@@ -1,8 +1,8 @@
 //! Provisional Qleisli frontend and independently checked finite IR.
 //!
-//! The frontend parses `.qli` and resolves modules, but does not yet type-check
-//! source or lower it to IR. [`verify`] checks the finite operation subset in
-//! [`ir`]. Raw IR is untrusted regardless of who or what generated it.
+//! The frontend checks a finite `.qli` subset and lowers it to IR. Every
+//! generated function is passed through [`verify`], which checks the operation
+//! subset in [`ir`]. Raw IR is untrusted regardless of its producer.
 
 pub mod frontend;
 pub mod ir;

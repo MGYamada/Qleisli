@@ -179,6 +179,38 @@ fn nested_classical_phi_is_visible_in_its_parent_arm() {
 }
 
 #[test]
+fn classical_phis_cannot_read_outputs_of_the_same_merge() {
+    rejected(
+        program(
+            vec![],
+            vec![c(0)],
+            vec![RawOp::ClassicalBranch {
+                condition: c(0),
+                then_ops: vec![],
+                else_ops: vec![],
+                quantum_phis: vec![],
+                classical_phis: vec![
+                    ClassicalPhi {
+                        then_id: c(0),
+                        else_id: c(0),
+                        output: c(1),
+                    },
+                    ClassicalPhi {
+                        then_id: c(1),
+                        else_id: c(0),
+                        output: c(2),
+                    },
+                ],
+            }],
+            vec![],
+            vec![c(2)],
+            Effect::Unitary,
+        ),
+        "undefined arm value",
+    );
+}
+
+#[test]
 fn bell_preparation_split_and_partial_measurement() {
     let bell = program(
         vec![],

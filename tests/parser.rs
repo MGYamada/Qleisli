@@ -202,6 +202,16 @@ fn deep_syntax_is_rejected_without_exhausting_the_stack() {
 }
 
 #[test]
+fn nested_operator_chains_share_the_ast_depth_limit() {
+    let mut expr = "x".to_owned();
+    for _ in 0..20 {
+        expr = format!("({expr}){}", " xor x".repeat(20));
+    }
+    let source = format!("basis fn f(x: Bit) -> Bit {{ {expr} }}");
+    assert!(parse_module(&source).unwrap_err().message.contains("limit"));
+}
+
+#[test]
 fn invisible_separators_and_bad_bit_literals_have_precise_errors() {
     let cases = [
         (

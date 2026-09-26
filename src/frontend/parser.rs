@@ -469,7 +469,31 @@ impl Parser {
     }
 
     fn basis_expr(&mut self) -> Result<BasisExpr, ParseError> {
-        self.basis_xor()
+        let expr = self.basis_xor()?;
+        // A left-associated chain can grow the AST without growing the parse
+        // stack. Nested chains must also share the AST depth budget.
+        let mut pending = vec![(&expr, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "basis AST exceeds the initial 64-level limit".to_owned(),
+                    span: node.span,
+                });
+            }
+            match &node.kind {
+                BasisExprKind::Not(inner) => pending.push((inner, depth + 1)),
+                BasisExprKind::Tuple(a, b)
+                | BasisExprKind::Xor(a, b)
+                | BasisExprKind::And(a, b) => {
+                    pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
+                }
+                BasisExprKind::Call { args, .. } => {
+                    pending.extend(args.iter().map(|arg| (arg, depth + 1)))
+                }
+                _ => {}
+            }
+        }
+        Ok(expr)
     }
 
     fn basis_xor(&mut self) -> Result<BasisExpr, ParseError> {

@@ -544,6 +544,10 @@ impl State {
             {
                 return Err(err(path, "classical phi references an undefined arm value"));
             }
+        }
+        // Phi inputs are simultaneous: no output of this merge is available
+        // in either arm, including outputs listed earlier in this same merge.
+        for phi in classical_phis {
             global.insert_classical(phi.output, path)?;
         }
         Ok(())
