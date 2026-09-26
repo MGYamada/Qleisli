@@ -1,0 +1,40 @@
+name: Specification and implementation checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install the tested Rust toolchain
+        run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+      - run: cargo +1.98.1 fmt --check
+      - run: cargo +1.98.1 test --all-targets
+      - run: cargo +1.98.1 clippy --all-targets -- -D warnings
+
+  lean:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean
+          auto-config: 'false'
+          build: 'true'
+      - name: Audit every project declaration for forbidden axioms
+        working-directory: lean
+        run: lake env lean -DwarningAsError=true Audit.lean
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: python3 scripts/check_docs.py
+      - run: git diff --check

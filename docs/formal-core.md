@@ -1,104 +1,249 @@
-# 有限コアの形式化と健全性定理の骨格
+# Finite core formalization and soundness obligations
 
-状態: **段階1の提案・未証明**（2026-09-26）。この文書は[設計思想](design-philosophy.md)、[開発目標](ai-era-goal.md)、[有限コア仕様v0](language-spec.md)の契約を完全な推論体系と証明へ展開する作業文書である。仕様の受理規則は確定したが、その健全性と実装対応は証明途上である。[初期フロントエンド](frontend-v0.md)と有限 IR は一部の構成的規則を実装したが、以下の一般的な判断・補題との対応の完全な証明は未完成である。
+Status: **Stage 1 in progress** (2026-09-26). The English
+[source resource calculus](source-resource-rules.md) now gives explicit rules
+for mixed values, pending results, calls, frames, and branch interfaces, together
+with a paper proof of its resource invariant (R1). An
+[ownership-accounting projection](lean-resource-proof.md) is now machine checked
+in Lean; it is supporting evidence for the specification, not the complete R1
+derivation system. The [source semantics](source-semantics.md) now defines mixed
+value/environment interfaces and gives conditional local proofs for call-by-value
+substitution, correlated frames, and classical branch/phi composition. The
+[typing supplement](source-typing-rules.md) covers all current syntax cases
+and proves local basis, scope, determinacy, and effect lemmas T1–T3.
+[Q1–Q3](source-soundness.md) now proves ideal quantum soundness for those
+explicit mathematical derivations. A small Lean matrix module checks the
+Kraus completeness composition used by that paper proof. Adequacy for the
+Rust source checker, source-to-IR meaning preservation, and an implementation
+soundness guarantee remain unproved. This English edition replaces the earlier
+Japanese formalization notes as the authoritative text of this document.
 
-## 対象と判断
+This work follows the [design principles](design-philosophy.md),
+[AI-era goal](ai-era-goal.md), and [finite core v0](language-spec.md).
+Specifying a rule, testing its implementation on finite examples, and proving a
+general theorem are different milestones. The [frontend](frontend-v0.md) and
+finite IR implement constructive checks, but a complete formal connection to
+the mathematical judgments below is still an obligation.
 
-初期コアは有限基底型 `Unit`、`Bit` と有限積、有限個の論理ワイヤ、全域・停止する関数だけを持つ。再帰、無限ループ、未報告の事後選択、暗黙の失敗・破棄、任意の外部量子操作は含めない。全域な `basis fn` は有限真理値表へ展開できる。量子基底添字はコヒーレントな式専用の文脈に置き、コピー可能な実行時古典文脈 `Γ` と混同しない。
+## 1. Scope and judgments
 
-`Δ` は互いに素な論理部分系 ID、基底型、線形所有権トークンからなる文脈である。複合レジスタの `split/join` はこの文脈の束ね方を変更するが、積状態を主張しない。以下の `H(Δ)` は各部分系の `H(A)=ℂ^A` のテンソル積を、固定した軸順序で取ったものとする。局所操作は対象軸を並べ替えた上で残りの軸に恒等を掛ける。したがって `Δ` に別々の ID があっても、入力密度演算子は任意に絡み合っていてよい。
+The core has finite basis types `Unit`, `Bit`, and finite products, finitely many
+logical wires, and total terminating functions. It excludes recursion, dynamic
+loops, unreported postselection, implicit failure or discard, and arbitrary
+external quantum operations. A `basis fn` denotes a total finite table. Its
+coherent basis variables are separate from copyable runtime classical values.
+
+An ownership context `Delta` records basis types, distinct subsystem IDs, and
+linear tokens. `split/join` change its grouping, without asserting a product
+state. Define `H(Delta)` by a fixed tensor order, and interpret local operations
+using the appropriate axis permutations and identities on the remaining axes.
+Input density operators may be entangled across all owned registers and with
+an arbitrary external reference system.
+
+For whole computations, the semantic judgment has the intended form
 
 ```text
-Γ ; Δin ⊢ P : B ; Δout ! ε
+Gamma ; Delta_in |- P : B ; Delta_out ! epsilon
 ```
 
-`B` は有限の古典出力型、`ε ∈ {pure, observe}` は効果であり、`pure ≤ observe` とする。`Q<A>` は `Δ` に属する所有権型で、効果型ではない。本書の `pure` は規範仕様の `Unitary` と `Iso` をまとめた略記で、ソースの効果名ではない。規範の順序は `Unitary ≤ Iso ≤ Observe`。`pure` な宣言には別途 `Iso` または `Unitary` の分類を付ける。`Iso` は入力から出力への等長性、`Unitary` はさらに全射性を要求する。`pure` が返す古典値は `Γ` のみに依存し、量子基底添字から `CBit` への暗黙の読み出しはない。
+Here `B` is the classical output type. The source effect order is
+`Unitary <= Iso <= Observe`. The word *pure* abbreviates the first two classes;
+it is not an additional source effect. `Q<A>` is an ownership type, not an
+effect. The operational resource judgment in
+[source-resource-rules.md](source-resource-rules.md) further distinguishes named
+bindings, opaque pending values, and a slot-to-token/wire store. That distinction
+is required for mixed tuples and for a branch inside a later call argument.
 
-主な規則は次の形を目標とする。`Δ` の入出力では、使用した所有権トークンを消費し、返す部分系に新しい SSA トークンを付ける。`q` と `r` が同じ部分系 ID を指す場合は規則の前提を満たさない。
+For fixed classical input `gamma`, a pure computation returns a classical
+value determined by `gamma` and a linear operator `V_gamma`. `Iso` requires
+`V_gamma† V_gamma = I`; `Unitary` also requires `V_gamma V_gamma† = I`.
+Classical information itself need not be reversible: a unitary declaration may
+ignore a classical argument. A call uses its declared effect, even if its body
+has a smaller derived effect.
 
-| 構成 | 所有権と古典結果 | 効果・側条件 |
+| Form | Resource interface | Effect and additional obligation |
 | --- | --- | --- |
-| `init0()` | `Δ → Δ, q:Q<Bit>`、`q` は新規 ID | `pure`、`Iso` |
-| `Gate(U,q)` | `q` の旧トークンを消費し新トークンを返す | `pure`、封印したユニタリ `U` |
-| `LiftBasis(f,q)` | 入力 `Q<A>` を消費し出力 `Q<B>` を返す | `pure`、全域な `f:A→B` の単射性を検査 |
-| `split/join` | 重複しない所有権の再束縛 | `pure`、正準テンソル同型 |
-| `qif(control,target)` | 相異なる制御・標的を消費して返す | `pure`、両枝は同じ標的型の `Unitary` |
-| `measure_z(q)` | `q` を消費し `b:CBit` を返す | `observe`、旧 `q` に生きた借用がない |
-| `discard(q)` | `q` を消費し `Unit` を返す | `observe`、部分跡 |
-| `reset(q)` | 旧 `q` を消費し新規 ID `q':Q<Bit>` を返す | `observe`、部分跡と `|0⟩` の準備 |
-| `with_computed` | 保護する元と作業レジスタを返し、内部補助を閉じる | `pure`、下記の構造化されたゼロ復帰証拠 |
+| `init0` | Add a fresh `Q<Bit>` slot and logical wire. | `Iso`; prepare zero. |
+| Sealed gates | Consume input tokens and return new tokens for the same ordered wires. | `Unitary`; exact sealed matrices. |
+| `do/pure` | Consume `Q<A>`, return `Q<B>`, append fresh wires if needed. | Check the total injection; same width is `Unitary`, growing width is `Iso`. |
+| `split/join` | Partition or concatenate disjoint ordered wire lists. | `Unitary`; preserve correlations. |
+| Static inverse, repetition, `qif` | Check unary `Q<A> -> Q<A>` unitaries; return all input resources. | `Unitary`; keep exact phases, check both branches and zero repetitions. |
+| `measure_z` | Consume `Q<Bit>`, return only `CBit`. | `Observe`; no old quantum handle remains. |
+| `discard` | Consume `Q<A>`, return `Unit`. | `Observe`, including zero-width ownership. |
+| `reset` | End the old `Q<Bit>`, create a fresh logical wire and handle. | `Observe`; discard correlations with the old wire. |
+| v0 `with_computed` | Preserve the source interface and close one private auxiliary. | `Unitary`; expanded auxiliary `Z/T` chain or identity only. |
 
-逐次合成では前段の `Δout` と後段の `Δin` を一致させ、前段の古典結果を後段の `Γ` に渡し、効果の上限を取る。例えば次を規則の骨格とする。
-
-```text
-Γ ; Δ0 ⊢ P : B ; Δ1 ! ε1    Γ, b:B ; Δ1 ⊢ F : C ; Δ2 ! ε2
-----------------------------------------------------------------
-Γ ; Δ0 ⊢ let b = P; F : C ; Δ2 ! (ε1 ∨ ε2)
-```
-
-古典 `if` の両枝は**排他的に**同じ入力 `Δ` を受けるため、ソース上で同じ量子変数が二つの枝に現れても二重使用ではない。合流する出力は同じ型付き量子インターフェースを要求し、枝ごとの新規 ID は必要なら α 換名・SSA の `φ` で対応づける。結果の型木と位置、外側の消費集合、生存frameを対応させる[規範規則](language-spec.md#7-古典分岐の合流)を採用する。その推論規則の完全化と意味保存の証明は未完了である。`unitary` として分類する古典分岐は、各古典入力で選ばれる枝がユニタリでなければならない。
-
-## 全体系に対する理想意味論
-
-各古典入力 `γ:Γ` と古典出力 `b:B` に対し、プログラムの意味を
+Sequential composition matches the first output ownership interface with the
+second input interface and makes the first classical result available to the
+second computation. Its effect is the join:
 
 ```text
-Eᴾ_{γ,b} : L(H(Δin)) → L(H(Δout))
+Gamma ; Delta0 |- P : B ; Delta1 ! epsilon1
+Gamma, b:B ; Delta1 |- F : C ; Delta2 ! epsilon2
+-----------------------------------------------------------
+Gamma ; Delta0 |- let b=P; F : C ; Delta2 ! max(epsilon1,epsilon2)
 ```
 
-とする。`L(H)` は `H` 上の線形演算子空間である。`pure` な `P` は、`γ` だけから決まる出力 `bγ` と線形写像 `Vγ` を持ち、`Eᴾ_{γ,bγ}(ρ)=Vγ ρ Vγ†`、他の結果ではゼロ写像とする。`Iso` では `Vγ†Vγ=I`、`Unitary` ではさらに `VγVγ†=I` を要求する。全体位相を持つ演算子をそのまま保持し、制御付き操作の前に位相で同一視しない。
+This is a schematic whole-computation rule. The detailed source rules also
+handle linear or mixed results and their moves; this display is not a
+replacement for those rules or a proof of a strict indexed monad structure.
 
-局所操作の式では、表示していない残りの量子系 `R` に恒等演算子を掛ける。次の式は入力が `q` と `R` の間、または外部参照系と絡み合う場合にも同じ線形写像として働く。
+Classical `if` checks its arms exclusively from the same entry context. Their
+result type trees and outer consumption sets must match. Result positions and
+surviving frame slots determine the phi interface, including resources in a
+suspended caller. The resource calculus proves that the interface covers each
+live slot once, including `Q<Unit>`, and gives an axis-renaming lemma. General
+meaning preservation for every implemented branch transformation remains open.
+The [local composition lemma](source-semantics.md#6-s3-classical-branch-and-complete-phi-transport)
+now specifies the condition/arm instrument equation and simultaneous classical
+substitution, assuming correspondence for immediate subderivations.
 
-| 構成 | 意味・検査する等式 |
-| --- | --- |
-| `init0` | `V=|0⟩_q ⊗ I_R`、`V†V=I_R`。 |
-| `LiftBasis(f)` | `V_f=Σ_{a∈A}|f(a)⟩⟨a|`。有限表で `f` が単射なら `V_f†V_f=I_A`。 |
-| `Gate(U)` | `U` は封印する正確な行列または検証対象の構成子で、`U†U=UU†=I` を要求する。 |
-| `split/join` | `H(A×B) ≅ H(A)⊗H(B)` と軸の並べ替え。振幅と相関を保持するユニタリ。 |
-| `qif` | `C=|0⟩⟨0|_q⊗U₀+|1⟩⟨1|_q⊗U₁`。`U₀` と `U₁` がユニタリなら `C†C=CC†=I`。相対位相を保持する。 |
-| `measure_z(q)` | `K_b=⟨b|_q⊗I_R`、`E_b(ρ)=K_bρK_b†`。`Σ_b K_b†K_b=I_{qR}`。測定した `q` は出力から消える。 |
-| `discard(q)` | `E(ρ)=tr_q(ρ)=Σ_b K_bρK_b†`。古典結果は一つだけで、結果 `b` は報告しない。 |
-| `reset(q)` | `J_b=|0⟩_{q'}⟨b|_q⊗I_R`、`E(ρ)=Σ_b J_bρJ_b†=|0⟩⟨0|_{q'}⊗tr_q(ρ)`、`Σ_b J_b†J_b=I_{qR}`。 |
+## 2. Ideal semantics on the entire system
 
-`measure_z` の各枝は完全正かつ跡非増加で、枝の総和は跡保存である。`discard` と `reset` も完全正かつ跡保存である。完全正性は、上記の Kraus 演算子に任意の参照系 `S` の `I_S` をテンソルしても正値性を保つことを含む。これらの式に積状態の仮定はない。
-
-前段 `P` が内部結果 `c` を返し、後段 `F` が `c` に応じた写像 `F_{d|c}` を選ぶ場合、結果 `c` も公開するなら合成枝は `F_{d|c}∘E^P_{γ,c}` で `(c,d)` と添字を付ける。`c` を隠すなら最終結果 `d` の写像を `Σ_c F_{d|c}∘E^P_{γ,c}` とする。この和は**古典結果を忘れる**場合の和であり、コヒーレントな振幅を勝手に足し合わせる操作ではない。
-
-## 純粋な補助ビット解放の証拠
-
-一般の `Release0` を単独の `Iso` または跡保存な原始操作として扱ってはならない。ゼロ射影による形式的な解放 `L(ρ)=(I_R⊗⟨0|)ρ(I_R⊗|0⟩)` は、入力の補助ビットが `|1⟩` なら `tr L(ρ)=0` であり、全状態上で跡保存ではない。通常の `discard` に置き換えると、入力との相関を失う `observe` 効果になり、純粋な解放を証明したことにはならない。
-
-純粋な解放に十分な証拠は、解放直前までの写像 `F:H(Δin)→H(R)⊗H(Bit)` が、**全入力について** `F=(I_R⊗|0⟩)V` と因子分解し、`V†V=I` を満たすことである。この等式は任意の参照系 `S` に対して `F⊗I_S=(I_R⊗|0⟩⊗I_S)(V⊗I_S)` へ拡張できるため、補助ビットは残りと分離する。IR 検証器は証拠という文字列の存在ではなく、この因子分解を保証する検査可能な規則を要する。
-
-一般の構造化IRで使う十分条件として、任意の全域基底関数 `f:A→Bit` について `C_f|x,a⟩=|x,a xor f(x)⟩` を使い、補助ビットを `|0⟩` で導入する。`use` を
+For classical input `gamma` and classical result `b`, the intended meaning is
 
 ```text
-W = Σ_{x∈A,a∈Bit} |x,a⟩⟨x,a| ⊗ V_{x,a}
+E[P]_(gamma,b) : L(H(Delta_in)) -> L(H(Delta_out)).
 ```
 
-という構造に制限し、各 `V_{x,a}` が作業レジスタ `R` 上のユニタリであることを構文・IR から検証する。位相ゲートは `R=Unit` の場合の複素位相として含まれる。`W` は保護中の元 `x` と補助 `a` の基底ラベルを変えない。軸を `(x,a,R)` の順に書くと、`C_f† W C_f` は任意の `|x,0,r⟩` を `|x,0⟩⊗V_{x,f(x)}|r⟩` へ写す。線形性により任意の重ね合わせと外部参照系でも補助は `|0⟩` で分離し、残系の写像 `Σ_x |x⟩⟨x|⊗V_{x,f(x)}` はユニタリである。
+For a pure computation, only its deterministic classical result `b_gamma` has a
+nonzero branch: `E[P]_(gamma,b_gamma)(rho)=V_gamma rho V_gamma†`. Keep the
+operator's exact phase, rather than quotienting by global phase. Controlled
+composition can turn that phase into an observable relative phase.
 
-したがって `with_computed` は `Init0; C_f; W; C_f†; Release0` の**一つの検証可能な構造**として定義できる。後尾の `Release0` だけを切り出して、任意の前段につなげてはならない。借用期間は `x,a` の変更や測定を防ぐ資源規則であり、上の因子分解そのものの証拠ではない。
+In the following formulas, `R` denotes the remaining quantum system and `S` an
+arbitrary external reference. Displayed operators are extended by `I_S`.
 
-v0ソースの `with_computed` は上記のうち `R=Unit`、補助上の展開後 `Z/T` 列だけを証拠として受理する。一般の作業レジスタや保存効果署名はv0外であり、この数学的な十分条件がそのままソースの受理範囲を意味しない。
+| Constructor | Exact interpretation | Required identity |
+| --- | --- | --- |
+| `init0` | `V = ket(0)_q tensor I_R`, with a chosen axis order. | `V†V=I_R` |
+| Injective lift | `V_f = sum_a ket(f(a)) bra(a)` | Injectivity gives `V_f†V_f=I_A`. |
+| Sealed gate | A fixed exact operator `U`, extended to all other axes. | `U†U=UU†=I` |
+| `split/join` | The canonical tensor/axis isomorphism. | Inverse permutations compose to identity. |
+| `qif` | `ket(0)bra(0) tensor U0 + ket(1)bra(1) tensor U1` | Orthogonal projectors and unitary `Ui` give unitarity. |
+| `measure_z(q)` | `K_b=bra(b)_q tensor I_R`; `E_b(rho)=K_b rho K_b†`. | `sum_b K_b†K_b=I_(qR)` |
+| `discard(q)` | `sum_b K_b rho K_b† = tr_q(rho)`; hide the basis outcome. | Kraus completeness; extend to a wider register's full basis. |
+| `reset(q)` | `J_b=ket(0)_(q') bra(b)_q tensor I_R`; hide `b`. | `sum_b J_b†J_b=I_(qR)` |
 
-## 定理目標と証明の骨格
+The Kraus forms imply complete positivity. Completeness implies that the sum of
+outcome maps preserves trace; each individual outcome is trace non-increasing.
+No equation assumes that the operated-on subsystem is independent of `R` or
+`S`. A partial measurement of a Bell pair therefore conditions the other half,
+and discarding a half produces a mixed residual state.
 
-**資源安全性の目標。** `Γ ; Δin ⊢ P : B ; Δout ! ε` が導出されれば、各実行経路で、命令は所有する相異なるワイヤ ID の有効なトークンだけを消費し、同一トークンの二重使用、測定後の旧トークン利用、生きた借用との衝突、暗黙の所有権喪失がない。`main` では `Δout=∅` を要求する。証明は各構成の入出力トークン規則、逐次合成、排他的な古典分岐についての構造帰納法とする。これは量子状態の分離を示す定理ではない。
+If `P` produces an internal classical result `c` and the continuation selects
+`F_(d|c)`, retaining both results gives the branch
+`F_(d|c) composed with E[P]_(gamma,c)` indexed by `(c,d)`. Hiding `c` gives
 
-**純粋操作の目標。** 各 `pure` な `Iso` の `Vγ` は `Vγ†Vγ=I`、`Unitary` ならさらに `VγVγ†=I`。封印ゲート、単射リフト、準備、構造同型を基底とし、合成・テンソル積・位相保持の `qif`・古典入力ごとの分岐で帰納する。`with_computed` には上の因子分解補題を使う。無条件の `Release0` は帰納法の基底に含めない。
+```text
+G_d = sum_c F_(d|c) composed with E[P]_(gamma,c).
+```
 
-**量子インストルメント健全性の目標。** 有限コアで受理した任意の `P` と各 `γ` について、各 `Eᴾ_{γ,b}` は完全正かつ跡非増加で、`Σ_b Eᴾ_{γ,b}` は跡保存である。純粋操作を一結果のインストルメントに埋め込み、測定・リセット・破棄の Kraus 完全性を基底とする。逐次・適応合成では完全正写像の合成と有限和が完全正であること、および各段の跡保存から総和の跡保存を示す。古典分岐は排他的な枝選択として扱う。外部参照系へ恒等拡張しても成立し、絡み合いを排除する前提を置かない。
+This is a sum of CP maps over classical alternatives. It is not coherent
+addition of measurement-branch amplitudes.
 
-この定理が得られても、個別プロトコルの状態保存、アルゴリズムの成功確率、実機での実現は従わない。また `q` の不正な二重所有を拒否することと、未知状態複製不可能性の物理定理を証明することは別である。
+## 3. Evidence for pure auxiliary release
 
-## 証明と実装の残件
+A standalone zero release is not an isometry or a trace-preserving primitive on
+arbitrary inputs. The formal map
+`L(rho)=(I_R tensor bra(0)) rho (I_R tensor ket(0))` sends an auxiliary `ket(1)`
+input to trace zero. Replacing it with ordinary discard changes the operation
+to `Observe` and can lose correlations; it is not a proof of pure cleanup.
 
-1. 確定したv0の型・効果・線形所有権・φ合流・限定補助証拠を、完全な形式体系へ展開する。一般の借用仕様の設計は別の後続課題とする。
-2. `H(Δ)` の軸順序、`split/join` と部分系 ID の置換、量子環境へのフレーム規則を厳密に定める。
-3. 実装済みの封印ゲート、有限表の単射性検査、`W` の構造証拠と `with_computed` のIR検査を規範と照合し、検証器の受理条件が証明の前提を満たすことを示す。浮動小数点の近似比較を等長性の証拠と見なさない。
-4. 上の構造帰納法を完全な数学的証明へ仕上げ、Rust の IR 検証器の受理条件が証明の前提に一致することを監査する。ソースから IR への変換が意味を保つことも別に示す。
-5. Bell対の片側測定・破棄、フィードバック、位相オラクルの有限照合を回帰検査として維持する。例の一致は一般定理の代用にはしない。
+Sufficient evidence is a factorization of the preceding map, **for every
+input**:
 
-この文書は一般のエンタングルメント判定を要求しない。所有権文脈は操作権を追い、量子的な正当性は全体系に対する局所操作の意味と、純粋解放の証拠から示す。
+```text
+F : H(Delta_in) -> H(R) tensor H(Bit)
+F = (I_R tensor ket(0)) V,       V†V=I.
+```
+
+Tensoring the equation with any `I_S` shows that the auxiliary is zero and
+separated from the remaining system even with an entangled reference.
+
+For the more general structured raw IR, take a total basis function `f:A->Bit`
+and the reversible XOR computation `C_f|x,a>=|x,a xor f(x)>`. Restrict use to
+
+```text
+W = sum_(x,a) |x,a><x,a| tensor V_(x,a),
+```
+
+where each `V_(x,a)` is a unitary on a work register `R`. This keeps both the
+source and auxiliary basis labels. On all `|x,0,r>` inputs,
+
+```text
+C_f† W C_f |x,0,r> = |x,0> tensor V_(x,f(x)) |r>.
+```
+
+Linear extension gives the required zero factorization for arbitrary states
+and references, with effective unitary
+`sum_x |x><x| tensor V_(x,f(x))`. Scalar phases are included when `R=Unit`.
+Consequently the entire `Init0; C_f; W; C_f†; Release0` structure can be certified
+as one constructor. Its final release must not be detached and applied to an
+unrelated preceding computation. A borrow lifetime prevents conflicting uses;
+it is not itself the factorization proof.
+
+Source v0 permits only the special case with no work register and an expanded
+`Z/T` chain on the auxiliary. The resource calculus states its exact phase
+formula and private scope rule. General work registers, preservation-effect
+signatures, arbitrary borrowing, and `with0` remain outside source v0 even
+though raw IR can describe more structured uses.
+
+## 4. Theorem status and proof work
+
+| Result | Current status | What it does not establish |
+| --- | --- | --- |
+| Source resource accounting, R1 | Paper proof for the explicit [resource calculus](source-resource-rules.md#7-resource-preservation-theorem-and-proof), plus a declaration-boundary corollary. | General equivalence with Rust execution or the whole source specification. |
+| Source types, effects, names and scopes, T1–T3 | [Syntax-complete rule presentation](source-typing-rules.md), local paper proofs of typed total basis evaluation, type/effect determinacy, lexical projection and conservative effects; finite boundary regressions. | Uniqueness of generated IR, full source/Rust adequacy, or general quantum soundness. |
+| R1-accounting projection | [Lean-checked](lean-resource-proof.md) typed ownership occurrences, local resource edits, frames, complete renaming/phi, and composition. | Full source R1, lexical/effect/scope/history rules, Rust adequacy, or quantum semantics. |
+| Phi axis renaming | Local paper lemma for complete position/frame interfaces, including references. | Full source-to-IR branch correctness. |
+| Source interface semantics and S1–S4 | [Conditional local paper proofs](source-semantics.md) for evaluated-value substitution, arbitrary correlated frames, classical branch/phi and structural IR composition. | Complete typing/name/scope adequacy, every semantic leaf or Rust implementation path. |
+| Finite static transformations, F1–F5 | [Conditional exact-operator paper proofs](static-semantics.md) for axis transport, flattening/output order, restricted computed phases, inverse, repetition, and coherent control; exact finite matrix regressions. | General source-to-IR adequacy, acceptance of all unitary raw IR, or verified Rust algorithms. |
+| Restricted auxiliary zero return | Exact local factorization above and in the resource calculus. | A general release primitive or arbitrary auxiliary-body acceptance. |
+| Finite IR ideal soundness | [Conditional paper argument](finite-core-proof.md) for its constructors and verification premises. | Verified Rust implementation, source translation, or numerical exactness. |
+| Source rule-system pure-operation and instrument soundness | [Paper Q1–Q3](source-soundness.md): pure determinacy/isometry/unitarity, finite adaptive instruments, CP and total trace preservation with arbitrary references. | Full Rust acceptance/translation correspondence, numerical exactness, protocol, algorithm, or hardware correctness. |
+| Local Kraus completeness algebra | [Lean KA-1–KA-5](lean-resource-proof.md#6-local-kraus-completeness-algebra): exact matrix identities for isometries, output transport, and adaptive composition. | Positivity/trace, source derivations, arbitrary-reference extension, or the whole Q1–Q3 proof. |
+
+**Pure-operation result and transfer obligation.** For each fixed classical
+input, every `Iso` derivation of the explicit source rules denotes an isometry
+and every `Unitary` derivation a unitary. Q1's induction uses exact sealed matrices, checked injections,
+preparation, structural isomorphisms, phase-preserving static operations,
+classical selection, and the auxiliary factorization lemma. Arbitrary release
+is not an induction base case. Transferring this paper theorem to every
+Rust-accepted source program still requires implementation adequacy.
+
+**Instrument result and transfer obligation.** For every derivation of the
+explicit source rules and fixed classical input, each `E[P]_(gamma,b)` is
+completely positive and trace non-increasing and their sum is trace preserving.
+Q2–Q3 uses Kraus
+completeness for observations, pure isometries as single-outcome instruments,
+and finite adaptive composition. The proof extends all operations by an
+arbitrary reference identity, without excluding entanglement. The relation
+between this meaning, actual Rust IR generation, and numerical execution is
+not proved by the instrument equations.
+
+**Remaining obligations, in order:**
+
+1. Establish adequacy of the explicit typing/name/effect rules and resource
+   calculus for v0 and for the implementation's snapshots, tombstones, and
+   implicit frames. The audit and finite regressions are evidence, not this proof.
+2. Connect the [source interface definitions and local S1–S4 proofs](source-semantics.md)
+   to every case of the explicit derivation system. Discharge the semantic-leaf and layout
+   correspondence premises. The local static algorithms and restricted computed
+   phase elimination now have [exact-operator proofs F1–F5](static-semantics.md);
+   their full source/Rust adequacy still needs to be established.
+3. Transfer Q1–Q3 through that adequacy relation to the implemented source
+   checker; preserve decoded classical records and all holder interfaces.
+4. Assemble S1–S4 and F1–F5 into source-to-IR meaning preservation, checking all
+   typing, effect, layout, and certificate premises. Audit each verifier premise
+   against the mathematical rules; finite matrix equality tests do not prove
+   general implementation adequacy.
+5. Connect these results to the Rust implementation or a mechanized model.
+   Preserve finite Bell, partial measurement/discard, feedback, and phase-oracle
+   regressions without presenting them as general proofs.
+
+The resource model deliberately avoids general entanglement detection. Ownership
+tracks operation rights; quantum validity needs whole-system semantics and
+checked cleanup evidence. Even completing these source theorems would not
+prove a protocol's state-preservation property, an algorithm's success
+probability, a hardware realization, or the physical no-cloning theorem.

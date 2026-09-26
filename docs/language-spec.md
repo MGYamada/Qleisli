@@ -1,176 +1,205 @@
-# Qleisli 有限コア言語仕様 v0
+<a id="qleisli-有限コア言語仕様-v0"></a>
 
-状態: **有限コアの規範仕様を確定**（2026-09-26）。サイズ付き型・操作パラメータ化に先立ち、有限の型と静的操作を対象にする。本書、[表層文法](syntax-v0.md)、[モジュールと封印API](standard-library.md)をv0の規範とする。[設計思想](design-philosophy.md)に従い、仕様の確定、実装、有限例の検証、一般定理の証明を区別する。[適合状況と証明課題](specification-status.md)にその対応を記録する。**ソースからIRへの意味保存・処理系の健全性の証明は未完了**である。
+# Qleisli finite core language specification v0
 
-## 1. 範囲と規範の扱い
+Status: **Normative finite core specification fixed** (2026-09-26). This version covers finite types and static operations before sized types and operation parameters. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is the authoritative text of this document and replaces its earlier Japanese edition without changing v0's rules.
 
-v0は `Unit`、`Bit` と有限積を基底とする非再帰言語である。有限表を使う単射リフト、封印ゲート、静的な逆・制御・反復、限定された補助計算、観測と古典分岐を含む。量子アルゴリズムの有限例はこの仕様の利用例・回帰検査として保持する。
+<a id="1-範囲と規範の扱い"></a>
 
-`Q<A>` は量子資源の**所有権型**であり、計算効果の型でも任意の量子状態をコピーできる値型でもない。自由ベクトル空間 `H(A)=ℂ^A` の任意の `bind` は実行APIに含めない。古典値・資源・効果を伴う合成をKleisli的に捉える設計原理と、厳密なモナド構造の証明は区別する。
+## 1. Scope and normative interpretation
 
-本書の「受理」は型・所有権・効果の規則を満たすことを指す。処理系の明示した容量上限による診断は別である。断片例は、登場する封印名を明示的にimportした環境で読む。完全な実行例は `examples/bell`、`examples/phase_oracle`、`examples/feedback` にある。
+v0 is a nonrecursive language with basis types `Unit`, `Bit`, and finite products. It includes injective lifts represented by finite tables, sealed gates, static inverse/control/repetition, restricted auxiliary computation, observation, and classical branching. Finite quantum algorithm examples remain applications of this specification and regression checks.
 
-v0に含めないもの: サイズ変数・配列・一般整数・任意角度・精度型・第一級の操作値・高階量子関数・再帰・動的反復・一般の借用・`with0`・無条件の `release0`・非破壊測定・外部量子操作・ホストI/O。`Iso<A,B>`、`Unitary<A,B>`、`lift(f)` は説明用のメタ記法であり、ソースの型やAPIではない。
+`Q<A>` is an **ownership type** for quantum resources. It is neither a computation effect nor a value type that permits arbitrary quantum states to be copied. Arbitrary `bind` on the free vector space `H(A)=ℂ^A` is not an executable API. The design principle of Kleisli-style composition with classical values, resources, and effects is distinct from a proof of a strict monad structure.
 
-## 2. 型と文脈
+In this document, *accepted* means satisfying the typing, ownership, and effect rules. Diagnostics for an implementation's explicit capacity limits are a separate matter. Read code fragments in an environment that explicitly imports the sealed names they use. Complete executable examples are in `examples/bell`, `examples/phase_oracle`, and `examples/feedback`.
+
+v0 excludes size variables, arrays, general integers, arbitrary angles, precision types, first-class operation values, higher-order quantum functions, recursion, dynamic loops, general borrowing, `with0`, unconditional `release0`, nondestructive measurement, external quantum operations, and host I/O. `Iso<A,B>`, `Unitary<A,B>`, and `lift(f)` are explanatory metanotation, not source types or APIs.
+
+<a id="2-型と文脈"></a>
+
+## 2. Types and contexts
 
 ```text
-基底型 A,B ::= Unit | Bit | (A,B)
-通常型 T   ::= Unit | CBit | Q<A> | (T,T)
-古典型 C   ::= Unit | CBit | (C,C)
+Basis types A,B   ::= Unit | Bit | (A,B)
+Ordinary types T  ::= Unit | CBit | Q<A> | (T,T)
+Classical types C ::= Unit | CBit | (C,C)
 ```
 
-- `Bit` はコヒーレントな基底ラベルであり、通常関数の裸の引数・戻り値には置けない。`CBit` はコピーできる古典値。相互の暗黙変換はない。
-- 型の等しさは構文木の一致とする。積の結合則、`(Unit,T)=T`、`Q<(A,B)>=(Q<A>,Q<B>)` は暗黙に適用しない。
-- `bits(Unit)=0`、`bits(Bit)=1`、`bits((A,B))=bits(A)+bits(B)`。`Q<Unit>` も線形所有権を持つ。ワイヤ数0を理由にコピー・暗黙破棄してはならない。
-- `Q<A>` を一つでも含む通常値は線形である。混合タプル `(CBit,Q<A>)` を名前で参照すると**値全体を移動**する。古典部分だけをコピーしたい場合は先にパターンで分解する。
-- 型は状態、固有状態、積状態、非エンタングルメント、アルゴリズムの成功を表明しない。相異なる所有権の対象も絡み合ってよい。
+- `Bit` is a coherent basis label and cannot appear as a bare parameter or return type of an ordinary function. `CBit` is a copyable classical value. There is no implicit conversion between them.
+- Type equality is equality of syntax trees. Product associativity, `(Unit,T)=T`, and `Q<(A,B)>=(Q<A>,Q<B>)` are not applied implicitly.
+- `bits(Unit)=0`, `bits(Bit)=1`, and `bits((A,B))=bits(A)+bits(B)`. `Q<Unit>` still carries linear ownership. Zero wire count does not permit copying or implicit discard.
+- An ordinary value containing any `Q<A>` is linear. Referring to a mixed tuple `(CBit,Q<A>)` by name **moves the entire value**. To copy only its classical part, destructure it with a pattern first.
+- Types do not assert a state, eigenstate, product state, absence of entanglement, or algorithmic success. Separately owned resources may be entangled.
 
-通常の式の判断を `Γ ; Δ ⊢ e : T ⊣ Δ' ! ε` と書く。`Γ` はコピー・破棄できる古典束縛、`Δ` は線形束縛とその量子トークン・部分系ID、`Δ'` は評価後に環境へ残る束縛である。式が返した値に含まれる所有権は `Δ'` と重複しない。混合値は線形束縛として管理する。基底式の判断 `Ξ ⊢basis e : A` は別の静的文脈を使い、実行時の `Γ` や `Δ` を捕捉しない。
+Write the judgment for an ordinary expression as `Γ ; Δ ⊢ e : T ⊣ Δ' ! ε`. `Γ` contains classical bindings that may be copied or discarded; `Δ` contains linear bindings and their quantum tokens and subsystem IDs; `Δ'` contains bindings remaining in the environment after evaluation. Ownership in the returned value is disjoint from `Δ'`. Mixed values are managed as linear bindings. The basis-expression judgment `Ξ ⊢basis e : A` uses a separate static context and cannot capture runtime `Γ` or `Δ`.
 
-## 3. 束縛、合成、宣言
+The [type, effect, name, and scope supplement](source-typing-rules.md) expands
+these judgments for every current syntax case, together with the resource
+calculus's pending frames, binding identities, and complete branch interfaces.
+Its local paper lemmas do not establish general compiler correctness.
 
-| 構成 | 型・所有権規則 | 効果・評価順 |
+<a id="3-束縛合成宣言"></a>
+
+## 3. Binding, composition, and declarations
+
+| Construct | Typing and ownership rule | Effect and evaluation order |
 | --- | --- | --- |
-| 名前 | 古典値はコピー。線形値は環境から一度取り出す。消費済みの名前は再使用不可。 | `Unitary` |
-| `()`、`(e1,e2)` | `Unit`、厳密な二項積。`e1` の残りの環境で `e2` を検査する。 | 左から右、効果の上限 |
-| `let p=e; body` | `e` の結果をパターン `p` で再束縛する。一つのパターン内の重複名は不可。`_` は古典値だけを捨てる。生存中の線形束縛を隠すことは不可。 | 右辺を先に評価し、その後で束縛。`let q=h(q);` は可能。 |
-| `e; body` | 捨てる `e` の型は古典型でなければならない。 | 順次合成、効果の上限 |
-| ブロック | 最終式は必須。局所の量子所有権は最終結果に返すか、明示的に消費する。 | 文の記載順、最後に結果式 |
-| `f(e1,…,en)` | 宣言と引数数・型が一致。関数の量子引数は呼び出しで移動し、結果から所有権を受け取る。 | 引数を左から右。呼び出しの効果は**宣言した分類**。 |
+| Name | Copy a classical value; take a linear value from the environment once. A consumed name cannot be reused. | `Unitary` |
+| `()`, `(e1,e2)` | `Unit` and a strict binary product. Check `e2` in the environment left by `e1`. | Left to right; join the effects. |
+| `let p=e; body` | Rebind the result of `e` using pattern `p`. Names cannot repeat within one pattern. `_` discards only classical values. A live linear binding cannot be shadowed. | Evaluate the right-hand side before binding. `let q=h(q);` is permitted. |
+| `e; body` | The discarded expression `e` must have a classical type. | Sequential composition; join the effects. |
+| Block | A final expression is required. Return local quantum ownership in the final result or consume it explicitly. | Statements in source order, followed by the result expression. |
+| `f(e1,…,en)` | Argument count and types must match the declaration. Quantum arguments move into the call; ownership is received through its result. | Arguments from left to right. Use the function's **declared classification** as the call effect. |
 
-各関数のパラメータ・結果型・効果分類は明記し、局所 `let` の型は推論する。通常関数は `unitary fn`、`iso fn`、`observe fn` のいずれか。本文は全量子引数と局所資源を消費または返し、戻り値は宣言型に一致させる。同梱の通常 `.qli` 定義にも同じ規則を適用する。
+Every function explicitly declares its parameter types, result type, and effect classification; local `let` types are inferred. An ordinary function is declared `unitary fn`, `iso fn`, or `observe fn`. Its body must consume or return every quantum parameter and local resource, and its result must match the declared type. The same rules apply to bundled ordinary `.qli` definitions.
 
-すべての宣言を検査する。未使用の関数、不選択の枝、反復0回の対象にも名前・型・効果・所有権検査を適用する。呼び出しグラフは非循環とし、静的操作の関数参照も辺に含める。関数は宣言順によらず参照できる。局所値は同名の関数を隠し、その値は呼び出せない。移動済みの局所束縛もスコープ内では同名関数を隠す。名前解決とモジュールの詳細は[文法](syntax-v0.md#名前とスコープ)による。
+Check every declaration. Name, type, effect, and ownership checks also apply to unused functions, unselected branches, and the target of zero repetitions. The call graph must be acyclic, including edges from function references in static operations. Functions may be referenced regardless of declaration order. A local value shadows a function of the same name, and the value is not callable. A moved local binding continues to shadow the function throughout its scope. The [grammar](syntax-v0.md#名前とスコープ) specifies name resolution and modules in detail.
 
-## 4. 効果と意味論
+<a id="4-効果と意味論"></a>
 
-効果は `Unitary ≤ Iso ≤ Observe` とし、順次合成・タプル・古典分岐で上限を取る。本文の効果が宣言の分類以下でなければならない。`basis fn` はこの効果列の外にある静的な全域関数である。
+## 4. Effects and semantics
 
-| 操作 | 効果 |
+The effect order is `Unitary ≤ Iso ≤ Observe`. Sequential composition, tuples, and classical branches take the join of their effects. The body effect must be no greater than its declaration's classification. A `basis fn` is a static total function outside this effect order.
+
+| Operation | Effect |
 | --- | --- |
-| 古典値の構成・コピー、所有権の移動、封印ゲート、`split/join`、同幅の単射リフト、静的操作、限定 `with_computed` | `Unitary` |
-| `init0`、幅を増やす単射リフト | `Iso` |
-| `measure_z`、`reset`、`discard` | `Observe` |
-| 通常関数呼び出し | 本文から弱めず、宣言の分類を使用 |
+| Classical value construction/copying, ownership moves, sealed gates, `split/join`, equal-width injective lifts, static operations, restricted `with_computed` | `Unitary` |
+| `init0`, width-increasing injective lifts | `Iso` |
+| `measure_z`, `reset`, `discard` | `Observe` |
+| Ordinary function call | Use its declared classification without lowering it based on its body. |
 
-例えば `iso fn id(q:Q<Bit>)->Q<Bit>{q}` は有効だが、`unitary fn` からこの `id` を呼ぶことは拒否する。宣言を `unitary` にすると受理する。`unitary fn forget(b:CBit)->Unit{()}` は受理する。`Unitary` が要求する可逆性は**固定された古典入力ごとの量子演算子**に対するものであり、古典情報の可逆性ではない。
+For example, `iso fn id(q:Q<Bit>)->Q<Bit>{q}` is valid, but calling this `id` from a `unitary fn` is rejected. Changing its declaration to `unitary` makes the call acceptable. `unitary fn forget(b:CBit)->Unit{()}` is accepted. The reversibility required by `Unitary` concerns the **quantum operator for each fixed classical input**, not reversibility of classical information.
 
-古典入力 `γ` を固定し、量子入力・出力空間を `H_in`、`H_out` とする。純粋な操作は古典出力 `c(γ)` と演算子 `V_γ:H_in→H_out` を持つ。`Iso` の契約は `V_γ†V_γ=I_in`、`Unitary` はさらに `V_γV_γ†=I_out`。この契約をソース検査が満たすことの一般証明は[形式化](formal-core.md)の課題である。
+Fix a classical input `γ`, and let the quantum input and output spaces be `H_in` and `H_out`. A pure operation has a classical output `c(γ)` and an operator `V_γ:H_in→H_out`. The `Iso` contract is `V_γ†V_γ=I_in`; `Unitary` additionally requires `V_γV_γ†=I_out`. Proving in general that source checking establishes these contracts is a [formalization obligation](formal-core.md).
 
-`Observe` の理想意味は古典出力 `c` ごとの完全正写像 `E_{γ,c}:L(H_in)→L(H_out)` とし、各 `γ` について総和を跡保存とする。確率は `tr(E_{γ,c}(ρ))`。公開しない古典結果は対応する写像を足し合わせる。測定枝の振幅を足し合わせてはならない。
+The ideal meaning of `Observe` is a completely positive map `E_{γ,c}:L(H_in)→L(H_out)` for each classical output `c`, with a trace-preserving sum for each `γ`. Its outcome probability is `tr(E_{γ,c}(ρ))`. To hide a classical result, sum the corresponding maps. Do not add amplitudes of measurement branches.
 
-局所操作は残系と任意の外部参照系への恒等拡張として解釈する。所有権の分離から状態の分離を推論しない。演算子の全体位相は保持する。`U` と `exp(iθ)U` は制御下で異なる相対位相を与えるため、静的操作の入力を位相同値類として扱わない。
+Interpret a local operation by extending it with the identity on the remaining system and any external reference system. Separate ownership does not imply a separated state. Preserve the operator's global phase. Since `U` and `exp(iθ)U` give different relative phases under control, inputs to static operations are not equivalence classes modulo phase.
 
-## 5. 基底計算と単射リフト
+<a id="5-基底計算と単射リフト"></a>
 
-基底式は `Unit`、ビットリテラル、変数、二項積、`not/xor/and`、全域な基底関数の呼び出しからなる。`not : Bit→Bit`、`xor/and : (Bit,Bit)→Bit` は通常の真理値表に従う。優先順位は `not > and > xor`、二項演算は左結合。基底変数はコピー・破棄できる。基底式には観測、通常関数、実行時古典値の捕捉、再帰を含めない。
+## 5. Basis computation and injective lifting
 
-`basis fn f(a1:A1,…,an:An)->B` の本文を全入力で型検査・評価できることを要求する。意味論上の定義域は、引数0個なら `Unit`、1個なら `A1`、2個以上なら左結合の積 `((A1,A2),…)`。ラベル順は `label(a,b)=label(a)+2^bits(A)label(b)` とする。
+Basis expressions consist of `Unit`, bit literals, variables, binary products, `not/xor/and`, and calls to total basis functions. `not : Bit→Bit` and `xor/and : (Bit,Bit)→Bit` follow the usual truth tables. Precedence is `not > and > xor`; binary operators associate to the left. Basis variables may be copied or discarded. Basis expressions exclude observations, ordinary functions, capture of runtime classical values, and recursion.
 
-`do x <- q; pure e` は**言語形式**である。先に `q:Q<A>` を評価・消費し、`Ξ={x:A}` だけで `e:B` を検査する。`e` が定める全域関数 `f:A→B` が単射なら `Q<B>` を返す。意味は `V_f=Σ_a |f(a)⟩⟨a|`。同幅なら `Unitary`、出力が広ければ `Iso`。型木の異なる同幅のリフトも認める。IRは有限表を持つ `LiftBasis` とし、独立に単射性を再検査する。表の出力位相はすべて1である。
+The body of `basis fn f(a1:A1,…,an:An)->B` must be type-checkable and evaluable on every input. Its semantic domain is `Unit` for zero parameters, `A1` for one, and the left-associated product `((A1,A2),…)` for two or more. Label order is `label(a,b)=label(a)+2^bits(A)label(b)`.
 
-| 入力と継続 | 判定 | 意味 |
+`do x <- q; pure e` is a **language form**. First evaluate and consume `q:Q<A>`, then check `e:B` using only `Ξ={x:A}`. If the total function `f:A→B` defined by `e` is injective, return `Q<B>`. Its meaning is `V_f=Σ_a |f(a)⟩⟨a|`. Equal width gives `Unitary`; greater output width gives `Iso`. Equal-width lifts between different type trees are permitted. The IR is `LiftBasis` with a finite table whose injectivity is independently rechecked. Every table output has phase 1.
+
+| Input and continuation | Decision | Meaning |
 | --- | --- | --- |
-| `q:Q<Bit>`、`pure (x,x)` | 受理、`Iso` | `α|0⟩+β|1⟩ → α|00⟩+β|11⟩`。未知状態の複製ではない。 |
-| `q:Q<Bit>`、`pure not x` | 受理、`Unitary` | 基底の置換 |
-| `q:Q<Unit>`、`pure 0` | 受理、`Iso` | 一点集合から `|0⟩` の準備 |
-| `q:Q<Bit>`、`pure 0` | 拒否 | 非単射 |
-| `pure outer` | 拒否 | `outer` が外側の古典・量子束縛なら捕捉不可 |
-| `(q,q)` | 拒否 | 基底ラベルではなく所有権を複製 |
+| `q:Q<Bit>`, `pure (x,x)` | Accepted, `Iso` | `α\|0⟩+β\|1⟩ → α\|00⟩+β\|11⟩`. This does not clone an unknown state. |
+| `q:Q<Bit>`, `pure not x` | Accepted, `Unitary` | A basis permutation. |
+| `q:Q<Unit>`, `pure 0` | Accepted, `Iso` | Prepare `\|0⟩` from a singleton domain. |
+| `q:Q<Bit>`, `pure 0` | Rejected | Not injective. |
+| `pure outer` | Rejected | An outer classical or quantum binding `outer` cannot be captured. |
+| `(q,q)` | Rejected | Duplicates ownership, not basis labels. |
 
-基底述語 `f` 自体には単射性を要求しない。単射性が必要なのは `f` を単独で量子レジスタにリフトするときである。
+A basis predicate `f` itself need not be injective. Injectivity is required when lifting `f` alone onto a quantum register.
 
-## 6. 封印された組み込み操作
+<a id="6-封印された組み込み操作"></a>
 
-以下の名前は明示的にimportする。`A,B` はこの表のメタ変数であり、利用者定義の型パラメータ構文ではない。各入力 `Q` を一度消費し、出力の `Q` に所有権を返す。多引数の量子操作は相異なる所有権と重複しないワイヤ集合を要求する。
+## 6. Sealed built-in operations
 
-| モジュール・名前 | 型 | 効果・意味 | IR |
+The following names require explicit imports. `A,B` are metavariables in this table, not user-defined type-parameter syntax. Consume each input `Q` once and return ownership through output `Q` values. Quantum operations with multiple arguments require distinct ownership and disjoint wire sets.
+
+| Module and name | Type | Effect and meaning | IR |
 | --- | --- | --- | --- |
-| `std::quantum::init0` | `()→Q<Bit>` | `Iso`。新しい論理ワイヤに `|0⟩` | `Init0` |
-| `h`, `x`, `z`, `t`（同上） | `Q<Bit>→Q<Bit>` | `Unitary`。下記行列 | `Gate` |
-| `cnot`（同上） | `(Q<Bit>,Q<Bit>)→(Q<Bit>,Q<Bit>)`（引数2個） | `Unitary`。`|c,t⟩→|c,t xor c⟩` | `Gate` |
-| `toffoli`（同上） | 引数3個の `Q<Bit>` → `((Q<Bit>,Q<Bit>),Q<Bit>)` | `Unitary`。`|a,b,t⟩→|a,b,t xor (a and b)⟩` | `Gate` |
-| `split`（同上） | `Q<(A,B)>→(Q<A>,Q<B>)` | `Unitary`。所有権を分割、状態の相関は保持 | `Split` |
-| `join`（同上） | 引数 `Q<A>,Q<B>` → `Q<(A,B)>` | `Unitary`。指定順に所有権を束ねる | `Join` |
-| `std::observe::measure_z` | `Q<Bit>→CBit` | `Observe`。対象を消費、量子ハンドルは返さない | `MeasureZ` |
-| `reset`（同上） | `Q<Bit>→Q<Bit>` | `Observe`。旧状態を捨て、新規論理IDに `|0⟩` | `Reset` |
-| `discard`（同上） | `Q<A>→Unit` | `Observe`。対象の部分跡。`Q<Unit>` でもこの分類 | `Discard` |
+| `std::quantum::init0` | `()→Q<Bit>` | `Iso`; prepare `\|0⟩` on a fresh logical wire. | `Init0` |
+| `h`, `x`, `z`, `t` in `std::quantum` | `Q<Bit>→Q<Bit>` | `Unitary`; matrices below. | `Gate` |
+| `cnot` in `std::quantum` | `(Q<Bit>,Q<Bit>)→(Q<Bit>,Q<Bit>)` (two arguments) | `Unitary`; `\|c,t⟩→\|c,t xor c⟩`. | `Cnot` |
+| `toffoli` in `std::quantum` | Three `Q<Bit>` arguments → `((Q<Bit>,Q<Bit>),Q<Bit>)` | `Unitary`; `\|a,b,t⟩→\|a,b,t xor (a and b)⟩`. | `Toffoli` |
+| `split` in `std::quantum` | `Q<(A,B)>→(Q<A>,Q<B>)` | `Unitary`; split ownership while preserving state correlations. | `Split` |
+| `join` in `std::quantum` | Arguments `Q<A>,Q<B>` → `Q<(A,B)>` | `Unitary`; group ownership in the specified order. | `Join` |
+| `std::observe::measure_z` | `Q<Bit>→CBit` | `Observe`; consume the target and return no quantum handle. | `MeasureZ` |
+| `reset` in `std::observe` | `Q<Bit>→Q<Bit>` | `Observe`; discard the old state and prepare `\|0⟩` with a fresh logical ID. | `Reset` |
+| `discard` in `std::observe` | `Q<A>→Unit` | `Observe`; partial trace over the target. This classification also applies to `Q<Unit>`. | `Discard` |
 
-基底順 `|0⟩,|1⟩` で `H=(1/√2)[[1,1],[1,-1]]`、`X=[[0,1],[1,0]]`、`Z=diag(1,-1)`、`T=diag(1,exp(iπ/4))`。ゲートは対象の論理ワイヤを保ち、所有権トークンを更新する。`split/join` で束ね直すだけでは物理ゲートを加えないが、関数の入出力で軸順序が変わる場合は演算子の並べ替えとして扱う。
+In basis order `|0⟩,|1⟩`, `H=(1/√2)[[1,1],[1,-1]]`, `X=[[0,1],[1,0]]`, `Z=diag(1,-1)`, and `T=diag(1,exp(iπ/4))`. Gates preserve the target logical wires and refresh ownership tokens. Regrouping through `split/join` does not itself add physical gates, but a change in axis order between a function's input and output is interpreted as an operator permutation.
 
-対象を `q`、残系を `R` とすると、観測のKraus演算子は `K_b=⟨b|_q⊗I_R`。`measure_z` は `E_b(ρ)=K_bρK_b†`、`discard` は `Σ_b E_b(ρ)=tr_qρ`。`reset` は `J_b=|0⟩_{q'}⟨b|_q⊗I_R` による `Σ_b J_bρJ_b†`。いずれも相関を持つ入力を含めて解釈する。
+For target `q` and remaining system `R`, observation has Kraus operators `K_b=⟨b|_q⊗I_R`. `measure_z` denotes `E_b(ρ)=K_bρK_b†`; `discard` denotes `Σ_b E_b(ρ)=tr_qρ`. `reset` denotes `Σ_b J_bρJ_b†` with `J_b=|0⟩_{q'}⟨b|_q⊗I_R`. These meanings include correlated inputs.
 
-`measure_z(q)` の後に `h(q)` を使うこと、`cnot(q,q)`、`join(q,q)` は拒否する。`let b=measure_z(q); let fresh=init0(); if b {x(fresh)} else {fresh}` は受理する。再準備した論理ワイヤは測定したハンドルと同一ではない。物理素子の再利用はバックエンドの責務である。
+Using `h(q)` after `measure_z(q)`, `cnot(q,q)`, and `join(q,q)` is rejected. `let b=measure_z(q); let fresh=init0(); if b {x(fresh)} else {fresh}` is accepted. The newly prepared logical wire is not the measured handle. Reuse of a physical device is the backend's responsibility.
 
-## 7. 古典分岐の合流
+<a id="7-古典分岐の合流"></a>
 
-`if c { e0 } else { e1 }` は言語形式。条件を先に評価して `CBit` を要求し、真ならthen枝、偽ならelse枝を選ぶ。各枝は条件評価後の同じ環境を**排他的に**受ける。両枝を静的に検査し、次をすべて要求する。
+## 7. Merging classical branches
 
-1. 両結果は同じ通常型 `T`。二項積の木構造も一致する。
-2. 外側の線形束縛を消費する集合が両枝で一致する。枝内の `let` は外側の束縛を更新しない。
-3. 枝内に残った局所の量子所有権はない。結果に返さない一時資源は枝内で明示的に消費する。
-4. 結果の量子葉はタプル内の位置と基底型で対応させる。残る外側の資源（frame）は元の位置ごとに対応させる。呼び出し元にあって関数の局所環境に現れない資源もframeに含める。
-5. 各枝の生存所有権を結果とframeの対応が重複なくすべて覆う。対応ごとに新しい合流トークン・論理IDを与え、古典結果も位置ごとに合流させる。
+`if c { e0 } else { e1 }` is a language form. Evaluate the condition first and require `CBit`; select the then arm if true and the else arm if false. Both arms receive the same environment after condition evaluation **exclusively**. Statically check both arms and require all of the following:
 
-IRは `ClassicalBranch` と量子・古典のφ対応を持つ。φは選んだ枝の結果を合流後の名前にする操作であり、量子状態の初期化ではない。各古典φは枝内または分岐前の値を参照し、同じ合流の別のφ出力を読まない。効果は条件と両枝の上限。
+1. Both results have the same ordinary type `T`, including the binary-product tree.
+2. Both arms consume the same set of outer linear bindings. A `let` inside an arm does not update an outer binding.
+3. No local quantum ownership remains in either arm. Explicitly consume temporary resources that are not returned in its result.
+4. Match quantum result leaves by tuple position and basis type. Match surviving outer resources (the frame) by their original positions. The frame also includes caller resources absent from the function's local environment.
+5. Result and frame matches cover all live ownership in each arm exactly once. Assign a fresh merge token and logical ID to each match; merge classical results by position as well.
 
-`if c {(a,b)} else {(b,a)}` は同型の `a,b` なら受理する。結果位置による対応なので、元のワイヤIDの一致を要求しない。両枝で新しく `init0()` した量子結果も `Iso` 以上の文脈なら返せる。`if c {discard(q)} else {()}` は消費集合が異なるため拒否する。枝内で `let q=h(q); ()` と書いて量子結果を返さない場合も拒否する。
+The IR uses `ClassicalBranch` with quantum and classical phi mappings. A phi names the selected arm's result at the merged interface; it does not initialize a quantum state. Each classical phi references a value from its arm or from before the branch, never another phi output in the same merge. The effect is the join of the condition and both arms.
 
-## 8. 静的な逆・反復・量子制御
+`if c {(a,b)} else {(b,a)}` is accepted when `a,b` have the same type. Matching by result position does not require the original wire IDs to agree. Both arms may return quantum results freshly prepared by `init0()` in an `Iso` or higher context. `if c {discard(q)} else {()}` is rejected because the consumed sets differ. An arm containing `let q=h(q); ()` is also rejected because it does not return its quantum result.
 
-次の三つは**言語形式**。`u` は静的に解決する関数名で、宣言が `unitary`、引数がちょうど一つの `Q<A>`、結果が同じ `Q<A>` でなければならない。封印された `h/x/z/t` も対象とする。古典引数・第一級操作値・`iso` 宣言は不可。
+<a id="8-静的な逆反復量子制御"></a>
 
-| 形式 | 入出力・所有権 | 効果・意味 |
+## 8. Static inverse, repetition, and quantum control
+
+The following three constructs are **language forms**. `u` is a statically resolved function name, declared `unitary`, with exactly one argument of type `Q<A>` and a result of the same type `Q<A>`. Sealed `h/x/z/t` are also eligible. Classical arguments, first-class operation values, and `iso` declarations are not permitted.
+
+| Form | Input/output and ownership | Effect and meaning |
 | --- | --- | --- |
-| `adjoint(u,q)` | `Q<A>→Q<A>`、一度消費し返す | `Unitary`、`U†` |
-| `repeat_static(n,u,q)` | `Q<A>→Q<A>`、一度消費し返す | `Unitary`、`U^n`。`n` は十進の静的自然数。 |
-| `qif(c,q){0=>u0,1=>u1}` | 引数 `Q<Bit>,Q<A>` → `(Q<Bit>,Q<A>)`。制御と標的のワイヤは重複不可。 | `Unitary`、`|0⟩⟨0|⊗U0+|1⟩⟨1|⊗U1` |
+| `adjoint(u,q)` | `Q<A>→Q<A>`; consume once and return ownership. | `Unitary`; `U†`. |
+| `repeat_static(n,u,q)` | `Q<A>→Q<A>`; consume once and return ownership. | `Unitary`; `U^n`. `n` is a decimal static natural-number literal. |
+| `qif(c,q){0=>u0,1=>u1}` | Arguments `Q<Bit>,Q<A>` → `(Q<Bit>,Q<A>)`. Control and target wires must be disjoint. | `Unitary`; `\|0⟩⟨0\|⊗U0+\|1⟩⟨1\|⊗U1`. |
 
-入力式自身の効果も全体に加える。`qif` は制御式、標的式の順で評価する。制御の基底ラベルは保存する。`n=0` も対象の宣言・本文を検査し、所有権を引き継ぐ恒等操作を返す。`Q<Unit>` 上のスカラー位相も制御下で保持する。
+Include the effects of the input expressions in the overall effect. `qif` evaluates the control expression before the target expression. It preserves the control's basis label. Even for `n=0`, check the target declaration and body, and return an identity operation that passes ownership through. Preserve scalar phases on `Q<Unit>` under control as well.
 
-IRは、型検査した本文をHadamardと8乗根位相付き基底置換の有限列へ変換した `ApplyUnitary`。逆は順序・置換・位相を反転し、反復は有限展開、制御は各枝の基底制御として構成する。関数の出力軸順序も反映する。検証器は作用軸の範囲・重複、制御との非重複、表の全域性・全単射性、位相を再検査する。
+The IR is `ApplyUnitary`: translate the checked body into a finite sequence of Hadamards and basis permutations carrying eighth-root phases. Inversion reverses the order, permutations, and phases; repetition expands finitely; control is constructed by basis control of the two arms. Account for the function's output axis order. The verifier rechecks axis bounds and distinctness, disjointness from controls, table totality and bijectivity, and phases.
 
-`adjoint(t,q)`、`repeat_static(0,h,q)` は受理する。`repeat_static(0,missing,q)`、`adjoint(init0,q)`、古典引数を持つ `choose` の静的変換、`qif(q,q){…}` は拒否する。[静的操作の例と検証記録](static-operations.md)を参照。
+`adjoint(t,q)` and `repeat_static(0,h,q)` are accepted. `repeat_static(0,missing,q)`, `adjoint(init0,q)`, static transformation of a `choose` with classical arguments, and `qif(q,q){…}` are rejected. See the [static-operation judgments, examples, and verification record](static-operations.md) and [conditional exact-operator proofs](static-semantics.md). These local proofs do not establish full source soundness or Rust compiler correctness.
 
-## 9. 限定された補助計算
+<a id="9-限定された補助計算"></a>
 
-`with_computed(q,f){|a| body}` は**言語形式**。v0では次の構成的証拠だけを採用する。
+## 9. Restricted auxiliary computation
 
-- `q:Q<A>` を評価・消費し、全域な基底関数名 `f:A→Bit` を要求する。`f` の単射性は不要。
-- `body` の外側から利用できる値は古典値だけ。計算元 `q` を含め、外側の量子値を捕捉できない。局所名 `a:Q<Bit>` は新しい補助ビットの所有権。
-- 本文は `Unitary` 効果で同じ補助スロットの `Q<Bit>` を返し、余分な量子資源を残さない。
-- **通常関数を展開した後の量子命令が、その補助上の `Z/T` 列または空列だけ**であることを要求する。各ゲートは直前の所有権を受け渡す。
-- 式全体は元の `Q<A>` の更新後の所有権を返す。入力式を除いた構成の効果は `Unitary`。
+`with_computed(q,f){|a| body}` is a **language form**. v0 accepts only the following constructive evidence:
 
-受理例は `with_computed(q,f){|a| z(a)}`、恒等の `a`、通常関数に包んだ `t(z(a))`。拒否例は `h(a)`、`h(h(a))`、測定、古典分岐、別の量子値の捕捉。`adjoint(t,a)` や `repeat_static(2,z,a)` は対角でも `ApplyUnitary` となり、このv0証拠形式では拒否する。等価な行列だから受理するという外延的な規則は採らない。
+- Evaluate and consume `q:Q<A>`, and require the name of a total basis function `f:A→Bit`. `f` need not be injective.
+- Only classical values are available from outside `body`. It cannot capture outer quantum values, including the computation source `q`. The local name `a:Q<Bit>` owns a fresh auxiliary bit.
+- The body has effect `Unitary`, returns `Q<Bit>` for the same auxiliary slot, and leaves no additional quantum resources.
+- **After ordinary function expansion, quantum instructions must be only a `Z/T` sequence on that auxiliary, or the empty sequence.** Each gate passes the immediately preceding ownership onward.
+- The whole expression returns updated ownership of the original `Q<A>`. Excluding its input expression, the construct's effect is `Unitary`.
 
-意味を定めるため `C_f|x,b⟩=|x,b xor f(x)⟩` とし、`W` を上記位相列とする。`k=(4·Zの個数+Tの個数) mod 8` とすると、全 `x` について
+Accepted bodies include `with_computed(q,f){|a| z(a)}`, the identity `a`, and `t(z(a))` wrapped in ordinary functions. Rejected bodies include `h(a)`, `h(h(a))`, measurement, classical branching, and capture of another quantum value. Although `adjoint(t,a)` and `repeat_static(2,z,a)` are diagonal, they produce `ApplyUnitary` and are rejected by this v0 evidence format. There is no extensional acceptance rule based on matrix equivalence.
+
+To define the meaning, let `C_f|x,b⟩=|x,b xor f(x)⟩` and let `W` be the phase sequence above. With `k=(4·number_of_Z_gates+number_of_T_gates) mod 8`, for every `x`,
 
 ```text
 C_f† W C_f |x,0⟩ = exp(iπ k f(x)/4) |x,0⟩
 V = Σ_x exp(iπ k f(x)/4) |x⟩⟨x|
 ```
 
-となる。この等式を線形に拡張すると、任意の入力と参照系について補助は `|0⟩` に戻り残系から分離する。`V†V=VV†=I_A`。この**全入力に対する構造的証拠**により内部補助を閉じる。単なる寿命、サンプル入力の測定、状態の数値比較を証拠としない。
+Linear extension of this equation shows that, for arbitrary inputs and reference systems, the auxiliary returns to `|0⟩` and separates from the remaining system. `V†V=VV†=I_A`. This **structural evidence for all inputs** closes the internal auxiliary. A lifetime alone, measurement of sample inputs, or numerical comparison of states is not evidence of this property.
 
-IRは原子的な `ComputeUseUncompute`。`Init0; C_f; W; C_f†; Release0` に相当する全構造を検証し、独立した `Release0` は公開しない。現行の手書きIRには作業レジスタへの保護付き制御もあるが、v0ソースから受理する本文は上記に限る。一般の借用・保存効果署名・`with0` は後続仕様である。
+The IR is atomic `ComputeUseUncompute`. Verify the entire structure corresponding to `Init0; C_f; W; C_f†; Release0`; no standalone `Release0` is exposed. Current handwritten IR also supports protected control over work registers, but accepted v0 source bodies are restricted as above. General borrowing, preservation-effect signatures, and `with0` belong to later specifications.
 
-## 10. コンパイルと実行の境界
+<a id="10-コンパイルと実行の境界"></a>
 
-1. モジュール解決と全宣言の検査。名前、型、効果、線形所有権、有限表と補助証拠を検査する。
-2. 通常関数を展開し、言語形式と封印名を対応するIRへ変換する。各普通関数の入出力を検証対象とする。
-3. 独立したIR検証器が任意の生成元のIRを同じ規則で再検査する。未検証IRを実行APIへ通さない。
-4. 閉じた入口を実行する。入口はルート `main.qli` の引数なし `observe fn main()->C`。`C` は古典型で、終了時の量子所有権は空。ライブラリ検査は入口を要求しない。
+## 10. Compilation and execution boundaries
 
-IRの量子命令は入力の所有権トークンを消費し、量子出力があれば新しいトークンを作る。名前の移動や恒等関数そのものは物理操作を追加しない。論理ワイヤはゲートや構造操作で引き継ぎ、`init0`、幅を増やすリフト、`reset` では必要な新規IDを割り当てる。分岐の合流IDは選択した枝の軸を再命名する。相関の有無をIDだけから判断しない。
+1. Resolve modules and check every declaration: names, types, effects, linear ownership, finite tables, and auxiliary evidence.
+2. Expand ordinary functions and lower language forms and sealed names to their corresponding IR. Verify the input/output boundary of each ordinary function.
+3. An independent IR verifier rechecks IR from every producer using the same rules. Unverified IR cannot enter the execution API.
+4. Execute a closed entry point: a parameterless `observe fn main()->C` in the root `main.qli`, where `C` is a classical type and no quantum ownership remains at termination. Library checking does not require an entry point.
 
-型・所有権・効果違反、非単射リフト、未対応の補助証拠、未知名、再帰、容量超過は位置付き診断にする。複数の違反がある場合の診断順序や説明文の完全一致は規範に含めない。実装上のエラーコード、数値・容量上限は[実装プロファイル](frontend-v0.md#診断と上限)で示す。上限超過を、反復打ち切り・暗黙破棄などの意味変更で処理してはならない。
+A quantum IR instruction consumes its input ownership tokens and creates fresh tokens for any quantum outputs. Name moves and identity functions do not themselves add physical operations. Gates and structural operations carry logical wires forward; `init0`, width-increasing lifts, and `reset` allocate fresh IDs as needed. Branch merge IDs rename the selected arm's axes. IDs alone do not establish the presence or absence of correlations.
 
-参照実行系は有限の理想意味論を数値近似する。ハードウェアへの合成・機器能力検査は別の責務であり、未対応の途中測定・フィードバック等を実現したことにしてはならない。Rustのメモリ安全性、有限テストの一致、独立したIR検査の存在は、ソース健全性の証明の代わりではない。
+Report type, ownership, and effect violations, noninjective lifts, unsupported auxiliary evidence, unknown names, recursion, and capacity overflow with source locations. With multiple violations, diagnostic ordering and exact wording are not normative. Implementation error codes and numerical/capacity limits are given in the [implementation profile](frontend-v0.md#診断と上限). Capacity overflow must not be handled by changing meaning, such as truncating repetitions or implicitly discarding resources.
 
-## 11. 変更方針と次の工程
+The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness.
 
-この版の範囲と受理・拒否規則をv0の基準として固定する。今後、構文・型・効果・所有権・意味・封印APIを変更するときは、仕様・文法・適合検査・IR対応を同じ変更で更新し、互換性への影響を記録する。通常ライブラリの実験的な定義を増やすことは、それだけで言語形式や封印操作を増やすことではない。
+<a id="11-変更方針と次の工程"></a>
 
-次の優先工程は、上記の判断を完全な推論体系に展開し、資源安全性、理想意味論の健全性、ソースからIRへの意味保存、検証器実装との対応を示すこと。[段階1の完了条件](../ROADMAP.md#1-言語仕様)を維持する。サイズ付き型・操作パラメータ・算法骨格と標準語彙の拡張は、その後の仕様として扱う。
+## 11. Change policy and next work
+
+The scope and acceptance/rejection rules of this edition are fixed as the v0 baseline. A future change to syntax, types, effects, ownership, semantics, or sealed APIs must update the specification, grammar, conformance checks, and IR correspondence together and record its compatibility impact. Adding experimental ordinary library definitions does not by itself add language forms or sealed operations.
+
+The [inference-rule supplement](source-typing-rules.md) and resource calculus cover all current syntax cases. [Ideal soundness Q1–Q3](source-soundness.md) proves pure-operation and instrument properties for these explicit mathematical derivations. The next priority is to prove their adequacy for all Rust source-checker paths, source-to-IR meaning preservation, and correspondence with the verifier implementation. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition; soundness of every Rust-accepted program and compiler correctness remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
