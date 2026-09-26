@@ -2,11 +2,13 @@
 
 Qleisli は、Rust で処理系を構築する純粋関数型量子プログラミング言語です。量子データを複製不能な所有資源とし、プログラムを古典値と量子資源の、効果付きで合成可能な変換として捉えます。
 
-**現状は設計と処理系の試作段階です。** [有限コア言語仕様v0](docs/language-spec.md)を確定し、実装プロファイルの容量上限内で、名前解決、型・効果・所有権検査、IR 生成、独立した IR 検証、参照実行を接続しました。Bell・位相オラクル・フィードバックに加え、[構造化した小規模Grover・Bernstein–Vazirani・ビット反転訂正](docs/algorithm-routines.md)を実行して期待分布を確認できます。同梱の通常定義は `stdlib/src/basis.qli`、`stdlib/src/routines.qli`、`stdlib/src/transforms.qli`、`stdlib/src/arithmetic.qli` です。[静的な逆・制御・有限反復と小規模QPE](docs/static-operations.md)も実装しました。[対応範囲](docs/frontend-v0.md)には制限があり、一般の健全性証明や外部バックエンドは未完成です。
+**現状は設計と処理系の試作段階です。** [有限コア言語仕様v0](docs/language-spec.md)を確定し、実装プロファイルの容量上限内で、名前解決、型・効果・所有権検査、IR 生成、独立した IR 検証、参照実行を接続しました。Bell・位相オラクル・フィードバックに加え、[構造化した小規模Grover・Bernstein–Vazirani・ビット反転訂正](docs/algorithm-routines.md)を実行して期待分布を確認できます。同梱の通常定義は `stdlib/src/basis.qli`、`stdlib/src/routines.qli`、`stdlib/src/transforms.qli`、`stdlib/src/arithmetic.qli` です。[静的な逆・制御・有限反復と小規模QPE](docs/static-operations.md)も実装しました。[対応範囲](docs/frontend-v0.md)には制限があり、処理系全体の健全性証明や外部バックエンドは未完成です。
 
 ## 現在の優先順位: 言語仕様
 
-ロードマップを**段階1へ戻しました**。有限コアv0の字句・文法、型・効果、線形所有権、古典分岐、静的操作、限定補助証拠を先に固定しました。[仕様と実装の適合状況](docs/specification-status.md)を記録し、次に推論規則の完全化と健全性・意味保存の証明を進めます。サイズ付き型・操作パラメータ化・アルゴリズムとstdlibの拡張は後続工程です。既存の有限例を仕様の回帰検査に使います。
+ロードマップを**段階1へ戻しました**。[資源規則R1](docs/source-resource-rules.md)、[型・効果・名前・スコープ規則](docs/source-typing-rules.md)、[ソースの局所意味論](docs/source-semantics.md)、[静的変換の証明](docs/static-semantics.md)を整え、[明示した数学的規則系の理想健全性Q1〜Q3](docs/source-soundness.md)を紙上で示しました。純粋操作の等長性／ユニタリ性と、観測・適応合成の完全正性・総和の跡保存を対象とします。
+
+所有権モデルに加え、Kraus完全性の合成に関する5補題を[Leanで検証](docs/lean-resource-proof.md)しました。Leanは必要な局所補題を支える役割に留めます。[適合状況](docs/specification-status.md)には実装監査と回帰検査を記録しています。数学的規則とRustの全受理経路の対応、ソースからIRへの一般的な意味保存は未証明です。サイズ付き型・操作パラメータ化・アルゴリズムとstdlibの拡張は後続工程です。
 
 ## 第1開発目標: AI時代の量子言語
 
@@ -53,6 +55,12 @@ AI が生成したコードも人間が書いたコードも、同じ型・効�
 17. [同梱部品の契約台帳](docs/stdlib-contracts.md): 公開12定義の状態・前提・意味・IR・費用・検証根拠。
 18. [有限算術と位数推定](docs/arithmetic-order-finding.md): 全空間上の可逆演算、N=15、古典再構成と再試行。
 19. [仕様v0の適合状況](docs/specification-status.md): 確定事項、実装上限、検証根拠、証明の残件。
+20. [ソース資源判断と紙上証明](docs/source-resource-rules.md): 英語の規則系、混合値と一時結果、関数のframe、φ、資源不変量R1と実装監査。
+21. [Leanの資源・Kraus証明台帳](docs/lean-resource-proof.md): 機械検証した所有権モデルと局所行列補題、その前提・未移植部分・再現手順。
+22. [ソースの値・環境・関数・分岐の意味論](docs/source-semantics.md): 混合値、評価済み値の代入、相関するframe、φの局所証明とIR対応。
+23. [有限の静的変換の正確な意味](docs/static-semantics.md): 平坦化・軸順・逆・制御・反復・限定補助位相の紙上証明、Rust対応、厳密行列の回帰検査。
+24. [型・効果・名前・スコープの推論規則](docs/source-typing-rules.md): 全AST構成子の規則、基底計算の全域性、束縛の射影、宣言効果、実装との対応と残件。
+25. [ソース規則系の理想健全性](docs/source-soundness.md): 純粋性・等長性／ユニタリ性、観測・適応合成・履歴の隠蔽、参照系を含む紙上証明Q1〜Q3。
 
 ## Rust 開発環境
 

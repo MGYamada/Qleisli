@@ -1,68 +1,254 @@
-# A2: 有限の静的操作変換
+<a id="a2-有限の静的操作変換"></a>
 
-状態: **有限部分集合を実装・有限例で検証**（2026-09-26）。第一級の操作値を導入せず、関数名をコンパイル時に解決する。以下はいずれも言語形式であり、通常の高階関数や封印ゲートの追加ではない。
+# A2: Finite static operation transformations
 
-## 表層の契約
+Status: **Finite subset implemented and checked on finite examples**
+(2026-09-26). Function names are resolved at compile time; operations are not
+first-class values. All three constructs below are language forms, not ordinary
+higher-order functions or additional sealed gates. This English edition is the
+authoritative contract and reference for this document, replacing its earlier
+Japanese edition without changing the accepted subset. The
+[finite core specification](language-spec.md) supplies the surrounding rules.
+The [static semantics](static-semantics.md) gives local phase-preserving proofs;
+general source-to-IR meaning preservation and Rust implementation correctness
+remain open.
 
-対象 `u` は、既知の `unitary fn u(q: Q<A>) -> Q<A>` または一量子ビットの封印ゲート。単一レジスタ、同一の基底型、古典パラメータなしを初期範囲とする。通常の関数本文を展開して型・効果・所有権検査と独立したIR検証を行い、その後に変換する。
+<a id="表層の契約"></a>
 
-| 記法 | 型・所有権・効果 | 受理／拒否と意味 |
+## Surface contracts
+
+A target `u` is a known `unitary fn u(q: Q<A>) -> Q<A>` or one of the sealed
+single-qubit gates `h/x/z/t`. The initial subset requires one register, identical
+input/output basis type trees, and no classical parameters. Expand and check
+the ordinary body for types, effects, and ownership, independently verify its
+IR, and only then transform it.
+
+| Form | Type, ownership, and effect | Acceptance, rejection, and meaning |
 | --- | --- | --- |
-| `adjoint(u, q)` | `Q<A> -> Q<A>`、`Unitary`。入力を消費して返す。 | 既知の本文の `U†`。`Iso`・観測・古典引数・異なる入出力型は拒否。 |
-| `repeat_static(n, u, q)` | 同上。`n`は十進の静的自然数リテラル。 | `U^n`、0回は恒等だが対象の名前・型・本文も検査する。動的な回数、予算超過を拒否。 |
-| `qif(c, q) { 0 => u0, 1 => u1 }` | `(Q<Bit>,Q<A>) -> (Q<Bit>,Q<A>)`、`Unitary`。両方を消費し返す。 | `∣0⟩⟨0∣⊗U0 + ∣1⟩⟨1∣⊗U1`。別所有権を要求し、両枝の位相を保持する。 |
+| `adjoint(u, q)` | `Q<A> -> Q<A>`, `Unitary`; consume and return the input ownership. | `U†` for the known body. Reject `Iso`, observation, classical parameters, or different input/output types. |
+| `repeat_static(n, u, q)` | The same interface. `n` is a decimal static natural-number literal. | `U^n`; zero repetitions give identity but still check the target name, type, and body. Reject a dynamic count or capacity-budget overflow. |
+| `qif(c, q) { 0 => u0, 1 => u1 }` | Arguments `Q<Bit>,Q<A>` return `(Q<Bit>,Q<A>)`, `Unitary`; consume and return both ownerships. | `∣0⟩⟨0∣⊗U0 + ∣1⟩⟨1∣⊗U1`. Require distinct ownership and preserve both arms' phases. |
 
-関数名は明示importと現在のモジュールで解決し、局所値による隠蔽、再帰を拒否する。関数名を返したり、通常の引数として渡したりはしない。量子引数は左から評価し、同じ所有権を二度指定できない。
+The table gives each form's own effect. Join it with the effects of its input
+expressions; applying a static unitary does not erase an input's `Iso` or
+`Observe` effect. Quantum arguments are evaluated from left to right. The same
+ownership cannot be supplied twice. Distinctness concerns logical ownership
+slots as well as disjoint physical wire sets: `Q<Unit>` remains linear even
+though its wire list is empty. Different ownerships may be entangled.
 
-`n`の上限は4,096とし、0を除く先頭ゼロを許さない。他の位置の基底リテラルは引き続き0/1のみ。展開には既存の合計作業予算と深さ制限を適用し、静的な回数の入れ子も無制限に増やさない。
+Resolve names through explicit imports and the current module. A local binding,
+including a spent binding, hides a same-named function. Recursion is rejected,
+including call-graph edges from static target references. Function names cannot
+be returned as values or passed as ordinary arguments.
 
-## 位相を保持する有限IR
+The implementation limits `n` to 4,096 and disallows leading zeroes except for
+`0` itself. Basis literals elsewhere remain only `0/1`. The existing total work
+budget and depth limit also apply to static expansion, including nested
+repetitions.
 
-変換先は `ApplyUnitary` と平坦な `CircuitStep` 列。各ステップは重複しない基底制御と、Hadamardまたは有限のmonomial演算子を持つ。monomial演算子は指定した順序付き軸に対して
+### Static target judgment
+
+Use the environments, opaque pending-value frame `F`, and register store `R`
+from the [source resource rules](source-resource-rules.md). `E` retains spent
+bindings as unavailable entries. Write
 
 ```text
-M|x⟩ = exp(iπ phase[x]/4) |permutation[x]⟩
+D ; E |- StaticTarget(u,A) => S
 ```
 
-と定義する。検証器は全域な置換表、位相指数0〜7、軸の範囲と一意性、制御と作用軸の非重複を検査する。空軸の表 `[0]` も位相を持ち、`Q<Unit>` のスカラー位相を消さない。これは任意の行列の受け入れではない。
+when declaration context `D` and the current residual environment `E` resolve
+`u` to a checked finite circuit `S` on `bits(A)` axes. This is metanotation,
+not a new source type or API. The premises are:
 
-逆演算は順序を逆にし、Hadamardを保ち、`p⁻¹[p[x]]=x` と `phase_inv[p[x]]=-phase[x] mod 8` を用いる。制御化は各ステップに対応する基底制御を付ける。`split/join`による出力軸順の変更も演算子の一部として正規化してから反転・制御する。
+1. `u` is absent from `dom(E)`, including spent entries; resolve it using the
+   current module and its explicit imports.
+2. Either it names a declaration whose **declared** classification is
+   `unitary`, with exactly the signature `(Q<A>) -> Q<A>`, or it names sealed
+   `std::quantum::h/x/z/t` and `A=Bit`. Exact type-tree equality is required;
+   equal wire width alone is insufficient. An `iso` identity is ineligible.
+3. Check the whole body from one fresh symbolic input in a separate register
+   store. Enforce normal calls, types, ownership closure, effect bounds, and
+   the acyclic dependency rule. It must return one `Q<A>` and no leftover
+   ownership. A static target cannot access caller values.
+4. Independently verify the resulting unary IR with declared effect `Unitary`;
+   flatten only supported finite constructors into `S`, including the final
+   output-axis permutation. All width, expansion, and work limits must hold.
 
-既存の単射リフトは同幅の置換だけを変換できる。`with_computed`は既存の保存構造の検査を通し、その有限の位相作用へ変換する。補助を無条件に解放する命令は作らない。既存の `QuantumIf` IRは保持し、新しい表層形式は一般の有限本文を扱う `ApplyUnitary` へ変換する。
+Thus a signature alone is insufficient. These premises are required even for
+zero repetitions and both arms of a `qif`. The emitted enclosing IR is also
+independently verified; static-body verification does not replace that check.
 
-各静的変換の対象レジスタは12ビットまで。`qif`では制御と標的を合わせて数える。プログラム全体の生存ワイヤ数の上限とは別である。ステップの表と制御の複製も作業予算へ加算する。生のIRは生成元と無関係に再検査する。変換の一般的な意味保存の機械証明は別の残件である。
+### Expression rules and evaluation order
 
-## 最初の利用対象
+Abbreviate a successful resource judgment as
+`D ; E ; F ; R |- e => v:T ! eps ; E' ; R'`. Freshness history is implicit
+here and must satisfy the full resource rules. For a circuit `S`, `Inv(S)`
+inverts it and `Repeat(n,S)` concatenates `n` copies, with an empty sequence
+for `n=0`.
 
-通常の `.qli` で固定幅QFTと2・3ビットのQPEを実装した。角度は既存Tの整数回によるπ/4単位の厳密な記号表現とし、任意角度・サイズ付き型・一般の操作パラメータ化は後続とする。QPEは位相レジスタを測定・消費し、測定後の標的所有権を返す。
+```text
+D ; E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
+D ; E1 |- StaticTarget(u,A) => S
+---------------------------------------------------------------------- ADJOINT
+D ; E ; F ; R |- adjoint(u,e) => q(s,A):Q<A> ! max(eps,Unitary) ; E1 ; R2
 
-### 通常定義と公開契約
+D ; E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
+D ; E1 |- StaticTarget(u,A) => S       n is a permitted static literal
+---------------------------------------------------------------------- REPEAT
+D ; E ; F ; R |- repeat_static(n,u,e)
+    => q(s,A):Q<A> ! max(eps,Unitary) ; E1 ; R2
+```
 
-| 所属・名前 | 型・所有権・効果 | 意味・受理・拒否・IR |
+`R2` is `R1` with a fresh token for slot `s` and the same ordered wires and
+basis type. Emit `ApplyUnitary` with `Inv(S)` or `Repeat(n,S)`. These rules
+resolve the target **after** evaluating `e`, using `E1`. Zero repetitions
+still evaluate `e`, check `StaticTarget`, and pass its ownership through once.
+
+```text
+D ; E  ; F        ; R  |- ec => c:Q<Bit> ! eps_c ; E1 ; R1
+D ; E1 ; F ++ [c] ; R1 |- eq => q:Q<A>   ! eps_q ; E2 ; R2
+own(c) and own(q) are disjoint; their live wire sets are disjoint
+D ; E2 |- StaticTarget(u0,A) => S0
+D ; E2 |- StaticTarget(u1,A) => S1
+---------------------------------------------------------------------- QIF
+D ; E ; F ; R |- qif(ec,eq){0=>u0,1=>u1}
+    => (c',q'):(Q<Bit>,Q<A>) ! max(eps_c,eps_q,Unitary) ; E2 ; R3
+```
+
+First evaluate and check the control as `Q<Bit>`, then evaluate the target
+with the control held in the opaque pending frame. If the target expression
+contains a classical branch, its complete phi interface must include that
+control; its register metadata can change while the pending holder survives.
+Resolve and check `u0`, then `u1`, in the same residual environment `E2`.
+Neither target becomes unchecked because of a known control state. Only after
+both checks, emit `Join; ApplyUnitary; Split`, returning the control and target
+in that order. The joins/splits create new slots/tokens while preserving the
+logical wire interface. Remap each target axis `j` to joined axis `j+1` and
+add a control at axis `0`, false for `S0` and true for `S1`.
+
+Accepted examples are `adjoint(t,q)` and `repeat_static(0,h,q)` on a live
+`Q<Bit>`. Rejected examples include `repeat_static(0,missing,q)`,
+`adjoint(init0,q)`, static transformation of a function with a classical
+parameter, and `qif(q,q){0=>h,1=>h}`. In
+`unitary fn bad(u:Q<Bit>)->Q<Bit>{adjoint(u,u)}`, evaluating the input spends
+local `u`; its tombstone still hides any same-named function, so the static
+target is rejected. Invalid function bodies and invalid second `qif` targets
+are rejected even when a run would not use their operation.
+
+<a id="位相を保持する有限ir"></a>
+
+## Phase-preserving finite IR
+
+The target representation is `ApplyUnitary` with a flat sequence of
+`CircuitStep`s. Each step has distinct basis controls and either a Hadamard or
+a finite monomial operator. On its specified ordered axes, a monomial means
+
+```text
+M|x⟩ = exp(iπ phase[x]/4) |permutation[x]⟩.
+```
+
+The verifier checks a total permutation table, phase exponents in `0..7`,
+axis bounds and uniqueness, and disjoint control/action axes. The empty-axis
+table `[0]` can also carry a phase, so scalar phases on `Q<Unit>` survive.
+This representation does not accept arbitrary matrices.
+
+Inversion reverses step order, leaves Hadamards unchanged, and uses
+`p⁻¹[p[x]]=x` and `phase_inv[p[x]]=-phase[x] mod 8`. Control adds the
+corresponding basis control to every step. Output-axis reordering caused by
+`split/join` is part of the operator and is normalized before inversion or
+control. The [static semantics](static-semantics.md) states the exact operator
+lemmas for flattening, adjoint, control, finite repetition, and computed phases,
+including their premises and limits.
+
+Existing injective lifts can be transformed only at equal width, when their
+tables are permutations. `with_computed` must pass its existing structural
+certificate before conversion to a finite phase action. No unconditional
+auxiliary-release instruction is introduced. Existing `QuantumIf` IR remains
+available; the new surface forms use `ApplyUnitary` to represent finite bodies.
+
+Each statically transformed register is limited to 12 bits; `qif` counts the
+control and target together. This is separate from the program's live-wire
+limit. Duplicated step tables and controls count against the work budget. Raw
+IR is rechecked regardless of its origin. General machine-checked meaning
+preservation for the transformation remains an open obligation.
+
+<a id="最初の利用対象"></a>
+
+## Initial applications
+
+Fixed-width QFT and two-/three-bit QPE are implemented as ordinary `.qli`
+definitions. Angles are exact symbolic multiples of `π/4`, using integer
+repetitions of the existing `T`. Arbitrary angles, sized types, and general
+operation parameters are deferred. QPE measures and consumes its phase
+register and returns the target ownership after measurement.
+
+<a id="通常定義と公開契約"></a>
+
+### Ordinary definitions and public contracts
+
+| Classification and name | Type, ownership, and effect | Meaning, acceptance, rejection, and IR |
 | --- | --- | --- |
-| 通常定義 `std::transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>`、`Unitary`。入力を消費し返す。 | `F_4`。2ビットで受理、異なる型・所有権再使用は拒否。H、制御付きT、Split/Joinへ展開。 |
-| 通常定義 `std::transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>`、`Unitary`。同上。 | `F_8`。3ビットで受理、異なる型・所有権再使用は拒否。通常呼び出しとApplyUnitaryに展開。 |
-| 例の通常定義 `evolution::evolve` | `Q<Bit> -> Q<Bit>`、`Unitary` | 初期本文はT。本文を差し替えてQPE対象を静的に指定する。観測を混ぜる本文は拒否。 |
-| 例の通常定義 `estimation::phase2` | `Q<Bit> -> ((CBit,CBit),Q<Bit>)`、`Observe` | 2ビットQPE。位相レジスタのみ測定・消費し標的を返す。固有状態の前提なしでもインストルメントとして受理。Unitary内の呼び出し・返した標的の暗黙破棄は拒否。 |
-| 例の通常定義 `estimation::phase3` | `Q<Bit> -> (((CBit,CBit),CBit),Q<Bit>)`、`Observe` | 3ビットQPE。同じ型・資源・効果の条件。制御付き冪、`adjoint(qft3,...)`、MeasureZへ展開。 |
+| Ordinary definition `std::transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>`, `Unitary`; consume and return the input. | `F_4`. Accept the two-bit type; reject other types and reused ownership. Expand to H, controlled T, and Split/Join. |
+| Ordinary definition `std::transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>`, `Unitary`; the same ownership rule. | `F_8`. Accept the three-bit type; reject other types and reused ownership. Expand ordinary calls and ApplyUnitary. |
+| Example ordinary definition `evolution::evolve` | `Q<Bit> -> Q<Bit>`, `Unitary`. | The initial body is T. Replace its body to specify the QPE target statically. Reject a body containing observation. |
+| Example ordinary definition `estimation::phase2` | `Q<Bit> -> ((CBit,CBit),Q<Bit>)`, `Observe`. | Two-bit QPE. Measure and consume only the phase register, returning the target. Accepted as an instrument without an eigenstate premise. Reject a call in a Unitary context or implicit discard of the returned target. |
+| Example ordinary definition `estimation::phase3` | `Q<Bit> -> (((CBit,CBit),CBit),Q<Bit>)`, `Observe`. | Three-bit QPE with the same type, resource, and effect conditions. Expand to controlled powers, `adjoint(qft3,...)`, and MeasureZ. |
 
-QFTの規約は `F_M∣x⟩=Σ_y exp(2πixy/M)∣y⟩/√M`。左からビット重みを1、2、4とする。位相レジスタに `U^(2^j)` を対応させ、逆QFTを作用させる。`U∣u⟩=exp(2πiφ)∣u⟩` なら結果 `y` の確率は `∣Σ_(r=0)^(M-1) exp(2πir(φ-y/M))/M∣²`。一般入力への測定後の作用と参照系の意味は[第3層のQPE契約](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント)を使う。[位相推定の一次資料、§5](https://arxiv.org/abs/quant-ph/9708016)
+The QFT convention is
+`F_M∣x⟩=Σ_y exp(2πixy/M)∣y⟩/√M`. Bits have weights `1,2,4` from left to
+right. Apply `U^(2^j)` controlled by phase bit `j`, then the inverse QFT.
+For `U∣u⟩=exp(2πiφ)∣u⟩`, the probability of result `y` is
+`∣Σ_(r=0)^(M-1) exp(2πir(φ-y/M))/M∣²`. The
+[planned QPE contract](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント)
+specifies the post-measurement action on general inputs and reference systems.
+See the [primary phase-estimation reference, §5](https://arxiv.org/abs/quant-ph/9708016).
 
-`transforms`の非公開ヘルパーは `identity:Q<Bit>->Q<Bit>` の恒等と `phase_quarter:Q<Bit>->Q<Bit>` のTを2回適用する通常のUnitary。QPE例の非公開ヘルパーは同型の恒等、`evolve`を2・4回適用する `square`・`fourth`。すべて同じ検査を受ける。
+Private helpers in `transforms` are the ordinary unitaries
+`identity:Q<Bit>->Q<Bit>` and `phase_quarter:Q<Bit>->Q<Bit>`, applying identity
+and two T gates respectively. The QPE example's private helpers are an identity
+of the same type and `square`/`fourth`, which apply `evolve` two/four times.
+All receive the same checks.
 
-QPEはまだ標準ライブラリの一般的な骨格ではなく、ソースの静的依存関係を差し替える有限例である。サイズ・任意角度・固有状態の証明・精度と失敗率の自動選択は提供しない。
+QPE is a finite example with replaceable static source dependencies, not yet a
+general standard-library skeleton. It supplies no size parameters, arbitrary
+angles, eigenstate proofs, or automatic choice of precision and failure rate.
 
-### 確認した結果
+<a id="確認した結果"></a>
+
+### Verification record
 
 ```sh
 cargo run --bin qleisli -- run examples/phase_estimation
 cargo test --test static_operations
 ```
 
-公開例はTの固有状態 `∣1⟩` を使い、結果 `1001` を確率1で返す。最初の `100` は整数1、位相1/8を表し、最後の1は返った標的のZ測定である。表示を二進整数の通常の上位ビット順と混同しない。
+The published example uses T's eigenstate `∣1⟩` and returns `1001` with
+probability one. Its first `100` encodes integer 1 and phase `1/8`; the final
+`1` is a Z measurement of the returned target. This display is not conventional
+most-significant-bit-first binary notation.
 
-[静的操作の12テスト](../tests/static_operations.rs)で全8位相、2ビットQPEの非整合位相の分布、外部参照との相関、縮退した位相部分空間のコヒーレンス、出力軸順を変える演算の逆、制御下の正負の反射、空レジスタの位相、0/1/4,096回反復、型・効果・資源・循環の拒否を確認した。2 MiBスタックで静的展開の深さと作業量の上限も確認した。生IRの不完全・非単射な表、範囲外の位相、重複・範囲外・制御と重なる軸を拒否する。
+The [12 static-operation tests](../tests/static_operations.rs) cover all eight
+phases, the distribution of a non-grid phase with two-bit QPE, correlations
+with an external reference, coherence within degenerate phase subspaces,
+inversion of output-axis reordering, positive/negative reflections under
+control, empty-register phases, repetition counts `0/1/4,096`, and rejection
+of type, effect, resource, and dependency-cycle errors. They also check static
+expansion depth and work limits on a 2 MiB stack. Raw IR with incomplete or
+noninjective tables, out-of-range phases, duplicated or out-of-range axes, or
+control/action overlap is rejected.
 
-数値照合の許容誤差は `1e-12`。単一入力の成功から一般の意味保存の機械証明や、任意精度のQPEの実装完了を主張しない。
+These numerical comparisons use tolerance `1e-12`. Success on one input does
+not establish general machine-checked meaning preservation or arbitrary-
+precision QPE. The additional [exact finite matrix checks](../tests/static_semantics.rs)
+exercise the static-translation correspondence described in
+[static-semantics.md](static-semantics.md). They preserve exact phases on their
+finite cases; they do not prove correctness for arbitrary source programs.
 
-最終検査（2026-09-26）: `cargo test --all-targets` は全92件成功（アルゴリズム7、コンパイラ17、パーサ8、プロジェクト8、参照実行13、静的操作12、IR検証27）。`cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`、`git diff --check`も成功した。文書リンクと新規表の列数、同梱公開定義9件を確認した。
+**Historical A2 validation (2026-09-26):** `cargo test --all-targets` passed
+all 92 tests (algorithms 7, compiler 17, parser 8, project 8, reference execution
+13, static operations 12, IR verification 27). `cargo fmt --check`,
+`cargo clippy --all-targets -- -D warnings`, and `git diff --check` also passed.
+Documentation links, column counts of new tables, and the nine public bundled
+definitions present at that milestone were checked. These are the A2 milestone
+counts, not the current repository totals; see the
+[conformance record](specification-status.md) for subsequent validation.

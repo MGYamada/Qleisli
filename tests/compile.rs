@@ -613,3 +613,204 @@ fn finite_v0_local_names_shadow_static_callees() {
         assert_eq!(error.code, ErrorCode::TypeMismatch, "{source}\n{error}");
     }
 }
+
+// SPEC-3 resource calculus boundaries: docs/source-resource-rules.md.
+#[test]
+fn resource_rules_pending_mixed_argument_survives_nested_call() {
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::cnot;
+use std::observe::measure_z;
+unitary fn choose(b: CBit, q: Q<Bit>) -> Q<Bit> {
+    if b { if b { h(h(q)) } else { x(x(q)) } } else { q }
+}
+unitary fn pack(v: (CBit,Q<Bit>), q: Q<Bit>) -> ((CBit,Q<Bit>),Q<Bit>) {
+    (v,q)
+}
+observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+    let (a,r) = cnot(h(init0()),init0());
+    let b = measure_z(h(init0()));
+    let ((saved,a),r) = pack((b,a),choose(b,r));
+    let (a,r) = cnot(a,r);
+    ((saved,b),(measure_z(h(a)),measure_z(r)))
+}
+"#,
+    );
+    let result = run(&root.0);
+    // The first actual argument has moved out of the caller environment when
+    // the second argument enters choose. Its quantum leaf is still entangled.
+    probability(&result, &[false, false, false, false], 0.5);
+    probability(&result, &[true, true, false, false], 0.5);
+}
+
+#[test]
+fn resource_rules_pending_tuple_field_survives_branch() {
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+observe fn main() -> (CBit,(CBit,CBit)) {
+    let (a,r) = cnot(h(init0()),init0());
+    let b = measure_z(h(init0()));
+    let (a,r) = (a,if b { h(h(r)) } else { r });
+    let (a,r) = cnot(a,r);
+    (b,(measure_z(h(a)),measure_z(r)))
+}
+"#,
+    );
+    let result = run(&root.0);
+    probability(&result, &[false, false, false], 0.5);
+    probability(&result, &[true, false, false], 0.5);
+}
+
+#[test]
+fn resource_rules_mixed_branch_results_follow_positions() {
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+    let b = measure_z(h(init0()));
+    let a = init0();
+    let r = x(init0());
+    let (left,right) = if b { ((b,a),(b,r)) } else { ((b,r),(b,a)) };
+    let (c,a) = left;
+    let (d,r) = right;
+    ((c,d),(measure_z(a),measure_z(r)))
+}
+"#,
+    );
+    let result = run(&root.0);
+    probability(&result, &[false, false, true, false], 0.5);
+    probability(&result, &[true, true, false, true], 0.5);
+}
+
+#[test]
+fn resource_rules_zero_width_result_and_frame_are_both_merged() {
+    use qleisli_core::ir::RawOp;
+
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::observe::discard;
+unitary fn choose(b: CBit, u: Q<Unit>) -> Q<Unit> {
+    if b { u } else { u }
+}
+observe fn main() -> (CBit,CBit) {
+    let pair = do b <- init0(); pure ((),b);
+    let (u,q) = split(pair);
+    let b = measure_z(h(init0()));
+    let u = choose(b,u);
+    discard(u);
+    (b,measure_z(q))
+}
+"#,
+    );
+    let checked = compile_project(&root.0).unwrap();
+    let branches: Vec<_> = checked
+        .program()
+        .operations
+        .iter()
+        .filter_map(|op| match op {
+            RawOp::ClassicalBranch { quantum_phis, .. } => Some(quantum_phis),
+            _ => None,
+        })
+        .collect();
+    assert_eq!(branches.len(), 1);
+    let mut widths: Vec<_> = branches[0]
+        .iter()
+        .map(|phi| phi.output_wires.len())
+        .collect();
+    widths.sort();
+    // A wire-only comparison would omit the Unit result. The other phi is
+    // the caller's q, which is not accessible inside choose's environment.
+    assert_eq!(widths, [0, 1]);
+    let result = run_closed(&checked, SimulationLimits::default()).unwrap();
+    probability(&result, &[false, false], 0.5);
+    probability(&result, &[true, false], 0.5);
+}
+
+#[test]
+fn resource_rules_reset_branch_keeps_reference_and_classical_history() {
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+use std::observe::reset;
+observe fn main() -> (CBit,(CBit,CBit)) {
+    let (a,r) = cnot(h(init0()),init0());
+    let b = measure_z(h(init0()));
+    let r = if b { reset(r) } else { r };
+    (b,(measure_z(a),measure_z(r)))
+}
+"#,
+    );
+    let result = run(&root.0);
+    probability(&result, &[false, false, false], 0.25);
+    probability(&result, &[false, true, true], 0.25);
+    probability(&result, &[true, false, false], 0.25);
+    probability(&result, &[true, true, false], 0.25);
+}
+
+#[test]
+fn resource_rules_nested_classical_results_keep_their_scopes() {
+    let root = SourceRoot::new(
+        r#"
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> (CBit,CBit) {
+    let b = measure_z(h(init0()));
+    let c = if b {
+        if b { measure_z(x(init0())) } else { measure_z(init0()) }
+    } else {
+        if b { measure_z(x(init0())) } else { measure_z(init0()) }
+    };
+    (b,c)
+}
+"#,
+    );
+    let result = run(&root.0);
+    probability(&result, &[false, false], 0.5);
+    probability(&result, &[true, true], 0.5);
+}
+
+#[test]
+fn resource_rules_reject_lost_or_differently_consumed_bindings() {
+    for source in [
+        // Same wire width does not make different outer consumption sets equal.
+        "unitary fn bad(c:CBit,a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){
+             let r=if c {a} else {b}; (r,a)
+         }",
+        // Rebinding the same spelling and slot still creates local ownership.
+        "use std::quantum::h;
+         unitary fn bad(c:CBit,q:Q<Bit>)->Q<Bit>{
+             if c { let q=h(q); () } else { () }; q
+         }",
+        "unitary fn bad(c:CBit,u:Q<Unit>)->Unit{
+             let _=if c {u} else {u}; ()
+         }",
+        "unitary fn bad(v:(CBit,Q<Unit>))->CBit{let (b,_)=v; b}",
+        "unitary fn bad(v:(CBit,Q<Bit>))->((CBit,Q<Bit>),(CBit,Q<Bit>)){
+             let moved=v; (moved,v)
+         }",
+        // A callee must account for every quantum parameter independently.
+        "unitary fn bad(a:Q<Bit>,b:Q<Bit>)->Q<Bit>{a}",
+    ] {
+        let error = check_project(&SourceRoot::new(source).0).unwrap_err();
+        assert_eq!(error.code, ErrorCode::Ownership, "{source}\n{error}");
+    }
+}
