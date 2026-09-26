@@ -1,0 +1,4 @@
+// Ordinary source definitions. These names are checked like user code;
+// importing them does not turn either function into a quantum primitive.
+pub basis fn xor2(x: Bit, y: Bit) -> Bit { x xor y }
+pub basis fn and2(x: Bit, y: Bit) -> Bit { x and y }
