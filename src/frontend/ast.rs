@@ -127,6 +127,21 @@ pub struct Expr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    Adjoint {
+        function: Ident,
+        input: Box<Expr>,
+    },
+    RepeatStatic {
+        count: u16,
+        function: Ident,
+        input: Box<Expr>,
+    },
+    QuantumIf {
+        control: Box<Expr>,
+        target: Box<Expr>,
+        zero: Ident,
+        one: Ident,
+    },
     Name(Ident),
     Unit,
     Tuple(Box<Expr>, Box<Expr>),

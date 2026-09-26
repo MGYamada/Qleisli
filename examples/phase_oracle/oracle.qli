@@ -1,0 +1,9 @@
+use std::quantum::z;
+
+basis fn predicate(x: Bit) -> Bit { not x }
+
+unitary fn phase(a: Q<Bit>) -> Q<Bit> { z(a) }
+
+pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
+    with_computed(q, predicate) { |a| phase(a) }
+}

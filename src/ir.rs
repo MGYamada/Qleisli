@@ -27,8 +27,11 @@ impl BasisShape {
     pub const BIT: Self = Self { bits: 1 };
 }
 
-/// The claimed function classification. The verifier derives the minimum
-/// required classification from commands and rejects a stronger claim.
+/// The claimed function classification. This declaration order is the
+/// verifier's strength order: Unitary < Iso < Observe. It linearizes the
+/// pure/observe effect and the Iso/Unitary classification of the formal core.
+/// The verifier derives the minimum required classification from commands and
+/// rejects a stronger claim.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Effect {
     Unitary,
@@ -89,6 +92,33 @@ pub enum UnitaryStep {
     },
     /// A phase times the identity on the whole target, including `Unit`.
     ScalarPhase(ScalarPhase),
+}
+
+/// A basis control on the same ordered register as a circuit action.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct BitControl {
+    pub index: usize,
+    pub when_one: bool,
+}
+
+/// Flat, exact finite unitary description. The monomial matrix maps |x> to
+/// exp(i*pi*phases[x]/4)|permutation[x]>. Empty indices retain scalar phase.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum CircuitAction {
+    Hadamard {
+        target: usize,
+    },
+    Monomial {
+        indices: Vec<usize>,
+        permutation: Vec<u16>,
+        phases: Vec<u8>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CircuitStep {
+    pub controls: Vec<BitControl>,
+    pub action: CircuitAction,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -152,6 +182,13 @@ pub struct ClassicalPhi {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RawOp {
+    /// A flat circuit over one register; the independent verifier checks every
+    /// control, axis, permutation and phase. No arbitrary matrix is accepted.
+    ApplyUnitary {
+        input: TokenId,
+        output: TokenId,
+        steps: Vec<CircuitStep>,
+    },
     Init0 {
         output: TokenId,
         wire: WireId,

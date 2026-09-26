@@ -1,6 +1,8 @@
 # 段階0: `.qli` と標準ライブラリの構成
 
-状態: **段階0の構成決定**（2026-09-26）。[設計思想](design-philosophy.md)に従い、ファイル規則、初期 API、組み込み境界を文書上で選定した。暫定 `.qli` パーサとモジュール解決器はあるが、型検査器は未実装で、Rust の [IR 試作](ir-prototype.md)が先行している。以下のコードは、段階1で文法・型規則を確定するための設計例である。
+状態: **段階0の構成決定と通常定義の追加**（2026-09-26）。[設計思想](design-philosophy.md)に従い、ファイル規則、初期 API、組み込み境界を選定した。本書のファイル・モジュール・封印APIの規則は[有限コア仕様v0](language-spec.md)の一部とする。現在は[初期フロントエンド](frontend-v0.md)が容量上限内のv0ソースを検査し、[有限 IR](ir-prototype.md)へ変換する。実行できる基本例に加え、第2目標の[構造化アルゴリズム](algorithm-routines.md)が通常定義の`std::routines`を利用する。
+
+[第3層の計画](stdlib-roadmap.md)に、原始操作からアルゴリズム骨格・ハイブリッド計画までの7領域、意味論的契約、標準への採用基準を記す。[契約台帳v1](stdlib-contracts.md)には同梱12公開定義を登録した。現在のAPIと計画中のメタ型を区別し、通常定義を同じ検査に通す。ホスト側の試行・統計処理との境界を保つ。
 
 ## `.qli` が表すもの
 
@@ -17,7 +19,7 @@
 | 入口 | 実行時はルート直下の `main.qli` に `observe fn main() -> T` を 1 つ置く。`T` は有限の古典結果型で、終了時に量子所有権を残さない。ライブラリのみなら `main.qli` は不要。 |
 | パッケージ | 初期版は外部依存とマニフェストを持たない。処理系は指定されたソースルート内の `.qli` と同梱 `std` だけを解決する。 |
 
-将来の CLI は `qleisli check src` と `qleisli run src` を想定する。`check` はルート内の `.qli` を型・効果・所有権まで検査し、`run` は `main.qli` と import されたモジュールから閉じたプログラムを実行する。現在はこの CLI と型検査器はない。実行結果の表示、反復回数の指定、機器への送信はホスト側の責務とする。`src/lib.qli` は任意のライブラリ用慣例名である。`foo.qli` と `foo/bar.qli` はそれぞれ `foo` と `foo::bar` という別モジュールで、暗黙の親子可視性はない。モジュールを再帰的に import しないことと、純粋関数の一般再帰を認めないことは別の規則として検査する。
+CLI は `qleisli check src` と `qleisli run src`。`check` はルート内の `.qli` を型・効果・所有権まで検査し、各通常関数の生成 IR を再検証する。`run` は全宣言を検査した上で `main.qli` の閉じたプログラムを参照実行する。現在の[対応範囲](frontend-v0.md)を越える機能は診断する。実行結果の表示、反復回数の指定、機器への送信はホスト側の責務とする。`src/lib.qli` は任意のライブラリ用慣例名である。`foo.qli` と `foo/bar.qli` はそれぞれ `foo` と `foo::bar` という別モジュールで、暗黙の親子可視性はない。モジュールの循環 import と関数の再帰呼び出しは別の規則として検査する。
 
 見つからない import、非公開名、名前の衝突、循環 import は、ファイル位置付きのコンパイル診断にする。モジュールの動的読み込みはない。実機の能力不足やホスト I/O の失敗は `.qli` の純粋関数の値に混ぜず、実行前の診断またはホスト側の失敗として扱う。
 
@@ -27,11 +29,14 @@
 
 | モジュール | 選定した初期 API | 実装の境界 |
 | --- | --- | --- |
-| `std::basis` | `xor2`、`and2` などの有限基底関数 | 通常の `.qli`。非単射な関数も基底関数として定義できるが、`Q` に直接適用する `lift` は単射性検査を通す。 |
+| `std::basis` | `xor2`、`and2` などの有限基底関数 | 通常の `.qli`。非単射な関数も基底関数として定義できるが、`do/pure` による量子リフトは単射性検査を通す。 |
 | `std::quantum` | `init0`、`h`、`x`、`z`、`t`、`cnot`、`toffoli`、`split`、`join` | 最小の原始操作と所有権の構造操作は封印された組み込み。`s(q) = t(t(q))` のような派生操作は通常の `.qli`。 |
 | `std::observe` | `measure_z`、`reset`、`discard` | 原始操作は封印された組み込み。`measure_x(q) = measure_z(h(q))` のような派生操作は通常の `.qli`。 |
+| `std::routines` | `hadamard2`、`reflect_uniform2`、`measure_x`、`measure_z2`、`parity_zz` | すべて通常の `.qli`。有限幅で共通構造を評価する初期API。封印操作は追加しない。 |
+| `std::transforms` | `qft2`、`qft3` | 通常の `.qli`。静的な制御・有限反復から2・3ビットのQFTを構成する。 |
+| `std::arithmetic` | `increment2`、`add2`、`mul2_mod15` | 通常の `.qli`。固定幅の全域可逆算術。桁あふれと法の範囲外を含む[契約](arithmetic-order-finding.md)を持つ。 |
 
-主要 API の公開名、型の形、所有権と効果は次を段階0の契約とする。`Q<A>` は所有する量子資源の型であり、各引数を線形に受け渡す。表の `Iso`、`Unitary`、`Observe` は操作の分類・効果である。正確なシグネチャ文法と型規則は段階1で定める。
+主要 API の公開名、型の形、所有権と効果は次を段階0の契約とする。`Q<A>` は所有する量子資源の型であり、各引数を線形に受け渡す。表の `Iso`、`Unitary`、`Observe` は操作の分類・効果である。正確な文法と型規則は[有限コア仕様v0](language-spec.md)で定める。下の引数の積記法はメタ記法であり、二引数関数とタプル一引数は区別する。
 
 | API | 型の形 | 効果・所有権 |
 | --- | --- | --- |
@@ -39,27 +44,38 @@
 | `quantum::init0` | `() -> Q<Bit>` | `Iso`。新しい `|0〉` ワイヤを返す。 |
 | `quantum::{h,x,z,t}` | `Q<Bit> -> Q<Bit>` | `Unitary`。同じ論理ワイヤの所有権を返す。 |
 | `quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | `Unitary`。異なるワイヤを要求する。 |
-| `quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>, Q<Bit>)` | `Unitary`。3 本とも異なるワイヤを要求する。 |
+| `quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)` | `Unitary`。3 本とも異なるワイヤを要求する。3 引数を取り、v0 の二要素タプルで入れ子にした 3 結果を返す。 |
 | `quantum::split` / `join` | `Q<(A,B)> <-> (Q<A>, Q<B>)` | 所有権の構造操作。振幅を変えず、絡み合いを保つ。 |
 | `observe::measure_z` | `Q<Bit> -> CBit` | `Observe`。測定対象の論理ワイヤを消費し、古典結果だけを返す。 |
 | `observe::reset` | `Q<Bit> -> Q<Bit>` | `Observe`。旧所有権と相関を捨て、新しい論理 ID の `|0〉` ワイヤを返す。 |
 | `observe::discard` | `Q<A> -> Unit` | `Observe`。部分跡でワイヤを消費する。 |
+| `routines::hadamard2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`。2本にHを適用し所有権を返す。 |
+| `routines::reflect_uniform2` | 同上 | `Unitary`。一様状態を正の固有空間とする反射。位相を含む契約を保持。 |
+| `routines::measure_x` | `Q<Bit> -> CBit` | `Observe`。対象をX基底で測定し所有権を消費。 |
+| `routines::measure_z2` | `Q<(Bit,Bit)> -> (CBit,CBit)` | `Observe`。左から順にZ測定し両方を消費。 |
+| `routines::parity_zz` | `(Q<Bit>,Q<Bit>) -> ((Q<Bit>,Q<Bit>),CBit)` | `Observe`。別所有のデータを保持し、内部メータを測定・消費。 |
+| `transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`。正符号の4次元QFT、全所有権を返す。 |
+| `transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>` | `Unitary`。正符号の8次元QFT、全所有権を返す。 |
+
+`routines`の名前・固定幅は初期の実装契約であり、一般化したコンビネータの確定ではない。[各部品の契約](algorithm-routines.md#公開apiの契約)に、受理例・拒否例・全体系での意味・既存IRへの展開を記す。非公開の`nonzero2 : (Bit,Bit)->Bit`は全域な通常の基底関数で、補助計算の述語に使う。同梱ソースのprivate宣言にも通常の可視性規則を適用する。
 
 `std::` はコンパイラと同じ版として配布し、初期版で利用者による置換や外部パッケージの読み込みを行わない。原始ゲートの行列、測定の意味、所有権を変える操作は、名前が `std` にあっても通常の `.qli` 本文で偽装できない。通常の標準ライブラリ定義には利用者コードと同じ型・効果規則を適用する。
 
 `measure_z` 後に同じ論理ワイヤを操作することはできない。必要なら `init0` で新しい論理ワイヤを準備し、測定結果で古典制御する。バックエンドは条件を満たすとき、新しい論理ワイヤを測定済みの物理素子に割り当ててもよい。
 
-選定した配置は `stdlib/src/basis.qli`、`stdlib/src/quantum.qli`、`stdlib/src/observe.qli` とする。現在は `basis.qli` の通常定義だけを同梱し、`std::quantum` と `std::observe` の封印された公開名は Rust のモジュール解決器に登録している。原始操作の公開シグネチャをこれらのモジュール ID に結び付け、派生定義だけを通常の `.qli` 本文に置く。表の公開契約は固定し、シグネチャの記法とコンパイラ内部での結合方法は段階1で確定する。
+現在は通常定義を`stdlib/src/basis.qli`、`routines.qli`、`transforms.qli`、`arithmetic.qli`に同梱し、`std::quantum`と`std::observe`の封印された公開名はRustのモジュール解決器に登録している。原始操作の公開シグネチャをこれらのモジュールIDに結び付け、派生定義は通常の`.qli`本文として同じ検査を通す。
 
-`lift(e)` の単射性検査、`qif`、`adjoint`、`with_computed` は静的に検査する**言語形式**とする。初期版は高階の操作値を定義しないので、これらを任意の関数値を受け取る通常のライブラリ関数として約束しない。`release0` は証拠を伴う内部操作で、無条件の公開 API にはしない。ハードウェアのバックエンドも標準ライブラリには入れない。
+`do/pure` の単射性検査、`qif`、`adjoint`、`repeat_static`、`with_computed` は静的に検査する**言語形式**とする。初期版は高階の操作値を定義しないので、これらを任意の関数値を受け取る通常のライブラリ関数として約束しない。`release0` は証拠を伴う内部操作で、無条件の公開 API にはしない。ハードウェアのバックエンドも標準ライブラリには入れない。
 
-## 複数ファイルの設計例
+`qif`、`adjoint`、`repeat_static`の有限実装とQFTの位相・ビット順・受理／拒否・IR変換は[静的操作の契約](static-operations.md)で定めた。操作名は静的な単一の関数名とし、初期対象は古典引数なしの `Q<A> -> Q<A>`。一般の高階操作値は未実装である。
 
-次のパスと `use` は上の解決規則に従う。**現在は実行できない構文例**である。
+## 複数ファイルの実行例
+
+次のパスと `use` は上の解決規則に従う。`tests/compile.rs` の `documented_projects_compile_verify_and_simulate` でソース検査・IR検証・分布を照合する。
 
 ### Bell 状態
 
-`examples/bell/src/bell.qli`:
+`examples/bell/bell.qli`:
 
 ```qli
 pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
@@ -68,7 +84,7 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
 }
 ```
 
-`examples/bell/src/main.qli`:
+`examples/bell/main.qli`:
 
 ```qli
 use bell::entangle;
@@ -90,7 +106,7 @@ observe fn main() -> (CBit, CBit) {
 
 ### 位相オラクル
 
-`examples/oracle/src/oracle.qli`:
+`examples/phase_oracle/oracle.qli`:
 
 ```qli
 use std::quantum::z;
@@ -102,7 +118,7 @@ pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
 }
 ```
 
-`examples/oracle/src/main.qli`:
+`examples/phase_oracle/main.qli`:
 
 ```qli
 use oracle::phase_oracle;
@@ -117,14 +133,14 @@ observe fn main() -> CBit {
 }
 ```
 
-`predicate(x) = not x` なので `phase_oracle` の行列は `-Z`。この閉じた例の測定結果は `1` である。`with_computed` が計算元のコヒーレントな借用をブロックにどう公開するか、および一般の作業レジスタをどう返すかは段階1で構文と型を確定する。
+`predicate(x) = not x` なので `phase_oracle` の行列は `-Z`。この閉じた例の測定結果は `1` である。v0の `with_computed` は計算元や他の量子値を本文へ公開せず、補助上の展開後の `Z/T` 列だけを受理する。一般の作業レジスタ・借用署名は後続仕様とする。
 
-`std::basis::xor2 : (Bit,Bit) -> Bit` のような非単射の基底関数を `lift(xor2)` として `Q<(Bit,Bit)>` に直接適用するコードは拒否する。`(q,q)` も、同じ所有権を二度使うので拒否する。標準モジュールにあるという理由で量子条件を緩めない。
+`std::basis::xor2 : (Bit,Bit) -> Bit` のような非単射の基底関数を `do x <- q; pure …` の継続として `Q<(Bit,Bit)>` に直接適用するコードは拒否する。`(q,q)` も、同じ所有権を二度使うので拒否する。標準モジュールにあるという理由で量子条件を緩めない。
 
-## 段階1へ渡す未決事項
+## 有限コアv0の後続仕様
 
-- 正確な文法、演算子の優先順位、`with_computed` の借用束縛、`qif` の枝表記。
-- サイズ付きレジスタ、静的な反復、回転角の表現。
+- 一般の `with_computed` の借用・保存効果署名。v0の限定形と静的操作の文法は確定。
+- サイズ付きレジスタ、一般の操作パラメータ化、任意角度の表現。有限反復のリテラル版は実装済み。
 - 高階関数、外部パッケージ、マニフェスト、追加の標準モジュール。
 
-これらを決めるときも [量子言語としての成立条件](quantum-language-requirements.md) を満たす必要がある。
+現在は段階1の仕様と証明を優先し、上記の拡張と標準APIの一般化は後続へ置く。これらを決めるときも [量子言語としての成立条件](quantum-language-requirements.md) を満たす必要がある。

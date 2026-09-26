@@ -18,6 +18,11 @@ pub enum TokenKind {
     Do,
     Pure,
     WithComputed,
+    Adjoint,
+    RepeatStatic,
+    Qif,
+    Natural(String),
+    FatArrow,
     Not,
     Xor,
     And,
@@ -61,6 +66,9 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "do" => TokenKind::Do,
         "pure" => TokenKind::Pure,
         "with_computed" => TokenKind::WithComputed,
+        "adjoint" => TokenKind::Adjoint,
+        "repeat_static" => TokenKind::RepeatStatic,
+        "qif" => TokenKind::Qif,
         "not" => TokenKind::Not,
         "xor" => TokenKind::Xor,
         "and" => TokenKind::And,
@@ -89,6 +97,11 @@ impl TokenKind {
             Self::Do => "`do`",
             Self::Pure => "`pure`",
             Self::WithComputed => "`with_computed`",
+            Self::Adjoint => "`adjoint`",
+            Self::RepeatStatic => "`repeat_static`",
+            Self::Qif => "`qif`",
+            Self::Natural(_) => "natural number (only in repeat_static)",
+            Self::FatArrow => "`=>`",
             Self::Not => "`not`",
             Self::Xor => "`xor`",
             Self::And => "`and`",
@@ -145,7 +158,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
     let mut lexer = Lexer { source, pos: 0 };
     let mut tokens = Vec::new();
     while let Some(ch) = lexer.peek() {
-        if ch.is_whitespace() {
+        if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             lexer.bump();
             continue;
         }
@@ -154,12 +167,26 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
                 if c == '\n' || c == '\r' {
                     break;
                 }
+                if !matches!(c, ' ' | '\t') {
+                    if let Some(message) = forbidden_character(c) {
+                        return Err(LexError {
+                            message: message.to_owned(),
+                            span: Span::new(lexer.pos, lexer.pos + c.len_utf8()),
+                        });
+                    }
+                }
                 lexer.bump();
             }
             continue;
         }
 
         let start = lexer.pos;
+        if let Some(message) = forbidden_character(ch) {
+            return Err(LexError {
+                message: message.to_owned(),
+                span: Span::new(start, start + ch.len_utf8()),
+            });
+        }
         let kind = if ch.is_ascii_alphabetic() || ch == '_' {
             lexer.bump();
             while lexer
@@ -170,11 +197,19 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
             }
             let name = &source[start..lexer.pos];
             keyword_kind(name).unwrap_or_else(|| TokenKind::Ident(name.to_owned()))
+        } else if ch.is_ascii_digit() {
+            lexer.bump();
+            while lexer.peek().is_some_and(|c| c.is_ascii_digit()) {
+                lexer.bump();
+            }
+            match &source[start..lexer.pos] {
+                "0" => TokenKind::Zero,
+                "1" => TokenKind::One,
+                digits => TokenKind::Natural(digits.to_owned()),
+            }
         } else {
             lexer.bump();
             match ch {
-                '0' => TokenKind::Zero,
-                '1' => TokenKind::One,
                 '(' => TokenKind::LParen,
                 ')' => TokenKind::RParen,
                 '{' => TokenKind::LBrace,
@@ -182,6 +217,10 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
                 '>' => TokenKind::RAngle,
                 ',' => TokenKind::Comma,
                 ';' => TokenKind::Semicolon,
+                '=' if lexer.peek() == Some('>') => {
+                    lexer.bump();
+                    TokenKind::FatArrow
+                }
                 '=' => TokenKind::Equals,
                 '|' => TokenKind::Pipe,
                 ':' if lexer.peek() == Some(':') => {
@@ -216,6 +255,26 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
         span: Span::new(source.len(), source.len()),
     });
     Ok(tokens)
+}
+
+fn forbidden_character(ch: char) -> Option<&'static str> {
+    if matches!(
+        ch,
+        '\u{061c}' | '\u{200e}' | '\u{200f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
+    ) {
+        Some("bidirectional control character is forbidden")
+    } else if matches!(
+        ch,
+        '\u{000b}' | '\u{000c}' | '\u{0085}' | '\u{2028}' | '\u{2029}'
+    ) {
+        Some("unsupported line separator is forbidden")
+    } else if ch.is_whitespace() {
+        Some("unsupported whitespace; use ASCII space, tab, LF, or CR")
+    } else if ch.is_control() {
+        Some("control character is forbidden")
+    } else {
+        None
+    }
 }
 
 struct Lexer<'a> {

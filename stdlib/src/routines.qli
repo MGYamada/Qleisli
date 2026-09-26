@@ -1,0 +1,40 @@
+// Finite algorithm building blocks; ordinary checked Qleisli definitions.
+// Contracts, including reflection phase, are in docs/algorithm-routines.md.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::quantum::split;
+use std::quantum::join;
+use std::observe::measure_z;
+
+pub unitary fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(h(a), h(b))
+}
+
+// Phase +1 on 00 and -1 elsewhere: 2|00><00| - I, including its sign.
+basis fn nonzero2(a: Bit, b: Bit) -> Bit { not (not a and not b) }
+
+pub unitary fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let q = hadamard2(q);
+    let q = with_computed(q, nonzero2) { |ancilla| z(ancilla) };
+    hadamard2(q)
+}
+
+pub observe fn measure_x(q: Q<Bit>) -> CBit {
+    measure_z(h(q))
+}
+
+pub observe fn measure_z2(q: Q<(Bit, Bit)>) -> (CBit, CBit) {
+    let (a, b) = split(q);
+    (measure_z(a), measure_z(b))
+}
+
+// Measure Z(a) Z(b); consume the meter and retain both data wires.
+pub observe fn parity_zz(a: Q<Bit>, b: Q<Bit>) -> ((Q<Bit>, Q<Bit>), CBit) {
+    let meter = init0();
+    let (a, meter) = cnot(a, meter);
+    let (b, meter) = cnot(b, meter);
+    ((a, b), measure_z(meter))
+}

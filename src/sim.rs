@@ -11,8 +11,8 @@ use std::fmt;
 
 use crate::VerifiedProgram;
 use crate::ir::{
-    ClassicalId, ClassicalPhi, Control, ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPhi,
-    RawOp, ScalarPhase, SingleGate, TokenId, UnitaryStep, WireId,
+    CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, ProtectedBit, ProtectedRegion,
+    ProtectedUse, QuantumPhi, RawOp, ScalarPhase, SingleGate, TokenId, UnitaryStep, WireId,
 };
 
 /// A practical cap on the number of live state-vector axes in this initial
@@ -201,9 +201,13 @@ impl Component {
                 projected[low | (high << axis)] = amplitude;
             }
         }
-        let mut component = self.clone();
+        let mut component = Self {
+            axes: self.axes.clone(),
+            amplitudes: projected,
+            tokens: self.tokens.clone(),
+            classical: self.classical.clone(),
+        };
         component.axes.remove(axis);
-        component.amplitudes = projected;
         Ok(component)
     }
 
@@ -436,6 +440,59 @@ fn run_unitary_steps(
     }
 }
 
+fn run_circuit(component: &mut Component, axes: &[usize], steps: &[CircuitStep]) {
+    for step in steps {
+        let enabled = |index| {
+            step.controls
+                .iter()
+                .all(|c| bit(index, axes[c.index]) == c.when_one)
+        };
+        match &step.action {
+            CircuitAction::Hadamard { target } => {
+                apply_gate(
+                    &mut component.amplitudes,
+                    axes[*target],
+                    SingleGate::H,
+                    enabled,
+                );
+            }
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
+            } => {
+                let targets: Vec<_> = indices.iter().map(|i| axes[*i]).collect();
+                let mut amplitudes = vec![Complex::ZERO; component.amplitudes.len()];
+                for (index, amplitude) in component.amplitudes.iter().copied().enumerate() {
+                    if !enabled(index) {
+                        amplitudes[index] += amplitude;
+                        continue;
+                    }
+                    let label = local_label(index, &targets);
+                    let mut output = index;
+                    for (place, axis) in targets.iter().enumerate() {
+                        output = (output & !(1 << axis))
+                            | (((usize::from(permutation[label]) >> place) & 1) << axis);
+                    }
+                    let s = std::f64::consts::FRAC_1_SQRT_2;
+                    let (re, im) = [
+                        (1.0, 0.0),
+                        (s, s),
+                        (0.0, 1.0),
+                        (-s, s),
+                        (-1.0, 0.0),
+                        (-s, -s),
+                        (0.0, -1.0),
+                        (s, -s),
+                    ][usize::from(phases[label])];
+                    amplitudes[output] += amplitude * Complex { re, im };
+                }
+                component.amplitudes = amplitudes;
+            }
+        }
+    }
+}
+
 fn relabel_branch(
     mut component: Component,
     then_arm: bool,
@@ -481,6 +538,19 @@ fn execute_op(
     limits: SimulationLimits,
 ) -> Result<Vec<Component>, SimulationError> {
     match operation {
+        RawOp::ApplyUnitary {
+            input,
+            output,
+            steps,
+        } => {
+            let wires = component.take(*input)?;
+            let axes = wires
+                .iter()
+                .map(|wire| component.position(*wire))
+                .collect::<Result<Vec<_>, _>>()?;
+            run_circuit(&mut component, &axes, steps);
+            component.tokens.insert(*output, wires);
+        }
         RawOp::Init0 { output, wire } => {
             component.add_zero_wire(*wire, limits)?;
             component.tokens.insert(*output, vec![*wire]);

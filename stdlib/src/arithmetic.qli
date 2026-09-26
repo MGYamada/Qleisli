@@ -1,0 +1,33 @@
+// Experimental fixed-width arithmetic; leftmost bits have the lowest weight.
+// Full-space contracts (including overflow and value 15) are documented in
+// docs/arithmetic-order-finding.md. All operations return every input wire.
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::toffoli;
+use std::quantum::split;
+use std::quantum::join;
+
+pub unitary fn increment2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (low, high) = split(q);
+    let (low, high) = cnot(low, high);
+    join(x(low), high)
+}
+
+pub unitary fn add2(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
+    let (a, b) = split(q);
+    let (a0, a1) = split(a);
+    let (b0, b1) = split(b);
+    // Carry must use the original low bits, before b0 is overwritten.
+    let ((a0, b0), b1) = toffoli(a0, b0, b1);
+    let (a1, b1) = cnot(a1, b1);
+    let (a0, b0) = cnot(a0, b0);
+    join(join(a0, a1), join(b0, b1))
+}
+
+pub unitary fn mul2_mod15(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
+    let (ab, cd) = split(q);
+    let (a, b) = split(ab);
+    let (c, d) = split(cd);
+    // Rotation implements 2*y mod 15 for y<15, and fixes 15.
+    join(join(d, a), join(b, c))
+}

@@ -1,0 +1,28 @@
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::split;
+use std::quantum::join;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn phase_quarter(q: Q<Bit>) -> Q<Bit> { repeat_static(2, t, q) }
+
+// Positive Fourier convention; the leftmost bit has weight 1.
+pub unitary fn qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    let b = h(b);
+    let (a, b) = qif(a, b) { 0 => identity, 1 => phase_quarter };
+    let a = h(a);
+    join(b, a)
+}
+
+pub unitary fn qft3(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    let c = h(c);
+    let (b, c) = qif(b, c) { 0 => identity, 1 => phase_quarter };
+    let (a, c) = qif(a, c) { 0 => identity, 1 => t };
+    let b = h(b);
+    let (a, b) = qif(a, b) { 0 => identity, 1 => phase_quarter };
+    let a = h(a);
+    join(join(c, b), a)
+}

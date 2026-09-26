@@ -1,9 +1,10 @@
-//! Source syntax and module resolution for the provisional `.qli` frontend.
+//! Syntax, module resolution, and checked lowering of a finite `.qli` subset.
 //!
-//! Parsing and name resolution do not establish type, effect, ownership, or
-//! quantum validity. A future lowering pass must verify its generated IR.
+//! Parsing and import resolution alone do not establish type or ownership
+//! validity. The `compile` API checks source and independently verifies its IR.
 
 pub mod ast;
+pub mod compile;
 pub mod lexer;
 pub mod parser;
 pub mod project;

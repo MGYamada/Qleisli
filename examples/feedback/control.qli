@@ -1,0 +1,8 @@
+use std::quantum::x;
+use std::observe::measure_z;
+
+pub observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (CBit, Q<Bit>) {
+    let b = measure_z(q);
+    let r = if b { x(r) } else { r };
+    (b, r)
+}
