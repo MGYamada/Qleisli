@@ -1,79 +1,165 @@
-# 段階0: `.qli` と標準ライブラリの構成
+<a id="段階0-qli-と標準ライブラリの構成"></a>
 
-状態: **段階0の構成決定と通常定義の追加**（2026-09-26）。[設計思想](design-philosophy.md)に従い、ファイル規則、初期 API、組み込み境界を選定した。本書のファイル・モジュール・封印APIの規則は[有限コア仕様v0](language-spec.md)の一部とする。現在は[初期フロントエンド](frontend-v0.md)が容量上限内のv0ソースを検査し、[有限 IR](ir-prototype.md)へ変換する。実行できる基本例に加え、第2目標の[構造化アルゴリズム](algorithm-routines.md)が通常定義の`std::routines`を利用する。
+# Stage 0: `.qli` files and standard-library organization
 
-[第3層の計画](stdlib-roadmap.md)に、原始操作からアルゴリズム骨格・ハイブリッド計画までの7領域、意味論的契約、標準への採用基準を記す。[契約台帳v1](stdlib-contracts.md)には同梱12公開定義を登録した。現在のAPIと計画中のメタ型を区別し、通常定義を同じ検査に通す。ホスト側の試行・統計処理との境界を保つ。
+Status: **Stage 0 organization fixed; ordinary definitions added** (2026-09-26).
+Following the [design principles](design-philosophy.md), this document defines
+file rules, initial APIs, and the boundary around sealed built-ins. Its file,
+module, and sealed-API rules form part of the [finite core v0 specification](language-spec.md).
+This English edition is authoritative and replaces the earlier Japanese edition
+without changing those rules. The [frontend](frontend-v0.md) checks v0 source
+within its capacity limits and lowers it to [finite IR](ir-prototype.md).
+The executable basic examples and [structured algorithms](algorithm-routines.md)
+use the same checks; the latter reuse ordinary definitions in `std::routines`.
 
-## `.qli` が表すもの
+The [Layer 3 plan](stdlib-roadmap.md) describes seven areas from primitives to
+algorithm skeletons and hybrid plans, with semantic contracts and adoption
+criteria. The [contract ledger](stdlib-contracts.md) records the 12 bundled
+public definitions. Proposed metatypes are distinct from current APIs, and
+host-side trials and statistical processing remain outside `.qli` operations.
 
-`.qli` は UTF-8 の **Qleisli ソースファイル**であり、量子状態データ、回路のバイナリ、IR、実行結果ではない。1 ファイルを 1 モジュールとする。トップレベルには `basis fn`、`iso fn`、`unitary fn`、`observe fn` と `use` だけを置き、ロード時の実行、グローバルな可変状態、I/O、暗黙の量子ビット確保を設けない。`let` は値への名前付けであり、可変セルではない。
+<a id="qli-が表すもの"></a>
 
-| 項目 | 初期版の選択 |
+## What a `.qli` file represents
+
+A `.qli` file is UTF-8 **Qleisli source**, not quantum-state data, a circuit
+binary, IR, or an execution result. One file defines one module. Top-level
+items are `basis fn`, `iso fn`, `unitary fn`, `observe fn`, and `use` only.
+There is no execution on load, global mutable state, I/O, or implicit qubit
+allocation. A `let` binds a name to a value, not to a mutable cell.
+
+| Item | Initial rule |
 | --- | --- |
-| モジュール名 | ソースルートからの相対パスで決める。ファイル内の `module` 宣言は置かない。 |
-| ソースルート | CLI に渡すディレクトリ。慣例上は `src/`。ルートの絶対パスが変わっても、各 `.qli` のルートからの相対パスが同じならモジュール名は同じ。 |
-| ローカル import | `use oracle::phase_oracle;` はルート内の `oracle.qli` の公開宣言を参照する。`foo::bar::name` は `foo/bar.qli` に対応する。すべてルート基準の絶対モジュールパスとし、呼び出し元基準の相対 import は初期版に置かない。 |
-| 標準 import | `std::` は処理系に同梱した標準ライブラリ専用の接頭辞。ローカルファイルで上書きできない。 |
-| 可視性 | 宣言は既定でモジュール内限定。`pub` を付けた宣言だけを他ファイルから参照できる。 |
-| import の形 | 初期版は名前を指定する `use path::name;` のみ。ワイルドカード、暗黙の再公開、循環 import を認めない。 |
-| 入口 | 実行時はルート直下の `main.qli` に `observe fn main() -> T` を 1 つ置く。`T` は有限の古典結果型で、終了時に量子所有権を残さない。ライブラリのみなら `main.qli` は不要。 |
-| パッケージ | 初期版は外部依存とマニフェストを持たない。処理系は指定されたソースルート内の `.qli` と同梱 `std` だけを解決する。 |
+| Module name | Determined by the path relative to the source root. There is no in-file `module` declaration. |
+| Source root | The directory supplied to the CLI, conventionally `src/`. Moving its absolute path does not change module names when relative `.qli` paths stay the same. |
+| Local import | `use oracle::phase_oracle;` refers to a public declaration in the root's `oracle.qli`; `foo::bar::name` refers to `foo/bar.qli`. Paths are absolute relative to the source root, not relative to the caller. |
+| Standard import | The `std::` prefix is reserved for the bundled standard library and cannot be overridden by local files. |
+| Visibility | Declarations are private to their module by default. Only `pub` declarations are accessible from other files. |
+| Import syntax | Only explicit `use path::name;`. No wildcard imports, implicit reexports, or cyclic imports. |
+| Entry point | Execution requires one parameterless `observe fn main() -> T` in root-level `main.qli`. `T` is `Unit`, `CBit`, or a finite nested binary product of classical types. No quantum ownership may remain at termination. Library checking does not require `main.qli`. |
+| Packages | No external dependencies or manifest in this version. Resolve only `.qli` files within the supplied root and bundled `std`. |
 
-CLI は `qleisli check src` と `qleisli run src`。`check` はルート内の `.qli` を型・効果・所有権まで検査し、各通常関数の生成 IR を再検証する。`run` は全宣言を検査した上で `main.qli` の閉じたプログラムを参照実行する。現在の[対応範囲](frontend-v0.md)を越える機能は診断する。実行結果の表示、反復回数の指定、機器への送信はホスト側の責務とする。`src/lib.qli` は任意のライブラリ用慣例名である。`foo.qli` と `foo/bar.qli` はそれぞれ `foo` と `foo::bar` という別モジュールで、暗黙の親子可視性はない。モジュールの循環 import と関数の再帰呼び出しは別の規則として検査する。
+The CLI commands are `qleisli check src` and `qleisli run src`. `check` checks
+types, effects, and ownership in all source declarations and independently
+verifies the IR generated for every ordinary function. `run` checks all
+declarations, then interprets the closed program in `main.qli`. Features beyond
+the [supported subset](frontend-v0.md) receive diagnostics. Displaying results,
+choosing host execution counts, and submitting work to devices are host duties.
+`src/lib.qli` is an optional library naming convention. `foo.qli` and
+`foo/bar.qli` define distinct modules `foo` and `foo::bar`, without implicit
+parent/child visibility. Cyclic module imports and recursive function calls
+are checked separately.
 
-見つからない import、非公開名、名前の衝突、循環 import は、ファイル位置付きのコンパイル診断にする。モジュールの動的読み込みはない。実機の能力不足やホスト I/O の失敗は `.qli` の純粋関数の値に混ぜず、実行前の診断またはホスト側の失敗として扱う。
+Missing imports, private names, name collisions, and cyclic imports produce
+diagnostics with source locations. Modules are not loaded dynamically.
+Unsupported device capabilities and host I/O failures must be diagnosed before
+execution or reported as host failures, not hidden inside pure `.qli` values.
 
-`Unit`、`Bit`、`CBit`、`Q<A>` と `if`、`do/pure` などの言語形式は import なしで使える。`Iso<A,B>` と `Unitary<A,B>` は初期版では関数宣言の静的分類であり、受け渡しできる第一級の値型ではない。基底式の `not`、`xor`、`and` も基本演算とする。`Bit` と `CBit` の間に暗黙変換はない。暗黙に開く `std::prelude` モジュールは設けず、標準ライブラリの関数は明示的に import する。
+Types `Unit`, `Bit`, `CBit`, and `Q<A>`, and language forms such as `if` and
+`do/pure`, require no import. `Iso<A,B>` and `Unitary<A,B>` are explanatory
+metanotation for static function classifications, not first-class source value
+types. Operators `not`, `and`, and `xor` are built in for basis `Bit` expressions
+and, separately, ordinary `CBit` expressions. Ordinary `true` and `false`
+literals have type `CBit`; the basis literals `0` and `1` have type `Bit`.
+There is no implicit conversion between `Bit` and `CBit`, and no implicitly
+opened `std::prelude`: library functions require explicit imports.
 
-## 標準ライブラリの最小構成
+<a id="標準ライブラリの最小構成"></a>
 
-| モジュール | 選定した初期 API | 実装の境界 |
+## Initial standard-library organization
+
+| Module | Initial API | Implementation boundary |
 | --- | --- | --- |
-| `std::basis` | `xor2`、`and2` などの有限基底関数 | 通常の `.qli`。非単射な関数も基底関数として定義できるが、`do/pure` による量子リフトは単射性検査を通す。 |
-| `std::quantum` | `init0`、`h`、`x`、`z`、`t`、`cnot`、`toffoli`、`split`、`join` | 最小の原始操作と所有権の構造操作は封印された組み込み。`s(q) = t(t(q))` のような派生操作は通常の `.qli`。 |
-| `std::observe` | `measure_z`、`reset`、`discard` | 原始操作は封印された組み込み。`measure_x(q) = measure_z(h(q))` のような派生操作は通常の `.qli`。 |
-| `std::routines` | `hadamard2`、`reflect_uniform2`、`measure_x`、`measure_z2`、`parity_zz` | すべて通常の `.qli`。有限幅で共通構造を評価する初期API。封印操作は追加しない。 |
-| `std::transforms` | `qft2`、`qft3` | 通常の `.qli`。静的な制御・有限反復から2・3ビットのQFTを構成する。 |
-| `std::arithmetic` | `increment2`、`add2`、`mul2_mod15` | 通常の `.qli`。固定幅の全域可逆算術。桁あふれと法の範囲外を含む[契約](arithmetic-order-finding.md)を持つ。 |
+| `std::basis` | `xor2`, `and2` | Ordinary `.qli` basis functions. They may be noninjective; any enclosing `do/pure` lift must satisfy its own injectivity check. |
+| `std::quantum` | `init0`, `h`, `x`, `z`, `t`, `cnot`, `toffoli`, `split`, `join` | Sealed primitive and ownership-structure operations. Derived operations such as `s(q) = t(t(q))` can be ordinary definitions; `s` is not a bundled public name. |
+| `std::observe` | `measure_z`, `reset`, `discard` | Sealed observation primitives. Derived measurements can be ordinary definitions, as `measure_x` is in `std::routines`. |
+| `std::routines` | `hadamard2`, `reflect_uniform2`, `measure_x`, `measure_z2`, `parity_zz` | Ordinary `.qli` definitions, evaluating shared structures at fixed widths. No added sealed operations. |
+| `std::transforms` | `qft2`, `qft3` | Ordinary definitions of two- and three-bit QFT using static control and finite repetition. |
+| `std::arithmetic` | `increment2`, `add2`, `mul2_mod15` | Ordinary definitions of total fixed-width reversible arithmetic. Their [contracts](arithmetic-order-finding.md) include overflow and values outside the modular residue range. |
 
-主要 API の公開名、型の形、所有権と効果は次を段階0の契約とする。`Q<A>` は所有する量子資源の型であり、各引数を線形に受け渡す。表の `Iso`、`Unitary`、`Observe` は操作の分類・効果である。正確な文法と型規則は[有限コア仕様v0](language-spec.md)で定める。下の引数の積記法はメタ記法であり、二引数関数とタプル一引数は区別する。
+`Q<A>` denotes owned quantum resources, and each quantum argument is transferred
+linearly. The following interfaces summarize types and effects; the
+[v0 specification](language-spec.md) supplies exact typing rules. A product
+domain is **semantic metanotation**, not an instruction to pack multiple source
+arguments into one tuple. For example, `xor2(x: Bit, y: Bit)` has two parameters,
+whereas a hypothetical `f(p: (Bit,Bit))` has one product parameter. `cnot` and
+`join` take two arguments; `toffoli` takes three; `parity_zz` takes two. Every
+other ordinary quantum API listed here takes one argument.
 
-| API | 型の形 | 効果・所有権 |
+| API | Interface | Effect and ownership |
 | --- | --- | --- |
-| `basis::xor2`、`basis::and2` | `(Bit, Bit) -> Bit` | 全域な基底関数。単射である必要はない。 |
-| `quantum::init0` | `() -> Q<Bit>` | `Iso`。新しい `|0〉` ワイヤを返す。 |
-| `quantum::{h,x,z,t}` | `Q<Bit> -> Q<Bit>` | `Unitary`。同じ論理ワイヤの所有権を返す。 |
-| `quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | `Unitary`。異なるワイヤを要求する。 |
-| `quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)` | `Unitary`。3 本とも異なるワイヤを要求する。3 引数を取り、v0 の二要素タプルで入れ子にした 3 結果を返す。 |
-| `quantum::split` / `join` | `Q<(A,B)> <-> (Q<A>, Q<B>)` | 所有権の構造操作。振幅を変えず、絡み合いを保つ。 |
-| `observe::measure_z` | `Q<Bit> -> CBit` | `Observe`。測定対象の論理ワイヤを消費し、古典結果だけを返す。 |
-| `observe::reset` | `Q<Bit> -> Q<Bit>` | `Observe`。旧所有権と相関を捨て、新しい論理 ID の `|0〉` ワイヤを返す。 |
-| `observe::discard` | `Q<A> -> Unit` | `Observe`。部分跡でワイヤを消費する。 |
-| `routines::hadamard2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`。2本にHを適用し所有権を返す。 |
-| `routines::reflect_uniform2` | 同上 | `Unitary`。一様状態を正の固有空間とする反射。位相を含む契約を保持。 |
-| `routines::measure_x` | `Q<Bit> -> CBit` | `Observe`。対象をX基底で測定し所有権を消費。 |
-| `routines::measure_z2` | `Q<(Bit,Bit)> -> (CBit,CBit)` | `Observe`。左から順にZ測定し両方を消費。 |
-| `routines::parity_zz` | `(Q<Bit>,Q<Bit>) -> ((Q<Bit>,Q<Bit>),CBit)` | `Observe`。別所有のデータを保持し、内部メータを測定・消費。 |
-| `transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`。正符号の4次元QFT、全所有権を返す。 |
-| `transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>` | `Unitary`。正符号の8次元QFT、全所有権を返す。 |
+| `basis::xor2`, `basis::and2` | Two `Bit` arguments; result `Bit` | Total basis functions, outside the quantum-effect order. Injectivity is not required for a basis declaration. |
+| `quantum::init0` | No arguments; result `Q<Bit>` | `Iso`; create a fresh logical wire in `\|0⟩`. |
+| `quantum::{h,x,z,t}` | `Q<Bit> -> Q<Bit>` | `Unitary`; return ownership of the same logical wire. |
+| `quantum::cnot` | Arguments `Q<Bit>, Q<Bit>`; result `(Q<Bit>,Q<Bit>)` | `Unitary`; require distinct wires. |
+| `quantum::toffoli` | Three `Q<Bit>` arguments; result `((Q<Bit>,Q<Bit>),Q<Bit>)` | `Unitary`; all three wires must be distinct. Results use nested binary products. |
+| `quantum::split` / `join` | `Q<(A,B)> -> (Q<A>,Q<B>)` / arguments `Q<A>,Q<B>` returning `Q<(A,B)>` | `Unitary` ownership-structure operations; preserve amplitudes and correlations in the specified wire order. |
+| `observe::measure_z` | `Q<Bit> -> CBit` | `Observe`; consume the logical wire and return only its classical result. |
+| `observe::reset` | `Q<Bit> -> Q<Bit>` | `Observe`; discard the old state and its correlations, returning a fresh logical wire in `\|0⟩`. |
+| `observe::discard` | `Q<A> -> Unit` | `Observe`; consume the wires by partial trace. |
+| `routines::hadamard2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`; apply H to both wires and return all ownership. |
+| `routines::reflect_uniform2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`; reflect with the uniform state as the positive eigenspace, preserving the specified phase. |
+| `routines::measure_x` | `Q<Bit> -> CBit` | `Observe`; measure in the X basis and consume the input. |
+| `routines::measure_z2` | `Q<(Bit,Bit)> -> (CBit,CBit)` | `Observe`; measure both wires in Z order from left to right and consume them. |
+| `routines::parity_zz` | Arguments `Q<Bit>,Q<Bit>`; result `((Q<Bit>,Q<Bit>),CBit)` | `Observe`; retain both separately owned data wires and measure/consume an internal meter. |
+| `transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`; positive-sign four-dimensional QFT, returning all ownership. |
+| `transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>` | `Unitary`; positive-sign eight-dimensional QFT, returning all ownership. |
+| `arithmetic::increment2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` | `Unitary`; add one modulo four and return both wires. |
+| `arithmetic::add2` | `Q<((Bit,Bit),(Bit,Bit))> -> Q<((Bit,Bit),(Bit,Bit))>` | `Unitary`; retain the first two-bit number and add it to the second modulo four; return all four wires. |
+| `arithmetic::mul2_mod15` | `Q<((Bit,Bit),(Bit,Bit))> -> Q<((Bit,Bit),(Bit,Bit))>` | `Unitary`; multiply values below 15 by two modulo 15 and fix 15; return all four wires. |
 
-`routines`の名前・固定幅は初期の実装契約であり、一般化したコンビネータの確定ではない。[各部品の契約](algorithm-routines.md#公開apiの契約)に、受理例・拒否例・全体系での意味・既存IRへの展開を記す。非公開の`nonzero2 : (Bit,Bit)->Bit`は全域な通常の基底関数で、補助計算の述語に使う。同梱ソースのprivate宣言にも通常の可視性規則を適用する。
+The names and widths in `routines` are initial implementation contracts, not a
+decision on generalized combinators. Their [individual contracts](algorithm-routines.md#公開apiの契約)
+record acceptance, rejection, whole-system meaning, and existing IR expansion.
+The private `nonzero2(a: Bit,b: Bit) -> Bit` is a total ordinary basis function
+used as an auxiliary predicate. Private bundled declarations follow normal
+visibility rules.
 
-`std::` はコンパイラと同じ版として配布し、初期版で利用者による置換や外部パッケージの読み込みを行わない。原始ゲートの行列、測定の意味、所有権を変える操作は、名前が `std` にあっても通常の `.qli` 本文で偽装できない。通常の標準ライブラリ定義には利用者コードと同じ型・効果規則を適用する。
+`std::` ships with the compiler version. User replacement and external package
+loading are unavailable. Ordinary `.qli` bodies cannot impersonate primitive
+gate matrices, observation semantics, or ownership transitions merely by using
+standard-looking names. Bundled definitions receive the same checks as user code.
 
-`measure_z` 後に同じ論理ワイヤを操作することはできない。必要なら `init0` で新しい論理ワイヤを準備し、測定結果で古典制御する。バックエンドは条件を満たすとき、新しい論理ワイヤを測定済みの物理素子に割り当ててもよい。
+After `measure_z`, the old logical wire cannot be used. Prepare a new logical
+wire with `init0` if needed and classically control it with the measurement
+result. A future backend may map the new wire to a previously measured physical
+device when its capabilities permit.
 
-現在は通常定義を`stdlib/src/basis.qli`、`routines.qli`、`transforms.qli`、`arithmetic.qli`に同梱し、`std::quantum`と`std::observe`の封印された公開名はRustのモジュール解決器に登録している。原始操作の公開シグネチャをこれらのモジュールIDに結び付け、派生定義は通常の`.qli`本文として同じ検査を通す。
+Ordinary definitions reside in `stdlib/src/basis.qli`, `routines.qli`,
+`transforms.qli`, and `arithmetic.qli`. Rust's module resolver registers the
+sealed public names in `std::quantum` and `std::observe`; their public signatures
+are tied to these module identities. Derived bodies remain ordinary checked source.
 
-`do/pure` の単射性検査、`qif`、`adjoint`、`repeat_static`、`with_computed` は静的に検査する**言語形式**とする。初期版は高階の操作値を定義しないので、これらを任意の関数値を受け取る通常のライブラリ関数として約束しない。`release0` は証拠を伴う内部操作で、無条件の公開 API にはしない。ハードウェアのバックエンドも標準ライブラリには入れない。
+`do/pure` (including its injectivity check), `qif`, `adjoint`, `repeat_static`,
+`with_computed`, and `apply_contract` are statically checked **language forms**. They are not
+ordinary functions taking arbitrary first-class operation values. `release0`
+describes an internal, evidence-dependent step inside the atomic auxiliary
+constructor, not a standalone public API. Hardware backends are also outside
+the standard library.
 
-`qif`、`adjoint`、`repeat_static`の有限実装とQFTの位相・ビット順・受理／拒否・IR変換は[静的操作の契約](static-operations.md)で定めた。操作名は静的な単一の関数名とし、初期対象は古典引数なしの `Q<A> -> Q<A>`。一般の高階操作値は未実装である。
+The [static-operation contract](static-operations.md) specifies the implemented
+finite forms, QFT phases and bit order, acceptance/rejection, and lowering.
+Targets are statically resolved function names with a single `Q<A> -> Q<A>`
+interface and no classical parameters. General higher-order operation values
+remain unimplemented.
 
-## 複数ファイルの実行例
+The [function-contract form](function-contracts-v0.1.md) separately names an
+ordinary implementation and a fixed ordinary specification. It checks their
+exact meaning and retains evidence in final IR; it does not add a sealed gate
+or change the contract ledger's list of bundled definitions.
 
-次のパスと `use` は上の解決規則に従う。`tests/compile.rs` の `documented_projects_compile_verify_and_simulate` でソース検査・IR検証・分布を照合する。
+<a id="複数ファイルの実行例"></a>
 
-### Bell 状態
+## Executable examples with multiple files
+
+The following blocks reproduce the named files. Their paths and imports follow
+the rules above. The test
+[`documented_projects_compile_verify_and_simulate`](../tests/compile.rs)
+checks the projects' source acceptance, IR verification, and result distributions.
+
+<a id="bell-状態"></a>
+
+### Bell state
 
 `examples/bell/bell.qli`:
 
@@ -88,23 +174,24 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
 
 ```qli
 use bell::entangle;
-use std::quantum::h;
 use std::quantum::init0;
+use std::quantum::h;
 use std::quantum::split;
 use std::observe::measure_z;
 
 observe fn main() -> (CBit, CBit) {
     let pair = entangle(h(init0()));
     let (left, right) = split(pair);
-    let a = measure_z(left);
-    let b = measure_z(right);
-    (a, b)
+    (measure_z(left), measure_z(right))
 }
 ```
 
-期待する結果は `(0,0)` と `(1,1)` が各 `1/2`。`bell.qli` は量子資源を複製せず、`x -> (x,x)` の単射性を型検査する。
+The results `(0,0)` and `(1,1)` each have probability `1/2`. The map
+`x -> (x,x)` is checked for injectivity; it does not duplicate quantum ownership.
 
-### 位相オラクル
+<a id="位相オラクル"></a>
+
+### Phase oracle
 
 `examples/phase_oracle/oracle.qli`:
 
@@ -113,8 +200,10 @@ use std::quantum::z;
 
 basis fn predicate(x: Bit) -> Bit { not x }
 
+unitary fn phase(a: Q<Bit>) -> Q<Bit> { z(a) }
+
 pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
-    with_computed(q, predicate) { |a| z(a) }
+    with_computed(q, predicate) { |a| phase(a) }
 }
 ```
 
@@ -122,25 +211,47 @@ pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
 
 ```qli
 use oracle::phase_oracle;
-use std::quantum::h;
 use std::quantum::init0;
+use std::quantum::h;
 use std::observe::measure_z;
 
 observe fn main() -> CBit {
-    let prepared = h(init0());
-    let marked = phase_oracle(prepared);
-    measure_z(h(marked))
+    measure_z(h(phase_oracle(h(init0()))))
 }
 ```
 
-`predicate(x) = not x` なので `phase_oracle` の行列は `-Z`。この閉じた例の測定結果は `1` である。v0の `with_computed` は計算元や他の量子値を本文へ公開せず、補助上の展開後の `Z/T` 列だけを受理する。一般の作業レジスタ・借用署名は後続仕様とする。
+Since `predicate(x) = not x`, the oracle's matrix is `-Z`. This closed example
+returns `1`. Source v0 hides the computation source and other outer quantum
+values from the auxiliary body and accepts only an expanded `Z/T` sequence
+on the auxiliary. General work registers and borrowing signatures are deferred.
 
-`std::basis::xor2 : (Bit,Bit) -> Bit` のような非単射の基底関数を `do x <- q; pure …` の継続として `Q<(Bit,Bit)>` に直接適用するコードは拒否する。`(q,q)` も、同じ所有権を二度使うので拒否する。標準モジュールにあるという理由で量子条件を緩めない。
+The total mathematical functions `xor2` and `and2` have noninjective product
+domains, so their full maps cannot define isometric lifts
+`Q<(Bit,Bit)> -> Q<Bit>`. This semantic fact must be distinguished from a
+surface-call error: in `do p <- q; pure xor2(p)` (or `and2(p)`), the function
+expects **two** arguments but receives one product argument, so the compiler
+reports `Arity` before injectivity is relevant. Explicit destructuring in the
+lift binder makes the components available: `do (a,b) <- q; pure xor2(a,b)`
+is well typed as a basis computation, but its full map fails the lift's
+injectivity requirement; the same applies to `and2(a,b)` on that product domain.
+There is no implicit uncurrying of `xor2(p)`. Calls with two basis `Bit`
+expressions are valid syntax, and every enclosing lift checks the complete
+resulting map for injectivity. `with_computed(q,xor2)` instead uses the predicate's
+semantic product domain and is supported for `q:Q<(Bit,Bit)>`.
 
-## 有限コアv0の後続仕様
+Likewise, `(q,q)` is rejected for reusing the same ownership. Importing a bundled
+name never relaxes resource or quantum conditions.
 
-- 一般の `with_computed` の借用・保存効果署名。v0の限定形と静的操作の文法は確定。
-- サイズ付きレジスタ、一般の操作パラメータ化、任意角度の表現。有限反復のリテラル版は実装済み。
-- 高階関数、外部パッケージ、マニフェスト、追加の標準モジュール。
+<a id="有限コアv0の後続仕様"></a>
 
-現在は段階1の仕様と証明を優先し、上記の拡張と標準APIの一般化は後続へ置く。これらを決めるときも [量子言語としての成立条件](quantum-language-requirements.md) を満たす必要がある。
+## Specifications after finite core v0
+
+- General borrowing and preservation-effect signatures for `with_computed`.
+  The restricted v0 form and static-operation grammar are already fixed.
+- Sized registers, general operation parameters, and arbitrary angles.
+  Literal-count finite repetition is already implemented.
+- Higher-order functions, external packages, manifests, and further modules.
+
+Stage 1 specification and proof work take priority over these extensions and
+API generalization. Future decisions must still satisfy the
+[quantum-language requirements](quantum-language-requirements.md).

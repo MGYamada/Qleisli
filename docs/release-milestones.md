@@ -1,0 +1,174 @@
+# Qleisli release milestones and north star
+
+Status: **project direction adopted by the user on 2026-09-27; v0.1's declared
+finite acceptance profile is implemented and checked; v1 remains unmet**.
+This English document is the authoritative record
+of the project north star and v0.1/v1 release conditions. The Japanese summaries in the
+[roadmap](../ROADMAP.md) and [algorithm goal](algorithm-structure-goal.md)
+follow it. It adopts the direction evaluated in the
+[semantic-contract review](semantic-contract-proposal-review.md). The first
+[finite checker and source extension](semantic-contracts-v0.1.md) and
+[retained function evidence](function-contracts-v0.1.md) form the completed
+bounded path. The [conformance ledger](specification-status.md) records its
+acceptance evidence, capacity limits, and remaining proof obligations.
+
+The finite core **specification v0**, the development **stages 0–5**, and
+these **release milestones v0.1/v1** are different labels. The existing Rust
+package version `0.1.0` and the standard-library ledger's “format v1” do not
+establish completion of either release milestone. Release claims require the
+evidence below, not a manifest version or successful fixed-size example.
+
+The adopted initial product baseline is **0.1.0**. The
+[versioning policy](versioning.md) defines compatibility, synchronized package
+versions, release validation, and immutable Git tags. The
+[changelog](../CHANGELOG.md) and [0.1.0 release notes](releases/v0.1.0.md)
+record its contents and validation scope. The Git tag and GitHub release
+identify the released commit and publication state; registry publication is
+a separate operation.
+
+## Project north star
+
+**Make the language people use to think about quantum algorithms coincide
+with the language they use to write programs.**
+
+State preparation, oracles, reflections, phase estimation, uncomputation,
+and their composition should be usable program concepts with the same
+mathematical meanings. Their contracts must survive implementation choices
+and lowering. This calls for readable, executable abstractions with checked
+meaning, not only familiar names or natural-language descriptions.
+
+This wording, adopted on 2026-09-27, expresses the overarching direction.
+The three algorithm families below remain its concrete v1 acceptance test.
+The v0.1 contract layer supplies the link between those concepts and the
+implementations that realize them.
+
+## v0.1 minimum: semantic contracts
+
+**v0.1 must carry a mathematical meaning contract through composition and
+independently check that the actual implementation realizes it.** The first
+fragment is finite-dimensional pure operations with exact phase:
+
+```text
+u : L_in -> L_out                 logical operation
+U : P_in -> P_out                 ideal circuit/IR implementation
+E_in : L_in -> P_in               input encoding
+E_out : L_out -> P_out            output encoding
+
+E_in† E_in = I,   E_out† E_out = I,   U† U = I,
+U E_in = E_out u.
+```
+
+The contract fixes u, the encodings, exact types, phase conventions and layouts.
+Entry evidence establishes the encoding promise. The implementation's global
+isometry, and unitarity where required, must be checked independently of the
+encoded-subspace equation. It remains subject to the ordinary resource/effect
+checks, including zero-width owners.
+The contract concerns ideal operators; it does not certify noisy hardware.
+
+All conditions below are necessary. They can begin with a declared bounded
+fragment and concrete function signatures; general size and operation
+parameters are not prerequisites for this first milestone.
+
+| ID | Minimum acceptance condition | Current status |
+| --- | --- | --- |
+| V01-C1 | Specify finite contract/evidence forms with well-typed spaces, checked isometric encodings, entry evidence, exact logical meaning, full ownership interfaces, and phase. Record source-to-IR attachment and trust boundaries. | Met in the declared finite profile: [SC specification](semantic-contracts-v0.1.md), [FC specification](function-contracts-v0.1.md), checked encodings, and exact source signatures. General encoded-state handles remain outside this profile. |
+| V01-C2 | Implement an independent evidence checker with primitive identities, sequential/tensor composition, explicitly qualified inverse/control rules, and bounded exact matrix comparison. Record a soundness argument for its rules. Proof search is outside the trusted checker; failure to find/check evidence never authorizes a contract or cleanup. | Met: bounded exact checker, identity and compositional constructors; SC/FC paper soundness arguments and [kernel regressions](../tests/semantic_contracts.rs). Rust implementation is not formally proved. |
+| V01-C3 | Bind evidence to the actual source/function contract and final IR, including parameters, output ordering and dependencies. Check transformations or recheck their results. Preserve existing type, ownership, effect and independent raw-IR validation. | Met: raw `CertifiedCompute` rechecks retained W/u; `FunctionEvidence` independently checks both complete raw functions and binds their frozen source/dependency snapshots. Final contract actions retain this evidence under axis remapping, adjoint, control, and repetition. [Raw evidence regressions](../tests/function_evidence.rs) cover binding and extraction. |
+| V01-C4 | Through the implemented compiler/checker, certify a phase oracle, auxiliary H;H, and the f(x)=x data/auxiliary simultaneous X example using the same evidence rules. Establish exact zero return and separation over all encoded inputs and arbitrary references. | Met: [certified source tests](../tests/certified_source.rs) and [runnable examples](../examples/semantic_contracts/README.md) use the same exact full-column equation; the reference extension follows by tensoring that equation with identity. Numerical reference tests supplement it. |
+| V01-C5 | Publish concrete function contracts that can be reused compositionally. Exchange at least two implementations of one fixed phase-oracle contract while leaving its logical client unchanged. Independently check the resulting IR, including reuse under coherent control and with a correlated reference. Different private auxiliary layouts must be hidden by checked interfaces. | Met: `apply_contract` fixes the client's specification. [One unchanged client](../tests/function_contracts.rs) accepts direct Z and two private-auxiliary implementations, with coherent control and an entangled reference. Calls share immutable evidence; nested composition and static transforms retain it. [Executable example](../examples/function_contracts/README.md). |
+| V01-C6 | Reject auxiliary-only X, incorrect phase/predicate, incompatible encoding or layout, missing entry evidence, invalid inverse/control premises, stale or mismatched certificates, and lost/duplicated ownership. Record exact checks, limits, diagnostics, assumptions, and proof/implementation/test status separately. | Met in the bounded profile: kernel, source, and raw-function rejection tests, changed-source/dependency tests, and finite checking/execution budgets. Exact proof checks and approximate reference results are separately recorded in the [ledger](specification-status.md). |
+
+The existing [39 exact example checks](../scripts/check_semantic_contract_examples.py)
+and current regression tests are supporting evidence. They do not satisfy
+V01-C2–C6 by themselves. A gate whitelist relaxation, a numerical simulation,
+or a document containing the desired equation is insufficient.
+
+The initial inverse rule may require both logical and implementation operators
+to be unitary. Initial coherent control may require identical input/output
+encodings. Mathematical evidence does not grant inverse/controlled access
+to an unknown device. Exact cleanup must remain separate from approximate
+logical accuracy; approximate leakage never permits pure release. Observation
+uses instrument contracts, and general block encoding uses a projected-block
+contract; neither is silently treated as exact pure intertwining.
+
+Full mechanization of every Rust compiler path is not asserted by this
+milestone. The checker rules, implemented fragment, source/IR correspondence
+evidence, and remaining trusted implementation obligations must be explicit.
+Existing [Stage 1 proof obligations](formal-core.md) remain in force; meeting
+this release gate does not retrospectively mark all of SPEC-4 complete.
+
+<a id="v1-north-star-textbook-algorithm-structure"></a>
+
+## v1 acceptance target: textbook algorithm structure
+
+**Shor, QPE, and Grover should read as the structure of the quantum algorithms
+found in a textbook, rather than as circuit diagrams transcribed into code.**
+
+This makes the project north star concrete for v1. Algorithm definitions should
+show mathematical stages, their composition, and the assumptions necessary
+to use them. Primitive gates, wire permutations, arithmetic decomposition,
+auxiliary management and proof derivations belong inside checked components.
+Readers can inspect those implementations, but should not need to reconstruct
+a gate diagram to understand the algorithm definition.
+
+The following describes required structure, **not proposed `.qli` syntax or
+existing public function names**:
+
+| Algorithm | Structure visible in its implementation source | Contracts visible at the relevant interface |
+| --- | --- | --- |
+| Grover | Prepare the search state; apply the marked-state phase oracle and the reflection about the prepared state; repeat the amplification step under an explicit iteration policy; measure and check the candidate. | Preparation and inverse access where required, the predicate and exact reflection/oracle phases, search size, iteration/success assumptions, and resource/effect boundaries. |
+| QPE | Prepare the phase register; compose controlled powers of the input operation; apply inverse QFT; measure and decode the phase estimate. | Phase-fixed controlled/power access, register size/precision, bit order, approximation and statistical guarantees where used, and the outcome/residual-state instrument. Eigenstate promises must be explicit; general inputs have a distribution over eigencomponents. |
+| Shor | Perform classical preprocessing and select a base; construct the modular-multiplication operation; obtain order information through the shared QPE structure; reconstruct and validate a period candidate; extract and validate factors; handle unsuccessful samples and retry according to a declared policy. | Coprimality and arithmetic domains including behavior outside the valid residue subspace, controlled modular powers, phase precision, classical reconstruction, failure conditions and resource/cost assumptions. A host retry boundary is explicit if used. |
+
+Shor must reuse the QPE component rather than hide a second hand-expanded
+phase-estimation circuit. A single top-level call named after an algorithm
+is not enough: the delivered definition of that algorithm must expose these
+stages. The quantum/classical boundary and retry behavior are part of the
+delivered workflow, even when a documented host layer owns them.
+
+For Shor, classical validation includes the early GCD factor case and checking
+a positive period candidate r with `a^r mod N = 1`. Factor extraction checks
+that r is even, `a^(r/2)` is neither `1` nor `-1` modulo N, and the resulting
+GCDs give nontrivial factors. Failed checks follow the stated retry policy.
+A period check alone does not establish that r is the least order. Samples
+come through the declared execution/measurement interface; access to a
+simulator's full output distribution cannot replace this workflow.
+
+| ID | v1 acceptance condition |
+| --- | --- |
+| V1-C1 | Deliver real source definitions of all three algorithms that compile and run within a declared supported profile. A reviewer can map their named stages and composition to the table above without reading primitive gate bodies. Pseudocode, comments, a renamed monolithic circuit, or an unimplemented black-box API do not pass. |
+| V1-C2 | Reuse the same definitions across multiple supported sizes, precisions, predicates/operations and problem inputs as appropriate. Size and operation parameters replace manually duplicated fixed instances; current 2/3-bit QPE and N=15 examples alone do not pass. |
+| V1-C3 | Carry the v0.1 meaning contracts through component boundaries to checked IR. Demonstrate implementation substitution without rewriting algorithm structure. State access capabilities and all additional instrument/accuracy contracts used by the algorithms. |
+| V1-C4 | Validate mathematical behavior as well as readability: phase-sensitive and reference-sensitive cases, failure/retry paths, and independently derived expected results. QPE sampling alone is not an order proof, an unverified candidate is not a factor, and a valid circuit alone is not an algorithm-correctness proof. |
+| V1-C5 | Keep source structure stable when changing implementation layout or decomposition. Report circuit-generation and execution costs separately, including oracle access and classical work. Precomputed answers or whole-space truth-table enumeration cannot stand in for the delivered general arithmetic/algorithm construction. Publish supported bounds and proof status. |
+
+V1 does not require a claim of practical hardware advantage, unlimited-size
+execution, or completion of every algorithm in the corpus. It requires a
+usable, checked abstraction for these three algorithm families. Any
+approximation used to support larger QFTs or other components has an explicit
+error contract; it does not weaken exact auxiliary-cleanup requirements.
+
+## Work order and design decisions
+
+1. Continue the finite-core source/IR and ownership-state work needed to
+   identify the contract boundary and preserve its premises.
+2. Complete V01-C1–C6 as one finite implementation path: specification,
+   independent checker, source/IR evidence, positive and negative examples,
+   and exchangeable phase-oracle implementations. Publish the v0.1 evidence.
+3. Generalize the checked interfaces with size and operation parameters,
+   access capabilities, and the instrument/error contracts required by the
+   three v1 algorithms.
+4. Implement reusable Grover and QPE structures and use QPE in Shor's complete
+   quantum/classical workflow. Evaluate V1-C1–C5 on real source and evidence.
+
+For each proposed abstraction, ask which algorithm stage it makes readable,
+which mathematical contract it exposes, and how its implementation evidence
+survives lowering and substitution. A more compact gate listing alone does
+not meet the north star. Broader library work follows the needs and verified
+reuse of these structures.
+
+This order refines the [existing roadmap](../ROADMAP.md); it does not turn
+the legacy stage numbers, A0–A4, or L0–L5 into release numbers. The algorithm
+corpus and existing finite examples remain regression material. New source
+forms and APIs still require their normal specification, ownership/effect,
+semantics, IR and conformance records before implementation claims.

@@ -1,16 +1,20 @@
-use super::basis::BasisValue;
+//! Source evaluation, lexical scopes, calls, and checked IR construction.
+//!
+//! Values and their ownership representation live in `value`; sealed operations
+//! and classical branch merging have separate implementations. All of them use
+//! the same complete register store and ID supply, including suspended callers.
+
+mod branch;
+mod certified;
+mod function_contract;
+mod primitives;
+mod scope;
+mod value;
+
+use value::{Env, Register, Slot, Value, env_size};
+
 use super::*;
 use crate::ir::*;
-
-type Slot = u32;
-type Env = BTreeMap<String, Option<Value>>;
-
-fn env_size(env: &Env) -> usize {
-    total_size(
-        env.values()
-            .map(|value| 1 + value.as_ref().map_or(0, |value| value.tree_size().nodes)),
-    )
-}
 
 #[derive(Clone, Copy)]
 struct CallSite<'a> {
@@ -19,69 +23,10 @@ struct CallSite<'a> {
     args: &'a [Expr],
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-enum Value {
-    Unit,
-    Classical(ClassicalId),
-    Quantum(Slot, Ty),
-    Pair(Box<Value>, Box<Value>),
-}
-
-impl Value {
-    fn tree_size(&self) -> TreeSize {
-        let mut size = TreeSize::default();
-        let mut pending = vec![(self, 1)];
-        while let Some((value, depth)) = pending.pop() {
-            size.nodes += 1;
-            size.depth = size.depth.max(depth);
-            match value {
-                Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
-                Self::Quantum(_, basis) => {
-                    let basis = basis.tree_size();
-                    size.nodes += basis.nodes;
-                    size.depth = size.depth.max(depth + basis.depth);
-                }
-                _ => {}
-            }
-        }
-        size
-    }
-
-    fn ty(&self) -> Ty {
-        match self {
-            Self::Unit => Ty::Unit,
-            Self::Classical(_) => Ty::CBit,
-            Self::Quantum(_, basis) => Ty::Q(Box::new(basis.clone())),
-            Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
-        }
-    }
-
-    fn owns_quantum(&self) -> bool {
-        match self {
-            Self::Quantum(..) => true,
-            Self::Pair(a, b) => a.owns_quantum() || b.owns_quantum(),
-            _ => false,
-        }
-    }
-
-    fn pair(a: Self, b: Self) -> Self {
-        Self::Pair(Box::new(a), Box::new(b))
-    }
-}
-
-#[derive(Clone)]
-struct Register {
-    token: TokenId,
-    wires: Vec<WireId>,
-    basis: Ty,
-}
-
-impl Register {
-    fn size(&self) -> usize {
-        1 + self.wires.len() + self.basis.tree_size().nodes
-    }
-}
-
+// The register store includes quantum values held by pending arguments and
+// suspended callers, not just bindings visible in the current lexical Env.
+// Branches snapshot registers/effects, but never rewind the fresh ID supply.
+// Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
     registers: BTreeMap<Slot, Register>,
@@ -292,7 +237,7 @@ impl Lowerer<'_, '_> {
     fn block(&mut self, module: &str, block: &Block, env: &mut Env) -> Result<Value, CompileError> {
         self.compiler
             .charge(module, block.span, env_size(env).saturating_mul(2))?;
-        let entry = env.clone();
+        let mut entry = env.clone();
         let mut local = env.clone();
         let mut rebound = BTreeSet::new();
         for stmt in &block.statements {
@@ -318,20 +263,10 @@ impl Lowerer<'_, '_> {
             }
         }
         let result = self.expr(module, &block.result, &mut local)?;
-        for (name, value) in &local {
-            if value.as_ref().is_some_and(Value::owns_quantum)
-                && (rebound.contains(name) || entry.get(name) != Some(value))
-            {
-                return Err(self.error(module, block.span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard")));
-            }
-        }
-        for (name, value) in entry {
-            if value.as_ref().is_some_and(Value::owns_quantum)
-                && (rebound.contains(&name) || local.get(&name) != Some(&value))
-            {
-                env.insert(name, None);
-            }
-        }
+        scope::close_scope(&mut entry, &local, &rebound).map_err(|name| {
+            self.error(module, block.span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
+        })?;
+        *env = entry;
         Ok(result)
     }
 
@@ -422,6 +357,21 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::ApplyContract {
+                implementation,
+                specification,
+                input,
+            } => {
+                let value = self.expr(module, input, env)?;
+                self.apply_function_contract(
+                    module,
+                    expr.span,
+                    implementation,
+                    specification,
+                    value,
+                    env,
+                )
+            }
             ExprKind::Adjoint { function, input }
             | ExprKind::RepeatStatic {
                 function, input, ..
@@ -481,6 +431,63 @@ impl Lowerer<'_, '_> {
                 self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
             }
             ExprKind::Unit => Ok(Value::Unit),
+            ExprKind::CBit(value) => {
+                let output = self.classical();
+                self.operations.push(RawOp::ClassicalConst {
+                    value: *value,
+                    output,
+                });
+                Ok(Value::Classical(output))
+            }
+            ExprKind::Not(input) => {
+                let Value::Classical(input) = self.expr(module, input, env)? else {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "not requires a CBit operand",
+                    ));
+                };
+                let output = self.classical();
+                self.operations.push(RawOp::ClassicalNot { input, output });
+                Ok(Value::Classical(output))
+            }
+            ExprKind::And(left, right) | ExprKind::Xor(left, right) => {
+                let Value::Classical(left) = self.expr(module, left, env)? else {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "and/xor require CBit operands",
+                    ));
+                };
+                // Both operands are evaluated, left to right. In particular,
+                // false AND must still execute effects in its right operand.
+                let Value::Classical(right) = self.expr(module, right, env)? else {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "and/xor require CBit operands",
+                    ));
+                };
+                let output = self.classical();
+                self.operations
+                    .push(if matches!(expr.kind, ExprKind::And(..)) {
+                        RawOp::ClassicalAnd {
+                            left,
+                            right,
+                            output,
+                        }
+                    } else {
+                        RawOp::ClassicalXor {
+                            left,
+                            right,
+                            output,
+                        }
+                    });
+                Ok(Value::Classical(output))
+            }
             ExprKind::Name(name) => {
                 let binding = env.get_mut(&name.text).ok_or_else(|| {
                     self.error(
@@ -582,6 +589,27 @@ impl Lowerer<'_, '_> {
                     ));
                 }
                 self.computed(module, expr.span, source, function, binder, body, env)
+            }
+            ExprKind::CertifiedComputed {
+                source,
+                function,
+                logical,
+                data_binder,
+                ancilla_binder,
+                body,
+            } => {
+                let source = self.expr(module, source, env)?;
+                self.certified_computed(
+                    module,
+                    expr.span,
+                    source,
+                    function,
+                    logical,
+                    data_binder,
+                    ancilla_binder,
+                    body,
+                    env,
+                )
             }
         }
     }
@@ -692,233 +720,11 @@ impl Lowerer<'_, '_> {
         super::circuit::flatten(inner.compiler, module, name.span, &checked)
     }
 
-    fn quantum(
-        &self,
-        module: &str,
-        span: Span,
-        value: &Value,
-        bit_only: bool,
-    ) -> Result<Slot, CompileError> {
-        let Value::Quantum(slot, basis) = value else {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "operation requires quantum ownership",
-            ));
-        };
-        if bit_only && *basis != Ty::Bit {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "operation requires Q<Bit>",
-            ));
-        }
-        Ok(*slot)
-    }
-
-    fn sealed(
-        &mut self,
-        module: &str,
-        span: Span,
-        namespace: &str,
-        name: &str,
-        mut args: Vec<Value>,
-    ) -> Result<Value, CompileError> {
-        let arity = match name {
-            "init0" => 0,
-            "cnot" | "join" => 2,
-            "toffoli" => 3,
-            _ => 1,
-        };
-        if args.len() != arity {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Arity,
-                format!("{name} requires {arity} arguments"),
-            ));
-        }
-        if namespace == "std::observe" {
-            self.effect = Effect::Observe;
-        }
-        match name {
-            "init0" => {
-                self.effect = self.effect.max(Effect::Iso);
-                let wire = self.wire();
-                let value = self.register(Ty::Bit, vec![wire]);
-                let slot = self.quantum(module, span, &value, true)?;
-                self.operations.push(RawOp::Init0 {
-                    output: self.registers[&slot].token,
-                    wire,
-                });
-                Ok(value)
-            }
-            "h" | "x" | "z" | "t" => {
-                let value = args.pop().expect("one argument");
-                let slot = self.quantum(module, span, &value, true)?;
-                let gate = match name {
-                    "h" => SingleGate::H,
-                    "x" => SingleGate::X,
-                    "z" => SingleGate::Z,
-                    _ => SingleGate::T,
-                };
-                let output = self.token();
-                let reg = self.registers.get_mut(&slot).expect("owned register");
-                self.operations.push(RawOp::Gate {
-                    gate,
-                    input: reg.token,
-                    output,
-                });
-                reg.token = output;
-                Ok(value)
-            }
-            "cnot" | "toffoli" => {
-                let slots = args
-                    .iter()
-                    .map(|arg| self.quantum(module, span, arg, true))
-                    .collect::<Result<Vec<_>, _>>()?;
-                if slots.iter().collect::<BTreeSet<_>>().len() != slots.len() {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Ownership,
-                        "gate operands alias one quantum register",
-                    ));
-                }
-                let inputs: Vec<_> = slots
-                    .iter()
-                    .map(|slot| self.registers[slot].token)
-                    .collect();
-                let outputs: Vec<_> = slots.iter().map(|_| self.token()).collect();
-                self.operations.push(if name == "cnot" {
-                    RawOp::Cnot {
-                        control: inputs[0],
-                        target: inputs[1],
-                        control_out: outputs[0],
-                        target_out: outputs[1],
-                    }
-                } else {
-                    RawOp::Toffoli {
-                        control_a: inputs[0],
-                        control_b: inputs[1],
-                        target: inputs[2],
-                        control_a_out: outputs[0],
-                        control_b_out: outputs[1],
-                        target_out: outputs[2],
-                    }
-                });
-                for (slot, output) in slots.iter().zip(outputs) {
-                    self.registers.get_mut(slot).expect("owned register").token = output;
-                }
-                let mut args = args.into_iter();
-                let a = args.next().expect("first input");
-                let b = args.next().expect("second input");
-                let pair = Value::pair(a, b);
-                Ok(if let Some(target) = args.next() {
-                    Value::pair(pair, target)
-                } else {
-                    pair
-                })
-            }
-            "split" => {
-                let value = args.pop().expect("one input");
-                let slot = self.quantum(module, span, &value, false)?;
-                let reg = self.registers.remove(&slot).expect("owned register");
-                let Ty::Pair(a, b) = reg.basis else {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::TypeMismatch,
-                        "split requires Q<(A, B)>",
-                    ));
-                };
-                let width = a.basis_bits().expect("basis type");
-                let left = self.register(*a, reg.wires[..width].to_vec());
-                let right = self.register(*b, reg.wires[width..].to_vec());
-                let left_slot = self.quantum(module, span, &left, false)?;
-                let right_slot = self.quantum(module, span, &right, false)?;
-                self.operations.push(RawOp::Split {
-                    input: reg.token,
-                    left: self.registers[&left_slot].token,
-                    right: self.registers[&right_slot].token,
-                    left_bits: width as u8,
-                });
-                Ok(Value::pair(left, right))
-            }
-            "join" => {
-                let a = self.quantum(module, span, &args[0], false)?;
-                let b = self.quantum(module, span, &args[1], false)?;
-                if a == b {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Ownership,
-                        "join operands alias",
-                    ));
-                }
-                let a = self.registers.remove(&a).expect("owned register");
-                let b = self.registers.remove(&b).expect("owned register");
-                if a.wires.len() + b.wires.len() > MAX_BITS {
-                    return Err(self.error(
-                        module,
-                        span,
-                        ErrorCode::Limit,
-                        "joined register exceeds 12 bits",
-                    ));
-                }
-                let mut wires = a.wires;
-                wires.extend(b.wires);
-                let value = self.register(Ty::pair(a.basis, b.basis), wires);
-                let slot = self.quantum(module, span, &value, false)?;
-                self.operations.push(RawOp::Join {
-                    left: a.token,
-                    right: b.token,
-                    output: self.registers[&slot].token,
-                });
-                Ok(value)
-            }
-            "measure_z" | "reset" | "discard" => {
-                let value = args.pop().expect("one input");
-                let slot = self.quantum(module, span, &value, name != "discard")?;
-                let reg = self.registers.remove(&slot).expect("owned register");
-                if name == "measure_z" {
-                    let output = self.classical();
-                    self.operations.push(RawOp::MeasureZ {
-                        input: reg.token,
-                        output,
-                    });
-                    Ok(Value::Classical(output))
-                } else if name == "discard" {
-                    self.operations.push(RawOp::Discard { input: reg.token });
-                    Ok(Value::Unit)
-                } else {
-                    let wire = self.wire();
-                    let value = self.register(Ty::Bit, vec![wire]);
-                    let slot = self.quantum(module, span, &value, true)?;
-                    self.operations.push(RawOp::Reset {
-                        input: reg.token,
-                        output: self.registers[&slot].token,
-                        fresh_wire: wire,
-                    });
-                    Ok(value)
-                }
-            }
-            _ => Err(self.error(
-                module,
-                span,
-                ErrorCode::Unsupported,
-                "unsupported sealed operation",
-            )),
-        }
-    }
-
     fn lift(
         &mut self,
         module: &str,
         span: Span,
-        binder: &Ident,
+        binder: &Pattern,
         input: Value,
         basis: &BasisExpr,
     ) -> Result<Value, CompileError> {
@@ -930,15 +736,9 @@ impl Lowerer<'_, '_> {
         let mut table = Vec::new();
         let mut seen = BTreeSet::new();
         for label in 0..(1u16 << reg.wires.len()) {
-            self.compiler
-                .charge(module, span, reg.basis.tree_size().nodes)?;
-            let env = BTreeMap::from([(
-                binder.text.clone(),
-                BasisValue {
-                    ty: reg.basis.clone(),
-                    label,
-                },
-            )]);
+            let env = self
+                .compiler
+                .bind_basis_pattern(module, binder, &reg.basis, label)?;
             let value = self.compiler.eval_basis(module, basis, &env, 0)?;
             if result_ty.as_ref().is_some_and(|ty| *ty != value.ty) {
                 return Err(self.error(
@@ -1123,210 +923,6 @@ impl Lowerer<'_, '_> {
         });
         source_reg.token = output;
         Ok(source)
-    }
-
-    fn branch(
-        &mut self,
-        module: &str,
-        span: Span,
-        condition: ClassicalId,
-        then_block: &Block,
-        else_block: &Block,
-        env: &mut Env,
-    ) -> Result<Value, CompileError> {
-        self.compiler.charge(
-            module,
-            span,
-            env_size(env)
-                .saturating_add(total_size(self.registers.values().map(Register::size)))
-                .saturating_mul(2),
-        )?;
-        let entry_registers = self.registers.clone();
-        let outer_ops = std::mem::take(&mut self.operations);
-        let entry_effect = self.effect;
-        let mut then_env = env.clone();
-        let then_result = self.block(module, then_block, &mut then_env)?;
-        let then_ops = std::mem::take(&mut self.operations);
-        let mut then_registers = std::mem::replace(&mut self.registers, entry_registers.clone());
-        let then_effect = self.effect;
-        self.effect = entry_effect;
-        let mut else_env = env.clone();
-        let else_result = self.block(module, else_block, &mut else_env)?;
-        let else_ops = std::mem::replace(&mut self.operations, outer_ops);
-        let mut else_registers = std::mem::take(&mut self.registers);
-        self.effect = self.effect.max(then_effect);
-        if then_env != else_env {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Ownership,
-                "if arms consume different outer quantum bindings",
-            ));
-        }
-        *env = then_env;
-        self.compiler.charge(
-            module,
-            span,
-            then_result
-                .tree_size()
-                .nodes
-                .saturating_add(else_result.tree_size().nodes),
-        )?;
-        if then_result.ty() != else_result.ty() {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "if arms must return the same type",
-            ));
-        }
-        let mut quantum_phis = Vec::new();
-        let mut classical_phis = Vec::new();
-        let result = self.merge_results(
-            module,
-            span,
-            then_result,
-            else_result,
-            &mut then_registers,
-            &mut else_registers,
-            &mut quantum_phis,
-            &mut classical_phis,
-        )?;
-        if then_registers.len() != else_registers.len() {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::Ownership,
-                "if arms leave incompatible quantum frames",
-            ));
-        }
-        for (slot, then_reg) in then_registers {
-            if !entry_registers.contains_key(&slot) {
-                return Err(self.error(
-                    module,
-                    span,
-                    ErrorCode::Ownership,
-                    "branch-local ownership was not returned",
-                ));
-            }
-            let else_reg = else_registers.remove(&slot).ok_or_else(|| {
-                self.error(
-                    module,
-                    span,
-                    ErrorCode::Ownership,
-                    "if arms leave incompatible quantum frames",
-                )
-            })?;
-            self.merge_register(module, span, slot, then_reg, else_reg, &mut quantum_phis)?;
-        }
-        self.operations.push(RawOp::ClassicalBranch {
-            condition,
-            then_ops,
-            else_ops,
-            quantum_phis,
-            classical_phis,
-        });
-        Ok(result)
-    }
-
-    fn merge_register(
-        &mut self,
-        module: &str,
-        span: Span,
-        slot: Slot,
-        a: Register,
-        b: Register,
-        phis: &mut Vec<QuantumPhi>,
-    ) -> Result<(), CompileError> {
-        self.compiler.tick(module, span)?;
-        if a.basis != b.basis {
-            return Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "branch quantum shapes differ",
-            ));
-        }
-        let token = self.token();
-        let wires: Vec<_> = (0..a.wires.len()).map(|_| self.wire()).collect();
-        phis.push(QuantumPhi {
-            then_token: a.token,
-            else_token: b.token,
-            output: token,
-            output_wires: wires.clone(),
-        });
-        self.registers.insert(
-            slot,
-            Register {
-                token,
-                wires,
-                basis: a.basis,
-            },
-        );
-        Ok(())
-    }
-
-    #[allow(clippy::too_many_arguments)]
-    fn merge_results(
-        &mut self,
-        module: &str,
-        span: Span,
-        a: Value,
-        b: Value,
-        a_regs: &mut BTreeMap<Slot, Register>,
-        b_regs: &mut BTreeMap<Slot, Register>,
-        quantum: &mut Vec<QuantumPhi>,
-        classical: &mut Vec<ClassicalPhi>,
-    ) -> Result<Value, CompileError> {
-        match (a, b) {
-            (Value::Unit, Value::Unit) => Ok(Value::Unit),
-            (Value::Classical(a), Value::Classical(b)) => {
-                if a == b {
-                    return Ok(Value::Classical(a));
-                }
-                let output = self.classical();
-                classical.push(ClassicalPhi {
-                    then_id: a,
-                    else_id: b,
-                    output,
-                });
-                Ok(Value::Classical(output))
-            }
-            (Value::Quantum(a, basis), Value::Quantum(b, _)) => {
-                let a = a_regs.remove(&a).ok_or_else(|| {
-                    self.error(
-                        module,
-                        span,
-                        ErrorCode::Ownership,
-                        "then result duplicates quantum ownership",
-                    )
-                })?;
-                let b = b_regs.remove(&b).ok_or_else(|| {
-                    self.error(
-                        module,
-                        span,
-                        ErrorCode::Ownership,
-                        "else result duplicates quantum ownership",
-                    )
-                })?;
-                let slot = self.slot();
-                self.merge_register(module, span, slot, a, b, quantum)?;
-                Ok(Value::Quantum(slot, basis))
-            }
-            (Value::Pair(a1, a2), Value::Pair(b1, b2)) => {
-                let a =
-                    self.merge_results(module, span, *a1, *b1, a_regs, b_regs, quantum, classical)?;
-                let b =
-                    self.merge_results(module, span, *a2, *b2, a_regs, b_regs, quantum, classical)?;
-                Ok(Value::pair(a, b))
-            }
-            _ => Err(self.error(
-                module,
-                span,
-                ErrorCode::TypeMismatch,
-                "incompatible branch result types",
-            )),
-        }
     }
 }
 

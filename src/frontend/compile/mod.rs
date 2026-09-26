@@ -7,6 +7,7 @@ mod lower;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 use super::ast::*;
 use super::project::{ImportOrigin, Project};
@@ -149,6 +150,8 @@ struct Compiler<'a> {
     project: &'a Project,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
+    checked: BTreeMap<Key, VerifiedProgram>,
+    function_evidence: BTreeMap<(Key, Key), (Arc<crate::contract::FunctionEvidence>, usize)>,
     work: usize,
 }
 
@@ -352,6 +355,14 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                 }
             }
             Node::Expr(expr) => match &expr.kind {
+                ExprKind::ApplyContract {
+                    implementation,
+                    specification,
+                    input,
+                } => {
+                    names.extend([implementation, specification]);
+                    stack.push(Node::Expr(input));
+                }
                 ExprKind::Adjoint { function, input }
                 | ExprKind::RepeatStatic {
                     function, input, ..
@@ -368,8 +379,9 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     names.extend([zero, one]);
                     stack.extend([Node::Expr(control), Node::Expr(target)]);
                 }
-                ExprKind::Name(_) | ExprKind::Unit => {}
-                ExprKind::Tuple(a, b) => {
+                ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
+                ExprKind::Not(input) => stack.push(Node::Expr(input)),
+                ExprKind::Tuple(a, b) | ExprKind::And(a, b) | ExprKind::Xor(a, b) => {
                     stack.push(Node::Expr(a));
                     stack.push(Node::Expr(b));
                 }
@@ -398,6 +410,16 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     ..
                 } => {
                     names.push(function);
+                    stack.extend([Node::Expr(source), Node::Block(body)]);
+                }
+                ExprKind::CertifiedComputed {
+                    source,
+                    function,
+                    logical,
+                    body,
+                    ..
+                } => {
+                    names.extend([function, logical]);
                     stack.extend([Node::Expr(source), Node::Block(body)]);
                 }
             },
@@ -463,6 +485,8 @@ fn process_project(
         project: &project,
         declarations,
         basis: BTreeMap::new(),
+        checked: BTreeMap::new(),
+        function_evidence: BTreeMap::new(),
         work: 0,
     };
     let order = compiler.order()?;
@@ -500,8 +524,9 @@ fn process_project(
         if compiler.declarations[key].kind != FnKind::Basis {
             let program = lower::lower_function(&mut compiler, key)?;
             if *key == entry {
-                main = Some(program);
+                main = Some(program.clone());
             }
+            compiler.checked.insert(key.clone(), program);
         }
     }
     Ok(main)

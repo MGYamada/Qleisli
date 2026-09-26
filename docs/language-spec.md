@@ -2,7 +2,7 @@
 
 # Qleisli finite core language specification v0
 
-Status: **Normative finite core specification fixed** (2026-09-26). This version covers finite types and static operations before sized types and operation parameters. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is the authoritative text of this document and replaces its earlier Japanese edition without changing v0's rules.
+Status: **Normative finite core specification, revised for product patterns and classical expressions** (2026-09-26). This version covers finite types and static operations before sized types and operation parameters. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
 
 <a id="1-範囲と規範の扱い"></a>
 
@@ -10,11 +10,24 @@ Status: **Normative finite core specification fixed** (2026-09-26). This version
 
 v0 is a nonrecursive language with basis types `Unit`, `Bit`, and finite products. It includes injective lifts represented by finite tables, sealed gates, static inverse/control/repetition, restricted auxiliary computation, observation, and classical branching. Finite quantum algorithm examples remain applications of this specification and regression checks.
 
+Specification v0 is distinct from the [adopted release milestones v0.1 and
+v1](release-milestones.md). The [finite semantic-contract extension](semantic-contracts-v0.1.md)
+adds the three-argument form in §9 below as a bounded step toward v0.1.
+The two-argument form retains its structural rule. Full release acceptance
+and the structured algorithm families for v1 remain open.
+
 `Q<A>` is an **ownership type** for quantum resources. It is neither a computation effect nor a value type that permits arbitrary quantum states to be copied. Arbitrary `bind` on the free vector space `H(A)=ℂ^A` is not an executable API. The design principle of Kleisli-style composition with classical values, resources, and effects is distinct from a proof of a strict monad structure.
 
 In this document, *accepted* means satisfying the typing, ownership, and effect rules. Diagnostics for an implementation's explicit capacity limits are a separate matter. Read code fragments in an environment that explicitly imports the sealed names they use. Complete executable examples are in `examples/bell`, `examples/phase_oracle`, and `examples/feedback`.
 
 v0 excludes size variables, arrays, general integers, arbitrary angles, precision types, first-class operation values, higher-order quantum functions, recursion, dynamic loops, general borrowing, `with0`, unconditional `release0`, nondestructive measurement, external quantum operations, and host I/O. `Iso<A,B>`, `Unitary<A,B>`, and `lift(f)` are explanatory metanotation, not source types or APIs.
+
+The review revision adds product patterns to `do` and classical Boolean
+expressions to the ordinary language. `true` and `false` are now reserved
+words: earlier programs using those names must rename them. Existing
+single-name `do` binders remain valid. Basis calls still require explicit
+arguments; there is no implicit product unpacking, projection syntax, or
+pattern parameter in a `basis fn` declaration.
 
 <a id="2-型と文脈"></a>
 
@@ -39,6 +52,16 @@ these judgments for every current syntax case, together with the resource
 calculus's pending frames, binding identities, and complete branch interfaces.
 Its local paper lemmas do not establish general compiler correctness.
 
+The [mixed-value interpretation](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)
+defines a classical record `C(T)` and ordered quantum leaves `Q(T)`. The
+whole-computation judgment in [formal-core.md](formal-core.md#1-scope-and-judgments)
+uses the classical results and the complete quantum output interface, including
+the returned value, surviving environment, and pending/caller frame. In
+particular, the expression judgment's residual `Delta'` is not by itself that
+complete output interface. `Pure` abbreviates `Unitary` or `Iso`, rather than
+introducing a different effect order. Adequacy of these mathematical judgments
+for all Rust checking and inlining paths remains an explicit proof obligation.
+
 <a id="3-束縛合成宣言"></a>
 
 ## 3. Binding, composition, and declarations
@@ -46,15 +69,29 @@ Its local paper lemmas do not establish general compiler correctness.
 | Construct | Typing and ownership rule | Effect and evaluation order |
 | --- | --- | --- |
 | Name | Copy a classical value; take a linear value from the environment once. A consumed name cannot be reused. | `Unitary` |
+| `true`, `false` | Construct a copyable `CBit`; no quantum ownership is created or consumed. | `Unitary`; emit `ClassicalConst`. |
+| `not e`, `e1 and e2`, `e1 xor e2` | Require `CBit` operands and return `CBit`. | Evaluate operands once, left to right, without short circuit; join their effects. Emit `ClassicalNot`, `ClassicalAnd`, or `ClassicalXor`. |
 | `()`, `(e1,e2)` | `Unit` and a strict binary product. Check `e2` in the environment left by `e1`. | Left to right; join the effects. |
 | `let p=e; body` | Rebind the result of `e` using pattern `p`. Names cannot repeat within one pattern. `_` discards only classical values. A live linear binding cannot be shadowed. | Evaluate the right-hand side before binding. `let q=h(q);` is permitted. |
 | `e; body` | The discarded expression `e` must have a classical type. | Sequential composition; join the effects. |
 | Block | A final expression is required. Return local quantum ownership in the final result or consume it explicitly. | Statements in source order, followed by the result expression. |
 | `f(e1,…,en)` | Argument count and types must match the declaration. Quantum arguments move into the call; ownership is received through its result. | Arguments from left to right. Use the function's **declared classification** as the call effect. |
 
+The classical forms above are **language forms**, not imported library calls.
+Their truth tables are the ordinary Boolean ones, with `not > and > xor` and
+left-associated binary operators. For example,
+`unitary fn parity(a:CBit,b:CBit)->CBit { a xor b }` and
+`unitary fn yes()->CBit { true }` are accepted. `not q` for `q:Q<Bit>` and
+`true xor ()` are rejected by type checking; `0` and `1` remain basis literals.
+`false and measure_z(q)` evaluates and consumes `q`, and has effect `Observe`.
+The Boolean operation itself changes only the classical record, acting as the
+identity on the whole quantum state and any reference. Operand evaluation
+retains its own quantum effects and full frame. See rules `C-CONST`, `C-NOT`,
+and `C-BOOL` in the [typing supplement](source-typing-rules.md).
+
 Every function explicitly declares its parameter types, result type, and effect classification; local `let` types are inferred. An ordinary function is declared `unitary fn`, `iso fn`, or `observe fn`. Its body must consume or return every quantum parameter and local resource, and its result must match the declared type. The same rules apply to bundled ordinary `.qli` definitions.
 
-Check every declaration. Name, type, effect, and ownership checks also apply to unused functions, unselected branches, and the target of zero repetitions. The call graph must be acyclic, including edges from function references in static operations. Functions may be referenced regardless of declaration order. A local value shadows a function of the same name, and the value is not callable. A moved local binding continues to shadow the function throughout its scope. The [grammar](syntax-v0.md#名前とスコープ) specifies name resolution and modules in detail.
+Check every declaration. Name, type, effect, and ownership checks also apply to unused functions, unselected branches, and the target of zero repetitions. The call graph must be acyclic, including edges from function references in static operations. Functions may be referenced regardless of declaration order. In ordinary calls, static operation targets, and computed-predicate positions, a local value shadows a function of the same name, and the value is not callable. A moved local binding continues to shadow the function throughout its scope. Basis calls instead consult their isolated basis context, as specified in section 5. The [grammar](syntax-v0.md#名前とスコープ) specifies name resolution and modules in detail.
 
 <a id="4-効果と意味論"></a>
 
@@ -64,7 +101,7 @@ The effect order is `Unitary ≤ Iso ≤ Observe`. Sequential composition, tuple
 
 | Operation | Effect |
 | --- | --- |
-| Classical value construction/copying, ownership moves, sealed gates, `split/join`, equal-width injective lifts, static operations, restricted `with_computed` | `Unitary` |
+| Classical value construction/copying, ownership moves, sealed gates, `split/join`, equal-width injective lifts, static operations, both checked `with_computed` forms, `apply_contract` | `Unitary` |
 | `init0`, width-increasing injective lifts | `Iso` |
 | `measure_z`, `reset`, `discard` | `Observe` |
 | Ordinary function call | Use its declared classification without lowering it based on its body. |
@@ -85,7 +122,7 @@ Basis expressions consist of `Unit`, bit literals, variables, binary products, `
 
 The body of `basis fn f(a1:A1,…,an:An)->B` must be type-checkable and evaluable on every input. Its semantic domain is `Unit` for zero parameters, `A1` for one, and the left-associated product `((A1,A2),…)` for two or more. Label order is `label(a,b)=label(a)+2^bits(A)label(b)`.
 
-`do x <- q; pure e` is a **language form**. First evaluate and consume `q:Q<A>`, then check `e:B` using only `Ξ={x:A}`. If the total function `f:A→B` defined by `e` is injective, return `Q<B>`. Its meaning is `V_f=Σ_a |f(a)⟩⟨a|`. Equal width gives `Unitary`; greater output width gives `Iso`. Equal-width lifts between different type trees are permitted. The IR is `LiftBasis` with a finite table whose injectivity is independently rechecked. Every table output has phase 1.
+`do p <- q; pure e` is a **language form**. First evaluate and consume `q:Q<A>`, then bind the basis pattern `p` against `A` and check `e:B` using only the resulting context `Ξ`. A name binds the whole basis value, `_` binds nothing, and `(p1,p2)` requires a product type and recursively binds its exact components. All bound names must be distinct. Rules `BP-NAME`, `BP-WILD`, `BP-PAIR`, and `LIFT` define this context and its label valuation. If the total function `f:A→B` defined by `e` is injective, return `Q<B>`. Its meaning is `V_f=Σ_a |f(a)⟩⟨a|`. Equal width gives `Unitary`; greater output width gives `Iso`. Equal-width lifts between different type trees are permitted. The IR is `LiftBasis` with a finite table whose injectivity is independently rechecked. Every table output has phase 1.
 
 | Input and continuation | Decision | Meaning |
 | --- | --- | --- |
@@ -97,6 +134,37 @@ The body of `basis fn f(a1:A1,…,an:An)->B` must be type-checkable and evaluabl
 | `(q,q)` | Rejected | Duplicates ownership, not basis labels. |
 
 A basis predicate `f` itself need not be injective. Injectivity is required when lifting `f` alone onto a quantum register.
+
+<a id="basis-product-boundary"></a>
+
+Patterns destructure basis labels, not quantum ownership. For each complete
+input label, binding follows `label(a,b)=label(a)+2^bits(A)label(b)` and evaluates
+the continuation. Injectivity is tested on this **entire input domain**, even
+when a component is ignored by `_`.
+
+| Complete form and input | Decision |
+| --- | --- |
+| `do (a,b) <- q; pure (a,a xor b)` with `q:Q<(Bit,Bit)>` | Accept a `Unitary` basis permutation, including arbitrary superpositions and references. |
+| `do (a,_) <- q; pure a` with `q:Q<(Bit,Unit)>` | Accept `Q<Bit>`, a same-width bijection that removes a singleton basis component. |
+| `do (a,_) <- q; pure a` with `q:Q<(Bit,Bit)>` | Reject as noninjective (`Ownership` diagnostic). |
+| `do (a,a) <- q; pure a` | Reject duplicate pattern names. |
+| `do (a,b) <- q; pure a` with `q:Q<Bit>` | Reject the pattern/type mismatch. |
+| `do (a,b) <- q; pure xor2(a,b)` or `pure and2(a,b)` with two input bits | Reject as noninjective, after successful basis typing. |
+| `do x <- q; pure xor2(x)` with two input bits | Reject as `Arity`: a product is not implicitly unpacked into two parameters. |
+
+`Q<Unit>` remains a linear ownership slot. The pure component removal above
+consumes one input register and returns one output register; it does not permit
+`let _ = q` or omission of a zero-width quantum holder. `do _ <- q; pure ()`
+can collapse a singleton basis domain but is rejected for a non-singleton one.
+The product-domain convention for a `with_computed` predicate is specific to
+that form and does not change basis-call arity.
+
+Runtime local names are absent from `Xi`, including names that coincide with
+top-level basis functions. For example, given `basis fn f(x:Bit)->Bit{not x}`,
+`unitary fn g(f:CBit,q:Q<Bit>)->Q<Bit>{do x <- q; pure f(x)}` is accepted.
+The basis binder itself does shadow a same-named function: `do f <- q; pure f(f)`
+is rejected. This is a distinction between the two name contexts, not permission
+to capture the runtime value `f` in a basis expression.
 
 <a id="6-封印された組み込み操作"></a>
 
@@ -150,6 +218,13 @@ The following three constructs are **language forms**. `u` is a statically resol
 | `repeat_static(n,u,q)` | `Q<A>→Q<A>`; consume once and return ownership. | `Unitary`; `U^n`. `n` is a decimal static natural-number literal. |
 | `qif(c,q){0=>u0,1=>u1}` | Arguments `Q<Bit>,Q<A>` → `(Q<Bit>,Q<A>)`. Control and target wires must be disjoint. | `Unitary`; `\|0⟩⟨0\|⊗U0+\|1⟩⟨1\|⊗U1`. |
 
+A target may compute internal `CBit` literals and Boolean expressions and
+branch on them. Since it has no classical inputs and cannot observe, these
+records are closed and deterministic. Flattening evaluates them and selects
+the corresponding checked branch, preserving complete quantum phi mappings,
+final output-axis order, and exact phase. Both branches still undergo all
+source and IR checks before selection.
+
 Include the effects of the input expressions in the overall effect. `qif` evaluates the control expression before the target expression. It preserves the control's basis label. Even for `n=0`, check the target declaration and body, and return an identity operation that passes ownership through. Preserve scalar phases on `Q<Unit>` under control as well.
 
 The IR is `ApplyUnitary`: translate the checked body into a finite sequence of Hadamards and basis permutations carrying eighth-root phases. Inversion reverses the order, permutations, and phases; repetition expands finitely; control is constructed by basis control of the two arms. Account for the function's output axis order. The verifier rechecks axis bounds and distinctness, disjointness from controls, table totality and bijectivity, and phases.
@@ -160,15 +235,25 @@ The IR is `ApplyUnitary`: translate the checked body into a finite sequence of H
 
 ## 9. Restricted auxiliary computation
 
-`with_computed(q,f){|a| body}` is a **language form**. v0 accepts only the following constructive evidence:
+`with_computed(q,f){|a| body}` is a **language form**. Its original two-argument form accepts only the following constructive evidence:
 
 - Evaluate and consume `q:Q<A>`, and require the name of a total basis function `f:A→Bit`. `f` need not be injective.
 - Only classical values are available from outside `body`. It cannot capture outer quantum values, including the computation source `q`. The local name `a:Q<Bit>` owns a fresh auxiliary bit.
 - The body has effect `Unitary`, returns `Q<Bit>` for the same auxiliary slot, and leaves no additional quantum resources.
-- **After ordinary function expansion, quantum instructions must be only a `Z/T` sequence on that auxiliary, or the empty sequence.** Each gate passes the immediately preceding ownership onward.
+- **After ordinary function expansion, the entire emitted instruction sequence must be only a `Z/T` sequence on that auxiliary, or the empty sequence.** Each gate passes the immediately preceding ownership onward.
 - The whole expression returns updated ownership of the original `Q<A>`. Excluding its input expression, the construct's effect is `Unitary`.
 
-Accepted bodies include `with_computed(q,f){|a| z(a)}`, the identity `a`, and `t(z(a))` wrapped in ordinary functions. Rejected bodies include `h(a)`, `h(h(a))`, measurement, classical branching, and capture of another quantum value. Although `adjoint(t,a)` and `repeat_static(2,z,a)` are diagonal, they produce `ApplyUnitary` and are rejected by this v0 evidence format. There is no extensional acceptance rule based on matrix equivalence.
+The auxiliary binder may use the spelling of a masked outer quantum binding.
+It creates a distinct private slot; the outer resource stays in the caller
+frame and is available again after the computed scope. For example, an outer
+`a:Q<Bit>` survives `with_computed(q,f){|a| z(a)}` and must still be returned or
+explicitly consumed afterward. The ordinary `let` prohibition on overwriting
+a live binding does not forbid this separate private scope. Other masked outer
+names continue to hide callable names inside the body unless shadowed by a
+valid local binding. See [COMPUTED](source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
+for the complete environment and frame rule.
+
+Accepted bodies include `with_computed(q,f){|a| z(a)}`, the identity `a`, and `t(z(a))` wrapped in ordinary functions. Rejected bodies include `h(a)`, `h(h(a))`, measurement, classical branching, and capture of another quantum value. Although `adjoint(t,a)` and `repeat_static(2,z,a)` are diagonal, they produce `ApplyUnitary` and are rejected by this v0 evidence format. Classical literals or Boolean operators inside the body emit classical SSA instructions and are also outside this certificate, even if their results are unused. Copying an existing classical value emits no instruction and is allowed. There is no extensional acceptance rule based on matrix equivalence.
 
 To define the meaning, let `C_f|x,b⟩=|x,b xor f(x)⟩` and let `W` be the phase sequence above. With `k=(4·number_of_Z_gates+number_of_T_gates) mod 8`, for every `x`,
 
@@ -181,12 +266,77 @@ Linear extension of this equation shows that, for arbitrary inputs and reference
 
 The IR is atomic `ComputeUseUncompute`. Verify the entire structure corresponding to `Init0; C_f; W; C_f†; Release0`; no standalone `Release0` is exposed. Current handwritten IR also supports protected control over work registers, but accepted v0 source bodies are restricted as above. General borrowing, preservation-effect signatures, and `with0` belong to later specifications.
 
+### Finite semantic-contract extension (2026-09-27)
+
+`with_computed(q,f,u){|d,a| body}` is a **language form**, specified by
+[SC-1–SC-IR](semantic-contracts-v0.1.md). Evaluate and consume `q:Q<A>`;
+resolve the total basis predicate `f:A -> Bit` and an explicit
+`unitary fn u(q:Q<A>)->Q<A>` at compile time. The sealed H/X/Z/T functions
+are also eligible on `Q<Bit>`, as for existing static targets. Names resolve after input
+evaluation and local names still hide callable names. The isolated body
+owns `d:Q<A>` and `a:Q<Bit>`, captures no outer values, and returns exactly
+`(Q<A>,Q<Bit>)` in that order with effect `Unitary`. All ownership checks,
+including zero-width `Q<Unit>`, remain mandatory. Its distinct binder names
+may shadow masked outer names without consuming those outer resources.
+
+With `E_f|x⟩=|x,f(x)⟩`, independent exact checking requires `W E_f=E_f u`
+for the actual body circuit W and explicitly specified logical circuit u.
+The whole expression returns `Q<A>` with logical action u and an exactly
+cleaned auxiliary. Its own effect is `Unitary`; the input expression's
+effect is included. For `f(x)=x`, `(x(d),x(a))` with logical X is accepted,
+and `(d,h(h(a)))` with logical identity is accepted. Auxiliary-only X,
+incorrect logical phase, observation, captures, and lost/duplicated owners
+are rejected. The separate specification supplies complete imported examples.
+
+The raw `CertifiedCompute` retains the predicate, W, and u; `verify`
+rechecks their equation and resource interface. Reference execution runs
+the physical compute/W/uncompute sequence. Static transforms may substitute
+the checked logical circuit, preserving phase and output order. The current
+bound is five data bits plus one auxiliary, at most 1,024 steps per circuit,
+and a conservative exact-arithmetic work limit. Exceeding capacity rejects
+the evidence. This does not relax the older two-argument certificate or
+complete general source-to-IR implementation proofs.
+
+### Function contract application (2026-09-27)
+
+`apply_contract(implementation,specification,input)` is a **language form**
+with a reserved keyword. Its complete rules are
+[FC-SOURCE/FC-CHECK/FC-IR](function-contracts-v0.1.md). Evaluate input exactly
+once, obtaining owned `Q<A>`, then resolve both names under the residual local
+hiding rules. Each must name an ordinary declared `unitary` function with
+exactly one `Q<A>` parameter and result exactly `Q<A>`, without classical
+ports. Sealed gates are not eligible directly. Include both targets and their
+dependencies in cycle checking.
+
+The independently checked contract is `U=u`, including phase and complete
+output order. The specification is fixed by the client; it is not inferred
+from the implementation. Both actual raw bodies are independently verified
+and extracted before exact comparison. The immutable evidence retains those
+bodies, exact signature, source/dependency snapshots, and the checked meaning.
+The form consumes and returns the input register once, including `Q<Unit>`;
+its own effect is `Unitary` joined with the input-expression effect.
+
+Emit a retained `CircuitAction::Contract` inside `ApplyUnitary`. Static
+inverse toggles its adjoint flag; control adds disjoint control axes;
+repetition and remapping retain the same checked evidence. Normal ownership
+and axis/control validation continue at the final IR boundary. This finite
+profile has at most six public bits and the additional
+[function-checking limits](function-contracts-v0.1.md#3-independent-whole-function-evidence).
+
+Accept independently checked implementations with the same public contract,
+including different privately cleaned auxiliary layouts. Reject unequal
+phase/operator, wrong source type tree, effect/classical-port mismatch,
+stale evidence binding, unsupported extraction, and capacity exhaustion.
+This adds no general encoded-state assertion or arbitrary matrix primitive.
+General source/Rust adequacy and checker-correctness proofs remain open;
+the new local paper argument does not extend a Lean theorem.
+
 <a id="10-コンパイルと実行の境界"></a>
 
 ## 10. Compilation and execution boundaries
 
 1. Resolve modules and check every declaration: names, types, effects, linear ownership, finite tables, and auxiliary evidence.
-2. Expand ordinary functions and lower language forms and sealed names to their corresponding IR. Verify the input/output boundary of each ordinary function.
+2. Expand ordinary calls and lower language forms and sealed names to their corresponding IR. An explicit `apply_contract` retains checked function evidence and a contract action. Verify the input/output boundary of each ordinary function.
 3. An independent IR verifier rechecks IR from every producer using the same rules. Unverified IR cannot enter the execution API.
 4. Execute a closed entry point: a parameterless `observe fn main()->C` in the root `main.qli`, where `C` is a classical type and no quantum ownership remains at termination. Library checking does not require an entry point.
 
@@ -194,7 +344,7 @@ A quantum IR instruction consumes its input ownership tokens and creates fresh t
 
 Report type, ownership, and effect violations, noninjective lifts, unsupported auxiliary evidence, unknown names, recursion, and capacity overflow with source locations. With multiple violations, diagnostic ordering and exact wording are not normative. Implementation error codes and numerical/capacity limits are given in the [implementation profile](frontend-v0.md#診断と上限). Capacity overflow must not be handled by changing meaning, such as truncating repetitions or implicitly discarding resources.
 
-The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness.
+The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness. The [translation contract](source-ir-correspondence.md) specifies the correspondence required of tables, primitive choices, ordered interfaces, and complete phis: raw-IR validity alone does not establish equality with the source meaning.
 
 <a id="11-変更方針と次の工程"></a>
 
@@ -202,4 +352,4 @@ The reference executor numerically approximates the finite ideal semantics. Hard
 
 The scope and acceptance/rejection rules of this edition are fixed as the v0 baseline. A future change to syntax, types, effects, ownership, semantics, or sealed APIs must update the specification, grammar, conformance checks, and IR correspondence together and record its compatibility impact. Adding experimental ordinary library definitions does not by itself add language forms or sealed operations.
 
-The [inference-rule supplement](source-typing-rules.md) and resource calculus cover all current syntax cases. [Ideal soundness Q1–Q3](source-soundness.md) proves pure-operation and instrument properties for these explicit mathematical derivations. The next priority is to prove their adequacy for all Rust source-checker paths, source-to-IR meaning preservation, and correspondence with the verifier implementation. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition; soundness of every Rust-accepted program and compiler correctness remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
+The [inference-rule supplement](source-typing-rules.md) and resource calculus cover the baseline and add a separate `CERTIFIED-COMPUTED` rule for this extension. [Ideal soundness Q1–Q3](source-soundness.md) gives the baseline paper proof and an explicit conditional extension case using the [SC local argument](semantic-contracts-v0.1.md). These statements concern mathematical derivations; neither finite tests nor adding this case proves Rust source-checker adequacy or compiler correctness. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition. The next v0.1 work connects reusable function contracts to actual source dependencies and final transformed IR; the general implementation proofs remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.

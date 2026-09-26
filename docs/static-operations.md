@@ -7,7 +7,8 @@ Status: **Finite subset implemented and checked on finite examples**
 first-class values. All three constructs below are language forms, not ordinary
 higher-order functions or additional sealed gates. This English edition is the
 authoritative contract and reference for this document, replacing its earlier
-Japanese edition without changing the accepted subset. The
+Japanese edition. The review revision additionally supports closed classical
+computations and deterministic branch selection within a static target. The
 [finite core specification](language-spec.md) supplies the surrounding rules.
 The [static semantics](static-semantics.md) gives local phase-preserving proofs;
 general source-to-IR meaning preservation and Rust implementation correctness
@@ -27,7 +28,7 @@ IR, and only then transform it.
 | --- | --- | --- |
 | `adjoint(u, q)` | `Q<A> -> Q<A>`, `Unitary`; consume and return the input ownership. | `U†` for the known body. Reject `Iso`, observation, classical parameters, or different input/output types. |
 | `repeat_static(n, u, q)` | The same interface. `n` is a decimal static natural-number literal. | `U^n`; zero repetitions give identity but still check the target name, type, and body. Reject a dynamic count or capacity-budget overflow. |
-| `qif(c, q) { 0 => u0, 1 => u1 }` | Arguments `Q<Bit>,Q<A>` return `(Q<Bit>,Q<A>)`, `Unitary`; consume and return both ownerships. | `∣0⟩⟨0∣⊗U0 + ∣1⟩⟨1∣⊗U1`. Require distinct ownership and preserve both arms' phases. |
+| `qif(c, q) { 0 => u0, 1 => u1 }` | Arguments `Q<Bit>,Q<A>` return `(Q<Bit>,Q<A>)`, `Unitary`; consume and return both ownerships. | `\|0⟩⟨0\|⊗U0 + \|1⟩⟨1\|⊗U1`. Require distinct ownership and preserve both arms' phases. |
 
 The table gives each form's own effect. Join it with the effects of its input
 expressions; applying a static unitary does not erase an input's `Iso` or
@@ -73,6 +74,13 @@ not a new source type or API. The premises are:
 4. Independently verify the resulting unary IR with declared effect `Unitary`;
    flatten only supported finite constructors into `S`, including the final
    output-axis permutation. All width, expansion, and work limits must hold.
+
+Closed internal `CBit` constants, Boolean operators, and classical branches
+are supported. With no classical ports or observations, their values are
+statically determined. After both arms pass source and IR verification,
+flattening selects the arm, transfers its complete simultaneous phi interface,
+and retains output order and phase. This does not enable classical parameters
+or measurement-dependent static targets. See [F2](static-semantics.md#3-f2-flattening-and-final-output-order).
 
 Thus a signature alone is insufficient. These premises are required even for
 zero repetitions and both arms of a `qif`. The emitted enclosing IR is also
@@ -161,10 +169,23 @@ lemmas for flattening, adjoint, control, finite repetition, and computed phases,
 including their premises and limits.
 
 Existing injective lifts can be transformed only at equal width, when their
-tables are permutations. `with_computed` must pass its existing structural
-certificate before conversion to a finite phase action. No unconditional
+tables are permutations. Two-argument `with_computed` must pass its existing
+structural certificate before conversion to a finite phase action. The
+[three-argument semantic extension](semantic-contracts-v0.1.md) first passes
+independent checking of its retained W and logical u, then contributes u's
+steps on the source axes. Adjoint/control/repetition act on that checked
+logical circuit, including output order and scalar phase. This substitution
+uses `C_f† W C_f E_0=E_0 u`; finite regression evidence does not prove every
+Rust transformation correct. No unconditional
 auxiliary-release instruction is introduced. Existing `QuantumIf` IR remains
 available; the new surface forms use `ApplyUnitary` to represent finite bodies.
+
+An explicit [function-contract call](function-contracts-v0.1.md) remains a
+`CircuitAction::Contract` referencing the same checked evidence. Flattening
+remaps its ordered interface, reversal toggles its adjoint flag, and coherent
+control appends disjoint predicates. Repetition reuses the evidence. Its exact
+meaning and retained implementation therefore remain inspectable in final IR;
+no fresh dense equality check is required for each invocation.
 
 Each statically transformed register is limited to 12 bits; `qif` counts the
 control and target together. This is separate from the program's live-wire
@@ -195,10 +216,10 @@ register and returns the target ownership after measurement.
 | Example ordinary definition `estimation::phase3` | `Q<Bit> -> (((CBit,CBit),CBit),Q<Bit>)`, `Observe`. | Three-bit QPE with the same type, resource, and effect conditions. Expand to controlled powers, `adjoint(qft3,...)`, and MeasureZ. |
 
 The QFT convention is
-`F_M∣x⟩=Σ_y exp(2πixy/M)∣y⟩/√M`. Bits have weights `1,2,4` from left to
+`F_M|x⟩=Σ_y exp(2πixy/M)|y⟩/√M`. Bits have weights `1,2,4` from left to
 right. Apply `U^(2^j)` controlled by phase bit `j`, then the inverse QFT.
-For `U∣u⟩=exp(2πiφ)∣u⟩`, the probability of result `y` is
-`∣Σ_(r=0)^(M-1) exp(2πir(φ-y/M))/M∣²`. The
+For `U|u⟩=exp(2πiφ)|u⟩`, the probability of result `y` is
+`|Σ_(r=0)^(M-1) exp(2πir(φ-y/M))/M|²`. The
 [planned QPE contract](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント)
 specifies the post-measurement action on general inputs and reference systems.
 See the [primary phase-estimation reference, §5](https://arxiv.org/abs/quant-ph/9708016).
@@ -222,7 +243,7 @@ cargo run --bin qleisli -- run examples/phase_estimation
 cargo test --test static_operations
 ```
 
-The published example uses T's eigenstate `∣1⟩` and returns `1001` with
+The published example uses T's eigenstate `|1⟩` and returns `1001` with
 probability one. Its first `100` encodes integer 1 and phase `1/8`; the final
 `1` is a Z measurement of the returned target. This display is not conventional
 most-significant-bit-first binary notation.

@@ -1,42 +1,119 @@
-# L0: 同梱標準部品の契約台帳
+<a id="l0-同梱標準部品の契約台帳"></a>
 
-状態: **文書形式v1・12公開定義を登録**（2026-09-26）。[第3層の計画](stdlib-roadmap.md)の最初の台帳。対象は同梱の通常 `.qli` 定義であり、封印されたAPIの一覧は[標準ライブラリ構成](standard-library.md)を参照する。機械可読スキーマと自動照合は未実装である。
+# L0: Contract ledger for bundled standard-library definitions
 
-## 共通項目
+Status: **Ledger format v1; 12 public definitions recorded** (2026-09-26).
+This is the initial ledger for the [Layer 3 plan](stdlib-roadmap.md). It covers
+ordinary bundled `.qli` definitions; the [module/API specification](standard-library.md)
+lists sealed APIs separately. This English edition is authoritative and replaces
+the earlier Japanese edition. The three arithmetic entries below complete the
+record of already implemented APIs; they introduce no new definitions or rules.
+This ledger is not yet a machine-readable public function-contract schema.
+The [finite semantic-contract kernel](semantic-contracts-v0.1.md) now checks
+typed operator contracts and a scoped source form, while
+[function evidence](function-contracts-v0.1.md) connects explicit client
+specifications to retained implementation proofs. Automatic conformance
+checking of all ledger entries, including observations and isometries, remains open.
 
-- **所属・版・成熟度:** 全項目は通常の `.qli` 定義、契約版1、実験的API。処理系と同じ版で同梱する。公開名・型・所有権・効果・位相・ビット順を変更するときは契約を改訂する。
-- **検査の入口:** `check_project` / `compile_project`。全宣言を検査し、通常の量子関数は独立した `verify` に通す。同梱の出所は検査の免除条件にならない。
-- **量子契約:** 引数の所有権を消費し、結果に含まれる所有権だけを返す。表に書かない参照系には恒等を掛ける。資源が別であることから積状態を仮定しない。
-- **状態の区別:** 各本文は実装済み、下記の有限例は数値検証済み。ソース変換全体の意味保存と一般的なアルゴリズム保証の機械証明は未完了。数値は `f64`、アルゴリズム照合の許容誤差は `1e-12`。
-- **容量と能力:** 有限表・レジスタは12ビットまで。静的変換は[展開予算](static-operations.md)を共有する。現行の参照実行が対象で、外部機器への合成費用や動作保証は未評価。
+Ledger **format v1** is not the product's **v1 release milestone**. The
+[release plan](release-milestones.md) requires finite compositional meaning
+contracts with independently checked implementation evidence for v0.1;
+the bounded checking path is implemented separately. Documentation and
+regression evidence in this ledger do not automatically issue those proofs.
 
-## 登録項目
+<a id="共通項目"></a>
 
-`B2=(Bit,Bit)`、`B3=((Bit,Bit),Bit)`はこの文書だけの略記。いずれも実際のソース型は有限積である。
+## Common contract fields
 
-| ID・API | 型・効果 | 意味・前提・証拠 | 本文・契約 |
+- **Classification, version, and adoption:** Every entry is an ordinary `.qli`
+  definition, contract version 1, with **experimental API** status. It ships
+  with the compiler. Revise its contract when its public name, type, ownership,
+  effect, phase, or bit order changes. Inclusion in this ledger does not confer
+  generalized standard-API status. Broader reuse, explicit assumptions,
+  conformance evidence, and the [adoption criteria](stdlib-roadmap.md) remain
+  necessary for that decision.
+- **Checking entry points:** `check_project` / `compile_project` check all
+  declarations; each ordinary quantum function's IR passes independent `verify`.
+  Bundled origin grants no exemption.
+- **Quantum interface:** Consume the input ownerships and return only those
+  present in the result. Extend each operator or instrument by the identity on
+  unmentioned reference systems. Separate ownership does not imply a product state.
+- **Evidence status:** Bodies are implemented. The finite cases cited below
+  have numerical regression evidence, using `f64` with algorithm tolerance
+  `1e-12`. Such evidence is distinct from the specified exact operator, and does
+  not prove general source-to-IR meaning preservation or algorithm correctness.
+  Those general machine-checked guarantees remain incomplete.
+- **Capacity and capabilities:** The implementation limits individual finite
+  tables and registers to 12 bits. Static transformations share the
+  [expansion budget](static-operations.md). The reference executor is supported;
+  physical synthesis cost and external-device guarantees are unevaluated.
+
+<a id="登録項目"></a>
+
+## Registered definitions
+
+Use the document-only abbreviations `B2=(Bit,Bit)`, `B3=(B2,Bit)`, and
+`B4=(B2,B2)`. These are finite product types, not source aliases or sized types.
+Bits carry weights `1,2,4,8` from left to right. A mathematical product domain
+does not merge source parameters: `xor2` and `and2` take two `Bit` arguments,
+and `parity_zz` takes two `Q<Bit>` arguments. Every other public definition in
+this ledger takes one quantum argument.
+
+| ID and API | Type and effect | Meaning, assumptions, and phase | Body and contract |
 | --- | --- | --- | --- |
-| B001 `std::basis::xor2` | `(Bit,Bit)->Bit`、基底関数 | 全入力で `x xor y`。全域だが非単射。基底での利用を許し、直接の量子リフトでは単射性を別検査。 | [basis.qli](../stdlib/src/basis.qli)、[初期仕様](standard-library.md) |
-| B002 `std::basis::and2` | 同上 | 全入力で `x and y`。補助への可逆XOR計算の述語として使える。古典測定結果の生成ではない。 | [basis.qli](../stdlib/src/basis.qli)、[構文の基底演算](syntax-v0.md) |
-| R001 `std::routines::hadamard2` | `Q<B2>->Q<B2>`、`Unitary` | `H⊗H`。追加の状態前提なし。別用途でGrover・BVから再利用。 | [routines.qli](../stdlib/src/routines.qli)、[部品契約](algorithm-routines.md) |
-| R002 `std::routines::reflect_uniform2` | 同上 | `D=2∣s⟩⟨s∣-I`、`∣s⟩=H⊗H∣00⟩`。非公開の全域述語 `nonzero2` と保存するZ作用から補助のゼロ復帰を検査。 | 同上、[反射の位相](algorithm-routines.md#反射の位相) |
-| R003 `std::routines::measure_x` | `Q<Bit>->CBit`、`Observe` | X固有値 `(-1)^b` を測定し対象を消費。残系と参照系を含むインストルメント。 | 同上、[部品契約](algorithm-routines.md) |
-| R004 `std::routines::measure_z2` | `Q<B2>->(CBit,CBit)`、`Observe` | データ2本を消費。結果の順は左、右で、レジスタの整数重みは1、2。 | 同上 |
-| R005 `std::routines::parity_zz` | `(Q<Bit>,Q<Bit>)->((Q<Bit>,Q<Bit>),CBit)`、`Observe` | `P_s=(I+(-1)^s Z⊗Z)/2` による射影測定。データ2本を返しメータを消費。パリティ部分空間内のコヒーレンスを保持。 | 同上、[全体系の意味](algorithm-routines.md#パリティ測定の全体系での意味) |
-| F001 `std::transforms::qft2` | `Q<B2>->Q<B2>`、`Unitary` | `F_4∣x⟩=Σ_y exp(2πixy/4)∣y⟩/2`。全入力を対象とし、位相と出力のビット反転を含む。 | [transforms.qli](../stdlib/src/transforms.qli)、[静的操作・QPE](static-operations.md) |
-| F002 `std::transforms::qft3` | `Q<B3>->Q<B3>`、`Unitary` | `F_8∣x⟩=Σ_y exp(2πixy/8)∣y⟩/√8`。`x=a+2b+4c`。一般サイズ・近似QFTのAPIではない。 | 同上 |
+| B001 `std::basis::xor2` | Two `Bit` arguments → `Bit`; basis function | Total `(x,y) ↦ x xor y` on all four inputs; noninjective as a product-domain map. Not a quantum primitive. | [basis.qli](../stdlib/src/basis.qli), [basis-call and lifting boundary](standard-library.md#位相オラクル) |
+| B002 `std::basis::and2` | Two `Bit` arguments → `Bit`; basis function | Total `(x,y) ↦ x and y` on all four inputs; noninjective. May supply a predicate for reversible XOR computation into an auxiliary; does not produce a measurement result. | [basis.qli](../stdlib/src/basis.qli), [basis grammar](syntax-v0.md) |
+| R001 `std::routines::hadamard2` | `Q<B2> -> Q<B2>`, `Unitary` | `H⊗H`; no state promise. Used independently by Grover and Bernstein–Vazirani. | [routines.qli](../stdlib/src/routines.qli), [routine contracts](algorithm-routines.md) |
+| R002 `std::routines::reflect_uniform2` | `Q<B2> -> Q<B2>`, `Unitary` | `D=2\|s⟩⟨s\|-I`, `\|s⟩=(H⊗H)\|00⟩`. The private total predicate `nonzero2` and a label-preserving Z certify the auxiliary's zero return. | [routines.qli](../stdlib/src/routines.qli), [reflection phase](algorithm-routines.md#反射の位相) |
+| R003 `std::routines::measure_x` | `Q<Bit> -> CBit`, `Observe` | Measure X eigenvalue `(-1)^b` and consume the target. Interpret the instrument on the whole system, including references. | [routines.qli](../stdlib/src/routines.qli), [routine contracts](algorithm-routines.md) |
+| R004 `std::routines::measure_z2` | `Q<B2> -> (CBit,CBit)`, `Observe` | Consume both data wires. Return left then right results; their register weights are 1 and 2. | [routines.qli](../stdlib/src/routines.qli), [routine contracts](algorithm-routines.md) |
+| R005 `std::routines::parity_zz` | Arguments `Q<Bit>,Q<Bit>` → `((Q<Bit>,Q<Bit>),CBit)`, `Observe` | Projective measurement with `P_s=(I+(-1)^s Z⊗Z)/2`. Return both data wires and consume the meter; preserve coherence within each parity subspace. | [routines.qli](../stdlib/src/routines.qli), [whole-system instrument](algorithm-routines.md#パリティ測定の全体系での意味) |
+| F001 `std::transforms::qft2` | `Q<B2> -> Q<B2>`, `Unitary` | `F_4\|x⟩=Σ_y exp(2πixy/4)\|y⟩/2` on every input, including its phase and output-bit reversal. | [transforms.qli](../stdlib/src/transforms.qli), [static operations and QPE](static-operations.md) |
+| F002 `std::transforms::qft3` | `Q<B3> -> Q<B3>`, `Unitary` | `F_8\|x⟩=Σ_y exp(2πixy/8)\|y⟩/√8`, with `x=a+2b+4c`. No general-size or approximate-QFT API. | [transforms.qli](../stdlib/src/transforms.qli), [static operations and QPE](static-operations.md) |
+| A001 `std::arithmetic::increment2` | `Q<B2> -> Q<B2>`, `Unitary` | `\|y⟩ ↦ \|(y+1) mod 4⟩` for all `0≤y<4`, with amplitude +1. Overflow wraps. Consume and return both wires; no auxiliary, measurement, or state promise. | [arithmetic.qli](../stdlib/src/arithmetic.qli), [arithmetic contracts](arithmetic-order-finding.md#通常定義の算術契約) |
+| A002 `std::arithmetic::add2` | `Q<(B2,B2)> -> Q<(B2,B2)>`, `Unitary` | `\|x,y⟩ ↦ \|x,(y+x) mod 4⟩` for all `0≤x,y<4`, with amplitude +1. The first pair is `x`, the second `y`; retain `x` and return all four wires in those positions. No auxiliary, measurement, or state promise. | [arithmetic.qli](../stdlib/src/arithmetic.qli), [arithmetic contracts](arithmetic-order-finding.md#通常定義の算術契約) |
+| A003 `std::arithmetic::mul2_mod15` | `Q<B4> -> Q<B4>`, `Unitary` | `\|y⟩ ↦ \|2y mod 15⟩` for `0≤y<15` and `\|15⟩ ↦ \|15⟩`, each with amplitude +1. Return all four wires in order `(d,a,b,c)` from input `(a,b,c,d)`. No residue-range promise, auxiliary, or measurement. | [arithmetic.qli](../stdlib/src/arithmetic.qli), [full-space arithmetic contract](arithmetic-order-finding.md#通常定義の算術契約) |
 
-## 受理・拒否、費用、IR、検証根拠
+For B001/B002, noninjectivity of the full product-domain map is a mathematical
+obstruction to an isometric lift. The surface call `xor2(p)` or `and2(p)` with
+`p:(Bit,Bit)` is instead an arity error: the declaration has two parameters and
+calls do not implicitly uncurry a tuple. Explicitly destructure the lift input
+with `do (a,b) <- q; pure xor2(a,b)` (or `and2(a,b)`) to reach the injectivity
+check, which rejects the full noninjective product-domain map. Calls with two
+`Bit` expressions are valid basis syntax; injectivity belongs to the complete
+map of the enclosing `do/pure` expression. `with_computed` can use either named
+predicate on its semantic product domain.
 
-| ID | 受理／拒否 | 論理費用とIRへの対応 | 検証根拠 |
+<a id="受理拒否費用ir検証根拠"></a>
+
+## Acceptance, rejection, cost, IR, and evidence
+
+Costs below are for the stated finite source bodies and logical IR. They do not
+give a physical backend's gate count. All emitted IR is independently verified.
+
+| ID | Acceptance / rejection | Logical cost and IR correspondence | Regression evidence |
 | --- | --- | --- | --- |
-| B001・B002 | 基底式と補助述語で受理。非単射な表の直接量子リフトは拒否。 | 4入力を有限評価。基底関数だけではIR操作を生成しない。利用時に `LiftBasis` または `ComputeUseUncompute` の表になる。 | [compile.rs](../tests/compile.rs)の `bundled_basis_functions_control_a_product_register` と拒否例。 |
-| R001 | 2ビットで受理。型違い・再使用を拒否。 | Hを2回、追加補助なし。Split/Gate/Join。 | [algorithms.rs](../tests/algorithms.rs)のBV全隠れ列、Grover全対象。 |
-| R002 | 正の一様反射として受理。型違い・資源再使用を拒否。 | Hを4回、述語計算・逆計算、Zを1回、論理補助1本。ComputeUseUncomputeの構造検査。参照実行では因子分解後の作用を使う。 | 同ファイルのGrover反復公式。[static_operations.rs](../tests/static_operations.rs)の `grover_reflection_and_its_negative_are_distinguished_under_control`。 |
-| R003・R004 | 観測として受理。Unitaryからの呼び出しと測定後の旧所有権使用を拒否。 | R003はHと測定を各1回。R004は測定2回。MeasureZで対象の所有権を終える。 | algorithms.rsの全3例と `derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks`。 |
-| R005 | 別所有のデータで受理。同じ入力2回、返したデータの暗黙破棄を拒否。 | Init0を1回、CNOTを2回、測定1回。生存量子資源はデータ2本とメータ1本。 | algorithms.rsの `parity_measurement_keeps_coherence_within_each_parity_sector` と参照系付きビット反転訂正。 |
-| F001・F002 | 指定した積型で受理。型違い、暗黙破棄、制御と標的の別名参照を拒否。 | F001はHを2回、制御付きTを2回、軸順の反転。F002はHを3回、制御付きTを5回、軸順の反転。補助なし。通常呼び出しとApplyUnitaryへ展開。逆・制御化時の軸置換表の費用も予算に算入。 | static_operations.rsのQPE全8位相・非整合位相分布・参照系・静的形式の拒否例。 |
+| B001–B002 | Accept ordinary basis calls and auxiliary predicates. Reject a noninjective complete lift map; distinguish the arity error above. | Enumerate four basis inputs. A basis declaration alone emits no quantum IR. Calls contribute to a surrounding `LiftBasis` table or a named `ComputeUseUncompute` predicate table. | [`bundled_basis_functions_control_a_product_register`](../tests/compile.rs); [`basis_call_arity_is_distinct_from_lift_injectivity`](../tests/specification_boundaries.rs). |
+| R001 | Accept a two-bit product; reject wrong types and consumed ownership. | Two H gates, no auxiliary: `Split; Gate; Gate; Join`. | [`bernstein_vazirani_recovers_every_two_bit_secret`](../tests/algorithms.rs), [`grover_all_targets_and_iteration_counts_match_amplitude_amplification`](../tests/algorithms.rs). |
+| R002 | Accept the positive uniform reflection; reject wrong types and ownership reuse. | Four H gates, predicate computation/uncomputation, one Z, and one logical auxiliary. `ComputeUseUncompute` checks the structure; reference execution uses the factorized effective action. | Grover iteration test above; [`grover_reflection_and_its_negative_are_distinguished_under_control`](../tests/static_operations.rs). |
+| R003–R004 | Accept observation; reject calls in a `unitary` body and old ownership after measurement. | R003: one H and one `MeasureZ`. R004: one `Split` and two `MeasureZ` operations, consuming both wires. | [algorithm tests](../tests/algorithms.rs), especially [`derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks`](../tests/algorithms.rs). |
+| R005 | Accept separately owned, possibly correlated data. Reject duplicate input ownership and implicit discard of returned data. | One `Init0`, two `Cnot`, one `MeasureZ`. At most the two data wires and one internal meter are live within this routine. | [`parity_measurement_keeps_coherence_within_each_parity_sector`](../tests/algorithms.rs), [`single_bit_flip_recovery_preserves_entanglement_with_a_reference`](../tests/algorithms.rs). |
+| F001–F002 | Accept the exact product types. Reject wrong types, implicit discard, and aliased control/target resources. | F001: two H and two controlled T gates plus output-axis reversal. F002: three H and five controlled T gates plus reversal. No auxiliary; expand ordinary calls and `ApplyUnitary`. Inverse/control expansion budgets include axis-permutation tables. | [static-operation tests](../tests/static_operations.rs): all eight QPE phases, off-grid phase distributions, references, and rejection cases. |
+| A001 | Accept every two-bit input, including 3→0. Reject `Q<Bit>` and reuse after `increment2(q)`. | One `Split`, one `Cnot`, one `Gate(X)`, one `Join`; two data wires, zero auxiliary. Static inverse/control/repetition use the checked finite-circuit path. | [`increment_and_add_match_modular_arithmetic_on_every_basis_input`](../tests/order_finding.rs) covers all four inputs; [`arithmetic_and_order_finding_obey_types_effects_and_ownership`](../tests/order_finding.rs) covers type/reuse rejection. |
+| A002 | Accept every pair of two-bit values and arbitrary correlated inputs. Require the exact product tree; reject wrong types, duplication, and implicit discard. | Three `Split`, one `Toffoli`, two `Cnot`, three `Join`; four data wires, zero auxiliary. Carry uses the original low bits. Static transformations preserve the specified order. | [`increment_and_add_match_modular_arithmetic_on_every_basis_input`](../tests/order_finding.rs) covers all 16 basis inputs; [`arithmetic_round_trip_preserves_four_entangled_references`](../tests/order_finding.rs); shared rejection test above. |
+| A003 | Accept all 16 values, including 0 and 15. Reject wrong product types and resource misuse. There are no modulus or multiplier parameters. | Three `Split` and three `Join` encode a four-axis rotation, with no primitive gates in an ordinary call. Static inverse/control/repetition materialize a 16-entry, zero-phase permutation in `ApplyUnitary`; physical routing/synthesis is not free by this assertion. Four data wires, zero auxiliary. | [`modular_multiply_powers_and_inverse_cover_the_full_register_space`](../tests/order_finding.rs) covers all 16 inputs, powers 0–4, and inverse; the reference round-trip and rejection tests above; [`qpe_preserves_reference_coherence_in_the_degenerate_fixed_subspace`](../tests/order_finding.rs). |
 
-量子アルゴリズムの成功率は、上記の個別操作の型から自動的には得られない。Groverの対象数、BVの線形オラクル、誤り訂正の誤りモデル、QPEの位相精度は、それぞれ[コーパス](algorithm-corpus.md)と例の契約で管理する。
+The arithmetic phase contracts follow the specified X/CNOT/Toffoli permutations
+and ordered wire interfaces. Basis-output distributions and inverse round trips
+alone are not a general proof of exact operator phase or compiler correctness.
+The three entries remain experimental fixed-width APIs; the N=15 example does
+not establish general efficient arithmetic or Shor implementation.
 
-この台帳は公開12定義を追跡する最初の形式である。一般化した `amplify`、`phase_estimate` 等の標準採用、複数の未知評価問題での評価、自動的な証拠スキーマ照合はL2以降の残件とする。
+Algorithm success probabilities do not follow automatically from these types.
+Grover's marked-set size, Bernstein–Vazirani's linear-oracle promise, the error
+model for correction, and QPE precision are separate assumptions recorded in the
+[corpus](algorithm-corpus.md) and example contracts.
+
+This ledger records all 12 public definitions in its initial format.
+Generalized `amplify`/`phase_estimate` APIs, evaluation on multiple previously
+unseen tasks, and automatic evidence-schema checking remain L2-and-later work.

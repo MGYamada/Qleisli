@@ -1,34 +1,109 @@
-# `.qli` 表層構文 v0
+<a id="qli-表層構文-v0"></a>
 
-状態: **有限コアv0の規範文法**（2026-09-26）。[言語仕様v0](language-spec.md)の字句・文法・名前とスコープを定める。[モジュール規則](standard-library.md)と合わせて読む。構文受理、型・効果・証拠の受理、実装上限内での実行を区別する。[適合状況](specification-status.md)を別に記録する。
+# `.qli` surface syntax v0
 
-## 構文と組み込みの境界
+Status: **normative grammar for finite core v0** (2026-09-26). This document
+specifies the lexical rules, grammar, names, and scopes of the
+[v0 language specification](language-spec.md). Read it with the
+[module rules](standard-library.md). Syntactic acceptance, acceptance of types,
+effects and evidence, and execution within implementation limits are distinct.
+The [conformance record](specification-status.md) tracks their status separately.
+This English edition is authoritative and replaces the earlier Japanese edition.
+This revision extends v0 with patterned coherent-lift binders and runtime
+`CBit` literals and Boolean expressions. It reserves `true` and `false`, a source
+compatibility change described below. The import-path grammar and Unicode
+comment policy clarify existing parser behavior.
 
-| 記法 | 所属 | 型・所有権・効果の要点 | IR への変換方針 |
+The later finite-contract extensions add the three-argument computed form
+and [`apply_contract`](function-contracts-v0.1.md). The latter reserves a new
+keyword; source identifiers with that spelling must be renamed. Their exact
+evidence requirements and capacity limits are separate from parsing.
+
+<a id="構文と組み込みの境界"></a>
+
+## Boundary between syntax and built-in operations
+
+| Notation | Classification | Types, ownership, and effects | IR translation |
 | --- | --- | --- | --- |
-| `use`、`pub`、四種類の `fn`、`let`、`if` | 言語形式 | `basis` は全域の有限基底関数。`iso` は純粋な等長、`unitary` は純粋なユニタリ、`observe` は観測を含められる。`let` は線形所有権を再束縛し、`if` は `CBit` で排他的に分岐する。 | 宣言・import は名前解決へ、`let` は SSA の束縛、`if` は `ClassicalBranch` へ。 |
-| `do x <- q; pure e` | 言語形式 | 入力 `q:Q<A>` を一度消費し、基底式 `e(x):B` が全域・単射の場合だけ `Q<B>` を作る純粋等長操作。`x` は測定結果ではない。 | 有限真理値表を検査して `LiftBasis` へ。 |
-| `with_computed(q, f) { \|a\| body }` | 言語形式 | `q:Q<A>`、全域な `f:A -> Bit`、`a:Q<Bit>`。`body` は一時所有権 `a` を返し、通常関数の展開後に補助上の `Z/T` 列または空列だけを持つ。外側の結果は元の `Q<A>`。 | `ComputeUseUncompute` という一つの検証対象へ。独立した `Release0` は作らない。 |
-| `adjoint(u,q)`、`repeat_static(n,u,q)` | 言語形式 | 静的に解決した同型のユニタリの逆・有限反復。量子所有権は一度消費し返す。 | [有限の静的操作](static-operations.md)に従いApplyUnitaryへ変換・再検証する。 |
-| `qif(c,q) { 0 => u0, 1 => u1 }` | 言語形式 | 制御と標的を消費し両方を返す。別所有権、同型の静的ユニタリ枝を要求。 | 制御付きの平坦なApplyUnitary列。枝位相を保持する。 |
-| `init0`、ゲート、`split/join`、`measure_z/reset/discard` | 封印された組み込み操作 | [段階0の公開契約](standard-library.md)に従う。観測操作は `observe` 効果、`measure_z` は `CBit` だけを返す。 | 公開名を、意味を固定した IR 構成子へ解決する。 |
-| `xor2`、`and2`、`s`、`measure_x` など | 通常の `.qli` 定義 | 利用者の定義と同じ規則で型・効果・所有権を検査する。 | 本文を検査し、呼び出しまたは展開した IR へ。 |
+| `use`, `pub`, the four kinds of `fn`, `let`, `if` | Language forms | `basis` declares a total finite basis function; `iso` a pure isometry; `unitary` a pure unitary; `observe` permits observation. `let` rebinds linear ownership, and `if` branches exclusively on a `CBit`. | Resolve declarations/imports; represent `let` by SSA bindings and `if` by `ClassicalBranch`. |
+| `do p <- q; pure e` | Language form | Consume `q:Q<A>` once. Match the name/wildcard/tuple pattern `p` against the exact basis tree `A`; its names are coherent basis labels, not measurements. Produce `Q<B>` only when `e:B` defines a total injection over the whole input basis. | Destructure each finite input label according to `p`, check the full table, and emit `LiftBasis`. |
+| `true`, `false`, `not e`, `e1 and e2`, `e1 xor e2` | Language forms | Literals return `CBit`; Boolean operators require and return `CBit`. They have own effect `Unitary` and preserve quantum ownership themselves. Evaluate operands eagerly from left to right, retaining their effects and resource transitions. | Emit classical SSA `ClassicalConst`, `ClassicalNot`, `ClassicalAnd`, or `ClassicalXor`; independently verify input visibility and fresh outputs. |
+| `with_computed(q, f) { \|a\| body }` | Language form | Require `q:Q<A>`, a total `f:A -> Bit`, and temporary `a:Q<Bit>`. The body returns that temporary ownership and, after ordinary call expansion, contains only an auxiliary `Z/T` chain or an empty chain. The outer result is the original `Q<A>`. | Emit one certified `ComputeUseUncompute`; never emit a standalone `Release0`. |
+| `with_computed(q,f,u) { \|d,a\| body }` | Language form | Consume `Q<A>` once, expose private data/auxiliary ownership, return both in order, and check `W Ef=Ef u` for a fixed logical unitary. Return `Q<A>` with own effect `Unitary`. | Retain actual W, f, and u in independently checked `CertifiedCompute`. |
+| `apply_contract(implementation,specification,q)` | Language form | Both names denote ordinary declared unitaries with exactly `Q<A>->Q<A>`. Evaluate q once, consume and return its ownership, and require exact operator equality. Join q's effect with `Unitary`. | `ApplyUnitary` contains a retained `CircuitAction::Contract` with immutable independently checked function evidence. |
+| `adjoint(u,q)`, `repeat_static(n,u,q)` | Language forms | Invert or finitely repeat a statically resolved unitary with identical input/output type. Consume and return the quantum ownership once. | Translate to `ApplyUnitary` and independently reverify, following the [finite static-operation rules](static-operations.md). |
+| `qif(c,q) { 0 => u0, 1 => u1 }` | Language form | Consume and return both control and target. Require distinct ownership and static unitary branches with the same input/output type. | Emit flat controlled `ApplyUnitary` steps, preserving branch phases. |
+| `init0`, gates, `split/join`, `measure_z/reset/discard` | Sealed built-in operations | Follow the [public contracts](standard-library.md). Observation operations have effect `observe`; `measure_z` returns only `CBit`. | Resolve the public names to IR constructors with fixed meanings. |
+| `xor2`, `and2`, `s`, `measure_x`, and similar helpers | Ordinary `.qli` definitions | Apply the same type, effect, and ownership rules as for user definitions. | Check each body and translate calls or their expansion to IR. |
 
-`Q<A>` は所有権型であり、上表の `iso` 等は関数の静的分類である。`Iso<A,B>` や `Unitary<A,B>` を第一級の値型として導入する案ではない。
-既存文書の `lift(e)` は `LiftBasis` の意味を表す記法として読み、この v0 表層では `do x <- q; pure e(x)` だけをその導入構文とする。直接の `lift(e)` ソース構文はv0に含めない。
+`Q<A>` is an ownership type; `iso` and the other classifications above are
+static function effects. `Iso<A,B>` and `Unitary<A,B>` are not first-class value
+types. Earlier documents' `lift(e)` denotes the meaning of `LiftBasis`; the v0
+surface form introducing it is `do x <- q; pure e(x)`. A direct `lift(e)` source
+form is not part of v0.
 
-## 字句と文法
+<a id="字句と文法"></a>
 
-`.qli` は UTF-8。識別子は v0 では ASCII の `[A-Za-z_][A-Za-z0-9_]*`。単独の `_` はワイルドカードパターンとして予約する。トークンを区切る空白は ASCII スペース・タブ・LF・CR だけとし、`//` コメントは LF または CR で終わる。コメント内の日本語など通常の非 ASCII 文字は許すが、コメント内外とも双方向制御文字（U+061C、U+200E/F、U+202A–E、U+2066–9）、LF/CR 以外の行終端（VT、FF、U+0085、U+2028/2029）、その他の制御文字は拒否する。その他の Unicode 空白もコメント内外とも拒否する。診断位置は UTF-8 バイト範囲である。予約語は `use`、`pub`、`basis`、`iso`、`unitary`、`observe`、`fn`、`let`、`if`、`else`、`do`、`pure`、`with_computed`、`adjoint`、`repeat_static`、`qif`、`not`、`xor`、`and`、`Unit`、`Bit`、`CBit`、`Q`。基底 `Bit` のリテラルは `0` と `1` のみとする。`repeat_static` の回数位置だけは十進自然数を認め、0を除く先頭ゼロを拒否する。現行の実装プロファイルは0〜4,096に制限し、超過を診断する。連続した数字を一つのトークンとし、基底式の `10` や `2` は引き続き拒否する。文字列、浮動小数点、配列、一般再帰、ユーザー定義の演算子はv0に含めない。
+## Lexical rules and grammar
 
-Rust パーサはスタックを守るため、再帰する構文と左結合の基底演算子列に実装上の 64 段の上限を置く。これは言語の数学的意味の上限ではなく、超過は位置付きエラーにする。
+A `.qli` file is UTF-8. Identifiers are ASCII
+`[A-Za-z_][A-Za-z0-9_]*`, excluding the reserved words below; `_` alone is
+reserved for wildcard patterns. Token-separating whitespace is limited to
+ASCII space, tab, LF, and CR. A `//` comment ends at LF, CR, or end of file.
+Diagnostic spans use UTF-8 byte offsets.
 
-次は EBNF に近い表記で、`*` は 0 回以上、`?` は省略可能、`|` は選択を表す。終端の引用符は字句上の文字そのもの。`Name` は現在のモジュールで見える単一の識別子である。式の末尾にセミコロンは付けず、文だけに付ける。引数・パラメータ・タプル・`qif` の枝に末尾のカンマは認めない。通常の式には `CBit` リテラルや `not/xor/and` を置かず、これらのリテラル・演算は基底式に限る。
+The following characters are forbidden both inside and outside comments:
+
+- Bidirectional controls U+061C, U+200E, U+200F, U+202A–U+202E, and
+  U+2066–U+2069.
+- Unsupported line separators U+000B (VT), U+000C (FF), U+0085, U+2028, and
+  U+2029.
+- Other Unicode whitespace, except the four ASCII separators listed above.
+- Other control characters in Unicode's `Cc` category, except tab, LF, and CR.
+
+Other Unicode characters are permitted in comments. This includes ordinary
+non-ASCII text and format characters such as U+200B and U+FEFF; v0 does not ban
+all characters in Unicode's `Cf` category. These two characters do not terminate
+a comment. Outside comments, neither is a valid token or separator, so each is
+rejected as an unexpected character. In particular, a leading U+FEFF byte order
+mark (BOM) is rejected rather than stripped. Non-ASCII identifiers are not
+permitted.
+
+The reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
+`let`, `if`, `else`, `do`, `pure`, `with_computed`, `adjoint`, `repeat_static`,
+`qif`, `apply_contract`, `true`, `false`, `not`, `xor`, `and`, `Unit`, `Bit`, `CBit`, and `Q`.
+The only basis `Bit`
+literals are `0` and `1`. A decimal natural number is allowed only in the count
+position of `repeat_static`, with no leading zero except for `0` itself. The
+current implementation profile accepts counts from 0 through 4,096 and diagnoses
+larger counts. A consecutive run of digits is one token, so `10` and `2` remain
+invalid basis literals. Strings, floating-point numbers, arrays, general
+recursion, and user-defined operators are outside v0.
+
+The newly reserved words `true` and `false` can no longer be used as declaration,
+parameter, binding, import, or module-component names. Existing source that used
+either as an identifier must rename it; neither keyword is a basis `Bit` literal.
+The basis literals `0` and `1` remain distinct from the ordinary `CBit` literals.
+
+To protect its stack, the Rust parser imposes a depth limit of 64 on recursive
+syntax, patterns, and basis or runtime expression trees, including
+left-associated Boolean chains. This is an implementation
+limit, not a limit on the language's mathematical meaning; exceeding it produces
+a located diagnostic.
+
+The notation below is EBNF-like: `*` means zero or more repetitions, `?` means
+optional, and `|` separates alternatives. Quoted terminals are literal source
+characters or words. `Ident` is a nonreserved identifier other than `_`; `Name`
+is one such identifier visible in the current module. `Digit` is an ASCII
+character from `0` through `9`, and `NonzeroDigit` from `1` through `9`.
+Statements end with semicolons; a block's final expression does not. Parameter
+lists, argument lists, tuples, and `qif` branches do not permit trailing commas.
 
 ```ebnf
 Module       ::= (Use | Decl)*
 Use          ::= "use" Path "::" Ident ";"
-Path         ::= Ident ("::" Ident)* | "std" "::" ("basis" | "observe")
+Path         ::= Ident ("::" Ident)*
+               | "std" "::" ("basis" | "observe") ("::" Ident)*
 Decl         ::= "pub"? (BasisDecl | QuantumDecl)
 BasisDecl    ::= "basis" "fn" Ident "(" BasisParams? ")"
                  "->" BasisType BasisBlock
@@ -46,8 +121,15 @@ Block        ::= "{" Stmt* Expr "}"
 BasisBlock   ::= "{" BasisExpr "}"
 Stmt         ::= "let" Pattern "=" Expr ";" | Expr ";"
 Pattern      ::= Ident | "_" | "(" Pattern "," Pattern ")"
-Expr         ::= Name | "()" | "(" Expr ")" | "(" Expr "," Expr ")"
+Expr         ::= RuntimeXor
+RuntimeXor   ::= RuntimeAnd ("xor" RuntimeAnd)*
+RuntimeAnd   ::= RuntimeUnary ("and" RuntimeUnary)*
+RuntimeUnary ::= "not" RuntimeUnary | RuntimeAtom
+RuntimeAtom  ::= Name | "true" | "false" | "()"
+               | "(" Expr ")" | "(" Expr "," Expr ")"
                | Call | If | CoherentLift | WithComputed | Adjoint | Repeat | Qif
+               | ApplyContract
+ApplyContract ::= "apply_contract" "(" Name "," Name "," Expr ")"
 Adjoint      ::= "adjoint" "(" Name "," Expr ")"
 Repeat       ::= "repeat_static" "(" StaticNat "," Name "," Expr ")"
 StaticNat    ::= "0" | NonzeroDigit Digit*
@@ -56,9 +138,11 @@ Qif          ::= "qif" "(" Expr "," Expr ")"
 Call         ::= Name "(" Args? ")"
 Args         ::= Expr ("," Expr)*
 If           ::= "if" Expr Block "else" Block
-CoherentLift ::= "do" Ident "<-" Expr ";" "pure" BasisExpr
+CoherentLift ::= "do" Pattern "<-" Expr ";" "pure" BasisExpr
 WithComputed ::= "with_computed" "(" Expr "," Name ")"
                  "{" "|" Ident "|" Stmt* Expr "}"
+               | "with_computed" "(" Expr "," Name "," Name ")"
+                 "{" "|" Ident "," Ident "|" Stmt* Expr "}"
 BasisExpr    ::= XorExpr
 XorExpr      ::= AndExpr ("xor" AndExpr)*
 AndExpr      ::= UnaryExpr ("and" UnaryExpr)*
@@ -70,25 +154,151 @@ BasisCall    ::= Name "(" BasisArgs? ")"
 BasisArgs    ::= BasisExpr ("," BasisExpr)*
 ```
 
-`std::basis` と `std::observe` の第 2 要素だけは、宣言用の予約語をモジュール名として使う特例である。import する末尾の名前やローカルモジュール名には予約語を使えない。`not` は `and` より強く、`and` は `xor` より強く結合する。両二項演算子は左結合とする。呼び出し引数と `let` の右辺は左から右に評価し、関数本体の文は記載順に評価する。`if` は条件を先に評価し、選んだ片方の枝だけを評価する。すべての関数は非再帰で、反復は静的な有限展開だけを認める。`repeat_static` は対象を先に検査し、回数0でも不正な本文を隠せない。
+Only the second component of `std::basis` or `std::observe` may use those
+declaration keywords as module names. All later components, the final imported
+name, and local module components must be ordinary identifiers. The parser
+retains further identifier components: for example, `use std::basis::a::b;`
+is syntactically valid and denotes an attempted import of `b` from
+`std::basis::a`. Parsing does not establish that such a module or declaration
+exists; project resolution diagnoses unsupported standard modules or missing
+names. This does not add nested standard modules to v0.
 
-`basis fn` の引数・結果は `BasisType` だけで、本文は全域の `BasisExpr` に限る。`0` と `1` は `Bit`、`()` は `Unit`。`not : Bit -> Bit`、`xor : (Bit,Bit) -> Bit`、`and : (Bit,Bit) -> Bit` は基底式の基本演算である。`std::basis::and2` もこの演算で通常定義する。いずれも有限型上の全域演算だが、`Q` への直接リフトでは写像全体の単射性を別途検査する。例えば `basis fn and2(x: Bit, y: Bit) -> Bit { x and y }` は基底関数として有効。複数の基底引数の意味論上の定義域はその積型とし、`with_computed(q, and2)` では `q:Q<(Bit,Bit)>` を要求する。`and2` を量子レジスタ全体に単純にリフトすることは非単射なので認めない。
+In both runtime and basis expressions, `not` binds more tightly than `and`,
+which binds more tightly than `xor`. Both binary operators associate to the
+left. Runtime Boolean operands are evaluated exactly once, eagerly from left to
+right: `false and measure_z(q)` still measures and consumes `q`, and has effect
+`Observe`. The operator's effect joins all operand effects; `and` does not
+short-circuit. `if` remains the form that conditionally executes an arm.
+Call arguments are evaluated from left to right; a `let` evaluates its
+right-hand side before binding the result.
+Function-body statements run in source order. An `if` evaluates its condition
+first and executes only the selected arm, although both arms are checked.
+All functions are nonrecursive; repetition is a finite static expansion.
+`repeat_static` checks its target even at count zero, so zero cannot hide an
+invalid target body.
 
-`Type` の文法は構文上は広めであり、役割は分類規則で絞る。通常の `iso`、`unitary`、`observe` の引数と結果に裸の `Bit` は置かない。`Bit` は `basis fn` の引数・結果、`Q<...>` の添字、`do/pure` 内の基底添字に現れる。`CBit` は測定などの観測結果または関数の古典引数としてだけ生成・導入され、`Bit` からの暗黙変換はない。複数の引数または結果はタプルで表す。`_` に `Q<A>` を束縛して捨てること、量子所有権を返す式を単なる `Expr;` にして捨てることは、構文上書けても資源検査で拒否する。
+A `basis fn` takes and returns only `BasisType`, and its body is a total
+`BasisExpr`. Literals `0` and `1` have type `Bit`; `()` has type `Unit`.
+The primitive basis operations are `not : Bit -> Bit`,
+`xor : (Bit,Bit) -> Bit`, and `and : (Bit,Bit) -> Bit`. These are total finite
+operations, but a direct lift to `Q` separately requires the entire map to be
+injective. For example, `basis fn and2(x: Bit, y: Bit) -> Bit { x and y }` is a
+valid ordinary basis definition. The semantic domain of multiple basis
+parameters is their product type; `with_computed(q, and2)` requires
+`q:Q<(Bit,Bit)>`. A direct lift of `and2` on the whole quantum register is
+rejected because that map is not injective.
 
-## 名前とスコープ
+Basis expressions can construct and pass tuples. A coherent lift can
+access their components by binding a name/wildcard/binary-tuple `Pattern` after
+`do`. Pattern shape must match the input basis tree exactly; all names in one
+pattern must be distinct. `_` ignores a basis label, not quantum ownership.
+The lift still consumes one whole quantum input and checks totality and
+injectivity of the map on its **entire** basis. For example,
+`do (a,b) <- q; pure (a,xor2(a,b))` defines an injective update on a two-bit
+basis, whereas `do (a,b) <- q; pure xor2(a,b)` alone is noninjective.
+There is no `()` pattern; use `_` or a name for a `Unit` component. Basis
+function parameters remain individual names, and a basis body has no `let`
+statements or projection/indexing operator.
 
-- 1 ファイル 1 モジュールとルート相対のモジュール名は段階0の規則どおり。`use foo::bar::name;` は `foo/bar.qli` の `pub` 宣言を `name` として束縛する。`std::` は同梱の標準ライブラリ専用。`use` はトップレベルにだけ置き、別名、ワイルドカード、再公開、相対パス、循環 import は置かない。定義と import の同名衝突は位置付きエラーとする。
-- 実行時の入口はルート直下の `main.qli` にある唯一の `observe fn main() -> T` で、`T` は上記 `ClassicalType`、終了時の量子所有権は空とする。ライブラリ用モジュールは `main` を必要としない。
-- 関数名は宣言順に依存せず解決するが、関数呼び出しグラフの循環を拒否する。通常の関数呼び出しは `Name(args)`。操作値を通常の引数として渡さない。静的操作形式の関数名はコンパイル時に解決し、呼び出しグラフへ含める。`with_computed` の第 2 項は `basis fn` の**名前**として静的に解決し、実行時の関数値ではない。
-- 関数引数と `let` 束縛は字句スコープを持つ。`let q = h(q);` では右辺が旧 `q` を消費した後、新しい `q` がスコープに入る。束縛を隠したことで未消費の旧 `Q` が残るならエラーにする。量子値の同一性は綴りではなく所有権トークンと論理ワイヤ ID で追う。
-- `if` の枝内の名前は枝の外に出ない。両枝は同じ入力線形文脈を排他的に受け、式の結果の型と量子所有権の形を合流させる。結果位置・残るframe・外側の消費集合に基づく[合流規則](language-spec.md#7-古典分岐の合流)を使い、枝内で新規に確保したワイヤも IR の `φ` で対応させる。
-- `do` の束縛名 `x` は後続の一つの `BasisExpr` 内だけで有効な**コヒーレントな基底添字**である。この式の静的文脈は `x` だけで、外側の古典値も量子値も捕捉しない。トップレベルの基底関数は呼び出せる。`pure` は一般の return 構文でも古典値の生成構文でもない。
-- `with_computed` の束縛名 `a` は本体内だけの一時的な `Q<Bit>` 所有権である。第 1 項の元レジスタはブロックの間保護し、本文には公開しない。他の外側の量子値も捕捉できず、外側の古典値だけを利用できる。ブロックの最終式は更新後の `a:Q<Bit>` を返す。元レジスタをコヒーレント制御としてブロックへ明示的に公開する束縛構文、および一般の作業レジスタを扱う構文はv0の範囲外である。
+The basis expression following `pure` extends through its complete basis
+operator expression. Parentheses close that expression before an enclosing
+runtime operator; for example, `(do p <- q; pure e)` explicitly delimits the
+lift. Runtime operators accept `CBit` operands, so applying one to that lift's
+`Q<B>` result fails type checking.
 
-## 構文受理と静的拒否の例
+Runtime classical literals are `false : CBit` and `true : CBit`.
+`not : CBit -> CBit`, `and : (CBit,CBit) -> CBit`, and
+`xor : (CBit,CBit) -> CBit` have their Boolean truth-table meanings. These are
+source expression forms, not callable standard-library function names.
+They compute classical SSA values, perform no observation themselves, and do
+not read quantum basis labels. A `CBit` can also be supplied as an ordinary
+function argument or produced by observation, then copied, returned, used in a
+Boolean expression, or used as an `if` condition. Basis and runtime values do
+not implicitly convert to each other.
 
-次の例は import を省略した**v0の受理・拒否例**である。対応する複数ファイルの実行例と、実装済みの型・所有権規則は[初期フロントエンド](frontend-v0.md)を参照する。
+The `Type` production intentionally accepts more syntax than the type-formation
+rules accept in every role. Ordinary `iso`, `unitary`, and `observe` parameters
+and results cannot contain a bare `Bit`. `Bit` occurs in basis signatures,
+inside `Q<...>`, and as a coherent index in `do/pure`. There is no implicit
+conversion from `Bit` to `CBit`. A comma-separated parameter or argument list
+has its own arity; one tuple-valued argument is not multiple arguments.
+Multiple result values use explicit binary tuples. Binding quantum ownership
+to `_`, or discarding a quantum-valued expression with `Expr;`, is syntactically
+expressible but rejected by resource checking.
+
+`ClassicalType` describes the semantic restriction on a root `main` result.
+It is a named subset of the types parsed by `Type`, not a separate production
+selected while parsing a declaration named `main`. Declaration and entry-point
+checking enforce this restriction after parsing, as specified below.
+
+<a id="名前とスコープ"></a>
+
+## Names and scopes
+
+- Each file is one module, with a source-root-relative module name under the
+  module rules. `use foo::bar::name;` binds the public declaration from
+  `foo/bar.qli` as `name`. `std::` is reserved for the bundled standard library.
+  Imports occur only at top level; there are no aliases, wildcards, reexports,
+  relative import paths, or cyclic imports. An import/local-definition name
+  collision produces a located diagnostic.
+- The execution entry point is the unique `observe fn main() -> T` in the
+  root's `main.qli`. `T` must satisfy `ClassicalType`, and no quantum ownership
+  may remain at exit. A library does not need a root `main`.
+- Function names resolve independently of declaration order, but the
+  function-call graph must be acyclic. Ordinary calls have form `Name(args)`;
+  operations are not ordinary argument values. Static-operation names resolve
+  at compile time and contribute to that graph. The second operand of
+  `with_computed` is a statically resolved **basis-function name**, not a runtime
+  function value. In the finite semantic-contract extension, the third
+  operand is an eligible unitary function name (ordinary or sealed H/X/Z/T), also resolved statically
+  and included in the acyclic dependency graph. The [name rules](source-typing-rules.md#2-names-declarations-and-project-acceptance)
+  specify when local names hide each kind of callable.
+- Parameters and `let` bindings have lexical scope. In `let q = h(q);`, the
+  right-hand side consumes the old `q` before the new `q` enters scope.
+  Hiding a still-owned old quantum binding is an error. Quantum identity is
+  tracked by ownership tokens and logical wire IDs, not by spelling alone.
+- `apply_contract` evaluates its input expression before resolving both
+  names in the residual environment. Live or spent local names hide the
+  targets. Both must be ordinary declared unitary definitions with the exact
+  single-register signature; a sealed gate must first be wrapped in such a
+  definition. The two references participate in acyclic dependency checking.
+  No caller values are captured by either function body. The
+  [FC-SOURCE rules](function-contracts-v0.1.md#2-source-language-form) specify
+  ownership, effects, exact phase, retained evidence, and rejection boundaries.
+- Names introduced in an `if` arm expire outside that arm. The arms receive the
+  same linear input context exclusively and must merge their result types and
+  quantum ownership interfaces. The [merge rule](language-spec.md#7-古典分岐の合流)
+  uses result positions, surviving frames, and outer consumption sets; IR `φ`
+  interfaces also align wires newly allocated in an arm.
+- The names introduced by a `do` pattern are **coherent basis indices** scoped
+  over its one following `BasisExpr`. That expression's static context contains
+  exactly those pattern bindings; it captures neither outer classical nor outer
+  quantum values. Top-level basis functions remain callable. Consequently, an
+  outer runtime value named `f` does not hide a basis function `f` within this
+  isolated context, while any pattern binder named `f` does hide it. `pure` is
+  neither a general return form nor a constructor for runtime classical values.
+- The two-argument `with_computed` binder `a` is temporary `Q<Bit>` ownership scoped over its
+  body. The source register is protected and inaccessible there, as are other
+  outer quantum values; outer classical values remain usable. The body's final
+  expression must return the updated ownership of that auxiliary. The
+  [computed-scope rule](source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
+  masks outer linear bindings into a private frame before introducing `a`.
+  The auxiliary may have the same spelling as a masked outer name without
+  consuming or exposing that outer resource.
+- The three-argument extension `with_computed(q,f,u){|d,a| body}` binds
+  distinct private data and auxiliary owners. It captures no outer values,
+  including classical values. Both names may shadow masked outer names.
+  Return `(Q<A>,Q<Bit>)` in data/auxiliary order. The exact source types,
+  unitary effect, ownership, and `W E_f=E_f u` are checked according to the
+  [semantic-contract specification](semantic-contracts-v0.1.md).
+
+<a id="構文受理と静的拒否の例"></a>
+
+## Examples of syntactic acceptance and static rejection
+
+These are **v0 acceptance/rejection examples** with imports omitted. See the
+[frontend profile](frontend-v0.md) for complete executable projects and the
+implemented type and ownership checks.
 
 ```qli
 iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
@@ -97,6 +307,15 @@ iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
 }
 
 basis fn predicate(x: Bit) -> Bit { not x }
+basis fn xor2(a: Bit, b: Bit) -> Bit { a xor b }
+
+unitary fn xor_into(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    do (a,b) <- q; pure (a,xor2(a,b))
+}
+
+unitary fn classical_flag(a: CBit, b: CBit) -> CBit {
+    not a and b xor true
+}
 
 unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
     with_computed(q, predicate) { |a| z(a) }
@@ -117,24 +336,72 @@ observe fn bell_result() -> (CBit, CBit) {
 }
 ```
 
-ここでは `z`、`measure_z`、`x`、`h`、`init0`、`split` を適切に `use` したものとする。`entangle` の `x -> (x,x)` は単射、`phase_oracle` の `z(a)` は保護中の `a` の基底ラベルを保存する。`feedback` の `if` は両枝で同じ入力 `r` を排他的に使う。`measure_z` は旧 `q` を消費して `CBit` だけを返す。`bell_result` の二回の測定は、`split` された両方の論理ワイヤを消費する。
+Assume the appropriate `use` declarations for `z`, `measure_z`, `x`, `h`,
+`init0`, and `split`. The map `x -> (x,x)` in `entangle` is injective, and
+`z(a)` in `phase_oracle` preserves the protected auxiliary's basis label.
+The arms of `feedback` use the same input `r` exclusively. `measure_z` consumes
+the old `q` and returns only `CBit`. The two measurements in `bell_result`
+consume both logical wires produced by `split`.
 
-| 断片 | 構文 | 静的判定の理由 |
+| Fragment | Syntax | Static decision |
 | --- | --- | --- |
-| `do x <- q; pure (x,x)` | 有効 | `x -> (x,x)` が単射なら受理。 |
-| `do x <- q; pure 0` | 有効 | `Bit -> Bit` の定数写像は非単射なので拒否。 |
-| `let pair = (q,q); pair` | 有効 | 同一 `Q` の二重使用なので拒否。 |
-| `let b = measure_z(q); h(q)` | 有効 | `measure_z` で消費した旧 `q` を再使用するので拒否。 |
-| `iso fn bad(q: Q<Bit>) -> CBit { measure_z(q) }` | 有効 | `observe` 効果を `iso` に入れられず拒否。 |
-| `with_computed(q, predicate) { \|a\| h(a) }` | 有効 | `H` は `a` の基底ラベルを保存せず、ゼロ復帰の規則に反するので拒否。 |
-| `do x <- q; let y = x; pure y` | 無効 | v0 の `do` は単一の `pure BasisExpr` だけを取る。 |
-| `use oracle::*;` | 無効 | ワイルドカード import は置かない。 |
+| `do x <- q; pure (x,x)` | Valid | Accept when `x -> (x,x)` is injective. |
+| `do x <- q; pure 0` | Valid | Reject the noninjective constant map `Bit -> Bit`. |
+| `do (a,b) <- q; pure (a,xor2(a,b))` | Valid | Accept for `q:Q<(Bit,Bit)>` and the total XOR basis function; the full map is injective. |
+| `do (a,b) <- q; pure xor2(a,b)` | Valid | Reject for `q:Q<(Bit,Bit)>`: XOR alone loses one input bit and is not injective. |
+| `do (_,b) <- q; pure b` | Valid | Accept for `q:Q<(Unit,Bit)>`; reject for `q:Q<(Bit,Bit)>` because ignoring a bit makes the full map noninjective. |
+| `do (a,a) <- q; pure a` | Valid | Reject duplicate names in the basis pattern. |
+| `true and not false` | Valid | Accept as `CBit` with effect `Unitary`; its value is true. |
+| `false and measure_z(q)` | Valid | Accept for owned `q:Q<Bit>` in an `observe` context; consume `q` even though the classical result is false. |
+| `not q` | Valid | Reject when `q:Q<Bit>`: a runtime Boolean operand must be `CBit`. |
+| `unitary fn f() -> CBit { 1 }` | Invalid | `1` is a basis literal, not a runtime `CBit` literal. |
+| `basis fn f() -> Bit { true }` | Invalid | `true` is a runtime literal, not a basis literal. |
+| `let pair = (q,q); pair` | Valid | Reject duplicate use of the same quantum ownership. |
+| `let b = measure_z(q); h(q)` | Valid | Reject reuse of the old `q` consumed by measurement. |
+| `iso fn bad(q: Q<Bit>) -> CBit { measure_z(q) }` | Valid | Reject an `observe` effect inside `iso`. |
+| `with_computed(q, predicate) { \|a\| h(a) }` | Valid | Reject: H does not preserve the auxiliary basis label and fails the zero-return certificate rule. |
+| `do x <- q; let y = x; pure y` | Invalid | A v0 `do` permits only one `pure BasisExpr`. |
+| `use oracle::*;` | Invalid | Wildcard imports are not part of v0. |
 
-## 構文を保留する項目
+The parser regressions
+[`reserved_std_module_keywords_allow_further_identifier_components`](../tests/parser.rs)
+and [`unicode_format_characters_are_comment_text_but_not_source_tokens`](../tests/parser.rs)
+check these import and Unicode boundaries. Additional parser tests check
+[`coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans`](../tests/parser.rs),
+[`classical_boolean_operators_have_precedence_and_left_associativity`](../tests/parser.rs),
+[`classical_literals_are_reserved_and_distinct_from_basis_bits`](../tests/parser.rs),
+and [`classical_operator_chains_and_basis_patterns_obey_depth_limits`](../tests/parser.rs).
+Parsing these cases does not establish successful module resolution, typing,
+or execution; the compilation and execution regressions are recorded in the
+[conformance ledger](specification-status.md).
 
-- 静的操作の第一級値への一般化、古典パラメータ付き操作、異なる基底型の間の逆変換。現在の `qif`・`adjoint`・`repeat_static` は関数名を静的に解決し、古典引数なしの `Q<A> -> Q<A>` だけを対象とする。
-- 元レジスタを借用して作業レジスタ `R` を操作する一般の `with_computed`、サイズ付きレジスタ、量子引数を取る高階関数、動的反復、実行時の真理値表生成はこの文法にない。これらを追加するときは保護するワイヤ ID 集合、効果と検査可能な証拠を同時に定める。
+<a id="構文を保留する項目"></a>
 
-### 証明と後続仕様
+## Deferred syntax
 
-文法・優先順位・有限版の型規則・分岐合流はv0として固定する。完全な形式体系での資源安全性と意味保存の証明は[段階1の残件](specification-status.md)。一般の保存効果を署名・証拠として受け渡す規則は後続仕様とし、v0の `with_computed` は限定された構造証拠を使う。
+- First-class static operations, operations with classical parameters, and
+  inverses between different basis types remain deferred. Current `qif`,
+  `adjoint`, and `repeat_static` resolve function names statically and target
+  only `Q<A> -> Q<A>` unitaries with no classical arguments.
+- General `with_computed` that borrows its source while operating on a work
+  register `R`, sized registers, higher-order functions with quantum arguments,
+  dynamic loops, and runtime truth-table generation are not in this grammar.
+  Adding them requires an accompanying definition of protected wire-ID sets,
+  effects, and checkable evidence.
+
+<a id="証明と後続仕様"></a>
+
+### Proof status and subsequent specifications
+
+The grammar, precedence, finite type rules, and branch interfaces are fixed
+for v0. The [resource calculus](source-resource-rules.md) and
+[typing supplement](source-typing-rules.md) give explicit rules, and
+[Q1–Q3](source-soundness.md) establishes paper ideal soundness for those
+mathematical derivations. Their adequacy for every Rust acceptance path and
+general source-to-IR meaning preservation remain
+[Stage 1 obligations](specification-status.md). General preservation effects
+passed through signatures or evidence belong to later specifications;
+the two-argument `with_computed` continues to use its restricted structural
+certificate. The three-argument extension has the separately specified
+[SC evidence rules](semantic-contracts-v0.1.md); it does not complete the
+general implementation proofs or the v0.1 release gate.

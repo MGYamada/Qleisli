@@ -1,14 +1,41 @@
-# `.qli` から検証済み IR までの初期実装
+# Initial `.qli` frontend and verified IR pipeline
 
-状態: **段階3・4の最小経路を実装・有限例で検証**（2026-09-26）。[有限コア仕様v0](language-spec.md)と[規範文法](syntax-v0.md)の実装プロファイルについて、名前解決、型・効果・線形所有権検査、IR 生成、独立した `verify`、参照実行を接続した。表層から IR への意味保存の一般証明、一般の借用署名、量子バックエンドは未完成である。
+Status: **the minimum Stage 3–4 path is implemented and tested on finite cases**
+(2026-09-26). This authoritative English implementation profile replaces the
+previous Japanese edition. It describes name resolution, type/effect/linear
+ownership checking, IR generation, independent verification, and reference
+execution for [finite core v0](language-spec.md) and its [grammar](syntax-v0.md).
+The explicit mathematical rules have paper soundness results; general Rust
+adequacy, source-to-IR preservation, and external backends remain open.
 
-## 入口と信頼境界
+<a id="入口と信頼境界"></a>
 
-Rust API は `frontend::compile::check_project(&Path)` と `compile_project(&Path)`。どちらもソースルートを読み込み、未使用の宣言を含む全関数を検査する。標準の通常定義 `std::basis`、`std::routines`、`std::transforms`、`std::arithmetic` も同じ検査を受ける。`check_project` は `main` のないライブラリも検査できる。`compile_project` は `main.qli` の `observe fn main() -> T` を要求し、`T` は `Unit`・`CBit`・それらの二要素タプルに限る。
+## Entry points and trust boundary
 
-各通常関数を型付きの入力資源から IR 化し、独立した IR 検証器に渡す。`compile_project` が返す値は `VerifiedProgram` である。公開されている可変 AST や import レコードをコンパイラの入力として受け付ける API は置かず、ソースから封印名を解決し直す。生成元による検査の違いはない。
+The Rust APIs `frontend::compile::check_project(&Path)` and
+`compile_project(&Path)` load a source root and check every declaration, including
+unused functions. Bundled ordinary definitions in `std::basis`, `std::routines`,
+`std::transforms`, and `std::arithmetic` receive the same checks.
+`check_project` permits a library without `main`. `compile_project` requires
+`observe fn main() -> T` in `main.qli`, with a classical result of the recursive
+shape `T ::= Unit | CBit | (T,T)`. Arbitrarily nested finite binary products
+are permitted within the implementation limits; there is no two-leaf limit.
 
-CLI は `qleisli check <source-root>` と `qleisli run <source-root>`。`run` は検査済みの閉じた `main` を参照シミュレータで実行し、返り値の左から順に並べたビット列と近似確率を表示する。ホストのコマンドであり、新しい `.qli` 構文や量子操作ではない。
+Each ordinary function is lowered from typed input resources and independently
+IR verified. `compile_project` returns `VerifiedProgram`. These entry points
+start from source files, rather than trusting public mutable AST or import
+records supplied by a caller. Sealed names are resolved anew. The producer of
+source or raw IR does not change its validation path.
+
+The CLI provides `qleisli check <source-root>` and `qleisli run <source-root>`.
+`run` executes a checked closed entry and prints result bits from left to right
+with approximate probabilities. Unit leaves contribute no bits. These are host
+commands, not new `.qli` forms or quantum operations.
+
+The CLI preserves the source-root argument as an OS path, including non-UTF-8
+paths where the filesystem permits them. Human-readable path displays may use
+replacement characters; filesystem access uses the original path. Invalid
+commands return usage status 2, and source-loading failures return status 1.
 
 ```sh
 cargo run --bin qleisli -- check examples/bell
@@ -17,70 +44,156 @@ cargo run --bin qleisli -- run examples/phase_oracle
 cargo run --bin qleisli -- run examples/feedback
 ```
 
-## 検査と変換の規則
+<a id="検査と変換の規則"></a>
 
-以下は有限コアv0への実装対応である。[適合記録](specification-status.md)で規範・実装上限・証明課題を分ける。数学的な一般定理の証明とは区別する。
+## Checks and lowering
 
-| 対象・所属 | 型・所有権・効果 | IR への変換 |
+These implementation correspondences are separate from general mathematical
+proofs. The [conformance record](specification-status.md) distinguishes the
+normative rules, capacity profile, finite tests, and open obligations.
+
+| Form and classification | Type, ownership, and effect | IR correspondence |
 | --- | --- | --- |
-| 関数呼び出し・言語形式 | 関数本体の呼び出し名を明示 import と同一モジュールの宣言から解決する。引数・結果の型と個数を照合し、通常関数は宣言された分類を越える効果を呼べない。呼び出しグラフの循環は未使用関数でも拒否する。 | 呼び出しごとに所有権を渡し、本文を新規 ID で展開する。第一級の操作値は導入しない。 |
-| `let`、ブロック・言語形式 | `Q<A>` を含む値の参照は束縛を消費する。`CBit` と `Unit` はコピーできる。右辺を先に評価し、未消費の量子束縛の隠蔽、`_` や式文による量子値の破棄を拒否する。内側で再束縛した量子値は、ブロックの結果として返すか明示的に消費する。 | 束縛自体は量子操作を生まない。後続操作は現在の所有権トークンを使う。 |
-| `basis fn`・言語形式 | 引数と結果は `Unit`、`Bit`、その積。全入力を有限列挙する。`not/xor/and` と通常の基底関数呼び出しを使え、基底式は量子値を捕捉しない。複数引数の積は左結合とし、第1引数を下位ビットに置く。 | 全域な有限表へ評価する。基底関数自身には単射性を要求しない。 |
-| `do x <- q; pure e`・言語形式 | `q:Q<A>` を消費し、`e:A -> B` の全域性と単射性を検査して `Q<B>` を返す。幅増加は `Iso`、同幅は `Unitary`。 | 入力の順序付きワイヤを保存し、必要な新規ワイヤを追加した `LiftBasis`。 |
-| 原始ゲート、`split/join`、観測・封印された組み込み | [標準 API](standard-library.md) の型と分類を使う。量子積の木構造も表層では比較する。`toffoli(a,b,t)` の結果は `((a,b),t)`。`measure_z` は `CBit` だけを返す。 | 各封印名に対応する既存 IR 構成子へ変換し、IR 検証器で再検査する。 |
-| 古典 `if`・言語形式 | 条件は `CBit`。両枝は同じ所有権から始まり、外側の量子束縛を同じように消費して、同じ型の結果を返す。外側に残る資源も両枝に保つ。 | 結果を積型の位置ごとに φ で対応させる。新規ワイヤも結果へ合流できる。呼び出し元の周囲の生存ワイヤを含め、全生存量子資源に新規 φ ID を割り当てる。 |
-| `with_computed`・言語形式 | `q:Q<A>` と全域 `f:A -> Bit` を受け、`Q<A>` を返す `Unitary`。元レジスタは本文から操作できず、初期表層形は他の量子資源も捕捉しない。本文は補助 `a:Q<Bit>` を線形に返す。 | 通常関数を展開した本文が、補助上の恒等操作または `Z/T` の列であることを検査する。`ComputeUseUncompute` を一つ生成し、単独の `Release0` は生成しない。 |
+| Function call; language form | Resolve declarations and explicit imports in the defining module. Check argument count/types, result, and declared effect. Reject all call cycles, including unused bodies. | Move arguments and expand the body with fresh IDs. No first-class operation values. |
+| `let` and block; language forms | Move any value containing `Q<A>`. Copy classical values. Evaluate the right-hand side first; reject shadowing live ownership or dropping it with a wildcard/statement. Return or explicitly consume block-local ownership. | Binding alone adds no quantum operation; subsequent operations use the current token. |
+| `basis fn`; language form | `Unit`, `Bit`, and finite products only; enumerate every input. Logical operators and basis calls use a separate context. A multi-parameter declaration has a left-associated semantic product domain, with the first argument in low bits; ordinary calls still require separate arguments. | Compile to a total finite table. A basis function need not itself be injective. |
+| `do x <- q; pure e`; language form | Consume `q:Q<A>`, check totality and injectivity of the expressible map to `B`, return `Q<B>`. Equal width is `Unitary`; growth is `Iso`. | `LiftBasis` preserves existing ordered wires and appends fresh wires if needed. |
+| Gates, `split/join`, observations; sealed operations | Use the [sealed contracts](standard-library.md); compare exact source product trees. Toffoli returns `((a,b),t)`; `measure_z` returns only `CBit`. | Emit the corresponding constructor, including distinct `Gate`, `Cnot`, and `Toffoli`, and independently reverify. |
+| Classical `if`; language form | A `CBit` condition selects exclusive branches with matching result types and outer consumption. Retain caller and pending resources. | Merge result positions and the complete surviving frame with fresh quantum phi IDs and classical phis. Branch-created wires may be returned. |
+| `with_computed`; language form | Consume/return `Q<A>` with a total predicate into `Bit`. Its body sees classical captures and one private auxiliary, not outer quantum values. The auxiliary may hide a masked outer name without consuming that outer resource. | Certify an expanded auxiliary identity or Z/T chain, then emit atomic `ComputeUseUncompute`; no standalone `Release0`. |
+| Three-argument `with_computed(q,f,u)`; finite semantic language extension | Consume/return `Q<A>`; isolated binders own the data and one computed bit and return both. No outer captures. Require an explicit eligible static unitary u on the exact source type. | Retain the predicate, joint body W and logical u in `CertifiedCompute`; independently check `W E_f=E_f u`. See [specification and bounds](semantic-contracts-v0.1.md). |
+| `apply_contract(implementation,specification,input)`; finite semantic language extension | Evaluate input first; require ordinary declared unitary targets with the same exact unary `Q<A> -> Q<A>` signature. Preserve linear ownership, including Unit. | Independently check both concrete raw functions and their exact meaning; retain immutable function evidence in an ordered `CircuitAction::Contract`. See [function contracts](function-contracts-v0.1.md). |
 
-古典 φ の入力は同時に検査する。同じ合流の先行 φ 出力を、別の φ の枝入力として参照できない。量子 φ の位置対応は異なる入力レジスタを組にすることも認める。たとえば `if c { (a,b) } else { (b,a) }` は古典制御による出力の交換であり、状態の複製や積状態化を意味しない。
+Classical phi inputs are checked before outputs are introduced. A phi cannot
+read another output of the same merge. Quantum result-position matching may
+pair different original registers: `if c {(a,b)} else {(b,a)}` expresses a
+conditional permutation, not cloning or a product-state assertion.
 
-`with_computed` の通常関数呼び出しに対する受理は、展開後の構造検査による。保存効果を関数の公開署名や外部の証明書だけから受け渡す仕組みはまだない。一般の作業レジスタを持つ `use`、古典分岐や静的操作変換を含む補助本体は対応範囲外で、黙って意味を変えず診断する。
+The computed-body certificate is checked after expansion. General preservation
+effects in signatures, arbitrary borrowed work registers, and computed bodies
+containing classical branches or static transformations are outside the
+two-argument form. The three-argument form admits the checked finite unitary
+circuit profile, including closed branches and static transformations.
+The raw IR's broader protected regions do not provide general source borrowing.
+Unsupported cases produce diagnostics instead of a changed meaning.
 
-`adjoint`・`repeat_static`・`qif`は[静的操作の契約](static-operations.md)の範囲で実装した。対象は単一の `Q<A> -> Q<A>` のユニタリで、古典引数や第一級操作値は取らない。本文のIRを独立に検証してから位相付き有限列へ変換し、出力順の置換も保持して再検証する。数字は反復位置に限り0〜4,096を認め、各表・ステップの複製を合計作業予算へ加算する。
+[Static inverse, repetition, and control](static-operations.md) require a unitary
+`Q<A> -> Q<A>` with no classical ports. Closed internal classical computations and selected branches are resolved
+during flattening, after both arms are checked. A body is independently verified before
+flattening into a finite sequence with exact eighth-root phase indices and
+output-axis permutations. Repetition counts are limited to 0–4,096, and copying
+tables and steps spends the common expansion budget.
 
-## 受理・拒否の例
+<a id="受理拒否の例"></a>
 
-適切な import と型を持つ宣言内で、次を確認した。
+## Accepted and rejected examples
 
-| 例 | 判定 |
+Assume appropriate imports and declaration types.
+
+| Example | Decision |
 | --- | --- |
-| `do x <- q; pure (x,x)` | 全入力の像が異なるため受理。 |
-| `with_computed(q,p) { \|a\| phase(a) }`、`phase(a) { z(a) }` | 展開後の対角ゲート列を検査して受理。 |
-| `if b { x(r) } else { r }` | 両枝が同じ量子所有権を結果へ渡すため受理。 |
-| `(q,q)`、測定した後の `h(q)` | 消費済みの所有権参照として拒否。 |
-| `let _ = init0();`、`init0();` | 暗黙の量子破棄として拒否。 |
-| `do x <- q; pure 0`（`q:Q<Bit>`） | 非単射として拒否。 |
-| `iso` 内の `measure_z`、`unitary` 内の `init0` | 効果・分類違反として拒否。 |
-| 補助本体の `h(a)`、`measure_z(a)`、元 `q` の利用 | 保存構造または所有権・効果違反として拒否。 |
+| `do x <- q; pure (x,x)` | Accept when it fits the profile: distinct basis inputs have distinct images. This can use a whole product basis value. |
+| `with_computed(q,p) { \|a\| phase(a) }`, where `phase(a) { z(a) }` | Accept after checking the expanded phase chain. |
+| `if b { x(r) } else { r }` | Accept: both branches return the same input ownership. |
+| `(q,q)`, or `h(q)` after `measure_z(q)` | Reject reuse of consumed ownership. |
+| `let _ = init0();` or `init0();` | Reject implicit quantum disposal. |
+| `do x <- q; pure 0` for `q:Q<Bit>` | Reject the well-typed but noninjective lift. |
+| `do x <- q; pure xor2(x)` for `q:Q<(Bit,Bit)>` and the bundled `xor2` | Reject argument count: a product is not unpacked into two parameters. |
+| `measure_z` in `iso`, or `init0` in `unitary` | Reject the effect violation. |
+| Auxiliary `h(a)`, measurement, or an attempted capture of outer quantum ownership | Reject the certificate, effect, or ownership violation. |
 
-## 診断と上限
+`do (a,b) <- q; pure (a,a xor b)` destructures basis products before
+constructing the complete lift table. `do (a,_) <- q; pure a` removes a `Unit`
+factor but rejects a discarded `Bit` factor by the full-domain injectivity
+check. Ordinary `true`/`false` and `not`/`and`/`xor` use `CBit`; both operands
+are evaluated exactly once in order, including observation effects. The two
+new literal keywords are reserved. See the [language specification](language-spec.md)
+and [specification boundary suite](../tests/specification_boundaries.rs).
 
-`CompileError` は `ErrorCode`、ファイルパス、UTF-8 バイト範囲、1始まりの行・文字列上の列、説明文を持つ。行位置は LF・CRLF・CR を扱う。利用側は自由な説明文の部分一致に依存せずエラー種別を判定できる。下位の `ParseError`、`ProjectError`、`ValidationError` の既存 API 全体を enum 化したわけではない。
+<a id="診断と上限"></a>
 
-通常関数の引数の型違反は呼び出し元の実引数、個数違反は呼び出し式全体を指す。別モジュールへの呼び出しでも、呼び出し元のファイル・範囲・行列を返す。呼び出し先の本文自体の違反は、その本文の位置を返す。
+## Diagnostics and limits
 
-単一量子レジスタと基底関数の入力・出力は最大12ビット。式・関数展開と基底評価の再帰深さは最大64。受理する内部の値・型の木構造は、各4,096ノード・深さ64までとする。量子値では基底型のノードも含め、ビットを持たない `Unit` の積も数える。注釈型、基底評価で推論した型、`with_computed` の引数をまとめた定義域にも適用し、超過は `ErrorCode::Limit` とする。
+`CompileError` contains an `ErrorCode`, file path, UTF-8 byte span, one-based
+line/Unicode-character column, and explanatory message. Line tracking supports
+LF, CRLF, and CR. Consumers can inspect the category instead of matching free
+text. Lower-level `ParseError`, `ProjectError`, and `ValidationError` do not all
+have equivalent enum categories.
 
-式・文の処理、呼び出し展開、有限表の評価、内部の値・型の構築と複製、環境・量子文脈の複製、φ 生成には合計1,000,000の作業予算を置く。値・型は木のノード数に応じて加算し、環境と量子文脈の複製では内部の木構造も数える。指数的な非再帰の関数展開、古典値の複製、基底型の増大も上限で停止する。これらは初期実装の容量制限であり、言語の数学的意味の上限ではない。参照実行には別の[容量上限と数値誤差](ir-prototype.md)がある。
+The current categories distinguish `Arity`, `TypeMismatch`, `Effect`,
+`UnknownName`, `RecursiveCall`, `Ownership`, `InvalidEntry`, `Unsupported`,
+`Limit`, `Project`, and `InvalidIr`. In this implementation, `Ownership` also
+covers a noninjective coherent lift; it is not limited to duplicate handles.
+A basis call with too few arguments fails as `Arity` before its resulting map
+can be tested for injectivity. Parse and project-loading failures are wrapped
+as `Project`. These are diagnostic conventions, not additional source effects.
 
-## 確認した結果と残件
+Ordinary argument type errors point to the caller's actual expression; arity
+errors point to the call. This holds across modules. Errors in a callee body
+point to that body. Ordering among multiple violations and exact message text
+are not normative.
 
-| ソースプロジェクト | 理想的な結果 | 確認 |
+Module-import cycle detection uses an explicit DFS stack. Import-chain depth
+does not consume the Rust call stack; cycles still report the importing file,
+the closing `use` span, and the cycle path. This graph traversal is separate
+from the syntax and function-expansion limits below.
+
+A register or basis function's input/output width is at most 12 bits. Syntax,
+expression/call expansion, and basis evaluation have depth limits of 64.
+Internal type/value trees have at most 4,096 nodes and depth 64, including the
+basis-type tree attached to a quantum value and zero-bit Unit products.
+Annotations, inferred basis types, and computed-predicate product domains are
+checked; excess yields `Limit`.
+
+Statements, evaluation, expansion, finite tables, constructed/copied trees,
+environment/register snapshots, and phi construction spend a shared work budget
+of 1,000,000. These checks bound exponential nonrecursive expansion and classical
+copying as well as quantum data. They are implementation limits, not limits on
+the mathematical finite types. The simulator has separate
+[capacity and numerical limits](ir-prototype.md#参照実行系の範囲).
+
+<a id="確認した結果と残件"></a>
+
+## Evidence and remaining obligations
+
+| Source project | Ideal result | Finite evidence |
 | --- | --- | --- |
-| `examples/bell` | `00` と `11` が各1/2 | `.qli` → 検査 → IR → `verify` → 参照実行で照合。 |
-| `examples/phase_oracle` | `1` が確率1 | 通常関数を経由した補助位相と、その後の干渉を照合。 |
-| `examples/feedback` | `00` と `10` が各1/2 | Bell の片側測定と結果依存の `X` により、2番目の結果が常に0。 |
-| `examples/grover` | `11` が確率1 | 一様準備・対象の位相・反射の1反復を共通部品から構成。 |
-| `examples/bernstein_vazirani` | `10` が確率1 | Groverと同じHadamard部品を再利用し、隠れた線形関数を干渉で識別。 |
-| `examples/bit_flip_code` | `11000` が確率1 | 中央のX誤りのシンドローム`11`、論理X測定`0`、復号補助`00`。 |
-| `examples/phase_estimation` | `1001` が確率1 | Tの位相1/8を低位から`100`、返した標的のZ測定を`1`と表示。 |
-| `examples/order_finding` | `000,010,001,011`が各1/4 | N=15・底2の位相を推定。ホスト例`shor15`で因子3・5と再試行を各確率1/2と集計。 |
+| `examples/bell` | `00`, `11`, each with probability 1/2 | Source checking, IR verification, and reference execution. |
+| `examples/phase_oracle` | `1` with probability 1 | Expanded auxiliary phase followed by interference. |
+| `examples/feedback` | `00`, `10`, each with probability 1/2 | Measure one Bell half and conditionally correct the other. |
+| `examples/grover` | `11` with probability 1 | Shared preparation, oracle, and one reflection step. |
+| `examples/bernstein_vazirani` | `10` with probability 1 | Reuse Hadamard preparation and recover the hidden linear function. |
+| `examples/bit_flip_code` | `11000` with probability 1 | Middle X error: syndrome `11`, logical X result `0`, decoded auxiliaries `00`. |
+| `examples/phase_estimation` | `1001` with probability 1 | T phase 1/8 as low-bit-first `100`, followed by target Z result `1`. |
+| `examples/order_finding` | `000,010,001,011`, each with probability 1/4 | N=15, base 2; the Rust Shor example obtains factors 3 and 5 or a retry, each with probability 1/2. |
 
-コンパイラ統合テストは23件（仕様v0の適合例6件を含む）。上記のほか、呼び出し元の量子資源を保持する分岐、枝で生成するワイヤ、古典結果の φ、積レジスタ上の基底関数、Toffoli・リセット・破棄、条件付き交換、拒否例、診断位置、展開上限を検査する。レビュー修正では、古典値と `Q<Unit>` の基底型の指数的・深い増大を2 MiBのスレッドスタックで診断できること、型注釈と補助計算の定義域の制限、上限内の受理、複製の作業予算、別モジュール呼び出しの引数位置と本文エラーの位置を確認した。
+The [compiler suite](../tests/compile.rs) covers caller frames, branch-created
+wires, mixed phis, exact types, primitive operations, rejection, source locations,
+and work limits. In particular, growing values and Unit trees are diagnosed on
+a 2 MiB thread stack, with accepted in-budget counterparts. Other suites cover
+[source judgments](../tests/source_judgments.rs),
+[source semantics](../tests/source_semantics.rs),
+[static operators](../tests/static_semantics.rs), and
+[instrument regressions](../tests/source_soundness.rs).
 
-仕様v0確定時には全108件を確認した。[適合状況](specification-status.md)に今回の内訳を記す。A2到達時の検査は全92件成功。A2で追加した[静的操作の12件](../tests/static_operations.rs)は、位相分布、反射符号、参照系、逆演算、所有権と効果の拒否、生IRの不正な表、展開制限を検査する。`cargo fmt --check`と`cargo clippy --all-targets -- -D warnings`も成功した。[検査の内訳](static-operations.md#確認した結果)を参照。
+The [project suite](../tests/project.rs) exercises deep import chains and cycles
+on a 2 MiB thread stack, as well as shared dependencies. The
+[CLI suite](../tests/cli.rs) covers ordinary paths and, on Unix, non-UTF-8
+arguments. Existing non-UTF-8 source directories are also tested on Linux.
 
-第2開発目標で追加した[アルゴリズム部品と検証](algorithm-routines.md)は、Groverの全対象・反復回数、BVの全隠れ列、符号化された論理入力と参照系の相関、パリティ部分空間のコヒーレンス、前提外の誤りと資源・効果の拒否例を扱う。同梱部品には新しい信頼された原始操作を設けない。
+Historical milestones were 92 Rust tests at A2 and 108 when v0 was fixed. These
+are not current totals; subsequent runs are recorded in the
+[conformance record](specification-status.md). The A2 static-operation suite
+covers phase distributions, reflection signs, references, inverses, rejection,
+malformed raw IR, and expansion limits. Algorithm suites independently check
+Grover/BV inputs, bit-flip assumptions and correlations, parity coherence, and
+[arithmetic/order-finding cases](arithmetic-order-finding.md#検証結果).
+No new trusted primitive is introduced by the ordinary library definitions.
 
-A3/L3で追加した[算術と位数推定の10検査](arithmetic-order-finding.md#検証結果)では、全基底入力、冪と逆、参照系、古典連分数と失敗条件を確認した。
-
-これで段階3・4の最小経路は接続したが、一般の健全性証明は未完成である。現在の優先課題は、v0の完全な推論規則、健全性とソース→IRの意味保存、検証器の実装対応である。一般の保存効果署名や操作パラメータ化、独立した補助の逐語実行による照合、厳密演算、バックエンド能力検査は後続の課題として保持する。所有権が別であることから状態の分離は推論しない。
+The Stage 3–4 minimum path is connected. The source rule system's paper proofs
+and local Lean results do not prove general correspondence with every Rust
+acceptance or lowering path. That adequacy and source-to-IR meaning preservation
+remain Stage 1 priorities. General borrowing, operation parameters, literal
+auxiliary execution as an independent comparison, exact reference execution,
+and backend capability checks remain later work. Distinct ownership never
+implies state separation.

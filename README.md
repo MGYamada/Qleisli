@@ -1,14 +1,40 @@
 # Qleisli
 
+**Current version: 0.1.0** · [Release notes](docs/releases/v0.1.0.md) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+
 Qleisli は、Rust で処理系を構築する純粋関数型量子プログラミング言語です。量子データを複製不能な所有資源とし、プログラムを古典値と量子資源の、効果付きで合成可能な変換として捉えます。
 
 **現状は設計と処理系の試作段階です。** [有限コア言語仕様v0](docs/language-spec.md)を確定し、実装プロファイルの容量上限内で、名前解決、型・効果・所有権検査、IR 生成、独立した IR 検証、参照実行を接続しました。Bell・位相オラクル・フィードバックに加え、[構造化した小規模Grover・Bernstein–Vazirani・ビット反転訂正](docs/algorithm-routines.md)を実行して期待分布を確認できます。同梱の通常定義は `stdlib/src/basis.qli`、`stdlib/src/routines.qli`、`stdlib/src/transforms.qli`、`stdlib/src/arithmetic.qli` です。[静的な逆・制御・有限反復と小規模QPE](docs/static-operations.md)も実装しました。[対応範囲](docs/frontend-v0.md)には制限があり、処理系全体の健全性証明や外部バックエンドは未完成です。
 
-## 現在の優先順位: 言語仕様
+## North starとリリース到達条件
 
-ロードマップを**段階1へ戻しました**。[資源規則R1](docs/source-resource-rules.md)、[型・効果・名前・スコープ規則](docs/source-typing-rules.md)、[ソースの局所意味論](docs/source-semantics.md)、[静的変換の証明](docs/static-semantics.md)を整え、[明示した数学的規則系の理想健全性Q1〜Q3](docs/source-soundness.md)を紙上で示しました。純粋操作の等長性／ユニタリ性と、観測・適応合成の完全正性・総和の跡保存を対象とします。
+**north star（2026-09-27採用）:**
 
-所有権モデルに加え、Kraus完全性の合成に関する5補題を[Leanで検証](docs/lean-resource-proof.md)しました。Leanは必要な局所補題を支える役割に留めます。[適合状況](docs/specification-status.md)には実装監査と回帰検査を記録しています。数学的規則とRustの全受理経路の対応、ソースからIRへの一般的な意味保存は未証明です。サイズ付き型・操作パラメータ化・アルゴリズムとstdlibの拡張は後続工程です。
+> 人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる。
+
+状態準備、オラクル、反射、位相推定、逆計算などの概念とその組み合わせを、意味を保ったプログラムの語彙にします。**v1ではShor・QPE・Groverが教科書のアルゴリズム構造のまま読めること**を、その具体的な到達条件とします。
+
+[設計メモ「量子の帳尻は言語が引き受ける」](docs/quantum-bookkeeping.md)に、この原理から所有権・補助回収・制御化・位相の検査を結ぶ考えと、QPE→振幅増幅→Shorを言語設計の試金石にする提案をまとめました。
+
+その最低基盤として、**v0.1では `U E_in = E_out u` による意味契約を合成・再利用し、実際のIRまで独立検査できること**を必須にします。同じ契約を満たす複数の実装を、利用側を変えずに交換でき、位相・所有権・補助の厳密なゼロ復帰を保持するところまでが到達条件です。
+
+v1では準備、オラクル、反射、制御付き冪、位相推定、位数再構成を、共有する部品とパラメータから構成します。実際にコンパイル・検証・実行できる三つのアルゴリズムで評価し、既存の固定サイズ例や疑似コードだけでは達成としません。[英語の到達条件](docs/release-milestones.md)を正本とし、この節は日本語の要約です。**v0.1の宣言した有限プロファイルは実装・検査を完了し、v1は未達成**です。crateの版番号や処理系全体の証明完了とは区別します。
+
+<a id="現在の優先順位-言語仕様"></a>
+
+## 現在の優先順位: v0.1の言語仕様と意味契約
+
+[有限意味契約の経路](docs/semantic-contracts-v0.1.md)を実装しました。厳密算術の独立検査器と、論理操作を明示する`with_computed(q,f,u){|d,a| body}`を接続し、位相オラクル・補助H;H・データと補助の同時Xを同じ規則で検査します。[関数境界](docs/function-contracts-v0.1.md)では`apply_contract(実装,仕様,入力)`によって利用側が意味を要求し、検査済み証拠を逆・制御・反復の後も最終IRに保持します。[実装を交換できる実行例](examples/function_contracts/README.md)を同梱しています。達成根拠と残る信頼境界は[適合記録](docs/specification-status.md)に記します。
+
+v0.1の基盤となる**段階1の言語仕様とIR対応**を進めています。[資源規則R1](docs/source-resource-rules.md)、[型・効果・名前・スコープ規則](docs/source-typing-rules.md)、[ソースの局所意味論](docs/source-semantics.md)、[静的変換の証明](docs/static-semantics.md)を整え、[明示した数学的規則系の理想健全性Q1〜Q3](docs/source-soundness.md)を紙上で示しました。純粋操作の等長性／ユニタリ性と、観測・適応合成の完全正性・総和の跡保存を対象とします。
+
+所有権モデルに加え、Kraus完全性の合成に関する5補題を[Leanで検証](docs/lean-resource-proof.md)しました。Leanは必要な局所補題を支える役割に留めます。[適合状況](docs/specification-status.md)には実装監査と回帰検査を記録しています。数学的規則とRustの全受理経路の対応、ソースからIRへの一般的な意味保存は未証明です。この基盤へv0.1の有限な意味契約・証拠検査を接続し、その後v1へ向けてサイズ付き型・操作パラメータ化・必要なアルゴリズムとstdlibを一般化します。
+
+[ソース→IR変換契約C1〜C5](docs/source-ir-correspondence.md)で、基底表の符号化、原始操作、補助証拠、完全なφを具体化し、その数学的変換について前提付きの意味保存を紙上で示しました。既存の局所証明を接続した到達点であり、Rustの全成功経路がこの契約を満たす一般的な証明は残っています。
+
+[スコープ終了の実装対応](docs/lowering-state-refinement.md)では、Rustの環境射影を独立した関数へ切り出し、同じ場合分けのLeanモデルで古典束縛の復元、消費済み束縛の非復活、量子所有権の保存を証明しました。再束縛の同一性を扱う有限モデルとソース回帰でも照合しています。ブロックに至る全実行経路や暗黙frameとの対応は次の課題です。
+
+レビュー改訂で、`do (a,b) <- q; pure (a,a xor b)` の積パターンと、通常式の `true`・`false : CBit`、`not`・`and`・`xor` を実装しました。古典演算は両辺を左から右に評価し、量子所有権と効果を保持します。`true`・`false` は新予約語です。[改訂内容と検証結果](docs/specification-status.md)を参照してください。
 
 ## 第1開発目標: AI時代の量子言語
 
@@ -61,6 +87,12 @@ AI が生成したコードも人間が書いたコードも、同じ型・効�
 23. [有限の静的変換の正確な意味](docs/static-semantics.md): 平坦化・軸順・逆・制御・反復・限定補助位相の紙上証明、Rust対応、厳密行列の回帰検査。
 24. [型・効果・名前・スコープの推論規則](docs/source-typing-rules.md): 全AST構成子の規則、基底計算の全域性、束縛の射影、宣言効果、実装との対応と残件。
 25. [ソース規則系の理想健全性](docs/source-soundness.md): 純粋性・等長性／ユニタリ性、観測・適応合成・履歴の隠蔽、参照系を含む紙上証明Q1〜Q3。
+26. [実装の責務と保守方針](docs/implementation-architecture.md): モジュールの依存方向、検証境界、loweringの不変条件、仕様・実装・回帰検査の対応。
+27. [用語と表記](docs/terminology.md): 英語の規範文書と日本語の補助文書の関係、所有権・frame・保護領域の用語、量子状態の表記。
+28. [ソース→IR変換契約](docs/source-ir-correspondence.md): 基底符号化・原始操作・補助証拠・完全φの局所導出、前提付き意味保存C1〜C5、Rustと独立検証器の対応義務。
+29. [lowering状態とスコープの実装対応](docs/lowering-state-refinement.md): 値・環境・registerの対応、スコープ射影のLean定理、入力・移動・束縛・呼出し・分岐の残る証明前提。
+30. [リリース到達条件とnorth star](docs/release-milestones.md): v0.1の意味契約・独立検査と、v1でShor・QPE・Groverを教科書の構造として読むための完了基準。
+31. [有限な意味契約](docs/semantic-contracts-v0.1.md)と[関数境界](docs/function-contracts-v0.1.md): 厳密な演算子等式、補助ゼロ復帰、公開された意味と実装の対応、最終IRでの証拠の再利用。
 
 ## Rust 開発環境
 
@@ -70,6 +102,8 @@ Rust 2024 edition に対応する **Rust 1.85 以降**と、Cargo・rustfmt・Cl
 cargo test --all-targets
 cargo fmt --check
 cargo clippy --all-targets -- -D warnings
+python3 scripts/check_docs.py
+python3 scripts/test_check_docs.py
 ```
 
 `Cargo.lock` と `target/` は生成物として Git から除外します。テストはパーサ、モジュール解決、ソースコンパイラ、IR 検証器、参照シミュレータを対象とします。有限例のコンパイルと数値実行の一致は、一般の健全性証明を意味しません。
@@ -88,3 +122,15 @@ cargo run --example shor15
 ```
 
 段階0の構成と有限コアv0の規範を定めました。現在は段階1の証明と処理系との対応を優先します。外部パッケージ管理やハードウェア固有 API は初期版の範囲外です。
+
+## License and contributions
+
+Copyright 2026 Masahiko G. Yamada.
+
+Unless otherwise stated in an individual file, Qleisli's own source code,
+standard library, examples, tests, scripts, Lean proofs, and documentation
+are licensed under the [Apache License, Version 2.0](LICENSE).
+See [NOTICE](NOTICE) and the [contribution policy](CONTRIBUTING.md).
+Third-party material and dependencies retain their own licenses and notices.
+This license covers Qleisli's files; it does not purport to license independently
+authored programs merely because they are written in or compiled with Qleisli.

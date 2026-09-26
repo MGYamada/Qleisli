@@ -1,41 +1,152 @@
-# Rust IR 検証器の試作
+# Rust finite IR verifier and reference execution
 
-状態: **段階2の部分実装**（2026-09-26）。この文書は、[有限コアの形式化](formal-core.md)のうち、現在の Rust crate `qleisli-core` が実際に検査する範囲を記録する。[初期フロントエンド](frontend-v0.md)は対応する `.qli` を型検査して本 IR へ変換する。一般の健全性定理と実装の対応の完全な証明はまだない。
+Status: **Stage 2 is partially implemented** (2026-09-26). This authoritative
+English implementation profile replaces the previous Japanese edition. It
+records the checks actually performed by `qleisli-core`, in relation to the
+[finite-core formalization](formal-core.md). The [frontend](frontend-v0.md)
+checks supported `.qli` and generates this IR. General correspondence between
+the mathematical theorems and the Rust implementation remains unproved.
 
-## 入力と信頼境界
+<a id="入力と信頼境界"></a>
 
-`RawProgram` は人間・AI・将来のフロントエンドが作れる公開データであり、型注釈と効果宣言を信用しない。`verify(raw)` は所有権、構成子、有限表、効果を再検査し、成功時だけ非公開フィールドを持つ `VerifiedProgram` を返す。参照実行系と将来のバックエンドはこの結果だけを入力にする。IR を書き換えた場合は再検証する。
+## Inputs and trust boundary
 
-現時点の `BasisShape` は `Bit` の有限列をビット幅で表す。幅 0 は `Unit` で、物理ワイヤはなくても `Q<Unit>` の所有権トークンは線形である。積型の木構造と表層の型名は、まだ IR に保存していない。レジスタ内のワイヤ順は意味を持ち、`split/join` と真理値表はこの順序を使う。
+`RawProgram` is public data that may be created by humans, AI, or a frontend.
+Its annotations and effect declarations are untrusted. `verify(raw)` checks
+ownership, constructors, finite tables, and effects, and returns a
+`VerifiedProgram` with private fields only on success. The simulator accepts
+that wrapper; future backends must maintain the same boundary. Rewriting raw
+IR requires fresh verification before execution.
 
-分岐の `QuantumPhi` は、選ばれた枝の各出力レジスタの **第 `i` ワイヤを φ 出力の第 `i` ワイヤへ改名する**。これは軸の位置対応であり、状態の複製、測定、積状態化ではない。枝ごとの全出力レジスタを一対一に対応づける。最終的な出力レジスタの順序は `quantum_outputs` で決め、将来の実行系・バックエンドも同じ軸対応を守る必要がある。
+`BasisShape` records an ordered finite bit width. Width zero covers the erased
+representation of Unit-only basis types; even a zero-wire register has a linear
+ownership token. Source product-tree structure and names are not retained in
+IR. Register wire order determines `split/join` and table indexing.
 
-`Effect` の順序 `Unitary < Iso < Observe` は、形式コアの `pure/observe` 効果と `Iso/Unitary` 分類を一つの順序にまとめた実装表現である。古典 φ は全入力を調べてから出力を導入し、同じ合流の別の φ 出力を枝入力として受理しない。
+A `QuantumPhi` renames the selected input register's wire at position `i` to
+its output wire at position `i`. It is an axis correspondence, not preparation,
+cloning, measurement, or a product-state assertion. Every live branch output
+must be covered once. Final register order is given by `quantum_outputs`;
+executors and future backends must preserve the same axis interpretation.
 
-## 実装済みの検査
+`Effect` uses the order `Unitary <= Iso <= Observe`, matching the current source
+effect order. Pure means either of the first two. IR effects describe expanded
+operations; they do not replace the source check of a callee's declared effect.
+Classical phi inputs are all validated before outputs are introduced, so a phi
+cannot read another output of the same merge.
 
-| 対象 | 検証内容 |
+<a id="実装済みの検査"></a>
+
+## Implemented checks
+
+| Subject | Validation |
 | --- | --- |
-| 資源 | 入力と生成ワイヤの一意性、SSA トークンの一度限りの消費、演算子の相異なる入力、全生存トークンの出力指定、測定後の旧トークン不使用。 |
-| 純粋操作 | 封印された `H/X/Z/T/CNOT/Toffoli`、順序付き `split/join`、全域・単射な `LiftBasis` 表。単射リフトの幅増加は `Iso` とし、同次元の場合だけ `Unitary` を主張できる。 |
-| 有限ユニタリ列 | `ApplyUnitary`のHadamard、位相付き有限置換、基底制御を独立に検査する。軸・制御の重複、表の不完全性・非単射性、範囲外の位相指数を拒否する。[数学的契約](static-operations.md)を参照。 |
-| コヒーレント分岐 | `QuantumIf` は相異なる制御ワイヤと標的レジスタを要求し、両枝の封印されたユニタリ列を検査する。枝のスカラー位相を保持し、制御を測定しない。 |
-| 観測 | `MeasureZ` は量子所有権を消費して `CBit` を生成する。`Reset` は新規ワイヤを要求し、`Discard` は明示されたときだけ所有権を終える。これらを含む `Unitary/Iso` の宣言を拒否する。 |
-| 古典分岐 | ガードは定義済みの古典 SSA 値に限る。両枝を同じ入力文脈から別々に検査し、全量子出力を新しい φ トークンへ合流する。片枝の資源漏れと効果の隠蔽を拒否する。 |
-| 補助ビット | 単独の `Release0` は存在しない。`ComputeUseUncompute` は全域な `f` を表で調べ、同じ `C_f` と逆演算を構造として固定する。`use` を、保護した計算元・補助系の基底ラベルを変えない位相と制御付き標的ゲートに限定する。 |
+| Resources | Unique input/generated wires, single consumption of SSA tokens, distinct operation inputs, all live tokens returned, and no reuse after measurement. |
+| Pure operations | Sealed H/X/Z/T/CNOT/Toffoli, ordered split/join, and total injective `LiftBasis` tables. Growth is `Iso`; only equal dimensions may claim `Unitary`. |
+| Finite unitary sequences | Independently check `ApplyUnitary` Hadamards, phase-labelled permutations, and basis controls. Reject invalid/duplicate axes, controls overlapping targets, partial/noninjective tables, and out-of-range phases. See the [static contract](static-operations.md). |
+| Coherent branches | Raw `QuantumIf` requires distinct control/target wires and sealed unitary arms. Keep scalar phases; do not measure the control. |
+| Observations | `MeasureZ` consumes ownership and produces a classical bit; `Reset` uses fresh logical wires; `Discard` explicitly ends ownership. Reject these in `Unitary`/`Iso` programs. |
+| Classical branches | Require a visible classical guard, check arms separately from the same context, and merge all live resources with fresh phis. Reject resource leaks and hidden effects. |
+| Auxiliaries | No standalone `Release0`. `ComputeUseUncompute` checks a total table, structurally fixes computation and its inverse, and restricts protected use to phases and controlled target gates preserving source/auxiliary basis labels. |
+| Semantic auxiliary contracts | `CertifiedCompute` checks the actual retained joint circuit W against the explicit logical circuit u using exact `W E_f=E_f u`. Reserve one fresh auxiliary wire; consume/reissue the source token, including width zero. The finite capacity and soundness premises are specified in [SC](semantic-contracts-v0.1.md). |
+| Function meaning contracts | `CircuitAction::Contract` carries immutable independently checked evidence, ordered local axes, and an adjoint flag. Validate target width, axis uniqueness, and disjoint controls at every attachment. [Function evidence](function-contracts-v0.1.md) retains both raw functions and source/dependency identity through static transformations. |
 
-検証器は任意の行列や、利用者が書いた「証明済み」という文字列を受け付けない。封印ゲートの意味、`MeasureZ/Reset/Discard` の量子操作としての意味、および Rust 実装の正しさが信頼境界に残る。`VerifiedProgram` の生成が制限されるのは安全な Rust API 上であり、任意の `unsafe` コードまで保証する宣言ではない。
+Protected raw IR can describe work-register uses beyond the source v0
+`with_computed` form. This is not a general source borrowing implementation.
+The two-argument source form permits only an expanded auxiliary identity or Z/T chain and
+masks all outer quantum captures. See [the source boundary](language-spec.md#9-限定された補助計算).
 
-真理値表に対応する単一レジスタと補助レジスタの幅はそれぞれ最大 12 ビット、古典分岐の入れ子は最大 64 として入力を制限する。これは試作の計算量と再帰深さを抑える実装上の上限であり、言語の数学的意味の上限ではない。総生存ワイヤ数と命令数は検証器では制限していない。検証器は生存ワイヤの索引を持ち、ワイヤ重複判定は対数時間の集合検索を使う。ID の新規性履歴と古典値の定義スコープは分岐間で共有し、履歴全体を枝ごとに複製しない。各枝の生存量子文脈の複製と φ の検査は、その時点の生存資源と φ の数に応じた費用を持つ。参照実行系は独自の容量上限を要する。
+The three-argument extension instead creates an isolated owned data/auxiliary
+body. Raw verification independently validates both flat circuits and the
+whole encoded-subspace equation, including zero rows outside the output code.
+The reference simulator executes the retained physical W between computation
+and uncomputation before eliminating the proved-zero auxiliary. Numerical
+smallness never authorizes release. The evidence API in `contract`
+has immutable checked results and typed encodings. In-process function evidence
+is retained and shared across calls and static transformations; serialized
+proof artifacts remain outside the initial profile.
 
-## 参照実行系の範囲
+The function circuit extractor independently validates both raw functions and
+compares exact ordered operators. Execution uses its checked physical lowering;
+a private clean region may already have been replaced by its certified logical
+action. The raw body remains in the evidence object. Checking cost, proof depth,
+and transitive execution expansion have explicit bounds in the function profile.
 
-`sim::run_closed` は `VerifiedProgram` のうち、古典・量子入力がなく、終了時に量子出力を残さないものだけを実行する。結果は `classical_outputs` の順のビット列から確率への表である。第 1 ワイヤを局所真理値表の bit 0 とし、全体系の軸 0 を状態ベクトル添字の最下位ビットとする。`QuantumPhi` は上記の位置対応で軸名を変更する。
+The verifier accepts neither arbitrary matrices nor textual claims of being
+proved. Sealed matrix/observation meanings and correctness of the Rust checker
+remain in the trust boundary. The wrapper restricts construction through safe
+Rust APIs; it is not a guarantee against arbitrary external `unsafe` code.
 
-測定、破棄、リセットは、**正規化しない**純粋状態の枝を保持するアンサンブルで表す。同じ公開古典結果を持つ隠れた枝でも振幅を合算せず、確率を合算する。これにより Bell 対の片側破棄後の残系を混合状態として扱える。数値は `f64` による近似で、厳密な等式の証明には使わない。たとえば `H; T` を 8 回; `H; measure_z` は理想意味論では `false` が確率 1 だが、丸め残差により `true` が約 10^-32 の重みで現れ得る。実装は正の枝を一律の閾値で消さないため、出力に現れた微小な重みだけで理想意味論上その結果が可能だとは判定できない。既定では量子軸 16 本、アンサンブル 65,536 成分、合計複素振幅 1,048,576 個を上限とし、量子軸の実装上の絶対上限は 20 本である。
+Table-related registers and auxiliary widths are each at most 12 bits, with
+at most 64 nested classical branches. These are capacity limits of this
+prototype, not mathematical finite-type restrictions. The verifier places no
+global cap on live wires or instruction count. It indexes live wires for
+logarithmic duplicate checks. Freshness history and classical scopes are shared
+across branch checks rather than copied wholesale. Copying live branch contexts
+and checking phis costs work proportional to those contexts and interfaces.
+Execution therefore needs its own limits.
 
-## 検証結果と未達成
+<a id="参照実行系の範囲"></a>
 
-`cargo test --all-targets` の検証器テスト 27 件は、Bell 状態を作る IR、位相オラクル、測定後フィードバックを受理し、量子所有権の二重使用・測定後利用・暗黙破棄・非単射リフト・不正な効果・補助ビットの基底変更・不完全な分岐・同一合流内の不正な古典 φ 参照を拒否した。参照実行系テスト 13 件は Bell の相関、位相オラクル、フィードバック、部分破棄・リセット後の混合状態、相対位相と `f64` 残差を有限例で照合した。暫定パーサ 8 件、モジュール解決 8 件、[ソースコンパイラ](frontend-v0.md) 17 件、構造化アルゴリズム7件、静的操作12件のテストも通過した。パーサは深い再帰と、入れ子の左結合演算子列による AST の深さ超過を拒否する。検証器は 8,000 分岐と 80,000 個の `Init0` を受理する回帰テストを保持する。`cargo fmt --check` と `cargo clippy --all-targets -- -D warnings` も通過した。これらは具体例に関する結果であり、一般の健全性証明ではない。
+Classical literals and Boolean source operators lower directly to
+`ClassicalConst`, `ClassicalNot`, `ClassicalAnd`, and `ClassicalXor`. The verifier
+requires visible operand SSA IDs and globally fresh outputs. These instructions
+preserve all quantum ownership and have derived effect `Unitary`; any effects
+of evaluating source operands remain in the preceding IR.
 
-現行 crate は有限部分集合の `.qli` を検査して IR へ変換する。表層では積型の木構造を照合するが、IR は順序付きのビット幅へ平坦化する。同型関数の `qif`・`adjoint`・有限反復は表層から実装した。一般の操作パラメータ化、古典引数付き・異型の静的操作、保存効果を署名で渡す一般的な借用規則、開いたプログラムの参照実行、数学的な定理の実装対応の完全な証明は未完成である。`ComputeUseUncompute` の数値実行は因子分解後の有効操作を使い、補助ワイヤのゼロ復帰を逐語実行で独立に照合するものではない。したがって現段階では「任意の `.qli` がコンパイルできれば物理的に健全」とは主張しない。[現行有限 IR の紙上証明](finite-core-proof.md)も、Rust 実装の機械検証を済ませたものではない。
+## Reference execution
+
+`sim::run_closed` runs only a `VerifiedProgram` with no classical or quantum
+inputs and no quantum outputs. It returns a map from bits in `classical_outputs`
+order to probabilities. The first local wire is table bit zero, and global axis
+zero is the least significant state-vector index bit. Branch phis rename axes
+by the position rule above.
+
+Measurement, discard, and reset retain an ensemble of **unnormalized** pure
+components. Histories with the same public result contribute probabilities,
+not amplitudes. This retains the mixed state after discarding one Bell half.
+Arithmetic uses approximate `f64`, not exact identities. For example, H, then
+T eight times, then H and Z measurement ideally returns false with probability
+one, but rounding can produce true with weight around `10^-32`. The simulator
+does not remove all small positive weights by a fixed threshold; a tiny output
+weight alone does not establish an ideal nonzero probability.
+
+Defaults are at most 16 quantum axes, 65,536 ensemble components, 1,048,576
+complex amplitude cells in total, and 1,000,000 execution steps shared across
+the whole run. `SimulationLimits::max_execution_steps` counts IR operation
+visits plus flat/expanded circuit steps and legacy protected/unitary steps
+over all ensemble components and selected classical branches. Contracted
+calls charge their cached transitive cost before expanding; calls and branches
+do not reset the budget. Exhaustion returns `SimulationError::ExecutionLimit`
+without a partial result. This is not a floating-point-operation or wall-clock
+bound. The implementation's absolute axis limit is
+20; a caller may choose smaller limits. Capacity failure is diagnosed rather
+than handled by silently truncating state or histories.
+
+<a id="検証結果と未達成"></a>
+
+## Evidence and open obligations
+
+The [verifier tests](../tests/verify.rs) exercise accepted Bell/oracle/feedback
+IR and reject duplicate or lost ownership, reuse after measurement, noninjective
+lifts, effect violations, invalid auxiliary use, incomplete branch interfaces,
+and references to outputs of the same classical merge. The
+[simulator tests](../tests/sim.rs) check correlations, phase, partial disposal,
+reset, mixed histories, and floating-point residuals against finite predictions.
+Regression cases include 8,000 branches and 80,000 preparations, bounding the
+observed cost of history and duplicate checks without proving complexity for
+all programs. Parser tests check recursion and left-associated AST depth limits.
+Frontend, project, algorithm, and static-operation suites cover their own layers.
+Current commands, totals, and historical milestones are recorded in the
+[conformance record](specification-status.md); old compiler counts are not a
+current coverage measure.
+
+The source frontend compares exact product trees, then erases them to ordered
+widths. Source static operations support the specified unary quantum interface.
+General operation parameters, classical-port or heterogeneous static operations,
+general source borrowing signatures, and open-program reference execution remain
+outside the implementation. The simulator implements the factored effective
+operator of `ComputeUseUncompute`; it does not independently execute and inspect
+every auxiliary wire's zero return. The [conditional finite-IR paper argument](finite-core-proof.md)
+is not machine verification of the Rust checker. Compiling a `.qli` program does
+not establish a proved guarantee of physical hardware correctness.

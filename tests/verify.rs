@@ -917,3 +917,94 @@ fn coherent_qif_rejects_aliasing_and_bad_target_indices() {
         );
     }
 }
+
+#[test]
+fn classical_constants_and_conjunction_require_fresh_visible_ssa_values() {
+    let checked = verify(program(
+        vec![],
+        vec![c(0)],
+        vec![
+            RawOp::ClassicalConst {
+                value: true,
+                output: c(1),
+            },
+            RawOp::ClassicalAnd {
+                left: c(0),
+                right: c(1),
+                output: c(2),
+            },
+        ],
+        vec![],
+        vec![c(2)],
+        Effect::Unitary,
+    ))
+    .unwrap();
+    assert_eq!(checked.derived_effect(), Effect::Unitary);
+    for operations in [
+        vec![RawOp::ClassicalConst {
+            value: false,
+            output: c(0),
+        }],
+        vec![RawOp::ClassicalAnd {
+            left: c(0),
+            right: c(0),
+            output: c(0),
+        }],
+    ] {
+        rejected(
+            program(
+                vec![],
+                vec![c(0)],
+                operations,
+                vec![],
+                vec![],
+                Effect::Unitary,
+            ),
+            "not fresh",
+        );
+    }
+    for (left, right) in [(c(1), c(0)), (c(0), c(1))] {
+        rejected(
+            program(
+                vec![],
+                vec![c(0)],
+                vec![RawOp::ClassicalAnd {
+                    left,
+                    right,
+                    output: c(2),
+                }],
+                vec![],
+                vec![],
+                Effect::Unitary,
+            ),
+            "not defined in this scope",
+        );
+    }
+    rejected(
+        program(
+            vec![],
+            vec![c(0)],
+            vec![
+                RawOp::ClassicalBranch {
+                    condition: c(0),
+                    then_ops: vec![RawOp::ClassicalConst {
+                        value: true,
+                        output: c(1),
+                    }],
+                    else_ops: vec![],
+                    quantum_phis: vec![],
+                    classical_phis: vec![],
+                },
+                RawOp::ClassicalAnd {
+                    left: c(0),
+                    right: c(1),
+                    output: c(2),
+                },
+            ],
+            vec![],
+            vec![],
+            Effect::Unitary,
+        ),
+        "not defined in this scope",
+    );
+}

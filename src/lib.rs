@@ -4,6 +4,7 @@
 //! generated function is passed through [`verify`], which checks the operation
 //! subset in [`ir`]. Raw IR is untrusted regardless of its producer.
 
+pub mod contract;
 pub mod frontend;
 pub mod host;
 pub mod ir;

@@ -4,8 +4,9 @@ Status: **SPEC-3 resource formalization, with a paper proof for the rules below*
 (2026-09-26). This English document is the authoritative statement of this
 resource calculus. The [formal-core overview](formal-core.md) provides
 motivation and the remaining quantum soundness obligations. This formalization
-draft is intended to account for the accepted forms of [v0](language-spec.md);
-it adds no syntax, primitive, public API, or new acceptance rule. Acceptance
+draft accounts for the accepted forms of [v0](language-spec.md), including typed
+lift patterns and ordinary classical Boolean expressions. It adds no acceptance
+rule or API beyond that specification. Acceptance
 remains governed by v0; any discovered mismatch must be recorded and resolved,
 rather than silently changing the language through this calculus.
 
@@ -23,6 +24,19 @@ The [type/effect/name supplement](source-typing-rules.md) now states all current
 syntax cases and declaration/scope premises, with local paper lemmas T1–T3.
 Together these documents present the finite rule system; completeness by
 syntax cases does not prove its adequacy for every accepted Rust execution.
+
+The **2026-09-27 semantic-contract supplement** adds
+[`CERTIFIED-COMPUTED`](semantic-contracts-v0.1.md#4-computed-relation-source-form)
+with the additional resource case below. Its local paper argument assumes
+exact relation checking and complete private ownership/output transport.
+It is separate from the original R1 validation record and has not been added
+to Lean. General correspondence of this new lowering path to the mathematical
+rule is a remaining obligation.
+
+The later [FC-APPLY function-contract rule](function-contracts-v0.1.md)
+adds one input/output ownership transition with retained checked evidence.
+Its local resource argument is recorded below; no new Lean theorem or general
+source/Rust correspondence follows from that addition.
 
 ## 1. Types, values, and ownership occurrences
 
@@ -118,6 +132,19 @@ are checked, including targets of zero repetitions.
 `MOVE` returns a live linear binding's entire value and replaces that binding
 by its spent marker. A missing or spent value name is rejected.
 
+`C-CONST` returns a fresh visible classical ID for `false` or `true`, emitting
+`ClassicalConst`; it changes no quantum slot or wire and has effect `Unitary`.
+`C-NOT` evaluates its operand once, requires `CBit`, then creates a fresh
+classical output with `ClassicalNot`. `C-BOOL` evaluates the left operand once,
+requires `CBit`, retains that result in the pending frame, then evaluates the
+right operand once and requires `CBit`. It emits `ClassicalAnd` or
+`ClassicalXor` with both visible input IDs and a fresh visible output ID.
+Input IDs may coincide; classical inputs are not consumed. Binary evaluation
+is eager even for `false and e`. Join both operand effects and retain all
+operand ownership transitions; the final classical operation has no quantum
+transition and own effect `Unitary`. The full judgments appear in
+[typing rules §4](source-typing-rules.md#4-values-argument-lists-patterns-and-blocks).
+
 The tuple rule explicitly retains its first result during the second premise:
 
 ```text
@@ -175,11 +202,23 @@ type. Its name must resolve to a basis declaration and must not be a local
 basis variable. All bodies are checked. Induction over the finite acyclic call
 graph and expression trees makes these functions total on their finite domains.
 
-A coherent lift first elaborates its ordinary input `q(s,A)`. It checks the
-basis expression in the **isolated** environment `Xi={x:A}`, obtaining `B` and
-a total table `f:A->B`. It requires distinct table outputs. No surrounding
-ordinary binding can be captured. The label convention is
-`label(a,b)=label(a)+2^bits(A)*label(b)`.
+A coherent lift `do p <- e; pure b` first elaborates its ordinary input
+`q(s,A)`. The typed basis pattern `p:A =>basis Xi` has name, wildcard, and
+exact binary-product cases (`BP-NAME/BP-WILD/BP-PAIR` in
+[typing rules §5](source-typing-rules.md#5-calls-sealed-operations-and-coherent-lift)).
+Names must be distinct across the pattern. For every **original** input label
+`a∈L_A`, uniquely decode and bind its selected components as `eta_p(a)`.
+Check `b:B` in this **isolated** `Xi` and form the total table
+`f(a)=eval(b,eta_p(a))`. All outputs must be distinct over the complete `L_A`,
+including labels ignored by `_`. No surrounding ordinary binding is captured.
+The label convention is `label(a,b)=label(a)+2^bits(A)*label(b)`.
+
+Basis labels carry no quantum ownership. Ignoring one during table construction
+does not consume a register or authorize an ordinary wildcard to discard
+`Q<A>`. For example, `do (a,_) <- q; pure a` on `Q<(Bit,Unit)>` explicitly
+removes a singleton basis factor, while the same expression on `Q<(Bit,Bit)>`
+fails injectivity. In both cases the entire input quantum slot must pass through
+the LIFT transition; pattern binding itself changes no quantum resource.
 
 After argument elaboration, a primitive checks its full source type and arity.
 Each listed input slot occurs once in its pending argument values, and different
@@ -336,22 +375,50 @@ Checking this private body does not expose a free-standing auxiliary release.
 Replace the entire private construction by one `ComputeUseUncompute`, refresh
 the source token, and return its original slot. Its internal zero return is
 justified by the following **exact** lemma. With `z` Z gates, `t` T gates,
-`k=(4z+t) mod 8`, and `C_f|x,b>=|x,b xor f(x)>`,
+`k=(4z+t) mod 8`, and `C_f|x,b⟩=|x,b xor f(x)⟩`,
 
 ```text
-C_f† W C_f |x,0> = exp(i*pi*k*f(x)/4) |x,0>.
+C_f† W C_f |x,0⟩ = exp(i*pi*k*f(x)/4) |x,0⟩.
 ```
 
 The equation holds for every basis input, extends linearly and under any
-reference identity, and factors out `|0>` on the auxiliary. Thus this atomic
+reference identity, and factors out `|0⟩` on the auxiliary. Thus this atomic
 certificate can close its private slot. Lifetime alone is not evidence.
 The more general protected target operations of raw IR are outside this source
 rule. This local lemma does not prove the entire source quantum semantics.
 
+`CERTIFIED-COMPUTED` is the separate three-argument form specified by
+SC-SOURCE/SC-COMPUTED. Evaluate its source once, transfer that holder into
+private d ownership, and add one private auxiliary a. Mask every outer name,
+including classical names, without losing any outer quantum holder. The body
+must have effect `Unitary` and return exactly `(Q<A>,Q<Bit>)`, with no lost,
+duplicated, or extra private ownership. This includes explicitly returning
+zero-width `Q<Unit>` data. Its static target has exact `Q<A>->Q<A>` type.
+
+Transport the complete ordered body output back into the data/auxiliary
+coordinates and check `W Ef=Ef u`, with `Ef|x>=|x,f(x)>`. Only then close
+the private auxiliary using `Cf† W Cf E0=E0 u`. Return the data through the
+outer source slot with a fresh token; all other outer and pending holders
+survive. The auxiliary wire is globally fresh and remains reserved in the
+issued-wire history even after the scope closes. The rule allows changes to
+both data and auxiliary; it never makes the original source and d two
+simultaneously usable holders. The two-argument structural rule remains
+unchanged.
+
+`FC-APPLY` evaluates its input once, retains all other owners in the pending
+frame, and requires both named functions to have the exact same unary
+`Q<A>->Q<A>` unitary signature. Independent function evidence binds those
+definitions and establishes their operator equality. The outer IR action
+consumes one token and returns a fresh token for the same ordered wires;
+it neither lends the actual argument to both functions nor executes both
+at runtime. `Q<Unit>` still requires this token transition. Evidence can be
+shared, while runtime ownership cannot. Remapping, inverse, control, and
+repetition preserve the action's evidence and normal axis/ownership checks.
+
 ## 7. Resource preservation theorem and proof
 
 **R1 (ownership accounting).** Suppose `D` is finite and acyclic, primitive
-transitions and the atomic computed certificate are exactly those above, and
+transitions and the atomic computed certificates are exactly those above, and
 `WF(E,F,R)` holds. For any successful finite expression derivation with result
 `v:T`, residual environment `E'`, and store `R'`:
 
@@ -377,6 +444,15 @@ or a finite sequence. Static body checks use that same declaration order.
   type is classical. `MOVE` removes the complete multiset of occurrences from
   one binding and places exactly that multiset in the result. It cannot read a
   spent marker. Store metadata does not change in any of these cases.
+- `C-CONST` adds only a fresh classical ID and no ownership occurrence.
+  `C-NOT` applies the operand induction hypothesis, then reads its visible
+  classical ID and defines a fresh one without changing `R`. For `C-BOOL`,
+  the first operand leaves a `CBit` holder with empty ownership; holding it
+  in `F` makes the second premise well formed, exactly as in `PAIR`. The
+  second hypothesis preserves every pending quantum holder even if it
+  measures, calls, or branches. The final Boolean operation changes no
+  quantum occurrence, and its fresh output satisfies classical visibility.
+  Eager evaluation omits neither premise and its ownership transitions.
 - For `PAIR`, the first induction hypothesis partitions `R1` among `E1`, `F`,
   and `v1`. Hence the second premise begins well formed with `v1` in its opaque
   frame. Its induction hypothesis partitions `R2` among `E2`, `F`, `v1`, and
@@ -395,7 +471,10 @@ or a finite sequence. Static body checks use that same declaration order.
   refresh tokens on the same disjoint wire lists. `SPLIT` partitions a list
   and `JOIN` concatenates disjoint lists, each exactly once. `INIT` introduces
   fresh ownership and wires. `LIFT` retains its list and appends fresh wires;
-  its updated value has the new basis type. `MEASURE/DISCARD` remove precisely
+  its updated value has the new basis type. The basis-pattern induction
+  manipulates only compile-time labels, creates no holder, and leaves the
+  full original domain of the injection test intact; `BP-WILD` cannot weaken
+  this ownership argument or permit a shrinking injection. `MEASURE/DISCARD` remove precisely
   the explicit input; `RESET` replaces precisely that input by fresh ownership.
   Token freshness and the stated type checks give all three conclusions. These
   arguments use slot multiplicity even when the wire list is empty.
@@ -430,7 +509,24 @@ or a finite sequence. Static body checks use that same declaration order.
   output source and every framed holder survive. No standalone release rule
   is available to this induction.
 
-These cases exhaust the v0 expression and statement forms. Sequential history
+- For the new certified computed case, transfer the source holder into the
+  isolated body and frame every other outer owner. Apply the body induction
+  to its data/auxiliary interface, then its no-extra-ownership and ordered
+  result checks. SC-COMPUTED's exact factorization licenses closing only that
+  auxiliary. The returned data replaces the transferred source holder once,
+  and restoring the untouched outer frame preserves the complete occurrence
+  count, including zero-width holders. Fresh auxiliary reservation and output
+  token issuance preserve history. This is the additional local paper case;
+  no claim follows that Rust establishes each premise on every execution.
+- FC-APPLY uses the input-expression induction with the complete pending
+  frame. Its action refreshes exactly that input token and preserves its
+  source slot/type/wires. The independently checked target bodies do not
+  obtain a second runtime copy of the caller's holder. Ordinary action and
+  control-axis checks therefore preserve ownership accounting; exact operator
+  equality is an additional semantic premise, not an ownership inference.
+
+These cases cover the v0 forms plus the explicit computed/function-contract supplements.
+Sequential history
 extension preserves freshness; only the branch case changes frame metadata,
 and it keeps frame slots and types. This proves R1. The circuit and auxiliary
 premises are explicit local certificate requirements, not inferred from mere
@@ -450,19 +546,25 @@ in `Lowerer::registers`; IR tokens/wires live only in the register metadata.
 The pending frame is implicit: registers not held by the current environment
 or expression result remain in that map. These representations are central to
 the following audit; their general equivalence to R1 is still unproved.
+Links to rules, Rust declarations, and named tests use the checked
+[reference convention](source-typing-rules.md#9-constructor-coverage-and-implementation-audit).
 
 | Rule or obligation | Implementation | Evidence / remaining boundary |
 | --- | --- | --- |
-| Exact types, occurrence distinction | [compile/mod.rs](../src/frontend/compile/mod.rs) `Ty`; [lower.rs](../src/frontend/compile/lower.rs) `Value::owns_quantum`, `quantum` | Existing mixed-value and `Q<Unit>` rejection cases. Wire width does not replace source type equality. |
-| MOVE/COPY, pattern and block exit | `expr_inner`, `bind`, `block`, `no_owned_bindings` | `resource_rules_reject_lost_or_differently_consumed_bindings`; explicit `rebound` detects same-name/same-slot rebinding. |
-| Pending argument / tuple frame | `expr_inner`, `call_user_inner`, `branch` | `resource_rules_pending_mixed_argument_survives_nested_call`, `resource_rules_pending_tuple_field_survives_branch`; Bell correlations tested after recombination. |
-| Mixed branch result positions | `branch`, `merge_results` | `resource_rules_mixed_branch_results_follow_positions`; both choices, classical duplication, and output permutation checked. |
-| Empty-wire ownership in phis | `merge_results`, `merge_register`; [verify.rs](../src/verify.rs) `verify_branch` | `resource_rules_zero_width_result_and_frame_are_both_merged` checks a zero-wire result plus a live caller frame. |
-| Old vs branch-created wires | `branch`, `merge_register`; [sim.rs](../src/sim.rs) `relabel_branch` | `resource_rules_reset_branch_keeps_reference_and_classical_history` checks the correlated frame when one arm ends a logical wire. |
-| Classical scope and simultaneous phi inputs | `merge_results`; `Global`, `verify_branch` in `verify.rs` | `resource_rules_nested_classical_results_keep_their_scopes`, existing `classical_phis_cannot_read_outputs_of_the_same_merge` and `nested_classical_phi_is_visible_in_its_parent_arm`. |
-| Actual parameters, conservative effects | `call_user_inner`, `lower_function` | Existing argument-location, effect, and unused-body tests; no substitution proof for the Rust implementation yet. |
-| Basis isolation and atomic auxiliary | [basis.rs](../src/frontend/compile/basis.rs) `eval_basis`; `lift`, `computed` in `lower.rs` | Existing `finite_v0_basis_lifts_are_injective_and_closed` and `finite_v0_computed_blocks_require_the_structural_certificate`. |
-| Static certificate boundary | `static_steps`; [circuit.rs](../src/frontend/compile/circuit.rs) `flatten`, `invert`; `check_circuit` in `verify.rs` | [Static judgments](static-operations.md#static-target-judgment), [local exact-operator proofs F1–F5](static-semantics.md), phase/rejection tests, and exact finite matrix regressions. Full source/Rust meaning preservation remains SPEC-4. |
+| [Exact types, occurrence distinction](#1-types-values-and-ownership-occurrences) | [`Ty`](../src/frontend/compile/mod.rs); [`owns_quantum`](../src/frontend/compile/lower/value.rs), [`quantum`](../src/frontend/compile/lower/primitives.rs) | Existing mixed-value and `Q<Unit>` rejection cases. Wire width does not replace source type equality. |
+| [MOVE/COPY, pattern and block exit](#2-judgments-and-evaluation-order) | [`expr_inner`](../src/frontend/compile/lower/mod.rs), [`bind`](../src/frontend/compile/lower/mod.rs), [`block`](../src/frontend/compile/lower/mod.rs), [`no_owned_bindings`](../src/frontend/compile/lower/mod.rs) | [`resource_rules_reject_lost_or_differently_consumed_bindings`](../tests/compile.rs); explicit `rebound` detects same-name/same-slot rebinding. |
+| [Classical Boolean sequencing and SSA](#2-judgments-and-evaluation-order) | [`expr_inner`](../src/frontend/compile/lower/mod.rs); [classical IR](../src/ir.rs), [verifier](../src/verify.rs) | [`boolean_operands_are_eager_and_preserve_pending_quantum_ownership`](../tests/specification_boundaries.rs), [`classical_constants_and_conjunction_require_fresh_visible_ssa_values`](../tests/verify.rs). A classical result cannot make operand-owned resources disappear. |
+| [Typed basis patterns and full-domain lifts](#3-basis-judgments-and-primitive-transitions) | [`bind_basis_pattern`](../src/frontend/compile/basis.rs), [`lift`](../src/frontend/compile/lower/mod.rs) | [`basis_lifts_destructure_exact_product_patterns`](../tests/specification_boundaries.rs), [`basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits`](../tests/specification_boundaries.rs). Ignoring a basis label is distinct from quantum weakening. |
+| [Pending argument / tuple frame](#2-judgments-and-evaluation-order) | [`expr_inner`](../src/frontend/compile/lower/mod.rs), [`call_user_inner`](../src/frontend/compile/lower/mod.rs), [`branch`](../src/frontend/compile/lower/branch.rs) | [`resource_rules_pending_mixed_argument_survives_nested_call`](../tests/compile.rs), [`resource_rules_pending_tuple_field_survives_branch`](../tests/compile.rs); Bell correlations tested after recombination. |
+| [Mixed branch result positions](#5-classical-branches-and-simultaneous-phi-interfaces) | [`branch`](../src/frontend/compile/lower/branch.rs), [`merge_results`](../src/frontend/compile/lower/branch.rs) | [`resource_rules_mixed_branch_results_follow_positions`](../tests/compile.rs); both choices, classical duplication, and output permutation checked. |
+| [Empty-wire ownership in phis](#5-classical-branches-and-simultaneous-phi-interfaces) | [`merge_results`](../src/frontend/compile/lower/branch.rs), [`merge_register`](../src/frontend/compile/lower/branch.rs); [`verify_branch`](../src/verify.rs) | [`resource_rules_zero_width_result_and_frame_are_both_merged`](../tests/compile.rs) checks a zero-wire result plus a live caller frame. |
+| [Old vs branch-created wires](#5-classical-branches-and-simultaneous-phi-interfaces) | [`branch`](../src/frontend/compile/lower/branch.rs), [`merge_register`](../src/frontend/compile/lower/branch.rs); [`relabel_branch`](../src/sim.rs) | [`resource_rules_reset_branch_keeps_reference_and_classical_history`](../tests/compile.rs) checks the correlated frame when one arm ends a logical wire. |
+| [Classical scope and simultaneous phi inputs](#5-classical-branches-and-simultaneous-phi-interfaces) | [`merge_results`](../src/frontend/compile/lower/branch.rs); [`Global`](../src/verify.rs), [`verify_branch`](../src/verify.rs) | [`resource_rules_nested_classical_results_keep_their_scopes`](../tests/compile.rs), existing [`classical_phis_cannot_read_outputs_of_the_same_merge`](../tests/verify.rs) and [`nested_classical_phi_is_visible_in_its_parent_arm`](../tests/verify.rs). |
+| [Actual parameters, conservative effects](#4-function-boundaries-and-frames) | [`call_user_inner`](../src/frontend/compile/lower/mod.rs), [`lower_function`](../src/frontend/compile/lower/mod.rs) | Existing argument-location, effect, and unused-body tests; no substitution proof for the Rust implementation yet. |
+| [Basis isolation and atomic auxiliary](#6-static-operations-and-the-computed-scope) | [`eval_basis`](../src/frontend/compile/basis.rs); [`lift`](../src/frontend/compile/lower/mod.rs), [`computed`](../src/frontend/compile/lower/mod.rs) | Existing [`finite_v0_basis_lifts_are_injective_and_closed`](../tests/compile.rs) and [`finite_v0_computed_blocks_require_the_structural_certificate`](../tests/compile.rs). |
+| [Certified data/auxiliary interface](#6-static-operations-and-the-computed-scope) | [`certified_computed`](../src/frontend/compile/lower/certified.rs), [`certified_body`](../src/frontend/compile/lower/certified.rs); [`check_computed`](../src/contract/mod.rs) | [SC-SOURCE/SC-COMPUTED/SC-IR](semantic-contracts-v0.1.md) separate exact operator evidence from ownership, type trees, and source/Rust correspondence. Test status is recorded in the conformance ledger. |
+| [Function-contract ownership transition](#6-static-operations-and-the-computed-scope) | [`apply_function_contract`](../src/frontend/compile/lower/function_contract.rs); [function evidence](../src/contract/function.rs) | [FC-APPLY/FC-IR](function-contracts-v0.1.md) retain the checked contract through final actions while checking the caller's ownership separately. |
+| [Static certificate boundary](#6-static-operations-and-the-computed-scope) | [`static_steps`](../src/frontend/compile/lower/mod.rs); [`flatten`](../src/frontend/compile/circuit.rs), [`invert`](../src/frontend/compile/circuit.rs); [`check_circuit`](../src/verify.rs) | [Static judgments](static-operations.md#static-target-judgment), [local exact-operator proofs F1–F5](static-semantics.md), phase/rejection tests, and exact finite matrix regressions. Full source/Rust meaning preservation remains SPEC-4. |
 
 The `resource_rules_` tests are in [tests/compile.rs](../tests/compile.rs).
 Numerical examples use tolerance `1e-12` and cannot prove R1 or equality of

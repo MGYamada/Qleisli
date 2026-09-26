@@ -127,6 +127,11 @@ pub struct Expr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    ApplyContract {
+        implementation: Ident,
+        specification: Ident,
+        input: Box<Expr>,
+    },
     Adjoint {
         function: Ident,
         input: Box<Expr>,
@@ -143,8 +148,12 @@ pub enum ExprKind {
         one: Ident,
     },
     Name(Ident),
+    CBit(bool),
     Unit,
     Tuple(Box<Expr>, Box<Expr>),
+    Not(Box<Expr>),
+    And(Box<Expr>, Box<Expr>),
+    Xor(Box<Expr>, Box<Expr>),
     Call {
         callee: Ident,
         args: Vec<Expr>,
@@ -155,7 +164,7 @@ pub enum ExprKind {
         else_branch: Block,
     },
     CoherentLift {
-        binder: Ident,
+        binder: Pattern,
         input: Box<Expr>,
         basis: BasisExpr,
     },
@@ -163,6 +172,16 @@ pub enum ExprKind {
         source: Box<Expr>,
         function: Ident,
         binder: Ident,
+        body: Block,
+    },
+    CertifiedComputed {
+        source: Box<Expr>,
+        function: Ident,
+        // Keep the expression enum small: the parser bounds nesting, and
+        // adding several inline identifiers would inflate every stack frame.
+        logical: Box<Ident>,
+        data_binder: Box<Ident>,
+        ancilla_binder: Box<Ident>,
         body: Block,
     },
 }

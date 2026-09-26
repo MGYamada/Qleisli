@@ -7,6 +7,59 @@ pub(super) struct BasisValue {
 }
 
 impl Compiler<'_> {
+    /// Bind one finite label through the exact product tree. Wildcards omit
+    /// basis information only; the complete lift still checks injectivity.
+    pub(super) fn bind_basis_pattern(
+        &mut self,
+        module: &str,
+        pattern: &Pattern,
+        ty: &Ty,
+        label: u16,
+    ) -> Result<BTreeMap<String, BasisValue>, CompileError> {
+        let mut env = BTreeMap::new();
+        let mut pending = vec![(pattern, ty, label)];
+        while let Some((pattern, ty, label)) = pending.pop() {
+            self.tick(module, pattern.span)?;
+            match &pattern.kind {
+                PatternKind::Name(name) => {
+                    if env.contains_key(&name.text) {
+                        return Err(self.error(
+                            module,
+                            name.span,
+                            ErrorCode::Ownership,
+                            "duplicate name in a basis binding pattern",
+                        ));
+                    }
+                    self.charge(module, pattern.span, ty.tree_size().nodes)?;
+                    env.insert(
+                        name.text.clone(),
+                        BasisValue {
+                            ty: ty.clone(),
+                            label,
+                        },
+                    );
+                }
+                PatternKind::Wildcard => {}
+                PatternKind::Tuple(left, right) => {
+                    let Ty::Pair(a, b) = ty else {
+                        return Err(self.error(
+                            module,
+                            pattern.span,
+                            ErrorCode::TypeMismatch,
+                            "tuple basis pattern requires a product basis type",
+                        ));
+                    };
+                    let left_bits = a.basis_bits().expect("basis pattern type");
+                    let left_label = label & ((1u16 << left_bits) - 1);
+                    // Push right first to visit pattern names from left to right.
+                    pending.push((right, b, label >> left_bits));
+                    pending.push((left, a, left_label));
+                }
+            }
+        }
+        Ok(env)
+    }
+
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
         let (params, result) = self.signature(key)?;

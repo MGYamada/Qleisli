@@ -25,6 +25,9 @@ pub struct SimulationLimits {
     pub max_components: usize,
     /// Total complex amplitudes retained across all ensemble components.
     pub max_amplitude_cells: usize,
+    /// IR visits and expanded circuit steps, shared across all components.
+    /// This is a step bound, not a floating-point-operation or time bound.
+    pub max_execution_steps: usize,
 }
 
 impl Default for SimulationLimits {
@@ -33,6 +36,7 @@ impl Default for SimulationLimits {
             max_qubits: 16,
             max_components: 65_536,
             max_amplitude_cells: 1 << 20,
+            max_execution_steps: 1_000_000,
         }
     }
 }
@@ -43,6 +47,7 @@ pub enum SimulationError {
     DimensionLimit { required: usize, max: usize },
     ComponentLimit { max: usize },
     AmplitudeLimit { required: usize, max: usize },
+    ExecutionLimit { max: usize },
     InconsistentVerifiedIr(&'static str),
 }
 
@@ -62,6 +67,9 @@ impl fmt::Display for SimulationError {
                     "simulation requires {required} amplitude cells; limit is {max}"
                 )
             }
+            Self::ExecutionLimit { max } => {
+                write!(f, "simulation exceeds the {max}-step execution limit")
+            }
             Self::InconsistentVerifiedIr(reason) => {
                 write!(f, "verified IR is inconsistent during simulation: {reason}")
             }
@@ -70,6 +78,21 @@ impl fmt::Display for SimulationError {
 }
 
 impl std::error::Error for SimulationError {}
+
+struct ExecutionBudget {
+    remaining: usize,
+    max: usize,
+}
+
+impl ExecutionBudget {
+    fn charge(&mut self, amount: usize) -> Result<(), SimulationError> {
+        self.remaining = self
+            .remaining
+            .checked_sub(amount)
+            .ok_or(SimulationError::ExecutionLimit { max: self.max })?;
+        Ok(())
+    }
+}
 
 #[derive(Clone, Copy, Debug, Default)]
 struct Complex {
@@ -440,7 +463,24 @@ fn run_unitary_steps(
     }
 }
 
-fn run_circuit(component: &mut Component, axes: &[usize], steps: &[CircuitStep]) {
+fn run_circuit(
+    component: &mut Component,
+    axes: &[usize],
+    steps: &[CircuitStep],
+    budget: &mut ExecutionBudget,
+) -> Result<(), SimulationError> {
+    // Charge the transitive cost before cloning or expanding dependencies.
+    for step in steps {
+        budget.charge(match &step.action {
+            CircuitAction::Contract { evidence, .. } => evidence.expanded_steps(),
+            _ => 1,
+        })?;
+    }
+    run_circuit_precharged(component, axes, steps);
+    Ok(())
+}
+
+fn run_circuit_precharged(component: &mut Component, axes: &[usize], steps: &[CircuitStep]) {
     for step in steps {
         let enabled = |index| {
             step.controls
@@ -448,6 +488,38 @@ fn run_circuit(component: &mut Component, axes: &[usize], steps: &[CircuitStep])
                 .all(|c| bit(index, axes[c.index]) == c.when_one)
         };
         match &step.action {
+            CircuitAction::Contract {
+                indices,
+                evidence,
+                adjoint,
+            } => {
+                // Execute the checked physical lowering; retain every outer
+                // control and remap the function's ordered interface axes.
+                let mut body = evidence.circuit().steps().to_vec();
+                if *adjoint {
+                    crate::contract::invert_steps(&mut body);
+                }
+                for inner in &mut body {
+                    for control in &mut inner.controls {
+                        control.index = indices[control.index];
+                    }
+                    inner.controls.extend(step.controls.iter().cloned());
+                    match &mut inner.action {
+                        CircuitAction::Hadamard { target } => *target = indices[*target],
+                        CircuitAction::Monomial {
+                            indices: targets, ..
+                        }
+                        | CircuitAction::Contract {
+                            indices: targets, ..
+                        } => {
+                            for target in targets {
+                                *target = indices[*target];
+                            }
+                        }
+                    }
+                }
+                run_circuit_precharged(component, axes, &body);
+            }
             CircuitAction::Hadamard { target } => {
                 apply_gate(
                     &mut component.amplitudes,
@@ -536,8 +608,46 @@ fn execute_op(
     mut component: Component,
     operation: &RawOp,
     limits: SimulationLimits,
+    budget: &mut ExecutionBudget,
 ) -> Result<Vec<Component>, SimulationError> {
+    budget.charge(1)?;
     match operation {
+        RawOp::CertifiedCompute {
+            source,
+            source_out,
+            ancilla_wires,
+            function,
+            use_steps,
+            ..
+        } => {
+            let wires = component.take(*source)?;
+            let data_axes = wires
+                .iter()
+                .map(|wire| component.position(*wire))
+                .collect::<Result<Vec<_>, _>>()?;
+            let auxiliary = ancilla_wires[0];
+            component.add_zero_wire(auxiliary, limits)?;
+            let aux_axis = component.position(auxiliary)?;
+            let compute = |state: &mut Component| {
+                // XOR the actual predicate; this permutation is its own inverse.
+                let mut output = vec![Complex::ZERO; state.amplitudes.len()];
+                for (index, amplitude) in state.amplitudes.iter().copied().enumerate() {
+                    let value = usize::from(function[local_label(index, &data_axes)]);
+                    output[index ^ (value << aux_axis)] = amplitude;
+                }
+                state.amplitudes = output;
+            };
+            compute(&mut component);
+            let mut axes = data_axes.clone();
+            axes.push(aux_axis);
+            run_circuit(&mut component, &axes, use_steps, budget)?;
+            compute(&mut component);
+            // Exact raw-IR evidence already proves the omitted rows are zero.
+            // No numerical tolerance, renormalization, or observed postselection
+            // is used as permission to release this auxiliary.
+            component = component.project_remove(auxiliary, false)?;
+            component.tokens.insert(*source_out, wires);
+        }
         RawOp::ApplyUnitary {
             input,
             output,
@@ -548,7 +658,7 @@ fn execute_op(
                 .iter()
                 .map(|wire| component.position(*wire))
                 .collect::<Result<Vec<_>, _>>()?;
-            run_circuit(&mut component, &axes, steps);
+            run_circuit(&mut component, &axes, steps, budget)?;
             component.tokens.insert(*output, wires);
         }
         RawOp::Init0 { output, wire } => {
@@ -616,6 +726,8 @@ fn execute_op(
             zero_ops,
             one_ops,
         } => {
+            budget.charge(zero_ops.len())?;
+            budget.charge(one_ops.len())?;
             let control_wires = component.take(*control)?;
             let target_wires = component.take(*target)?;
             let control_axis = component.position(control_wires[0])?;
@@ -743,6 +855,9 @@ fn execute_op(
             }
             return Ok(branches);
         }
+        RawOp::ClassicalConst { value, output } => {
+            component.classical.insert(*output, *value);
+        }
         RawOp::ClassicalNot { input, output } => {
             let value = !component.classical(*input)?;
             component.classical.insert(*output, value);
@@ -755,6 +870,14 @@ fn execute_op(
             let value = component.classical(*left)? ^ component.classical(*right)?;
             component.classical.insert(*output, value);
         }
+        RawOp::ClassicalAnd {
+            left,
+            right,
+            output,
+        } => {
+            let value = component.classical(*left)? & component.classical(*right)?;
+            component.classical.insert(*output, value);
+        }
         RawOp::ClassicalBranch {
             condition,
             then_ops,
@@ -764,7 +887,7 @@ fn execute_op(
         } => {
             let then_arm = component.classical(*condition)?;
             let arm = if then_arm { then_ops } else { else_ops };
-            let result = execute_ops(vec![component], arm, limits)?;
+            let result = execute_ops(vec![component], arm, limits, budget)?;
             return result
                 .into_iter()
                 .map(|branch| relabel_branch(branch, then_arm, quantum_phis, classical_phis))
@@ -778,6 +901,7 @@ fn execute_op(
             function,
             use_ops,
         } => {
+            budget.charge(use_ops.len())?;
             check_dimension(component.axes.len() + ancilla_wires.len(), limits)?;
             let source_wires = component.take(*source)?;
             let source_axes = source_wires
@@ -809,12 +933,13 @@ fn execute_ops(
     mut ensemble: Vec<Component>,
     operations: &[RawOp],
     limits: SimulationLimits,
+    budget: &mut ExecutionBudget,
 ) -> Result<Vec<Component>, SimulationError> {
     for operation in operations {
         let mut next = Vec::new();
         let mut next_cells = 0usize;
         for component in ensemble {
-            for successor in execute_op(component, operation, limits)? {
+            for successor in execute_op(component, operation, limits, budget)? {
                 next_cells = next_cells.checked_add(successor.amplitudes.len()).ok_or(
                     SimulationError::AmplitudeLimit {
                         required: usize::MAX,
@@ -854,7 +979,16 @@ pub fn run_closed(
     }
     check_components(1, limits)?;
     check_amplitude_cells(1, limits)?;
-    let ensemble = execute_ops(vec![Component::vacuum()], &raw.operations, limits)?;
+    let mut budget = ExecutionBudget {
+        remaining: limits.max_execution_steps,
+        max: limits.max_execution_steps,
+    };
+    let ensemble = execute_ops(
+        vec![Component::vacuum()],
+        &raw.operations,
+        limits,
+        &mut budget,
+    )?;
     let mut probabilities = BTreeMap::new();
     for component in ensemble {
         if !component.tokens.is_empty() || !component.axes.is_empty() {

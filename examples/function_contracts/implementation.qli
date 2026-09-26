@@ -1,0 +1,16 @@
+use std::quantum::z;
+use std::quantum::h;
+use meaning::phase;
+
+basis fn copy_label(value: Bit) -> Bit { value }
+
+unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
+
+unitary fn computed(q: Q<Bit>) -> Q<Bit> {
+    with_computed(q, copy_label, phase) { |data, auxiliary|
+        (data, h(h(z(auxiliary))))
+    }
+}
+
+// Replacing computed(q) with direct(q) leaves the client unchanged.
+pub unitary fn selected(q: Q<Bit>) -> Q<Bit> { computed(q) }

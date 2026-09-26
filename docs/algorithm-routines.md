@@ -1,87 +1,165 @@
-# 構造化アルゴリズムの有限部品
+<a id="構造化アルゴリズムの有限部品"></a>
 
-状態: **通常の `.qli` 定義として実装・有限例で検証**（2026-09-26）。[第2開発目標](algorithm-structure-goal.md)のA1に対応する。`stdlib/src/routines.qli`の`std::routines`は、固定幅の5つの公開関数を持つ。同梱ソースも利用者ソースと同じ型・効果・所有権検査、本文の展開、独立したIR検証を受ける。新しい原始操作・表層構文・第一級コンビネータは追加していない。名前と幅の一般化は今後の設計対象。
+# Finite building blocks for structured algorithms
 
-## 公開APIの契約
+Status: **Implemented as ordinary `.qli` definitions and checked on finite
+examples** (2026-09-26), corresponding to A1 of the
+[second development goal](algorithm-structure-goal.md). The bundled
+[`routines.qli`](../stdlib/src/routines.qli) defines five fixed-width public
+functions in `std::routines`. They receive the same type, effect, ownership,
+body-expansion, and independent IR checks as user source. They add no primitive
+operations, surface syntax, or first-class combinators. Generalized names and
+widths remain future design work. This English edition is the authoritative
+contract and reference for this document, replacing its earlier Japanese edition
+without changing the APIs or their evidence status.
 
-表の量子引数はすべて消費し、返した値だけを再使用できる。別所有権から積状態を仮定しない。表示しない参照系には恒等を掛けて解釈する。`Bit`の組`(a,b)`はIRのビット添字で`a+2b`、測定結果の表示では左から`ab`の順。
+<a id="公開apiの契約"></a>
 
-| 名前・所属 | 入出力型・効果・意味 | 受理例／拒否例 | IRへの変換 |
+## Public API contracts
+
+Consume all quantum arguments; only ownership returned in the result may be
+used subsequently. Distinct ownership does not imply a product state. Interpret
+each operation with the identity on unmentioned reference systems. The basis
+pair `(a,b)` has IR integer label `a+2b`; measurement output is displayed as
+`ab` from left to right. Product-domain notation does not change source arity:
+`parity_zz` takes two quantum arguments, while the other four functions take one.
+
+| Name and classification | Input/output type, effect, and meaning | Acceptance / rejection | IR lowering |
 | --- | --- | --- | --- |
-| `hadamard2`／通常の`.qli`定義 | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>`、`Unitary`。`H⊗H`。全所有権を返す。 | 受理: 2ビットの積レジスタ。拒否: `Q<Bit>`、消費済み入力。 | `Split; H; H; Join`。 |
-| `reflect_uniform2`／通常の`.qli`定義 | 同じ型、`Unitary`。`D=2∣s⟩⟨s∣-I`、`∣s⟩=H⊗H∣00⟩`。 | 受理: Groverステップの反射。拒否: 単一ビット、同じ所有権の再使用。 | `hadamard2`、`ComputeUseUncompute`、`hadamard2`を展開。位相を以下の等式で固定する。 |
-| `measure_x`／通常の`.qli`定義 | `Q<Bit> -> CBit`、`Observe`。X固有値`(-1)^b`を測り、対象の所有権を消費。 | 受理: `measure_x(h(init0()))`は0。拒否: `unitary`本文での呼び出し、測定後の旧入力。 | `H; MeasureZ`。 |
-| `measure_z2`／通常の`.qli`定義 | `Q<(Bit,Bit)> -> (CBit,CBit)`、`Observe`。両対象を消費。 | 受理: Bell対では00/11。拒否: 単一ビット、測定後の旧レジスタ。 | `Split; MeasureZ; MeasureZ`、左の結果を先に返す。 |
-| `parity_zz`／通常の`.qli`定義 | `(Q<Bit>,Q<Bit>) -> ((Q<Bit>,Q<Bit>),CBit)`、`Observe`。別所有のデータ2本を返し、内部測定用ワイヤを消費。 | 受理: 相関したデータのZZパリティ測定。拒否: `parity_zz(q,q)`、返ったデータの暗黙破棄、`Unitary`としての使用。 | `Init0; Cnot(a,m); Cnot(b,m); MeasureZ(m)`。 |
+| `hadamard2`; ordinary `.qli` definition | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>`, `Unitary`; `H⊗H`, returning all ownership. | Accept a two-bit product register. Reject `Q<Bit>` and consumed inputs. | `Split; Gate(H); Gate(H); Join`. |
+| `reflect_uniform2`; ordinary definition | Same type, `Unitary`; `D=2\|s⟩⟨s\|-I` with `\|s⟩=(H⊗H)\|00⟩`. | Accept the reflection in a Grover step. Reject a single bit and reused ownership. | Expand `hadamard2`, `ComputeUseUncompute`, `hadamard2`. The equation below fixes the phase. |
+| `measure_x`; ordinary definition | `Q<Bit> -> CBit`, `Observe`; measure X eigenvalue `(-1)^b` and consume the input ownership. | `measure_x(h(init0()))` returns 0. Reject a call in a `unitary` body or subsequent use of its old input. | `Gate(H); MeasureZ`. |
+| `measure_z2`; ordinary definition | `Q<(Bit,Bit)> -> (CBit,CBit)`, `Observe`; consume both inputs. | A Bell pair gives 00/11. Reject a single bit and use of the old measured register. | `Split; MeasureZ; MeasureZ`; return the left result first. |
+| `parity_zz`; ordinary definition | Arguments `Q<Bit>,Q<Bit>` → `((Q<Bit>,Q<Bit>),CBit)`, `Observe`; return both separately owned data wires and consume the internal meter. | Accept ZZ-parity measurement on correlated data. Reject `parity_zz(q,q)`, implicit discard of returned data, and use in a `unitary` body. | `Init0; Cnot(a,m); Cnot(b,m); MeasureZ(m)`. |
 
-非公開の`nonzero2 : (Bit,Bit) -> Bit`も通常の`.qli`基底関数。全域で、`00`に0、それ以外に1を返す。全域性は有限列挙で検査する。この表は非単射でよく、補助へのXOR計算を持つ`with_computed`の述語に使う。`Q<(Bit,Bit)>`から`Q<Bit>`へ直接リフトする契約ではない。
+The private `nonzero2(a: Bit,b: Bit) -> Bit` is also an ordinary basis function.
+It is total, returning 0 on 00 and 1 otherwise; finite enumeration checks
+totality. Its table may be noninjective because `with_computed` uses it for
+reversible XOR computation into an auxiliary. This is not a direct-lift
+contract from `Q<(Bit,Bit)>` to `Q<Bit>`.
 
-### 反射の位相
+<a id="反射の位相"></a>
 
-`with_computed(q,nonzero2) { |a| z(a) }`は基底`|ab⟩`に`(-1)^nonzero2(a,b)`を掛けるので、
+### Reflection phase
+
+`with_computed(q,nonzero2) { |a| z(a) }` multiplies basis state `|ab⟩` by
+`(-1)^nonzero2(a,b)`, hence
 
 ```text
 R0 = diag(1, -1, -1, -1) = 2|00⟩⟨00| - I
 D  = (H⊗H) R0 (H⊗H) = 2|s⟩⟨s| - I
 ```
 
-となる。`00`だけを負にする位相オラクルなら結果は`-D`になるため、この選択を明記する。演算子の符号は上の定義と本文の構成で固定する。今回の閉じた測定例だけでは全体位相は観測できず、A2で追加した[制御化による符号テスト](static-operations.md#確認した結果)では `D` と `-D` を区別した。
+An oracle that negated only 00 would instead produce `-D`. The operator's sign
+is fixed by this definition and the source construction. Global phase is
+unobservable in the closed measurement example alone. The subsequent A2
+[controlled-sign tests](static-operations.md#確認した結果) distinguish `D` from `-D`.
 
-### パリティ測定の全体系での意味
+<a id="パリティ測定の全体系での意味"></a>
 
-`parity_zz`の結果`s`に対応する非正規化の残系は
+### Whole-system meaning of parity measurement
+
+For result `s` of `parity_zz`, the unnormalized remaining system is
 
 ```text
 P_s = (I + (-1)^s Z_a Z_b) / 2
-E_s(ρ) = (P_s ⊗ I_R) ρ (P_s ⊗ I_R),  s ∈ {0,1}
+E_s(ρ) = (P_s ⊗ I_R) ρ (P_s ⊗ I_R),  s ∈ {0,1}.
 ```
 
-である。`P_0+P_1=I`で全枝の和は跡保存。パリティ部分空間の内部の重ね合わせを保持する。各データをZ測定してから結果をXORする操作とは残系が異なる。`|++⟩`入力からは、結果0で`(|00⟩+|11⟩)/√2`、結果1で`(|01⟩+|10⟩)/√2`を各1/2で得る。これはデータ測定を置き換えた場合に壊れるX相関で検査する。
+The orthogonal projectors sum to identity, so the sum of branches preserves
+trace. Coherence within each parity subspace is retained. Measuring each data
+wire in Z and then XORing the results would produce a different remaining state.
+For input `|++⟩`, results 0 and 1 have probability `1/2` each and leave,
+respectively, `(|00⟩+|11⟩)/√2` and `(|01⟩+|10⟩)/√2`. Tests check the X
+correlations that would be lost by replacing the operation with data measurements.
 
-## 組み立てたアルゴリズム
+<a id="組み立てたアルゴリズム"></a>
 
-### Grover: オラクル・反射・有限反復
+## Composed algorithm examples
 
-[`examples/grover`](../examples/grover/main.qli)は、状態準備、`oracle::mark`、`search::step`、測定をモジュールで分ける。述語`marked(a,b)=a and b`の位相オラクルは`O=I-2|11⟩⟨11|`。ステップは`G=D O`で、`search_one`は`|s⟩`へ1回適用する。
+<a id="grover-オラクル反射有限反復"></a>
 
-- `oracle::mark`、`search::step`は通常定義、`Q<(Bit,Bit)> -> Q<(Bit,Bit)>`の`Unitary`。
-- `search::search_one`は通常定義、`() -> Q<(Bit,Bit)>`の`Iso`。新しいデータ2本を返す。
-- `marked`は全域な通常の基底関数`(Bit,Bit)->Bit`。対象数1という性質は個別アルゴリズムの前提である。
-- すべて通常呼び出しとして既存の準備・ゲート・補助計算IRへ展開。受理例は公開main、拒否例はステップへ同じ資源を二重に渡す式や測定済み入力。
+### Grover: oracle, reflection, and finite repetition
 
-1対象・4候補では`θ=arcsin(1/2)=π/6`、`k`反復の成功確率は`sin²((2k+1)θ)`。テストは全4対象、`k=0..4`を照合し、反復すれば常に成功率が上がるという誤った仕様を避ける。このGrover例の有限反復テストは明示した呼び出し列を使う。A2では別途 `repeat_static` の静的展開を実装した。
+[`examples/grover`](../examples/grover/main.qli) separates preparation,
+`oracle::mark`, `search::step`, and measurement into modules. Predicate
+`marked(a,b)=a and b` gives `O=I-2|11⟩⟨11|`. The step is `G=D O`, and
+`search_one` applies it once to `|s⟩`.
 
-### Bernstein–Vazirani: 同じ準備と異なる干渉の組み立て
+- `oracle::mark` and `search::step` are ordinary definitions of type
+  `Q<(Bit,Bit)> -> Q<(Bit,Bit)>` and effect `Unitary`.
+- `search::search_one` is an ordinary `Iso` definition with no arguments and
+  result `Q<(Bit,Bit)>`, returning two fresh data wires.
+- `marked(a: Bit,b: Bit) -> Bit` is an ordinary total basis function. Having
+  exactly one marked value is an algorithm-specific assumption.
+- Ordinary calls expand into existing preparation, gate, and auxiliary IR.
+  The example `main` is accepted. Reusing resources or supplying measured
+  ownership to a step is rejected.
 
-[`examples/bernstein_vazirani`](../examples/bernstein_vazirani/main.qli)は`hadamard2`と`measure_z2`をGroverと共有する。`O_s|x⟩=(-1)^(s·x)|x⟩`に対して`(H⊗H)O_s(H⊗H)|00⟩=|s⟩`を使う。
+For one marked value among four candidates, `θ=arcsin(1/2)=π/6` and the success
+probability after `k` iterations is `sin²((2k+1)θ)`. Tests cover every marked
+value and `k=0..4`; repetition does not monotonically increase success.
+These finite Grover repetition tests use explicit call sequences. A2 separately
+implemented the `repeat_static` language form.
 
-- `oracle::mark`は通常定義、2ビットレジスタの`Unitary`。全域な通常の基底関数`linear(a,b)=a`が隠れ列`10`を表す。
-- `interference::recover_secret`は通常定義、`() -> Q<(Bit,Bit)>`の`Iso`。新規準備・オラクル・Hadamardを展開し、所有権を返す。
-- 受理例は公開main、拒否例は型違い・所有権再使用。線形関数という約束は型検査の保証ではない。
+<a id="bernsteinvazirani-同じ準備と異なる干渉の組み立て"></a>
 
-テストは全4隠れ列を照合する。これは位相オラクルへのアクセスを前提とする有限例であり、大規模オラクルの合成コストを測ったものではない。
+### Bernstein–Vazirani: shared preparation, different interference
 
-### ビット反転訂正: シンドローム・古典フィードバック
+[`examples/bernstein_vazirani`](../examples/bernstein_vazirani/main.qli) shares
+`hadamard2` and `measure_z2` with Grover. For
+`O_s|x⟩=(-1)^(s·x)|x⟩`, it uses `(H⊗H)O_s(H⊗H)|00⟩=|s⟩`.
 
-[`examples/bit_flip_code`](../examples/bit_flip_code/main.qli)は**3量子ビット反復符号、理想操作、高々1箇所のX誤り**に限定する。コード空間は`α|000⟩+β|111⟩`。一般の量子誤り訂正や耐故障性は主張しない。
+- `oracle::mark` is an ordinary `Unitary` on a two-bit register. Its ordinary
+  total basis function `linear(a,b)=a` represents the displayed secret 10.
+- `interference::recover_secret` is an ordinary `Iso` with no arguments and
+  result `Q<(Bit,Bit)>`. It expands fresh preparation, the oracle, and Hadamards,
+  returning the resulting ownership.
+- The example `main` is accepted; incorrect types and ownership reuse are
+  rejected. Linearity of the oracle's Boolean function is an algorithm promise,
+  not a consequence of type acceptance.
 
-| 通常の`.qli`定義 | 型・所有権・効果 | 意味とIR |
+Tests cover all four secrets. This is a finite example assuming access to a
+phase oracle, not a measurement of large-oracle synthesis cost.
+
+<a id="ビット反転訂正-シンドローム古典フィードバック"></a>
+
+### Bit-flip correction: syndrome and classical feedback
+
+[`examples/bit_flip_code`](../examples/bit_flip_code/main.qli) is restricted to
+a **three-qubit repetition code, ideal operations, and at most one X error**.
+Its code space is `α|000⟩+β|111⟩`. It does not claim general error correction
+or fault tolerance.
+
+| Ordinary definition | Type, ownership, and effect | Meaning and IR |
 | --- | --- | --- |
-| `code::encode` | `Q<Bit> -> Q<((Bit,Bit),Bit)>`、`Iso`。入力を消費し2本増えたレジスタを返す。 | 単射基底写像`b -> ((b,b),b)`の`LiftBasis`。未知状態のコピーではなく符号化`V`。 |
-| `code::recover` | `Q<((Bit,Bit),Bit)> -> (Q<((Bit,Bit),Bit)>,(CBit,CBit))`、`Observe`。データを返し、内部メータを測定・消費。 | `parity_zz(a,b)`、`parity_zz(b,c)`、シンドロームに応じたXを`ClassicalBranch`へ展開。 |
-| `code::decode` | `Q<((Bit,Bit),Bit)> -> (Q<Bit>,(Q<Bit>,Q<Bit>))`、`Unitary`。全3本の所有権を返す。 | `Cnot(a,b); Cnot(a,c)`。補助2本がゼロでも暗黙解放せず、呼び出し元で測定等により消費する。 |
+| `code::encode` | `Q<Bit> -> Q<((Bit,Bit),Bit)>`, `Iso`. Consume the input and return a register with two additional wires. | `LiftBasis` for injective `b -> ((b,b),b)`; encoding `V`, not cloning an unknown state. |
+| `code::recover` | `Q<((Bit,Bit),Bit)> -> (Q<((Bit,Bit),Bit)>,(CBit,CBit))`, `Observe`. Return the data and measure/consume internal meters. | Expand `parity_zz(a,b)`, `parity_zz(b,c)`, and syndrome-dependent X using `ClassicalBranch`. |
+| `code::decode` | `Q<((Bit,Bit),Bit)> -> (Q<Bit>,(Q<Bit>,Q<Bit>))`, `Unitary`. Return ownership of all three wires. | `Cnot(a,b); Cnot(a,c)`. Even zero-valued auxiliary outputs are not implicitly released; the caller consumes them explicitly, for example by measurement. |
 
-`(s_ab,s_bc)`は、無誤り・`X_a`・`X_b`・`X_c`に対してそれぞれ`00,10,11,01`。対応する補正を`C_s`、復号を`D_dec`とすると、各`E∈{I,X_a,X_b,X_c}`について
+Syndromes `(s_ab,s_bc)` for no error, `X_a`, `X_b`, and `X_c` are
+`00,10,11,01` respectively. For the corresponding correction `C_s` and decoder
+`D_dec`, each `E∈{I,X_a,X_b,X_c}` satisfies
 
 ```text
-D_dec C_s E V |ψ⟩ = |ψ⟩ ⊗ |00⟩
+D_dec C_s E V |ψ⟩ = |ψ⟩ ⊗ |00⟩.
 ```
 
-であり、同じ線形等式を参照系へ恒等拡張できる。シンドロームは論理値に依存しない。この回路についての等式と、コンパイラ全体の一般的な健全性証明は別である。
+The same linear equality extends by identity to any reference system. The
+syndrome is independent of the logical value. This circuit equation is distinct
+from a general soundness proof for the compiler.
 
-テストは論理入力を外部参照とBell対にして、4種の誤り後の相関、シンドローム、復号補助のゼロを照合する。Z誤り・2箇所のX誤りでは論理誤りが残ることも確認する。符号空間と誤りモデルの前提は現在の`Q<...>`型には符号化されておらず、前提外の入力を型検査で拒否するとは主張しない。資源の二重使用・返されたデータの暗黙破棄・観測の`unitary`内への混入は拒否する。
+Tests entangle the logical input with an external Bell reference and check
+correlations, syndrome, and zero decoder auxiliaries after all four errors.
+They also confirm residual logical errors for a Z error and for two X errors.
+The current `Q<...>` types do not encode the code-space or error-model premises;
+inputs outside those premises are not claimed to be rejected by typing.
+Resource duplication, implicit discard of returned data, and observation inside
+a `unitary` body are rejected.
 
-## 実行と検証
+<a id="実行と検証"></a>
+
+## Execution and verification
 
 ```sh
 cargo run --bin qleisli -- run examples/grover
@@ -90,4 +168,9 @@ cargo run --bin qleisli -- run examples/bit_flip_code
 cargo test --test algorithms --test project
 ```
 
-期待するmainの出力は順に`11`、`10`、`11000`が確率1。最後はシンドローム`11`、論理X測定`0`、復号補助のZ測定`00`の順。参照シミュレータは`f64`近似であり、テスト許容誤差は`1e-12`。これらは一般の健全性定理、実機の訂正能力、大規模での計算量を検証するものではない。
+The three example outputs are respectively `11`, `10`, and `11000` with
+probability one. The last consists of syndrome 11, logical X measurement 0,
+then Z measurements 00 of the decoder auxiliaries. The reference simulator
+uses `f64` approximation with test tolerance `1e-12`. These finite checks do
+not establish a general soundness theorem, physical correction capability, or
+large-scale computational complexity.

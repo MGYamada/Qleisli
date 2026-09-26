@@ -1,52 +1,146 @@
-# A3/L3: 有限算術と位数推定
+<a id="a3l3-有限算術と位数推定"></a>
 
-状態: **有限部分集合を実装・有限例で検証**（2026-09-26）。A3/L3の最初の範囲を、固定幅の可逆算術、N=15の位数推定、古典的な因数候補検査に限定する。一般サイズのShor、サイズ付き整数型、VQE/QAOAは別の残件である。
+# A3/L3: Finite arithmetic and order finding
 
-## 通常定義の算術契約
+Status: **Finite subset implemented and checked on finite examples** (2026-09-26).
+The initial A3/L3 scope consists of fixed-width reversible arithmetic,
+order finding for N=15, and classical factor-candidate checking. General-size
+Shor, sized integer types, and VQE/QAOA remain separate work. This English edition
+is the authoritative contract and reference for this document, replacing its
+earlier Japanese edition without changing the implemented APIs. The public
+arithmetic definitions remain experimental; the [ledger](stdlib-contracts.md)
+records their contracts and adoption status.
 
-文書中だけの略記を `B2=(Bit,Bit)`、`B4=(B2,B2)` とする。ビットは左から重み1、2、4、8。下記はすべて通常の `.qli` 定義、`Unitary`。入力所有権を消費して同じ型で全ワイヤを返す。補助資源や測定を導入しない。表示しない参照系には恒等を掛ける。
+<a id="通常定義の算術契約"></a>
 
-| API | 型と全基底入力での意味 | IR・費用 | 受理／拒否 |
+## Arithmetic contracts for ordinary definitions
+
+Use the document-only abbreviations `B2=(Bit,Bit)` and `B4=(B2,B2)`. Bits have
+weights 1, 2, 4, and 8 from left to right. All three APIs below are ordinary
+`.qli` definitions with effect `Unitary` and one quantum parameter. They consume
+input ownership and return every input wire with the same type. They introduce
+no auxiliary resources or measurement, impose no state or separability promise,
+and extend by identity to unmentioned references. Each stated basis mapping has
+amplitude **+1**, not an unspecified global or input-dependent phase.
+
+| API | Type and meaning on every basis input | Logical IR and cost | Acceptance / rejection |
 | --- | --- | --- | --- |
-| `std::arithmetic::increment2` | `Q<B2> -> Q<B2>`、`∣y⟩ -> ∣(y+1) mod 4⟩`。桁あふれは巡回する。 | Split、CNOT、X、Join。 | 2ビットで受理、幅・積型違いと所有権再使用を拒否。 |
-| `std::arithmetic::add2` | `Q<(B2,B2)> -> Q<(B2,B2)>`、`∣x,y⟩ -> ∣x,(y+x) mod 4⟩`。xを保持。 | Toffoli 1回、CNOT 2回とSplit/Join。 | 全16入力、絡み合った入力で受理。暗黙破棄・複製を拒否。 |
-| `std::arithmetic::mul2_mod15` | `Q<B4> -> Q<B4>`。`0<=y<15`では`∣y⟩ -> ∣2y mod 15⟩`、`∣15⟩ -> ∣15⟩`。 | 4ビットの巡回並べ替えをSplit/Joinで表す。逆・制御化時は位相0の16要素置換表へ変換。 | 15も定義済みの入力として受理。別の法・乗数を指定するAPIではない。 |
+| `std::arithmetic::increment2` | `Q<B2> -> Q<B2>`; `\|y⟩ ↦ \|(y+1) mod 4⟩` for `0≤y<4`. Overflow wraps. | One `Split`, one `Cnot`, one `Gate(X)`, one `Join`; two data wires. | Accept the two-bit product, including 3→0. Reject wrong widths/type trees and ownership reuse. |
+| `std::arithmetic::add2` | `Q<(B2,B2)> -> Q<(B2,B2)>`; `\|x,y⟩ ↦ \|x,(y+x) mod 4⟩` for `0≤x,y<4`. The first pair is `x`, which is retained; the second is `y`. | One `Toffoli`, two `Cnot`, three `Split`, three `Join`; four data wires. | Accept all 16 basis inputs and arbitrary correlated inputs. Reject wrong types, duplication, and implicit discard. |
+| `std::arithmetic::mul2_mod15` | `Q<B4> -> Q<B4>`; `\|y⟩ ↦ \|2y mod 15⟩` for `0≤y<15`, and `\|15⟩ ↦ \|15⟩`. | Three `Split` and three `Join` encode a cyclic four-axis permutation. Static transformations materialize a zero-phase, 16-entry permutation in `ApplyUnitary`. | Accept 15 as a defined input as well as every residue. Reject wrong types/resource misuse. There is no parameter for another modulus or multiplier. |
 
-`add2`では、下位ビットの加算前にcarryを上位へXORする。`mul2_mod15`は入力ビット `(a,b,c,d)` を `(d,a,b,c)` に並べる。この置換は0と15の両方を固定する。15を0へ写す非単射な拡張にはしない。逆は既存の `adjoint`、冪は `repeat_static` で表す。
+In `add2`, XOR the carry into the high bit **before** updating the low bit.
+In `mul2_mod15`, input wires `(a,b,c,d)` become `(d,a,b,c)` in the output
+interface. This permutation fixes both 0 and 15; mapping 15 to 0 instead would
+be noninjective. The existing `adjoint` and `repeat_static` forms express inverse
+and powers through the same checked static-transformation path.
 
-## N=15の量子部分
+These exact phase contracts follow from the sealed X/CNOT/Toffoli matrices
+and the ordered wire interface. Numerical basis-output tests and inverse
+round trips alone do not establish an arbitrary compiler's phase correctness.
+No proof of general source-to-IR preservation is claimed here.
 
-`examples/order_finding` は、静的な `evolution::evolve` を `mul2_mod15` に設定する。既存のQPE構造を4ビットの標的へ適用する有限例であり、第一級操作引数や一般化した標準QPE APIは導入しない。
+<a id="n15の量子部分"></a>
 
-- `evolve`、`identity`、`square`、`fourth`: 通常定義の `Q<B4> -> Q<B4>`、Unitary。後二者はUの2乗・4乗。
-- `estimation::phase3`: 通常定義の `Q<B4> -> (((CBit,CBit),CBit),Q<B4>)`、Observe。標的を返し、新規の位相ビット3本だけを測定・消費。固有状態でなくても受理し、標的の暗黙破棄やUnitaryからの呼び出しを拒否する。
-- `main`: 標的を`∣1⟩`へ準備し、phase3を呼び、返った標的を明示的にdiscardする。位相結果だけを返す。
+## Quantum computation for N=15
 
-IRは準備、`qif`による制御付きU・U²・U⁴、`adjoint(qft3,...)`、測定と破棄へ展開し、独立したverifyに通す。一般入力の契約は [QPEのKraus演算子](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント)に従う。
+[`examples/order_finding`](../examples/order_finding/main.qli) statically defines
+`evolution::evolve` as `mul2_mod15`. It applies the existing QPE structure to a
+four-bit target; it introduces neither a first-class operation parameter nor a
+generalized standard-library QPE API.
 
-Uの`∣1⟩`からの軌道は1→2→4→8→1。M=8で位相を正確に表せるため、整数出力y=0,2,4,6の確率は各1/4。表示は低位ビットからなので`000,010,001,011`となる。3ビットの精度で一般のNの位数を回収できるとはしない。
+- `evolve`, `identity`, `square`, and `fourth` are ordinary `Unitary` definitions
+  of type `Q<B4> -> Q<B4>`; the latter two implement `U²` and `U⁴`.
+- `estimation::phase3` is an ordinary `Observe` definition of type
+  `Q<B4> -> (((CBit,CBit),CBit),Q<B4>)`. It returns the target and measures/
+  consumes only the three newly prepared phase bits. An eigenstate promise is
+  unnecessary for acceptance. Calls in a `unitary` body and implicit discard
+  of the returned target are rejected.
+- `main` prepares target `|1⟩`, calls `phase3`, explicitly discards the returned
+  target, and returns only the phase result.
 
-## 古典ホストとの境界
+Lowering expands preparation, controlled `U`/`U²`/`U⁴` via `qif`,
+`adjoint(qft3,...)`, measurement, and discard, then passes the result through
+independent `verify`. For general inputs, the mathematical instrument is
+described by the [QPE Kraus operators](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント);
+that future-plan notation is not a current source API.
 
-Rustの `host::factor_from_phase(n,a,phase_bits,outcome)` は量子操作ではなく、古典後処理のAPI。奇数n>=3、1<a<n、gcd(a,n)=1、1〜32位相ビット、0<=outcome<2^phase_bitsを要求し、範囲外をエラーにする。
+The orbit of `|1⟩` under U is `1→2→4→8→1`. With `M=8`, the phases are exactly
+representable, giving integer results `y=0,2,4,6` with probability `1/4` each.
+Output is displayed from the least significant bit, as `000,010,001,011`.
+Three phase bits are not claimed to recover the order for arbitrary N.
 
-整数演算で `outcome/2^phase_bits` の連分数収束分数を走査し、0でない分子と分母r<nについて、rが偶数かつ`a^r mod n=1`であることを検査する。`gcd(a^(r/2)-1,n)` が非自明な約数のときだけ `(factor,cofactor,period_candidate)` を返す。rの最小性や因子の素数性は主張しない。分母だけから位数を断定せず、候補の倍数探索や複数サンプルのLCM補完も行わない。
+<a id="古典ホストとの境界"></a>
 
-候補が得られない、奇数周期、または自明なgcdの場合は`None`。新規準備で再試行し、底に由来する失敗では底を変更する。自動再試行・乱数による底選択・装置サンプリングは未実装。成功・再試行の全分布を保ち、成功枝だけを正規化しない。
+## Boundary with the classical host
 
-N=15、a=2ではy=2,6からr=4、因子3と5を得る。y=0は情報がなく、y=4の分母2は`2² mod 15 != 1`なので再試行。今回の単一サンプル方針の成功確率は1/2である。
+The Rust API [`factor_from_phase`](../src/host.rs), in module `host`, performs
+classical postprocessing rather than a quantum operation:
 
-ホスト例 `cargo run --example shor15` は参照シミュレータの全分布を集計し、各yと因数抽出／再試行の確率を表示する。これは有限の理想分布の列挙であり、実機のサンプルや統計的な信頼区間ではない。
+```rust
+pub fn factor_from_phase(
+    n: u32,
+    a: u32,
+    phase_bits: u8,
+    outcome: u32,
+) -> Result<Option<Factors>, PhaseInputError>
+```
 
-## 費用と残件
+It requires odd `n≥3`, `1<a<n`, `gcd(a,n)=1`, between 1 and 32 phase bits, and
+`0≤outcome<2^phase_bits`. Violations produce respectively `Modulus`, `Base`,
+`Precision`, or `Outcome` errors.
 
-量子例は標的4本と位相3本の計7本、位相測定3回、最後に標的の破棄を使う。冪を素朴展開したU呼び出しは1+2+4=7回。逆QFT3にはH 3回と制御付きT 5回、位相準備にはH 3回を使う。所有権の並べ替えは物理SWAPの無料実装を意味せず、制御下の置換にはバックエンドでの合成が必要。有限表のコンパイル費用と実機ゲート数は区別する。
+Using integer arithmetic, it traverses continued-fraction convergents of
+`outcome/2^phase_bits`. For a nonzero numerator and denominator `r<n`, it checks
+that `r` is even and `a^r mod n=1`. Only when `gcd(a^(r/2)-1,n)` is a nontrivial
+factor does it return `Some(Factors)`, with `period_candidate=r` and the factor
+pair ordered increasingly. It does not claim minimality of `r` or primality
+of either factor. A denominator alone is insufficient evidence of a period.
+The implementation does not search candidate multiples or combine samples
+using least common multiples.
 
-この法・乗数に特化した巡回置換は一般の効率的剰余乗算を実装した証拠ではない。一般サイズの算術・精度選択・静的操作パラメータ化と標準QPE骨格・ホスト反復は引き続き設計課題である。
+No usable candidate, odd candidate periods, or trivial gcd results yield
+`None`. Retry using a newly prepared state, changing the base when its choice
+causes failure. Automatic retries, random base selection, and device sampling
+are unimplemented. Preserve the full success/retry distribution instead of
+renormalizing success branches.
 
-出典: [Shorの因数分解](https://arxiv.org/abs/quant-ph/9508027)、[Cleveほか §6の位数推定](https://arxiv.org/html/quant-ph/9708016#S6)。上記の固定幅API・全空間拡張・再試行方針はQleisli側の設計である。
+For `N=15` and `a=2`, results `y=2,6` supply `r=4` and factors 3 and 5.
+Result `y=0` is uninformative, while `y=4` supplies denominator 2, which fails
+`2² mod 15=1` and therefore requires a retry. This single-sample policy succeeds
+with probability `1/2`.
 
-## 検証結果
+The host example `cargo run --example shor15` aggregates the reference
+simulator's entire distribution and displays each outcome's factor/retry
+probability. It enumerates a finite ideal distribution; it does not draw
+physical-device samples or supply a statistical confidence interval.
+
+<a id="費用と残件"></a>
+
+## Cost and remaining work
+
+The quantum example uses four target and three phase wires, seven in total,
+three phase measurements, and a final target discard. Naive expansion of powers
+uses `1+2+4=7` applications of U. The inverse QFT3 uses three H and five
+controlled T gates, and phase preparation uses three more H gates. An ownership
+permutation does not imply free physical SWAPs. Controlled permutations require
+backend synthesis; compilation cost of finite tables is distinct from physical
+gate count.
+
+This cyclic permutation specialized to one modulus and multiplier is not
+evidence of general efficient modular multiplication. General-size arithmetic,
+precision selection, static operation parameters, a standard QPE skeleton, and
+host iteration remain design work. The fixed-width APIs remain experimental
+under the [adoption criteria](stdlib-roadmap.md).
+
+Background: [Shor's factoring algorithm](https://arxiv.org/abs/quant-ph/9508027)
+and [Cleve et al., order finding in section 6](https://arxiv.org/html/quant-ph/9708016#S6).
+The fixed-width APIs, full-space extension, and retry policy above are Qleisli
+design decisions.
+
+<a id="検証結果"></a>
+
+## Verification record
 
 ```sh
 cargo run --bin qleisli -- run examples/order_finding
@@ -54,8 +148,21 @@ cargo run --example shor15
 cargo test --test order_finding
 ```
 
-ホスト例はy=0,4の再試行とy=2,6の因子3・5を各1/4で表示し、成功と再試行を各0.5と集計する。
+The host example displays retry for `y=0,4` and factors 3 and 5 for `y=2,6`,
+each outcome with probability `1/4`. Success and retry each total 0.5.
 
-[10件のテスト](../tests/order_finding.rs)で、increment全4入力、add全16入力、剰余乗算全16入力の0〜4乗と逆、4組のBell参照を含む往復、全16初期値の位相分布、0・15の縮退部分空間と参照系のコヒーレンス、型・効果・所有権の拒否を検査した。古典側は成功と再試行の総確率、非二進の位相43/256からN=21の因子回収、奇数周期・自明なgcd・不正入力・32ビット境界、独立に全探索した小さな位数からの再構成を検査した。数値分布の許容誤差は1e-12。連分数・剰余演算は浮動小数点を使わない。
+The [ten order-finding tests](../tests/order_finding.rs) cover all four increment
+inputs, all 16 addition inputs, all 16 multiplication inputs with powers 0–4 and
+inverse, and round trips with four Bell references. They also cover phase
+distributions for all 16 starting values, coherence with a reference in the
+degenerate fixed subspace spanned by 0 and 15, and type/effect/ownership rejection.
 
-有限例の照合はコンパイラの一般的な意味保存証明、一般サイズでの効率性、実機動作の保証を代替しない。
+The classical checks cover total success/retry probability, factor recovery for
+N=21 from non-dyadic phase estimate `43/256`, odd periods, trivial gcd, invalid
+inputs, the 32-bit boundary, and reconstruction of small usable orders found
+independently by exhaustive search. Numerical distribution tolerance is `1e-12`;
+continued fractions and modular arithmetic use no floating-point computation.
+
+These finite checks do not replace a general compiler meaning-preservation
+proof, establish efficiency at arbitrary sizes, or guarantee physical-device
+behavior.

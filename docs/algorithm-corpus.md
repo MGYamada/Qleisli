@@ -14,7 +14,7 @@
 | C08 振幅推定（QPE版）／一般化 | 準備手順のgood確率を推定。 | S3・S4: 振幅増幅演算子の位相推定。 | 制御付き増幅演算子、確率への変換、精度と失敗率。未実装。 | [Brassardほか](https://arxiv.org/abs/quant-ph/0005055) |
 | C09 量子計数／派生アルゴリズム | 有限集合内のmarked要素数を推定。 | S3・S4: Grover演算子の位相から対象数へ変換。 | 探索空間サイズ、対象数の推定誤差。C08と構造を共有。未実装。 | [Brassard–Høyer–Tapp](https://arxiv.org/abs/quant-ph/9805082) |
 | C10 Szegedy型ウォーク／基盤 | 遷移確率へコヒーレントにアクセスし、marked集合を検出。 | S1・S3・S5: 遷移の準備、部分空間反射の積、反復・位相解析。 | 遷移アクセス、定常分布・スペクトルギャップなどの約束。任意の古典乱歩を無料で量子化できない。未実装。 | [Szegedy](https://arxiv.org/abs/quant-ph/0401053) |
-| C11 HHL／アルゴリズム | 条件を満たす行列と状態`∣b⟩`から解に関連する状態・観測量を得る。 | S1・S2・S4・S6: Hamiltonian時間発展、QPE、制御回転、逆計算、測定。 | 疎性・条件数・入力準備・成功フラグ。全成分の古典出力を高速に得る契約ではない。未実装。 | [Harrow–Hassidim–Lloyd](https://arxiv.org/abs/0811.3171) |
+| C11 HHL／アルゴリズム | 条件を満たす行列と状態`\|b⟩`から解に関連する状態・観測量を得る。 | S1・S2・S4・S6: Hamiltonian時間発展、QPE、制御回転、逆計算、測定。 | 疎性・条件数・入力準備・成功フラグ。全成分の古典出力を高速に得る契約ではない。未実装。 | [Harrow–Hassidim–Lloyd](https://arxiv.org/abs/0811.3171) |
 | C12 積公式による時間発展／手法 | 局所項へ分解したHamiltonianの時間発展を近似。 | S4・S5: 各項の指数演算、順序付き反復。 | 非可換項に由来する誤差、時間・分割数。回転角と誤差予算が未実装。 | [Childsほか、A Theory of Trotter Error](https://arxiv.org/abs/1912.08854) |
 | C13 LCU/Taylor時間発展／手法 | ユニタリの線形結合へアクセスして時間発展を近似。 | S1・S2・S3・S8: PREPARE、SELECT、逆準備、増幅。 | 係数の正規化、成功部分空間、近似誤差。任意の線形結合を純粋な`bind`にしない。未実装。 | [Berryほか](https://arxiv.org/abs/1412.4687) |
 | C14 Qubitization／基盤 | 指定されたユニタリのブロックにHamiltonianを符号化。 | S1・S3・S8: 準備・制御・反射から不変部分空間を作る。 | 正規化と符号化の等式、補助系、制御オラクル。証拠形式が未設計。 | [Low–Chuang](https://arxiv.org/abs/1610.06546) |

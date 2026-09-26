@@ -1,35 +1,14 @@
 //! Boundary checks for finite source judgments, not a general soundness proof.
 
+mod common;
+
 use std::fs;
-use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+
+use common::SourceRoot;
 
 use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli_core::ir::{Effect, ProtectedUse, RawOp, SingleGate};
 use qleisli_core::sim::{SimulationLimits, run_closed};
-
-static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
-
-struct SourceRoot(PathBuf);
-
-impl SourceRoot {
-    fn new(source: &str) -> Self {
-        let path = std::env::temp_dir().join(format!(
-            "qleisli-source-judgments-{}-{}",
-            std::process::id(),
-            NEXT_ROOT.fetch_add(1, Ordering::Relaxed)
-        ));
-        fs::create_dir(&path).unwrap();
-        fs::write(path.join("main.qli"), source).unwrap();
-        Self(path)
-    }
-}
-
-impl Drop for SourceRoot {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
-    }
-}
 
 fn accepted(source: &str) {
     let root = SourceRoot::new(source);

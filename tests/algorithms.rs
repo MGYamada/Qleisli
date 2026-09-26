@@ -1,28 +1,17 @@
+mod common;
+
 use std::collections::BTreeMap;
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::sync::atomic::{AtomicU64, Ordering};
+use std::path::Path;
+
+use common::SourceRoot;
 
 use qleisli_core::frontend::compile::{ErrorCode, compile_project};
 use qleisli_core::sim::{SimulationLimits, run_closed};
 
-static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
-
-struct SourceRoot(PathBuf);
-
 impl SourceRoot {
-    fn new() -> Self {
-        let root = std::env::temp_dir().join(format!(
-            "qleisli-algorithm-{}-{}",
-            std::process::id(),
-            NEXT_ROOT.fetch_add(1, Ordering::Relaxed),
-        ));
-        fs::create_dir(&root).unwrap();
-        Self(root)
-    }
-
     fn example(name: &str) -> Self {
-        let root = Self::new();
+        let root = Self::new("");
         let example = Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("examples")
             .join(name);
@@ -35,21 +24,11 @@ impl SourceRoot {
         root
     }
 
-    fn write(&self, name: &str, source: &str) {
-        fs::write(self.0.join(name), source).unwrap();
-    }
-
     fn run(&self) -> BTreeMap<Vec<bool>, f64> {
         let ir = compile_project(&self.0).unwrap();
         let distribution = run_closed(&ir, SimulationLimits::default()).unwrap();
         assert!((distribution.values().sum::<f64>() - 1.0).abs() < 1e-12);
         distribution
-    }
-}
-
-impl Drop for SourceRoot {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
     }
 }
 
@@ -191,7 +170,7 @@ fn bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors() {
 
 #[test]
 fn parity_measurement_keeps_coherence_within_each_parity_sector() {
-    let root = SourceRoot::new();
+    let root = SourceRoot::new("");
     root.write(
         "main.qli",
         "
@@ -231,7 +210,7 @@ fn derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks() {
             ErrorCode::Ownership,
         ),
     ] {
-        let root = SourceRoot::new();
+        let root = SourceRoot::new("");
         root.write("main.qli", &format!("{imports} {declaration}"));
         let error = compile_project(&root.0).unwrap_err();
         assert_eq!(error.code, code, "{error}");

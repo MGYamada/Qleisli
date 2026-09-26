@@ -2,7 +2,190 @@
 
 状態: **全構文の規則とその理想健全性Q1〜Q3を紙上で整備、Rustの全受理経路・IR変換との一般的な対応は未証明**（2026-09-26）。[ロードマップ](../ROADMAP.md)のSPEC-0〜2の記録と、SPEC-3・4の進捗を含む。
 
-## 今回の決定
+## 0.1.0のリリース検査（2026-09-27）
+
+初回ソースリリースの内容を[英語のリリースノート](releases/v0.1.0.md)と[変更履歴](../CHANGELOG.md)にまとめた。公開先は`MGYamada/Qleisli`のGitHub Releasesと注釈付き`v0.1.0`タグとする。タグは検証対象の変更をすべて含むコミットへ付け、実際のコミットID・CI・公開状態はGitHubのリリース記録で確認する。レジストリ配布は別の操作である。
+
+直前の最終レビューでは、macOS／Rust 1.98.1でRust全245件、fmt、Clippy、文書検査器14件、文書参照検査、厳密な数学例39件、Lean buildと527宣言の公理監査、Cargo配布パッケージの生成と再ビルドが成功した。意味契約・関数契約の両例は`101: 1.000000000000e0`、Shorホスト例は因数3と5・成功確率1/2・再試行確率1/2を確認した。深く不正なraw IRの拒否も別プロセスの追加照合で確認した。一般の健全性証明とは区別する。
+
+その後の変更は設計メモ、リリース文書、Cargoの公開先メタデータとCIであり、Rust／Leanの実装は変更していない。Linux専用CLIの1件と最低対応Rust 1.85.0はローカルでは未実行である。リリースCIに1.85.0での全targetテストを追加し、Linux上のRust・文書・Leanの全ジョブ成功を公開条件とする。以下の記録は各工程時点の履歴として保持する。
+
+## 0.1.0のライセンス・バージョン方針（2026-09-27）
+
+利用者の指定により基準版を`0.1.0`とし、Qleisli自身のコード・標準ライブラリ・例・証明・文書にApache-2.0を適用した。[LICENSE](../LICENSE)、[NOTICE](../NOTICE)、[貢献方針](../CONTRIBUTING.md)を追加し、Cargoのライセンスメタデータを設定した。RustとLeanのプロジェクト版は既に`0.1.0`で一致している。
+
+[英語のバージョン方針](versioning.md)と[AGENTS.md](../AGENTS.md)に、0.xの互換修正はPATCH、新機能・破壊的変更はMINOR、1.0以降は通常のSemVer増分を使うと記した。位相・軸順・所有権・効果・証拠の前提も互換性に含め、仕様違反の誤受理修正と新しい制限を区別する。[CHANGELOG.md](../CHANGELOG.md)を設け、公開済みタグ・配布物の不変性、リリース検査と正確な状態記録を定めた。
+
+この工程はライセンス・メタデータ・文書の整備であり、言語の受理規則やRust／Leanの実装は変更していない。`cargo metadata --no-deps --format-version 1 --offline`で`0.1.0`／`Apache-2.0`を確認し、`cargo package --list --allow-dirty --offline`でLICENSE・NOTICEの梱包対象を確認した。生成されたPythonキャッシュが配布候補に混じっていたため、Gitの除外設定に追加した。文書検査、文書検査器の14テスト、`git diff --check`は成功。Rustの実行テスト・Lean build／公理監査は本工程では再実行していない。Gitタグ、push、公開リリース、レジストリ配布は未実施。
+
+## v0.1: 宣言した有限プロファイルの到達記録（2026-09-27）
+
+[V01-C1〜C6](release-milestones.md#v01-minimum-semantic-contracts)の仕様、独立した証拠検査、実ソースと最終IRへの結合、関数境界での再利用、実装交換、受理・拒否検査を接続した。v0.1の宣言した有限プロファイルを達成したと記録する。これは公開リリースの配布操作や、Rust処理系全体の形式証明の完了を意味しない。north starは「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」とし、Shor・QPE・Groverはv1でその方向を評価する具体的な到達条件として維持する。
+
+| 条件 | 到達根拠 |
+| --- | --- |
+| V01-C1 | [SC仕様](semantic-contracts-v0.1.md)は型木、等長な符号化、固定した論理作用、位相、入口の前提を定義。[FC仕様](function-contracts-v0.1.md)は正確な単一量子入出力と恒等な公開符号化を持つ関数境界を規定。一般の符号化された実行状態を主張するAPIは提供しない。 |
+| V01-C2 | [独立した厳密検査核](../src/contract/mod.rs)と[19テスト](../tests/semantic_contracts.rs)が原始等式・逐次／テンソル合成・前提付き逆／制御・全列比較を扱う。SC/FC規則の条件付き紙上導出と、Rust実装の一般的な正しさを区別する。 |
+| V01-C3 | [FunctionEvidence](../src/contract/function.rs)は実装と仕様のraw IRを独立検証・抽出して比較し、両raw snapshotと正確なソース依存先を保持。[18テスト](../tests/function_evidence.rs)で位相、非対称な述語、出力順、閉じた古典分岐、補助、共有予算、依存証拠、改変拒否を検査。最終IRのContract actionは逆・制御・反復・軸移送の後も証拠を保持する。 |
+| V01-C4 | [14ソーステスト](../tests/certified_source.rs)と[実行例](../examples/semantic_contracts/README.md)が位相オラクル、補助H;H、データ／補助同時Xを同じ厳密等式で検査する。任意の参照系への保証は演算子等式に恒等写像をテンソルする数学的帰結であり、有限の数値実行を一般証明としない。 |
+| V01-C5 | [apply_contract](../src/frontend/compile/lower/function_contract.rs)が利用側の固定した仕様を要求。[16ソーステスト](../tests/function_contracts.rs)には同一の利用側で直接Z・従来の補助計算・意味契約付き補助計算を交換し、制御と相関参照を検査するケースがある。通常呼出し・入れ子・逆・反復は同じ不変証拠を再利用する。[実装交換例](../examples/function_contracts/README.md)も実行可能。 |
+| V01-C6 | SC/FC/ソースの各検査が誤位相・補助のみX・述語／軸／型／符号化の不一致、入口証拠欠如、不正な逆／制御の前提、古いソース／依存証拠、所有権の紛失／重複と容量超過を拒否する。`Q<Unit>`の所有権と制御で現れるスカラー位相も含む。 |
+
+新しい`apply_contract`は言語形式であり、新予約語となる。対象は通常の宣言済み`unitary Q<A> -> Q<A>`関数で、入力式を先に一度評価し、その後の名前隠蔽規則に従って両対象を解決する。対象を封印ゲート、古典ポートや別の型木の関数へ暗黙に拡張しない。
+
+公開関数は6bit、型木128ノード・深さ32、回路1,024ステップ、関数依存深さ32、関数ごとの展開量100万に限定する。ソース同一性は128記録・合計1 MiB・各名前4,096byte以内。raw操作と分岐にも[FCの個別上限](function-contracts-v0.1.md#3-independent-whole-function-evidence)があり、全上限を同時に満たせるとは限らない。独立検査は共有する厳密作業予算を使い、ソース側は1千万を供給する。証拠の比較は発行時の同一性を用い、共有依存グラフを再帰展開して比較しない。
+
+独立レビューで、証拠を共有する大きな部品の反復による実行量増加を確認し、`SimulationLimits::max_execution_steps`を追加した。既定100万の予算を実行全体・古典分岐・全アンサンブル成分で共有し、関数証拠の展開前にその推移的な費用を計上する。これは実行ステップの上限であり、浮動小数点演算回数や実時間の保証ではない。
+
+検査結果（macOS、2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **245件成功**。直前の211件に関数証拠18件とソース統合16件を追加。既存Linux専用CLI 1件はこの環境では未実行。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`: 成功。
+- `python3 scripts/test_check_docs.py`: **14件成功**。`python3 scripts/check_docs.py`と`git diff --check`も成功。
+- `examples/function_contracts`をCLIで検査・実行し、`101: 1.000000000000e0`を確認。
+- Leanは本工程で変更せず、ビルド・公理監査を再実行していない。以前からの作業ツリーのLean変更と、その過去の検査記録は保持した。
+
+残る信頼境界は厳密算術、検証器、独立した回路抽出、ソースから実際のIRへのRust実装対応である。ソースsnapshotは由来の照合であり、その翻訳の正しさの証明ではない。証拠付き呼出しの実行は検査済みの回路を用い、補助領域を証明済みの論理作用へ置換できる。元の物理raw本体は証拠内に保持する。一般の符号化された状態ハンドル、サイズ／操作パラメータ、観測・近似契約、証拠のシリアライズ、外部バックエンド、v1の3アルゴリズムの一般化は後続である。
+
+以下の件数と未達記述は、各工程時点の履歴として保持する。
+
+## v0.1: 有限意味契約の最初の実装経路（2026-09-27、関数境界の実装前）
+
+v0.1の最低条件V01-C1〜C6をgoalとして設定し、[有限意味契約の英語仕様](semantic-contracts-v0.1.md)、厳密算術、独立検査、ソース拡張と参照実行を接続した。プロジェクトのnorth starは「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」とする。Shor・QPE・Groverは、v1でこの方向を評価する具体的な到達条件として維持する。
+
+| 実装 | 検査対象と根拠 |
+| --- | --- |
+| [厳密算術](../src/contract/exact.rs) | `Z[ζ8,1/2]`の正規化された係数、checked i128算術、最大64次元の行列と作業予算。9単体テスト。浮動小数点の一致を証拠にしない。 |
+| [契約検査核](../src/contract/mod.rs) | 型木付き符号化、等長性、正確な位相、全列・全出力行での`U E_in=E_out u`。不変な証拠から恒等・合成・テンソル・前提付き逆／制御を構成する。[19件の回帰](../tests/semantic_contracts.rs)は誤位相・軸・符号化・入口証拠・不正逆／制御・証拠取り違え・容量とraw IRの所有権を含む。 |
+| [ソース拡張](../src/frontend/compile/lower/certified.rs) | `with_computed(q,f,u){\|d,a\| body}`を言語形式として追加。独立した所有権スコープでWを生成し、明示したuとともに`CertifiedCompute`へ保持。[14件のソース回帰](../tests/certified_source.rs)で位相オラクル・補助H;H・同時X・相関参照・制御・逆・同じ利用側での実装交換・拒否境界を検査。 |
+| [独立IR検証](../src/verify.rs)と[参照実行](../src/sim.rs) | 実際のW/uとpredicateを再検査し、新規補助ID・線形source tokenを確認。実行はcompute/W/uncomputeを行い、厳密な証拠のあるゼロ軸だけを除く。 |
+
+新しい形式は最大5データbitと補助1bit、各回路1,024ステップ、raw検査当たり1千万の保守的な厳密演算予算に限定する。容量超過は拒否する。既存2引数形式のZ/T限定は維持する。公開Rust APIの`check_entry`は証拠の境界同士の照合であり、実行状態が符号空間にある証明ではない。ソース形式の入口はfreshな補助の準備と計算によって成立させる。
+
+独立レビューで、新ASTによるパーサのスタック使用量増加と、深い未検証型の拒否後の再帰的破棄を修正した。前者は追加識別子のBox化と既存深さテスト、後者は反復的破棄と10万段・2 MiBスタックの回帰で確認した。
+
+検査結果（macOS、2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **211件成功**。従来169件に上記9+19+14件を追加。既存Linux専用CLI 1件はこの環境では未実行。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`: 成功。
+- `python3 scripts/test_check_docs.py`: **14件成功**。文書参照検査と`git diff --check`も成功。
+- [実行例](../examples/semantic_contracts/README.md)をCLIで検査・実行し、`101: 1.000000000000e0`を確認。
+- Leanは変更せず、本工程でビルドや公理監査を再実行していない。SC規則の局所紙上導出とRust実装の一般的な形式検証は区別する。
+
+**v0.1は未達成、goalは継続中。** 次はV01-C3/C5の公開関数契約・依存先・実装を束ねる境界と、静的変換後の最終IRに対応証拠を持たせる経路を完成させる。現在の通常呼出しは展開と再検査であり、同じ利用側での交換テストだけでは部品証拠の再利用を達成したことにならない。
+
+## v0.1の最低条件とv1の到達条件の採用（2026-09-27、実装前の記録）
+
+[英語のリリース条件](release-milestones.md)を正本として、v0.1は意味契約 `U E_in = E_out u` の有限証拠・合成・関数境界での再利用・実装交換・最終IRまでの独立検査を最低条件に採用した。v1は、Shor・QPE・Groverが教科書のアルゴリズム構造のまま読める、実際にコンパイル・実行・検証できる実装をnorth starにする。本節は日本語の補助記録である。
+
+両目標は**未達成**。V01-C1〜C6の統合した仕様・検査経路は未実装であり、[提案レビュー](semantic-contract-proposal-review.md)の39件の厳密な数学的照合、既存の有限回帰例、Cargoの`0.1.0`、契約台帳の形式v1から達成を推論しない。V1-C1〜C5は、共通QPEを使うShorの古典処理・因数検証・再試行まで含む。固定例や疑似コードだけでは達成としない。
+
+ロードマップ、README、作業指針、設計目標と標準ライブラリ計画を同じ順序へ整合した。今回の変更は文書のみで、現行v0の受理規則、Rust実装、Leanの証明範囲を変更しない。以下の処理系・Leanの検査結果は各工程時点の履歴として保持する。
+
+今回の文書検査は `python3 scripts/check_docs.py`、`python3 scripts/test_check_docs.py`（14件）、`git diff --check` が成功。Rust・Leanの検査はこの方針変更では再実行していない。
+
+## SPEC-4: スコープ射影の実装対応と局所証明（2026-09-27）
+
+直近の処理系・Leanの検証結果を本節に記録する。[状態対応の英語文書](lowering-state-refinement.md)で、Rustの値・環境・registerから境界関係BCへの対応を整理した。ブロック終了処理を非公開の[`close_scope`](../src/frontend/compile/lower/scope.rs)へ切り出し、同じ場合分けを[Leanモデル](../lean/Qleisli/Scope.lean)で証明した。言語の受理規則・公開APIは変更していない。
+
+機械検証した範囲は、古典束縛の復元、消費済み束縛の非復活、入口の名前集合の保存、導入・再束縛した量子所有者の未返却の拒否、成功時の各名前と有限名前列の量子所有権リストの保存。`Q<Unit>`も所有権を持つ。一般のlookup関数と集合によるモデルであり、Rustの有限mapとの対応、実行経路が渡すsnapshotと再束縛集合、暗黙frameと発行済みID履歴の健全性までを機械検証したものではない。
+
+| 検査 | 範囲 |
+| --- | --- |
+| [`scope_projection_matches_a_finite_lexical_identity_model`](../src/frontend/compile/lower/scope.rs) | 明示的な束縛IDと手動の線形分類による独立oracleに対し、2名・8値状態・移動と再束縛を組み合わせた7,225ケースを比較。量子成分が左右それぞれにある混合値とゼロ幅も含む。拒否時の入口非変更性を検査。すべてのソース実行経路の列挙ではない。 |
+| [`nested_projection_restores_classical_entries_and_preserves_mixed_pending_ownership`](../tests/source_scope.rs) | 2実行ケース。入れ子scope、古典値の復元、混合値とQ<Unit>、呼出し中のBell参照、完全φ後の所有権を直接の期待相関で照合。 |
+| [`equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner`](../tests/source_scope.rs) | 4拒否ケース。値が等しい再束縛の未返却と消費済み外側所有権の再使用を、診断本文と位置まで検査。 |
+| [`local_spent_names_expire_but_entry_spent_names_still_hide_functions`](../tests/source_scope.rs) | 6実行・3拒否ケース。通常呼出し・逆・0回反復の関数名について、局所消費済み名は消え、入口の消費済み名は復元されることを照合。 |
+
+検査結果（macOS、2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **169件成功**。従来165件に内部モデル1件とソース回帰3件を追加。既存のLinux専用CLI 1件はこの環境では未実行。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`: 成功。
+- `python3 scripts/test_check_docs.py`: **14件成功**。文書参照検査と`git diff --check`も成功。
+- `lake build`: 成功、1,212 jobs。`lake env lean -DwarningAsError=true Audit.lean`: **527宣言**の監査に成功。依存公理は標準の`propext`・`Classical.choice`・`Quot.sound`のみ。
+- 独立レビューで抽出前後の同値性、診断、値と束縛の同一性の区別、期待相関の独立性を確認した。
+
+次は入力・移動・束縛・待機中の所有者を含む状態対応を合成し、上の局所定理の前提をRustの成功経路から導く。全処理系・独立検証器の形式検証、量子意味保存、数値誤差の保証は残件である。以下の件数は各工程時点の履歴として保持する。
+
+## SPEC-4: 具体的変換契約と前提付き意味保存（2026-09-27）
+
+この工程の到達点を本節に記録する。[英語の変換契約](source-ir-correspondence.md)で、境界関係BC、基底符号化・表生成C1、原始操作C2、補助証拠と静的ターゲットC3、完全φ構築C4、構造・依存帰納による合成C5を整備した。指定した数学的変換について、位相を含む作用素と参照系付きinstrumentの対応を紙上で示した。Rustの全成功経路がその変換規則を満たす一般証明ではない。
+
+IR検証器の単射表・所有権・freshness・効果の検査と、元のソース式に対する表の値・原始操作の選択・φの結果位置の一致を区別する。[対応表](source-ir-correspondence.md#7-implementation-and-independent-verifier-obligations)に実装項目と残る義務を記録した。言語の受理規則、公開API、Leanの証明範囲は変更していない。
+
+[新しい回帰スイート](../tests/source_ir_correspondence.rs)は、コンパイラの変換や逆変換を期待値に使わず、解析的な疎状態とPauli測定のBorn則から分布を作る。許容誤差は`1e-12`。履歴ごとの振幅を足さず、その元の確率重みを保ったまま和算し、比較前の再正規化は行わない。
+
+| 回帰 | 有限の検査範囲 |
+| --- | --- |
+| [`unit_factors_and_product_labels_match_every_explicit_basis_image`](../tests/source_ir_correspondence.rs) | Unitを挟む非対称な3ビット積置換を8基底入力と明示した表で照合。 |
+| [`growing_lift_matches_joint_pauli_statistics_with_two_reference_wires`](../tests/source_ir_correspondence.rs) | 2→3ビットのliftと2本のBell参照を、5本の出力の全243通りのX/Y/Z設定で照合。 |
+| [`observation_instruments_preserve_public_weights_and_reference_statistics`](../tests/source_ir_correspondence.rs) | 位相と偏りを持つ絡み合い入力の測定9設定、reset 9設定、discard 3設定。公開結果の重みと参照系の状態を照合。 |
+| [`computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs`](../tests/source_ir_correspondence.rs) | Unitを含む4引数predicate、27設定のコヒーレンス、16設定の制御位相、空引数／2個のUnit引数の1行表と位相4設定。等幅で型木が異なる2例を拒否。 |
+| [`complete_branch_phi_transports_measured_results_fresh_wires_and_pending_frames`](../tests/source_ir_correspondence.rs) | 測定と新規割当を含む枝、2古典φ、2参照、待機中のQ<Unit>を81設定で照合。 |
+| [`verified_ir_does_not_by_itself_establish_source_correspondence`](../tests/source_ir_correspondence.rs) | ソースのNOT表を別の有効な恒等表へ改変。独立verifyは受理するが、元のソースの期待分布とは異なることを確認。 |
+
+合計は**6テスト、401受理ケース、2拒否ケース、有効IRの改変1件**。この有限範囲の一致は、すべての型・入力・ソースプログラムでの一般的な意味保存を証明するものではない。
+
+検査結果（macOS、2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **165件成功**。従来159件に上記6件を追加。既存のLinux専用CLI 1件はこの環境では未実行。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`: 成功。
+- `python3 scripts/test_check_docs.py`: **14件成功**。文書参照検査と`git diff --check`も成功。
+- 紙上導出と独立した期待状態式を再レビューし、座標輸送の向き・中間古典記録・computed入力の効果・静的操作の具体的出力を確認した。
+
+本工程では文書と回帰テストのみを追加・更新し、処理系の変更を要する不整合は見つからなかった。Leanは変更しておらず、本工程でビルド・公理監査を再実行したとは扱わない。直前の境界修正時点の結果は次節に記録する。
+
+## コードレビューで見つかった境界不具合の修正（2026-09-27）
+
+この修正時点の実装検査を本節に記録する。後続節の件数も各改訂時点の履歴である。今回の修正は言語形式・標準API・量子意味論・Leanの証明範囲を変更しない。
+
+| 不具合 | 修正と回帰検査 |
+| --- | --- |
+| 長いimport連鎖でスタックオーバーフロー | [モジュール探索](../src/frontend/project.rs)を再帰から明示的DFSスタックに変更。[projectテスト](../tests/project.rs)で3,000モジュールの非循環鎖と深い循環を2 MiBスレッド上で検査し、循環の位置・経路と共有依存の受理を照合。 |
+| コメント内のLean importを監査対象への到達と誤認 | [文書検査](../scripts/check_docs.py)は先頭のimportヘッダを読み、行コメント・入れ子ブロックコメントを除外。宣言や文字列内のimport風の記述を依存関係と数えない。[回帰検査](../scripts/test_check_docs.py)でコメントにだけ記された未到達モジュールの拒否を確認。 |
+| CLIの非UTF-8引数でpanic | [CLI](../src/bin/qleisli.rs)が`args_os`で元のOSパスを保持。[CLIテスト](../tests/cli.rs)で通常パス、非UTF-8のコマンドと存在しないパスの診断を確認。既存の非UTF-8ディレクトリを受理するLinux専用テストも追加。 |
+
+検査結果（macOS、2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **159件成功**。従来153件にproject 3件とCLI 3件を追加。Linux専用のCLI 1件はこの環境では未実行。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`: 成功。
+- `python3 scripts/test_check_docs.py`: **14件成功**。`python3 scripts/check_docs.py`と`git diff --check`も成功。
+- 元の12,000モジュールの再現プロジェクトを`qleisli check`で検査し、異常終了せず成功。
+- 元のLean監査漏れの再現プロジェクトで、コメントにしかimportを書いていない`Qleisli.Hidden`を未到達として拒否。
+- `lake build`と`lake env lean -DwarningAsError=true Audit.lean`: 成功。既存の**456宣言**を監査。
+
+## レビュー後の仕様改訂と適合記録（2026-09-26〜27）
+
+この節はA1〜C3への仕様改訂を記録する。後続の108・115・119・124・130・134件の記録はそれぞれの到達点の履歴であり、最新の件数ではない。本書は日本語の作業・適合台帳で、規範の英語版との関係は[用語集](terminology.md)に従う。
+
+A1・A4は制限の明文化だけで済ませず、仕様と実装を拡張した。`do p <- q; pure e` の `p` に名前・`_`・入れ子の積パターンを認め、通常式には `true`・`false : CBit` と `not`・`and`・`xor` を追加した。どちらも**言語形式**であり、標準ライブラリの公開定義や封印された量子原始操作を追加するものではない。`true`・`false` は新しい予約語なので、旧ソースで識別子として使っている場合は改名が必要になる。
+
+積パターンは基底ラベルだけを分解する。`do (a,_) <- q; pure a` は `Q<(Bit,Unit)> -> Q<Bit>` では全単射として受理し、`Q<(Bit,Bit)> -> Q<Bit>` では全入力の単射性が破れるため拒否する。通常式の論理演算は `CBit` 専用で、両オペランドを一度ずつ左から右に評価し、測定や所有権の消費を省略しない。古典ポートのないユニタリ関数内の閉じた古典計算と分岐は、両枝を検査した後に静的変換でも解決する。
+
+| レビュー項目 | 決定・修正と追跡先 |
+| --- | --- |
+| A1 | `BP-NAME`・`BP-WILD`・`BP-PAIR`・`LIFT` を[型規則](source-typing-rules.md)へ追加・更新。[`basis_lifts_destructure_exact_product_patterns`](../tests/specification_boundaries.rs)、[`basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits`](../tests/specification_boundaries.rs)で型木・重複名・Unit除去・コヒーレンス・単射性を検査。 |
+| A2 | 基底関数の呼出しは隔離した `Xi` で名前解決し、外側の通常値は関数名を隠さない。基底パターンの名前は隠す。[`basis_calls_ignore_outer_cbit_names_but_respect_basis_binders`](../tests/specification_boundaries.rs)で `CBit` と積パターンも照合。 |
+| A3 | 補助の私有束縛は遮蔽された外側と同名でも可。外側所有権はframeに保存される。[`computed_auxiliary_shadow_preserves_the_outer_owner`](../tests/specification_boundaries.rs)は元の量子値・位相の保持と未返却の拒否を照合。 |
+| A4 | `C-CONST`・`C-NOT`・`C-BOOL`、古典レコードの決定的更新、左から右の効果付き合成を規定。IRの `ClassicalConst`・`ClassicalAnd` を追加し、既存 `ClassicalNot`・`ClassicalXor` も到達可能にした。[真理値表](../tests/specification_boundaries.rs)、[SSA検査](../tests/verify.rs)、[静的変換の厳密行列](../tests/static_semantics.rs)を照合。 |
+| A5 | [混合値の射影](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)と[判断の対応](formal-core.md#1-scope-and-judgments)へ統一。全計算の略記は結果・残存環境・frameをすべて含む。宣言の本体検査と呼出し展開のRust実装対応はSPEC-4の未証明の義務。 |
+| A6 | 文法・モジュール／封印API・公開12定義の契約と関連リファレンスを英語化。英語版を正本、日本語の設計・証明メモと本台帳を補助資料と明記。 |
+| B1・B2 | `Cnot`・`Toffoli` のIRを正記。[契約台帳](stdlib-contracts.md)に算術3定義を追加し、全12公開定義の型・全空間の意味・費用・検証状態・採用基準を記録。 |
+| B3・B4 | `main` の任意の有限な入れ子古典積を明記。`xor2(p)` の個数違反と、分解後 `xor2(a,b)` の非単射性を区別。[`basis_call_arity_is_distinct_from_lift_injectivity`](../tests/specification_boundaries.rs)と[`entry_point_accepts_nested_classical_products`](../tests/specification_boundaries.rs)。 |
+| B5・B6 | Bell・位相オラクルの4掲載コードを実ファイルと一致させ、古い検査件数・定義件数を履歴と明記。現行の検証結果は本節に集約。 |
+| B7 | 現行の限定補助領域・生IRの保護領域の検査と、未実装の一般借用構文・署名を区別。 |
+| B8 | EBNFを予約モジュール名の後の追加パスにも整合。`ClassicalType` は入口検査に使う意味的部分集合と明記。コメント内のCf受理、先頭BOMとソーストークン内Cf拒否を規定。[`reserved_std_module_keywords_allow_further_identifier_components`](../tests/parser.rs)、[`unicode_format_characters_are_comment_text_but_not_source_tokens`](../tests/parser.rs)。非単射リフトの `Ownership` 診断も[記録](frontend-v0.md#診断と上限)。 |
+| B9・C1・C2・C3 | 通常関数、アルゴリズム、frame、ケット／ブラを[用語集](terminology.md)に統一。規則ID・実装・テストの対応表を新構文まで更新し、参照先の存在を文書検査で照合。 |
+
+今回の最終検査結果（2026-09-27）:
+
+- `cargo test --all-targets --quiet`: **153件成功**。compile 30、parser 14、project 8、verify 28、sim 13、algorithms 7、static_operations 12、order_finding 10、source_judgments 6、source_semantics 4、source_soundness 4、static_semantics 7、specification_boundaries 10。
+- `cargo fmt --check`、`cargo clippy --all-targets -- -D warnings`、`git diff --check`: 成功。
+- `python3 scripts/test_check_docs.py`: 9件成功。`python3 scripts/check_docs.py`: ローカル文書・節・実装項目・テスト参照、Leanのroot importを検査。
+
+R1・T1〜T3・S1〜S4・Q1〜Q3の紙上の帰納ケースを新構文へ更新し、F2に閉じた古典評価と完全なφ転送を加えた。Leanは変更せず、ビルド・公理監査は今回再実行していない。有限テストや紙上証明の更新を、全Rust受理経路への適合証明や段階1全体の完了とはしない。
+
+## v0初回確定時の決定
 
 | 項目 | v0として固定した内容 | 後続に置く内容 |
 | --- | --- | --- |
@@ -14,7 +197,7 @@
 | 静的操作 | 同型の単一量子引数を持つ `unitary` の逆・制御・反復。位相を保持 | 操作パラメータ・古典引数付き変換・任意角度 |
 | 補助証拠 | 展開後の補助上 `Z/T` 列または空列だけを構成的に認証 | `with0`、一般の借用・作業レジスタ・保存効果署名 |
 | 観測 | 測定は所有権を消費して `CBit` のみ。resetは新しい論理ID。破棄は部分跡 | 非破壊測定・実機への割当 |
-| stdlib | 封印APIを規範化。通常の同梱定義は同じ検査を通す | 一般の算法骨格と標準採用・互換性方針 |
+| stdlib | 封印APIを規範化。通常の同梱定義は同じ検査を通す | 一般のアルゴリズム骨格と標準採用・互換性方針 |
 
 [言語仕様](language-spec.md)が型・効果・所有権・意味・IR対応、[文法](syntax-v0.md)が字句と構文、[標準ライブラリ構成](standard-library.md)がファイル・モジュール・封印名を規定する。将来計画のメタ型や関数名はv0のAPIに読み替えない。
 
@@ -29,7 +212,7 @@
 | 静的な制御 | 有限 `ApplyUnitary` への展開を使う。制御を含む合成レジスタも12ビットの上限を受ける。 |
 | ファイルシステム | 現行ローダはソースルートを正規化し、配下のシンボリックリンクを拒否する。ソースは `.qli`、モジュールの各要素は予約語と単独 `_` を除くASCII識別子。OSごとのファイル配置は量子意味論の規則ではない。 |
 | 検査と実行 | `check_project` は全宣言を検査し、入口の存在を要求しない。`compile_project` / `run` が閉じた `main` の条件を要求する。 |
-| ソースと生IR | 生IRの保護付き作業レジスタ・古典演算などはソースv0の全APIではない。生IRが受理する構造をそのままソースで書けるとは限らない。 |
+| ソースと生IR | 生IRの保護付き作業レジスタなどはソースv0の全APIではない。古典const/not/and/xorは上の改訂でソースから到達できる。生IRが受理する構造をそのままソースで書けるとは限らない。 |
 | 補助本体 | `h(h(a))` の恒等性や `adjoint(t,a)` の対角性を一般判定しない。これは容量差ではなく、v0自体が選んだ証拠形式の制限。 |
 | 数値実行 | `f64` の非正規化純粋状態アンサンブルを使う。厳密な等式・ゼロ確率の証明ではない。[実行上限と誤差](ir-prototype.md)を参照。 |
 | backend | 外部バックエンドは未実装。能力検査を必要条件として定めたことは、実機での実行保証ではない。 |
@@ -55,7 +238,7 @@
 | Bell部分測定、破棄後の混合状態、resetの新規系 | [sim](../tests/sim.rs): `bell_half_measurement_and_feedback_corrects_other_half`、`discarding_entangled_half_keeps_mixed_residual`、`reset_breaks_bell_correlation_and_returns_new_zero_wire` |
 | 静的逆・出力軸順序・制御下の全体位相、反復0も検査 | [static_operations](../tests/static_operations.rs): `inverse_reverses_noncommuting_gates_and_output_axis_reordering`、`computed_zero_width_phase_survives_inverse_and_control`、`static_forms_reject_bad_names_effects_types_and_ownership` 等 |
 | 生成元に依存しない独立IR検査 | [verify](../tests/verify.rs) の27件と [static_operations](../tests/static_operations.rs) の `raw_finite_circuit_validation_rejects_forged_certificates` |
-| 同梱定義の合成と算法ごとの契約 | [algorithms](../tests/algorithms.rs)、[static_operations](../tests/static_operations.rs)、[order_finding](../tests/order_finding.rs)。成功条件・参照系・前提外の反例を個別に検査 |
+| 同梱定義の合成とアルゴリズムごとの契約 | [algorithms](../tests/algorithms.rs)、[static_operations](../tests/static_operations.rs)、[order_finding](../tests/order_finding.rs)。成功条件・参照系・前提外の反例を個別に検査 |
 
 ### 検査結果（2026-09-26）
 
@@ -171,12 +354,12 @@ Leanのツールチェーン・依存版、ソースの受理規則、言語形�
 
 ## 次に証明すること
 
-次の課題は仕様v0を変更せず、その契約を成立させる根拠を完成させる作業である。矛盾・反例が見つかった場合は仕様変更として明記する。
+次の課題は、本節に記録した改訂後の仕様v0について、その契約を成立させる根拠を完成させる作業である。矛盾・反例が見つかった場合は仕様変更として明記する。
 
 1. **推論規則と実装の対応:** 構文全体の型・効果・名前・スコープ規則と資源規則を、v0およびRustの全受理経路へ対応づける。T1〜T3と値・環境の意味論を基に、暗黙frame・束縛スナップショット・スコープの一般的な対応を示す。
 2. **資源安全性の接続:** 規則系の紙上定理R1を、ソース検査器とIR検証器のすべての受理経路へ接続する。無断複製・暗黙喪失・測定後利用の不在を、処理系について証明済みとはまだしない。
 3. **理想健全性の処理系への移送:** 明示した規則系にはQ1〜Q3の紙上定理を得た。Rustの全受理経路がその型・効果・資源・意味の前提を満たすことを示し、実装での健全性保証へ接続する。
-4. **ソース→IRの意味保存:** 構造的変換の局所証明S1〜S4と静的変換F1〜F5を合成し、その型・効果・名前・軸順・証拠の前提を全経路で満たすことを示す。各数学的アルゴリズムの局所証明と、Rust実行経路への一般的な対応は区別する。
+4. **ソース→IRの意味保存:** C1〜C5で数学的な変換規則についてS1〜S4とF1〜F5を合成した。次はその境界関係、型・効果・名前・軸順・証拠の前提をRustの全成功経路が満たすことを示す。紙上の数学的変換と、実装の一般的な適合証明は区別する。
 5. **実装への接続:** 検証器の各受理条件を証明の前提と対応づける。[有限IRの紙上証明](finite-core-proof.md)は前提付きの議論であり、Rust実装の正しさやソース全体の定理を自動的に与えない。
 
-これらの完成前は、段階1全体を完了にせず、コンパイル成功を証明済みの物理的妥当性とも呼ばない。個別算法の正答・成功確率、ホスト後処理、実機のノイズと較正は、さらに別の検証対象である。
+これらの完成前は、段階1全体を完了にせず、コンパイル成功を証明済みの物理的妥当性とも呼ばない。個別アルゴリズムの正答・成功確率、ホスト後処理、実機のノイズと較正は、さらに別の検証対象である。

@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use qleisli_core::frontend::project::{ImportOrigin, ModuleOrigin, Project};
+use qleisli_core::frontend::project::{ImportOrigin, ModuleOrigin, Project, ProjectError};
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -35,12 +35,38 @@ impl TempRoot {
     fn path(&self) -> &Path {
         &self.path
     }
+
+    fn write_import_chain(&self, count: usize, last_dependency: Option<usize>) {
+        for index in 0..count {
+            let dependency = if index + 1 < count {
+                Some(index + 1)
+            } else {
+                last_dependency
+            };
+            let import = dependency
+                .map_or_else(String::new, |next| format!("use m{next:04}::f{next:04};\n"));
+            self.write(
+                &format!("m{index:04}.qli"),
+                &format!("// π\n{import}pub basis fn f{index:04}(x: Bit) -> Bit {{ x }}\n"),
+            );
+        }
+    }
 }
 
 impl Drop for TempRoot {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.path);
     }
+}
+
+fn load_on_small_stack(root: &Path) -> Result<Project, ProjectError> {
+    let root = root.to_owned();
+    std::thread::Builder::new()
+        .stack_size(2 * 1024 * 1024)
+        .spawn(move || Project::load(&root))
+        .unwrap()
+        .join()
+        .unwrap()
 }
 
 #[test]
@@ -111,6 +137,71 @@ fn import_cycles_and_name_collisions_are_rejected() {
     root.write("a.qli", "use b::g; basis fn g(x: Bit) -> Bit { x }");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("collides"), "{error}");
+}
+
+#[test]
+fn long_acyclic_import_chain_loads_on_a_small_stack() {
+    let root = TempRoot::new();
+    // This depth overflowed the recursive import DFS on a 2 MiB Rust thread.
+    let count = 3_000;
+    root.write_import_chain(count, None);
+    let project = load_on_small_stack(root.path()).unwrap();
+    assert_eq!(
+        project
+            .modules
+            .values()
+            .filter(|module| module.origin == ModuleOrigin::Local)
+            .count(),
+        count
+    );
+    assert_eq!(
+        project.module("m0000").unwrap().imports["f0001"].module,
+        "m0001"
+    );
+    assert!(project.module("m2999").unwrap().imports.is_empty());
+}
+
+#[test]
+fn deep_import_cycle_reports_the_back_edge_and_cycle_path() {
+    let root = TempRoot::new();
+    let count = 3_000;
+    let cycle_start = 1_200;
+    root.write_import_chain(count, Some(cycle_start));
+    let error = load_on_small_stack(root.path()).unwrap_err();
+    assert!(error.path.ends_with("m2999.qli"));
+    let source = fs::read_to_string(&error.path).unwrap();
+    assert_eq!(error.span.start, "// π\n".len());
+    assert_eq!(
+        &source[error.span.start..error.span.end],
+        "use m1200::f1200;"
+    );
+    let cycle: Vec<_> = (cycle_start..count)
+        .chain(std::iter::once(cycle_start))
+        .map(|index| format!("m{index:04}"))
+        .collect();
+    assert_eq!(
+        error.message,
+        format!("cyclic import: {}", cycle.join(" -> "))
+    );
+}
+
+#[test]
+fn converging_import_paths_do_not_report_a_cycle() {
+    let root = TempRoot::new();
+    root.write("a.qli", "use b::left; use c::right; use d::shared;");
+    root.write(
+        "b.qli",
+        "use d::shared; pub basis fn left(x: Bit) -> Bit { x }",
+    );
+    root.write(
+        "c.qli",
+        "use d::shared; pub basis fn right(x: Bit) -> Bit { x }",
+    );
+    root.write("d.qli", "pub basis fn shared(x: Bit) -> Bit { x }");
+    let project = Project::load(root.path()).unwrap();
+    for name in ["a", "b", "c"] {
+        assert_eq!(project.module(name).unwrap().imports["shared"].module, "d");
+    }
 }
 
 #[test]

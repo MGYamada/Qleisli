@@ -1,10 +1,10 @@
 //! Exact finite operator checks, including global phase, not a general proof.
 
-use std::fs;
-use std::ops::{Add, Mul, Neg};
-use std::path::PathBuf;
-use std::sync::atomic::{AtomicU64, Ordering};
+mod common;
 
+use std::ops::{Add, Mul, Neg};
+
+use common::SourceRoot;
 use qleisli_core::frontend::compile::compile_project;
 use qleisli_core::ir::{CircuitAction, CircuitStep, RawOp};
 
@@ -105,16 +105,6 @@ impl Mul for Exact {
     }
 }
 
-static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
-
-struct SourceRoot(PathBuf);
-
-impl Drop for SourceRoot {
-    fn drop(&mut self) {
-        let _ = fs::remove_dir_all(&self.0);
-    }
-}
-
 const IMPORTS: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
@@ -122,21 +112,11 @@ use std::quantum::join; use std::quantum::split; use std::observe::discard;
 ";
 
 fn compiled_steps(definitions: &str, preparation: &str, operation: &str) -> Vec<CircuitStep> {
-    let root = SourceRoot(std::env::temp_dir().join(format!(
-        "qleisli-static-semantics-{}-{}",
-        std::process::id(),
-        NEXT_ROOT.fetch_add(1, Ordering::Relaxed)
-    )));
-    fs::create_dir(&root.0).unwrap();
-    fs::write(
-        root.0.join("main.qli"),
-        format!(
-            "{IMPORTS}\n{definitions}\nobserve fn main() -> Unit {{
+    let root = SourceRoot::new(&format!(
+        "{IMPORTS}\n{definitions}\nobserve fn main() -> Unit {{
             {preparation} let result = {operation}; discard(result); ()
         }}"
-        ),
-    )
-    .unwrap();
+    ));
     let verified = compile_project(&root.0).unwrap();
     let mut circuits = verified
         .program()
@@ -178,6 +158,11 @@ fn assert_operator(width: usize, steps: &[CircuitStep], expected: impl Fn(usize,
                     continue;
                 }
                 match &step.action {
+                    CircuitAction::Contract { .. } => {
+                        panic!(
+                            "function evidence is covered by the dedicated function contract suite"
+                        )
+                    }
                     CircuitAction::Hadamard { target } => {
                         let mask = 1 << target;
                         let zero = basis & !mask;
@@ -371,6 +356,150 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     assert_operator(1, &steps, |row, column| {
         if row == column {
             Exact::phase(if column == 0 { 7 } else { 0 })
+        } else {
+            Exact::ZERO
+        }
+    });
+}
+
+#[test]
+fn closed_classical_computation_selects_static_branches_and_preserves_output_axes() {
+    let definitions = "
+unitary fn choose(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let flag = if true { false xor not false } else { false };
+    let a = if flag and true { t(x(a)) } else { z(a) };
+    join(b,a)
+}
+unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
+unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
+    let (c,p) = split(q);
+    let (c,p) = qif(c,p) { 0 => identity, 1 => choose };
+    join(c,p)
+}";
+    // U|a,b> = zeta^(1-a)|b,1-a>; both branch phis and final
+    // ownership order participate in the exact inverse and controlled matrix.
+    let preparation = "let q = join(init0(),init0());";
+    let steps = compiled_steps(definitions, preparation, "repeat_static(1,choose,q)");
+    assert_operator(2, &steps, |row, column| {
+        let a = column & 1;
+        let b = column >> 1;
+        if row == b | ((1 - a) << 1) {
+            Exact::phase(1 - a)
+        } else {
+            Exact::ZERO
+        }
+    });
+    let inverse = compiled_steps(definitions, preparation, "adjoint(choose,q)");
+    assert_operator(2, &inverse, |row, column| {
+        let b = column & 1;
+        let a = 1 - (column >> 1);
+        if row == a | (b << 1) {
+            Exact::phase(8 - (1 - a))
+        } else {
+            Exact::ZERO
+        }
+    });
+    let else_definitions = definitions.replace("if true {", "if false {");
+    let else_steps = compiled_steps(&else_definitions, preparation, "repeat_static(1,choose,q)");
+    assert_operator(2, &else_steps, |row, column| {
+        let a = column & 1;
+        let b = column >> 1;
+        if row == b | (a << 1) {
+            Exact::phase(4 * a)
+        } else {
+            Exact::ZERO
+        }
+    });
+    let controlled = compiled_steps(
+        definitions,
+        "let q = join(init0(),join(init0(),init0()));",
+        "repeat_static(1,control,q)",
+    );
+    assert_operator(3, &controlled, |row, column| {
+        let c = column & 1;
+        let a = (column >> 1) & 1;
+        let b = column >> 2;
+        let (output, phase) = if c == 0 {
+            (column, 0)
+        } else {
+            (c | (b << 1) | ((1 - a) << 2), 1 - a)
+        };
+        if row == output {
+            Exact::phase(phase)
+        } else {
+            Exact::ZERO
+        }
+    });
+    let scalar_definitions = "
+basis fn one(u:Unit)->Bit { 1 }
+unitary fn identity(q:Q<Unit>)->Q<Unit> { q }
+unitary fn scalar(q:Q<Unit>)->Q<Unit> {
+    if not false {
+        if true and false { q } else { with_computed(q,one) { |a| z(t(a)) } }
+    } else { q }
+}
+unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
+    let (c,u)=split(q);
+    let (c,u)=qif(c,u) { 0=>identity, 1=>scalar };
+    join(c,u)
+}";
+    let scalar = compiled_steps(
+        scalar_definitions,
+        "let q=do b <- init0(); pure (b,());",
+        "repeat_static(1,controlled,q)",
+    );
+    assert_operator(1, &scalar, |row, column| {
+        if row == column {
+            Exact::phase(5 * column)
+        } else {
+            Exact::ZERO
+        }
+    });
+}
+
+#[test]
+fn product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control() {
+    let definitions = "
+unitary fn permute(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    do (a,b) <- q; pure (b,a xor b)
+}
+unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
+unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
+    let (c,p) = split(q);
+    let (c,p) = qif(c,p) { 0 => identity, 1 => permute };
+    join(c,p)
+}";
+    let inverse = compiled_steps(
+        definitions,
+        "let q=join(init0(),init0());",
+        "adjoint(permute,q)",
+    );
+    assert_operator(2, &inverse, |row, column| {
+        let b = column & 1;
+        let a = (column >> 1) ^ b;
+        if row == a | (b << 1) {
+            Exact::ONE
+        } else {
+            Exact::ZERO
+        }
+    });
+    let controlled = compiled_steps(
+        definitions,
+        "let q=join(init0(),join(init0(),init0()));",
+        "repeat_static(1,control,q)",
+    );
+    assert_operator(3, &controlled, |row, column| {
+        let c = column & 1;
+        let a = (column >> 1) & 1;
+        let b = column >> 2;
+        let output = if c == 0 {
+            column
+        } else {
+            c | (b << 1) | ((a ^ b) << 2)
+        };
+        if row == output {
+            Exact::ONE
         } else {
             Exact::ZERO
         }

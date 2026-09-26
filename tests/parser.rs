@@ -1,4 +1,6 @@
-use qleisli_core::frontend::ast::{BasisExprKind, ExprKind, FnBody, FnKind, StmtKind, TypeKind};
+use qleisli_core::frontend::ast::{
+    BasisExprKind, ExprKind, FnBody, FnKind, PatternKind, StmtKind, TypeKind,
+};
 use qleisli_core::frontend::parser::parse_module;
 
 #[test]
@@ -27,7 +29,7 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     else {
         panic!("expected coherent lift")
     };
-    assert_eq!(binder.text, "x");
+    assert!(matches!(&binder.kind, PatternKind::Name(name) if name.text == "x"));
     assert!(matches!(input.kind, ExprKind::Name(_)));
     assert!(matches!(basis.kind, BasisExprKind::Tuple(_, _)));
 
@@ -252,5 +254,198 @@ fn invisible_separators_and_bad_bit_literals_have_precise_errors() {
         assert!(error.message.contains(message), "{error}");
         assert_eq!(error.span.start, source.find(offending).unwrap());
         assert_eq!(error.span.end, error.span.start + offending.len());
+    }
+}
+
+#[test]
+fn reserved_std_module_keywords_allow_further_identifier_components() {
+    for (source, expected) in [
+        ("use std::basis::a::b;", vec!["std", "basis", "a", "b"]),
+        (
+            "use std::observe::a::b::c;",
+            vec!["std", "observe", "a", "b", "c"],
+        ),
+    ] {
+        let module = parse_module(source).unwrap();
+        assert_eq!(module.uses.len(), 1);
+        assert!(module.decls.is_empty());
+        let path = &module.uses[0].path;
+        assert_eq!(
+            path.iter()
+                .map(|part| part.text.as_str())
+                .collect::<Vec<_>>(),
+            expected,
+            "{source}"
+        );
+        for part in path {
+            assert_eq!(&source[part.span.start..part.span.end], part.text);
+        }
+    }
+    // The keyword exception applies only immediately after `std::`.
+    // Resolving the parsed module/name is a separate project check.
+    for source in [
+        "use other::basis::a;",
+        "use std::basis::observe;",
+        "use std::observe::a::basis;",
+    ] {
+        assert!(parse_module(source).is_err(), "{source}");
+    }
+}
+
+#[test]
+fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
+    let declaration = "basis fn visible() -> Bit { 0 }";
+    for format_character in ['\u{200b}', '\u{feff}'] {
+        for line_ending in ["\n", "\r", "\r\n"] {
+            let source = format!(
+                "// note{format_character}basis fn hidden() -> Bit {{ 1 }}{line_ending}{declaration}"
+            );
+            let module = parse_module(&source).unwrap();
+            assert_eq!(module.decls.len(), 1);
+            assert_eq!(module.decls[0].name.text, "visible");
+            assert_eq!(
+                module.decls[0].span.start,
+                source.find(declaration).unwrap()
+            );
+        }
+        let trailing_comment = format!("{declaration} // note{format_character}");
+        assert_eq!(parse_module(&trailing_comment).unwrap().decls.len(), 1);
+
+        // In particular, a leading U+FEFF is not stripped as a BOM.
+        let source = format!("{format_character}{declaration}");
+        let error = parse_module(&source).unwrap_err();
+        assert!(error.message.contains("unexpected character"), "{error}");
+        assert_eq!(error.span.start, 0);
+        assert_eq!(error.span.end, format_character.len_utf8());
+    }
+}
+
+#[test]
+fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
+    let source = "unitary fn f(q: Q<((Bit,Unit),Bit)>) -> Q<(Bit,Bit)> {
+        do ((a,_),b) <- q; pure (a,b)
+    }";
+    let module = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::CoherentLift { binder, basis, .. } = &body.result.kind else {
+        panic!("expected coherent lift")
+    };
+    assert_eq!(&source[binder.span.start..binder.span.end], "((a,_),b)");
+    let PatternKind::Tuple(left, right) = &binder.kind else {
+        panic!("expected outer tuple pattern")
+    };
+    let PatternKind::Tuple(a, ignored) = &left.kind else {
+        panic!("expected nested tuple pattern")
+    };
+    assert!(matches!(&a.kind, PatternKind::Name(name) if name.text == "a"));
+    assert!(matches!(ignored.kind, PatternKind::Wildcard));
+    assert!(matches!(&right.kind, PatternKind::Name(name) if name.text == "b"));
+    assert!(matches!(basis.kind, BasisExprKind::Tuple(_, _)));
+
+    parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { do _ <- q; pure 0 }").unwrap();
+    // Duplicate names are syntactically valid; the basis pattern checker must
+    // reject them. A unit pattern and tuples with more than two fields are not.
+    parse_module("unitary fn f(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,a) <- q; pure a }").unwrap();
+    for pattern in ["()", "(a)", "(a,)", "(a,b,c)"] {
+        let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {pattern} <- q; pure 0 }}");
+        assert!(parse_module(&source).is_err(), "{source}");
+    }
+}
+
+#[test]
+fn classical_boolean_operators_have_precedence_and_left_associativity() {
+    let source = "unitary fn f(a: CBit, b: CBit, c: CBit) -> CBit {
+        not a and b xor c xor false
+    }";
+    let module = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::Xor(first, last) = &body.result.kind else {
+        panic!("expected outer xor")
+    };
+    assert!(matches!(last.kind, ExprKind::CBit(false)));
+    let ExprKind::Xor(left, right) = &first.kind else {
+        panic!("expected left-associated xor")
+    };
+    assert!(matches!(&right.kind, ExprKind::Name(name) if name.text == "c"));
+    let ExprKind::And(negated, _) = &left.kind else {
+        panic!("expected and to bind more tightly")
+    };
+    assert!(matches!(negated.kind, ExprKind::Not(_)));
+    assert_eq!(
+        &source[body.result.span.start..body.result.span.end],
+        "not a and b xor c xor false"
+    );
+
+    let module = parse_module("unitary fn f() -> CBit { true and false and true }").unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::And(left, right) = &body.result.kind else {
+        panic!("expected outer and")
+    };
+    assert!(matches!(left.kind, ExprKind::And(_, _)));
+    assert!(matches!(right.kind, ExprKind::CBit(true)));
+
+    parse_module("unitary fn f(a: CBit) -> CBit { not (a xor true) }").unwrap();
+    parse_module("unitary fn f(a: CBit) -> CBit { if not a { true } else { false } }").unwrap();
+}
+
+#[test]
+fn classical_literals_are_reserved_and_distinct_from_basis_bits() {
+    for source in [
+        "unitary fn f() -> (CBit,CBit) { (true,false) }",
+        "basis fn f() -> (Bit,Bit) { (0,1) }",
+    ] {
+        parse_module(source).unwrap();
+    }
+    for keyword in ["true", "false"] {
+        for source in [
+            format!("unitary fn {keyword}() -> Unit {{ () }}"),
+            format!("unitary fn f({keyword}: CBit) -> Unit {{ () }}"),
+            format!("unitary fn f() -> Unit {{ let {keyword} = (); () }}"),
+            format!("use m::{keyword};"),
+            format!("use {keyword}::f;"),
+            format!("basis fn f() -> Bit {{ {keyword} }}"),
+            format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {keyword} <- q; pure 0 }}"),
+        ] {
+            assert!(parse_module(&source).is_err(), "{source}");
+        }
+    }
+    for expression in ["0", "1", "true and", "not", "true xor xor false"] {
+        let source = format!("unitary fn f() -> CBit {{ {expression} }}");
+        assert!(parse_module(&source).is_err(), "{source}");
+    }
+}
+
+#[test]
+fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
+    let mut nested_chain = "true".to_owned();
+    for _ in 0..20 {
+        nested_chain = format!("({nested_chain}){}", " xor true".repeat(20));
+    }
+    for expression in [
+        format!("{}true", "not ".repeat(10_000)),
+        format!("true{}", " xor false".repeat(10_000)),
+        format!("true{}", " and false".repeat(10_000)),
+        nested_chain,
+    ] {
+        let source = format!("unitary fn f() -> CBit {{ {expression} }}");
+        let error = parse_module(&source).unwrap_err();
+        assert!(error.message.contains("limit"), "{error}");
+        assert!(error.span.start < source.len());
+    }
+    let deep_pattern = format!("{}a{}", "(".repeat(10_000), ",_)".repeat(10_000));
+    let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {deep_pattern} <- q; pure a }}");
+    assert!(parse_module(&source).unwrap_err().message.contains("limit"));
+
+    for expression in [
+        format!("{}true", "not ".repeat(32)),
+        format!("true{}", " xor false".repeat(32)),
+    ] {
+        parse_module(&format!("unitary fn f() -> CBit {{ {expression} }}")).unwrap();
     }
 }

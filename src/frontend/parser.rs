@@ -49,7 +49,7 @@ pub fn parse_module(source: &str) -> Result<Module, ParseError> {
     .module(source.len())
 }
 
-/// An implementation limit on recursive syntax and left-associated basis ASTs.
+/// An implementation limit on recursive syntax and left-associated expression ASTs.
 const MAX_NESTING: usize = 64;
 
 struct Parser {
@@ -357,6 +357,142 @@ impl Parser {
     }
 
     fn expr_inner(&mut self) -> Result<Expr, ParseError> {
+        // Use an iterative precedence stack so parenthesized expressions do
+        // not add three recursive parser frames per nesting level. Operators
+        // are left-associative, with `and` above `xor`.
+        let mut values = Vec::new();
+        let mut operators = Vec::new();
+        loop {
+            let mut negations = Vec::new();
+            while let Some(token) = self.consume(&TokenKind::Not) {
+                negations.push(token.span);
+                if self.nesting + negations.len() > MAX_NESTING {
+                    return Err(self.error("expression exceeds the initial 64-level limit"));
+                }
+            }
+            self.nesting += negations.len();
+            let parsed = self.expr_primary();
+            self.nesting -= negations.len();
+            let mut value = parsed?;
+            let depth = Self::expr_depth(&value)? + negations.len();
+            if depth > MAX_NESTING {
+                return Err(self.error("expression AST exceeds the initial 64-level limit"));
+            }
+            for span in negations.into_iter().rev() {
+                value = Expr {
+                    span: span.cover(value.span),
+                    kind: ExprKind::Not(Box::new(value)),
+                };
+            }
+            values.push((value, depth));
+            let priority = match self.current().kind {
+                TokenKind::And => 2,
+                TokenKind::Xor => 1,
+                _ => break,
+            };
+            while operators
+                .last()
+                .is_some_and(|(previous, _)| *previous >= priority)
+            {
+                Self::reduce_boolean(&mut values, operators.pop().unwrap().1)?;
+            }
+            operators.push((priority, self.bump()));
+        }
+        while let Some((_, operator)) = operators.pop() {
+            Self::reduce_boolean(&mut values, operator)?;
+        }
+        Ok(values.pop().unwrap().0)
+    }
+
+    fn reduce_boolean(values: &mut Vec<(Expr, usize)>, operator: Token) -> Result<(), ParseError> {
+        let (right, right_depth) = values.pop().unwrap();
+        let (left, left_depth) = values.pop().unwrap();
+        let depth = 1 + left_depth.max(right_depth);
+        if depth > MAX_NESTING {
+            return Err(ParseError {
+                message: "expression AST exceeds the initial 64-level limit".to_owned(),
+                span: operator.span,
+            });
+        }
+        let span = left.span.cover(right.span);
+        let kind = match operator.kind {
+            TokenKind::And => ExprKind::And(Box::new(left), Box::new(right)),
+            TokenKind::Xor => ExprKind::Xor(Box::new(left), Box::new(right)),
+            _ => unreachable!("Boolean operator stack"),
+        };
+        values.push((Expr { kind, span }, depth));
+        Ok(())
+    }
+
+    fn expr_depth(expr: &Expr) -> Result<usize, ParseError> {
+        // Keep this iterative walk outside the recursive parsing frames.
+        // Binary chains can deepen the AST without deepening the parse stack.
+        let mut maximum = 1;
+        let mut pending = vec![(expr, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "expression AST exceeds the initial 64-level limit".to_owned(),
+                    span: node.span,
+                });
+            }
+            maximum = maximum.max(depth);
+            match &node.kind {
+                ExprKind::Not(inner)
+                | ExprKind::ApplyContract { input: inner, .. }
+                | ExprKind::Adjoint { input: inner, .. }
+                | ExprKind::RepeatStatic { input: inner, .. }
+                | ExprKind::CoherentLift { input: inner, .. } => {
+                    pending.push((inner, depth + 1));
+                }
+                ExprKind::Tuple(a, b)
+                | ExprKind::Xor(a, b)
+                | ExprKind::And(a, b)
+                | ExprKind::QuantumIf {
+                    control: a,
+                    target: b,
+                    ..
+                } => pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]),
+                ExprKind::Call { args, .. } => {
+                    pending.extend(args.iter().map(|arg| (arg, depth + 1)));
+                }
+                ExprKind::If {
+                    condition,
+                    then_branch,
+                    else_branch,
+                } => {
+                    pending.push((condition, depth + 1));
+                    for block in [then_branch, else_branch] {
+                        pending.push((&block.result, depth + 1));
+                        pending.extend(block.statements.iter().map(|statement| {
+                            let value = match &statement.kind {
+                                StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                            };
+                            (value, depth + 1)
+                        }));
+                    }
+                }
+                ExprKind::WithComputed { source, body, .. }
+                | ExprKind::CertifiedComputed { source, body, .. } => {
+                    pending.push((source, depth + 1));
+                    pending.push((&body.result, depth + 1));
+                    pending.extend(body.statements.iter().map(|statement| {
+                        let value = match &statement.kind {
+                            StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                        };
+                        (value, depth + 1)
+                    }));
+                }
+                ExprKind::Name(_) | ExprKind::CBit(_) | ExprKind::Unit => {}
+            }
+        }
+        Ok(maximum)
+    }
+
+    fn expr_primary(&mut self) -> Result<Expr, ParseError> {
+        if let Some(start) = self.consume(&TokenKind::ApplyContract) {
+            return self.apply_contract(start.span);
+        }
         if self.at(&TokenKind::Adjoint) || self.at(&TokenKind::RepeatStatic) {
             let start = self.bump();
             self.expect(&TokenKind::LParen)?;
@@ -438,7 +574,7 @@ impl Parser {
             });
         }
         if let Some(do_token) = self.consume(&TokenKind::Do) {
-            let binder = self.ident()?;
+            let binder = self.pattern()?;
             self.expect(&TokenKind::LeftArrow)?;
             let input = self.expr()?;
             self.expect(&TokenKind::Semicolon)?;
@@ -459,27 +595,77 @@ impl Parser {
             let source = self.expr()?;
             self.expect(&TokenKind::Comma)?;
             let function = self.ident()?;
+            let logical = if self.consume(&TokenKind::Comma).is_some() {
+                Some(self.ident()?)
+            } else {
+                None
+            };
             self.expect(&TokenKind::RParen)?;
             let open = self.expect(&TokenKind::LBrace)?;
             self.expect(&TokenKind::Pipe)?;
             let binder = self.ident()?;
+            let ancilla_binder = if logical.is_some() {
+                self.expect(&TokenKind::Comma)?;
+                Some(self.ident()?)
+            } else {
+                None
+            };
             self.expect(&TokenKind::Pipe)?;
             let body = self.block_contents(open.span.start)?;
             let span = Span::new(with_token.span.start, body.span.end);
-            return Ok(Expr {
-                kind: ExprKind::WithComputed {
+            let kind = if let Some(logical) = logical {
+                ExprKind::CertifiedComputed {
+                    source: Box::new(source),
+                    function,
+                    logical: Box::new(logical),
+                    data_binder: Box::new(binder),
+                    ancilla_binder: Box::new(ancilla_binder.expect("certified binder")),
+                    body,
+                }
+            } else {
+                ExprKind::WithComputed {
                     source: Box::new(source),
                     function,
                     binder,
                     body,
-                },
-                span,
-            });
+                }
+            };
+            return Ok(Expr { kind, span });
         }
         self.expr_atom()
     }
 
+    fn apply_contract(&mut self, start: Span) -> Result<Expr, ParseError> {
+        self.expect(&TokenKind::LParen)?;
+        let implementation = self.ident()?;
+        self.expect(&TokenKind::Comma)?;
+        let specification = self.ident()?;
+        self.expect(&TokenKind::Comma)?;
+        let input = Box::new(self.expr()?);
+        let end = self.expect(&TokenKind::RParen)?;
+        Ok(Expr {
+            kind: ExprKind::ApplyContract {
+                implementation,
+                specification,
+                input,
+            },
+            span: start.cover(end.span),
+        })
+    }
+
     fn expr_atom(&mut self) -> Result<Expr, ParseError> {
+        if let Some(token) = self.consume(&TokenKind::True) {
+            return Ok(Expr {
+                kind: ExprKind::CBit(true),
+                span: token.span,
+            });
+        }
+        if let Some(token) = self.consume(&TokenKind::False) {
+            return Ok(Expr {
+                kind: ExprKind::CBit(false),
+                span: token.span,
+            });
+        }
         if let TokenKind::Ident(_) = self.current().kind {
             let ident = self.ident()?;
             if self.consume(&TokenKind::LParen).is_some() {

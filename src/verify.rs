@@ -1,6 +1,8 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
+use crate::contract::exact::Budget;
+
 use crate::ir::{
     BasisShape, CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, Effect,
     ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPhi, RawOp, RawProgram, SingleGate,
@@ -81,13 +83,14 @@ struct State {
 /// Freshness and classical definitions span both arms of every branch. These
 /// grow with the program and must never be copied for each branch.
 #[derive(Debug)]
-struct Global {
+struct Global<'a> {
     seen_tokens: BTreeSet<TokenId>,
     seen_wires: BTreeSet<WireId>,
     classical_scopes: BTreeMap<ClassicalId, usize>,
     active_scopes: BTreeSet<usize>,
     current_scope: usize,
     next_scope: usize,
+    contract_budget: &'a mut Budget,
 }
 
 impl Default for State {
@@ -100,8 +103,8 @@ impl Default for State {
     }
 }
 
-impl Default for Global {
-    fn default() -> Self {
+impl<'a> Global<'a> {
+    fn new(contract_budget: &'a mut Budget) -> Self {
         Self {
             seen_tokens: BTreeSet::new(),
             seen_wires: BTreeSet::new(),
@@ -109,11 +112,12 @@ impl Default for Global {
             active_scopes: BTreeSet::from([0]),
             current_scope: 0,
             next_scope: 1,
+            contract_budget,
         }
     }
 }
 
-impl Global {
+impl Global<'_> {
     fn reserve_wire(&mut self, wire: WireId, path: &[usize]) -> Result<(), ValidationError> {
         if !self.seen_wires.insert(wire) {
             return Err(err(path, format!("wire {:?} is not globally fresh", wire)));
@@ -253,6 +257,34 @@ impl State {
             ));
         }
         match operation {
+            RawOp::CertifiedCompute {
+                source,
+                source_out,
+                ancilla_wires,
+                function,
+                use_steps,
+                logical_steps,
+            } => {
+                let reg = self.consume(&[*source], path)?.pop().expect("one input");
+                if ancilla_wires.len() != 1 {
+                    return Err(err(
+                        path,
+                        "semantic contract requires exactly one computed bit",
+                    ));
+                }
+                for wire in ancilla_wires {
+                    global.reserve_wire(*wire, path)?;
+                }
+                crate::contract::check_computed_with_budget(
+                    reg.wires.len(),
+                    function,
+                    use_steps,
+                    logical_steps,
+                    global.contract_budget,
+                )
+                .map_err(|error| err(path, format!("semantic contract: {error}")))?;
+                self.insert_token(global, *source_out, reg, path)?;
+            }
             RawOp::ApplyUnitary {
                 input,
                 output,
@@ -422,11 +454,19 @@ impl State {
                 self.consume(&[*input], path)?;
                 self.effect = Effect::Observe;
             }
+            RawOp::ClassicalConst { output, .. } => {
+                global.insert_classical(*output, path)?;
+            }
             RawOp::ClassicalNot { input, output } => {
                 global.require_classical(*input, path)?;
                 global.insert_classical(*output, path)?;
             }
             RawOp::ClassicalXor {
+                left,
+                right,
+                output,
+            }
+            | RawOp::ClassicalAnd {
                 left,
                 right,
                 output,
@@ -637,7 +677,7 @@ fn require_width(reg: &Register, width: usize, path: &[usize]) -> Result<(), Val
     Ok(())
 }
 
-fn check_circuit(
+pub(crate) fn check_circuit(
     steps: &[CircuitStep],
     width: usize,
     path: &[usize],
@@ -658,6 +698,23 @@ fn check_circuit(
             axis(control.index)?;
         }
         match &step.action {
+            CircuitAction::Contract {
+                indices, evidence, ..
+            } => {
+                let expected = evidence
+                    .signature()
+                    .bits()
+                    .map_err(|error| err(path, error.to_string()))?;
+                if indices.len() != expected {
+                    return Err(err(
+                        path,
+                        "contract application does not match its owned interface",
+                    ));
+                }
+                for index in indices {
+                    axis(*index)?;
+                }
+            }
             CircuitAction::Hadamard { target } => axis(*target)?,
             CircuitAction::Monomial {
                 indices,
@@ -799,8 +856,16 @@ fn check_controls(
 /// Recheck every constructor, SSA reference, live wire, effect, and restricted
 /// `ComputeUseUncompute` proof from the untrusted raw IR.
 pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError> {
+    let mut budget = Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+    verify_with_budget(program, &mut budget)
+}
+
+pub(crate) fn verify_with_budget(
+    program: RawProgram,
+    budget: &mut Budget,
+) -> Result<VerifiedProgram, ValidationError> {
     let mut state = State::default();
-    let mut global = Global::default();
+    let mut global = Global::new(budget);
     let mut input_bits = 0usize;
     for port in &program.quantum_inputs {
         if port.shape.bits > MAX_REGISTER_BITS || port.wires.len() != usize::from(port.shape.bits) {

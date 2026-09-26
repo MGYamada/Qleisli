@@ -12,6 +12,17 @@ that every Rust execution satisfies those properties, or prove full source
 soundness. Exact finite regression checks support the implementation audit;
 they are not a machine-checked proof of the algorithms. Lean is unchanged.
 
+The later `CertifiedCompute` extension is an additional flattening case:
+after independently checking `W E_f=E_f u`, substitute the ordered logical
+u circuit on the source axes, justified by `C_f† W C_f E_0=E_0 u`.
+The [SC rules](semantic-contracts-v0.1.md) state its assumptions. This
+conditional leaf extends the mathematical argument; regression tests do not
+prove the new Rust transformation. The later
+[function-contract action](function-contracts-v0.1.md) retains independently
+checked function evidence through remapping, inverse, control, and repetition.
+Its conditional additional cases below preserve that evidence; the original
+F1–F5 test record and Lean model do not verify these new Rust paths.
+
 ## 1. Scope and coordinates
 
 Consider a resolved target with exact type `Q<A> -> Q<A>` and declared effect
@@ -42,11 +53,12 @@ Let `zeta = exp(i*pi/4)`. A monomial table has a permutation `p` of all local
 labels and exponents `k(x)` in `Z/8Z`:
 
 ```text
-M(p,k)|x> = zeta^k(x) |p(x)>.
+M(p,k)|x⟩ = zeta^k(x) |p(x)⟩.
 ```
 
 Each circuit step has distinct controls, each disjoint from its action axes.
-It acts by its H or monomial action when all control bits match, and by the
+It acts by its H, monomial, or checked function-contract action when all
+control bits match, and by the
 identity otherwise. These are exact linear operators. Equality modulo global
 phase, or equality only of induced density maps, is insufficient here.
 
@@ -54,10 +66,19 @@ An empty action axis list still has one basis label. Its table `p=[0], k=[r]`
 denotes the scalar `zeta^r`, not necessarily the identity. Likewise, `Q<Unit>`
 has one owned logical port even though it has zero axes.
 
+A contract action denotes its evidence's fixed unitary U, or `U†` when its
+adjoint flag is set. The evidence establishes exact equality with its public
+specification and retains its independently checked raw implementation.
+Its ordered indices place that whole operator in the surrounding register;
+the reference executor may execute its checked implementation circuit while
+the exact checker uses the cached equal matrix. These are two interpretations
+connected by the FC extraction/equality premises.
+
 ## 2. F1: axis transport and the flattening invariant
 
-The mathematical flattening state consists of a token map `R` and a list of
-emitted circuit steps. Initially `R(input)=[0,...,n-1]` and the list is empty.
+The mathematical flattening state consists of a token map `R`, a classical
+valuation `gamma`, and a list of emitted circuit steps. Initially
+`R(input)=[0,...,n-1]`, `gamma` is empty, and the step list is empty.
 After any processed prefix, require:
 
 1. `dom(R)` is exactly the set of live quantum tokens of that prefix.
@@ -69,6 +90,10 @@ After any processed prefix, require:
    fixed physical input axes. Internal clean auxiliaries are eliminated only
    by the factorization in §4. Regrouping token interfaces adds no physical
    operation.
+4. `gamma` agrees with every visible classical SSA value on the selected path.
+   Values are deterministic because there are no classical inputs or observation
+   operations. Hidden values can be retained internally but cannot be read by
+   verified instructions outside their scope.
 
 **Axis transport lemma.** Replacing every local action index and every local
 control index in a step by its image under an injective list `a` gives
@@ -85,19 +110,29 @@ Injectivity preserves distinctness and disjointness of controls and targets.
 This is the obligation implemented by `circuit::remap`; transporting only
 action indices would fail for nested controlled operations.
 
+For a retained contract action, expand U on its local input basis and apply
+the same injective axis transport to every matrix coefficient. This proves
+`embed_a(U)` is preserved by remapping, including its control projectors and
+empty target list. The evidence object and adjoint flag remain unchanged;
+transport changes placement, not the certified function or specification.
+
 ## 3. F2: flattening and final output order
 
 The accepted raw subset and the prefix-induction cases are:
 
 | Raw operation | Map update and emitted operator |
 | --- | --- |
+| `ClassicalConst`, `ClassicalNot`, `ClassicalAnd`, `ClassicalXor` | Evaluate the Boolean truth table in `gamma`, define the fresh output, and emit no quantum step. |
+| `ClassicalBranch` | Read its known condition and process only that arm. Simultaneously transfer every selected quantum phi input's axis list to its fresh output token, and every selected classical phi input's value to its fresh output ID. |
 | `Gate` | Replace the input token by its output on the same one axis. Emit H, X, Z, or T, with X permutation `[1,0]`, Z exponents `[0,4]`, and T exponents `[0,1]`. |
 | `Cnot`, `Toffoli` | Replace the distinct one-bit tokens on the same axes. Emit X controlled by the one or two input control axes. |
 | `Split` | Replace one list by its specified prefix and suffix. Emit no step; ordered tensor coordinates account for the split. |
 | `Join` | Replace two distinct tokens by their concatenated lists. Emit no step. Concatenation order is preserved in `R`. |
 | Equal-width `LiftBasis` | Keep the axes and replace the token. Emit the verified total injection table as a permutation with zero phases. |
 | `ApplyUnitary` | Replace the token on the same axes. Transport every verified nested step through the current ordered list using F1. |
+| Retained contract action inside `ApplyUnitary` | Transport indices and controls by F1; retain the immutable function evidence and adjoint flag. Do not substitute an unbound action based only on a name. |
 | `ComputeUseUncompute` with no work targets and only protected Z/T gates | Keep the source axes and replace its token. Emit the diagonal table proved in F3. |
+| `CertifiedCompute` | After independent exact relation checking, keep source axes and emit its fixed logical circuit using `Cf† W Cf E0=E0 u`. |
 
 For a lift, verification checks the old wires as an ordered prefix of the new
 wires. Any increase has effect `Iso` and is incompatible with the temporary
@@ -105,17 +140,27 @@ program's `Unitary` declaration. Thus this case preserves width and wires;
 a total injection between equally sized finite bases is a permutation.
 Equal endpoint dimensions alone would not justify each intermediate case.
 
-Raw initialization, observation, classical instructions or branches,
-`QuantumIf`, and other protected-use forms are outside this flattening subset.
+Raw initialization, observation, `QuantumIf`, and other protected-use forms are outside this flattening subset.
 Some are valid independently verified IR but are rejected by flattening.
 In particular, a valid raw controlled protected phase is not accepted by
 this converter. No theorem here asserts acceptance of every unitary IR.
+The independent function-evidence extractor has its own explicitly bounded
+[larger pure subset](function-contracts-v0.1.md#3-independent-whole-function-evidence),
+including raw `QuantumIf` and structured protected targets. That does not
+silently enlarge this frontend converter's acceptance contract.
 
 **Prefix proof.** The verifier's ownership premises ensure that each consumed
 token is present, distinct inputs do not alias, and outputs are fresh. Each
 row preserves the ordered partition and denotes the same physical operation
 by its stated matrix, F1, or F3. Split and join only reorganize the partition.
-Induction therefore establishes all three invariants in §2.
+For classical instructions the quantum operator is identity and the truth
+table preserves the valuation invariant. For a branch, the known condition
+agrees with its runtime value. Apply induction to the selected arm; complete
+verified phi coverage transfers all axis lists without changing the physical
+operator. Simultaneous classical phis preserve the known valuation. The
+unselected arm is still independently checked, but contributes no operator
+to this classical selection. Induction on the finite operation/branch tree
+therefore establishes all four invariants in §2.
 
 At the output, verified coverage and the single-output shape imply that its
 list `a=R(output)` is a permutation of all input axes. This includes `a=[]`
@@ -124,14 +169,14 @@ order**, while the accumulated operator `V` still uses physical input order.
 Define
 
 ```text
-P_a |x> = |extract_a(x)>.
+P_a |x⟩ = |extract_a(x)⟩.
 ```
 
 **Claim F2.** The complete flat operator is exactly `P_a V`. Append the
 monomial permutation `p(x)=extract_a(x)` on axes `[0,...,n-1]`, with zero
 phases, unless `a` is already that identity list.
 
-**Proof.** In the physical state `|x>`, output component `j` is physical axis
+**Proof.** In the physical state `|x⟩`, output component `j` is physical axis
 `a[j]`. Its output label is precisely `extract_a(x)`. Transporting the prefix
 operator to the output interface is therefore left multiplication by `P_a`.
 Appending this circuit step realizes that multiplication. Both are linear,
@@ -146,10 +191,10 @@ in inversion, repetition, and coherent control just like the earlier gates.
 
 Let `f` be the complete, range-correct predicate table from an `n`-bit source
 to an `m`-bit auxiliary. It need not be injective. The auxiliary is fresh and
-starts in `|0^m>`. Define the reversible computation
+starts in `|0^m⟩`. Define the reversible computation
 
 ```text
-C_f |x,y> = |x, y xor f(x)>.
+C_f |x,y⟩ = |x, y xor f(x)⟩.
 ```
 
 Assume no work targets and a use sequence consisting only of Z/T on protected
@@ -159,20 +204,20 @@ for T. Define
 ```text
 k(x) = sum_(g on source bit i) e_g bit(x,i)
      + sum_(g on auxiliary bit j) e_g bit(f(x),j)       (mod 8),
-D_f |x> = zeta^k(x) |x>.
+D_f |x⟩ = zeta^k(x) |x⟩.
 ```
 
 **Claim F3.** Compute, use, and uncompute maps
-`|psi> tensor |0^m>` to `(D_f|psi>) tensor |0^m>`, including any external
+`|psi⟩ tensor |0^m⟩` to `(D_f|psi⟩) tensor |0^m⟩`, including any external
 reference. It therefore admits pure auxiliary release and the emitted
 identity-permutation monomial has exactly the same operator.
 
-**Proof.** On input `|x,0>`, computation gives `|x,f(x)>`. Every use is
+**Proof.** On input `|x,0⟩`, computation gives `|x,f(x)⟩`. Every use is
 diagonal and leaves both labels intact, multiplying by `zeta^k(x)`.
 Uncomputation XORs the same `f(x)` and returns the auxiliary to zero.
-For a joint vector `sum_x |x> tensor |r_x>` with arbitrary, possibly
+For a joint vector `sum_x |x⟩ tensor |r_x⟩` with arbitrary, possibly
 nonorthogonal reference vectors, the output is
-`sum_x zeta^k(x)|x> tensor |r_x> tensor |0^m>`. Thus the auxiliary factors as
+`sum_x zeta^k(x)|x⟩ tensor |r_x⟩ tensor |0^m⟩`. Thus the auxiliary factors as
 zero for every input and reference. Linearity and mixtures extend the result
 to joint density operators. This is an all-input factorization, not evidence
 from an auxiliary's lifetime or one sampled state.
@@ -196,7 +241,7 @@ of a controlled step has the same controls and the inverse action; reversing
 the step list and inverting each action therefore gives the adjoint of F2's
 complete operator.
 
-**Proof.** The table sends `|p(x)>` to `zeta^(-k(x))|x>`, which undoes the
+**Proof.** The table sends `|p(x)⟩` to `zeta^(-k(x))|x⟩`, which undoes the
 original action on an orthonormal basis. A controlled step has orthogonal
 blocks consisting of its action and identities. The control projectors act
 on disjoint axes and remain unchanged, so taking the adjoint inverts only the
@@ -205,16 +250,26 @@ reversed, individually inverted list. For example, `p=[1,0], k=[0,1]` needs
 inverse phases `[7,0]`; merely negating phases in place would give `[0,7]`
 and is wrong.
 
+For a retained contract action, invert its unitary by toggling the adjoint
+flag and retain its evidence. Exact `U=u` implies `U†=u†`; toggling twice
+restores the original operator. The same block-adjoint argument preserves
+external controls. This includes scalar phases on `Q<Unit>`. The rule
+requires checked ordinary unitary targets and a known circuit; it provides
+no inverse capability for an unknown device.
+
 **Claim F4b.** Concatenating the complete flat list `r` times gives `U^r`
 for every nonnegative finite `r`, including `U^0=I` for the empty list.
 This follows by induction on `r` and sequence composition. At source level,
 the input expression is still evaluated once, and all target name, type,
 effect, body, independent-verification, flattening, and capacity checks still
 apply at `r=0`. The identity equation does not relax the acceptance contract.
+Repeated contract actions share checked evidence but consume each runtime
+input/output token in sequence. Copying evidence is not copying a quantum
+holder. Count zero emits no call action after the target/evidence checks.
 
 ## 6. F5: coherent control of a complete target
 
-For a separately owned control bit `c`, let `Pi_b=|b><b|` and define
+For a separately owned control bit `c`, let `Pi_b=|b⟩⟨b|` and define
 
 ```text
 C_b(U) = Pi_b tensor U + Pi_(1-b) tensor I.
@@ -240,6 +295,14 @@ on opposite control blocks; multiplying them yields the displayed `Q`.
 Join/split around the compiled circuit supply the stated input/output tuple
 interfaces and add no physical operation. No control bit is measured and no
 sum of classical alternatives is substituted for this operator.
+
+The argument also applies when T or S is a retained function-contract action:
+add the new condition to its enclosing step and keep the evidence, indices,
+and adjoint choice. Its exact equality `U=u` survives both control blocks.
+Thus final IR records the selected implementation and specification even
+when the action is controlled within another transformed function. This is
+the conditional FC-STATIC extension of F5, not a theorem about every Rust
+implementation of that transformation.
 
 For `Q<Unit>`, taking `U0=1` and `U1=zeta` yields
 `Q=diag(1,zeta)` on the control. Dropping a scalar because its density map is
@@ -271,14 +334,23 @@ successful-transformation theorem.
 
 ## 8. Implementation correspondence and regression evidence
 
+The review extension is covered by
+[`closed_classical_computation_selects_static_branches_and_preserves_output_axes`](../tests/static_semantics.rs)
+and [`product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control`](../tests/static_semantics.rs).
+They compare exact matrix entries, including phase, for classical selection,
+quantum/classical phi transport, product patterns, final axis order, inverse,
+and coherent control. The proof additions above are paper arguments; these
+finite checks do not establish Rust adequacy or a machine-checked F2 theorem.
+
+
 | Obligation | Implementation |
 | --- | --- |
-| Resolve the residual-environment target, check exact signature and declared effect, independently verify its body | `static_steps` in [lower.rs](../src/frontend/compile/lower.rs) |
+| Resolve the residual-environment target, check exact signature and declared effect, independently verify its body | `static_steps` in [lower/mod.rs](../src/frontend/compile/lower/mod.rs) |
 | Track the ordered partition and emit the final `P_a` | `flatten` in [circuit.rs](../src/frontend/compile/circuit.rs) |
 | Transport action indices and existing controls | `remap` in `circuit.rs` |
 | Reindex inverse phases and reverse the whole sequence | `invert` in `circuit.rs` |
-| Emit `D_f` from protected source/auxiliary bits | `flatten` computed case; `computed` in `lower.rs` establishes the narrower source form |
-| Repeat checked steps; shift target axes and add arm controls | `expr_inner` static cases in `lower.rs` |
+| Emit `D_f` from protected source/auxiliary bits | `flatten` computed case; `computed` in `lower/mod.rs` establishes the narrower source form |
+| Repeat checked steps; shift target axes and add arm controls | `expr_inner` static cases in `lower/mod.rs` |
 | Validate tables, disjoint indices, widths, effects, and complete ownership | `check_circuit`, computed checks, and `verify` in [verify.rs](../src/verify.rs) |
 
 [tests/static_semantics.rs](../tests/static_semantics.rs) compares every matrix
@@ -309,7 +381,10 @@ checked 319 local link targets, the static contract's six legacy anchors, and
 the changed documents' tables. These checks do not machine-check F1–F5.
 
 The [type/effect/name supplement](source-typing-rules.md) now presents all
-syntax cases. Remaining work includes its source/Rust adequacy, correspondence
-of all semantic leaves and Rust data structures, and assembly of the local
-results into the full source-to-IR theorem. See the
+syntax cases. The [translation contract C1–C5](source-ir-correspondence.md)
+supplies the mathematical leaf schemas and assembles them with F1–F5 by
+dependency and structural induction. Remaining work includes source/Rust
+adequacy, the boundary relation for Rust data structures, and correctness of
+the implemented verifier and executor. The conditional mathematical theorem
+does not establish full compiler correctness. See the
 [roadmap](../ROADMAP.md) and [conformance ledger](specification-status.md).

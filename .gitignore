@@ -3,3 +3,4 @@
 .DS_Store
 *.rs.bk
 /lean/.lake/
+__pycache__/

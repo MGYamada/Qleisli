@@ -266,51 +266,51 @@ impl Project {
 
     fn reject_cycles(&self) -> Result<(), ProjectError> {
         let mut marks = BTreeMap::<&str, u8>::new();
-        let mut stack = Vec::<&str>::new();
+        // Each frame records the next import to visit. Keep the active path on
+        // the heap so a long acyclic module chain cannot exhaust the Rust stack.
+        let mut stack = Vec::<(&str, usize)>::new();
         for name in self.modules.keys() {
-            self.visit(name, &mut marks, &mut stack)?;
-        }
-        Ok(())
-    }
-
-    fn visit<'a>(
-        &'a self,
-        name: &'a str,
-        marks: &mut BTreeMap<&'a str, u8>,
-        stack: &mut Vec<&'a str>,
-    ) -> Result<(), ProjectError> {
-        match marks.get(name).copied() {
-            Some(2) => return Ok(()),
-            Some(1) => unreachable!("caller diagnoses back edges"),
-            _ => {}
-        }
-        marks.insert(name, 1);
-        stack.push(name);
-        let module = self.modules.get(name).expect("known module");
-        for use_decl in &module.ast.uses {
-            let local_name = &use_decl.path.last().expect("parser requires name").text;
-            let imported = module.imports.get(local_name).expect("imports resolved");
-            if imported.origin == ImportOrigin::Sealed {
+            if marks.get(name.as_str()).copied() == Some(2) {
                 continue;
             }
-            let dependency = imported.module.as_str();
-            if marks.get(dependency).copied() == Some(1) {
-                let start = stack
-                    .iter()
-                    .position(|item| *item == dependency)
-                    .unwrap_or(0);
-                let mut cycle = stack[start..].to_vec();
-                cycle.push(dependency);
-                return Err(error(
-                    &module.path,
-                    use_decl.span,
-                    format!("cyclic import: {}", cycle.join(" -> ")),
-                ));
+            marks.insert(name, 1);
+            stack.push((name, 0));
+            while let Some((name, next_import)) = stack.last_mut() {
+                let module = self.modules.get(*name).expect("known module");
+                let Some(use_decl) = module.ast.uses.get(*next_import) else {
+                    marks.insert(*name, 2);
+                    stack.pop();
+                    continue;
+                };
+                *next_import += 1;
+                let local_name = &use_decl.path.last().expect("parser requires name").text;
+                let imported = module.imports.get(local_name).expect("imports resolved");
+                if imported.origin == ImportOrigin::Sealed {
+                    continue;
+                }
+                let dependency = imported.module.as_str();
+                match marks.get(dependency).copied() {
+                    Some(1) => {
+                        let start = stack
+                            .iter()
+                            .position(|(name, _)| *name == dependency)
+                            .expect("active module is on the DFS path");
+                        let mut cycle: Vec<_> =
+                            stack[start..].iter().map(|(name, _)| *name).collect();
+                        cycle.push(dependency);
+                        return Err(error(
+                            &module.path,
+                            use_decl.span,
+                            format!("cyclic import: {}", cycle.join(" -> ")),
+                        ));
+                    }
+                    Some(2) => continue,
+                    _ => {}
+                }
+                marks.insert(dependency, 1);
+                stack.push((dependency, 0));
             }
-            self.visit(dependency, marks, stack)?;
         }
-        stack.pop();
-        marks.insert(name, 2);
         Ok(())
     }
 }

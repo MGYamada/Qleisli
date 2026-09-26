@@ -3,15 +3,36 @@
 Status: **semantic interfaces and conditional local paper proofs** (2026-09-26).
 This English document supplies the semantic layer for the
 [source resource rules](source-resource-rules.md) and [finite core v0](language-spec.md).
-It introduces no syntax, primitive, acceptance rule, or standard-library API.
+It interprets the current syntax, including typed lift patterns and ordinary
+classical Boolean expressions, without adding acceptance rules or library APIs.
 The local results below do not alone prove full source soundness or correctness
 of the Rust compiler. [Q1–Q3](source-soundness.md) now assembles the ideal
 soundness proof for the explicit rule system. S1–S4 are not Lean proofs.
+
+The subsequent three-argument computed extension has the separate
+[SC source/IR rule](semantic-contracts-v0.1.md), with isolated data/auxiliary
+owners and explicit logical action u. Its conditional local soundness case
+is recorded in Q1–Q3; the historical S1–S4 proofs are not Rust verification
+of the new extension.
+
+The later [function-contract rule](function-contracts-v0.1.md) evaluates its
+input once, then applies the fixed specification u to the owned register and
+identity to the entire correlated frame. Independently checked equality U=u
+justifies substituting the retained implementation. The FC paper argument
+extends this equality through ordered axis placement, adjoint, coherent
+control, and composition, conditional on the stated extraction/checking
+premises. It does not assert a new whole-compiler proof.
 
 The milestone is to state what a mixed source value denotes and prove how
 call-by-value substitution, an arbitrary correlated frame, and classical
 branch interfaces compose. Checking that every source rule and every Rust
 execution meets these premises remains an explicit obligation.
+
+The [translation contract C1–C5](source-ir-correspondence.md) now supplies
+basis encoding/table construction, concrete leaf schemas, auxiliary extraction,
+and complete phi construction, then assembles these local arguments for that
+specified mathematical translation. General Rust implementation adequacy
+remains open.
 
 ## 1. Mixed values and ordered quantum interfaces
 
@@ -32,7 +53,7 @@ one-dimensional. `Unit`, `Q<Unit>`, and product trees remain distinct types.
 The ordered quantum space `Hq(T)` is the tensor product of the leaf spaces;
 an empty product is the scalar space. The basis label convention is
 `label(a,b)=label(a)+2^bits(A)*label(b)` for `a:A` and `b:B`.
-Tensor identifications send `|a> tensor |b>` to `|label(a,b)>`; no default
+Tensor identifications send `|a⟩ tensor |b⟩` to `|label(a,b)⟩`; no default
 array-library or Kronecker ordering is assumed.
 
 Let `R(s)=(A,t,w)` be the slot store of the resource rules, and let `gamma`
@@ -114,6 +135,8 @@ their semantic structure. They do not provide a new source checker.
 | Rule | Semantic action |
 | --- | --- |
 | Unit, classical copy, quantum move | Reorganize values/environments with identity on the physical joint state. Moving spends the original binding. |
+| `true` / `false` | Add a fresh classical record entry for 1 / 0; the quantum operator is identity. |
+| Ordinary `not`, `and`, `xor` | Evaluate each strictly `CBit` operand once, eagerly from left to right, then update the classical record by the truth table. Retain operand effects and the complete frame. |
 | Pair | Evaluate the left expression; retain its entire result in `F`; evaluate the right expression; pair the resulting value trees. |
 | `let` / pattern binding | Evaluate the right-hand expression once, destructure its resulting value, introduce fresh binder identities, then continue. A wildcard can forget only a classical footprint. |
 | Block exit | Hide block-local names and unused classical records, restore surviving outer bindings, and propagate spent outer linear bindings. Do not trace out a live quantum resource on scope exit. |
@@ -132,6 +155,36 @@ Pending values remain in that interface; they cannot disappear when a later
 argument calls a function or measures a different subsystem. Their conditional
 state may change through correlations even though the later expression cannot
 directly access their handles.
+
+For a deterministic classical truth function `g` and fresh result ID `c`, let
+`u_g(gamma)=gamma[c ↦ g(gamma)]`. Its action on a family of quantum blocks is
+
+```text
+(B_g(rho))_delta = sum_(gamma : u_g(gamma)=delta) rho_gamma.
+```
+
+Each input record contributes once, with exact quantum operator `I`.
+`ClassicalConst` uses the constant truth value, `ClassicalNot` reads one visible
+bit, and `ClassicalAnd` / `ClassicalXor` read two; a repeated input ID simply
+supplies the same classical bit twice. These leaves neither observe quantum
+state nor consume quantum ownership. The whole expression includes its operand
+maps: `not e` means `B_not ⋆ E_e`, and `e1 op e2` means
+`B_op ⋆ E_e2 ⋆ E_e1`, with the first result retained during the second stage.
+Even `false and e2` includes `E_e2`. Operand observations can alter a correlated
+frame and create histories that must remain until the appropriate record
+grouping. The truth-table step alone is quantum identity, not the whole
+expression when its operands perform quantum work.
+
+A typed lift pattern `p:A =>basis Xi` is interpreted by the unique label
+valuation `eta_p(a)=BasisBind(p,A,a)` from the typing rules. For every
+`a∈L_A`, evaluate `b` in that valuation to define `f(a)`. Names bind basis
+labels, `_` omits labels from the valuation, and pairs decode the exact
+product tree. This is compile-time construction of a **full-domain** function,
+not measurement or partial trace of the input. Only if that whole `f` is
+injective does the lift have operator `V_f=Σ_a |f(a)⟩⟨a|`. Pattern erasure of a
+singleton Unit factor can satisfy this condition; discarding an independent
+Bit cannot. Duplicate names and mismatched pattern trees fail before an
+operator is assigned. No ordinary quantum wildcard rule is weakened.
 
 The semantic leaves are the exact sealed matrices and Kraus maps in the
 [formal-core overview](formal-core.md#2-ideal-semantics-on-the-entire-system).
@@ -181,6 +234,16 @@ side once; fresh lexical identities extend the two environments with matching
 result values, and substitutions stop at shadowing binders. Scope exit removes
 the same local holders and propagates the same spent outer bindings.
 
+For ordinary Boolean constants, both sides introduce the same truth value
+with quantum identity. For `not/and/xor`, apply the operand hypotheses in the
+specified eager order; matching decoded bits give the same deterministic
+record update. No argument expression is substituted and evaluated again.
+For a lift, alpha-renaming its pattern-bound basis names preserves the exact
+typed pattern and its distinct-name condition. Pattern induction gives
+matching `eta_p(a)` for every original input label, so T1 gives identical
+full tables and therefore the same exact `V_f`, not merely equal probabilities.
+Runtime substitutions cannot enter this isolated basis context.
+
 The local-map premise makes each sealed/certified leaf commute with the
 interface identification. In a pair or argument sequence, the first induction
 hypothesis puts matching pending values in the frame; the next hypothesis
@@ -217,10 +280,17 @@ over the finite outcome sums. Condition/arm selection depends on the available
 classical record, not on direct access to framed quantum handles. Phi changes
 frame coordinates through the layout isomorphism, retaining their port types.
 Induction gives the displayed Kraus operators. Expand an arbitrary joint
-operator as `sum_(i,j) |i><j|_A tensor R_(i,j)`; linearity gives the equation
+operator as `sum_(i,j) |i⟩⟨j|_A tensor R_(i,j)`; linearity gives the equation
 without a product-state assumption. The same proof applies to exact pure
 operators. Complete positivity is preserved, and Kraus completeness is
 preserved whenever the original outcome family is complete.
+
+Classical truth-table updates are a direct instance of the identity leaf:
+their inputs are visible classical records, with no access to a quantum frame.
+Their operand maps still use the sequential/adaptive induction, so eagerness
+does not discard a correlated frame. Basis-pattern decomposition has no
+runtime state action; the resulting checked full-domain lift is local to its
+input interface and extends by the same identity as any other lift.
 
 This does **not** assert that a frame's normalized conditional state is
 unchanged. Measuring one half of a Bell pair steers the other half to the
@@ -237,6 +307,11 @@ by retained arm-output classical records `h`, including the result projection.
 First transport private histories to the fixed arm-output interface and sum
 them within each such record. The source and IR need not have the same private
 Kraus decompositions. No condition is re-evaluated.
+
+A condition built from `true/false/not/and/xor` uses the deterministic record
+updates and eager operand composition in §3. This may itself include
+observation histories from its operands. S3 uses that entire condition
+instrument, not a short-circuit reduction based on its final Boolean value.
 
 Use the resource rules' correspondence `J` over **all** result quantum leaves
 and residual frame slots. It is a bijection to the live slots in either arm;
@@ -293,7 +368,9 @@ V_IR J_in = J_out V_source                         (pure operators).
 **Claim S4:** assuming premise 4 for immediate subderivations and the resource
 interfaces, the following structural translations preserve these equations:
 pair/argument sequencing, pattern binding and block exit, normal call inlining,
-and classical `if` with complete simultaneous phis.
+ordinary classical Boolean expressions, typed pattern binding for a coherent
+lift, and classical `if` with complete simultaneous phis. The lift case also
+requires the emitted finite table to equal the fully enumerated `f` of §3.
 
 **Proof.** Structural moves/bindings add no physical instruction. Intermediate
 coordinate isomorphisms cancel in a sequence, and finite sums distribute over
@@ -301,6 +378,13 @@ composition. S1 identifies parameter binding with value instantiation; S2
 extends the body equality over every suspended caller or pending-value axis.
 S3 identifies selected-arm maps, output coordinate transport, and classical
 decoding. Thus each structural case commutes, including arbitrary references.
+For Boolean forms, operand correspondence composes in the same left-to-right
+order and the fresh SSA instruction implements the same deterministic record
+update `B_g`, with quantum operator `I`. For a lift pattern, the pattern
+induction identifies every label valuation; under the stated table-equality
+premise, `LiftBasis` has the same exact operator `V_f`. Neither conclusion
+assumes that tests prove Rust table enumeration, classical SSA scope, or the
+verifier's implementation correct.
 Pure cases use exact operator equations throughout, so no phase is quotiented
 away. This proves the local compositional rule. It does not discharge every
 semantic leaf, static compiler transformation, or Rust data-structure invariant;
@@ -311,9 +395,11 @@ those premises.
 
 | Semantic obligation | Current implementation | Evidence and boundary |
 | --- | --- | --- |
-| Actuals are values, evaluated once in order | `expr_inner` and `call_user_inner` in [lower.rs](../src/frontend/compile/lower.rs) | Argument values are collected before parameter binding. Classical aliasing is permitted; quantum values move. |
+| Actuals are values, evaluated once in order | `expr_inner` and `call_user_inner` in [lower/mod.rs](../src/frontend/compile/lower/mod.rs) | Argument values are collected before parameter binding. Classical aliasing is permitted; quantum values move. |
+| Eager CBit operands and deterministic record updates | [`expr_inner`](../src/frontend/compile/lower/mod.rs), [classical IR](../src/ir.rs), [sim.rs](../src/sim.rs) | [`ordinary_cbit_literals_and_operators_have_their_truth_tables`](../tests/specification_boundaries.rs), [`boolean_operands_are_eager_and_preserve_pending_quantum_ownership`](../tests/specification_boundaries.rs). Operand maps are sequentially composed before the Boolean update. |
+| Exact lift-pattern labels and full input domain | [`bind_basis_pattern`](../src/frontend/compile/basis.rs), [`lift`](../src/frontend/compile/lower/mod.rs) | [`basis_lifts_destructure_exact_product_patterns`](../tests/specification_boundaries.rs), [`basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits`](../tests/specification_boundaries.rs), [`product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control`](../tests/static_semantics.rs). General table/implementation correspondence remains open. |
 | Callee module and lexical isolation | `call_user_inner`, `block`, `bind` | A fresh parameter environment and callee module are used. Block snapshots and the `rebound` set implement scope bookkeeping; their general adequacy remains open. |
-| Pending/caller frame | Shared `Lowerer::registers`, `branch` | Registers outside the callee environment still participate in complete branch merging. The compiler does not infer a product state. |
+| Pending/caller frame | Shared `Lowerer::registers`, `branch` in [lower/branch.rs](../src/frontend/compile/lower/branch.rs) | Registers outside the callee environment still participate in complete branch merging. The compiler does not infer a product state. |
 | Ordered mixed outputs and complete phi | `merge_results`, `merge_register`, `branch` | Result trees are traversed before residual slots, including zero-width slots. [verify.rs](../src/verify.rs) independently checks full coverage. |
 | Simultaneous classical substitution | `verify_branch` in `verify.rs` | All inputs are checked before any output is registered. Sequential assignments in [sim.rs](../src/sim.rs) are equivalent because verified outputs are globally fresh and cannot be inputs to this merge. |
 | Axis order and history sum | `relabel_branch` and final probability aggregation in `sim.rs` | Selected wire IDs are relabeled; hidden classical histories contribute probabilities. Numerical execution is finite-precision evidence, not an exact operator proof. |
@@ -335,11 +421,17 @@ reordered verified IR. Numerical comparisons use tolerance `1e-12`. They do
 not establish equality on arbitrary input operators, and source edits were
 not needed to make these regressions pass.
 
-Local validation on 2026-09-26: all four new regressions passed; all 119 Rust
+Historical validation before the lift-pattern/CBit extension (2026-09-26):
+all four regressions above passed; all 119 Rust
 tests, formatting, and Clippy with warnings denied passed. Documentation checks
 found no missing local link targets. The translated normative specification
 retains its title and 11 legacy section anchors. These checks are implementation
 and documentation evidence, not machine checking of S1–S4. Lean is unchanged.
+
+The later pattern/Boolean cases are included in the paper S1–S4 arguments
+above. Their regression references identify finite evidence; the historical
+119-test run did not include them. Lean has not been extended to these source
+rules, and general Rust adequacy remains open.
 
 ## 9. Remaining specification work
 
@@ -349,12 +441,13 @@ and documentation evidence, not machine checking of S1–S4. Lean is unchanged.
 | S1 value substitution, S2 correlated frame, S3 branch/phi, S4 structural IR composition | Conditional local paper proofs above |
 | Finite flattening, output order, inverse/control/repetition, restricted computed phase | [F1–F5](static-semantics.md) supplies conditional local paper proofs and exact finite matrix regressions |
 | Type/effect/name and scope rules for all syntax cases | [Explicit supplement and local T1–T3 proofs](source-typing-rules.md); full source/Rust adequacy of binder identities, scopes, snapshots and effects remains open |
-| Every source/IR semantic leaf and static lowering meets the correspondence equation | Open; assemble the local proofs and establish all source typing/layout premises and Rust implementation adequacy |
+| Mathematical leaf schemas and assembly of source/IR correspondence | [C1–C5](source-ir-correspondence.md) gives a conditional paper theorem for the specified translation, including table encoding and complete phi construction; general Rust adequacy remains open |
 | Ideal soundness of the explicit source rule system | [Paper Q1–Q3](source-soundness.md), using complete holder interfaces, exact leaves and finite adaptive Kraus composition |
 | General correspondence to Rust acceptance and correctness of lowering/verifier paths | Open; not inferred from the paper theorem or finite tests |
 
-The next task is to discharge the remaining leaf-translation premises and
-establish implementation adequacy for the explicit derivations and Q1–Q3.
+The next task is to establish that successful Rust executions satisfy C1–C5's
+boundary relation and translation schemas, connecting the explicit derivations
+and Q1–Q3 to the implementation.
 Lean supports the resource model and a small Kraus algebra component; it does
 not yet check these source semantic proofs. Algorithm
 correctness, backend behavior, and physical noise remain separate topics.

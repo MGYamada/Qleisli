@@ -105,6 +105,14 @@ pub struct BitControl {
 /// exp(i*pi*phases[x]/4)|permutation[x]>. Empty indices retain scalar phase.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CircuitAction {
+    /// A known finite implementation carrying immutable independently checked
+    /// function evidence. Axis remapping, outer controls and adjoint retain
+    /// the evidence rather than replacing it with an unbound gate sequence.
+    Contract {
+        indices: Vec<usize>,
+        evidence: std::sync::Arc<crate::contract::function::FunctionEvidence>,
+        adjoint: bool,
+    },
     Hadamard {
         target: usize,
     },
@@ -182,6 +190,19 @@ pub struct ClassicalPhi {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RawOp {
+    /// Exact finite semantic contract for compute/use/uncompute. The data
+    /// occupy the low axes and one fresh computed bit the highest axis.
+    /// Independent verification checks W E_f = E_f u, including phase and
+    /// all rows outside the encoded subspace, before permitting cleanup.
+    /// Both actual W and the explicitly specified logical u are retained.
+    CertifiedCompute {
+        source: TokenId,
+        source_out: TokenId,
+        ancilla_wires: Vec<WireId>,
+        function: Vec<u16>,
+        use_steps: Vec<CircuitStep>,
+        logical_steps: Vec<CircuitStep>,
+    },
     /// A flat circuit over one register; the independent verifier checks every
     /// control, axis, permutation and phase. No arbitrary matrix is accepted.
     ApplyUnitary {
@@ -257,11 +278,21 @@ pub enum RawOp {
     Discard {
         input: TokenId,
     },
+    /// A fresh classical SSA bit, with no quantum preparation or measurement.
+    ClassicalConst {
+        value: bool,
+        output: ClassicalId,
+    },
     ClassicalNot {
         input: ClassicalId,
         output: ClassicalId,
     },
     ClassicalXor {
+        left: ClassicalId,
+        right: ClassicalId,
+        output: ClassicalId,
+    },
+    ClassicalAnd {
         left: ClassicalId,
         right: ClassicalId,
         output: ClassicalId,

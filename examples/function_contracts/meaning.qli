@@ -1,0 +1,4 @@
+use std::quantum::z;
+
+// The client's fixed logical contract: |b> maps to (-1)^b |b>.
+pub unitary fn phase(q: Q<Bit>) -> Q<Bit> { z(q) }

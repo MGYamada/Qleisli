@@ -3,8 +3,11 @@
 Status: **syntax-complete rule presentation and local paper lemmas**
 (2026-09-26). This English supplement makes the typing and name premises of
 the [v0 specification](language-spec.md) and [resource calculus](source-resource-rules.md)
-explicit. It adds no accepted syntax, coercion, primitive, or library API.
-The rules below and the resource transitions together cover every current
+explicit. It records the current language forms, including typed lift patterns
+and ordinary classical Boolean expressions; it introduces no additional
+coercion or library API beyond the normative specification.
+The rules below, the resource transitions, and the linked
+[semantic-contract supplement](semantic-contracts-v0.1.md) cover every current
 source AST constructor. This coverage is not a proof that the Rust frontend
 implements the rules, nor a completed source soundness theorem.
 
@@ -13,6 +16,19 @@ scope projection, and conservative effects. They are paper proofs, not Lean
 proofs. [S1–S4](source-semantics.md) and [F1–F5](static-semantics.md) supply
 conditional semantic correspondence; their implementation premises remain
 open. Capacity and diagnostic ordering are separated from successful rules.
+
+**2026-09-27 supplement:** `CertifiedComputed` adds the explicit
+`CERTIFIED-COMPUTED` rule below. Its equation and local paper soundness argument
+are SC-SOURCE/SC-COMPUTED in the semantic-contract specification. The original
+T1–T3 record does not establish Rust adequacy for this new path; the conditional
+case arguments below describe its mathematical extension. No Lean theorem is
+extended by this documentation change.
+
+The subsequent `ApplyContract` constructor is covered by the supplemental
+[FC-APPLY rule](function-contracts-v0.1.md#2-source-language-form). Its fixed
+public signature and independently checked function equality are additional
+premises; the original T1–T3 record and Lean model do not verify the new
+implementation path.
 
 ## 1. Types and judgment interfaces
 
@@ -93,6 +109,8 @@ The expression context additionally checks local hiding:
 | `adjoint` / `repeat_static` target | Check hiding and resolution in the residual environment after the quantum input expression. |
 | `qif` targets | Check both names after control and target evaluation, in their common residual environment. |
 | `with_computed` predicate | Check hiding and resolution after source expression evaluation. |
+| Three-argument `with_computed` logical target | Apply the same residual-environment rule and the static-target signature/effect check. |
+| `apply_contract` implementation and specification | Evaluate the input once first; then require both names absent from the residual local environment and resolve ordinary unitary declarations. |
 
 Spent local names are in `dom(E)`. They hide functions until their lexical
 scope ends. A callee body resolves its names in its **defining module** and
@@ -104,7 +122,8 @@ parameter/result types for its kind. Basis declarations use basis types and
 basis expressions; other declarations use ordinary types and blocks. Form
 the function-reference graph from **all** syntactic call/reference sites,
 including unused declarations, both branch arms, all basis calls, computed
-predicates, both `qif` targets, and repetition-zero targets. Resolve each
+predicates, certified logical targets, both function-contract targets, both `qif`
+targets, and repetition-zero targets. Resolve each
 reference and reject cycles. Module imports also have their own acyclicity
 check. Forward declarations are allowed because dependency order, not text
 order, determines checking.
@@ -209,6 +228,39 @@ not a proof of that implementation or its capacity checks.
 `UNIT` returns `():Unit` with effect `U`. `COPY` reads a live classical value
 without changing `E`; `MOVE` reads a live linear value and spends its whole
 binding. Both have effect `U`. They fail on missing or spent value names.
+
+Ordinary literals `true` and `false` have type `CBit`. Ordinary `not`, `and`,
+and `xor` require exactly `CBit` operands; their basis counterparts still
+require `Bit`. There is no implicit conversion. The precedence is `not`,
+then `and`, then `xor`; binary chains associate to the left. Both binary
+operands are evaluated once, eagerly, from left to right, even when the left
+bit alone determines an `and` result. The expression rules are:
+
+```text
+b in {false,true}              c fresh in H
+---------------------------------------------------------- C-CONST
+E ; F ; R |- b => c:CBit ! U ; E ; R       |> ClassicalConst(b,c)
+
+E ; F ; R |- e => c:CBit ! eps ; E1 ; R1 |> P       d fresh
+---------------------------------------------------------- C-NOT
+E ; F ; R |- not e => d:CBit ! eps ; E1 ; R1 |> P; ClassicalNot(c,d)
+
+E0 ; F      ; R0 |- e1 => c1:CBit ! eps1 ; E1 ; R1 |> P1
+E1 ; F++[c1]; R1 |- e2 => c2:CBit ! eps2 ; E2 ; R2 |> P2
+op in {and,xor}                d fresh
+---------------------------------------------------------- C-BOOL
+E0 ; F ; R0 |- e1 op e2 => d:CBit ! eps1 join eps2 ; E2 ; R2
+                          |> P1; P2; ClassicalOp(c1,c2,d)
+```
+
+`P`, `P1`, and `P2` are the operand fragments; `ClassicalOp` is
+`ClassicalAnd` or `ClassicalXor`. Each output ID is globally fresh and visible
+in the current IR scope; every input ID must already be visible. Input IDs
+may coincide because classical copying is permitted. These are language forms
+lowering to deterministic classical IR, not sealed quantum library calls.
+Their own effect is `U`; operand effects, quantum ownership transitions, and
+pending frames remain intact. In particular, an observing right operand of
+`false and e` still runs and still contributes `Observe`.
 
 ```text
 E0 ; F       ; R0 |- e1 => v1:T1 ! eps1 ; E1 ; R1
@@ -317,20 +369,58 @@ For coherent lift, define `LiftEffect(A,B)=U` for equal bit counts and `I`
 for increasing bit count. A total injection between these finite bases cannot
 decrease bit count.
 
+The lift binder is a typed basis pattern `p`, using the same surface
+`Name`, `_`, and binary-pair pattern shapes as `let` but a **different** judgment:
+
+```text
+A basis                           A basis
+---------------- BP-NAME         ---------------- BP-WILD
+x:A =>basis {x:A}                 _:A =>basis empty
+
+p:A =>basis Xi1    q:B =>basis Xi2    dom(Xi1) disjoint dom(Xi2)
+------------------------------------------------------------ BP-PAIR
+(p,q):(A,B) =>basis Xi1 union Xi2
+```
+
+Names must be distinct across the whole pattern. `BP-PAIR` requires the exact
+product tree; it cannot reassociate a value or match `Bit`/`Unit` as a pair.
+A name may bind any whole basis type and `_` may ignore a basis label of any
+type. These labels are not quantum holders, so `BP-WILD` is not permission to
+discard `Q<A>` in an ordinary pattern. It does not waive the lift's injection
+check.
+
+For `p:A =>basis Xi`, define `BasisBind(p,A,a)=eta_p(a)` for every `a∈L_A`.
+A name receives label `a`, `_` returns the empty valuation, and a pair decodes
+`a=a1+2^bits(A1)*a2` before recursively binding its two exact component types.
+Disjoint names make the union a function. Induction on the pattern proves
+that `eta_p(a)` exists uniquely and has precisely the types in `Xi`, including
+singleton `Unit` factors. Combined with T1, this proves total, uniquely typed
+evaluation under the pattern for **every original input label**. The binding
+itself need not be injective.
+
 ```text
 E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
-D ; m ; {x:A} |- b:B       f(a)=eval(b,x=a) for every a in L_A
+p:A =>basis Xi            D ; m ; Xi |- b:B
+f(a)=eval(b,eta_p(a)) for every a in L_A
 f is injective            transition LIFT(s,A,B,f) gives R2
 ------------------------------------------------------------- LIFT
-E ; F ; R |- do x <- e; pure b => q(s,B):Q<B>
+E ; F ; R |- do p <- e; pure b => q(s,B):Q<B>
                                   ! eps join LiftEffect(A,B) ; E1 ; R2
 ```
 
-`{x:A}` is the **whole** basis context. Outer runtime names are not added to
-it. Top-level basis callees still resolve in module `m`. T1 supplies totality;
-injectivity is a separate table check, independently rechecked by `LiftBasis`
+`Xi` from the pattern is the **whole** basis context. Outer runtime names are
+not added to it. Every pattern-bound name hides a same-named basis function.
+Top-level basis callees still resolve in module `m`. T1 and the pattern lemma
+supply totality; injectivity is a separate table check, independently rechecked by `LiftBasis`
 verification. Equal-width lifts may change basis type trees without adding
 an implicit coercion anywhere else in the language.
+
+For `q:Q<(Bit,Unit)>`, `do (a,_) <- q; pure a` is an explicit equal-width
+unitary lift. For `q:Q<(Bit,Bit)>`, `do (a,b) <- q; pure xor2(a,b)` reaches
+the complete-table injection check and is rejected as noninjective. Ignoring
+an independent `Bit` with `_` likewise cannot make a shrinking lift valid.
+`do p <- q; pure xor2(p)` still supplies only one argument to the two-argument
+function and fails with `Arity`; pattern support introduces no implicit uncurrying.
 
 ## 6. Classical and coherent control, repetition, and computed scope
 
@@ -401,6 +491,48 @@ The source expression's effect survives. No ordinary `Init0` effect is
 exposed for this internal, certified auxiliary and no free-standing pure
 release is added. The predicate need not be injective.
 
+The three-argument form is a separate rule. Let `Hide(E1)` preserve every
+outer name as an unavailable marker, including classical names. Transfer
+the consumed source into private data ownership d and introduce one fresh
+auxiliary a. Other outer owners remain inaccessible in the frame. Distinct
+binders can hide unavailable names without consuming those outer owners.
+
+```text
+E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
+f absent from dom(E1)    Resolve(D,m,f)=basis (B_j)->Bit
+Pack([B_j])=A            table f is total
+StaticTarget(E1,u,A) has exact unitary operator u
+d != a
+Hide(E1)[d := private data Q<A>, a := fresh auxiliary Q<Bit>]
+    |- B => (data',aux'):(Q<A>,Q<Bit>) ! U ; E_body ; R_body
+no unreturned private ownership; body and output-axis transport denote W
+Ef|x>=|x,f(x)>           W Ef = Ef u exactly
+---------------------------------------------------------------- CERTIFIED-COMPUTED
+E ; F ; R |- with_computed(e,f,u){|d,a| B}
+    => q(s,A):Q<A> ! eps join U ; E1 ; R2
+```
+
+SC-SOURCE fixes exact type trees and private ownership; SC-COMPUTED proves
+the zero-return factorization; SC-IR binds W, f, and u to `CertifiedCompute`.
+The body may change both data and auxiliary and need not preserve their
+individual basis labels. It must meet the supported finite static extraction
+profile, with no outer capture. Closed classical expressions are permitted
+when extraction can resolve them. Returned axes are transported explicitly;
+returning equal-width values alone does not establish the intended ordering.
+This rule does not change the preceding two-argument Z/T-chain rule.
+
+For `apply_contract(i,s,e)`, use FC-APPLY: elaborate e once to `Q<A>`, resolve
+i and s after that elaboration, and require ordinary declared unitaries with
+exact signature `Q<A>->Q<A>`. Independently checked function evidence must bind
+both actual raw bodies, their ordered pure operators, exact signature, and
+frozen source/dependency snapshots, and establish `U_i=U_s`. Emit one retained
+contract action, refresh the input token, and return the same source slot and
+type. The own effect is `Unitary`, joined with e's effect; the residual
+environment is exactly the one after e. No other caller holder is captured.
+The [FC specification](function-contracts-v0.1.md) fixes capacities, evidence
+identity, and rejection rules. It does not introduce first-class operation
+values or relax the ordinary function-boundary checks.
+
 ## 7. T2: determinacy and lexical projection
 
 Fix well-formed acyclic declarations, complete sealed schemas, the above
@@ -419,6 +551,12 @@ T1 supplies unique basis types, labels and tables. Value rules select a
 unique visible binding; `classical(T)` chooses copy versus move. Pair and
 argument rules fix left-to-right residual contexts. Pattern structure fixes
 its matching subvalues, distinct-name checks and newly introduced bindings.
+`BP-NAME/BP-WILD/BP-PAIR` uniquely fix the isolated basis context and every
+label valuation, so the enlarged LIFT rule still determines the same full
+input-domain table uniquely. `C-CONST` fixes type `CBit` and effect `U`;
+`C-NOT/C-BOOL` fix the operand order, strict types, and effect join. Fresh SSA
+renaming cannot alter these conclusions, and eager binary evaluation has no
+value-dependent choice of residual contexts.
 `Close` depends on original binding identities, not a guessed comparison of
 quantum state. Calls select a unique declaration and its fixed signature;
 the lower-rank body induction fixes their successful result. Sealed schemas
@@ -426,6 +564,15 @@ and lift tables fix types and effects. Branch result types must agree, and
 projected outer bindings and position-wise phis fix the interface types;
 permitted choices of SSA names do not change them. Static and
 computed rules have fixed interfaces, target checks, and certificate rules.
+For `CERTIFIED-COMPUTED`, A comes from the once-evaluated source, f and u
+resolve in its residual environment, the two private result types are fixed,
+and the outer residual environment is exactly E1. Exact checking only accepts
+or rejects the stated relation; it does not infer a different result type or
+change u to fit the body. Thus this additional successful-rule case has the
+same type/effect/residual-context determinacy, under its explicit premises.
+FC-APPLY likewise fixes its result type and residual environment from the
+once-evaluated input. Its two resolved declarations and exact-equality
+certificate determine acceptance, not a new inferred public operation.
 Every conclusion uses a uniquely specified effect join. These cases exhaust
 the constructors in §9. This proves determinacy of this mathematical rule
 system, not termination or determinacy of all Rust executions.
@@ -441,6 +588,10 @@ original remains spent. Classical bindings and entry tombstones are restored
 by the other projection clause. Induction through nested blocks preserves
 these properties. At a branch, both projected environments must agree; a
 surviving local with the same name cannot conceal unequal outer consumption.
+Boolean record updates introduce no source binder and modify the visible
+environment only through their operand derivations. Basis-pattern bindings
+are isolated from that environment. Thus both extensions preserve this same
+projection argument.
 This argument explains the need for Rust's separate `rebound` set, but does
 not prove that its snapshots implement all lexical-identity cases.
 
@@ -454,7 +605,9 @@ classification. This is the least effect specified by these syntax-directed
 rules, not necessarily the least classification of its mathematical operator.
 
 **Proof.** Value/pattern cases contribute `U`; sequencing, arguments, tuples,
-and `if` explicitly take maxima. `CALL` joins the argument effect with the
+ordinary Boolean operations, and `if` explicitly retain or take maxima of
+operand effects. Constants contribute `U`; even `false and e` includes `e`'s
+effect. Basis patterns add no runtime effect. `CALL` joins the argument effect with the
 declared effect, which bounds its checked body. Lift/sealed/static rules join
 their own and input effects. The computed body must have effect `U`, while
 its source effect is retained. Induction and the transitivity of `<=` prove
@@ -471,8 +624,20 @@ declared effect by its smaller body effect; the call rule still bounds it.
 IR sequencing/branching joins the already bounded fragment effects. Static
 circuits contribute `U`. Atomic computed IR contributes `U` under its checked
 certificate, although its private proof uses an initialized auxiliary. Name
-and pattern operations emit nothing. Induction gives the bound. This relies
+and pattern operations emit nothing. `ClassicalConst`, `ClassicalNot`,
+`ClassicalAnd`, and `ClassicalXor` contribute `U` after the already bounded
+operand fragments. Induction gives the bound. This relies
 on the stipulated IR effects and does not establish verifier correctness.
+
+For the new certified form, these effect arguments additionally assume the
+SC-COMPUTED factorization and the `CertifiedCompute` verifier rule. The private
+body and logical target must be `Unitary`, while the source expression's
+effect remains in the join. The local semantic proof justifies that atomic
+unitary effect; it does not make a direct `Init0; ...; discard` sequence pure.
+FC-APPLY's own effect is also `Unitary`: both declared targets must qualify,
+while the input effect remains in the join. Its effect argument assumes the
+independently checked function equality and final contract-action rule; it
+does not follow merely from the presence of an evidence pointer.
 
 For example, `observe fn id(q:Q<Bit>)->Q<Bit>{q}` is a valid declaration.
 Its raw body contains no observation, but a `unitary` caller of `id` is
@@ -485,20 +650,38 @@ verification therefore discharge different premises.
 The table covers the variants in [ast.rs](../src/frontend/ast.rs), not proposed
 future syntax. Parentheses that group an expression add no AST constructor.
 
+Reference maintenance: [the documentation checker](../scripts/check_docs.py)
+checks local Markdown fragments against explicit HTML anchor IDs or ATX heading
+anchors, including repeated-heading suffixes. Keep headings used by rule links
+stable or update their links in the same change. A Rust file link labelled with
+exactly one backticked identifier opts into a declaration-existence check in
+that file; a target under `tests/` must declare that function with `#[test]`.
+The checker supports ordinary directly written `fn`, `struct`, `enum`, `type`,
+`trait`, `const`, `static`, and `mod` items and unqualified method names. It
+ignores comments and string literals. Qualified paths, reexports, macro-generated
+items, and full Rust name resolution are outside this small check. Use ordinary
+file labels when linking a file as a whole. Links remain normal file links in
+Markdown viewers; no synthetic Rust anchors or line numbers are required.
+These checks detect stale references; they neither execute the linked tests
+nor prove that an implementation satisfies its linked rule.
+
 | AST family / cases | Rule coverage | Current implementation |
 | --- | --- | --- |
-| `TypeKind`: Unit, Bit, CBit, Q, Tuple | §1, declaration role | `Compiler::ty`, `signature` in [compile/mod.rs](../src/frontend/compile/mod.rs) |
-| `FnKind`: Basis, Unitary, Iso, Observe; `FnBody`: Basis, Quantum | §2–3, DECL | `compile_basis` in [basis.rs](../src/frontend/compile/basis.rs); `lower_function`, `call_user_inner` in [lower.rs](../src/frontend/compile/lower.rs) |
-| `BasisExprKind`: Name, Bit, Unit, Tuple, Call, Not, Xor, And | B-VAR, B-LIT, B-VALUE-UNIT, B-TUPLE, B-CALL, B-NOT, B-BOOL | `eval_basis` |
-| `PatternKind`: Name, Wildcard, Tuple | P-NAME, P-WILD, P-PAIR | `bind` |
-| `StmtKind`: Let, Expr; `Block` final expression | LET, SEQ, BLOCK/Close | `block`, with `entry`, `local`, `rebound` |
-| `ExprKind`: Name, Unit, Tuple | COPY/MOVE, UNIT, PAIR | `expr_inner` |
-| `ExprKind::Call` | §2 name timing, ARGS, CALL / sealed schemas | `expr_inner`, `call_user_inner`, `sealed` |
-| `ExprKind::If` | IF, CompletePhi | `branch`, `merge_results`, `merge_register` |
-| `ExprKind::CoherentLift` | LIFT, isolated basis context, injectivity | `lift`, `eval_basis` |
-| `ExprKind`: Adjoint, RepeatStatic, QuantumIf | StaticTarget, ADJOINT, REPEAT, QIF | `expr_inner`, `static_steps`, [circuit.rs](../src/frontend/compile/circuit.rs) |
-| `ExprKind::WithComputed` | COMPUTED, private frame and structural certificate | `computed` |
-| Modules, imports, declaration dependency graph, root entry | §2 and project/profile premises | [project.rs](../src/frontend/project.rs), `resolve`, `called_names`, `order`, `process_project`, `compile_project`, `check_project` |
+| `TypeKind`: Unit, Bit, CBit, Q, Tuple | [§1, declaration role](#1-types-and-judgment-interfaces) | [`ty`](../src/frontend/compile/mod.rs), [`signature`](../src/frontend/compile/mod.rs) |
+| `FnKind`: Basis, Unitary, Iso, Observe; `FnBody`: Basis, Quantum | [§2–3, DECL](#2-names-declarations-and-project-acceptance), [basis rules](#3-basis-rules-and-t1-typed-total-evaluation) | [`compile_basis`](../src/frontend/compile/basis.rs); [`lower_function`](../src/frontend/compile/lower/mod.rs), [`call_user_inner`](../src/frontend/compile/lower/mod.rs) |
+| `BasisExprKind`: Name, Bit, Unit, Tuple, Call, Not, Xor, And | [B-VAR, B-LIT, B-VALUE-UNIT, B-TUPLE, B-CALL, B-NOT, B-BOOL](#3-basis-rules-and-t1-typed-total-evaluation) | [`eval_basis`](../src/frontend/compile/basis.rs) |
+| `PatternKind`: Name, Wildcard, Tuple | [P-NAME, P-WILD, P-PAIR](#4-values-argument-lists-patterns-and-blocks); [BP-NAME, BP-WILD, BP-PAIR](#5-calls-sealed-operations-and-coherent-lift) for lift binders | [`bind`](../src/frontend/compile/lower/mod.rs), [`bind_basis_pattern`](../src/frontend/compile/basis.rs) |
+| `StmtKind`: Let, Expr; `Block` final expression | [LET, SEQ, BLOCK/Close](#4-values-argument-lists-patterns-and-blocks) | [`block`](../src/frontend/compile/lower/mod.rs) collects `entry`, `local`, `rebound`; [`close_scope`](../src/frontend/compile/lower/scope.rs) projects them |
+| `ExprKind`: Name, Unit, Tuple | [COPY/MOVE, UNIT, PAIR](#4-values-argument-lists-patterns-and-blocks) | [`expr_inner`](../src/frontend/compile/lower/mod.rs) |
+| `ExprKind`: CBit, Not, And, Xor | [C-CONST, C-NOT, C-BOOL](#4-values-argument-lists-patterns-and-blocks) | [`expr_inner`](../src/frontend/compile/lower/mod.rs); [classical IR](../src/ir.rs), [verification](../src/verify.rs), [execution](../src/sim.rs) |
+| `ExprKind::Call` | [§2 name timing](#2-names-declarations-and-project-acceptance), [ARGS](#4-values-argument-lists-patterns-and-blocks), [CALL / sealed schemas](#5-calls-sealed-operations-and-coherent-lift) | [`expr_inner`](../src/frontend/compile/lower/mod.rs), [`call_user_inner`](../src/frontend/compile/lower/mod.rs), [`sealed`](../src/frontend/compile/lower/primitives.rs) |
+| `ExprKind::If` | [IF, CompletePhi](#6-classical-and-coherent-control-repetition-and-computed-scope) | [`branch`](../src/frontend/compile/lower/branch.rs), [`merge_results`](../src/frontend/compile/lower/branch.rs), [`merge_register`](../src/frontend/compile/lower/branch.rs) |
+| `ExprKind::CoherentLift` | [LIFT, typed basis pattern, isolated context, full-domain injectivity](#5-calls-sealed-operations-and-coherent-lift) | [`lift`](../src/frontend/compile/lower/mod.rs), [`bind_basis_pattern`](../src/frontend/compile/basis.rs), [`eval_basis`](../src/frontend/compile/basis.rs) |
+| `ExprKind`: Adjoint, RepeatStatic, QuantumIf | [StaticTarget, ADJOINT, REPEAT, QIF](static-operations.md#static-target-judgment) | [`expr_inner`](../src/frontend/compile/lower/mod.rs), [`static_steps`](../src/frontend/compile/lower/mod.rs), [`flatten`](../src/frontend/compile/circuit.rs), [`invert`](../src/frontend/compile/circuit.rs) |
+| `ExprKind::WithComputed` | [COMPUTED, private frame and structural certificate](#6-classical-and-coherent-control-repetition-and-computed-scope) | [`computed`](../src/frontend/compile/lower/mod.rs) |
+| `ExprKind::CertifiedComputed` | [CERTIFIED-COMPUTED](#6-classical-and-coherent-control-repetition-and-computed-scope), [SC-SOURCE/SC-COMPUTED/SC-IR](semantic-contracts-v0.1.md) | [`certified_computed`](../src/frontend/compile/lower/certified.rs), [`certified_body`](../src/frontend/compile/lower/certified.rs); [`check_computed`](../src/contract/mod.rs) |
+| `ExprKind::ApplyContract` | [FC-APPLY](function-contracts-v0.1.md#2-source-language-form), residual-name rule, exact function evidence | [`apply_function_contract`](../src/frontend/compile/lower/function_contract.rs), [`contract_function`](../src/frontend/compile/lower/function_contract.rs); [independent function checker](../src/contract/function.rs) |
+| Modules, imports, declaration dependency graph, root entry | [§2 and project/profile premises](#2-names-declarations-and-project-acceptance) | [project.rs](../src/frontend/project.rs), [`resolve`](../src/frontend/compile/mod.rs), [`called_names`](../src/frontend/compile/mod.rs), [`order`](../src/frontend/compile/mod.rs), [`process_project`](../src/frontend/compile/mod.rs), [`compile_project`](../src/frontend/compile/mod.rs), [`check_project`](../src/frontend/compile/mod.rs) |
 
 The representation audit maps lexical identities to `Option<Value>` entries
 and explicit rebound tracking; effects to `Lowerer::effect` snapshots and
@@ -509,30 +692,57 @@ Finite acceptance/rejection evidence is in
 [tests/source_judgments.rs](../tests/source_judgments.rs), alongside existing
 [compiler](../tests/compile.rs), [static](../tests/static_operations.rs),
 [source-semantic](../tests/source_semantics.rs), and independent IR tests.
-The new tests compare source acceptance with explicit expected types/effects
+Those source-judgment tests compare acceptance with explicit expected types/effects
 and scope rules, including cases where raw IR has a weaker effect. They do
 not infer source soundness from acceptance or test the paper lemmas directly.
 
 | New regression | Expected boundary |
 | --- | --- |
-| `declared_effects_survive_arguments_tuples_conditions_and_both_arms` | Six composition contexts retain an `Observe` declaration even with an empty expanded body; an accepted closed program has source declaration `Observe` but derived IR effect `Unitary`. |
-| `branch_local_shadows_expire_but_moved_outer_names_remain_reserved` | A branch-local gate-name binding expires; an original moved binding still hides a gate or predicate, including zero-width ownership. |
-| `basis_domains_and_branch_results_preserve_exact_product_trees` | A three-parameter predicate requires its left-associated domain including Unit; a mismatched branch result tree rejects, while an explicit injective regrouping lift accepts. |
-| `basis_context_is_closed_and_has_its_own_callable_shadowing` | An ordinary name is absent from the isolated basis context, while the basis binder hides a same-named basis function; quantum capture rejects. |
-| `computed_certificates_preserve_effects_and_outer_name_restrictions` | A unitary expanded Z chain is certified; stronger declared effects, a hidden outer gate name, and an erased source-allocation effect reject. |
-| `ordinary_basis_and_computed_names_resolve_in_the_declaration_module` | Imported bodies use their own module's ordinary and basis helpers; the three independently predicted measured bits are all one. |
+| [`declared_effects_survive_arguments_tuples_conditions_and_both_arms`](../tests/source_judgments.rs) | Six composition contexts retain an `Observe` declaration even with an empty expanded body; an accepted closed program has source declaration `Observe` but derived IR effect `Unitary`. |
+| [`branch_local_shadows_expire_but_moved_outer_names_remain_reserved`](../tests/source_judgments.rs) | A branch-local gate-name binding expires; an original moved binding still hides a gate or predicate, including zero-width ownership. |
+| [`basis_domains_and_branch_results_preserve_exact_product_trees`](../tests/source_judgments.rs) | A three-parameter predicate requires its left-associated domain including Unit; a mismatched branch result tree rejects, while an explicit injective regrouping lift accepts. |
+| [`basis_context_is_closed_and_has_its_own_callable_shadowing`](../tests/source_judgments.rs) | An ordinary name is absent from the isolated basis context, while the basis binder hides a same-named basis function; quantum capture rejects. |
+| [`computed_certificates_preserve_effects_and_outer_name_restrictions`](../tests/source_judgments.rs) | A unitary expanded Z chain is certified; stronger declared effects, a hidden outer gate name, and an erased source-allocation effect reject. |
+| [`ordinary_basis_and_computed_names_resolve_in_the_declaration_module`](../tests/source_judgments.rs) | Imported bodies use their own module's ordinary and basis helpers; the three independently predicted measured bits are all one. |
 
-The last case uses the numerical reference executor with tolerance `1e-12`;
-the remaining checks inspect acceptance, diagnostic categories for isolated
+The lift-pattern/CBit extension has separate boundary regressions:
+
+| Regression | Rule boundary |
+| --- | --- |
+| [`basis_lifts_destructure_exact_product_patterns`](../tests/specification_boundaries.rs) | Exact nested basis-pattern matching, explicit Unit-factor elimination, and accepted injective output maps. |
+| [`basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits`](../tests/specification_boundaries.rs) | BP exact-tree and distinct-name conditions; the full-domain LIFT check still rejects loss of an independent Bit. |
+| [`basis_call_arity_is_distinct_from_lift_injectivity`](../tests/specification_boundaries.rs) | A unary product argument is not silently uncurried; explicit two-argument basis calls and noninjective lift rejection are distinct judgments. |
+| [`ordinary_cbit_literals_and_operators_have_their_truth_tables`](../tests/specification_boundaries.rs) | C-CONST/C-NOT/C-BOOL truth tables and ordinary-expression precedence. |
+| [`ordinary_boolean_operands_require_cbits_and_have_checked_dependencies`](../tests/specification_boundaries.rs) | Strict CBit operand types and complete call-dependency checking. |
+| [`boolean_operands_are_eager_and_preserve_pending_quantum_ownership`](../tests/specification_boundaries.rs) | Both operands are evaluated once in source order; observing effects and pending quantum resources survive Boolean composition. |
+
+In the original six-case table, the final case uses the numerical reference
+executor with tolerance `1e-12`; the other original checks inspect acceptance,
+diagnostic categories for isolated
 violations, and verified IR structure/effects. Diagnostic ordering among
 multiple violations is deliberately not an oracle.
 
-Local validation on 2026-09-26: all six new tests and all 130 Rust tests passed;
-formatting and Clippy with warnings denied passed. The coverage table names
-all 34 variants in seven AST enums, with `Block` separately accounted for.
+Historical validation before the lift-pattern/CBit extension (2026-09-26):
+all six original `source_judgments` regressions and all 130 Rust tests passed;
+formatting and Clippy with
+warnings denied passed. At that milestone the coverage table named all 34
+variants in seven AST enums, with `Block` separately accounted for.
 Documentation checks validated 351 local targets, 29 tables in eight changed
 documents, all six regression names, and the specification's 12 legacy anchors.
 This validation does not machine-check T1–T3. Lean was not changed.
+
+The lift-pattern/CBit extension additionally covered four ordinary-expression
+variants (`CBit`, `Not`, `And`, `Xor`), giving 38 variants across the same seven enums.
+`CoherentLift` now holds the existing `Pattern` type; no pattern variant was
+added. The paper T1–T3 arguments above include the new cases. Their Rust
+correspondence remains an open obligation, and the historical run above is
+not evidence that these later cases were tested.
+
+The 2026-09-27 semantic-contract supplements add `CertifiedComputed` and
+`ApplyContract`, bringing the current constructor table to 40 variants in
+those seven enums. Their local conditional cases are stated separately above
+and use the independent contract checker premises. They are not covered by
+the historical validation run or the existing Lean ownership projection.
 
 ## 10. Remaining proof obligations
 
@@ -546,7 +756,13 @@ covering every constructor does not discharge those implementation premises.
 [Q1–Q3](source-soundness.md) now assembles the paper pure-operation and
 instrument theorems for these derivations, using exact primitive meanings,
 injection and cleanup evidence, and finite adaptive composition over arbitrary
-references. Next establish each source-to-IR leaf correspondence and the
-implementation's satisfaction of the derivation premises. Soundness of all
+references. The [translation contract C1–C5](source-ir-correspondence.md)
+specifies basis encoding and leaf/phi construction and proves conditional
+preservation for that mathematical translation. The later
+[scope-refinement step](lowering-state-refinement.md) checks a Lean lookup
+model of `Close` and compares its Rust implementation with finite independent
+cases. It does not mechanize all of T1–T3 or establish the execution-trace
+premises. Next establish the implementation's satisfaction of the full
+boundary relation and derivation premises. Soundness of all
 Rust-accepted programs, compiler correctness, algorithm success, and backend
 or hardware correctness remain distinct tasks in the [roadmap](../ROADMAP.md).
