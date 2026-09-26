@@ -31,6 +31,7 @@ impl Compiler<'_> {
             let mut offset = 0;
             for (param, ty) in decl.params.iter().zip(&params) {
                 let width = ty.basis_bits().expect("basis type");
+                self.charge(&key.0, param.span, ty.tree_size().nodes)?;
                 env.insert(
                     param.name.text.clone(),
                     BasisValue {
@@ -75,14 +76,18 @@ impl Compiler<'_> {
             ));
         }
         let value = match &expr.kind {
-            BasisExprKind::Name(name) => env.get(&name.text).cloned().ok_or_else(|| {
-                self.error(
-                    module,
-                    name.span,
-                    ErrorCode::UnknownName,
-                    format!("unknown basis value `{}`", name.text),
-                )
-            })?,
+            BasisExprKind::Name(name) => {
+                let value = env.get(&name.text).ok_or_else(|| {
+                    self.error(
+                        module,
+                        name.span,
+                        ErrorCode::UnknownName,
+                        format!("unknown basis value `{}`", name.text),
+                    )
+                })?;
+                self.charge(module, name.span, value.ty.tree_size().nodes)?;
+                value.clone()
+            }
             BasisExprKind::Bit(bit) => BasisValue {
                 ty: Ty::Bit,
                 label: u16::from(*bit),
@@ -154,6 +159,9 @@ impl Compiler<'_> {
                         "basis expressions may call only basis functions",
                     )
                 })?;
+                let size = function.signature_size();
+                self.charge(module, expr.span, size)?;
+                let function = &self.basis[&key];
                 let params = function.params.clone();
                 let result = function.result.clone();
                 if args.len() != params.len() {
@@ -185,6 +193,9 @@ impl Compiler<'_> {
                 }
             }
         };
+        // Each child was already checked; at most one bounded tuple layer is
+        // constructed before this check, including types inferred from names.
+        self.check_tree(module, expr.span, value.ty.tree_size())?;
         Ok(value)
     }
 

@@ -18,6 +18,11 @@ pub enum TokenKind {
     Do,
     Pure,
     WithComputed,
+    Adjoint,
+    RepeatStatic,
+    Qif,
+    Natural(String),
+    FatArrow,
     Not,
     Xor,
     And,
@@ -61,6 +66,9 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "do" => TokenKind::Do,
         "pure" => TokenKind::Pure,
         "with_computed" => TokenKind::WithComputed,
+        "adjoint" => TokenKind::Adjoint,
+        "repeat_static" => TokenKind::RepeatStatic,
+        "qif" => TokenKind::Qif,
         "not" => TokenKind::Not,
         "xor" => TokenKind::Xor,
         "and" => TokenKind::And,
@@ -89,6 +97,11 @@ impl TokenKind {
             Self::Do => "`do`",
             Self::Pure => "`pure`",
             Self::WithComputed => "`with_computed`",
+            Self::Adjoint => "`adjoint`",
+            Self::RepeatStatic => "`repeat_static`",
+            Self::Qif => "`qif`",
+            Self::Natural(_) => "natural number (only in repeat_static)",
+            Self::FatArrow => "`=>`",
             Self::Not => "`not`",
             Self::Xor => "`xor`",
             Self::And => "`and`",
@@ -192,12 +205,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
             match &source[start..lexer.pos] {
                 "0" => TokenKind::Zero,
                 "1" => TokenKind::One,
-                _ => {
-                    return Err(LexError {
-                        message: "Bit literal must be 0 or 1".to_owned(),
-                        span: Span::new(start, lexer.pos),
-                    });
-                }
+                digits => TokenKind::Natural(digits.to_owned()),
             }
         } else {
             lexer.bump();
@@ -209,6 +217,10 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
                 '>' => TokenKind::RAngle,
                 ',' => TokenKind::Comma,
                 ';' => TokenKind::Semicolon,
+                '=' if lexer.peek() == Some('>') => {
+                    lexer.bump();
+                    TokenKind::FatArrow
+                }
                 '=' => TokenKind::Equals,
                 '|' => TokenKind::Pipe,
                 ':' if lexer.peek() == Some(':') => {

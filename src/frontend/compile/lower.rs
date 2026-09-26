@@ -5,6 +5,20 @@ use crate::ir::*;
 type Slot = u32;
 type Env = BTreeMap<String, Option<Value>>;
 
+fn env_size(env: &Env) -> usize {
+    total_size(
+        env.values()
+            .map(|value| 1 + value.as_ref().map_or(0, |value| value.tree_size().nodes)),
+    )
+}
+
+#[derive(Clone, Copy)]
+struct CallSite<'a> {
+    module: &'a str,
+    span: Span,
+    args: &'a [Expr],
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum Value {
     Unit,
@@ -14,6 +28,25 @@ enum Value {
 }
 
 impl Value {
+    fn tree_size(&self) -> TreeSize {
+        let mut size = TreeSize::default();
+        let mut pending = vec![(self, 1)];
+        while let Some((value, depth)) = pending.pop() {
+            size.nodes += 1;
+            size.depth = size.depth.max(depth);
+            match value {
+                Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
+                Self::Quantum(_, basis) => {
+                    let basis = basis.tree_size();
+                    size.nodes += basis.nodes;
+                    size.depth = size.depth.max(depth + basis.depth);
+                }
+                _ => {}
+            }
+        }
+        size
+    }
+
     fn ty(&self) -> Ty {
         match self {
             Self::Unit => Ty::Unit,
@@ -41,6 +74,12 @@ struct Register {
     token: TokenId,
     wires: Vec<WireId>,
     basis: Ty,
+}
+
+impl Register {
+    fn size(&self) -> usize {
+        1 + self.wires.len() + self.basis.tree_size().nodes
+    }
 }
 
 struct Lowerer<'c, 'p> {
@@ -140,7 +179,12 @@ impl Lowerer<'_, '_> {
         }
     }
 
-    fn call_user(&mut self, key: &Key, args: Vec<Value>) -> Result<Value, CompileError> {
+    fn call_user(
+        &mut self,
+        key: &Key,
+        args: Vec<Value>,
+        site: Option<CallSite<'_>>,
+    ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
         if self.depth >= MAX_DEPTH {
             return Err(self.error(
@@ -151,12 +195,17 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.depth += 1;
-        let result = self.call_user_inner(key, args);
+        let result = self.call_user_inner(key, args, site);
         self.depth -= 1;
         result
     }
 
-    fn call_user_inner(&mut self, key: &Key, args: Vec<Value>) -> Result<Value, CompileError> {
+    fn call_user_inner(
+        &mut self,
+        key: &Key,
+        args: Vec<Value>,
+        site: Option<CallSite<'_>>,
+    ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
         self.compiler.tick(&key.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
@@ -169,19 +218,26 @@ impl Lowerer<'_, '_> {
             ));
         }
         if args.len() != params.len() {
+            let (module, span) =
+                site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
             return Err(self.error(
-                &key.0,
-                decl.span,
+                module,
+                span,
                 ErrorCode::Arity,
                 "function argument count does not match",
             ));
         }
         let mut env = Env::new();
-        for ((param, ty), value) in decl.params.iter().zip(params).zip(args) {
+        for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
+            let (module, span) = site.map_or((key.0.as_str(), param.span), |site| {
+                (site.module, site.args[index].span)
+            });
+            self.compiler
+                .charge(module, span, value.tree_size().nodes)?;
             if value.ty() != ty {
                 return Err(self.error(
-                    &key.0,
-                    param.span,
+                    module,
+                    span,
                     ErrorCode::TypeMismatch,
                     format!("argument `{}` has the wrong type", param.name.text),
                 ));
@@ -194,6 +250,8 @@ impl Lowerer<'_, '_> {
             unreachable!("ordinary function")
         };
         let value = self.block(&key.0, body, &mut env)?;
+        self.compiler
+            .charge(&key.0, body.result.span, value.tree_size().nodes)?;
         if value.ty() != return_ty {
             return Err(self.error(
                 &key.0,
@@ -233,7 +291,7 @@ impl Lowerer<'_, '_> {
 
     fn block(&mut self, module: &str, block: &Block, env: &mut Env) -> Result<Value, CompileError> {
         self.compiler
-            .charge(module, block.span, env.len().saturating_mul(2))?;
+            .charge(module, block.span, env_size(env).saturating_mul(2))?;
         let entry = env.clone();
         let mut local = env.clone();
         let mut rebound = BTreeSet::new();
@@ -348,7 +406,13 @@ impl Lowerer<'_, '_> {
         self.depth += 1;
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
-        result
+        let value = result?;
+        // Values entering an environment are bounded before they can be reused.
+        // Constructors combine only previously checked children, so even an
+        // over-limit temporary adds at most one layer before being rejected.
+        self.compiler
+            .check_tree(module, expr.span, value.tree_size())?;
+        Ok(value)
     }
 
     fn expr_inner(
@@ -358,6 +422,64 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::Adjoint { function, input }
+            | ExprKind::RepeatStatic {
+                function, input, ..
+            } => {
+                let value = self.expr(module, input, env)?;
+                let slot = self.quantum(module, input.span, &value, false)?;
+                let basis = self.registers[&slot].basis.clone();
+                let mut steps = self.static_steps(module, function, &basis, env)?;
+                let cost = total_size(steps.iter().map(super::circuit::size));
+                match &expr.kind {
+                    ExprKind::Adjoint { .. } => {
+                        self.compiler.charge(module, expr.span, cost)?;
+                        super::circuit::invert(&mut steps);
+                    }
+                    ExprKind::RepeatStatic { count, .. } => {
+                        self.compiler.charge(
+                            module,
+                            expr.span,
+                            cost.saturating_add(1).saturating_mul(usize::from(*count)),
+                        )?;
+                        steps = (0..*count).flat_map(|_| steps.iter().cloned()).collect();
+                    }
+                    _ => unreachable!(),
+                }
+                self.apply_circuit(slot, steps);
+                Ok(value)
+            }
+            ExprKind::QuantumIf {
+                control,
+                target,
+                zero,
+                one,
+            } => {
+                let c = self.expr(module, control, env)?;
+                self.quantum(module, control.span, &c, true)?;
+                let q = self.expr(module, target, env)?;
+                let slot = self.quantum(module, target.span, &q, false)?;
+                let basis = self.registers[&slot].basis.clone();
+                let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
+                let mut steps = Vec::new();
+                for (name, when_one) in [(zero, false), (one, true)] {
+                    let mut arm = self.static_steps(module, name, &basis, env)?;
+                    self.compiler.charge(
+                        module,
+                        expr.span,
+                        total_size(arm.iter().map(super::circuit::size)).saturating_add(arm.len()),
+                    )?;
+                    for step in &mut arm {
+                        super::circuit::remap(step, &axes);
+                        step.controls.push(BitControl { index: 0, when_one });
+                    }
+                    steps.extend(arm);
+                }
+                let joined = self.sealed(module, expr.span, "std::quantum", "join", vec![c, q])?;
+                let slot = self.quantum(module, expr.span, &joined, false)?;
+                self.apply_circuit(slot, steps);
+                self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
+            }
             ExprKind::Unit => Ok(Value::Unit),
             ExprKind::Name(name) => {
                 let binding = env.get_mut(&name.text).ok_or_else(|| {
@@ -379,6 +501,8 @@ impl Lowerer<'_, '_> {
                         ),
                     )
                 })?;
+                self.compiler
+                    .charge(module, name.span, value.tree_size().nodes)?;
                 Ok(if value.owns_quantum() {
                     binding.take().expect("live value")
                 } else {
@@ -400,14 +524,22 @@ impl Lowerer<'_, '_> {
                     ));
                 }
                 let target = self.compiler.resolve(module, callee)?;
-                let args = args
+                let values = args
                     .iter()
                     .map(|arg| self.expr(module, arg, env))
                     .collect::<Result<Vec<_>, _>>()?;
                 match target {
-                    Callee::User(key) => self.call_user(&key, args),
+                    Callee::User(key) => self.call_user(
+                        &key,
+                        values,
+                        Some(CallSite {
+                            module,
+                            span: expr.span,
+                            args,
+                        }),
+                    ),
                     Callee::Sealed(namespace, name) => {
-                        self.sealed(module, expr.span, &namespace, &name, args)
+                        self.sealed(module, expr.span, &namespace, &name, values)
                     }
                 }
             }
@@ -452,6 +584,112 @@ impl Lowerer<'_, '_> {
                 self.computed(module, expr.span, source, function, binder, body, env)
             }
         }
+    }
+
+    fn apply_circuit(&mut self, slot: Slot, steps: Vec<CircuitStep>) {
+        let output = self.token();
+        let reg = self.registers.get_mut(&slot).expect("owned register");
+        self.operations.push(RawOp::ApplyUnitary {
+            input: reg.token,
+            output,
+            steps,
+        });
+        reg.token = output;
+    }
+
+    fn static_steps(
+        &mut self,
+        module: &str,
+        name: &Ident,
+        basis: &Ty,
+        env: &Env,
+    ) -> Result<Vec<CircuitStep>, CompileError> {
+        if env.contains_key(&name.text) {
+            return Err(self.error(
+                module,
+                name.span,
+                ErrorCode::TypeMismatch,
+                "static operation requires a function name, not a local value",
+            ));
+        }
+        let target = self.compiler.resolve(module, name)?;
+        let ty = Ty::Q(Box::new(basis.clone()));
+        match &target {
+            Callee::User(key) => {
+                if self.compiler.declarations[key].kind != FnKind::Unitary {
+                    return Err(self.error(
+                        module,
+                        name.span,
+                        ErrorCode::Effect,
+                        "static operation requires a unitary function",
+                    ));
+                }
+                let (params, result) = self.compiler.signature(key)?;
+                if params != [ty.clone()] || result != ty {
+                    return Err(self.error(
+                        module,
+                        name.span,
+                        ErrorCode::TypeMismatch,
+                        "static operation requires one Q<A> input and the same Q<A> result",
+                    ));
+                }
+            }
+            Callee::Sealed(namespace, gate) => {
+                if namespace != "std::quantum" || !matches!(gate.as_str(), "h" | "x" | "z" | "t") {
+                    return Err(self.error(
+                        module,
+                        name.span,
+                        ErrorCode::Effect,
+                        "static sealed operation must be h, x, z or t",
+                    ));
+                }
+                if *basis != Ty::Bit {
+                    return Err(self.error(
+                        module,
+                        name.span,
+                        ErrorCode::TypeMismatch,
+                        "sealed gate requires Q<Bit>",
+                    ));
+                }
+            }
+        }
+        self.compiler
+            .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
+        let mut inner = Lowerer {
+            compiler: self.compiler,
+            registers: BTreeMap::new(),
+            operations: vec![],
+            next_token: 0,
+            next_wire: 0,
+            next_classical: 0,
+            next_slot: 0,
+            effect: Effect::Unitary,
+            depth: self.depth,
+        };
+        let mut quantum_inputs = vec![];
+        let mut classical_inputs = vec![];
+        let arg = inner.input(&ty, &mut quantum_inputs, &mut classical_inputs);
+        let result = match target {
+            Callee::User(key) => inner.call_user(&key, vec![arg], None)?,
+            Callee::Sealed(namespace, gate) => {
+                inner.sealed(module, name.span, &namespace, &gate, vec![arg])?
+            }
+        };
+        let slot = inner.quantum(module, name.span, &result, false)?;
+        let raw = RawProgram {
+            quantum_inputs,
+            classical_inputs,
+            operations: inner.operations,
+            quantum_outputs: vec![inner.registers[&slot].token],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let checked = crate::verify(raw).map_err(|err| {
+            inner
+                .compiler
+                .error(module, name.span, ErrorCode::InvalidIr, err.to_string())
+        })?;
+        super::circuit::flatten(inner.compiler, module, name.span, &checked)
     }
 
     fn quantum(
@@ -685,11 +923,15 @@ impl Lowerer<'_, '_> {
         basis: &BasisExpr,
     ) -> Result<Value, CompileError> {
         let slot = self.quantum(module, span, &input, false)?;
+        self.compiler
+            .charge(module, span, self.registers[&slot].size())?;
         let reg = self.registers[&slot].clone();
         let mut result_ty = None;
         let mut table = Vec::new();
         let mut seen = BTreeSet::new();
         for label in 0..(1u16 << reg.wires.len()) {
+            self.compiler
+                .charge(module, span, reg.basis.tree_size().nodes)?;
             let env = BTreeMap::from([(
                 binder.text.clone(),
                 BasisValue {
@@ -718,6 +960,8 @@ impl Lowerer<'_, '_> {
             table.push(value.label);
         }
         let basis = result_ty.expect("nonempty domain");
+        self.compiler
+            .charge(module, span, basis.tree_size().nodes)?;
         let bits = basis.basis_bits().expect("basis result");
         if bits < reg.wires.len() {
             return Err(self.error(
@@ -770,7 +1014,7 @@ impl Lowerer<'_, '_> {
                 "predicate must be a basis function",
             ));
         };
-        let predicate = self.compiler.basis.get(&key).cloned().ok_or_else(|| {
+        let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
             self.error(
                 module,
                 function.span,
@@ -778,12 +1022,18 @@ impl Lowerer<'_, '_> {
                 "predicate must be a basis function",
             )
         })?;
-        let domain = predicate
-            .params
-            .iter()
-            .cloned()
-            .reduce(Ty::pair)
-            .unwrap_or(Ty::Unit);
+        let size = predicate
+            .signature_size()
+            .saturating_add(predicate.table.len());
+        self.compiler.charge(module, function.span, size)?;
+        let predicate = self.compiler.basis[&key].clone();
+        let mut params = predicate.params.into_iter();
+        let mut domain = params.next().unwrap_or(Ty::Unit);
+        for param in params {
+            domain = Ty::pair(domain, param);
+            self.compiler
+                .check_tree(module, function.span, domain.tree_size())?;
+        }
         if domain != self.registers[&source_slot].basis || predicate.result != Ty::Bit {
             return Err(self.error(
                 module,
@@ -798,6 +1048,7 @@ impl Lowerer<'_, '_> {
         let initial_token = self.registers[&ancilla_slot].token;
         // This first source form exposes only the ancilla and classical outer
         // values. Other quantum registers remain in the surrounding frame.
+        self.compiler.charge(module, body.span, env_size(env))?;
         let mut local: Env = env
             .iter()
             .map(|(name, value)| {
@@ -886,8 +1137,8 @@ impl Lowerer<'_, '_> {
         self.compiler.charge(
             module,
             span,
-            env.len()
-                .saturating_add(self.registers.len())
+            env_size(env)
+                .saturating_add(total_size(self.registers.values().map(Register::size)))
                 .saturating_mul(2),
         )?;
         let entry_registers = self.registers.clone();
@@ -913,6 +1164,14 @@ impl Lowerer<'_, '_> {
             ));
         }
         *env = then_env;
+        self.compiler.charge(
+            module,
+            span,
+            then_result
+                .tree_size()
+                .nodes
+                .saturating_add(else_result.tree_size().nodes),
+        )?;
         if then_result.ty() != else_result.ty() {
             return Err(self.error(
                 module,
@@ -1090,11 +1349,18 @@ pub(super) fn lower_function(
     };
     let mut quantum_inputs = Vec::new();
     let mut classical_inputs = Vec::new();
+    // Signature types are already bounded; account for constructing their
+    // value tree and the register's copy of each quantum basis type.
+    lower.compiler.charge(
+        &key.0,
+        decl.span,
+        total_size(params.iter().map(|ty| ty.tree_size().nodes)).saturating_mul(2),
+    )?;
     let args = params
         .iter()
         .map(|ty| lower.input(ty, &mut quantum_inputs, &mut classical_inputs))
         .collect();
-    let result = lower.call_user(key, args)?;
+    let result = lower.call_user(key, args, None)?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
     fn outputs(

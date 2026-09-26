@@ -1,6 +1,7 @@
 //! Checked lowering of the finite source subset to independently verified IR.
 
 mod basis;
+mod circuit;
 mod lower;
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -14,6 +15,8 @@ use crate::{VerifiedProgram, ir::Effect};
 const MAX_BITS: usize = 12;
 const MAX_WORK: usize = 1_000_000;
 const MAX_DEPTH: usize = 64;
+const MAX_TREE_NODES: usize = 4096;
+const MAX_TREE_DEPTH: usize = 64;
 type Key = (String, String);
 
 /// Stable categories for consumers; `message` is explanatory text.
@@ -69,6 +72,21 @@ enum Ty {
 }
 
 impl Ty {
+    fn tree_size(&self) -> TreeSize {
+        let mut size = TreeSize::default();
+        let mut pending = vec![(self, 1)];
+        while let Some((ty, depth)) = pending.pop() {
+            size.nodes += 1;
+            size.depth = size.depth.max(depth);
+            match ty {
+                Self::Q(inner) => pending.push((inner, depth + 1)),
+                Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
+                _ => {}
+            }
+        }
+        size
+    }
+
     fn basis_bits(&self) -> Option<usize> {
         match self {
             Self::Unit => Some(0),
@@ -91,6 +109,18 @@ impl Ty {
     }
 }
 
+/// Count representation nodes, including zero-bit Unit products. Walking is
+/// iterative so checking a newly constructed tree never needs its call depth.
+#[derive(Default)]
+struct TreeSize {
+    nodes: usize,
+    depth: usize,
+}
+
+fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
+    sizes.into_iter().fold(0, usize::saturating_add)
+}
+
 #[derive(Clone, Debug)]
 enum Callee {
     User(Key),
@@ -102,6 +132,17 @@ struct BasisFunction {
     params: Vec<Ty>,
     result: Ty,
     table: Vec<u16>,
+}
+
+impl BasisFunction {
+    fn signature_size(&self) -> usize {
+        total_size(
+            self.params
+                .iter()
+                .chain([&self.result])
+                .map(|ty| ty.tree_size().nodes),
+        )
+    }
 }
 
 struct Compiler<'a> {
@@ -148,6 +189,18 @@ impl<'a> Compiler<'a> {
         Ok(())
     }
 
+    fn check_tree(&mut self, module: &str, span: Span, size: TreeSize) -> Result<(), CompileError> {
+        if size.nodes > MAX_TREE_NODES || size.depth > MAX_TREE_DEPTH {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                format!("internal value or type exceeds the initial {MAX_TREE_NODES}-node / {MAX_TREE_DEPTH}-level limit"),
+            ));
+        }
+        self.charge(module, span, size.nodes)
+    }
+
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
         let key = (module.to_owned(), name.text.clone());
         if self.declarations.contains_key(&key) {
@@ -171,7 +224,7 @@ impl<'a> Compiler<'a> {
         ))
     }
 
-    fn ty(&self, module: &str, ty: &Type, basis_only: bool) -> Result<Ty, CompileError> {
+    fn ty(&mut self, module: &str, ty: &Type, basis_only: bool) -> Result<Ty, CompileError> {
         let result = match &ty.kind {
             TypeKind::Unit => Ty::Unit,
             TypeKind::Bit if basis_only => Ty::Bit,
@@ -190,6 +243,7 @@ impl<'a> Compiler<'a> {
                 ));
             }
         };
+        self.check_tree(module, ty.span, result.tree_size())?;
         if basis_only && result.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
             return Err(self.error(
                 module,
@@ -201,7 +255,7 @@ impl<'a> Compiler<'a> {
         Ok(result)
     }
 
-    fn signature(&self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
+    fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
         let mut names = BTreeSet::new();
         let mut params = Vec::new();
@@ -298,6 +352,22 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                 }
             }
             Node::Expr(expr) => match &expr.kind {
+                ExprKind::Adjoint { function, input }
+                | ExprKind::RepeatStatic {
+                    function, input, ..
+                } => {
+                    names.push(function);
+                    stack.push(Node::Expr(input));
+                }
+                ExprKind::QuantumIf {
+                    control,
+                    target,
+                    zero,
+                    one,
+                } => {
+                    names.extend([zero, one]);
+                    stack.extend([Node::Expr(control), Node::Expr(target)]);
+                }
                 ExprKind::Name(_) | ExprKind::Unit => {}
                 ExprKind::Tuple(a, b) => {
                     stack.push(Node::Expr(a));

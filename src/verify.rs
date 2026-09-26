@@ -2,9 +2,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use crate::ir::{
-    BasisShape, ClassicalId, ClassicalPhi, Control, Effect, ProtectedBit, ProtectedRegion,
-    ProtectedUse, QuantumPhi, RawOp, RawProgram, SingleGate, TargetTransition, TokenId,
-    UnitaryStep, WireId,
+    BasisShape, CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, Effect,
+    ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPhi, RawOp, RawProgram, SingleGate,
+    TargetTransition, TokenId, UnitaryStep, WireId,
 };
 
 const MAX_REGISTER_BITS: u8 = 12;
@@ -253,6 +253,15 @@ impl State {
             ));
         }
         match operation {
+            RawOp::ApplyUnitary {
+                input,
+                output,
+                steps,
+            } => {
+                let reg = self.consume(&[*input], path)?.pop().expect("one input");
+                check_circuit(steps, reg.wires.len(), path)?;
+                self.insert_token(global, *output, reg, path)?;
+            }
             RawOp::Init0 { output, wire } => {
                 global.reserve_wire(*wire, path)?;
                 self.insert_token(global, *output, Register { wires: vec![*wire] }, path)?;
@@ -624,6 +633,49 @@ fn require_width(reg: &Register, width: usize, path: &[usize]) -> Result<(), Val
             path,
             format!("operation requires a {width}-bit register"),
         ));
+    }
+    Ok(())
+}
+
+fn check_circuit(
+    steps: &[CircuitStep],
+    width: usize,
+    path: &[usize],
+) -> Result<(), ValidationError> {
+    for step in steps {
+        let mut seen = BTreeSet::new();
+        let mut axis = |index| {
+            if index >= width || !seen.insert(index) {
+                Err(err(
+                    path,
+                    "circuit axis is out of range or overlaps another axis/control",
+                ))
+            } else {
+                Ok(())
+            }
+        };
+        for control in &step.controls {
+            axis(control.index)?;
+        }
+        match &step.action {
+            CircuitAction::Hadamard { target } => axis(*target)?,
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
+            } => {
+                for index in indices {
+                    axis(*index)?;
+                }
+                check_table(permutation, indices.len(), indices.len(), true, path)?;
+                if phases.len() != permutation.len() || phases.iter().any(|phase| *phase >= 8) {
+                    return Err(err(
+                        path,
+                        "circuit phase table must be total with exponents in 0..8",
+                    ));
+                }
+            }
+        }
     }
     Ok(())
 }

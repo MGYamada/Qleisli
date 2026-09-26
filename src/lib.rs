@@ -5,6 +5,7 @@
 //! subset in [`ir`]. Raw IR is untrusted regardless of its producer.
 
 pub mod frontend;
+pub mod host;
 pub mod ir;
 pub mod sim;
 mod verify;

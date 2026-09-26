@@ -1,0 +1,9 @@
+use oracle::mark;
+use std::quantum::init0;
+use std::quantum::join;
+use std::routines::hadamard2;
+
+pub iso fn recover_secret() -> Q<(Bit, Bit)> {
+    let prepared = hadamard2(join(init0(), init0()));
+    hadamard2(mark(prepared))
+}

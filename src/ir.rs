@@ -94,6 +94,33 @@ pub enum UnitaryStep {
     ScalarPhase(ScalarPhase),
 }
 
+/// A basis control on the same ordered register as a circuit action.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct BitControl {
+    pub index: usize,
+    pub when_one: bool,
+}
+
+/// Flat, exact finite unitary description. The monomial matrix maps |x> to
+/// exp(i*pi*phases[x]/4)|permutation[x]>. Empty indices retain scalar phase.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum CircuitAction {
+    Hadamard {
+        target: usize,
+    },
+    Monomial {
+        indices: Vec<usize>,
+        permutation: Vec<u16>,
+        phases: Vec<u8>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CircuitStep {
+    pub controls: Vec<BitControl>,
+    pub action: CircuitAction,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ProtectedRegion {
     Source,
@@ -155,6 +182,13 @@ pub struct ClassicalPhi {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RawOp {
+    /// A flat circuit over one register; the independent verifier checks every
+    /// control, axis, permutation and phase. No arbitrary matrix is accepted.
+    ApplyUnitary {
+        input: TokenId,
+        output: TokenId,
+        steps: Vec<CircuitStep>,
+    },
     Init0 {
         output: TokenId,
         wire: WireId,

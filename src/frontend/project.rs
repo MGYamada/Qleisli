@@ -12,7 +12,18 @@ use super::ast::{self, FnKind, Span, UseDecl};
 use super::lexer::keyword_kind;
 use super::parser::parse_module;
 
-const BUNDLED_BASIS: &str = include_str!("../../stdlib/src/basis.qli");
+const BUNDLED_SOURCES: &[(&str, &str)] = &[
+    (
+        "arithmetic",
+        include_str!("../../stdlib/src/arithmetic.qli"),
+    ),
+    ("basis", include_str!("../../stdlib/src/basis.qli")),
+    ("routines", include_str!("../../stdlib/src/routines.qli")),
+    (
+        "transforms",
+        include_str!("../../stdlib/src/transforms.qli"),
+    ),
+];
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ModuleOrigin {
@@ -51,8 +62,8 @@ pub struct SourceModule {
 #[derive(Clone, Debug)]
 pub struct Project {
     pub root: PathBuf,
-    /// Local modules use root-relative names; `std::basis` is the bundled
-    /// source module. Sealed `std::quantum` and `std::observe` have no AST.
+    /// Local modules use root-relative names; bundled `std` source modules
+    /// follow the same checks. Sealed quantum/observe primitives have no AST.
     pub modules: BTreeMap<String, SourceModule>,
 }
 
@@ -118,19 +129,21 @@ impl Project {
             }
         }
 
-        let basis_path = PathBuf::from("<bundled>/std/basis.qli");
-        let basis_ast = parse_module(BUNDLED_BASIS)
-            .map_err(|failure| error(&basis_path, failure.span, failure.message))?;
-        let basis = SourceModule {
-            name: "std::basis".to_owned(),
-            path: basis_path,
-            source: BUNDLED_BASIS.to_owned(),
-            ast: basis_ast,
-            imports: BTreeMap::new(),
-            origin: ModuleOrigin::Bundled,
-        };
-        check_declarations(&basis)?;
-        modules.insert(basis.name.clone(), basis);
+        for &(name, source) in BUNDLED_SOURCES {
+            let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
+            let ast = parse_module(source)
+                .map_err(|failure| error(&path, failure.span, failure.message))?;
+            let module = SourceModule {
+                name: format!("std::{name}"),
+                path,
+                source: source.to_owned(),
+                ast,
+                imports: BTreeMap::new(),
+                origin: ModuleOrigin::Bundled,
+            };
+            check_declarations(&module)?;
+            modules.insert(module.name.clone(), module);
+        }
 
         let mut project = Self { root, modules };
         project.resolve_imports()?;

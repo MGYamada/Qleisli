@@ -145,3 +145,22 @@ fn unknown_sealed_name_is_not_reinterpreted_as_user_code() {
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("sealed module"), "{error}");
 }
+
+#[test]
+fn algorithm_routines_are_bundled_source_with_private_helpers() {
+    let root = TempRoot::new();
+    root.write("main.qli", "use std::routines::reflect_uniform2;");
+    let project = Project::load(root.path()).unwrap();
+    assert_eq!(
+        project.module("main").unwrap().imports["reflect_uniform2"].origin,
+        ImportOrigin::Bundled
+    );
+    let routines = project.module("std::routines").unwrap();
+    assert_eq!(routines.origin, ModuleOrigin::Bundled);
+    assert!(!routines.ast.decls.is_empty());
+    assert_eq!(routines.imports["h"].origin, ImportOrigin::Sealed);
+
+    root.write("main.qli", "use std::routines::nonzero2;");
+    let error = Project::load(root.path()).unwrap_err();
+    assert!(error.message.contains("not public"), "{error}");
+}

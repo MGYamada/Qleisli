@@ -357,6 +357,71 @@ impl Parser {
     }
 
     fn expr_inner(&mut self) -> Result<Expr, ParseError> {
+        if self.at(&TokenKind::Adjoint) || self.at(&TokenKind::RepeatStatic) {
+            let start = self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let count = if start.kind == TokenKind::RepeatStatic {
+                let count = match &self.current().kind {
+                    TokenKind::Zero => 0,
+                    TokenKind::One => 1,
+                    TokenKind::Natural(digits) if !digits.starts_with('0') => digits
+                        .parse::<u16>()
+                        .ok()
+                        .filter(|n| *n <= 4096)
+                        .ok_or_else(|| {
+                            self.error("static repetition exceeds the 4096-count limit")
+                        })?,
+                    _ => return Err(self.error("expected canonical static natural number")),
+                };
+                self.bump();
+                self.expect(&TokenKind::Comma)?;
+                Some(count)
+            } else {
+                None
+            };
+            let function = self.ident()?;
+            self.expect(&TokenKind::Comma)?;
+            let input = Box::new(self.expr()?);
+            let end = self.expect(&TokenKind::RParen)?;
+            let kind = if let Some(count) = count {
+                ExprKind::RepeatStatic {
+                    count,
+                    function,
+                    input,
+                }
+            } else {
+                ExprKind::Adjoint { function, input }
+            };
+            return Ok(Expr {
+                kind,
+                span: start.span.cover(end.span),
+            });
+        }
+        if let Some(start) = self.consume(&TokenKind::Qif) {
+            self.expect(&TokenKind::LParen)?;
+            let control = Box::new(self.expr()?);
+            self.expect(&TokenKind::Comma)?;
+            let target = Box::new(self.expr()?);
+            self.expect(&TokenKind::RParen)?;
+            self.expect(&TokenKind::LBrace)?;
+            self.expect(&TokenKind::Zero)?;
+            self.expect(&TokenKind::FatArrow)?;
+            let zero = self.ident()?;
+            self.expect(&TokenKind::Comma)?;
+            self.expect(&TokenKind::One)?;
+            self.expect(&TokenKind::FatArrow)?;
+            let one = self.ident()?;
+            let end = self.expect(&TokenKind::RBrace)?;
+            return Ok(Expr {
+                kind: ExprKind::QuantumIf {
+                    control,
+                    target,
+                    zero,
+                    one,
+                },
+                span: start.span.cover(end.span),
+            });
+        }
         if let Some(if_token) = self.consume(&TokenKind::If) {
             let condition = self.expr()?;
             let then_branch = self.block()?;
@@ -553,6 +618,9 @@ impl Parser {
     }
 
     fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
+        if matches!(self.current().kind, TokenKind::Natural(_)) {
+            return Err(self.error("Bit literal must be 0 or 1"));
+        }
         if let TokenKind::Ident(_) = self.current().kind {
             let ident = self.ident()?;
             if self.consume(&TokenKind::LParen).is_some() {
