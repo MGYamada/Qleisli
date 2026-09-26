@@ -39,7 +39,7 @@
 | `quantum::init0` | `() -> Q<Bit>` | `Iso`。新しい `|0〉` ワイヤを返す。 |
 | `quantum::{h,x,z,t}` | `Q<Bit> -> Q<Bit>` | `Unitary`。同じ論理ワイヤの所有権を返す。 |
 | `quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | `Unitary`。異なるワイヤを要求する。 |
-| `quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>, Q<Bit>)` | `Unitary`。3 本とも異なるワイヤを要求する。 |
+| `quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)` | `Unitary`。3 本とも異なるワイヤを要求する。3 引数を取り、v0 の二要素タプルで入れ子にした 3 結果を返す。 |
 | `quantum::split` / `join` | `Q<(A,B)> <-> (Q<A>, Q<B>)` | 所有権の構造操作。振幅を変えず、絡み合いを保つ。 |
 | `observe::measure_z` | `Q<Bit> -> CBit` | `Observe`。測定対象の論理ワイヤを消費し、古典結果だけを返す。 |
 | `observe::reset` | `Q<Bit> -> Q<Bit>` | `Observe`。旧所有権と相関を捨て、新しい論理 ID の `|0〉` ワイヤを返す。 |

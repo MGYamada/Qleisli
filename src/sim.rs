@@ -201,9 +201,13 @@ impl Component {
                 projected[low | (high << axis)] = amplitude;
             }
         }
-        let mut component = self.clone();
+        let mut component = Self {
+            axes: self.axes.clone(),
+            amplitudes: projected,
+            tokens: self.tokens.clone(),
+            classical: self.classical.clone(),
+        };
         component.axes.remove(axis);
-        component.amplitudes = projected;
         Ok(component)
     }
 

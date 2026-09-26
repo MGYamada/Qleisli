@@ -118,7 +118,7 @@ impl Project {
             }
         }
 
-        let basis_path = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("stdlib/src/basis.qli");
+        let basis_path = PathBuf::from("<bundled>/std/basis.qli");
         let basis_ast = parse_module(BUNDLED_BASIS)
             .map_err(|failure| error(&basis_path, failure.span, failure.message))?;
         let basis = SourceModule {

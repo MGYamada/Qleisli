@@ -1,7 +1,7 @@
 use qleisli_core::ir::{
-    BasisShape, ClassicalId, Control, Effect, ProtectedBit, ProtectedRegion, ProtectedUse,
-    QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate, TargetTransition, TokenId,
-    UnitaryStep, WireId,
+    BasisShape, ClassicalId, ClassicalPhi, Control, Effect, ProtectedBit, ProtectedRegion,
+    ProtectedUse, QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate,
+    TargetTransition, TokenId, UnitaryStep, WireId,
 };
 use qleisli_core::verify;
 
@@ -49,6 +49,133 @@ fn rejected(program: RawProgram, phrase: &str) {
         error.message.contains(phrase),
         "expected {phrase:?}, got {error}"
     );
+}
+
+#[test]
+fn many_live_wires_do_not_require_quadratic_duplicate_checks() {
+    let count = 80_000u32;
+    let operations = (0..count)
+        .map(|id| RawOp::Init0 {
+            output: t(id),
+            wire: w(id),
+        })
+        .collect();
+    let checked = verify(program(
+        vec![],
+        vec![],
+        operations,
+        (0..count).map(t).collect(),
+        vec![],
+        Effect::Iso,
+    ))
+    .unwrap();
+    assert_eq!(checked.program().quantum_outputs.len(), count as usize);
+}
+
+#[test]
+fn many_branches_share_freshness_history_without_leaking_classical_scopes() {
+    let mut operations = Vec::new();
+    let mut condition = c(0);
+    for index in 0..8_000u32 {
+        let then_id = c(index * 3 + 1);
+        let else_id = c(index * 3 + 2);
+        let output = c(index * 3 + 3);
+        operations.push(RawOp::ClassicalBranch {
+            condition,
+            then_ops: vec![RawOp::ClassicalNot {
+                input: condition,
+                output: then_id,
+            }],
+            else_ops: vec![RawOp::ClassicalNot {
+                input: condition,
+                output: else_id,
+            }],
+            quantum_phis: vec![],
+            classical_phis: vec![ClassicalPhi {
+                then_id,
+                else_id,
+                output,
+            }],
+        });
+        condition = output;
+    }
+    verify(program(
+        vec![],
+        vec![c(0)],
+        operations,
+        vec![],
+        vec![condition],
+        Effect::Unitary,
+    ))
+    .unwrap();
+
+    rejected(
+        program(
+            vec![],
+            vec![c(0)],
+            vec![RawOp::ClassicalBranch {
+                condition: c(0),
+                then_ops: vec![RawOp::ClassicalNot {
+                    input: c(0),
+                    output: c(1),
+                }],
+                else_ops: vec![RawOp::ClassicalNot {
+                    input: c(1),
+                    output: c(2),
+                }],
+                quantum_phis: vec![],
+                classical_phis: vec![],
+            }],
+            vec![],
+            vec![],
+            Effect::Unitary,
+        ),
+        "not defined in this scope",
+    );
+}
+
+#[test]
+fn nested_classical_phi_is_visible_in_its_parent_arm() {
+    let inner = RawOp::ClassicalBranch {
+        condition: c(0),
+        then_ops: vec![RawOp::ClassicalNot {
+            input: c(0),
+            output: c(1),
+        }],
+        else_ops: vec![RawOp::ClassicalNot {
+            input: c(0),
+            output: c(2),
+        }],
+        quantum_phis: vec![],
+        classical_phis: vec![ClassicalPhi {
+            then_id: c(1),
+            else_id: c(2),
+            output: c(3),
+        }],
+    };
+    let outer = RawOp::ClassicalBranch {
+        condition: c(0),
+        then_ops: vec![inner],
+        else_ops: vec![RawOp::ClassicalNot {
+            input: c(0),
+            output: c(4),
+        }],
+        quantum_phis: vec![],
+        classical_phis: vec![ClassicalPhi {
+            then_id: c(3),
+            else_id: c(4),
+            output: c(5),
+        }],
+    };
+    verify(program(
+        vec![],
+        vec![c(0)],
+        vec![outer],
+        vec![],
+        vec![c(5)],
+        Effect::Unitary,
+    ))
+    .unwrap();
 }
 
 #[test]

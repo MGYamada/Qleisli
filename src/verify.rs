@@ -74,29 +74,108 @@ impl Register {
 #[derive(Clone, Debug)]
 struct State {
     live: BTreeMap<TokenId, Register>,
-    classical: BTreeSet<ClassicalId>,
+    live_wires: BTreeSet<WireId>,
+    effect: Effect,
+}
+
+/// Freshness and classical definitions span both arms of every branch. These
+/// grow with the program and must never be copied for each branch.
+#[derive(Debug)]
+struct Global {
     seen_tokens: BTreeSet<TokenId>,
     seen_wires: BTreeSet<WireId>,
-    seen_classical: BTreeSet<ClassicalId>,
-    effect: Effect,
+    classical_scopes: BTreeMap<ClassicalId, usize>,
+    active_scopes: BTreeSet<usize>,
+    current_scope: usize,
+    next_scope: usize,
 }
 
 impl Default for State {
     fn default() -> Self {
         Self {
             live: BTreeMap::new(),
-            classical: BTreeSet::new(),
-            seen_tokens: BTreeSet::new(),
-            seen_wires: BTreeSet::new(),
-            seen_classical: BTreeSet::new(),
+            live_wires: BTreeSet::new(),
             effect: Effect::Unitary,
         }
+    }
+}
+
+impl Default for Global {
+    fn default() -> Self {
+        Self {
+            seen_tokens: BTreeSet::new(),
+            seen_wires: BTreeSet::new(),
+            classical_scopes: BTreeMap::new(),
+            active_scopes: BTreeSet::from([0]),
+            current_scope: 0,
+            next_scope: 1,
+        }
+    }
+}
+
+impl Global {
+    fn reserve_wire(&mut self, wire: WireId, path: &[usize]) -> Result<(), ValidationError> {
+        if !self.seen_wires.insert(wire) {
+            return Err(err(path, format!("wire {:?} is not globally fresh", wire)));
+        }
+        Ok(())
+    }
+
+    fn insert_classical(&mut self, id: ClassicalId, path: &[usize]) -> Result<(), ValidationError> {
+        if self
+            .classical_scopes
+            .insert(id, self.current_scope)
+            .is_some()
+        {
+            return Err(err(
+                path,
+                format!("classical SSA value {:?} is not fresh", id),
+            ));
+        }
+        Ok(())
+    }
+
+    fn require_classical(&self, id: ClassicalId, path: &[usize]) -> Result<(), ValidationError> {
+        if !self.is_classical_visible(id) {
+            return Err(err(
+                path,
+                format!("classical bit {:?} was not defined in this scope", id),
+            ));
+        }
+        Ok(())
+    }
+
+    fn is_classical_visible(&self, id: ClassicalId) -> bool {
+        self.classical_scopes
+            .get(&id)
+            .is_some_and(|scope| self.active_scopes.contains(scope))
+    }
+
+    fn is_classical_visible_in_arm(&self, id: ClassicalId, arm_scope: usize) -> bool {
+        self.classical_scopes
+            .get(&id)
+            .is_some_and(|scope| *scope == arm_scope || self.active_scopes.contains(scope))
+    }
+
+    fn enter_scope(&mut self) -> (usize, usize) {
+        let parent = self.current_scope;
+        let scope = self.next_scope;
+        self.next_scope += 1;
+        self.current_scope = scope;
+        self.active_scopes.insert(scope);
+        (parent, scope)
+    }
+
+    fn leave_scope(&mut self, parent: usize, scope: usize) {
+        self.active_scopes.remove(&scope);
+        self.current_scope = parent;
     }
 }
 
 impl State {
     fn insert_token(
         &mut self,
+        global: &mut Global,
         token: TokenId,
         register: Register,
         path: &[usize],
@@ -106,42 +185,15 @@ impl State {
         }
         let mut local = BTreeSet::new();
         for wire in &register.wires {
-            if !local.insert(*wire) || self.live.values().any(|r| r.wires.contains(wire)) {
+            if !local.insert(*wire) || self.live_wires.contains(wire) {
                 return Err(err(path, format!("quantum wire {:?} is live twice", wire)));
             }
         }
-        if !self.seen_tokens.insert(token) {
+        if !global.seen_tokens.insert(token) {
             return Err(err(path, format!("token {:?} is not fresh", token)));
         }
+        self.live_wires.extend(register.wires.iter().copied());
         self.live.insert(token, register);
-        Ok(())
-    }
-
-    fn reserve_wire(&mut self, wire: WireId, path: &[usize]) -> Result<(), ValidationError> {
-        if !self.seen_wires.insert(wire) {
-            return Err(err(path, format!("wire {:?} is not globally fresh", wire)));
-        }
-        Ok(())
-    }
-
-    fn insert_classical(&mut self, id: ClassicalId, path: &[usize]) -> Result<(), ValidationError> {
-        if !self.seen_classical.insert(id) {
-            return Err(err(
-                path,
-                format!("classical SSA value {:?} is not fresh", id),
-            ));
-        }
-        self.classical.insert(id);
-        Ok(())
-    }
-
-    fn require_classical(&self, id: ClassicalId, path: &[usize]) -> Result<(), ValidationError> {
-        if !self.classical.contains(&id) {
-            return Err(err(
-                path,
-                format!("classical bit {:?} was not defined in this scope", id),
-            ));
-        }
         Ok(())
     }
 
@@ -162,26 +214,38 @@ impl State {
                 ));
             }
         }
-        Ok(tokens
+        let registers: Vec<_> = tokens
             .iter()
             .map(|token| self.live.remove(token).expect("checked present"))
-            .collect())
+            .collect();
+        for register in &registers {
+            for wire in &register.wires {
+                self.live_wires.remove(wire);
+            }
+        }
+        Ok(registers)
     }
 
     fn verify_ops(
         &mut self,
+        global: &mut Global,
         operations: &[RawOp],
         prefix: &[usize],
     ) -> Result<(), ValidationError> {
         for (index, operation) in operations.iter().enumerate() {
             let mut path = prefix.to_vec();
             path.push(index);
-            self.verify_op(operation, &path)?;
+            self.verify_op(global, operation, &path)?;
         }
         Ok(())
     }
 
-    fn verify_op(&mut self, operation: &RawOp, path: &[usize]) -> Result<(), ValidationError> {
+    fn verify_op(
+        &mut self,
+        global: &mut Global,
+        operation: &RawOp,
+        path: &[usize],
+    ) -> Result<(), ValidationError> {
         if path.len() > 2 * MAX_NESTED_BRANCHES + 1 {
             return Err(err(
                 path,
@@ -190,15 +254,15 @@ impl State {
         }
         match operation {
             RawOp::Init0 { output, wire } => {
-                self.reserve_wire(*wire, path)?;
-                self.insert_token(*output, Register { wires: vec![*wire] }, path)?;
+                global.reserve_wire(*wire, path)?;
+                self.insert_token(global, *output, Register { wires: vec![*wire] }, path)?;
                 self.effect = self.effect.max(Effect::Iso);
             }
             RawOp::Gate { input, output, .. } => {
                 let mut regs = self.consume(&[*input], path)?;
                 let reg = regs.pop().expect("one input");
                 require_width(&reg, 1, path)?;
-                self.insert_token(*output, reg, path)?;
+                self.insert_token(global, *output, reg, path)?;
             }
             RawOp::Cnot {
                 control,
@@ -210,8 +274,8 @@ impl State {
                 for reg in &regs {
                     require_width(reg, 1, path)?;
                 }
-                self.insert_token(*control_out, regs[0].clone(), path)?;
-                self.insert_token(*target_out, regs[1].clone(), path)?;
+                self.insert_token(global, *control_out, regs[0].clone(), path)?;
+                self.insert_token(global, *target_out, regs[1].clone(), path)?;
             }
             RawOp::Toffoli {
                 control_a,
@@ -229,7 +293,7 @@ impl State {
                     .into_iter()
                     .zip(regs)
                 {
-                    self.insert_token(out, reg, path)?;
+                    self.insert_token(global, out, reg, path)?;
                 }
             }
             RawOp::QuantumIf {
@@ -245,8 +309,8 @@ impl State {
                 let target_width = regs[1].wires.len();
                 check_unitary_steps(zero_ops, target_width, path)?;
                 check_unitary_steps(one_ops, target_width, path)?;
-                self.insert_token(*control_out, regs[0].clone(), path)?;
-                self.insert_token(*target_out, regs[1].clone(), path)?;
+                self.insert_token(global, *control_out, regs[0].clone(), path)?;
+                self.insert_token(global, *target_out, regs[1].clone(), path)?;
             }
             RawOp::Split {
                 input,
@@ -261,6 +325,7 @@ impl State {
                     return Err(err(path, "split exceeds the input register width"));
                 }
                 self.insert_token(
+                    global,
                     *left,
                     Register {
                         wires: reg.wires[..split].to_vec(),
@@ -268,6 +333,7 @@ impl State {
                     path,
                 )?;
                 self.insert_token(
+                    global,
                     *right,
                     Register {
                         wires: reg.wires[split..].to_vec(),
@@ -282,7 +348,7 @@ impl State {
             } => {
                 let regs = self.consume(&[*left, *right], path)?;
                 let wires = regs.into_iter().flat_map(|r| r.wires).collect();
-                self.insert_token(*output, Register { wires }, path)?;
+                self.insert_token(global, *output, Register { wires }, path)?;
             }
             RawOp::LiftBasis {
                 input,
@@ -305,9 +371,10 @@ impl State {
                 }
                 check_table(table, input_width, output_width, true, path)?;
                 for wire in &output_wires[input_width..] {
-                    self.reserve_wire(*wire, path)?;
+                    global.reserve_wire(*wire, path)?;
                 }
                 self.insert_token(
+                    global,
                     *output,
                     Register {
                         wires: output_wires.clone(),
@@ -321,7 +388,7 @@ impl State {
             RawOp::MeasureZ { input, output } => {
                 let mut regs = self.consume(&[*input], path)?;
                 require_width(&regs.pop().expect("one input"), 1, path)?;
-                self.insert_classical(*output, path)?;
+                global.insert_classical(*output, path)?;
                 self.effect = Effect::Observe;
             }
             RawOp::Reset {
@@ -331,8 +398,9 @@ impl State {
             } => {
                 let mut regs = self.consume(&[*input], path)?;
                 require_width(&regs.pop().expect("one input"), 1, path)?;
-                self.reserve_wire(*fresh_wire, path)?;
+                global.reserve_wire(*fresh_wire, path)?;
                 self.insert_token(
+                    global,
                     *output,
                     Register {
                         wires: vec![*fresh_wire],
@@ -346,17 +414,17 @@ impl State {
                 self.effect = Effect::Observe;
             }
             RawOp::ClassicalNot { input, output } => {
-                self.require_classical(*input, path)?;
-                self.insert_classical(*output, path)?;
+                global.require_classical(*input, path)?;
+                global.insert_classical(*output, path)?;
             }
             RawOp::ClassicalXor {
                 left,
                 right,
                 output,
             } => {
-                self.require_classical(*left, path)?;
-                self.require_classical(*right, path)?;
-                self.insert_classical(*output, path)?;
+                global.require_classical(*left, path)?;
+                global.require_classical(*right, path)?;
+                global.insert_classical(*output, path)?;
             }
             RawOp::ClassicalBranch {
                 condition,
@@ -365,6 +433,7 @@ impl State {
                 quantum_phis,
                 classical_phis,
             } => self.verify_branch(
+                global,
                 *condition,
                 then_ops,
                 else_ops,
@@ -380,6 +449,7 @@ impl State {
                 function,
                 use_ops,
             } => self.verify_compute(
+                global,
                 *source,
                 *source_out,
                 targets,
@@ -395,6 +465,7 @@ impl State {
     #[allow(clippy::too_many_arguments)]
     fn verify_branch(
         &mut self,
+        global: &mut Global,
         condition: ClassicalId,
         then_ops: &[RawOp],
         else_ops: &[RawOp],
@@ -402,28 +473,24 @@ impl State {
         classical_phis: &[ClassicalPhi],
         path: &[usize],
     ) -> Result<(), ValidationError> {
-        self.require_classical(condition, path)?;
-        let entry_classical = self.classical.clone();
+        global.require_classical(condition, path)?;
 
         let mut then_state = self.clone();
         let mut then_path = path.to_vec();
         then_path.push(0);
-        then_state.verify_ops(then_ops, &then_path)?;
+        let (parent, then_scope) = global.enter_scope();
+        let then_result = then_state.verify_ops(global, then_ops, &then_path);
+        global.leave_scope(parent, then_scope);
+        then_result?;
 
         let mut else_state = self.clone();
         // SSA IDs are globally fresh, including across mutually exclusive arms.
-        else_state
-            .seen_tokens
-            .extend(then_state.seen_tokens.iter().copied());
-        else_state
-            .seen_wires
-            .extend(then_state.seen_wires.iter().copied());
-        else_state
-            .seen_classical
-            .extend(then_state.seen_classical.iter().copied());
         let mut else_path = path.to_vec();
         else_path.push(1);
-        else_state.verify_ops(else_ops, &else_path)?;
+        let (parent, else_scope) = global.enter_scope();
+        let else_result = else_state.verify_ops(global, else_ops, &else_path);
+        global.leave_scope(parent, else_scope);
+        else_result?;
 
         let mut then_covered = BTreeSet::new();
         let mut else_covered = BTreeSet::new();
@@ -455,17 +522,15 @@ impl State {
             return Err(err(path, "a branch leaves an unmerged quantum token"));
         }
 
-        self.seen_tokens = else_state.seen_tokens;
-        self.seen_wires = else_state.seen_wires;
-        self.seen_classical = else_state.seen_classical;
         self.effect = then_state.effect.max(else_state.effect);
         self.live.clear();
-        self.classical = entry_classical;
+        self.live_wires.clear();
         for phi in quantum_phis {
             for wire in &phi.output_wires {
-                self.reserve_wire(*wire, path)?;
+                global.reserve_wire(*wire, path)?;
             }
             self.insert_token(
+                global,
                 phi.output,
                 Register {
                     wires: phi.output_wires.clone(),
@@ -474,12 +539,12 @@ impl State {
             )?;
         }
         for phi in classical_phis {
-            if !then_state.classical.contains(&phi.then_id)
-                || !else_state.classical.contains(&phi.else_id)
+            if !global.is_classical_visible_in_arm(phi.then_id, then_scope)
+                || !global.is_classical_visible_in_arm(phi.else_id, else_scope)
             {
                 return Err(err(path, "classical phi references an undefined arm value"));
             }
-            self.insert_classical(phi.output, path)?;
+            global.insert_classical(phi.output, path)?;
         }
         Ok(())
     }
@@ -487,6 +552,7 @@ impl State {
     #[allow(clippy::too_many_arguments)]
     fn verify_compute(
         &mut self,
+        global: &mut Global,
         source: TokenId,
         source_out: TokenId,
         targets: &[TargetTransition],
@@ -512,7 +578,7 @@ impl State {
             require_width(target_reg, 1, path)?;
         }
         for wire in ancilla_wires {
-            self.reserve_wire(*wire, path)?;
+            global.reserve_wire(*wire, path)?;
         }
         for use_op in use_ops {
             match use_op {
@@ -540,9 +606,9 @@ impl State {
                 }
             }
         }
-        self.insert_token(source_out, source_reg.clone(), path)?;
+        self.insert_token(global, source_out, source_reg.clone(), path)?;
         for (target, reg) in targets.iter().zip(&regs[1..]) {
-            self.insert_token(target.output, reg.clone(), path)?;
+            self.insert_token(global, target.output, reg.clone(), path)?;
         }
         Ok(())
     }
@@ -678,6 +744,7 @@ fn check_controls(
 /// `ComputeUseUncompute` proof from the untrusted raw IR.
 pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError> {
     let mut state = State::default();
+    let mut global = Global::default();
     let mut input_bits = 0usize;
     for port in &program.quantum_inputs {
         if port.shape.bits > MAX_REGISTER_BITS || port.wires.len() != usize::from(port.shape.bits) {
@@ -687,9 +754,10 @@ pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError> {
             ));
         }
         for wire in &port.wires {
-            state.reserve_wire(*wire, &[])?;
+            global.reserve_wire(*wire, &[])?;
         }
         state.insert_token(
+            &mut global,
             port.token,
             Register {
                 wires: port.wires.clone(),
@@ -699,9 +767,9 @@ pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError> {
         input_bits += port.wires.len();
     }
     for id in &program.classical_inputs {
-        state.insert_classical(*id, &[])?;
+        global.insert_classical(*id, &[])?;
     }
-    state.verify_ops(&program.operations, &[])?;
+    state.verify_ops(&mut global, &program.operations, &[])?;
 
     let mut outputs = BTreeSet::new();
     for token in &program.quantum_outputs {
@@ -719,7 +787,7 @@ pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError> {
         return Err(err(&[], "live quantum ownership was omitted from outputs"));
     }
     for id in &program.classical_outputs {
-        state.require_classical(*id, &[])?;
+        global.require_classical(*id, &[])?;
     }
     if state.effect > program.declared_effect {
         return Err(err(

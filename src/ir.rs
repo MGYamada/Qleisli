@@ -27,8 +27,11 @@ impl BasisShape {
     pub const BIT: Self = Self { bits: 1 };
 }
 
-/// The claimed function classification. The verifier derives the minimum
-/// required classification from commands and rejects a stronger claim.
+/// The claimed function classification. This declaration order is the
+/// verifier's strength order: Unitary < Iso < Observe. It linearizes the
+/// pure/observe effect and the Iso/Unitary classification of the formal core.
+/// The verifier derives the minimum required classification from commands and
+/// rejects a stronger claim.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Effect {
     Unitary,

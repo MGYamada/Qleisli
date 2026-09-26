@@ -34,7 +34,9 @@ fn closed(
 }
 
 fn run(program: &qleisli_core::VerifiedProgram) -> std::collections::BTreeMap<Vec<bool>, f64> {
-    run_closed(program, SimulationLimits::default()).unwrap()
+    let distribution = run_closed(program, SimulationLimits::default()).unwrap();
+    close(distribution.values().sum(), 1.0);
+    distribution
 }
 
 fn close(actual: f64, expected: f64) {
@@ -42,6 +44,42 @@ fn close(actual: f64, expected: f64) {
         (actual - expected).abs() < 1e-12,
         "expected {expected}, got {actual}"
     );
+}
+
+#[test]
+fn repeated_t_phase_can_leave_a_tiny_floating_point_outcome() {
+    let mut operations = vec![
+        RawOp::Init0 {
+            output: t(0),
+            wire: w(0),
+        },
+        RawOp::Gate {
+            gate: SingleGate::H,
+            input: t(0),
+            output: t(1),
+        },
+    ];
+    for index in 0..8 {
+        operations.push(RawOp::Gate {
+            gate: SingleGate::T,
+            input: t(index + 1),
+            output: t(index + 2),
+        });
+    }
+    operations.extend([
+        RawOp::Gate {
+            gate: SingleGate::H,
+            input: t(9),
+            output: t(10),
+        },
+        RawOp::MeasureZ {
+            input: t(10),
+            output: c(0),
+        },
+    ]);
+    let distribution = run(&closed(operations, vec![c(0)]));
+    close(distribution[&vec![false]], 1.0);
+    assert!(distribution.get(&vec![true]).copied().unwrap_or(0.0) < 1e-28);
 }
 
 #[test]

@@ -168,3 +168,79 @@ fn malformed_syntax_has_precise_error_spans() {
         assert!(error.message.contains(message), "{error}");
     }
 }
+
+#[test]
+fn deep_syntax_is_rejected_without_exhausting_the_stack() {
+    let parentheses = format!(
+        "iso fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "(".repeat(10_000),
+        ")".repeat(10_000)
+    );
+    let negations = format!("basis fn f(x: Bit) -> Bit {{ {}x }}", "not ".repeat(10_000));
+    let types = format!(
+        "basis fn f(x: {}Bit{}) -> Bit {{ 0 }}",
+        "(".repeat(10_000),
+        ", Bit)".repeat(10_000)
+    );
+    let conditionals = format!(
+        "observe fn f(b: CBit, q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "if b { ".repeat(10_000),
+        " } else { q }".repeat(10_000)
+    );
+    for source in [&parentheses, &negations, &types, &conditionals] {
+        let error = parse_module(source).unwrap_err();
+        assert!(error.message.contains("limit"), "{error}");
+        assert!(error.span.start < source.len());
+    }
+
+    let below_limit = format!(
+        "iso fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "(".repeat(62),
+        ")".repeat(62)
+    );
+    parse_module(&below_limit).unwrap();
+}
+
+#[test]
+fn invisible_separators_and_bad_bit_literals_have_precise_errors() {
+    let cases = [
+        (
+            "// note\u{2028}iso fn hidden() -> Unit { () }",
+            "unsupported line separator",
+            "\u{2028}",
+        ),
+        ("// note\u{202e}hidden", "bidirectional control", "\u{202e}"),
+        (
+            "// note\u{0085}hidden",
+            "unsupported line separator",
+            "\u{0085}",
+        ),
+        (
+            "// note\u{000b}hidden",
+            "unsupported line separator",
+            "\u{000b}",
+        ),
+        ("// note\u{0000}hidden", "control character", "\u{0000}"),
+        (
+            "basis fn f() -> Bit { 10 }",
+            "Bit literal must be 0 or 1",
+            "10",
+        ),
+        (
+            "basis fn f() -> Bit { 2 }",
+            "Bit literal must be 0 or 1",
+            "2",
+        ),
+        (
+            "basis fn f() -> Bit {\u{3000}0 }",
+            "unsupported whitespace",
+            "\u{3000}",
+        ),
+    ];
+    for (source, message, offending) in cases {
+        let error = parse_module(source).unwrap_err();
+        assert!(error.message.contains(message), "{error}");
+        assert_eq!(error.span.start, source.find(offending).unwrap());
+        assert_eq!(error.span.end, error.span.start + offending.len());
+    }
+}

@@ -145,7 +145,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
     let mut lexer = Lexer { source, pos: 0 };
     let mut tokens = Vec::new();
     while let Some(ch) = lexer.peek() {
-        if ch.is_whitespace() {
+        if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             lexer.bump();
             continue;
         }
@@ -154,12 +154,26 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
                 if c == '\n' || c == '\r' {
                     break;
                 }
+                if !matches!(c, ' ' | '\t') {
+                    if let Some(message) = forbidden_character(c) {
+                        return Err(LexError {
+                            message: message.to_owned(),
+                            span: Span::new(lexer.pos, lexer.pos + c.len_utf8()),
+                        });
+                    }
+                }
                 lexer.bump();
             }
             continue;
         }
 
         let start = lexer.pos;
+        if let Some(message) = forbidden_character(ch) {
+            return Err(LexError {
+                message: message.to_owned(),
+                span: Span::new(start, start + ch.len_utf8()),
+            });
+        }
         let kind = if ch.is_ascii_alphabetic() || ch == '_' {
             lexer.bump();
             while lexer
@@ -170,11 +184,24 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
             }
             let name = &source[start..lexer.pos];
             keyword_kind(name).unwrap_or_else(|| TokenKind::Ident(name.to_owned()))
+        } else if ch.is_ascii_digit() {
+            lexer.bump();
+            while lexer.peek().is_some_and(|c| c.is_ascii_digit()) {
+                lexer.bump();
+            }
+            match &source[start..lexer.pos] {
+                "0" => TokenKind::Zero,
+                "1" => TokenKind::One,
+                _ => {
+                    return Err(LexError {
+                        message: "Bit literal must be 0 or 1".to_owned(),
+                        span: Span::new(start, lexer.pos),
+                    });
+                }
+            }
         } else {
             lexer.bump();
             match ch {
-                '0' => TokenKind::Zero,
-                '1' => TokenKind::One,
                 '(' => TokenKind::LParen,
                 ')' => TokenKind::RParen,
                 '{' => TokenKind::LBrace,
@@ -216,6 +243,26 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
         span: Span::new(source.len(), source.len()),
     });
     Ok(tokens)
+}
+
+fn forbidden_character(ch: char) -> Option<&'static str> {
+    if matches!(
+        ch,
+        '\u{061c}' | '\u{200e}' | '\u{200f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
+    ) {
+        Some("bidirectional control character is forbidden")
+    } else if matches!(
+        ch,
+        '\u{000b}' | '\u{000c}' | '\u{0085}' | '\u{2028}' | '\u{2029}'
+    ) {
+        Some("unsupported line separator is forbidden")
+    } else if ch.is_whitespace() {
+        Some("unsupported whitespace; use ASCII space, tab, LF, or CR")
+    } else if ch.is_control() {
+        Some("control character is forbidden")
+    } else {
+        None
+    }
 }
 
 struct Lexer<'a> {

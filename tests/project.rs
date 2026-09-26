@@ -52,7 +52,7 @@ fn bell_module_and_bundled_imports_resolve() {
     );
     root.write(
         "main.qli",
-        "use bell::entangle;\nuse std::quantum::h;\nuse std::basis::xor2;\nuse std::observe::measure_z;\nobserve fn main() -> CBit { measure_z(init0()) }",
+        "use bell::entangle;\nuse std::quantum::h;\nuse std::quantum::init0;\nuse std::basis::xor2;\nuse std::observe::measure_z;\nobserve fn main() -> CBit { measure_z(init0()) }",
     );
     root.write("nested/helper.qli", "pub basis fn id(x: Bit) -> Bit { x }");
 

@@ -41,15 +41,37 @@ impl From<LexError> for ParseError {
 
 pub fn parse_module(source: &str) -> Result<Module, ParseError> {
     let tokens = lex(source)?;
-    Parser { tokens, pos: 0 }.module(source.len())
+    Parser {
+        tokens,
+        pos: 0,
+        nesting: 0,
+    }
+    .module(source.len())
 }
+
+/// An implementation limit on recursive syntax and left-associated basis ASTs.
+const MAX_NESTING: usize = 64;
 
 struct Parser {
     tokens: Vec<Token>,
     pos: usize,
+    nesting: usize,
 }
 
 impl Parser {
+    fn nested<T>(
+        &mut self,
+        parse: impl FnOnce(&mut Self) -> Result<T, ParseError>,
+    ) -> Result<T, ParseError> {
+        if self.nesting >= MAX_NESTING {
+            return Err(self.error("syntax nesting exceeds the initial 64-level limit"));
+        }
+        self.nesting += 1;
+        let result = parse(self);
+        self.nesting -= 1;
+        result
+    }
+
     fn module(&mut self, source_len: usize) -> Result<Module, ParseError> {
         let mut uses = Vec::new();
         let mut decls = Vec::new();
@@ -174,6 +196,10 @@ impl Parser {
     }
 
     fn ty(&mut self) -> Result<Type, ParseError> {
+        self.nested(Self::ty_inner)
+    }
+
+    fn ty_inner(&mut self) -> Result<Type, ParseError> {
         if let Some(token) = self.consume(&TokenKind::Unit) {
             return Ok(Type {
                 kind: TypeKind::Unit,
@@ -205,6 +231,10 @@ impl Parser {
     }
 
     fn basis_type(&mut self) -> Result<Type, ParseError> {
+        self.nested(Self::basis_type_inner)
+    }
+
+    fn basis_type_inner(&mut self) -> Result<Type, ParseError> {
         if let Some(token) = self.consume(&TokenKind::Unit) {
             return Ok(Type {
                 kind: TypeKind::Unit,
@@ -253,6 +283,10 @@ impl Parser {
     }
 
     fn block_contents(&mut self, start: usize) -> Result<Block, ParseError> {
+        self.nested(|parser| parser.block_contents_inner(start))
+    }
+
+    fn block_contents_inner(&mut self, start: usize) -> Result<Block, ParseError> {
         let mut statements = Vec::new();
         loop {
             if self.at(&TokenKind::RBrace) {
@@ -287,6 +321,10 @@ impl Parser {
     }
 
     fn pattern(&mut self) -> Result<Pattern, ParseError> {
+        self.nested(Self::pattern_inner)
+    }
+
+    fn pattern_inner(&mut self) -> Result<Pattern, ParseError> {
         if let TokenKind::Ident(name) = self.current().kind.clone() {
             let token = self.bump();
             if name == "_" {
@@ -315,6 +353,10 @@ impl Parser {
     }
 
     fn expr(&mut self) -> Result<Expr, ParseError> {
+        self.nested(Self::expr_inner)
+    }
+
+    fn expr_inner(&mut self) -> Result<Expr, ParseError> {
         if let Some(if_token) = self.consume(&TokenKind::If) {
             let condition = self.expr()?;
             let then_branch = self.block()?;
@@ -432,7 +474,12 @@ impl Parser {
 
     fn basis_xor(&mut self) -> Result<BasisExpr, ParseError> {
         let mut left = self.basis_and()?;
+        let mut chain = 0;
         while self.consume(&TokenKind::Xor).is_some() {
+            chain += 1;
+            if self.nesting + chain > MAX_NESTING {
+                return Err(self.error("basis expression exceeds the initial 64-level limit"));
+            }
             let right = self.basis_and()?;
             let span = left.span.cover(right.span);
             left = BasisExpr {
@@ -445,7 +492,12 @@ impl Parser {
 
     fn basis_and(&mut self) -> Result<BasisExpr, ParseError> {
         let mut left = self.basis_unary()?;
+        let mut chain = 0;
         while self.consume(&TokenKind::And).is_some() {
+            chain += 1;
+            if self.nesting + chain > MAX_NESTING {
+                return Err(self.error("basis expression exceeds the initial 64-level limit"));
+            }
             let right = self.basis_unary()?;
             let span = left.span.cover(right.span);
             left = BasisExpr {
@@ -457,6 +509,10 @@ impl Parser {
     }
 
     fn basis_unary(&mut self) -> Result<BasisExpr, ParseError> {
+        self.nested(Self::basis_unary_inner)
+    }
+
+    fn basis_unary_inner(&mut self) -> Result<BasisExpr, ParseError> {
         if let Some(not) = self.consume(&TokenKind::Not) {
             let inner = self.basis_unary()?;
             let span = not.span.cover(inner.span);
@@ -469,6 +525,10 @@ impl Parser {
     }
 
     fn basis_atom(&mut self) -> Result<BasisExpr, ParseError> {
+        self.nested(Self::basis_atom_inner)
+    }
+
+    fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
         if let TokenKind::Ident(_) = self.current().kind {
             let ident = self.ident()?;
             if self.consume(&TokenKind::LParen).is_some() {
