@@ -131,8 +131,13 @@ impl Project {
 
         for &(name, source) in BUNDLED_SOURCES {
             let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
-            let ast = parse_module(source)
-                .map_err(|failure| error(&path, failure.span, failure.message))?;
+            let ast = parse_module(source).map_err(|failure| {
+                error(
+                    &path,
+                    failure.span,
+                    format!("parse error: {}", failure.message),
+                )
+            })?;
             let module = SourceModule {
                 name: format!("std::{name}"),
                 path,
@@ -398,8 +403,13 @@ fn parse_source(
     origin: ModuleOrigin,
 ) -> Result<SourceModule, ProjectError> {
     let source = fs::read_to_string(&path).map_err(|failure| io_error(&path, failure))?;
-    let ast =
-        parse_module(&source).map_err(|failure| error(&path, failure.span, failure.message))?;
+    let ast = parse_module(&source).map_err(|failure| {
+        error(
+            &path,
+            failure.span,
+            format!("parse error: {}", failure.message),
+        )
+    })?;
     let module = SourceModule {
         name,
         path,

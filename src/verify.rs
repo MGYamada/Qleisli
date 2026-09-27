@@ -275,7 +275,7 @@ impl State {
                 for wire in ancilla_wires {
                     global.reserve_wire(*wire, path)?;
                 }
-                crate::contract::check_computed_with_budget(
+                crate::contract::check_computed_diagnostic_with_budget(
                     reg.wires.len(),
                     function,
                     use_steps,

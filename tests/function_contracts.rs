@@ -173,7 +173,7 @@ fn repeated_calls_reuse_one_immutable_evidence_object() {
 }
 
 #[test]
-fn cached_source_binding_comparisons_spend_the_frontend_work_budget() {
+fn repeated_contract_calls_do_not_recompare_frozen_source_snapshots() {
     let statements = "let q=apply_contract(specified_phase,specified_phase,q);".repeat(60);
     let source = format!(
         "{IMPORTS}\n// {}\nobserve fn main() -> CBit {{
@@ -181,7 +181,51 @@ fn cached_source_binding_comparisons_spend_the_frontend_work_budget() {
         }}",
         "metadata".repeat(1500)
     );
-    rejects(&source, ErrorCode::Limit);
+    let root = SourceRoot::new(&source);
+    let program = compile_project(&root.0).unwrap();
+    let attached = evidence(&program.program().operations);
+    assert_eq!(attached.len(), 60);
+    assert!(attached.iter().all(|item| Arc::ptr_eq(item, attached[0])));
+    probability(
+        &run_closed(&program, SimulationLimits::default()).unwrap(),
+        &[false],
+        1.0,
+    );
+}
+
+#[test]
+fn unrelated_source_comments_do_not_multiply_contract_reuse_work() {
+    let root = SourceRoot::new(&format!(
+        "{IMPORTS}
+        unitary fn first(q: Q<Bit>) -> Q<Bit> {{ apply_contract(specified_phase,specified_phase,q) }}
+        unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,specified_phase,q) }}
+        unitary fn third(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified_phase,q) }}
+        unitary fn fourth(q: Q<Bit>) -> Q<Bit> {{ apply_contract(third,specified_phase,q) }}
+        unitary fn fifth(q: Q<Bit>) -> Q<Bit> {{ apply_contract(fourth,specified_phase,q) }}
+        observe fn main() -> CBit {{
+            let q=fifth(h(init0())); let q=fifth(q); measure_z(h(q))
+        }}"
+    ));
+    let comments = format!("// {}\n", "metadata".repeat(12_500));
+    root.write("unrelated.qli", &comments);
+    let program = compile_project(&root.0).unwrap();
+    let attached = evidence(&program.program().operations);
+    assert_eq!(attached.len(), 2);
+    assert!(Arc::ptr_eq(attached[0], attached[1]));
+    assert_eq!(attached[0].depth(), 5);
+    // Source binding remains exact and retains the whole loaded project.
+    assert!(
+        attached[0]
+            .identity()
+            .sources
+            .iter()
+            .any(|(name, text)| name == "unrelated" && text == &comments)
+    );
+    probability(
+        &run_closed(&program, SimulationLimits::default()).unwrap(),
+        &[false],
+        1.0,
+    );
 }
 
 const BUDGETED_FUNCTIONS: &str = "

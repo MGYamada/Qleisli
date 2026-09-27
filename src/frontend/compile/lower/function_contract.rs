@@ -34,48 +34,16 @@ impl Lowerer<'_, '_> {
         let implementation_key = self.contract_function(module, implementation, &basis, env)?;
         let specification_key = self.contract_function(module, specification, &basis, env)?;
         let cache_key = (implementation_key.clone(), specification_key.clone());
-        let implementation_name = format!("{}::{}", implementation_key.0, implementation_key.1);
-        let specification_name = format!("{}::{}", specification_key.0, specification_key.1);
-        if let Some((_, comparison_work)) = self.compiler.function_evidence.get(&cache_key) {
-            // Charge before comparing source bytes or recursively walking raw
-            // snapshots. Reuse avoids matrix interpretation, not binding work.
-            self.compiler.charge(module, span, *comparison_work)?;
-        }
-        let evidence = if let Some((evidence, _)) = self.compiler.function_evidence.get(&cache_key)
-        {
-            // This cache belongs to one immutable loaded project. Still compare
-            // exact identities and snapshots explicitly at every reuse boundary.
-            let identity = evidence.identity();
-            let sources_match = identity.sources.len() == self.compiler.project.modules.len()
-                && identity
-                    .sources
-                    .iter()
-                    .zip(&self.compiler.project.modules)
-                    .all(|((name, bytes), (loaded_name, loaded))| {
-                        name == loaded_name && bytes == &loaded.source
-                    });
-            if identity.implementation != implementation_name
-                || identity.specification != specification_name
-                || !sources_match
-            {
-                return Err(self.error(
-                    module,
-                    span,
-                    ErrorCode::InvalidIr,
-                    "cached function evidence does not match the current source dependencies",
-                ));
-            }
-            evidence
-                .check_binding(
-                    identity,
-                    self.compiler.checked[&implementation_key].program(),
-                    self.compiler.checked[&specification_key].program(),
-                )
-                .map_err(|error| {
-                    self.error(module, span, ErrorCode::InvalidIr, error.to_string())
-                })?;
+        let evidence = if let Some(evidence) = self.compiler.function_evidence.get(&cache_key) {
+            // Only this compiler populates the cache, using the exact resolved
+            // keys and independently checked raw functions below. The loaded
+            // project and those dependencies cannot change during compilation.
+            // Reuse therefore needs neither a digest nor repeated source/raw
+            // comparisons. External evidence still uses check_binding.
             Arc::clone(evidence)
         } else {
+            let implementation_name = format!("{}::{}", implementation_key.0, implementation_key.1);
+            let specification_name = format!("{}::{}", specification_key.0, specification_key.1);
             let source_size = total_size(
                 self.compiler
                     .project
@@ -89,12 +57,13 @@ impl Lowerer<'_, '_> {
                     .filter_map(|key| self.compiler.checked.get(key))
                     .map(|program| representation_size(program.program())),
             );
-            let comparison_work = source_size
-                .saturating_mul(2)
+            let snapshot_work = source_size
                 .saturating_add(snapshot_size)
                 .saturating_add(implementation_name.len())
                 .saturating_add(specification_name.len());
-            self.compiler.charge(module, span, comparison_work)?;
+            // Charge the snapshots before cloning them, once for each new
+            // implementation/specification pair rather than at every call.
+            self.compiler.charge(module, span, snapshot_work)?;
             let identity = FunctionIdentity {
                 implementation: implementation_name,
                 specification: specification_name,
@@ -124,7 +93,7 @@ impl Lowerer<'_, '_> {
             let specification = raw(&specification_key)?;
             let signature = contract_basis(&basis);
             let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-            let evidence = FunctionEvidence::check(
+            let evidence = FunctionEvidence::check_diagnostic(
                 signature,
                 implementation,
                 specification,
@@ -142,7 +111,7 @@ impl Lowerer<'_, '_> {
             let evidence = Arc::new(evidence);
             self.compiler
                 .function_evidence
-                .insert(cache_key, (Arc::clone(&evidence), comparison_work));
+                .insert(cache_key, Arc::clone(&evidence));
             evidence
         };
         self.apply_circuit(
@@ -215,8 +184,7 @@ fn contract_basis(basis: &Ty) -> BasisType {
     }
 }
 
-// A structural comparison visits vectors and operation fields, but compares
-// opaque evidence dependencies by their issued identity without opening them.
+// Count raw snapshot cloning without opening shared opaque evidence dependencies.
 fn representation_size(program: &RawProgram) -> usize {
     let mut size = program.classical_inputs.len()
         + program.classical_outputs.len()

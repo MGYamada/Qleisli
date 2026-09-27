@@ -112,7 +112,7 @@ pub(super) fn flatten(
         let permutation = (0..1usize << width)
             .map(|label| {
                 axes.iter().enumerate().fold(0u16, |out, (place, axis)| {
-                    out | (((label >> axis) & 1) as u16) << place
+                    out | ((((label >> axis) & 1) as u16) << place)
                 })
             })
             .collect();

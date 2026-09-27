@@ -19,6 +19,10 @@ use crate::ir::{
 /// interpreter. Limits chosen by the caller may be smaller.
 pub const MAX_SIMULATED_QUBITS: usize = 20;
 
+// A diagnostic alarm on the fraction of component probability outside a
+// certified zero auxiliary. This never replaces the exact release certificate.
+const AUXILIARY_LEAKAGE_ALARM: f64 = 1e-12;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct SimulationLimits {
     pub max_qubits: usize,
@@ -236,6 +240,52 @@ impl Component {
 
     fn weight(&self) -> f64 {
         self.amplitudes.iter().map(|z| z.norm_squared()).sum()
+    }
+
+    fn remove_certified_zero(&self, wire: WireId) -> Result<Self, SimulationError> {
+        let axis = self.position(wire)?;
+        let mut scale = 0.0_f64;
+        let mut total_weight = 0.0;
+        for amplitude in &self.amplitudes {
+            scale = scale.max(amplitude.re.abs()).max(amplitude.im.abs());
+            total_weight += amplitude.norm_squared();
+        }
+        // Retain the non-finite-weight alarm, including overflow from finite
+        // amplitudes, which the scaled diagnostic calculation could hide.
+        if !total_weight.is_finite() {
+            return Err(SimulationError::InconsistentVerifiedIr(
+                "non-finite amplitude weight during certified auxiliary cleanup",
+            ));
+        }
+        if scale > 0.0 {
+            // Ensemble components are unnormalized. Scale only this ratio
+            // calculation so squaring tiny amplitudes cannot erase leakage.
+            // Divide directly: even a finite subnormal scale may have an
+            // infinite reciprocal. Stored amplitudes remain untouched.
+            let mut kept_weight = 0.0;
+            let mut leaked_weight = 0.0;
+            for (index, amplitude) in self.amplitudes.iter().enumerate() {
+                let weight = Complex {
+                    re: amplitude.re / scale,
+                    im: amplitude.im / scale,
+                }
+                .norm_squared();
+                if bit(index, axis) {
+                    leaked_weight += weight;
+                } else {
+                    kept_weight += weight;
+                }
+            }
+            if leaked_weight / (kept_weight + leaked_weight) > AUXILIARY_LEAKAGE_ALARM {
+                return Err(SimulationError::InconsistentVerifiedIr(
+                    "certified auxiliary has nonzero numerical leakage",
+                ));
+            }
+        }
+        // Exact raw-IR evidence is the only permission to release. Preserve
+        // the projected amplitudes, including their numerical mass; do not
+        // renormalize the component or turn this alarm into postselection.
+        self.project_remove(wire, false)
     }
 }
 
@@ -493,8 +543,9 @@ fn run_circuit_precharged(component: &mut Component, axes: &[usize], steps: &[Ci
                 evidence,
                 adjoint,
             } => {
-                // Execute the checked physical lowering; retain every outer
-                // control and remap the function's ordered interface axes.
+                // Execute the checked extracted circuit, which may contain
+                // proved cleanup substitutions. Retain every outer control
+                // and remap the function's ordered interface axes.
                 let mut body = evidence.circuit().steps().to_vec();
                 if *adjoint {
                     crate::contract::invert_steps(&mut body);
@@ -642,10 +693,7 @@ fn execute_op(
             axes.push(aux_axis);
             run_circuit(&mut component, &axes, use_steps, budget)?;
             compute(&mut component);
-            // Exact raw-IR evidence already proves the omitted rows are zero.
-            // No numerical tolerance, renormalization, or observed postselection
-            // is used as permission to release this auxiliary.
-            component = component.project_remove(auxiliary, false)?;
+            component = component.remove_certified_zero(auxiliary)?;
             component.tokens.insert(*source_out, wires);
         }
         RawOp::ApplyUnitary {
@@ -1005,3 +1053,6 @@ pub fn run_closed(
     }
     Ok(probabilities)
 }
+
+#[cfg(test)]
+mod tests;

@@ -145,6 +145,7 @@ impl Lowerer<'_, '_> {
             compiler: self.compiler,
             registers: BTreeMap::new(),
             operations: vec![],
+            operation_sources: BTreeMap::new(),
             next_token: 0,
             next_wire: 0,
             next_classical: 0,
@@ -204,9 +205,13 @@ impl Lowerer<'_, '_> {
             declared_effect: Effect::Unitary,
         };
         let checked = crate::verify(raw).map_err(|err| {
-            inner
-                .compiler
-                .error(module, body.span, ErrorCode::InvalidIr, err.to_string())
+            verification_error(
+                inner.compiler,
+                &inner.operation_sources,
+                module,
+                body.span,
+                err,
+            )
         })?;
         super::super::circuit::flatten(inner.compiler, module, body.span, &checked)
     }

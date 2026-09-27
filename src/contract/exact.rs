@@ -110,9 +110,10 @@ impl Dyadic {
         let denominator_bits = self.denominator_bits.max(rhs.denominator_bits);
         let scale = |value: Self| {
             let shift = denominator_bits - value.denominator_bits;
-            // checked_shl alone checks the shift count, not discarded bits.
-            let factor = 1_i128
-                .checked_shl(shift)
+            // Reject an unrepresentable positive power, including 2^127;
+            // checked_shl only checks the shift count and can change the sign.
+            let factor = 2_i128
+                .checked_pow(shift)
                 .ok_or(ExactError::ArithmeticCapacity)?;
             value
                 .numerator
@@ -273,6 +274,45 @@ impl Exact {
         coefficients[2] = coefficients[2].neg()?;
         coefficients[3] = coefficients[3].neg()?;
         Ok(Self { coefficients })
+    }
+
+    pub(super) fn diagnostic(self) -> String {
+        let mut terms = Vec::new();
+        for (coefficient, basis) in self
+            .coefficients
+            .iter()
+            .zip(["", "sqrt(2)", "i", "i*sqrt(2)"])
+        {
+            if coefficient.numerator == 0 {
+                continue;
+            }
+            let mut term = coefficient.numerator.to_string();
+            if coefficient.denominator_bits != 0 {
+                term = format!("({term}/2^{})", coefficient.denominator_bits);
+            }
+            if !basis.is_empty() {
+                term.push('*');
+                term.push_str(basis);
+            }
+            terms.push(term);
+        }
+        if terms.is_empty() {
+            "0".to_owned()
+        } else {
+            terms.join(" + ")
+        }
+    }
+
+    // Numerical comparisons in tests never authorize a semantic certificate.
+    #[cfg(test)]
+    pub(crate) fn components_f64(self) -> (f64, f64) {
+        let [a, b, c, d] = self.coefficients.map(|coefficient| {
+            coefficient.numerator as f64 / 2_f64.powi(coefficient.denominator_bits as i32)
+        });
+        (
+            a + b * std::f64::consts::SQRT_2,
+            c + d * std::f64::consts::SQRT_2,
+        )
     }
 }
 
@@ -495,6 +535,39 @@ mod tests {
         );
         assert_eq!(
             Exact::integer(i128::MAX).mul(Exact::integer(2)),
+            Err(ExactError::ArithmeticCapacity)
+        );
+    }
+
+    #[test]
+    fn denominator_alignment_preserves_sign_at_capacity() {
+        let tiny = Exact::new([1, 0, 0, 0], 126).unwrap();
+        assert_eq!(
+            Exact::one().add(tiny).unwrap(),
+            Exact::new([(1_i128 << 126) + 1, 0, 0, 0], 126).unwrap()
+        );
+        assert_eq!(
+            Exact::integer(-2).add(tiny).unwrap(),
+            Exact::new([i128::MIN + 1, 0, 0, 0], 126).unwrap()
+        );
+        assert_eq!(
+            Exact::integer(2).add(tiny),
+            Err(ExactError::ArithmeticCapacity)
+        );
+        assert_eq!(Exact::new([2, 0, 0, 0], 127).unwrap(), tiny);
+        assert_eq!(
+            Exact::new([1, 0, 0, 0], 127),
+            Err(ExactError::ArithmeticCapacity)
+        );
+
+        // Even if a future profile admits this exponent, scaling by 2^127
+        // must reject rather than silently multiply by the negative i128::MIN.
+        let beyond_profile = Dyadic {
+            numerator: 1,
+            denominator_bits: 127,
+        };
+        assert_eq!(
+            Dyadic::integer(1).add(beyond_profile),
             Err(ExactError::ArithmeticCapacity)
         );
     }

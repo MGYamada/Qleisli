@@ -14,7 +14,7 @@ acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
 these **release milestones v0.1/v1** are different labels. The existing Rust
-package version `0.1.0` and the standard-library ledger's “format v1” do not
+package version `0.1.1` and the standard-library ledger's “format v1” do not
 establish completion of either release milestone. Release claims require the
 evidence below, not a manifest version or successful fixed-size example.
 
@@ -25,6 +25,12 @@ versions, release validation, and immutable Git tags. The
 record its contents and validation scope. The Git tag and GitHub release
 identify the released commit and publication state; registry publication is
 a separate operation.
+
+The current product version is **0.1.1**, selected for
+compatible maintenance after the v0.1.0 review. The
+[0.1.1 release notes and roadmap](releases/v0.1.1.md) define its scope,
+existing evidence, and remaining release gates. Selecting this patch version
+does not complete v1 or authorize v0.2.0 feature implementation.
 
 ## Project north star
 
@@ -148,6 +154,49 @@ usable, checked abstraction for these three algorithm families. Any
 approximation used to support larger QFTs or other components has an explicit
 error contract; it does not weaken exact auxiliary-cleanup requirements.
 
+<a id="pre-v020-imaginary-v1-code"></a>
+
+## Prerequisite before v0.2.0: imaginary Qleisli 1.0 code
+
+Status: **adopted by the user on 2026-09-27; initial code corpus pending**.
+
+**Write the ideal algorithm code in an imaginary Qleisli 1.0 first, before
+starting v0.2.0 feature implementation and before releasing v0.2.0.** This
+design prerequisite precedes size/operation generalization and the new
+abstractions or standard APIs intended for that release. Existing finite-core
+maintenance, regression checks, and open proof work can continue.
+
+The initial corpus must include **QPE, Grover, amplitude estimation, Shor,
+quantum walk, and QSVT**. Write each algorithm's intended definition, exposing
+its mathematical stages, composition, and relevant parameters. A list of
+algorithm names or calls to undefined whole-algorithm functions does not
+satisfy this prerequisite. The code may use proposed syntax and APIs and
+**need not compile yet**; label it explicitly as imaginary Qleisli 1.0 design
+code, separate from executable examples and normative source syntax.
+
+For each draft, record its intended input/output and meaning, required
+capabilities, ownership/effects, phase and cleanup obligations, and any
+accuracy, success/failure, or classical-processing assumptions. Mark unresolved
+contracts explicitly. Link the drafts from a corpus index and identify the
+missing language forms, sealed operations, ordinary definitions, evidence
+rules, and source-to-IR support needed to make the code meaningful; record
+unresolved classifications as such. These initial drafts and their requirement
+records establish the prerequisite, without requiring implementation or proof
+of all proposed operations.
+
+Use the corpus with AI to work through those requirements one by one. Revise
+both the imaginary code and the design when semantic analysis or counterexamples
+expose a problem; the drafts do not freeze the 1.0 grammar or public APIs.
+Keep draft, specification, implementation, validation, and proof status separate.
+AI-generated code and evidence follow the same independent checking boundary.
+
+This prerequisite does not expand the executable v1 acceptance target beyond
+V1-C1–C5 for Shor, QPE, and Grover. The broader drafts test the proposed
+abstractions; their existence does not establish executable support or v1
+completion. Record corpus completion with artifact links in the conformance
+ledger before advancing to v0.2.0 implementation or release. Adoption of this
+policy alone does not complete the prerequisite or change the product version.
+
 ## Work order and design decisions
 
 1. Continue the finite-core source/IR and ownership-state work needed to
@@ -155,10 +204,13 @@ error contract; it does not weaken exact auxiliary-cleanup requirements.
 2. Complete V01-C1–C6 as one finite implementation path: specification,
    independent checker, source/IR evidence, positive and negative examples,
    and exchangeable phase-oracle implementations. Publish the v0.1 evidence.
-3. Generalize the checked interfaces with size and operation parameters,
+3. Complete the [imaginary Qleisli 1.0 code prerequisite](#pre-v020-imaginary-v1-code)
+   before v0.2.0 feature implementation. Derive the required abstractions and
+   contracts from the initial algorithm drafts.
+4. Generalize the checked interfaces with size and operation parameters,
    access capabilities, and the instrument/error contracts required by the
    three v1 algorithms.
-4. Implement reusable Grover and QPE structures and use QPE in Shor's complete
+5. Implement reusable Grover and QPE structures and use QPE in Shor's complete
    quantum/classical workflow. Evaluate V1-C1–C5 on real source and evidence.
 
 For each proposed abstraction, ask which algorithm stage it makes readable,

@@ -23,6 +23,24 @@ struct CallSite<'a> {
     args: &'a [Expr],
 }
 
+// Diagnostic metadata only: acceptance still depends solely on raw IR.
+// Keys use the independent verifier's operation/branch-index path convention.
+type OperationSources = BTreeMap<Vec<usize>, (String, Span)>;
+
+fn verification_error(
+    compiler: &Compiler<'_>,
+    sources: &OperationSources,
+    module: &str,
+    span: Span,
+    failure: crate::ValidationError,
+) -> CompileError {
+    let (module, span) = (1..=failure.path.len())
+        .rev()
+        .find_map(|length| sources.get(&failure.path[..length]))
+        .map_or((module, span), |(module, span)| (module.as_str(), *span));
+    compiler.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+}
+
 // The register store includes quantum values held by pending arguments and
 // suspended callers, not just bindings visible in the current lexical Env.
 // Branches snapshot registers/effects, but never rewind the fresh ID supply.
@@ -31,6 +49,7 @@ struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
     registers: BTreeMap<Slot, Register>,
     operations: Vec<RawOp>,
+    operation_sources: OperationSources,
     next_token: u32,
     next_wire: u32,
     next_classical: u32,
@@ -339,9 +358,17 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.depth += 1;
+        let first_operation = self.operations.len();
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
+        // Nested expressions/callees already supplied more precise positions.
+        // Fill only the operations emitted directly by this expression.
+        for index in first_operation..self.operations.len() {
+            self.operation_sources
+                .entry(vec![index])
+                .or_insert_with(|| (module.to_owned(), expr.span));
+        }
         // Values entering an environment are bounded before they can be reused.
         // Constructors combine only previously checked children, so even an
         // over-limit temporary adds at most one layer before being rejected.
@@ -687,6 +714,7 @@ impl Lowerer<'_, '_> {
             compiler: self.compiler,
             registers: BTreeMap::new(),
             operations: vec![],
+            operation_sources: BTreeMap::new(),
             next_token: 0,
             next_wire: 0,
             next_classical: 0,
@@ -713,9 +741,13 @@ impl Lowerer<'_, '_> {
             declared_effect: Effect::Unitary,
         };
         let checked = crate::verify(raw).map_err(|err| {
-            inner
-                .compiler
-                .error(module, name.span, ErrorCode::InvalidIr, err.to_string())
+            verification_error(
+                inner.compiler,
+                &inner.operation_sources,
+                module,
+                name.span,
+                err,
+            )
         })?;
         super::circuit::flatten(inner.compiler, module, name.span, &checked)
     }
@@ -896,6 +928,9 @@ impl Lowerer<'_, '_> {
             }
         }
         self.operations.truncate(start);
+        // The temporary gates become one protected operation below; their old
+        // operation paths must not label this operation or a later expression.
+        self.operation_sources.split_off(&vec![start]);
         let ancilla = self
             .registers
             .remove(&ancilla_slot)
@@ -936,6 +971,7 @@ pub(super) fn lower_function(
         compiler,
         registers: BTreeMap::new(),
         operations: Vec::new(),
+        operation_sources: BTreeMap::new(),
         next_token: 0,
         next_wire: 0,
         next_classical: 0,
@@ -990,8 +1026,12 @@ pub(super) fn lower_function(
         declared_effect: effect(decl.kind),
     };
     crate::verify(raw).map_err(|failure| {
-        lower
-            .compiler
-            .error(&key.0, decl.span, ErrorCode::InvalidIr, failure.to_string())
+        verification_error(
+            lower.compiler,
+            &lower.operation_sources,
+            &key.0,
+            decl.span,
+            failure,
+        )
     })
 }

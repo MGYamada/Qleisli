@@ -54,6 +54,11 @@ fn pow_mod(mut base: u64, mut exponent: u64, modulus: u64) -> u64 {
 
 /// Try to extract a factor from one QPE outcome, interpreted as outcome/2^m.
 ///
+/// `outcome` is an integer, not a displayed bit string. For a low-bit-first
+/// phase register, bit i contributes `u32::from(bit) << i`; for example the
+/// displayed phase bits `100` represent outcome 1, hence phase 1/8 at m=3.
+/// The caller selects the phase-register bits from its classical output tuple.
+///
 /// Uses only continued-fraction convergents with a nonzero numerator and
 /// denominator r < n. An even r must pass a^r mod n = 1 before gcd extraction.
 /// Returns `None` when this sample supplies no usable candidate (retry with a

@@ -8,7 +8,10 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
-The current baseline is **0.1.0**. [Cargo.toml](../Cargo.toml)'s
+The current baseline is **0.1.1**. The
+[0.1.1 release notes](releases/v0.1.1.md) record the patch scope and
+release checks; version selection does not establish publication.
+[Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
 version in [lean/lakefile.toml](../lean/lakefile.toml) synchronized. Compiler,
 bundled standard library, examples, and proof development currently share
@@ -46,6 +49,13 @@ For Rust API classification, also consult
 For example, adding a variant to an exhaustive public enum or a required
 field to a publicly constructible struct can break callers.
 
+Before starting `0.2.0` feature implementation or releasing `0.2.0` (including
+its prereleases), complete the
+[imaginary Qleisli 1.0 code prerequisite](release-milestones.md#pre-v020-imaginary-v1-code).
+The initial algorithm drafts may be noncompiling; their existence and recorded
+semantic requirements must precede the implementation they guide. Adopting
+this policy does not itself complete the prerequisite or bump the version.
+
 `1.0.0` requires the [V1-C1–C5 acceptance evidence](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure)
 and a documented stable public contract. The current fixed-size examples,
 elapsed development time, or completion of a 0.x feature do not establish
@@ -77,6 +87,9 @@ new restriction on previously valid programs, a different promised operator,
 or an incompatible public Rust API change to be hidden in a patch.
 
 ## Release records and validation
+
+For `0.2.0` and its prereleases, first verify that the conformance ledger links
+the completed initial imaginary-code corpus and its requirement records.
 
 For each release or prerelease:
 

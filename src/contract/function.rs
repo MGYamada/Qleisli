@@ -10,7 +10,10 @@ use std::fmt;
 use std::sync::Arc;
 
 use super::exact::{Budget, Matrix};
-use super::{BasisType, Circuit, ContractError, MAX_CONTRACT_BITS, MAX_CONTRACT_STEPS};
+use super::{
+    BasisType, Circuit, ContractDiagnostic, ContractError, MAX_CONTRACT_BITS, MAX_CONTRACT_STEPS,
+    check_equation,
+};
 use crate::ir::*;
 
 pub const MAX_FUNCTION_DEPTH: usize = 32;
@@ -76,6 +79,17 @@ impl FunctionEvidence {
         identity: FunctionIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
+        Self::check_diagnostic(signature, implementation, specification, identity, budget)
+            .map_err(|diagnostic| diagnostic.error)
+    }
+
+    pub(crate) fn check_diagnostic(
+        signature: BasisType,
+        implementation: RawProgram,
+        specification: RawProgram,
+        identity: FunctionIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
         let bits = signature.bits()?;
         validate_identity(&identity, budget)?;
         let implementation_depth = preflight(&implementation, bits, budget)?;
@@ -95,9 +109,7 @@ impl FunctionEvidence {
         let expanded_steps = expanded_steps(&circuit)?;
         let actual = circuit.matrix(budget)?;
         let meaning = specified.matrix(budget)?;
-        if actual != meaning {
-            return Err(ContractError::EquationMismatch);
-        }
+        check_equation(&actual, &meaning)?;
         Ok(Self {
             signature,
             implementation,
@@ -400,7 +412,7 @@ fn extract(
         let permutation = (0..dimension)
             .map(|label| {
                 axes.iter().enumerate().fold(0u16, |out, (place, axis)| {
-                    out | (((label >> axis) & 1) as u16) << place
+                    out | ((((label >> axis) & 1) as u16) << place)
                 })
             })
             .collect();
