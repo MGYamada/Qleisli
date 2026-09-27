@@ -403,5 +403,8 @@ general source-to-IR meaning preservation remain
 passed through signatures or evidence belong to later specifications;
 the two-argument `with_computed` continues to use its restricted structural
 certificate. The three-argument extension has the separately specified
-[SC evidence rules](semantic-contracts-v0.1.md); it does not complete the
-general implementation proofs or the v0.1 release gate.
+[SC evidence rules](semantic-contracts-v0.1.md). Together with the
+[retained function-contract path](function-contracts-v0.1.md), it meets the
+declared finite V01-C1–C6 profile. General implementation proofs and the v1
+algorithm-structure target remain open. The [language evolution framework](language-evolution.md)
+organizes future design notation without adding forms to this grammar.

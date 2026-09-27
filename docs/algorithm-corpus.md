@@ -1,34 +1,49 @@
-# アルゴリズム構造の初期コーパス
+<a id="アルゴリズム構造の初期コーパス"></a>
 
-状態: **20項目の初期整理**（2026-09-26）。[第2開発目標](algorithm-structure-goal.md)の抽出資料。派生アルゴリズム・基盤・プロトコルを含むため、20個の独立した高速化原理という数え方はしない。下表の分解とQleisliへの対応は一次資料を踏まえた設計上の分析であり、論文からの引用や実装済み保証ではない。S1〜S8は目標文書の構造ID。
+# Initial corpus of algorithm structures
 
-| ID・対象・区分 | 入力モデル・目的 | 抽出した構造 | 必要な前提／現行コアとの差 | 一次資料 |
+Status: **initial organization of 20 entries** (2026-09-26). This corpus
+supplies extraction material for the [second development goal](algorithm-structure-goal.md).
+It includes derived algorithms, foundations, and protocols; the count does
+not mean 20 independent speedup principles. The decompositions and Qleisli
+mappings below are design analysis informed by primary sources, not quotations
+from those papers or implemented guarantees. S1–S8 are the structure IDs in
+the goal document. This English edition supersedes the earlier Japanese
+corpus without changing its assumptions or implementation-status claims.
+
+| ID, subject, and category | Input model and purpose | Extracted structure | Required premises / difference from the current core | Primary sources |
 | --- | --- | --- | --- | --- |
-| C01 Deutsch–Jozsa（位相版）／アルゴリズム | 定数または均衡という約束を持つBooleanオラクルを識別。 | S1・S2: Hadamard→位相付け→Hadamard→測定。 | 定数・均衡の約束は型だけでは得られない。有限関数なら現行の`with_computed`で構成可能。 | [Cleveほか、§3](https://arxiv.org/abs/quant-ph/9708016) |
-| C02 Bernstein–Vazirani／アルゴリズム | `f(x)=s·x mod 2`へのアクセスから隠れたビット列を求める。 | S1・S2: Fourierサンプリングと位相オラクル。 | 線形関数という約束、ビット順序。2ビット版を実装・全隠れ列で検査済み。 | [Bernstein–Vazirani、Quantum complexity theory](https://people.eecs.berkeley.edu/~vazirani/pubs/bv.pdf) |
-| C03 Simon／アルゴリズム | `f(x)=f(x xor s)`の2対1構造から周期を求める。 | S1・S2・S6: 可逆評価→部分測定→Hadamard→線形方程式を収集。 | 衝突の約束、複数出力オラクル、GF(2)での古典後処理。現行の1ビット補助オラクルだけでは一般形を表せない。 | [Simon](https://doi.org/10.1137/S0097539796298637) |
-| C04 Shorの因数分解／アルゴリズム | 整数と選んだ互いに素な底から位数を調べ、古典的に因数候補を検証。 | S2・S4: 可逆剰余算術、位数推定、Fourier変換。 | 算術回路・制御付き冪・連分数・再試行。N=15・底2の有限例と連分数による候補検査を[実装・検査](arithmetic-order-finding.md)。一般サイズの効率的算術、精度選択、自動再試行は未実装。 | [Shor](https://arxiv.org/abs/quant-ph/9508027)、[位相推定としての再定式化 §6](https://arxiv.org/abs/quant-ph/9708016) |
-| C05 QPE／基盤アルゴリズム | 位相を保持したユニタリと固有状態、またはその重ね合わせから固有位相を推定。 | S1・S4・S5: 準備、制御付き`2^k`乗、逆QFT、測定。 | 一般入力では固有成分に応じた分布。制御可能な実装、精度、ビット順序が必要。同型の静的制御とπ/4単位の位相、2・3ビット例を実装。一般の角度・サイズ指定は未実装。 | [Cleveほか、§5](https://arxiv.org/abs/quant-ph/9708016) |
-| C06 Grover／アルゴリズム | 有限集合のmarked predicateから対象を探索。 | S1・S3・S5: 一様準備、オラクル、反射、反復。 | 対象数に応じた反復回数。2ビット・一対象では1反復で成功確率1。有限例を実装・検査済み。 | [Grover](https://arxiv.org/abs/quant-ph/9605043) |
-| C07 振幅増幅／一般化 | 準備ユニタリ`A`とgood predicateの成功振幅を増幅。 | S1・S3・S5: `A`、`A†`、二つの反射、反復。 | `A`の逆と位相、初期成功確率。任意の状態準備`Iso`をそのまま反転できない。一般形は未実装。 | [Brassardほか](https://arxiv.org/abs/quant-ph/0005055) |
-| C08 振幅推定（QPE版）／一般化 | 準備手順のgood確率を推定。 | S3・S4: 振幅増幅演算子の位相推定。 | 制御付き増幅演算子、確率への変換、精度と失敗率。未実装。 | [Brassardほか](https://arxiv.org/abs/quant-ph/0005055) |
-| C09 量子計数／派生アルゴリズム | 有限集合内のmarked要素数を推定。 | S3・S4: Grover演算子の位相から対象数へ変換。 | 探索空間サイズ、対象数の推定誤差。C08と構造を共有。未実装。 | [Brassard–Høyer–Tapp](https://arxiv.org/abs/quant-ph/9805082) |
-| C10 Szegedy型ウォーク／基盤 | 遷移確率へコヒーレントにアクセスし、marked集合を検出。 | S1・S3・S5: 遷移の準備、部分空間反射の積、反復・位相解析。 | 遷移アクセス、定常分布・スペクトルギャップなどの約束。任意の古典乱歩を無料で量子化できない。未実装。 | [Szegedy](https://arxiv.org/abs/quant-ph/0401053) |
-| C11 HHL／アルゴリズム | 条件を満たす行列と状態`\|b⟩`から解に関連する状態・観測量を得る。 | S1・S2・S4・S6: Hamiltonian時間発展、QPE、制御回転、逆計算、測定。 | 疎性・条件数・入力準備・成功フラグ。全成分の古典出力を高速に得る契約ではない。未実装。 | [Harrow–Hassidim–Lloyd](https://arxiv.org/abs/0811.3171) |
-| C12 積公式による時間発展／手法 | 局所項へ分解したHamiltonianの時間発展を近似。 | S4・S5: 各項の指数演算、順序付き反復。 | 非可換項に由来する誤差、時間・分割数。回転角と誤差予算が未実装。 | [Childsほか、A Theory of Trotter Error](https://arxiv.org/abs/1912.08854) |
-| C13 LCU/Taylor時間発展／手法 | ユニタリの線形結合へアクセスして時間発展を近似。 | S1・S2・S3・S8: PREPARE、SELECT、逆準備、増幅。 | 係数の正規化、成功部分空間、近似誤差。任意の線形結合を純粋な`bind`にしない。未実装。 | [Berryほか](https://arxiv.org/abs/1412.4687) |
-| C14 Qubitization／基盤 | 指定されたユニタリのブロックにHamiltonianを符号化。 | S1・S3・S8: 準備・制御・反射から不変部分空間を作る。 | 正規化と符号化の等式、補助系、制御オラクル。証拠形式が未設計。 | [Low–Chuang](https://arxiv.org/abs/1610.06546) |
-| C15 QSVT／基盤 | ブロック符号化された行列の特異値に多項式変換を施す。 | S4・S5・S8: `U/U†`、射影に関する位相、交互の層。 | 多項式の有界性・次数・パリティ・近似誤差。一般の行列を直接ユニタリとみなさない。未実装。 | [Gilyénほか](https://arxiv.org/abs/1806.01838) |
-| C16 VQE／ハイブリッドアルゴリズム | AnsatzとHamiltonianからエネルギーを推定し、古典的にパラメータを更新。 | S1・S5・S6: パラメータ付き準備、観測量測定、統計集計、最適化。 | Ansatz表現力・測定誤差・収束条件。測定部品のみ現行コアで表現可能。一般の角度・ホスト最適化は未実装。 | [Peruzzoほか](https://arxiv.org/abs/1304.3061) |
-| C17 QAOA／ハイブリッドアルゴリズム | コスト関数とmixerから有限層を構成し、候補をサンプル。 | S1・S5・S6: コスト位相とmixerの交互適用、測定、古典最適化。 | 層数・角度・問題ごとの性能。VQEとホスト反復を共有するが、同じ成功保証ではない。未実装。 | [Farhi–Goldstone–Gutmann](https://arxiv.org/abs/1411.4028) |
-| C18 古典シャドウ／測定推定手法 | 同じ準備手順から新しく得た状態をランダムな基底で測定し、複数の性質を推定。 | S1・S6: 測定計画、破壊的測定、古典推定。 | 測定ensemble、対象観測量、shadow normと誤差。未知状態のコピーは要求できない。未実装。 | [Huang–Kueng–Preskill](https://arxiv.org/abs/2002.08953) |
-| C19 安定化子QEC／プロトコル族 | 符号空間にあるデータから可換な検査量のシンドロームを得て回復。 | S2・S6・S7: パリティ抽出、補助測定、decoder、条件付き補正。 | 符号空間・訂正可能な誤り集合・測定回路の誤り。初回は理想操作下の3ビット符号と高々1箇所のX誤りに限定。 | [Gottesman、Stabilizer Codes and Quantum Error Correction](https://arxiv.org/abs/quant-ph/9705052) |
-| C20 テレポーテーション／通信プロトコル | 未知入力、共有Bell対、二つの古典結果から別資源へ状態を移す。 | S1・S6・S7: エンタングルメント準備、Bell測定、古典補正。 | 測定済み入力は消費、出力は別所有権。参照系との相関保存が検証対象。現行部品で構成可能だが今回の実装対象外。 | [Bennettほか](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.70.1895) |
+| C01 Deutsch–Jozsa (phase version); algorithm | Distinguish a Boolean oracle promised to be constant or balanced. | S1, S2: Hadamard → phase marking → Hadamard → measurement. | Types alone do not establish the constant/balanced promise. Finite functions can be constructed with the current `with_computed`. | [Cleve et al., §3](https://arxiv.org/abs/quant-ph/9708016) |
+| C02 Bernstein–Vazirani; algorithm | Recover a hidden bit string from access to `f(x)=s·x mod 2`. | S1, S2: Fourier sampling and a phase oracle. | Linear-function promise and bit order. The two-bit version is implemented and checked for every hidden string. | [Bernstein–Vazirani, Quantum complexity theory](https://people.eecs.berkeley.edu/~vazirani/pubs/bv.pdf) |
+| C03 Simon; algorithm | Recover a period from the two-to-one structure `f(x)=f(x xor s)`. | S1, S2, S6: reversible evaluation → partial measurement → Hadamard → collect linear equations. | Collision promise, multi-output oracle, and classical GF(2) postprocessing. The current one-bit auxiliary oracle alone cannot express the general form. | [Simon](https://doi.org/10.1137/S0097539796298637) |
+| C04 Shor factorization; algorithm | Find an order from an integer and a selected coprime base, then validate factor candidates classically. | S2, S4: reversible modular arithmetic, order finding, Fourier transform. | Arithmetic circuits, controlled powers, continued fractions, and retries. The finite N=15, base-2 example and continued-fraction candidate checking are [implemented and checked](arithmetic-order-finding.md). Efficient general-size arithmetic, precision selection, and automatic retries are unimplemented. | [Shor](https://arxiv.org/abs/quant-ph/9508027), [phase-estimation reformulation, §6](https://arxiv.org/abs/quant-ph/9708016) |
+| C05 QPE; foundational algorithm | Estimate eigenphases using a phase-preserving unitary and an eigenstate or superposition of eigenstates. | S1, S4, S5: preparation, controlled `2^k` powers, inverse QFT, measurement. | General inputs produce a distribution according to their eigencomponents. Controllable implementation, precision, and bit order are required. Same-type static control, phases in units of π/4, and two-/three-bit examples are implemented. General angles and size parameters are unimplemented. | [Cleve et al., §5](https://arxiv.org/abs/quant-ph/9708016) |
+| C06 Grover; algorithm | Search a finite set using a marked predicate. | S1, S3, S5: uniform preparation, oracle, reflection, repetition. | Iteration count depends on the number of marked items. With two bits and one marked item, one iteration succeeds with probability one. Finite examples are implemented and checked. | [Grover](https://arxiv.org/abs/quant-ph/9605043) |
+| C07 Amplitude amplification; generalization | Amplify the success amplitude of a preparation unitary `A` and a good predicate. | S1, S3, S5: `A`, `A†`, two reflections, repetition. | Inverse and phase of `A`, and initial success probability. An arbitrary state-preparation `Iso` cannot simply be inverted. The general form is unimplemented. | [Brassard et al.](https://arxiv.org/abs/quant-ph/0005055) |
+| C08 Amplitude estimation (QPE version); generalization | Estimate a preparation procedure's good-outcome probability. | S3, S4: phase estimation of the amplitude-amplification operator. | Controlled amplification operator, conversion to probability, precision, and failure probability. Unimplemented. | [Brassard et al.](https://arxiv.org/abs/quant-ph/0005055) |
+| C09 Quantum counting; derived algorithm | Estimate the number of marked items in a finite set. | S3, S4: convert a Grover-operator phase to a marked count. | Search-space size and error in the estimated count. Shares structure with C08. Unimplemented. | [Brassard–Høyer–Tapp](https://arxiv.org/abs/quant-ph/9805082) |
+| C10 Szegedy walk; foundation | Coherently access transition probabilities and detect a marked set. | S1, S3, S5: transition preparation, product of subspace reflections, repetition/phase analysis. | Transition access and promises such as stationary distribution and spectral gap. An arbitrary classical random walk cannot be quantized for free. Unimplemented. | [Szegedy](https://arxiv.org/abs/quant-ph/0401053) |
+| C11 HHL; algorithm | Obtain a solution-related state or observable from a matrix satisfying the required conditions and a state `\|b⟩`. | S1, S2, S4, S6: Hamiltonian evolution, QPE, controlled rotation, uncomputation, measurement. | Sparsity, condition number, input preparation, and a success flag. This is not a contract for efficiently outputting all components classically. Unimplemented. | [Harrow–Hassidim–Lloyd](https://arxiv.org/abs/0811.3171) |
+| C12 Product-formula time evolution; method | Approximate evolution under a Hamiltonian decomposed into local terms. | S4, S5: exponentials of individual terms and ordered repetition. | Error from noncommuting terms, time, and subdivision count. Rotation angles and error budgets are unimplemented. | [Childs et al., A Theory of Trotter Error](https://arxiv.org/abs/1912.08854) |
+| C13 LCU/Taylor time evolution; method | Approximate evolution using access to a linear combination of unitaries. | S1, S2, S3, S8: PREPARE, SELECT, inverse preparation, amplification. | Coefficient normalization, success subspace, and approximation error. Do not turn an arbitrary linear combination into a pure `bind`. Unimplemented. | [Berry et al.](https://arxiv.org/abs/1412.4687) |
+| C14 Qubitization; foundation | Encode a Hamiltonian in a block of a specified unitary. | S1, S3, S8: build invariant subspaces from preparation, control, and reflection. | Normalization and encoding equation, auxiliaries, and controlled oracles. The evidence format is not yet designed. | [Low–Chuang](https://arxiv.org/abs/1610.06546) |
+| C15 QSVT; foundation | Apply a polynomial transformation to the singular values of a block-encoded matrix. | S4, S5, S8: `U/U†`, projector phases, alternating layers. | Polynomial boundedness, degree, parity, and approximation error. Do not treat a general matrix directly as a unitary. Unimplemented. | [Gilyén et al.](https://arxiv.org/abs/1806.01838) |
+| C16 VQE; hybrid algorithm | Estimate energy from an ansatz and Hamiltonian, and update parameters classically. | S1, S5, S6: parameterized preparation, observable measurement, statistical aggregation, optimization. | Ansatz expressiveness, measurement error, and convergence conditions. Only measurement components are expressible in the current core. General angles and host optimization are unimplemented. | [Peruzzo et al.](https://arxiv.org/abs/1304.3061) |
+| C17 QAOA; hybrid algorithm | Build finite layers from a cost function and mixer, then sample candidates. | S1, S5, S6: alternating cost-phase and mixer layers, measurement, classical optimization. | Layer count, angles, and problem-specific performance. Shares host iteration with VQE, but not the same success guarantee. Unimplemented. | [Farhi–Goldstone–Gutmann](https://arxiv.org/abs/1411.4028) |
+| C18 Classical shadows; measurement-estimation method | Measure fresh states from the same preparation procedure in random bases to estimate multiple properties. | S1, S6: measurement plan, destructive measurement, classical estimation. | Measurement ensemble, target observables, shadow norm, and error. Cannot require copies of an unknown state. Unimplemented. | [Huang–Kueng–Preskill](https://arxiv.org/abs/2002.08953) |
+| C19 Stabilizer QEC; protocol family | Extract syndromes of commuting checks from data in a code space and recover. | S2, S6, S7: parity extraction, auxiliary measurement, decoder, conditional correction. | Code space, correctable error set, and errors in the measurement circuit. The initial case is limited to a three-bit code under ideal operations and at most one X error. | [Gottesman, Stabilizer Codes and Quantum Error Correction](https://arxiv.org/abs/quant-ph/9705052) |
+| C20 Teleportation; communication protocol | Transfer an unknown input state to another resource using a shared Bell pair and two classical outcomes. | S1, S6, S7: entanglement preparation, Bell measurement, classical correction. | Measured input is consumed; output has distinct ownership. Preservation of reference correlations is a verification target. Constructible from current components but outside this implementation scope. | [Bennett et al.](https://journals.aps.org/prl/abstract/10.1103/PhysRevLett.70.1895) |
 
-## 次の抽出課題
+<a id="次の抽出課題"></a>
 
-- S3の反射が探索・推定・ウォークで共有できるよう、符号と制御可能性を公開契約に含める。
-- S4・S5をQPEで具体化し、そのままC04・C08・C09へ再利用できるか検査する。
-- S6の一回のインストルメントと、ホスト上の統計推定・最適化を別のインターフェースにする。
-- S2のゼロ復帰、C19の符号空間、S8の射影ブロックを、それぞれ異なる証拠として管理する。
-- 各行の有限実装、拒否テスト、計算量モデル、一般証明へのリンクを追加する。未実装の行を「対応済み」と数えない。
+## Next extraction tasks
+
+- Include signs and control capability in public S3 reflection contracts so
+  that search, estimation, and walks can share them.
+- Instantiate S4/S5 in QPE and check reuse in C04, C08, and C09.
+- Give the single-trial instrument of S6 a separate interface from host
+  statistical estimation and optimization.
+- Manage S2 zero return, C19 code spaces, and S8 projected blocks as distinct
+  forms of evidence.
+- Add links for each row's finite implementation, rejection tests, complexity
+  model, and general proofs. Do not count unimplemented rows as supported.

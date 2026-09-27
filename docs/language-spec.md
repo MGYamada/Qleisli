@@ -12,9 +12,11 @@ v0 is a nonrecursive language with basis types `Unit`, `Bit`, and finite product
 
 Specification v0 is distinct from the [adopted release milestones v0.1 and
 v1](release-milestones.md). The [finite semantic-contract extension](semantic-contracts-v0.1.md)
-adds the three-argument form in §9 below as a bounded step toward v0.1.
-The two-argument form retains its structural rule. Full release acceptance
-and the structured algorithm families for v1 remain open.
+adds the three-argument form in §9 below. Together with the
+[function-contract supplement](function-contracts-v0.1.md), it implements and
+checks V01-C1–C6 within the declared finite profile. The two-argument form
+retains its structural rule. General implementation soundness and the
+structured algorithm families required for v1 remain open.
 
 `Q<A>` is an **ownership type** for quantum resources. It is neither a computation effect nor a value type that permits arbitrary quantum states to be copied. Arbitrary `bind` on the free vector space `H(A)=ℂ^A` is not an executable API. The design principle of Kleisli-style composition with classical values, resources, and effects is distinct from a proof of a strict monad structure.
 
@@ -352,4 +354,6 @@ The reference executor numerically approximates the finite ideal semantics. Hard
 
 The scope and acceptance/rejection rules of this edition are fixed as the v0 baseline. A future change to syntax, types, effects, ownership, semantics, or sealed APIs must update the specification, grammar, conformance checks, and IR correspondence together and record its compatibility impact. Adding experimental ordinary library definitions does not by itself add language forms or sealed operations.
 
-The [inference-rule supplement](source-typing-rules.md) and resource calculus cover the baseline and add a separate `CERTIFIED-COMPUTED` rule for this extension. [Ideal soundness Q1–Q3](source-soundness.md) gives the baseline paper proof and an explicit conditional extension case using the [SC local argument](semantic-contracts-v0.1.md). These statements concern mathematical derivations; neither finite tests nor adding this case proves Rust source-checker adequacy or compiler correctness. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition. The next v0.1 work connects reusable function contracts to actual source dependencies and final transformed IR; the general implementation proofs remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
+The [inference-rule supplement](source-typing-rules.md) and resource calculus cover the baseline and add a separate `CERTIFIED-COMPUTED` rule for this extension. [Ideal soundness Q1–Q3](source-soundness.md) gives the baseline paper proof and an explicit conditional extension case using the [SC local argument](semantic-contracts-v0.1.md). These statements concern mathematical derivations; neither finite tests nor adding this case proves Rust source-checker adequacy or compiler correctness. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition. The finite function-contract path now connects reusable contracts to actual source dependencies and final transformed IR; the general implementation proofs remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
+
+The [English language evolution framework](language-evolution.md) organizes future specification records and imaginary-code notation. It adds no accepted syntax. Complete the six-draft pre-0.2.0 design prerequisite before implementing size or operation generalization.

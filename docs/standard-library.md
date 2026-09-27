@@ -255,3 +255,5 @@ name never relaxes resource or quantum conditions.
 Stage 1 specification and proof work take priority over these extensions and
 API generalization. Future decisions must still satisfy the
 [quantum-language requirements](quantum-language-requirements.md).
+
+Future candidates follow the [English language evolution framework](language-evolution.md). They are not adopted APIs. Complete and review the six imaginary algorithm drafts required [before v0.2.0](release-milestones.md#pre-v020-imaginary-v1-code), then select and specify the smallest necessary generalization. Existing finite-core maintenance and Stage 1 proof work may continue in parallel.

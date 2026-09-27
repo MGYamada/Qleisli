@@ -3,7 +3,7 @@
 Status: **project direction adopted by the user on 2026-09-27; v0.1's declared
 finite acceptance profile is implemented and checked; v1 remains unmet**.
 This English document is the authoritative record
-of the project north star and v0.1/v1 release conditions. The Japanese summaries in the
+of the project north star and v0.1/v1 release conditions. The English summaries in the
 [roadmap](../ROADMAP.md) and [algorithm goal](algorithm-structure-goal.md)
 follow it. It adopts the direction evaluated in the
 [semantic-contract review](semantic-contract-proposal-review.md). The first
@@ -14,7 +14,7 @@ acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
 these **release milestones v0.1/v1** are different labels. The existing Rust
-package version `0.1.1` and the standard-library ledger's “format v1” do not
+package version `0.1.2` and the standard-library ledger's “format v1” do not
 establish completion of either release milestone. Release claims require the
 evidence below, not a manifest version or successful fixed-size example.
 
@@ -26,11 +26,17 @@ record its contents and validation scope. The Git tag and GitHub release
 identify the released commit and publication state; registry publication is
 a separate operation.
 
-The current product version is **0.1.1**, selected for
-compatible maintenance after the v0.1.0 review. The
-[0.1.1 release notes and roadmap](releases/v0.1.1.md) define its scope,
-existing evidence, and remaining release gates. Selecting this patch version
-does not complete v1 or authorize v0.2.0 feature implementation.
+The current product version is **0.1.2**, selected for
+compatible documentation/design work after 0.1.1. The
+[0.1.2 release record](releases/v0.1.2.md) covers the six imaginary-v1
+drafts, their requirement index, semantic review, and release validation.
+The [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
+records the tagged commit, CI, and publication.
+The [six initial drafts and requirements](imaginary-v1/README.md), their
+[semantic review](imaginary-v1/review.md), and the English specification
+groundwork are complete as design artifacts. This satisfies the corpus
+prerequisite below; future features still need their own specifications and
+validation. Selecting this patch version does not complete v1.
 
 ## Project north star
 
@@ -158,7 +164,16 @@ error contract; it does not weaken exact auxiliary-cleanup requirements.
 
 ## Prerequisite before v0.2.0: imaginary Qleisli 1.0 code
 
-Status: **adopted by the user on 2026-09-27; initial code corpus pending**.
+Status: **adopted by the user on 2026-09-27; initial code corpus and requirement
+records completed and reviewed on 2026-09-27**. The
+[artifact index](imaginary-v1/README.md), [requirements](imaginary-v1/requirements.md),
+and [review](imaginary-v1/review.md) establish this limited prerequisite.
+All code remains imaginary and uncompiled; future specification, implementation,
+validation, and proof are separate.
+
+The [0.1.2 roadmap](releases/v0.1.2.md) records the corpus and requirement
+records as documentation deliverables. Completion follows the linked artifacts
+and review, not the plan or version number, and does not fix future syntax/APIs.
 
 **Write the ideal algorithm code in an imaginary Qleisli 1.0 first, before
 starting v0.2.0 feature implementation and before releasing v0.2.0.** This

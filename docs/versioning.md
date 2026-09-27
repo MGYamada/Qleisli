@@ -8,9 +8,11 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
-The current baseline is **0.1.1**. The
-[0.1.1 release notes](releases/v0.1.1.md) record the patch scope and
-release checks; version selection does not establish publication.
+The current baseline is **0.1.2**. The
+[0.1.2 release record](releases/v0.1.2.md) describes the documentation/design
+patch and release checks; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
+identifies the tagged commit and publication. Version selection alone does not
+establish publication.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
 version in [lean/lakefile.toml](../lean/lakefile.toml) synchronized. Compiler,

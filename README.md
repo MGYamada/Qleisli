@@ -1,106 +1,127 @@
 # Qleisli
 
-**Current version: 0.1.1** · [0.1.1 release notes](docs/releases/v0.1.1.md) · [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.2** · [Release notes](docs/releases/v0.1.2.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
 
-**v0.1.1は互換修正のリリースです。** Claudeレビューから確認した契約再利用・診断・数値実行・厳密算術の改善と回帰検査を収めます。Rust 1.98.1／1.85.0の全target検査、Lean build／公理監査、代表例と配布候補の再ビルドを確認しました。[ロードマップ](ROADMAP.md#v011-release-roadmap)に検証と公開の条件を、GitHubのリリース記録に実際のコミット・CI・公開状態を記録します。
+**v0.1.2 is a design and documentation maintenance release.** Its [roadmap](ROADMAP.md#v012-release-roadmap) starts with [English language specification groundwork](docs/language-evolution.md), followed by six initial imaginary Qleisli 1.0 algorithm drafts and an index of their semantic contracts, required capabilities, and open questions. The [six drafts and requirements index](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) are complete. [Local candidate validation](docs/releases/v0.1.2.md#local-candidate-validation) is recorded separately from subsequent English documentation consolidation. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) identifies the tagged commit, required CI, verified source archives, and publication status. The finite core and public contracts of v0.1.1 are preserved. Implementation of imaginary syntax belongs to v0.2.0 or later.
 
-Qleisli は、Rust で処理系を構築する純粋関数型量子プログラミング言語です。量子データを複製不能な所有資源とし、プログラムを古典値と量子資源の、効果付きで合成可能な変換として捉えます。
+Qleisli is a purely functional quantum programming language with an implementation in Rust. It treats quantum data as owned resources that cannot be copied, and programs as composable, effectful transformations of classical values and quantum resources.
 
-**現状は設計と処理系の試作段階です。** [有限コア言語仕様v0](docs/language-spec.md)を確定し、実装プロファイルの容量上限内で、名前解決、型・効果・所有権検査、IR 生成、独立した IR 検証、参照実行を接続しました。Bell・位相オラクル・フィードバックに加え、[構造化した小規模Grover・Bernstein–Vazirani・ビット反転訂正](docs/algorithm-routines.md)を実行して期待分布を確認できます。同梱の通常定義は `stdlib/src/basis.qli`、`stdlib/src/routines.qli`、`stdlib/src/transforms.qli`、`stdlib/src/arithmetic.qli` です。[静的な逆・制御・有限反復と小規模QPE](docs/static-operations.md)も実装しました。[対応範囲](docs/frontend-v0.md)には制限があり、処理系全体の健全性証明や外部バックエンドは未完成です。
+**The project is at the design and implementation-prototype stage.** The [finite-core language specification v0](docs/language-spec.md) is specified. Within the implementation profile's capacity limits, name resolution, type/effect/ownership checking, IR generation, independent IR verification, and reference execution are connected. Alongside Bell, phase-oracle, and feedback examples, [small structured Grover, Bernstein–Vazirani, and bit-flip correction examples](docs/algorithm-routines.md) execute with the expected distributions. Bundled ordinary definitions live in `stdlib/src/basis.qli`, `stdlib/src/routines.qli`, `stdlib/src/transforms.qli`, and `stdlib/src/arithmetic.qli`. [Static adjoints, control, finite repetition, and small QPE examples](docs/static-operations.md) are also implemented. The [supported profile](docs/frontend-v0.md) is limited; general implementation soundness proofs and external backends remain unfinished.
 
-## North starとリリース到達条件
+This is the English project overview. The [documentation map](docs/documentation-map.md) identifies authoritative specifications, accepted design principles, proposals, and historical evidence. Translating a design document does not adopt new syntax or strengthen a guarantee.
 
-**north star（2026-09-27採用）:**
+<a id="north-starとリリース到達条件"></a>
 
-> 人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる。
+## North star and release milestones
 
-状態準備、オラクル、反射、位相推定、逆計算などの概念とその組み合わせを、意味を保ったプログラムの語彙にします。**v1ではShor・QPE・Groverが教科書のアルゴリズム構造のまま読めること**を、その具体的な到達条件とします。
+**North star (adopted 2026-09-27):**
 
-[設計メモ「量子の帳尻は言語が引き受ける」](docs/quantum-bookkeeping.md)に、この原理から所有権・補助回収・制御化・位相の検査を結ぶ考えと、QPE→振幅増幅→Shorを言語設計の試金石にする提案をまとめました。
+> Make the language people use to think about quantum algorithms coincide with the language they use to write programs.
 
-その最低基盤として、**v0.1では `U E_in = E_out u` による意味契約を合成・再利用し、実際のIRまで独立検査できること**を必須にします。同じ契約を満たす複数の実装を、利用側を変えずに交換でき、位相・所有権・補助の厳密なゼロ復帰を保持するところまでが到達条件です。
+State preparation, oracles, reflections, phase estimation, uncomputation, and their compositions should become program vocabulary that preserves their meaning. **For v1, Shor, QPE, and Grover must be readable in their textbook algorithmic structure.**
 
-v1では準備、オラクル、反射、制御付き冪、位相推定、位数再構成を、共有する部品とパラメータから構成します。実際にコンパイル・検証・実行できる三つのアルゴリズムで評価し、既存の固定サイズ例や疑似コードだけでは達成としません。[英語の到達条件](docs/release-milestones.md)を正本とし、この節は日本語の要約です。**v0.1の宣言した有限プロファイルは実装・検査を完了し、v1は未達成**です。crateの版番号や処理系全体の証明完了とは区別します。
+The design note [“The language takes responsibility for quantum bookkeeping”](docs/quantum-bookkeeping.md) connects this principle to ownership, auxiliary cleanup, control, and phase checks. It proposes QPE → amplitude amplification → Shor as language-design test cases.
 
-**v0.2.0へ進む前提として、仮想Qleisli 1.0の理想コードを先に書きます。** QPE・Grover・amplitude estimation・Shor・quantum walk・QSVTの構造を、まだコンパイルできなくてもコードで表し、必要な意味契約・能力・未解決事項を洗い出します。初稿をそろえてからv0.2.0向けの一般化・新機能実装とリリースへ進みます。[英語正本の前提条件](docs/release-milestones.md#pre-v020-imaginary-v1-code)を採用済みですが、コード群の作成は未完了です。仮想コードは改訂可能な設計資料であり、v1達成の証拠とは区別します。
+The minimum foundation is that **v0.1 must compose and reuse semantic contracts `U E_in = E_out u` and independently check them through actual IR**. Different implementations of the same contract must be interchangeable without changing their client, while preserving phase, ownership, and exact auxiliary zero return.
+
+For v1, preparation, oracles, reflections, controlled powers, phase estimation, and order reconstruction must be assembled from shared components and parameters. Evaluation uses three algorithms that actually compile, verify, and execute; fixed-size examples or pseudocode alone do not suffice. The [release milestones](docs/release-milestones.md) are authoritative; this section summarizes them. **The declared finite v0.1 profile is implemented and tested; v1 is not achieved.** These milestones are distinct from the crate version and completion of a general compiler proof.
+
+**Before v0.2.0, write ideal code in imaginary Qleisli 1.0.** The prerequisite covers QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT: express their structure in code even before it compiles, and identify semantic contracts, capabilities, and unresolved questions before generalization, new feature implementation, or release. The [six initial drafts, contracts, and requirements index](docs/imaginary-v1/README.md), with their review, satisfy the [prerequisite](docs/release-milestones.md#pre-v020-imaginary-v1-code) of having initial code and requirement records. Concrete new syntax and APIs remain undecided. The imaginary code is revisable design material, not evidence of executable v1 completion.
 
 <a id="現在の優先順位-言語仕様"></a>
 
-## 現在の優先順位: v0.1の言語仕様と意味契約
+<a id="現在の優先順位-v01の言語仕様と意味契約"></a>
 
-[有限意味契約の経路](docs/semantic-contracts-v0.1.md)を実装しました。厳密算術の独立検査器と、論理操作を明示する`with_computed(q,f,u){|d,a| body}`を接続し、位相オラクル・補助H;H・データと補助の同時Xを同じ規則で検査します。[関数境界](docs/function-contracts-v0.1.md)では`apply_contract(実装,仕様,入力)`によって利用側が意味を要求し、検査済み証拠を逆・制御・反復の後も最終IRに保持します。[実装を交換できる実行例](examples/function_contracts/README.md)を同梱しています。達成根拠と残る信頼境界は[適合記録](docs/specification-status.md)に記します。
+## Current priority: the v0.1 language specification and semantic contracts
 
-v0.1の基盤となる**段階1の言語仕様とIR対応**を進めています。[資源規則R1](docs/source-resource-rules.md)、[型・効果・名前・スコープ規則](docs/source-typing-rules.md)、[ソースの局所意味論](docs/source-semantics.md)、[静的変換の証明](docs/static-semantics.md)を整え、[明示した数学的規則系の理想健全性Q1〜Q3](docs/source-soundness.md)を紙上で示しました。純粋操作の等長性／ユニタリ性と、観測・適応合成の完全正性・総和の跡保存を対象とします。
+The [finite semantic-contract path](docs/semantic-contracts-v0.1.md) is implemented. An independent exact-arithmetic checker connects to `with_computed(q,f,u){|d,a| body}`, which states the logical action explicitly. It checks a phase oracle, auxiliary H;H, and simultaneous data/auxiliary X using the same rule. At [function boundaries](docs/function-contracts-v0.1.md), `apply_contract(implementation,specification,input)` lets a client demand meaning and retains checked evidence in final IR after adjoints, control, and repetition. A bundled [implementation-substitution example](examples/function_contracts/README.md) is executable. The [conformance ledger](docs/specification-status.md) records the evidence and remaining trust boundaries.
 
-所有権モデルに加え、Kraus完全性の合成に関する5補題を[Leanで検証](docs/lean-resource-proof.md)しました。Leanは必要な局所補題を支える役割に留めます。[適合状況](docs/specification-status.md)には実装監査と回帰検査を記録しています。数学的規則とRustの全受理経路の対応、ソースからIRへの一般的な意味保存は未証明です。この基盤へv0.1の有限な意味契約・証拠検査を接続し、その後v1へ向けてサイズ付き型・操作パラメータ化・必要なアルゴリズムとstdlibを一般化します。
+Work continues on **Stage 1 language rules and IR correspondence**, the foundation of v0.1. The [resource rules R1](docs/source-resource-rules.md), [type/effect/name/scope rules](docs/source-typing-rules.md), [local source semantics](docs/source-semantics.md), and [static-transformation proofs](docs/static-semantics.md) support the [paper proofs Q1–Q3 for the explicitly stated mathematical rules](docs/source-soundness.md). They concern isometry/unitarity of pure operations and complete positivity with trace preservation after summing outcomes for observation and adaptive composition.
 
-[ソース→IR変換契約C1〜C5](docs/source-ir-correspondence.md)で、基底表の符号化、原始操作、補助証拠、完全なφを具体化し、その数学的変換について前提付きの意味保存を紙上で示しました。既存の局所証明を接続した到達点であり、Rustの全成功経路がこの契約を満たす一般的な証明は残っています。
+Alongside the ownership model, five lemmas on composition of Kraus completeness are [checked in Lean](docs/lean-resource-proof.md). Lean supports the required local lemmas. The [conformance record](docs/specification-status.md) records implementation audits and regressions. Correspondence between the mathematical rules and every accepted Rust path, and general source-to-IR semantic preservation, remain unproved. The finite v0.1 semantic contracts and evidence checker connect to this foundation; sized types, operation parameters, algorithms, and the required standard library are generalized afterward toward v1.
 
-[スコープ終了の実装対応](docs/lowering-state-refinement.md)では、Rustの環境射影を独立した関数へ切り出し、同じ場合分けのLeanモデルで古典束縛の復元、消費済み束縛の非復活、量子所有権の保存を証明しました。再束縛の同一性を扱う有限モデルとソース回帰でも照合しています。ブロックに至る全実行経路や暗黙frameとの対応は次の課題です。
+The [source-to-IR contracts C1–C5](docs/source-ir-correspondence.md) specify basis-table encoding, primitive operations, auxiliary evidence, and complete φ mappings. Their mathematical translation has a conditional paper proof of semantic preservation, composing existing local proofs. A general proof that all successful Rust paths meet these contracts remains open.
 
-レビュー改訂で、`do (a,b) <- q; pure (a,a xor b)` の積パターンと、通常式の `true`・`false : CBit`、`not`・`and`・`xor` を実装しました。古典演算は両辺を左から右に評価し、量子所有権と効果を保持します。`true`・`false` は新予約語です。[改訂内容と検証結果](docs/specification-status.md)を参照してください。
+For [scope-exit refinement](docs/lowering-state-refinement.md), Rust environment projection was extracted into an independent function. A Lean model with the same case split proves restoration of classical bindings, non-resurrection of consumed bindings, and preservation of quantum ownership. A finite model of rebinding identity and source regressions provide further checks. Correspondence for all paths reaching the block and their implicit frames remains future work.
 
-## 第1開発目標: AI時代の量子言語
+Review revisions implemented product patterns in `do (a,b) <- q; pure (a,a xor b)` and ordinary-expression `true` and `false : CBit`, `not`, `and`, and `xor`. Classical operations evaluate both operands from left to right, preserving quantum ownership and effects. `true` and `false` became reserved words. See the [revision and validation record](docs/specification-status.md).
 
-AI が生成したコードも人間が書いたコードも、同じ型・効果・所有権検査と IR 検証に通す。まず資源の安全性を、その上で理想意味論における量子操作の健全性を保証することを目指す。プロトコルやアルゴリズムの正しさ、実機での動作は別の検証対象とする。保証の条件と到達基準は[開発目標](docs/ai-era-goal.md)に記す。
+<a id="第1開発目標-ai時代の量子言語"></a>
 
-## 第2開発目標: 量子アルゴリズムの構造化
+## Development goal 1: a quantum language for the AI era
 
-「量子アルゴリズムは何によって構成されているか」を問い、**既存アルゴリズム → 共通構造 → 言語抽象化 → 新しいアルゴリズム**という循環を作る。可逆計算、反射、制御付き冪、有限反復、観測量、古典フィードバックを、型・所有権・効果・証拠の契約へつなぐ。
+AI-generated and human-written code pass through the same type/effect/ownership checks and IR verification. The aim is resource safety first, then quantum-operation soundness in ideal semantics. Protocol correctness, algorithm correctness, and hardware behavior are separate verification targets. The [development goal](docs/ai-era-goal.md) states assumptions and acceptance criteria.
 
-[初期コーパス20項目](docs/algorithm-corpus.md)と[設計契約・到達基準](docs/algorithm-structure-goal.md)を整え、最初の5部品と固定幅QFT2/3を通常の `.qli` として同梱しました。さらに[固定幅算術とN=15の位数推定・古典因数抽出](docs/arithmetic-order-finding.md)を実装しました。高階のコンビネータ、厳密なモナド構造、一般のQPE・Shor・VQE/QAOAは今後の課題です。
+<a id="第2開発目標-量子アルゴリズムの構造化"></a>
 
-## 第3層の将来計画: 量子アルゴリズムの標準語彙
+## Development goal 2: structuring quantum algorithms
 
-第1層の検証基盤、第2層の構造抽出を土台に、アルゴリズムの概念を**意味論的契約を持つ標準ライブラリ**へ育てます。原始操作、構造コンビネータ、量子データ構造、算術、変換、アルゴリズム骨格、ハイブリッド計画の7領域を整理します。
+Ask what quantum algorithms are built from and establish a cycle of **existing algorithms → common structures → language abstractions → new algorithms**. Connect reversible computation, reflections, controlled powers, finite iteration, observables, and classical feedback to contracts for types, ownership, effects, and evidence.
 
-[将来計画](docs/stdlib-roadmap.md)に、`amplify`・`phase_estimate`・`simulate`・`estimate` の契約案、標準への採用基準、AIが提案したパターンの検証経路、着手条件を記しました。同梱12公開定義の[契約台帳v1](docs/stdlib-contracts.md)と有限な静的操作を整備しました。一般化したアルゴリズム骨格のAPIは未実装です。
+The [initial 20-entry corpus](docs/algorithm-corpus.md) and [design contracts and acceptance criteria](docs/algorithm-structure-goal.md) are documented. The first five routines and fixed-width QFT2/3 are bundled as ordinary `.qli` definitions. [Fixed-width arithmetic, order finding for N=15, and classical factor extraction](docs/arithmetic-order-finding.md) are also implemented. Higher-order combinators, a strict monad structure, general QPE and Shor, and VQE/QAOA remain future work.
 
-## 設計の境界
+<a id="第3層の将来計画-量子アルゴリズムの標準語彙"></a>
 
-- 自由ベクトル空間モナドはコヒーレントな計算の数学的な由来です。資源と効果を追うプログラム合成は Kleisli 的に設計しますが、任意の `bind` を安全な実行 API として公開しません。
-- `Q<A>` は量子レジスタの操作権です。すべての効果で線形に扱い、暗黙の破棄を許しません。基底添字の共有は、全体の写像が等長なら許します。
-- 測定、リセット、破棄は `observe` 効果に置きます。初期版の測定は量子ハンドルを消費して古典結果だけを返します。補助量子ビットの純粋な解放には、全入力に対するゼロ復帰の静的証拠が必要です。
-- [未解決の中核課題](docs/design-philosophy.md)は、所有権による操作権の管理と、絡み合った全体系について必要な証拠をどう合成するかです。
-- Rust の借用検査は処理系のメモリ安全性を担います。Qleisli の所有権・効果・構成子の条件は専用のフロントエンドと IR 検証器が検査します。検査器実装の一般的な正しさの証明は別の課題です。
+## Future layer 3: a standard vocabulary for quantum algorithms
 
-## 文書
+Building on the verification foundation of layer 1 and the structure extraction of layer 2, develop algorithmic concepts into a **standard library with semantic contracts**. Its seven areas are primitives, structural combinators, quantum data structures, arithmetic, transforms, algorithm skeletons, and hybrid plans.
 
-1. [設計思想](docs/design-philosophy.md): 固定する原理と、構文に残す自由度。
-2. [AI時代の量子言語という開発目標](docs/ai-era-goal.md): 健全性の階層と証明目標。
-3. [ROADMAP.md](ROADMAP.md): 段階0から実装までの順序と完了条件。
-4. [量子言語としての成立条件](docs/quantum-language-requirements.md): 仕様と実装が満たすべき条件。
-5. [`.qli` と標準ライブラリの構成](docs/standard-library.md): 段階0の構成決定。
-6. [有限コア言語仕様v0](docs/language-spec.md): 規範となる型・効果・所有権・意味論。
-7. [有限コアの形式化](docs/formal-core.md): 定理の形、構成子の意味、証明の残件。
-8. [`.qli` 構文v0](docs/syntax-v0.md): 規範文法、名前とスコープ、静的な拒否例。
-9. [Rust IR 検証器の試作](docs/ir-prototype.md): 実装済みの検査、信頼境界、未達成の保証。
-10. [有限 IR の紙上証明](docs/finite-core-proof.md): 現行構成子の量子意味と、実装との対応に残る検証義務。
-11. [`.qli` フロントエンドの初期実装](docs/frontend-v0.md): 実行できる部分集合、検査規則、診断、実行例。
-12. [量子アルゴリズムの構造化という第2目標](docs/algorithm-structure-goal.md): 共通構造、型・合成の契約、実装順。
-13. [アルゴリズム構造のコーパス](docs/algorithm-corpus.md): 20項目の一次資料、入力モデル、前提、未対応部分。
-14. [有限のアルゴリズム部品](docs/algorithm-routines.md): 同梱API、3つの構造化例、数式とテストの対応。
-15. [第3層・標準ライブラリの将来計画](docs/stdlib-roadmap.md): 7領域、意味論的契約、採用・保守・AI探索への還流。
-16. [有限の静的操作とQPE](docs/static-operations.md): 逆・制御・反復、有限IR、固定幅QFTとQPEの検証。
-17. [同梱部品の契約台帳](docs/stdlib-contracts.md): 公開12定義の状態・前提・意味・IR・費用・検証根拠。
-18. [有限算術と位数推定](docs/arithmetic-order-finding.md): 全空間上の可逆演算、N=15、古典再構成と再試行。
-19. [仕様v0の適合状況](docs/specification-status.md): 確定事項、実装上限、検証根拠、証明の残件。
-20. [ソース資源判断と紙上証明](docs/source-resource-rules.md): 英語の規則系、混合値と一時結果、関数のframe、φ、資源不変量R1と実装監査。
-21. [Leanの資源・Kraus証明台帳](docs/lean-resource-proof.md): 機械検証した所有権モデルと局所行列補題、その前提・未移植部分・再現手順。
-22. [ソースの値・環境・関数・分岐の意味論](docs/source-semantics.md): 混合値、評価済み値の代入、相関するframe、φの局所証明とIR対応。
-23. [有限の静的変換の正確な意味](docs/static-semantics.md): 平坦化・軸順・逆・制御・反復・限定補助位相の紙上証明、Rust対応、厳密行列の回帰検査。
-24. [型・効果・名前・スコープの推論規則](docs/source-typing-rules.md): 全AST構成子の規則、基底計算の全域性、束縛の射影、宣言効果、実装との対応と残件。
-25. [ソース規則系の理想健全性](docs/source-soundness.md): 純粋性・等長性／ユニタリ性、観測・適応合成・履歴の隠蔽、参照系を含む紙上証明Q1〜Q3。
-26. [実装の責務と保守方針](docs/implementation-architecture.md): モジュールの依存方向、検証境界、loweringの不変条件、仕様・実装・回帰検査の対応。
-27. [用語と表記](docs/terminology.md): 英語の規範文書と日本語の補助文書の関係、所有権・frame・保護領域の用語、量子状態の表記。
-28. [ソース→IR変換契約](docs/source-ir-correspondence.md): 基底符号化・原始操作・補助証拠・完全φの局所導出、前提付き意味保存C1〜C5、Rustと独立検証器の対応義務。
-29. [lowering状態とスコープの実装対応](docs/lowering-state-refinement.md): 値・環境・registerの対応、スコープ射影のLean定理、入力・移動・束縛・呼出し・分岐の残る証明前提。
-30. [リリース到達条件とnorth star](docs/release-milestones.md): v0.1の意味契約・独立検査と、v1でShor・QPE・Groverを教科書の構造として読むための完了基準。
-31. [有限な意味契約](docs/semantic-contracts-v0.1.md)と[関数境界](docs/function-contracts-v0.1.md): 厳密な演算子等式、補助ゼロ復帰、公開された意味と実装の対応、最終IRでの証拠の再利用。
+The [library roadmap](docs/stdlib-roadmap.md) records proposed contracts for `amplify`, `phase_estimate`, `simulate`, and `estimate`, standard-adoption criteria, verification paths for AI-proposed patterns, and prerequisites for implementation. The [contract ledger v1](docs/stdlib-contracts.md) covers twelve bundled public definitions; finite static operations are implemented. Generalized algorithm-skeleton APIs are not implemented.
 
-## Rust 開発環境
+<a id="設計の境界"></a>
 
-Rust 2024 edition に対応する **Rust 1.85 以降**と、Cargo・rustfmt・Clippy を使用します。この crate は現在外部依存を持ちません。リポジトリのルートで次を実行します。
+## Design boundaries
+
+- The free-vector-space monad motivates coherent computation mathematically. Program composition that tracks resources and effects is Kleisli-inspired; arbitrary `bind` is not exposed as a safe execution API.
+- `Q<A>` is ownership of operations on a quantum register. It is linear under every effect, with no implicit discard. Sharing basis indices is allowed when the whole map is isometric.
+- Measurement, reset, and discard belong to `observe`. Initial measurement consumes the quantum handle and returns only a classical result. Pure auxiliary release requires static zero-return evidence for every input.
+- An [open central problem](docs/design-philosophy.md) is how ownership-based control of operations composes with evidence about the entangled global system.
+- Rust borrowing provides memory safety for the implementation. A dedicated Qleisli frontend and IR verifier check Qleisli ownership, effects, and constructor premises. General correctness of those checkers is a separate proof obligation.
+
+<a id="文書"></a>
+
+## Documentation
+
+The [documentation map](docs/documentation-map.md) records authority, status, and the English translation inventory.
+
+1. [Design philosophy](docs/design-philosophy.md): fixed principles and remaining freedom in syntax.
+2. [A quantum language for the AI era](docs/ai-era-goal.md): assurance levels and proof targets.
+3. [Roadmap](ROADMAP.md): stages, ordering, and completion conditions.
+4. [Quantum-language requirements](docs/quantum-language-requirements.md): conditions for the specification and implementation.
+5. [`.qli` and the standard library](docs/standard-library.md): Stage 0 organization decisions.
+6. [Finite-core language specification v0](docs/language-spec.md): normative types, effects, ownership, and semantics.
+7. [Formal core](docs/formal-core.md): theorem statements, constructor semantics, and open proof obligations.
+8. [Syntax v0](docs/syntax-v0.md): normative grammar, names and scopes, and static rejection examples.
+9. [Rust IR prototype](docs/ir-prototype.md): implemented checks, trust boundaries, and unachieved guarantees.
+10. [Finite-IR paper proof](docs/finite-core-proof.md): current constructor semantics and implementation correspondence obligations.
+11. [Initial `.qli` frontend](docs/frontend-v0.md): executable subset, checks, diagnostics, and examples.
+12. [Structuring quantum algorithms](docs/algorithm-structure-goal.md): common structures, type/composition contracts, and implementation order.
+13. [Algorithm corpus](docs/algorithm-corpus.md): twenty entries with primary sources, input models, premises, and unsupported parts.
+14. [Finite algorithm routines](docs/algorithm-routines.md): bundled APIs, three structured examples, equations, and tests.
+15. [Standard-library roadmap](docs/stdlib-roadmap.md): seven areas, semantic contracts, adoption, maintenance, and feedback into AI exploration.
+16. [Finite static operations and QPE](docs/static-operations.md): adjoints, control, repetition, finite IR, and fixed-width QFT/QPE validation.
+17. [Bundled contract ledger](docs/stdlib-contracts.md): status, premises, meaning, IR, cost, and evidence for twelve public definitions.
+18. [Finite arithmetic and order finding](docs/arithmetic-order-finding.md): full-space reversible operations, N=15, classical reconstruction, and retries.
+19. [Specification conformance](docs/specification-status.md): decisions, implementation limits, evidence, and open proofs; historical entries retain their original language.
+20. [Source resource rules](docs/source-resource-rules.md): mixed values, pending results, function frames, φ, resource invariant R1, and implementation audit.
+21. [Lean resource and Kraus proof ledger](docs/lean-resource-proof.md): checked ownership model and local matrix lemmas, premises, omissions, and reproduction.
+22. [Source semantics](docs/source-semantics.md): mixed values, evaluated-value substitution, correlated frames, local φ proofs, and IR correspondence.
+23. [Static semantics](docs/static-semantics.md): paper proofs for flattening, axis order, adjoints, control, repetition, and restricted auxiliary phases; Rust correspondence and exact-matrix regressions.
+24. [Type/effect/name/scope inference rules](docs/source-typing-rules.md): all AST constructors, basis totality, binding projection, declared effects, and implementation obligations.
+25. [Ideal soundness of the source rules](docs/source-soundness.md): paper proofs Q1–Q3 for purity, isometry/unitarity, observation, adaptive composition, hidden histories, and reference systems.
+26. [Implementation architecture](docs/implementation-architecture.md): module dependencies, verification boundaries, lowering invariants, and links between specification, implementation, and regressions.
+27. [Terminology and notation](docs/terminology.md): English authority, supporting material, ownership, frames, protected scopes, and quantum-state notation.
+28. [Source-to-IR correspondence](docs/source-ir-correspondence.md): basis encoding, primitives, auxiliary evidence, complete φ, conditional preservation C1–C5, and Rust/verifier obligations.
+29. [Lowering-state refinement](docs/lowering-state-refinement.md): value/environment/register relations, scope-projection Lean theorems, and remaining input/move/binding/call/branch premises.
+30. [Release milestones and north star](docs/release-milestones.md): v0.1 semantic contracts and independent checks; executable textbook structure for Shor, QPE, and Grover in v1.
+31. [Finite semantic contracts](docs/semantic-contracts-v0.1.md) and [function boundaries](docs/function-contracts-v0.1.md): exact operator equality, auxiliary zero return, public meaning and implementation correspondence, and evidence reuse in final IR.
+32. [Language-evolution framework](docs/language-evolution.md) and [six imaginary v1 drafts](docs/imaginary-v1/README.md): current/future boundary, common requirements, and semantic review.
+
+<a id="rust-開発環境"></a>
+
+## Rust development environment
+
+Use **Rust 1.85 or later** with Rust 2024 edition, Cargo, rustfmt, and Clippy. The crate currently has no external dependencies. From the repository root:
 
 ```sh
 cargo test --all-targets
@@ -110,7 +131,7 @@ python3 scripts/check_docs.py
 python3 scripts/test_check_docs.py
 ```
 
-`Cargo.lock` と `target/` は生成物として Git から除外します。テストはパーサ、モジュール解決、ソースコンパイラ、IR 検証器、参照シミュレータを対象とします。有限例のコンパイルと数値実行の一致は、一般の健全性証明を意味しません。
+`Cargo.lock` and `target/` are generated and excluded from Git. Tests cover parsing, module resolution, source compilation, IR verification, and reference simulation. Agreement between compiled finite examples and numerical execution is not a general soundness proof.
 
 ```sh
 cargo run --bin qleisli -- check examples/bell
@@ -125,9 +146,9 @@ cargo run --bin qleisli -- run examples/order_finding
 cargo run --example shor15
 ```
 
-CLIのビット列は戻り値の古典タプルを左から右にたどった順です。位相推定の例では位相レジスタを低位ビットから返すため、`100`は整数1を表します。確率は浮動小数の近似値であり、丸めによる微小な正の値も表示します。[出力順と数値実行の規約](docs/frontend-v0.md)を参照してください。
+CLI bit strings follow the returned classical tuple from left to right. The phase-estimation example returns its phase register least-significant bit first, so `100` denotes integer 1. Probabilities are floating-point approximations, including tiny positive values caused by rounding. See the [output-order and numerical-execution conventions](docs/frontend-v0.md).
 
-段階0の構成と有限コアv0の規範を定めました。現在は段階1の証明と処理系との対応を優先します。外部パッケージ管理やハードウェア固有 API は初期版の範囲外です。
+Stage 0 organization and the normative finite core v0 are specified. Stage 1 proofs and implementation correspondence remain the priority. External package management and hardware-specific APIs are outside the initial scope.
 
 ## License and contributions
 

@@ -8,6 +8,63 @@ separately in [release milestones](docs/release-milestones.md).
 
 No unreleased changes.
 
+## 0.1.2 — 2026-09-27
+
+Documentation/design maintenance release. Both project manifests are
+synchronized at 0.1.2. The [release notes](docs/releases/v0.1.2.md) record scope
+and validation; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
+identifies the tagged commit, required CI, source archives, and publication.
+
+### Changed
+
+- Align current-version records and define a staged roadmap for six imaginary
+  Qleisli 1.0 algorithm drafts, per-draft semantic contracts, a shared
+  requirements index, semantic review, and release validation.
+- Make the next-minor sequence explicit: complete the existing imaginary-v1
+  prerequisite, select and specify the smallest required generalization,
+  then implement and validate it with evidence retained in final IR.
+  V1-C1–C5 remain the separate executable acceptance target.
+- Translate ten current Japanese design, planning, overview, and finite-IR
+  proof documents into English. Preserve semantic premises, proposal/proof
+  status, historical evidence, source links, and legacy heading anchors.
+  Add a documentation authority/inventory map; retain Japanese operational
+  guidance and original dated conformance entries as supporting records.
+- Correct the review summary's odd-QSVT direction to right-to-left singular
+  spaces, matching the unchanged `L p(Sigma) V†` contract and circuit.
+
+### Added
+
+- An English language-evolution framework separating current normative rules,
+  imaginary notation, extension specifications, implementation and proof.
+  Correct stale v0.1 status summaries without changing acceptance rules.
+- Six original imaginary-v1 algorithm bodies for QPE, Grover, amplitude
+  estimation, Shor, a symmetric Szegedy walk and QSVT; per-draft contracts,
+  shared requirements R01–R14 and a semantic/counterexample review.
+- A reproducible 52-check mathematical script covering Fourier/phase conventions,
+  residual/reference coherence, amplification signs, factor validation, walk
+  reflections, and QSVT parity/selector boundaries, also run in documentation CI.
+
+### Validation and limits
+
+Before English consolidation, the local 0.1.2 candidate passed 258 Rust tests and Clippy on both Rust 1.98.1
+and 1.85.0, Lean build and its 527-declaration axiom audit, 14 documentation
+checker tests, 39 exact examples, 52 new mathematical checks, all ten CLI
+projects and Shor, and 155-file source-candidate packaging/rebuild. Linux CI
+and clean-release-commit packaging are publication gates; their final results
+belong in the GitHub release record. Subsequent
+English translation passed independent fidelity review, document checks and
+14 checker tests, the 39/52 mathematical fixtures, and updated 156-file
+packaging/rebuild, recorded [separately](docs/releases/v0.1.2.md#english-documentation-consolidation).
+It does not claim to rerun Rust execution tests, Clippy, or Lean suites.
+
+The initial design-corpus prerequisite before 0.2.0 is met by the recorded
+artifacts and review. All imaginary source remains uncompiled; no new language
+forms, standard APIs or general proof guarantees are delivered. The
+[release record](docs/releases/v0.1.2.md) and
+[conformance ledger](docs/specification-status.md) distinguish local candidate
+validation from clean-commit CI, tagging and publication. The compiler fixes
+and historical results of 0.1.1 remain recorded under 0.1.1.
+
 ## 0.1.1 — 2026-09-27
 
 Compatible maintenance release. Both project manifests are synchronized at

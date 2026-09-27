@@ -1,12 +1,22 @@
 # Terminology and notation
 
 Status: **editorial conventions for the English specification and API contracts**
-(2026-09-26). The [language specification](language-spec.md),
+(updated 2026-09-27). The [language specification](language-spec.md),
 [grammar](syntax-v0.md), [module and sealed-API specification](standard-library.md),
+the [semantic-contract supplement](semantic-contracts-v0.1.md),
+the [function-contract supplement](function-contracts-v0.1.md),
 and [ordinary-library contract ledger](stdlib-contracts.md) are authoritative
-English documents. Japanese design goals, planning notes, and milestone records
-are supporting material; they do not override those contracts. Translation and
-notation cleanup do not change acceptance rules or turn tests into proofs.
+English documents. Design goals and planning notes now have English editions;
+their authority and proposal status are identified in the
+[documentation map](documentation-map.md). They do not override current source/API
+contracts. Japanese operational guidance, historical milestone records, legacy
+anchors, and glossary terms remain supporting material. Translation and notation
+cleanup do not change acceptance rules or turn tests into proofs.
+
+The [language evolution framework](language-evolution.md) separates current
+normative rules from future design notation and defines the English records
+required before selecting an extension. Imaginary algorithm code is design
+material, even when it resembles `.qli`; it is not executable source evidence.
 
 | English term | Japanese supporting term | Meaning in this repository |
 | --- | --- | --- |

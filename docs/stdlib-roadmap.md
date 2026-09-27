@@ -1,93 +1,191 @@
-# 第3層の将来計画: 量子アルゴリズムの標準語彙
+<a id="第3層の将来計画-量子アルゴリズムの標準語彙"></a>
 
-状態: **L0/L1とL3の有限部分を整備し、v0.1の最低条件とv1の到達像を決定・一般化した標準APIは未実装**（2026-09-27）。[契約台帳v1](stdlib-contracts.md)と[静的操作の有限実装](static-operations.md)が基盤となる。本書の高階型・アルゴリズム骨格の関数名・一般化したモジュール分割は設計候補であり、現在のAPIは[標準ライブラリ構成](standard-library.md)で区別する。本書は日本語の設計計画であり、リリース条件の英語正本は[release-milestones.md](release-milestones.md)とする。
+# Layer 3 roadmap: a standard vocabulary for quantum algorithms
 
-**プロジェクトのnorth star:** 「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」。第3層は、その言葉を意味・前提・検証状態を持つ標準語彙として育てる。Shor・QPE・Groverを教科書の構造で読める実ソースは、v1でこの方向を評価する具体的な到達条件とする。
+Status: **L0/L1 and the finite part of L3 are established; the v0.1 minimum and
+v1 target are adopted; generalized standard APIs remain unimplemented**
+(2026-09-27). The [contract ledger, format v1](stdlib-contracts.md), and
+[finite static-operation implementation](static-operations.md) provide the
+foundation. Higher-order types, algorithm-skeleton names, and generalized
+module organization in this document are design candidates. The
+[standard-library specification](standard-library.md) distinguishes current APIs.
+This authoritative English edition of the design plan replaces its Japanese
+edition without adopting its proposals as language rules or public APIs.
+[Release milestones](release-milestones.md) remain authoritative for release
+acceptance, and the [language evolution framework](language-evolution.md)
+distinguishes current specifications from future design.
 
-**現在の優先順位（2026-09-27）:** 証拠付き意味契約 `U E_in = E_out u` と独立した証明書検査を[v0.1の最低条件](release-milestones.md#v01-minimum-semantic-contracts)にする。有限コアの仕様・所有権・IR対応をその基盤として進め、同じ論理契約で実装を交換できる経路を先に実証する。有限検査器と3引数の補助計算形式を[実装](semantic-contracts-v0.1.md)し、[公開関数契約と最終IRへの証拠保持](function-contracts-v0.1.md)を含むv0.1の有限経路を検査した。一般サイズと操作パラメータ化は、その上に[v1の具体的な到達条件](release-milestones.md#v1-north-star-textbook-algorithm-structure)を実現する後続工程とする。現行v0と固定幅例は回帰基準として保持し、標準APIの採用には個別の契約と検証を要する。
+**Project north star:** make the language people use to think about quantum
+algorithms coincide with the language they use to write programs. Layer 3
+develops that language into a standard vocabulary with meanings, premises, and
+verification status. Real source in which Shor, QPE, and Grover retain their
+textbook structure is the concrete v1 acceptance target for this direction.
 
-v0.2.0向けの一般化・標準APIの新機能実装とリリースには、[仮想Qleisli 1.0コードの先行作成](release-milestones.md#pre-v020-imaginary-v1-code)を必須の前提とする。6題の理想コード初稿はコンパイル不要で、必要な語彙・契約・未解決事項を抽出する設計資料となる。方針は採用済み、初稿作成は未完了であり、草案に書かれたAPIを標準採用済みと扱わない。
+**Priority adopted on 2026-09-27:** make evidence-bearing semantic contracts
+`U E_in = E_out u` and independent certificate checking the
+[v0.1 minimum](release-milestones.md#v01-minimum-semantic-contracts). Develop
+finite-core specification, ownership, and source/IR correspondence as their
+foundation, first demonstrating exchangeable implementations of one logical
+contract. The finite checker and three-argument computed form are
+[implemented](semantic-contracts-v0.1.md), and the finite v0.1 path including
+[public function contracts and final-IR evidence](function-contracts-v0.1.md)
+has been checked. General sizes and operation parameters follow this foundation
+to support the [v1 acceptance target](release-milestones.md#v1-north-star-textbook-algorithm-structure).
+Keep current v0 and fixed-width examples as regressions; adopting a standard
+API requires its own contract and validation.
 
-> 量子アルゴリズム研究で使う概念を、型・所有権・効果・意味・証拠・費用の契約を伴う標準語彙として蓄積する。人間とAIが、その語彙を合成してプログラムを作り、同じ検証基盤に通せるようにする。
+Before generalization, new standard-API implementation, or release for v0.2.0,
+complete the [imaginary Qleisli 1.0 code prerequisite](release-milestones.md#pre-v020-imaginary-v1-code).
+The six initial ideal-code drafts need not compile; they are design material
+for extracting vocabulary, contracts, and open questions. The
+[six-draft requirement index](imaginary-v1/README.md) and
+[semantic review](imaginary-v1/review.md) now exist. This satisfies the limited
+artifact-and-requirement prerequisite; APIs written in drafts are not thereby
+adopted into the standard library.
 
-## 1. 三つの層の関係
+> Build a standard vocabulary from concepts used in quantum-algorithm research,
+> with contracts for types, ownership, effects, meaning, evidence, and cost.
+> Humans and AI should be able to compose programs from that vocabulary and
+> pass them through the same verification foundation.
 
-| 層 | 役割 | 成果物 |
+<a id="1-三つの層の関係"></a>
+
+## 1. How the three layers relate
+
+| Layer | Role | Deliverables |
 | --- | --- | --- |
-| 第1層: [検証基盤](ai-era-goal.md) | プログラムを受理する根拠を定める。 | 型・効果・所有権規則、有限コア、独立したIR検証器。 |
-| 第2層: [アルゴリズムの構造化](algorithm-structure-goal.md) | 既存アルゴリズムから再利用できる構造を抽出する。 | コーパス、共通構造、実験的な部品、別の問題での再合成。 |
-| 第3層: 標準語彙の整備 | 抽出した構造の契約を整え、継続して使える標準ライブラリへ育てる。 | APIと意味論の対応、検証状態を持つ契約台帳、実装、適合検査、版の管理。 |
+| Layer 1: [verification foundation](ai-era-goal.md) | Define the grounds for accepting a program. | Type/effect/ownership rules, finite core, independent IR verifier. |
+| Layer 2: [algorithm structure](algorithm-structure-goal.md) | Extract reusable structures from existing algorithms. | Corpus, shared structures, experimental components, and recomposition for other problems. |
+| Layer 3: standard vocabulary | Establish contracts for the extracted structures and develop a maintainable standard library. | API-to-semantics correspondence, a contract ledger with verification status, implementations, conformance checks, and version management. |
 
-第2層は抽象化を発見・評価する研究の流れ、第3層は採用・配布・保守の流れを担う。処理系の段階0〜5とは別の整理であり、三層がすべて実装済みという意味ではない。
+Layer 2 covers discovering and evaluating abstractions; Layer 3 covers
+adoption, distribution, and maintenance. This organization is separate from
+implementation stages 0–5 and does not mean that all three layers are complete.
 
-### リリース目標と台帳の役割
+<a id="リリース目標と台帳の役割"></a>
 
-| 目標 | ライブラリと検証基盤に求める到達点 | 現在の状態 |
+### Release targets and the role of the ledger
+
+| Target | Required library and verification result | Current status |
 | --- | --- | --- |
-| v0.1 | 有限で正確な意味契約を対象に、固定した論理作用・符号化・入口証拠・位相を独立検査し、証明書を実際のIRと契約版に結び付ける。同契約の複数実装を交換しても所有権と意味が保たれることを、制御と参照系を含め実証する。 | **宣言した有限プロファイルで達成**。厳密検査器、補助計算、公開関数証拠、最終IRへの保持と交換経路を実装・検査。台帳全体の自動検査や一般化は後続。 |
-| v1 | Shor・QPE・Groverを教科書の量子アルゴリズム構造のまま実ソースで読める。論理部品の契約を組み合わせ、ゲート・補助・配置の実装を交換できる。 | **未実装・未達成**。小規模Grover、QPE2/3、N=15の位数推定は基盤となる固定幅例であり、v1の達成例ではない。 |
+| v0.1 | Independently check fixed logical meaning, encodings, entry evidence, and phase for finite exact semantic contracts, binding certificates to actual IR and the contract version. Demonstrate that substituting implementations of one contract preserves ownership and meaning, including coherent control and references. | **Met in the declared finite profile.** Exact checker, computed regions, public function evidence, retention through final IR, and substitution are implemented and checked. Automated checking of the entire ledger and generalization remain later work. |
+| v1 | Shor, QPE, and Grover retain their textbook algorithm structure in real source. Compose logical-component contracts and substitute gate, auxiliary, and layout implementations. | **Unimplemented and unmet.** Small Grover, QPE2/3, and N=15 order-finding examples are fixed-width foundations, not v1 acceptance evidence. |
 
-v0.1の契約では `u` と等長な `E_in/E_out` を仕様側で固定する。型木、位相、ビット順、物理入出力、符号化された入力である証拠を検査対象にし、通常の所有権・効果・全出力被覆の検査も続ける。証明書の名前や存在だけで受理せず、対象回路の改変後に古い証拠が通らないようにする。正確な等式の検査で容量を超えた場合は診断し、近似一致を純粋な補助解放の根拠へ変更しない。
+In the v0.1 contract, the specification fixes `u` and isometric `E_in/E_out`.
+Check type trees, phase, bit order, physical inputs/outputs, and evidence that
+the input satisfies its encoding, alongside ordinary ownership, effect, and
+complete-output-coverage checks. A certificate's name or presence alone cannot
+justify acceptance; modifying its circuit must invalidate stale evidence.
+If exact equality checking exceeds capacity, report a diagnostic rather than
+using approximate agreement to authorize pure auxiliary release.
 
-受入例には、同じ位相オラクル契約の計算／位相付け／逆計算と直接実装の交換、H;Hによる恒等操作、`f(x)=x`でのデータと補助の同時Xを含める。制御下の位相と参照系への拡張を確かめ、補助だけのX、不正な位相・述語・符号化・配置、対象と不一致の証拠、非ゼロの補助漏出を拒否する。H;Hや同時Xは新しい3引数形式の有限な厳密検査で扱い、従来の2引数形式はZ/T列に限定する。[適合記録](specification-status.md)に現在の検査範囲を記し、一般的な実装交換の完成とは区別する。
+Acceptance examples include substituting a compute/phase/uncompute circuit and
+a direct implementation of one phase-oracle contract, an H;H identity, and
+simultaneous data/auxiliary X for `f(x)=x`. Check phase under coherent control
+and extension to references. Reject auxiliary-only X, incorrect phase,
+predicate, encoding or layout, mismatched evidence, and nonzero auxiliary
+leakage. H;H and simultaneous X use the finite exact three-argument form;
+the original two-argument form remains restricted to Z/T chains. The
+[conformance record](specification-status.md) distinguishes the checked scope
+from completion of general implementation substitution.
 
-v1の構造化は、実装のない関数名や疑似コードを並べても達成としない。[第2目標の判定表](algorithm-structure-goal.md#リリース目標と構造化の判定)に従い、Shorの位数推定と古典再構成・再試行、QPEの制御付き冪と逆QFT、Groverの準備・位相オラクル・反射・反復を実ソースと検証経路で結ぶ。サイズ、操作に必要な制御・逆の能力、誤差・失敗条件、ホスト再試行は利用側に見える契約とする。ゲート列、補助資源の内部管理、配置は部品の契約と実装へ収める。この説明は新しい構文やAPI名を確定しない。
+Listing unimplemented function names or pseudocode does not establish v1
+structure. Follow the [algorithm-goal acceptance table](algorithm-structure-goal.md#リリース目標と構造化の判定):
+connect Shor's order finding, classical reconstruction and retries; QPE's
+controlled powers and inverse QFT; and Grover's preparation, phase oracle,
+reflection and repetition to real source and verification. Sizes, required
+control/inverse access, error/failure conditions, and host retries remain
+client-visible contracts. Gate sequences, private auxiliary management, and
+layout belong in component implementations and contracts. This description
+does not finalize syntax or API names.
 
 ```mermaid
 flowchart LR
-    A[既存アルゴリズム] --> B[共通構造と契約]
-    B --> C[実験的な通常定義]
-    C --> D[独立した検証と再利用評価]
-    D --> E[標準ライブラリと契約台帳]
-    E --> F[人間とAIによる合成・探索]
-    F --> G[新しいパターン候補]
+    A[Existing algorithms] --> B[Shared structures and contracts]
+    B --> C[Experimental ordinary definitions]
+    C --> D[Independent checking and reuse evaluation]
+    D --> E[Standard library and contract ledger]
+    E --> F[Human and AI composition and exploration]
+    F --> G[Candidate new patterns]
     G --> B
 ```
 
-## 2. ライブラリの七つの領域
+<a id="2-ライブラリの七つの領域"></a>
 
-領域は概念の分類であり、下表の名前をそのまま `std::` に追加する決定ではない。まず通常の `.qli` 定義として構成し、操作の静的変換が必要な箇所を言語形式へ切り分ける。原始操作の追加には個別の意味論とIR検査を要する。
+## 2. Seven library areas
 
-| 領域 | 標準語彙の候補 | 所属・依存・契約の焦点 |
+These areas classify concepts; the names below are not a decision to add those
+names to `std::`. Start with ordinary `.qli` definitions and identify any parts
+requiring language forms for static operation transformations. New primitives
+require their own semantics and IR checks.
+
+| Area | Candidate standard vocabulary | Classification, dependencies, and contract focus |
 | --- | --- | --- |
-| Quantum primitives | 準備、ユニタリ操作、測定、reset、discard | 現行 `std::quantum`・`std::observe` の封印操作を基盤とし、派生する準備や測定は通常定義。任意の行列を実行する `unitary` は設けない。 |
-| Structural combinators | control、inverse、repeat、tensor、compose、compute/uncompute | inverseは既存の `adjoint` 案、controlは `qif` 案に対応。まず言語形式による静的変換を検討し、合成は通常定義で表す。位相、効果、全資源の受け渡し、有限展開、ゼロ復帰を検査。 |
-| Quantum data structures | Qubit、QReg n、量子整数、indices、ancilla | `Q<Bit>` と有限積を出発点にする。サイズ付き型は言語形式の候補、整数等の操作は通常定義の候補。幅・符号・ビット順・有効部分空間を定め、古典の添字と量子所有権を分ける。 |
-| Arithmetic | 可逆加算・乗算、剰余算術、比較 | 通常定義。全域な基底関数と可逆拡張、桁あふれ、法、作業領域を明記。例えば法Nの有効値以外も含め、全レジスタ空間での作用を定義する。 |
-| Transforms | Hadamard変換、QFT、基底変換、block encoding | 変換回路は通常定義。block encodingは全体ユニタリと射影ブロックの関係を表す追加契約。位相・軸順・近似誤差と正規化係数を保持する。 |
-| Algorithmic skeletons | phase estimation、amplitude amplification、quantum walk、LCU、QSVT | 通常定義の族として構成する候補。静的な操作パラメータ化の方式は未決。入力モデル、成功条件、反復・精度・費用を公開契約にする。 |
-| Hybrid patterns | 測定とfeed-forward、変分反復、syndrome extraction | 一回の量子処理は通常の `observe` 定義。試行・統計集計・最適化はホスト側の計画として別に設計する。ホストAPIは `.qli` の標準関数として扱わない。 |
+| Quantum primitives | Preparation, unitary operations, measurement, reset, discard | Build on sealed operations in `std::quantum` and `std::observe`; derived preparation and measurements are ordinary definitions. Do not introduce a `unitary` primitive executing arbitrary matrices. |
+| Structural combinators | Control, inverse, repeat, tensor, compose, compute/uncompute | Inverse and control correspond to `adjoint` and `qif`; their finite forms already exist, while generalization remains proposed. Consider static transformations through language forms first, with composition expressed by ordinary definitions. Check phase, effects, complete resource transfer, finite expansion, and zero return. |
+| Quantum data structures | Qubit, QReg n, quantum integers, indices, ancilla | Start from `Q<Bit>` and finite products. Sized types are language-form candidates; integer operations are ordinary-definition candidates. Specify width, signedness, bit order and valid subspaces; distinguish classical indices from quantum ownership. |
+| Arithmetic | Reversible addition/multiplication, modular arithmetic, comparison | Ordinary definitions. State total basis functions and reversible extensions, overflow, modulus, and work regions. Define the action on the entire register space, including values outside valid residues modulo N. |
+| Transforms | Hadamard transforms, QFT, basis changes, block encoding | Transform circuits are ordinary definitions. Block encoding needs an additional contract between the full unitary and a projected block. Preserve phase, axis order, approximation error, and normalization. |
+| Algorithmic skeletons | Phase estimation, amplitude amplification, quantum walk, LCU, QSVT | Candidates for families of ordinary definitions. The static operation-parameter mechanism is undecided. Make input models, success conditions, iteration, precision, and costs public contracts. |
+| Hybrid patterns | Measurement and feed-forward, variational iteration, syndrome extraction | One quantum trial is an ordinary `observe` definition. Trials, statistics, and optimization require separate host-side planning; host APIs are not `.qli` standard functions. |
 
-`Qubit`、`QReg n` は量子状態をコピー可能な値にする型ではない。ancillaも線形な資源であり、名前や寿命からゼロ復帰を推論しない。別々のレジスタは絡み合っていてよい。
+`Qubit` and `QReg n` do not turn quantum states into copyable values. Ancillas
+also remain linear resources; neither a name nor a lifetime proves zero
+return. Separately owned registers may be entangled.
 
-## 3. 各語彙に付ける契約
+<a id="3-各語彙に付ける契約"></a>
 
-契約台帳には以下を必須項目とする。[文書形式v1](stdlib-contracts.md)に同梱12公開定義を登録した。有限契約と合成可能なRust証拠に加え、公開関数の契約・依存関係・最終変換後の証拠を持ち運ぶ形式を実装した。台帳全体の機械可読化は残件である。v0.1では有限な交換経路を完成させ、全台帳や将来の近似・観測契約を一度に一般化することは要求しない。
+## 3. Contracts attached to each concept
 
-| 項目 | 記録する内容 |
+The following fields are required in the contract ledger. Its
+[document format v1](stdlib-contracts.md) records the 12 bundled public
+definitions. Finite contracts and composable Rust evidence are implemented,
+as is a representation carrying public function contracts, dependencies, and
+evidence after final transformations. Making the entire ledger machine
+readable remains open. v0.1 completed the finite substitution path; it does
+not require generalizing the whole ledger and future approximation/observation
+contracts at once.
+
+| Field | Required content |
 | --- | --- |
-| 識別と状態 | 契約ID、版、出典とコーパスID、提案／実験的実装／標準採用。証明・実装・テストの状態は別欄にする。 |
-| 所属と型 | 言語形式／封印された組み込み操作／通常の `.qli` 定義。ホスト計画ならその旨を明示。古典パラメータと量子入出力、静的パラメータの範囲。 |
-| 所有権と効果 | 消費・返却・新規作成する全資源、測定・破棄、`Unitary/Iso/Observe`。捕捉する資源があればそれも列挙。 |
-| 意味と前提 | 位相を含む演算子、または全結果を含むインストルメント。入力モデル、約束、失敗枝、成功確率、参照系への拡張。 |
-| 証拠と検査範囲 | 型で検査する条件、検証器が検査する証明書、個別の数学的前提を区別。全域性・単射性・保存効果・ゼロ復帰・符号空間等の検査方法。 |
-| 近似と費用 | 誤差のノルム・失敗率・合成規則、oracle呼び出し数、ゲート数、補助資源、状態準備・測定回数、古典後処理。 |
-| 実装との対応 | 通常定義とIRへの変換、独立したIR検証、バックエンドの必要能力。未対応なら診断する。 |
-| 適合検査 | 受理例、拒否例、境界値、位相と参照系に敏感な入力、既知の結果分布、異なる用途での再利用例。 |
+| Identity and status | Contract ID, version, sources and corpus IDs, and proposal/experimental implementation/standard-adoption status. Record proof, implementation, and testing separately. |
+| Classification and types | Language form, sealed built-in operation, or ordinary `.qli` definition; explicitly identify host plans. Include classical parameters, quantum inputs/outputs, and static-parameter domains. |
+| Ownership and effects | Every consumed, returned, and fresh resource; measurement/discard; `Unitary/Iso/Observe`. List captured resources if any. |
+| Meaning and premises | Phase-sensitive operator or instrument containing every outcome. Input model, promises, failure branches, success probability, and reference extension. |
+| Evidence and checked scope | Distinguish typing conditions, verifier-checked certificates, and individual mathematical premises. State checks for totality, injectivity, preservation effects, zero return, code spaces, and similar conditions. |
+| Approximation and cost | Error norm, failure probability, composition rules, oracle calls, gates, auxiliary resources, preparation/measurement counts, and classical postprocessing. |
+| Implementation correspondence | Ordinary definitions and IR lowering, independent IR verification, and required backend capabilities. Diagnose unsupported cases. |
+| Conformance | Acceptance/rejection cases, boundaries, phase-sensitive/reference-sensitive inputs, known output distributions, and reuse in different contexts. |
 
-型による資源安全性、理想操作の健全性、個別アルゴリズムの成功保証、実機性能を別々に表示する。例えば「固有状態」「訂正可能な誤り」「適切な初期成功確率」は、通常の `Q<A>` 型だけからは得られない。証明書が未対応なら、その条件は未検査の前提として残す。
+Display resource safety from types, ideal-operation soundness, algorithmic
+success guarantees, and hardware performance separately. An ordinary `Q<A>`
+type alone does not establish an eigenstate promise, a correctable-error model,
+or a suitable initial success probability. If the certificate mechanism does
+not support a condition, retain it as an unchecked premise.
 
-## 4. 最初に契約を具体化する骨格
+<a id="4-最初に契約を具体化する骨格"></a>
 
-以下は**設計用メタ記法**である。`U_A` は位相を保持する `H(A)` 上のユニタリ記述、`Prep_A` は繰り返し新規準備できる手順、`CBits[m]` は古典結果列を表す。これらは現在の第一級ソース型ではない。量子資源を捕捉しない操作記述と、実行時に線形消費する `Q<A>` を分ける。一般の自由ベクトル空間 `bind` は採用せず、Kleisli的な合成の厳密なモナド則は別の証明課題とする。
+## 4. First algorithm skeleton contracts
 
-### 4.1 amplify: 準備と判定から増幅を構成する
+The following is **design metanotation**. `U_A` describes a phase-fixed unitary
+on `H(A)`, `Prep_A` is a repeatable fresh-preparation procedure, and `CBits[m]`
+is a classical result sequence. These are not current first-class source types.
+Distinguish operation descriptions that capture no quantum resources from
+`Q<A>` owners consumed linearly at runtime. Arbitrary free-vector-space `bind`
+is not adopted; strict monad laws for Kleisli-style composition remain a
+separate proof question.
+
+<a id="41-amplify-準備と判定から増幅を構成する"></a>
+
+### 4.1 amplify: amplification from preparation and a predicate
 
 ```text
 amplify(P: U_A, good: A -> Bit, k: StaticNat) : () -[Iso]-> Q<A>
 ```
 
-**所属案:** 通常の `.qli` 定義の族。静的な操作パラメータ化に依存する。`good` は全域な基底関数で、指定した `|0_A⟩` と準備ユニタリ `P` から `|ψ⟩=P|0_A⟩` を作る。
+**Proposed classification:** a family of ordinary `.qli` definitions, dependent
+on static operation parameters. `good` is a total basis function. A specified
+`|0_A⟩` and preparation unitary `P` produce `|ψ⟩=P|0_A⟩`.
 
 ```text
 Π_good = Σ_{x:good(x)=1} |x⟩⟨x|
@@ -97,107 +195,219 @@ G = R_ψ O_good
 output = G^k |ψ⟩
 ```
 
-新規データの所有権を返す `Iso` とし、内部の `G` は `Unitary` とする。測定して成功を選ぶ処理は `Observe` として別に構成する。補助系はゼロ復帰を検査して閉じるか、明示的に出力へ含める。
+The result is fresh data ownership with effect `Iso`; internal `G` has effect
+`Unitary`. Measurement and selecting a successful result form a separate
+`Observe` procedure. Close auxiliary regions only after checked zero return,
+or explicitly include their ownership in the output.
 
-初期成功確率 `a=⟨ψ|Π_good|ψ⟩=sin²θ` なら、理想回路の成功確率は `sin²((2k+1)θ)`。未知の `a` から最適な `k` が自動的に分かるとはせず、未知確率への戦略や固定点版には別契約を付ける。[振幅増幅の一次資料](https://arxiv.org/abs/quant-ph/0005055)
+For initial success probability `a=⟨ψ|Π_good|ψ⟩=sin²θ`, the ideal success
+probability is `sin²((2k+1)θ)`. An unknown `a` does not automatically supply an
+optimal `k`; strategies for unknown probability and fixed-point variants need
+separate contracts. [Primary amplitude-amplification reference](https://arxiv.org/abs/quant-ph/0005055).
 
-- **受理候補:** 2ビット一様準備、一対象、`k=1`。`k=0` は準備のみ、goodが空なら成功率0。
-- **拒否候補:** 測定を含む `P` の反転、手元の未知状態だけからの反射生成、未検証の位相オラクルを `good` と同一と扱うこと。
-- **IR方針:** 準備、検査可能な位相オラクル、`P†`、ゼロ状態の反射、`P` を静的な有限列へ展開し再検証。演算子の全体位相も保存する。
+- **Candidate acceptance:** two-bit uniform preparation, one marked item,
+  `k=1`; `k=0` means preparation only, and an empty good set has success zero.
+- **Candidate rejection:** inverting a `P` that measures, constructing a
+  reflection from an owned unknown state alone, or identifying an unchecked
+  phase oracle with `good`.
+- **IR direction:** expand preparation and the checkable phase oracle, `P†`,
+  zero-state reflection, and `P` into a finite static sequence and reverify.
+  Retain the operator's global phase.
 
-この契約には準備手順と反復方針が必要である。`Oracle A -> Predicate A -> Q<A>` という省略形だけでは、それらと所有権の出所を表せない。
+This contract needs a preparation procedure and an iteration policy.
+`Oracle A -> Predicate A -> Q<A>` alone omits both and the source of ownership.
 
-### 4.2 phase_estimate: 位相に関するインストルメント
+<a id="42-phase_estimate-位相に関するインストルメント"></a>
+
+### 4.2 phase_estimate: an instrument for phase information
 
 ```text
 phase_estimate(U: ControlledAccess<U_A>, m: StaticNatPositive;
                q: Q<A>) -[Observe]-> (CBits[m], Q<A>)
 ```
 
-**所属案:** 通常の `.qli` 定義の族。`ControlledAccess` は位相を固定した制御付き冪を構成できるという能力の契約候補である。未知のブラックボックス `U` があることだけを、制御化できる証拠にしない。
+**Proposed classification:** a family of ordinary `.qli` definitions.
+`ControlledAccess` is a candidate capability contract for constructing
+phase-fixed controlled powers. Possession of an unknown black-box `U` alone
+is not evidence of controlled access.
 
-`q` の所有権を消費して測定後の標的を返す。新しく準備した位相レジスタだけを測定・消費し、標的を捨てる版には明示した `discard` を要する。`M=2^m` とすると、理想的な有限QPEの古典結果 `y` に対する契約を次で固定する。
+Consume `q` and return the postmeasurement target. Measure and consume only
+the freshly prepared phase register; a variant disposing of the target needs
+an explicit `discard`. For `M=2^m`, fix the ideal finite-QPE contract for
+classical outcome `y` as follows:
 
 ```text
 K_y = (1/M) Σ_{r=0}^{M-1} exp(-2π i r y/M) U^r
 E_y(ρ_AR) = (K_y ⊗ I_R) ρ_AR (K_y† ⊗ I_R)
 ```
 
-`U|u⟩=exp(2πiφ)|u⟩` のとき、確率は `|(1/M)Σ_r exp(2πir(φ-y/M))|²`。`φ=j/M` なら `y=j` が確率1となる。一般の入力には固有成分に応じた結果分布と測定後の変化があり、未知状態から単一の固有位相を確定して読む契約ではない。[QPEの一次資料、§5](https://arxiv.org/abs/quant-ph/9708016)
+When `U|u⟩=exp(2πiφ)|u⟩`, the probability is
+`|(1/M)Σ_r exp(2πir(φ-y/M))|²`; if `φ=j/M`, outcome `y=j` has probability one.
+General inputs have eigencomponent-dependent distributions and postmeasurement
+changes. The contract does not deterministically read one eigenphase from an
+unknown state. [Primary QPE reference, Section 5](https://arxiv.org/abs/quant-ph/9708016).
 
-- **受理候補:** 制御可能な既知のユニタリ、所有する標的、正の静的ビット数。固有状態の約束がなくても上記インストルメントとして解釈する。
-- **拒否候補:** `Observe` を制御付き冪として使う、制御と標的の同一ワイヤ、標的所有権の暗黙破棄。
-- **IR方針:** 位相レジスタの準備、制御付き `U^(2^j)`、逆QFT、測定を展開・再検証する。ビット重み・表示順・角度の符号を公開する。
+- **Candidate acceptance:** a known controllable unitary, an owned target,
+  and a positive static bit count. Without an eigenstate promise, interpret
+  the result through the full instrument above.
+- **Candidate rejection:** an `Observe` operation used as a controlled power,
+  overlapping control/target wires, or implicit loss of target ownership.
+- **IR direction:** expand phase-register preparation, controlled `U^(2^j)`,
+  inverse QFT, and measurement, then reverify. Publish bit weights, display
+  order, and angle signs.
 
-精度 `ε` と失敗率 `δ` を指定する版は、必要な `m`、近似ゲートの誤差、問い合わせ費用の関係を証明してから追加する。`m` ビットの出力だけで任意の精度・成功率を約束しない。測定前のコヒーレント版は、位相レジスタも返す別契約として検討する。
+A variant parameterized by accuracy `ε` and failure probability `δ` requires
+proof of the relation between necessary `m`, approximate-gate errors, and query
+cost before adoption. A result containing `m` bits alone does not promise arbitrary accuracy
+or confidence. A coherent premeasurement version returning the phase register
+would have a separate contract.
 
-### 4.3 simulate: 時間発展の近似とアクセスモデル
+<a id="43-simulate-時間発展の近似とアクセスモデル"></a>
+
+### 4.3 simulate: approximate time evolution and access models
 
 ```text
 simulate(H: HamiltonianAccess<A>, t: Real, ε: Positive;
          q: Q<A>) -[Unitary]-> Q<A>
 ```
 
-**所属案:** 通常の `.qli` 定義の族。Hermitianな `H` と、局所項の分解または検査可能なblock encodingへのアクセスを要求する。有限の回路 `U_t` を構成し、所有権を返す。時間の単位、`exp(-iHt)` の符号、位相を含む演算子ノルムの目標 `‖U_t-exp(-iHt)‖ ≤ ε` を契約化する。
+**Proposed classification:** a family of ordinary `.qli` definitions. Require
+Hermitian `H` and access through a local-term decomposition or a checkable block
+encoding. Construct a finite circuit `U_t` and return ownership. The contract
+specifies time units, the sign in `exp(-iHt)`, and the phase-sensitive operator
+norm target `‖U_t-exp(-iHt)‖ ≤ ε`.
 
-この署名は、補助を使わないか、全入力・参照系に対する厳密なゼロ復帰を示して、データ上のユニタリ `U_t` を構成できる方式を対象とする。補助が近似的にしか戻らない方式では、補助所有権も返す契約、または明示的な破棄を含む `Observe` とチャネル誤差の契約を別に定める。近似誤差の小ささを純粋な解放の証拠にはしない。
+This signature covers methods constructing a data-space unitary `U_t` without
+auxiliaries or with exact auxiliary zero return for all inputs and references.
+If auxiliaries return only approximately, use a separate contract that returns
+their ownership, or an `Observe` procedure with explicit discard and channel
+error. A small approximation error does not justify pure release.
 
-- **受理候補:** 契約を持つ項ごとの時間発展と、積公式の誤差を満たす静的分割数。
-- **拒否候補:** 非Hermitianな行列、必要なアクセスや誤差証拠の欠落、合成予算を超える展開。
-- **IR方針:** 検査済みユニタリ列へ展開し、近似の証拠と資源見積もりを対応付ける。IRがユニタリであることと、指定した `H` を誤差内で模擬することを別に検査する。
+- **Candidate acceptance:** contracted term evolutions and a static subdivision
+  count satisfying the product-formula error bound.
+- **Candidate rejection:** non-Hermitian matrices, missing access or error
+  evidence, or expansion exceeding the synthesis budget.
+- **IR direction:** expand to a checked unitary sequence and bind approximation
+  evidence and resource estimates. Independently distinguish IR unitarity from
+  approximating the specified `H` within the stated error.
 
-積公式から始め、項の非可換性に由来する誤差を扱う。LCU・qubitization版では別のアクセス契約を要する。[積公式の誤差解析](https://arxiv.org/abs/1912.08854)、[qubitization](https://arxiv.org/abs/1610.06546)
+Start with product formulas and account for errors due to noncommuting terms.
+LCU and qubitization variants require different access contracts.
+[Product-formula error analysis](https://arxiv.org/abs/1912.08854),
+[qubitization](https://arxiv.org/abs/1610.06546).
 
-### 4.4 estimate: 新規準備を繰り返して観測量を推定する
+<a id="44-estimate-新規準備を繰り返して観測量を推定する"></a>
+
+### 4.4 estimate: repeated fresh preparation for observable estimation
 
 ```text
 estimate(prep: Prep_A, observable: Observable<A>, plan: SamplingPlan)
     -> HostResult<Estimate>
 ```
 
-**所属案:** ホスト側の計画API。各試行は通常の `.qli` の `Observe` 定義として検査する。`Prep_A` は試行ごとに新しい資源を作る手順であり、一つの未知状態の所有権ではない。
+**Proposed classification:** a host-side planning API. Check each quantum trial
+as an ordinary `.qli` `Observe` definition. `Prep_A` creates fresh resources
+for each trial; it is not ownership of one unknown state.
 
-まず有限のPauli和を対象候補にし、準備する密度演算子 `ρ` に対する `tr(Oρ)` を推定する。結果には推定値、試行数、誤差・信頼水準の根拠、準備・測定の前提、ホスト実行の失敗を残す。サンプリング誤差と回路近似・装置誤差を分ける。
+Finite Pauli sums are the initial candidate scope. Estimate `tr(Oρ)` for the
+prepared density operator `ρ`. Return the estimate, trial count, justification
+of error/confidence, preparation and measurement assumptions, and host execution
+failures. Separate sampling error from circuit approximation and device error.
 
-- **受理候補:** 毎回新規準備する手順、測定可能な観測量の分解、有限試行数と集計法。
-- **拒否候補:** 同じ `Q<A>` を複製して複数試行に使う、一回のサンプルを期待値そのものとして返す、根拠のない信頼区間。
-- **IR方針:** 各試行を準備・基底変換・測定の検証済みIRへ変換する。試行管理と統計処理はホスト側に置く。
+- **Candidate acceptance:** fresh preparation on each trial, a measurable
+  observable decomposition, a finite trial count, and an aggregation method.
+- **Candidate rejection:** copying one `Q<A>` to increase trial count, reporting
+  a single sample as the expectation itself, or unsupported confidence intervals.
+- **IR direction:** lower each preparation/basis-change/measurement trial to
+  verified IR; keep trial management and statistics on the host.
 
-変分ループはこの上でパラメータを更新する。推定の契約と、最適化が基底エネルギーへ収束するという主張は別に扱う。[VQEの一次資料](https://arxiv.org/abs/1304.3061)
+Variational loops update parameters on top of this procedure. The estimation
+contract is separate from a claim that optimization converges to the ground
+energy. [Primary VQE reference](https://arxiv.org/abs/1304.3061).
 
-### 後続の契約候補
+<a id="後続の契約候補"></a>
 
-quantum walkには遷移アクセスと対象部分空間、LCUには係数・正規化・成功フラグ、QSVTにはblock encoding・多項式の有界性とパリティ・位相列・近似誤差を記録する。これらは通常定義の族と証拠契約の候補であり、成功ブロックの抽出を無条件の純粋操作にしない。[QSVTの一次資料](https://arxiv.org/abs/1806.01838)
+### Further contract candidates
 
-syndrome extractionには、返すデータと消費するメータ、測る可換検査量、符号空間、訂正可能な誤り集合、古典decoderの前提を記録する。現行の[ビット反転訂正](algorithm-routines.md)から一般のQECや耐故障性を推論しない。
+Record transition access and target subspaces for quantum walks; coefficients,
+normalization and success flags for LCU; and block encodings, polynomial
+boundedness/parity, phase sequences, and approximation error for QSVT. These
+remain candidate ordinary-definition families and evidence contracts. Extracting
+a success block must not become an unconditional pure operation.
+[Primary QSVT reference](https://arxiv.org/abs/1806.01838).
 
-## 5. 標準への採用とAIからの還流
+For syndrome extraction, record returned data and consumed meters, the commuting
+checks measured, code space, correctable-error set, and classical-decoder
+premises. The existing [bit-flip correction](algorithm-routines.md) does not
+establish general QEC or fault tolerance.
 
-1. **候補:** コーパスと複数の利用文脈から構造を提案し、既存部品との関係を示す。
-2. **実験的実装:** 契約台帳、通常定義、IR対応、受理・拒否例を揃える。未検査の前提は公開する。
-3. **再利用評価:** 少なくとも二つの異なる用途と、抽出に使わなかった問題で評価する。所有権、位相、誤差、費用の契約が保たれることを調べる。
-4. **標準採用:** 契約の安定性と検査根拠をレビューし、公開名・互換性・移行方法を定める。数値例の一致を一般証明として登録しない。
-5. **継続評価:** AIや人間が見つけた頻出パターンを候補へ戻す。頻度だけでは採用せず、同じ検証と再利用評価を行う。
+<a id="5-標準への採用とaiからの還流"></a>
 
-通常定義への昇格によって封印された原始操作や検証器の信頼境界を自動的に増やさない。新しい言語形式や原始操作が必要なら、その必要性・意味・検査規則を別に審査する。
+## 5. Standard adoption and feedback from AI exploration
 
-台帳からは、必要な資源、効果、アクセス能力、前提、誤差予算で部品を探せるようにする。これはAIに対する**探索単位の設計**である。探索費用が減るかは、同じ問題集合と計算予算で、有効な候補率・検査失敗・生成回路の費用・再利用率を比較して評価する。探索空間の桁数や新規アルゴリズムの発見を達成済みの成果にしない。
+1. **Candidate:** propose a structure from the corpus and multiple uses;
+   explain its relation to existing components.
+2. **Experimental implementation:** supply a contract ledger entry, ordinary
+   definitions, IR correspondence, and acceptance/rejection cases. Publish
+   unchecked assumptions.
+3. **Reuse evaluation:** assess at least two different uses and a problem not
+   used to extract the abstraction. Check preservation of ownership, phase,
+   error, and cost contracts.
+4. **Standard adoption:** review contract stability and validation evidence;
+   establish public names, compatibility, and migration. Do not register
+   numerical example agreement as a general proof.
+5. **Continuing evaluation:** return frequent patterns found by humans or AI
+   to the candidate stage. Frequency alone does not justify adoption; apply
+   the same verification and reuse evaluation.
 
-現行 `std::routines` の固定幅APIは実験的な出発点とする。安定化時には移行方針を用意し、所有権・効果・ビット順・位相・誤差・成功条件の変更を契約変更として扱う。現在の「処理系と同じ版で同梱する」配布方式を基礎にし、外部パッケージ管理は別途設計する。
+Promoting a component to an ordinary definition does not automatically enlarge
+the sealed primitive set or verifier trust boundary. A needed language form
+or primitive requires separate review of its necessity, meaning, and checking
+rules.
 
-## 6. 着手条件と将来の順序
+The ledger should support finding components by resources, effects, access
+capabilities, premises, and error budgets. This designs **units for AI search**.
+Evaluate any reduction in search cost on the same problem set and computation
+budget, comparing valid-candidate rates, failed checks, generated-circuit costs,
+and reuse rates. Do not claim a demonstrated search-space reduction or discovery
+of new algorithms without such results.
 
-v0.2.0向けの実装へ進む際は、上記の仮想コード初稿と要求の記録を先にそろえる。以下のL0〜L5の既存成果は、その前提の完了を意味しない。
+Current fixed-width `std::routines` APIs are an experimental starting point.
+Provide a migration policy when stabilizing them. Changes in ownership,
+effects, bit order, phase, error, or success conditions change the contract.
+Retain the current compiler-bundled version model as the distribution baseline;
+external package management needs separate design.
 
-これまでにL0の台帳とA2/L1の有限実装を整備し、最初の到達点を検査した。現在はv0.1の最低条件としてL4の有限な意味契約・証拠検査を先行させる。以下の領域を[第2層のA2〜A4](algorithm-structure-goal.md#実装順と到達基準)と合わせ、有限実装と未実装の一般化を区別する。L0〜L5はリリース番号ではなく、全項目の完了がそのままv0.1やv1の必要条件になるわけではない。
+<a id="6-着手条件と将来の順序"></a>
 
-| 段階 | 着手条件 | 成果物・完了判定 |
+## 6. Entry conditions and future work order
+
+The imaginary drafts and requirement records must precede v0.2.0 implementation.
+The existing L0–L5 results below do not by themselves complete that prerequisite;
+its completion is recorded separately through the corpus and review linked above.
+
+The L0 ledger and finite A2/L1 implementation have reached and checked their
+initial milestones. The adopted order prioritizes finite L4 meaning contracts
+and evidence checking for the v0.1 minimum; that bounded path is now checked.
+Relate the areas below to [Layer 2's A2–A4](algorithm-structure-goal.md#実装順と到達基準)
+while distinguishing finite implementations from unimplemented generalization.
+L0–L5 are not release numbers, and completing every area is not itself a
+requirement of either v0.1 or v1.
+
+| Area | Entry condition | Deliverables and completion status |
 | --- | --- | --- |
-| L0: 契約台帳の設計 | 現行A0/A1を入力とする。 | 文書形式v1に通常定義12件を登録済み。状態・前提・実装・検証・費用を追跡。機械可読化は未着手。 |
-| L1: 構造とデータの基盤 | A2で `adjoint`・制御・有限反復を具体化する。 | 静的な同型関数の逆・制御・有限反復を実装・検査済み。有限積のビット順と位相を固定。サイズ付き型・一般の静的パラメータ化は残件。 |
-| L2: 最初のアルゴリズム骨格 | L1の規則とIR対応、実装交換に使う意味契約が揃う。 | 固定幅QPEの利用例を実装。Grover・QPEの一般化した構造とShorからの利用はv1の対象であり未実装。amplify/QPEの一般化した標準APIと振幅推定・量子計数への再利用評価も残件。 |
-| L3: 算術とハイブリッド計画 | A3の算術・角度・観測量とホスト境界を定める。 | [固定幅算術からN=15の位数推定・古典因数抽出](arithmetic-order-finding.md)へ接続済み。再試行の条件と確率を検査。一般算術・自動再試行・estimateのVQE/QAOAでの共用は未実装。 |
-| L4: 証拠付きの高度な骨格 | 有限で正確な意味契約・補助証拠はv0.1の必須部分として先行。一般化にはA4の保存効果・射影ブロック・誤差の契約を要する。 | 有限な厳密検査器、3引数の補助形式、公開関数契約の再利用と最終IRへの証拠保持・交換経路を実装・検査。quantum walk、LCU、QSVT、simulate、一般化したsyndrome抽出は後続候補であり、各方式の前提と検証状態を台帳から追跡する。 |
-| L5: 標準化と探索への還流 | 複数用途と未知の評価問題で再利用の根拠が揃う。 | 公開APIの版と適合検査を管理し、AI提案を候補から採用まで同じ経路で審査する。個々の部品ごとに採用判断する。 |
+| L0: contract-ledger design | Use current A0/A1 as input. | Twelve ordinary definitions registered in document format v1; track status, premises, implementation, validation, and cost. Machine-readable conversion has not begun. |
+| L1: structural and data foundations | Specify `adjoint`, control, and finite repetition in A2. | Static inverse/control/finite repetition of functions with identical input/output types are implemented and checked, with fixed finite-product bit order and phase. Sized types and general static parameters remain open. |
+| L2: first algorithm skeletons | L1 rules, IR correspondence, and substitution meaning contracts are available. | Fixed-width QPE usage examples are implemented. Generalized Grover/QPE structure and Shor's reuse are v1 targets, unimplemented. General `amplify`/QPE standard APIs and reuse in amplitude estimation/quantum counting remain open. |
+| L3: arithmetic and hybrid plans | Establish A3 arithmetic, angles, observables, and host boundaries. | [Fixed arithmetic, N=15 order finding, and classical factor extraction](arithmetic-order-finding.md) are connected; retry conditions and probabilities are checked. General arithmetic, automatic retries, and shared `estimate` use in VQE/QAOA remain unimplemented. |
+| L4: advanced skeletons with evidence | Finite exact meaning/auxiliary contracts come first as required by v0.1. Generalization needs A4 preservation effects, projected blocks, and error contracts. | Finite exact checker, three-argument computed form, public-function contract reuse, final-IR retention, and substitution are implemented and checked. Walk, LCU, QSVT, `simulate`, and general syndrome extraction remain later candidates; record each method's premises and verification status in the ledger. |
+| L5: standardization and feedback into search | Establish reuse evidence across multiple uses and previously unused evaluation problems. | Manage public API versions and conformance checks; apply the same review from AI-generated candidate through adoption. Decide adoption separately for each component. |
 
-まずv0.1の有限な契約検査と実装交換を、L0の記録、L1の静的操作、L4の証拠の限定部分をつないで成立させる。その上でL1のサイズ・操作パラメータ化、L2の構造化とL3の算術・ホスト境界を、Shor・QPE・Groverというv1の到達像に沿って進める。L3のVQE/QAOAやL4の一般ブロック符号化までを同じリリース条件にはしない。個々のAPIの標準採用には引き続き第5節の評価を要し、有限例の成功やリリース目標の決定を、一般証明・実装完了・標準採用と数えない。
+The first step connected L0 records, L1 static operations, and finite L4 evidence
+to establish v0.1 contract checking and implementation substitution. Build on
+that foundation with L1 size/operation parameters, L2 structures, and L3
+arithmetic/host boundaries toward textbook-structured Shor, QPE, and Grover.
+L3 VQE/QAOA and general L4 block encoding do not become requirements of that
+same release target. Standard adoption of each API still requires Section 5's
+evaluation; finite examples and adopted release goals are not general proofs,
+completed generalized implementations, or standard adoption.
