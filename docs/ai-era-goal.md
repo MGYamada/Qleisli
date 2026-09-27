@@ -1,66 +1,187 @@
-# 第1開発目標: AI時代の量子言語
+<a id="第1開発目標-ai時代の量子言語"></a>
 
-状態: **長期的な開発目標**（2026-09-26）。[Rust IR 検証器と閉じた IR の参照実行系](ir-prototype.md)は部分実装したが、型規則、健全性定理、`.qli` 処理系はまだ完成していない。この文書は[固定した設計思想](design-philosophy.md)を、AI がコードを書く時代の一つの観点から具体化する。人間が書いた `.qli` と AI が生成した `.qli` に同じ規則を適用する。
+# Development goal 1: a quantum language for the AI era
 
-**プロジェクトのnorth star（2026-09-27）:** 「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」。第1目標は、プログラムに現れる概念の意味と実装との対応を検査し、人間とAIが同じ契約を使える基盤を担う。この方針と下記リリース条件は[英語の正本](release-milestones.md)に従う日本語の補助要約である。
+Status: **adopted long-term development goal** (2026-09-26). This English
+edition is authoritative for this goal and replaces the earlier Japanese text
+without changing its mathematical premises or guarantee boundaries. It does
+not introduce accepted syntax or establish an implementation soundness theorem.
+The original 2026-09-26 status described a partially implemented
+[Rust IR verifier and reference executor for closed IR](ir-prototype.md),
+with type rules, soundness theorems, and the `.qli` implementation still
+incomplete. Subsequent progress in the declared finite profile is recorded
+below; the general implementation proofs remain open.
 
-> Qleisli は、生成された量子プログラムを型・効果・所有権検査と検証済み IR に通し、どの健全性が成立したかをコンパイル時に示せる言語を目指す。
+This goal develops the [adopted design principles](design-philosophy.md) from
+the perspective of an era in which AI writes code. The same rules apply to
+human-written and AI-generated `.qli`.
 
-[第2開発目標](algorithm-structure-goal.md)では、代表的アルゴリズムから共通構造を抽出し、この検証境界の内側で再利用できる部品へ育てる。[第3層の将来計画](stdlib-roadmap.md)では、それらを意味論的契約を持つ標準語彙として蓄積する。検証基盤、構造抽出、標準ライブラリという三層を同じ信頼境界につなぐ。
+**Project north star (2026-09-27):** make the language people use to think
+about quantum algorithms coincide with the language they use to write
+programs. Goal 1 provides the foundation on which humans and AI can use the
+same contracts, by checking the correspondence between program concepts and
+their implementations. This direction and the release conditions below
+follow the authoritative [release milestones](release-milestones.md).
 
-AI は候補となるコードや証明案を作れる。受理の根拠は、その出所や説明文ではなく、コンパイラが検査した導出と IR の構成子・証拠である。検査不能な操作を生成元に応じて特別扱いしない。診断は、失敗した資源、効果、証拠とソース位置を返す。
+> Qleisli aims to pass generated quantum programs through type, effect, and
+> ownership checking and verified IR, and to show at compile time which
+> soundness guarantees have been established.
 
-## v0.1 と v1 の到達条件
+The [second development goal](algorithm-structure-goal.md) extracts common
+structures from representative algorithms and develops reusable components
+inside this verification boundary. The [Layer 3 plan](stdlib-roadmap.md)
+collects those components into a standard vocabulary with semantic contracts.
+The three layers—verification foundations, structure extraction, and the
+standard library—share one trust boundary.
 
-**2026-09-27 にユーザーが採用したリリース目標**として、[v0.1 の意味契約の最低条件](release-milestones.md#v01-minimum-semantic-contracts)を第1目標の最初のバージョン到達条件に置く。この節は英語のリリース計画を正本とする日本語の補助要約であり、実装・証明の完了や新規な数学的発明を宣言するものではない。
+AI can propose code and proofs. Acceptance rests on derivations checked by
+the compiler and on IR constructors and evidence, not on a proposal's origin
+or accompanying explanation. Operations that cannot be checked receive no
+special treatment based on who generated them. Diagnostics should identify
+the failing resource, effect, or evidence and its source location.
 
-有限次元の論理空間から実装空間への等長な符号化 `E_in, E_out`、理想的な純粋実装演算子 `U`、公開仕様で固定した論理操作 `u` に対する `U E_in = E_out u` を、検査可能な有限の意味証拠に結び付ける。同じ契約を満たす実装への交換と、生成元から独立した IR・証拠の再検査を v0.1 の最低条件にする。AI の説明を証拠として扱わず、契約の入力符号化・位相・所有権を検査する。これは純粋操作の契約から始める計画であり、観測や一般のアルゴリズムの正しさまで、この式だけで保証するものではない。
+<a id="v01-と-v1-の到達条件"></a>
 
-[v1 の具体的な到達条件](release-milestones.md#v1-north-star-textbook-algorithm-structure)は「Shor、QPE、Grover が教科書の量子アルゴリズム構造のまま読める」ことであり、north starを実ソースで評価する三つの対象とする。有限コアの仕様・証明・IR 対応を優先する方針を維持し、まずv0.1の意味契約を満たす。サイズ付き型・操作パラメータ化・標準語彙は、この検証基盤の上でv1の記述を支えるために進める。
+## v0.1 and v1 acceptance conditions
 
-[有限な厳密契約検査器と3引数の補助計算形式](semantic-contracts-v0.1.md)、[公開関数契約と最終IRまでの証拠保持](function-contracts-v0.1.md)を接続し、v0.1の宣言した有限プロファイルを実装・検査した。v1は未達成である。現在の検査結果は[適合記録](specification-status.md)に分け、AIが与えた説明や有限例の成功を一般的な健全性証明に置き換えない。
+As **release goals adopted by the user on 2026-09-27**, the
+[v0.1 minimum semantic-contract conditions](release-milestones.md#v01-minimum-semantic-contracts)
+are the first version milestone for Goal 1. This section summarizes the
+authoritative release plan; adopting a goal does not declare completed
+implementation, proof, or a new mathematical invention.
 
-v0.2.0へ進む前提として、[仮想Qleisli 1.0の理想コードの先行作成](release-milestones.md#pre-v020-imaginary-v1-code)を採用した。6題の初稿と必要な意味契約・未解決事項を先にそろえ、AIとともに不足する抽象化・検証方法を具体化してから一般化を実装する。初稿はコンパイル不要で改訂可能だが、生成元や説明は検査の証拠にならない。初稿作成は未完了であり、方針採用を検証済み保証として扱わない。
+For isometric encodings `E_in, E_out` from finite-dimensional logical spaces
+to implementation spaces, an ideal pure implementation operator `U`, and a
+logical operation `u` fixed by a public specification, connect the equation
+`U E_in = E_out u` to checkable finite semantic evidence. The v0.1 minimum
+requires substitution of implementations satisfying the same contract and
+independent rechecking of IR and evidence, regardless of their producer.
+Check the input encoding, phase, and ownership; an AI explanation is not
+evidence. This plan starts with pure-operation contracts. The equation alone
+does not guarantee observation semantics or general algorithm correctness.
 
-## 保証の階層
+The [concrete v1 acceptance target](release-milestones.md#v1-north-star-textbook-algorithm-structure)
+is that Shor, QPE, and Grover can be read in their textbook quantum-algorithm
+structure. These three actual source programs assess the north star. Preserve
+the priority of the finite-core specification, proofs, and IR correspondence:
+the v0.1 meaning contracts come first. Sized types, operation parameters, and
+standard vocabulary then support v1 programs on that verification foundation.
 
-| 水準 | 目標とする保証 | 検査の境界 |
+The [bounded exact checker and three-argument auxiliary form](semantic-contracts-v0.1.md)
+have been connected to [public function contracts and final-IR evidence](function-contracts-v0.1.md),
+implementing and checking v0.1's declared finite profile. v1 remains unmet.
+Current validation results belong in the [conformance ledger](specification-status.md).
+Neither AI explanations nor successful finite examples replace a general
+soundness proof.
+
+The [imaginary Qleisli 1.0 code prerequisite](release-milestones.md#pre-v020-imaginary-v1-code)
+was adopted before v0.2.0: write all six initial drafts and their necessary
+meaning contracts and open questions before implementing generalization.
+Use the drafts with AI to make missing abstractions and checking methods
+concrete. They need not compile and may be revised; their origin and
+explanations are not verification evidence. The
+[six drafts and requirements index](imaginary-v1/README.md) and semantic
+review now exist. This completes the prerequisite concerning initial
+artifacts and recorded requirements, not verified language features or a
+general soundness guarantee. The [language evolution framework](language-evolution.md)
+preserves that distinction when selecting subsequent specifications.
+
+<a id="保証の階層"></a>
+
+## Levels of guarantees
+
+| Level | Intended guarantee | Checking boundary |
 | --- | --- | --- |
-| 1. 資源安全性 | 無所有ワイヤへの操作、同じ所有権の二重使用、測定後の旧ハンドル利用、未処理の量子所有権、保護領域との衝突を拒否する。一般の借用との衝突検査は将来の署名・構文に対する目標。 | 型・効果・所有権検査と IR の線形トークン検証。 |
-| 2. 理想意味論での量子的健全性 | 純粋な `iso` は等長、`unitary` はユニタリ、観測を含むプログラムは正当な量子インストルメントを表す。 | 封印された原始操作、単射リフト、位相、分離証拠、効果付き合成、IR 意味論の検証。 |
-| 3. プロトコルの正しさ | 例えばテレポーテーションの出力が、入力の量子情報を保つ。 | 個別の仕様と追加の証明義務。基本型が自動的に示す性質ではない。 |
-| 4. アルゴリズムの正しさ | 目的の答えや成功確率を満たす。 | 個別の数学的証明、解析、検証。型検査だけでは示せない。 |
+| 1. Resource safety | Reject operations on unowned wires, repeated use of the same ownership, reuse of a measured handle, unhandled quantum ownership, and protected-region conflicts. Conflict checking for general borrowing is a goal for future signatures and syntax. | Type, effect, and ownership checking, with IR linear-token verification. |
+| 2. Quantum soundness in ideal semantics | Pure `iso` operations are isometries, `unitary` operations are unitaries, and programs containing observation denote valid quantum instruments. | Sealed primitive meanings, injective lifts, phase, separation evidence, effectful composition, and verification of IR semantics. |
+| 3. Protocol correctness | For example, a teleportation output preserves the input's quantum information. | A protocol-specific specification and additional proof obligations; basic types do not automatically establish this property. |
+| 4. Algorithm correctness | Produce the intended answers or satisfy the required success probability. | Algorithm-specific mathematical proof, analysis, and validation; type checking alone is insufficient. |
 
-水準 1 の所有権検査は `(q,q)` を二重所有として拒否するが、任意の未知状態複製装置が存在しないことをそれだけで証明するわけではない。水準 2 には、原始操作の意味と純粋な補助ビット解放の分離証拠が必要である。入出力のワイヤ集合が同じという情報だけでは、内部で失われた相関を検出できない。
+At Level 1, the ownership checker rejects `(q,q)` as duplicated ownership.
+That alone is not a proof that no machine can clone arbitrary unknown states.
+Level 2 requires primitive semantics and evidence of separation for pure
+auxiliary release. Matching input and output wire sets cannot by itself detect
+correlations lost inside an implementation.
 
-## 目指す健全性定理
+<a id="目指す健全性定理"></a>
 
-初期版の有限・停止するコアについて、概念的な判断を次のように置く。`Γ` は古典文脈、`Δ` は量子所有権文脈、`ε` は `Unitary ≤ Iso ≤ Observe` の効果であり、pureは前二者の略称である。これは[ソースの混合値の射影](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)による全計算の略記で、式の残存環境だけを量子出力とするものではない。
+## Intended soundness theorem
+
+For the initial finite, terminating core, use the following conceptual
+judgment. `Γ` is a classical context, `Δ` a quantum-ownership context, and
+`ε` an effect in `Unitary ≤ Iso ≤ Observe`; *pure* abbreviates the first two.
+This is whole-computation shorthand based on the
+[projection of mixed source values](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces),
+not a convention that treats only an expression's residual environment as
+the quantum output.
 
 ```text
 Γ ; Δin ⊢ P : B ; Δout ! ε
 ```
 
-封印された原始操作の意味が正しく、単射リフトと構造化された `ComputeUseUncompute` のゼロ復帰条件が検証され、合成が型・効果規則に従うなら、各古典入力 `γ` と有限な古典結果型 `B` の結果 `b : B` について `⟦P⟧_{γ,b} : L(H(Δin)) -> L(H(Δout))` は完全正で跡非増加、`Σ_b ⟦P⟧_{γ,b}` は跡保存である、という定理を目指す。この写像の族が量子インストルメントである。古典結果を保持する全体は古典量子出力への CPTP 写像、結果を忘れた総和も CPTP 写像になる。閉じた `main` が量子入力・出力を持たなければ、意味は `B` 上の正規化された確率分布となる。
+The intended theorem has these premises: sealed primitives have the specified
+valid meanings; injective lifts and the zero-return conditions of structured
+`ComputeUseUncompute` are verified; and composition obeys the type/effect
+rules. For each classical input `γ` and outcome `b : B` in the finite
+classical result type `B`, it states that
+`⟦P⟧_{γ,b} : L(H(Δin)) -> L(H(Δout))` is completely positive and
+trace-nonincreasing, and that `Σ_b ⟦P⟧_{γ,b}` is trace preserving. This
+family of maps is a quantum instrument. Retaining the classical outcome
+gives a CPTP map to a classical–quantum output; forgetting the outcome by
+summing the maps also gives a CPTP map. When a closed `main` has no quantum
+input or output, its meaning is a normalized probability distribution over `B`.
 
-純粋な `iso fn` については `V†V = I`、`unitary fn` についてはさらに `VV† = I` を別に示す。定理の前提、型付けの保存、各 IR 構成子の意味、合成の補題を段階1・2で確定する。[有限コアの形式化](formal-core.md)に現時点の定理文と証明の骨格を記した。数学的なソース規則系については[Q1〜Q3の紙上証明](source-soundness.md)を得た。Rustの受理・IR変換との一般的な対応と、処理系についての健全性保証は未証明である。
+Separately establish `V†V = I` for a pure `iso fn`, and additionally
+`VV† = I` for a `unitary fn`. The theorem premises, typing preservation,
+meanings of all IR constructors, and composition lemmas are responsibilities
+of Stages 1 and 2. The [finite-core formalization](formal-core.md) records
+the current theorem statements and proof outline. A
+[paper proof of Q1–Q3](source-soundness.md) exists for the mathematical
+source-rule system. General correspondence with Rust acceptance and IR
+translation, and an implementation soundness guarantee, remain unproved.
 
-この保証が述べるのは理想的な言語意味論である。外部バックエンドの機能、実機のノイズと較正、指定したプロトコルやアルゴリズムの成果は別に検査する。将来、未検証の外部操作や事後選択を追加する場合は、この定理の前提と結論を改めて定義する。
+This guarantee concerns ideal language semantics. External-backend
+capabilities, hardware noise and calibration, and the outcomes of a specified
+protocol or algorithm require separate validation. Adding unchecked external
+operations or postselection in a future version requires restating the
+theorem's premises and conclusions.
 
-## AI を含む開発の流れ
+<a id="ai-を含む開発の流れ"></a>
 
-1. 人間または AI が `.qli` と、必要なら個別仕様を提案する。
-2. フロントエンドが型・効果・所有権を検査し、型付き IR と証拠を生成する。
-3. IR 検証器が、生成元から独立にワイヤの線形性、構成子、証拠を再検査する。
-4. 合格したプログラムだけを参照実行系または能力を照合したバックエンドへ渡す。プロトコルの主張は別の検証結果として示す。
+## Development workflow involving AI
 
-検証器が理解できない AI 生成の説明や証明文を、そのまま証拠として採用しない。AI の提案を修正しやすい位置付き診断と、機械可読な検査結果を目指す。小さな検証核を作り、その信頼境界を文書化する。
+1. A human or AI proposes `.qli` and, where needed, an individual specification.
+2. The frontend checks types, effects, and ownership, and generates typed IR
+   with evidence.
+3. The IR verifier independently rechecks wire linearity, constructors, and
+   evidence without trusting the producer.
+4. Only accepted programs go to the reference executor or a backend whose
+   capabilities have been checked. Protocol claims have separate validation
+   results.
 
-## 到達判定
+Do not accept AI-generated explanations or proof prose as evidence when the
+verifier cannot understand it. Aim for diagnostics with source locations that
+help revise AI proposals, together with machine-readable checking results.
+Keep the checking kernel small and document its trust boundary.
 
-- [言語仕様](language-spec.md)で、受理・拒否例、資源保存、純粋操作と観測操作の意味を曖昧さなく定める。
-- [ロードマップ](../ROADMAP.md)に従い、型付き IR の全構成子を検証し、不正な線形使用・効果違反・証拠なしの解放を拒否する。
-- 有限コアの上記定理を証明し、実装した検査器がその前提に沿うことを確かめてから「コンパイル成功なら健全」と主張する。
-- Bell 状態、部分測定、位相オラクル、測定結果によるフィードバックの期待結果を参照実行系で照合する。これらの例示検査を一般の健全性証明と区別する。
+<a id="到達判定"></a>
 
-線形ワイヤの型検査と密度演算子上の意味論を組み合わせる先行例に [QWIRE](https://arxiv.org/abs/1803.00699)、線形型の健全性を形式化する先行例に [Proto-Quipper の形式化](https://arxiv.org/abs/1812.03624)がある。Qleisli の目標と定理は、これらの成果をそのまま実装済みと主張するものではない。
+## Acceptance criteria for this goal
+
+- Specify accepted/rejected examples, resource preservation, and the meanings
+  of pure and observing operations unambiguously in the
+  [language specification](language-spec.md).
+- Following the [roadmap](../ROADMAP.md), verify every typed-IR constructor
+  and reject invalid linear use, effect violations, and release without evidence.
+- Prove the finite-core theorem above and establish that the implemented
+  checker meets its premises before claiming that compilation success
+  guarantees soundness.
+- Compare expected Bell-state, partial-measurement, phase-oracle, and
+  measurement-feedback results with the reference executor. Keep these
+  example checks distinct from a general soundness proof.
+
+[QWIRE](https://arxiv.org/abs/1803.00699) is prior work combining linear-wire
+typing with density-operator semantics; the
+[Proto-Quipper formalization](https://arxiv.org/abs/1812.03624) is prior work
+formalizing linear-type soundness. Qleisli's goals and theorem statements do
+not claim that these results have already been implemented in Qleisli.

@@ -1,105 +1,225 @@
-# 第2開発目標: 量子アルゴリズムの構造化
+<a id="第2開発目標-量子アルゴリズムの構造化"></a>
 
-状態: **有限部品を実装・検証し、v0.1の最低条件とv1の到達像を決定**（2026-09-27）。v0.1の宣言した有限プロファイルは実装・検査済み、v1は未達成。第1目標の[AI時代の量子言語](ai-era-goal.md)が検証の信頼境界を定め、本目標は検証するプログラムをどのような部品で組み立てるかを定める。[設計思想](design-philosophy.md)と[有限コア](formal-core.md)に従う。本書は日本語の設計計画であり、リリース条件の英語正本は[release-milestones.md](release-milestones.md)とする。
+# Second development goal: structuring quantum algorithms
 
-**プロジェクトのnorth star:** 「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」。第2目標は、その思考に現れる概念・合成・前提を、実際にコンパイル可能な抽象化へ育てる。Shor・QPE・Groverは、この方向をv1で具体的に評価する三つの到達対象とする。
+Status: **finite building blocks implemented and validated; the v0.1 minimum
+and the v1 target selected** (2026-09-27). The declared finite v0.1 profile
+has been implemented and checked; v1 has not been achieved. The first goal,
+[a quantum language for the AI era](ai-era-goal.md), defines the verification
+trust boundary. This goal determines the building blocks from which the
+programs being verified are assembled. It follows the
+[design principles](design-philosophy.md) and [finite core](formal-core.md).
+This English edition supersedes the earlier Japanese design plan without
+changing its decisions or evidence status. [Release milestones](release-milestones.md)
+remain authoritative for release criteria; this plan does not itself add
+language forms or standard APIs.
 
-**現在の優先順位（2026-09-27）:** 証拠付き意味契約 `U E_in = E_out u` と独立した証明書検査を[v0.1の最低条件](release-milestones.md#v01-minimum-semantic-contracts)にする。有限コアの仕様・所有権・IR対応をその基盤として進め、既存v0の有限例を回帰検査に保持する。有限検査器と3引数の補助計算形式を[実装](semantic-contracts-v0.1.md)し、[公開関数契約と最終IRまでの証拠保持](function-contracts-v0.1.md)へ接続した。一般サイズと操作パラメータ化は、この意味と実装の対応基盤の上に[v1の具体的な到達条件](release-milestones.md#v1-north-star-textbook-algorithm-structure)を実現する後続工程とする。
+**Project north star:** make the language people use to think about quantum
+algorithms coincide with the language they use to write programs. The second goal is
+to develop the concepts, compositions, and premises that appear in that thinking
+into abstractions that can actually compile. Shor, QPE, and Grover are the three
+concrete targets for evaluating that direction in v1.
 
-**v0.2.0以前の前提（2026-09-27採用）:** [仮想Qleisli 1.0コードの先行作成](release-milestones.md#pre-v020-imaginary-v1-code)を、上記の一般化の実装に先立つ必須工程とする。QPE・Grover・amplitude estimation・Shor・quantum walk・QSVTの理想コード初稿をそろえ、意味契約・能力・未解決事項を記録してからv0.2.0向けの新機能実装とリリースへ進む。まだコンパイルできなくてもよく、初稿自体も改訂できる。方針は採用済み、初稿作成は未完了であり、既存の資料コーパスや固定幅例だけではこの前提を満たさない。
+**Current priority (2026-09-27):** make evidence-bearing semantic contracts
+`U E_in = E_out u` and independent certificate checking the
+[v0.1 minimum](release-milestones.md#v01-minimum-semantic-contracts). Develop the
+finite-core specification, ownership rules, and IR correspondence as their
+foundation, retaining existing finite v0 examples as regressions. The finite
+checker and three-argument computed form have been
+[implemented](semantic-contracts-v0.1.md) and connected to
+[public function contracts and evidence retention through final IR](function-contracts-v0.1.md).
+General sizes and operation parameters are subsequent work toward the
+[concrete v1 criteria](release-milestones.md#v1-north-star-textbook-algorithm-structure),
+built on this correspondence between meaning and implementation.
 
-> 代表的な量子アルゴリズムから共通構造を抽出し、その型・所有権・効果・証拠をQleisliの抽象化として表す。既存アルゴリズムの記述と検証で抽象化を評価し、その再合成から新しいアルゴリズムを探る。
+**Pre-0.2.0 prerequisite (adopted 2026-09-27):**
+[write imaginary Qleisli 1.0 code first](release-milestones.md#pre-v020-imaginary-v1-code)
+before implementing that generalization. Collect initial ideal-code drafts for
+QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT, and record
+their semantic contracts, capabilities, and open questions before new-feature
+implementation and release work for 0.2.0. The drafts need not compile and may
+be revised. The [six drafts and requirements index](imaginary-v1/README.md)
+and [semantic review](imaginary-v1/review.md) now exist, satisfying the
+prerequisite of initial bodies and requirement records. This was not achieved
+merely by the earlier research corpus or fixed-width examples; implementation
+and validation of the imaginary code remain incomplete.
 
-[第3層の将来計画](stdlib-roadmap.md)は、ここで抽出した構造を標準語彙として採用・配布・保守する流れを定める。本目標のA0〜A4は構造の発見と評価、第三層のL0〜L5は契約台帳とライブラリの整備を担当する。一般化したAPIの実装は将来の作業とする。
+> Extract common structures from representative quantum algorithms and express
+> their types, ownership, effects, and evidence as Qleisli abstractions. Evaluate
+> those abstractions by describing and verifying existing algorithms, then
+> explore new algorithms by recombining them.
 
-## リリース目標と構造化の判定
+The [third-layer plan](stdlib-roadmap.md) defines how the extracted structures
+will be adopted, distributed, and maintained as standard vocabulary. A0–A4 in
+this goal concern discovery and evaluation of structures; L0–L5 in the third
+layer concern the contract ledger and library development. Implementation of
+generalized APIs remains future work.
 
-**north starを評価するv1の具体的な到達条件は、Shor・QPE・Groverが、教科書の量子アルゴリズム構造のまま実ソースで読めること。** アルゴリズムの入口から、準備・論理操作・反復・観測・古典後処理の関係を追えることを要求する。ゲート列に関数名を付けただけの例や、未実装の疑似コードは到達例に数えない。
+<a id="リリース目標と構造化の判定"></a>
 
-| 目標 | 到達条件 | 現在の状態 |
+## Release targets and criteria for algorithm structure
+
+**The concrete v1 criterion for evaluating the north star is that real Shor,
+QPE, and Grover source reads in the structure of the textbook algorithms.**
+From each algorithm's entry point, readers must be able to follow the relation
+between preparation, logical operations, repetition, observation, and classical
+postprocessing. Merely assigning function names to gate sequences, or writing
+unimplemented pseudocode, does not meet this criterion.
+
+| Target | Acceptance condition | Current state |
 | --- | --- | --- |
-| v0.1 | 有限で正確な意味契約と独立した証明書検査を、実際のIR・所有権・補助解放へ接続する。同じ論理契約の複数実装を、制御と参照系を含む同一の利用側で交換できる。 | **宣言した有限プロファイルで達成**。厳密検査器、補助計算、公開関数証拠、最終IRへの保持、同一利用側での実装交換を実装・検査。一般的なRust形式証明は含まない。 |
-| v1 | Shor・QPE・Groverを、サイズ・操作の能力・精度・失敗条件を明示した部品から構成し、その構造を実ソースで読める。 | **未実装・未達成**。2ビットGrover、QPE2/3、N=15の位数推定は固定幅の回帰例。 |
+| v0.1 | Connect finite exact semantic contracts and independent certificate checking to actual IR, ownership, and auxiliary release. Exchange multiple implementations of the same logical contract in the same client, including control and reference systems. | **Achieved for the declared finite profile.** Exact checking, computed auxiliaries, public function evidence, final-IR retention, and implementation substitution in unchanged clients are implemented and checked. This does not include a general formal proof of Rust correctness. |
+| v1 | Assemble Shor, QPE, and Grover from components with explicit sizes, operation capabilities, precision, and failure conditions, with their structure readable in real source. | **Unimplemented and not achieved.** Two-bit Grover, QPE2/3, and N=15 order finding remain fixed-width regressions. |
 
-v0.1では、論理作用 `u` と等長な符号化 `E_in/E_out` を先に固定し、全体位相、型木、ビット順、入出力配置、符号化された入力である証拠を検査する。独立検査器は証明書を対象IRと契約の版へ結び付け、通常の型・所有権・効果・全出力被覆の検査を継続する。数値の近似一致や小さい補助漏出を、正確な等式や純粋な解放の証拠にしない。
+For v0.1, fix the logical action `u` and isometric encodings `E_in/E_out`
+first, and check global phase, type trees, bit order, input/output layouts,
+and evidence that the input has the required encoding. The independent checker
+binds a certificate to its target IR and contract version while retaining
+ordinary type, ownership, effect, and complete-output-coverage checks.
+Approximate numerical agreement or small auxiliary leakage is not evidence
+of an exact equality or pure release.
 
-最小の受入例は、同じ位相オラクル契約の計算／位相付け／逆計算と直接実装の交換、補助上のH;Hによる恒等操作、`f(x)=x`に対するデータと補助の同時Xである。制御下の相対位相と任意の参照系への対応も契約に含める。補助だけのX、不正な位相・述語・符号化・配置、対象回路の変更後に残った証拠、ゼロ復帰しない解放は拒否例とする。H;Hや同時Xは、新しい3引数の`with_computed(q,f,u)`で厳密な関係を検査する。従来の2引数形式はZ/T列に限定したままとし、[現在の検証範囲](specification-status.md)とリリース条件全体を区別する。
+The minimal acceptance cases are substitution between compute/phase/uncompute
+and direct implementations of the same phase-oracle contract, an auxiliary
+H;H identity, and simultaneous X on data and auxiliary for `f(x)=x`.
+Relative phase under control and extension to arbitrary reference systems are
+part of the contract. Rejection cases include X on the auxiliary alone,
+incorrect phases/predicates/encodings/layouts, evidence left over after its
+target circuit changes, and release without zero return. H;H and simultaneous
+X use the new three-argument `with_computed(q,f,u)` to check the exact relation.
+The original two-argument form remains restricted to Z/T sequences. Distinguish
+the [current validation scope](specification-status.md) from the complete
+release criteria.
 
-v1では、次の構造と条件を隠さずに表す。下表の語は設計上の概念であり、確定したAPI名や新しい構文ではない。
+For v1, expose the following structures and conditions. Terms in this table
+are design concepts, not finalized API names or new syntax.
 
-| アルゴリズム | 実ソースで読めるべき構造 | 表に出す契約・条件 |
+| Algorithm | Structure that must be readable in real source | Contracts and conditions to expose |
 | --- | --- | --- |
-| Shor | 底の選択と古典的検査、可逆剰余算術の制御付き冪、共有するQPE部品による位数推定、連分数による再構成、因数候補の検証と再試行。 | 整数・レジスタのサイズ、全空間上の算術作用、精度、失敗理由、ホスト側の再試行条件と予算。 |
-| QPE | 位相レジスタの準備、同一の論理操作の制御付き冪、逆QFT、測定と位相の解釈。 | 位相を保持する操作と制御能力、サイズ、ビット順、精度・近似誤差・失敗率、一般入力での測定後の標的と参照系。 |
-| Grover | 準備、判定から得る位相オラクル、準備状態の反射、反復方針、測定と結果の検査。 | 探索サイズ、準備と逆操作の能力、位相、対象数や初期成功確率の前提、反復回数・成功条件・失敗時の扱い。 |
+| Shor | Base selection and classical checks; controlled powers of reversible modular arithmetic; order finding through shared QPE; continued-fraction reconstruction; validation of factor candidates and retries. | Integer/register sizes, arithmetic action on the entire space, precision, failure reasons, and host retry conditions and budgets. |
+| QPE | Phase-register preparation; controlled powers of the same logical operation; inverse QFT; measurement and phase interpretation. | Phase-preserving operation and control capability, sizes, bit order, precision/approximation error/failure probability, and the post-measurement target and reference system for general inputs. |
+| Grover | Preparation; a phase oracle derived from a predicate; reflection about the prepared state; an iteration policy; measurement and result validation. | Search size, preparation and inverse capabilities, phase, assumptions about marked count or initial success probability, iteration count, success conditions, and failure handling. |
 
-個々のゲート、補助レジスタの配線、物理配置は、意味・所有権・証拠・費用を持つ部品の実装へ収める。利用側が必要とするサイズ、操作の能力、誤差、失敗、ホストとの境界まで隠してよいという意味ではない。通常定義と実際のIRの間の検査を維持し、v1の読みやすさを処理系全体の健全性証明や実機性能の保証と混同しない。
+Individual gates, auxiliary-register wiring, and physical placement belong
+inside component implementations with contracts for meaning, ownership,
+evidence, and cost. This does not permit hiding the sizes, operation
+capabilities, errors, failures, or host boundary that a client needs. Maintain
+checking between ordinary definitions and actual IR. Do not confuse v1
+readability with a soundness proof for the whole implementation or a hardware
+performance guarantee.
 
 ```mermaid
 flowchart LR
-    A[既存アルゴリズムと一次資料] --> B[構造・前提・資源・証拠を抽出]
-    B --> C[型・効果・コンビネータの契約]
-    C --> D[通常の定義と検証済みIR]
-    D --> E[別の問題への再合成と検証]
+    A[Existing algorithms and primary sources] --> B[Extract structure, premises, resources, and evidence]
+    B --> C[Type, effect, and combinator contracts]
+    C --> D[Ordinary definitions and verified IR]
+    D --> E[Recombine and verify on another problem]
     E --> B
 ```
 
-## 調査を言語設計へ結び付ける方法
+<a id="調査を言語設計へ結び付ける方法"></a>
 
-初期コーパスは[20項目](algorithm-corpus.md)。アルゴリズム、派生手法、基盤、誤り訂正・通信プロトコルを区別する。各項目に入力モデル、構造、必要な証拠、現行コアとの差を記録する。名称を増やすだけでなく、同じ部品が異なる目的に現れるかを調べる。
+## Connecting research to language design
 
-1. 論文における入力・出力、オラクル、成功・失敗、古典処理、精度を記録する。
-2. 回路を準備・可逆計算・制御・反射・反復・測定・適応処理へ分解する。
-3. 共通部分について、**演算子の位相を含む意味、線形所有権、効果、追加の証拠**を契約化する。
-4. 現行構文で表せるものは通常の `.qli` 定義として実装する。新しい言語形式は、通常定義で失われる構造や検証情報を示してから提案する。
-5. 独立したIR検証と、数学から導いた有限例・拒否例で照合する。抽出に使わなかった問題へ適用し、追加の原始操作なしで表現できるかを評価する。
+The initial corpus contains [20 entries](algorithm-corpus.md), distinguishing
+algorithms, derived methods, foundations, error correction, and communication
+protocols. Each entry records its input model, structure, required evidence,
+and differences from the current core. Investigate whether the same components
+appear for different purposes, rather than merely collecting algorithm names.
 
-オラクルの問い合わせ回数、可逆回路への合成コスト、状態準備、測定回数、古典後処理を区別する。現行の有限真理値表は一般の大規模オラクルの効率的実装ではない。型検査の成功は、アルゴリズムの成功確率や高速化の証明を代替しない。
+1. Record the paper's inputs/outputs, oracles, success/failure, classical
+   processing, and precision.
+2. Decompose circuits into preparation, reversible computation, control,
+   reflection, repetition, measurement, and adaptive processing.
+3. Give shared parts contracts for **meaning including operator phase, linear
+   ownership, effects, and additional evidence**.
+4. Implement what the current syntax can express as ordinary `.qli` definitions.
+   Propose a new language form only after identifying the structure or
+   verification information lost by ordinary definitions.
+5. Compare independent IR verification with finite mathematical examples and
+   rejection cases. Apply the result to problems not used in its extraction,
+   and assess whether they can be expressed without additional primitives.
 
-## 抽出する共通構造
+Distinguish oracle query counts, reversible-circuit synthesis cost, state
+preparation, measurement counts, and classical postprocessing. The current
+finite truth tables are not efficient implementations of general large oracles.
+Successful type checking does not replace a proof of an algorithm's success
+probability or speedup.
 
-以下はコーパスからの**Qleisli側の設計上の整理**である。論文がQleisliの抽象化を提案・証明したという意味ではない。
+<a id="抽出する共通構造"></a>
 
-| ID | 共通構造 | 主な利用先 | 契約上の要点 |
+## Common structures to extract
+
+The following is **Qleisli's design analysis** of the corpus. It does not
+assert that the papers proposed or proved Qleisli's abstractions.
+
+| ID | Common structure | Main uses | Contract considerations |
 | --- | --- | --- | --- |
-| S1 | 状態準備と基底変換 | BV、Grover、QPE、VQE | `Iso`による新規準備と、同じ空間の`Unitary`を区別。逆変換にはユニタリ拡張または適切な定義域証拠が必要。 |
-| S2 | 可逆計算・計算して使い逆計算する | Shor、オラクル、LCU、QEC | 全域な基底関数、作業領域、全入力・参照系に対するゼロ復帰。基底関数の複製と資源の複製を区別。 |
-| S3 | 位相オラクルと反射 | Grover、振幅増幅・推定、量子ウォーク | `O_f=I-2Π_f`、`R_ψ=2\|ψ⟩⟨ψ\|-I`など符号を固定。`R`と`-R`は制御化前に同一視しない。 |
-| S4 | 制御付き冪とフーリエ変換 | QPE、Shor、量子計数、HHL | `controlled(U^(2^k))`の静的構成、制御と標的の別所有、ビット順序、位相・角度・近似誤差。 |
-| S5 | 有限反復と層の合成 | Grover、QAOA、積公式、QSVT | 有限回数と同じ入出力インターフェース。コピー可能な操作記述と、毎回消費する所有権を分離。 |
-| S6 | 観測量・測定計画・推定 | VQE、QAOA、古典シャドウ | `Observe`、各試行で新しく準備する資源、測定基底、統計誤差。期待値は一回の測定値ではない。 |
-| S7 | シンドロームと古典フィードバック | QEC、テレポーテーション | 測定対象を消費し、残系に条件付き操作を適用。符号空間と誤りモデルは別の証拠。 |
-| S8 | ブロック符号化と信号変換 | LCU、qubitization、QSVT、線形代数 | 正規化係数・射影する部分空間・誤差の契約。成功ブロックだけを無条件の純粋操作として取り出さない。 |
+| S1 | State preparation and basis changes | BV, Grover, QPE, VQE | Distinguish fresh `Iso` preparation from a `Unitary` on the same space. An inverse needs a unitary extension or appropriate domain evidence. |
+| S2 | Reversible computation and compute/use/uncompute | Shor, oracles, LCU, QEC | Total basis functions, workspace, and zero return for every input/reference. Distinguish duplication of basis functions from duplication of resources. |
+| S3 | Phase oracles and reflections | Grover, amplitude amplification/estimation, quantum walks | Fix signs such as `O_f=I-2Π_f` and `R_ψ=2\|ψ⟩⟨ψ\|-I`. Do not identify `R` and `-R` before adding control. |
+| S4 | Controlled powers and Fourier transforms | QPE, Shor, quantum counting, HHL | Static construction of `controlled(U^(2^k))`, separate control/target ownership, bit order, phases, angles, and approximation error. |
+| S5 | Finite repetition and layer composition | Grover, QAOA, product formulas, QSVT | Finite counts and the same input/output interface. Separate copyable operation descriptions from ownership consumed on every application. |
+| S6 | Observables, measurement plans, and estimation | VQE, QAOA, classical shadows | `Observe`, freshly prepared resources for every trial, measurement bases, and statistical error. An expectation value is not a single measurement result. |
+| S7 | Syndromes and classical feedback | QEC, teleportation | Consume measured targets and apply conditional operations to the remaining system. Code-space and error-model premises require separate evidence. |
+| S8 | Block encoding and signal transformation | LCU, qubitization, QSVT, linear algebra | Contracts for normalization, projected subspaces, and errors. Do not extract the success block alone as an unconditional pure operation. |
 
-## 型と合成の設計契約
+<a id="型と合成の設計契約"></a>
 
-この節の `U:A⇒B` などは**設計用のメタ記法**であり、新しい `.qli` 構文や第一級の操作値ではない。実装済みの入口は[部品の契約](algorithm-routines.md)に分ける。
+## Design contracts for types and composition
 
-| 候補と所属 | 入出力・所有権・効果 | 受理／拒否の条件とIR方針 |
+Notation such as `U:A⇒B` in this section is **design metanotation**, not new
+`.qli` syntax or first-class operation values. The implemented interfaces are
+recorded separately in the [building-block contracts](algorithm-routines.md).
+
+| Candidate and classification | Input/output, ownership, and effect | Acceptance/rejection conditions and IR direction |
 | --- | --- | --- |
-| `compose`、`tensor`／通常定義の合成原理 | `U:A⇒B, V:B⇒C`から`V∘U:A⇒C`。テンソルは異なる所有資源を取る。効果は上限を取る。 | 受理: 出力を次の入力へ渡す。拒否: 同じ資源を両方の因子に渡す。現在は通常関数の展開とワイヤの合流・分割に変換。 |
-| `adjoint`／有限の言語形式を実装 | 一般案は`Unitary<A,B>`から`Unitary<B,A>`。実装は単一の同型`Q<A> -> Q<A>`。 | 静的に解決した本文の順序と各演算を反転し、ApplyUnitaryを再検証する。測定、Iso、古典引数は拒否。 |
-| `controlled`／`qif`として有限実装 | 制御`Q<Bit>`と標的`Q<A>`を消費し両方を返す`Unitary`。 | 静的な同型関数名を枝とし、位相を保持するApplyUnitaryへ変換。別名参照とObserveを拒否する。 |
-| `repeat_static`／有限の言語形式を実装 | 同一インターフェースの`U:A⇒A`と静的自然数`n`から`U^n`。 | 0〜4,096回を予算付きで展開。`n=0`でも対象を検査する。動的回数、資源複製、上限超過を拒否。 |
-| `conjugate`、`reflect`／上記形式から作る通常定義の候補 | `U†VU`、`A(2\|0⟩⟨0\|-I)A†`。反射の`A`は同じ空間のユニタリ。 | 受理: 逆演算と位相を含む契約。拒否: `init0`の逆を無条件の解放とする。構成を通常のIR列へ展開し再検証。 |
-| `instrument`／観測効果の合成原理 | 各古典出力`b`の完全正写像`E_b`、全枝の和が跡保存。 | 受理: 全結果を保持または古典的に周辺化。拒否: 失敗枝を隠す事後選択。測定・古典分岐のIRで表す。 |
-| `estimate`／ホスト側の測定計画の候補 | 状態準備手順と観測量から、反復した古典サンプルと誤差情報を得る。 | 受理: 各試行の新規準備と明示した集計。拒否: 所有する未知状態を複製して試行数を増やす。現時点ではホスト側で計画し、各試行を検証済みIRへ渡す。 |
-| `block_encode`／証拠を持つ契約の候補 | ユニタリ`U`の指定ブロックが`A/α`を誤差`ε`内で表す。 | 受理: `α`・部分空間・誤差の証拠と全体ユニタリ。拒否: 非ユニタリな`A`を直接ゲートとする。証拠スキーマとIRは未設計。 |
+| `compose`, `tensor`: composition principles for ordinary definitions | From `U:A⇒B, V:B⇒C`, obtain `V∘U:A⇒C`. Tensor takes distinct owned resources. Effects take their join. | Accept passing one output into the next input. Reject giving the same resource to both factors. Currently lower through ordinary function expansion and wire joins/splits. |
+| `adjoint`: finite language form implemented | The general proposal maps `Unitary<A,B>` to `Unitary<B,A>`. The implementation supports a single same-type `Q<A> -> Q<A>` interface. | Reverse the order and operations of a statically resolved body and reverify `ApplyUnitary`. Reject measurement, `Iso`, and classical arguments. |
+| `controlled`: finite implementation as `qif` | A `Unitary` consumes control `Q<Bit>` and target `Q<A>` and returns both. | Branches name statically resolved functions with matching input/output type; lower to phase-preserving `ApplyUnitary`. Reject aliasing and `Observe`. |
+| `repeat_static`: finite language form implemented | The same-interface `U:A⇒A` and a static natural `n` give `U^n`. | Expand 0–4,096 repetitions within a budget. Check the target even for `n=0`. Reject dynamic counts, resource duplication, and capacity overflow. |
+| `conjugate`, `reflect`: candidate ordinary definitions built from the forms above | `U†VU`, `A(2\|0⟩⟨0\|-I)A†`. The reflection's `A` is a unitary on the same space. | Accept a contract including inverse and phase. Reject treating the inverse of `init0` as unconditional release. Expand the composition into ordinary IR sequences and reverify. |
+| `instrument`: composition principle for observation effects | A completely positive map `E_b` for each classical output `b`, with a trace-preserving sum over all branches. | Accept retaining all outcomes or marginalizing them classically. Reject postselection that hides failure branches. Represent through measurement and classical-branch IR. |
+| `estimate`: candidate host measurement plan | From a preparation procedure and observable, obtain repeated classical samples and error information. | Accept fresh preparation for every trial and explicit aggregation. Reject copying an owned unknown state to increase the trial count. At present, plan on the host and submit each trial to verified IR. |
+| `block_encode`: candidate evidence-bearing contract | A specified block of a unitary `U` represents `A/α` within error `ε`. | Accept evidence for `α`, subspaces, and error, with a full unitary. Reject using nonunitary `A` directly as a gate. The evidence schema and IR are not yet designed. |
 
-`Q<A>`は引き続き線形な所有権型である。計算の合成は古典文脈`Γ`、量子資源`Δin/Δout`、効果を追うKleisli的な原理として扱う。測定を含む合成では、内部結果`c`を隠した枝は`Σ_c F_(d|c)∘E_c`となる。これを厳密なモナドとしてまとめるには、対象・等式・単位・結合則と資源の添字の整合を別に証明する。今回、自由ベクトル空間の任意の`bind`や新しいモナドAPIは導入しない。
+`Q<A>` remains a linear ownership type. Treat computation composition as a
+Kleisli-like principle tracking classical context `Γ`, quantum resources
+`Δin/Δout`, and effects. For composition with measurement, a branch hiding the
+internal result `c` is `Σ_c F_(d|c)∘E_c`. Describing this as a strict monad
+would require separate proofs of the objects, equations, units, associativity,
+and consistency of resource indices. This work introduces neither arbitrary
+`bind` from the free vector space nor a new monad API.
 
-## 実装順と到達基準
+<a id="実装順と到達基準"></a>
 
-v0.2.0向けの一般化・新機能実装には、上記の仮想コード初稿と要求の記録が先行する。下表の過去の到達点を初稿作成の完了と読み替えず、実装・検査を深める順序と、先に理想コード群を書く工程を区別する。
+## Implementation order and acceptance criteria
 
-| 段階 | 到達基準 | 状態 |
+The imaginary-code drafts and requirement records above precede
+v0.2.0 generalization and new-feature implementation. Do not reinterpret the
+historical milestones below as completion of those drafts. Distinguish the
+order for deepening implementation/validation from the prior step of writing
+the ideal-code corpus.
+
+| Area | Acceptance criteria | State |
 | --- | --- | --- |
-| A0: コーパスと契約 | 20項目の出典・入力モデル・構造・未対応部分を追跡し、共通構造と型の契約を整理する。 | 初回整理済み |
-| A1: 有限部品の再利用 | 通常の`.qli`部品を同梱し、Grover・BV・ビット反転訂正を組み立てる。全対象、反復回数、位相に敏感な入力、参照系との相関、拒否例を検査する。 | 5部品と3例を実装・有限例で検証 |
-| A2: 操作構造の表層化 | `adjoint`・制御・有限反復の表層規則を定める。QPEをビット順序・正確な位相付きで実装し、反射符号を制御下でも比較する。 | [有限部分集合で到達](static-operations.md)。通常定義のQFT2/3とQPE2/3、静的操作12テスト。一般サイズ・角度・操作引数は残件。 |
-| A3: 算術とハイブリッド計算 | 可逆算術と小規模Shor、パラメータ付き準備・観測量・ホスト反復によるVQE/QAOAを実装する。入力準備と合成コストを明記する。 | [有限算術の初回到達](arithmetic-order-finding.md)。N=15の位数推定と古典因数抽出を検査。一般サイズとVQE/QAOAは残件。 |
-| A4: 証拠と再合成 | 一般の保存効果、符号空間・ブロック符号化・近似誤差の契約を整備。抽出に使わなかった問題へ部品を再合成し、性能と成功条件を検証する。 | v0.1の有限な厳密検査、補助形式、公開関数契約の再利用・最終IRへの証拠保持を実装・検査。一般化は未実装。 |
+| A0: corpus and contracts | Track sources, input models, structures, and unsupported parts for 20 entries; organize shared structures and type contracts. | Initial organization complete. |
+| A1: reuse of finite components | Bundle ordinary `.qli` components and assemble Grover, BV, and bit-flip correction. Check all targets, iteration counts, phase-sensitive inputs, reference correlations, and rejection cases. | Five components and three examples implemented and validated on finite cases. |
+| A2: exposing operation structure | Specify surface rules for `adjoint`, control, and finite repetition. Implement QPE with exact phase and bit order; compare reflection signs under control. | [Reached for a finite subset](static-operations.md): ordinary QFT2/3 and QPE2/3, with 12 static-operation tests. General sizes, angles, and operation arguments remain open. |
+| A3: arithmetic and hybrid computation | Implement reversible arithmetic and small Shor, plus VQE/QAOA through parameterized preparation, observables, and host iteration. State input-preparation and synthesis costs. | [Initial finite-arithmetic milestone](arithmetic-order-finding.md): N=15 order finding and classical factor extraction checked. General sizes and VQE/QAOA remain open. |
+| A4: evidence and recombination | Develop contracts for general preservation effects, code spaces, block encoding, and approximation error. Recombine components on problems not used for extraction and validate performance and success conditions. | Finite exact v0.1 checking, computed forms, public function-contract reuse, and final-IR evidence retention implemented and checked. Generalization is unimplemented. |
 
-A0〜A4は作業領域と既存の到達点であり、リリース番号や全項目を順番に完了する条件ではない。v0.1はA2の位相・静的操作を基盤にA4の有限な証拠検査を先行させる。v1ではA1〜A3の固定幅例をサイズと操作の契約を持つ構造へ育てる。A3のVQE/QAOAやA4の一般ブロック符号化までを、3アルゴリズムの構造化と同じ到達条件にはしない。それぞれの証拠と採用判断は継続して記録する。
+A0–A4 are work areas and existing milestones, not release numbers or a
+requirement to complete every item in sequence. For v0.1, the finite evidence
+checking of A4 comes first on top of A2's phase and static-operation foundation.
+For v1, develop the fixed-width examples of A1–A3 into structures with size and
+operation contracts. A3's VQE/QAOA and A4's general block encoding are not part
+of the same acceptance condition as structuring the three target algorithms.
+Continue to record their respective evidence and adoption decisions.
 
-部品を安定した抽象化に昇格させるには、複数の利用文脈、受理・拒否例、数学的な契約、生成IRとの対応を残す。新規アルゴリズムという主張には、既存手法との比較と個別の正しさ・計算量の根拠を要する。今回の小規模例はその評価基盤であり、長期目標全体の完了ではない。
+Promoting a component to a stable abstraction requires multiple use contexts,
+acceptance/rejection cases, mathematical contracts, and correspondence to
+generated IR. A claim of a new algorithm requires comparison with existing
+methods and evidence for its particular correctness and complexity. The small
+examples provide a foundation for that evaluation; they do not complete the
+long-term goal.

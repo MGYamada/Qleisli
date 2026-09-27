@@ -1,6 +1,132 @@
-# 有限コア仕様v0: 決定・適合状況・証明課題
+<a id="有限コア仕様v0-決定適合状況証明課題"></a>
 
-状態: **全構文の規則とその理想健全性Q1〜Q3を紙上で整備、Rustの全受理経路・IR変換との一般的な対応は未証明**（2026-09-26）。[ロードマップ](../ROADMAP.md)のSPEC-0〜2の記録と、SPEC-3・4の進捗を含む。
+# Finite-core v0: decisions, conformance, and proof obligations
+
+Current status (2026-09-27): **the declared finite v0.1 semantic-contract profile
+is implemented and checked; general correspondence between all accepted Rust
+paths and the mathematical source/IR rules remains unproved.** The stated
+mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
+have the scope recorded in the [proof ledger](lean-resource-proof.md).
+The project version is 0.1.2, not a claim of v1 completion. Actual publication
+evidence is in the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2).
+
+This ledger retains dated Japanese entries as original historical evidence.
+Their counts, “pending” statements, and checks not rerun describe those steps.
+The current [release record](releases/v0.1.2.md) and
+[documentation map](documentation-map.md) identify subsequent results and
+English authority. Historical text does not override current specifications.
+The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
+Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
+[roadmap](../ROADMAP.md); those proof limitations remain.
+
+## 0.1.2 release procedure and publication record (2026-09-27)
+
+The user authorized release through publication. The release date is
+2026-09-27 (JST); current summaries and the English release notes are finalized
+for that release. GitHub main requires a PR, an up-to-date base, resolved
+conversations, and `rust`, `rust-msrv`, `lean`, and `docs` checks. No bypass
+actor is configured. The v* rules prohibit updates and deletions of release
+tags. These active rules were checked before release work.
+
+The release procedure verifies CI on the merged main commit and packages and
+rebuilds its clean source before annotated tagging, tag push, and GitHub
+publication. The [hosted release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
+records the exact commit, PR, CI, archive verification, and completed operations.
+Registry publication is outside this release. Version/date metadata alone does
+not prove that publication occurred. The preparation/translation records below
+retain their original scope, test counts, and then-pending steps.
+
+<a id="english-documentation-consolidation"></a>
+
+## English documentation consolidation (2026-09-27)
+
+The ten current Japanese documents in the [translation inventory](documentation-map.md#translation-inventory)
+now have English editions: README, roadmap, design philosophy, AI-era goal,
+algorithm-structure goal, algorithm corpus, quantum-language requirements,
+standard-library roadmap, quantum bookkeeping, and the finite-IR paper proof.
+Each identifies its authority and distinguishes adopted principles, proposals,
+specified behavior, implementation, finite testing, paper proofs, and Lean
+results. The current English specifications and six imaginary-v1 drafts are
+cross-referenced; concrete future syntax/APIs remain undecided.
+
+Legacy heading anchors, mathematical premises, code/equations, primary-source
+links, historical dates/counts, and remaining trust boundaries are preserved.
+Stale summaries are clarified against existing specification records: the
+original restricted auxiliary form is separate from the later explicit
+semantic-contract form, and historical partial implementation is separate from
+the achieved bounded v0.1 profile. No language rules, public APIs, Rust/Lean
+implementation, dependencies, capacities, or toolchain requirements changed.
+
+Translation and independent review are complete. Reviewers compared the ten
+English editions with their Japanese baselines, including every historical
+roadmap paragraph, and checked the current-specification/future-design boundary.
+The review preserved theorem premises and limitations, C01–C20, S1–S8, A0–A4,
+L0–L5, contract fields, and proposed-API status. One ambiguous phrase about
+retained partial-discard/reset tests was clarified; new status-record anchors
+were added before final link checking.
+
+Checks performed for this documentation step on macOS aarch64:
+
+| Check | Result and scope |
+| --- | --- |
+| Translation inventory | All ten documents have English prose; all 102 original heading/explicit-anchor targets and all original link destinations are retained. Remaining Japanese prose is operational guidance, historical conformance records, and glossary terms. |
+| Documentation checker | `python3 scripts/test_check_docs.py`: all 14 tests passed. `python3 scripts/check_docs.py` passed local links, anchors, Rust declaration/test references, and Lean-root reachability. `git diff --check` passed. |
+| Mathematical fixtures | `python3 scripts/check_semantic_contract_examples.py`: 39 exact rational/algebraic assertions passed. `python3 scripts/check_imaginary_v1_examples.py`: 52 finite convention checks passed. Neither compiles imaginary source or proves the implementation. |
+| Source candidate | `CARGO_TARGET_DIR=/private/tmp/qleisli-v012-rust cargo package --allow-dirty --offline`: generated and rebuilt the 156-file candidate. All 55 current documentation/license/notice files in the archive were compared byte-for-byte with the working tree, including the new documentation map and translated documents. |
+
+The earlier Rust execution-test/Clippy, Lean build/axiom-audit, and CLI results
+below are retained as history; those suites were not rerun or credited as new
+translation results. Package verification did rebuild the unchanged Rust code.
+This is a local uncommitted candidate, not clean-release-commit validation.
+The version remains 0.1.2 in preparation. No commit, tag, push, hosted release,
+or registry publication was performed.
+
+### Follow-up review correction (2026-09-27)
+
+Corrected the [corpus review summary](imaginary-v1/review.md) to describe odd
+QSVT as mapping right singular vectors to left singular vectors, matching
+the unchanged `L p(Sigma) V†` equation and circuit in the draft. Document
+references and `git diff --check` passed. This wording correction adds no
+implementation or proof claim; Rust/Lean tests were not rerun.
+
+## 0.1.2の設計成果物とローカル候補検証（2026-09-27）
+
+ユーザーの指示に従い、P012-0の英語仕様整備を先に完了してから、v0.1.2の設計・文書候補を完成させるgoalを設定した。[QPE](imaginary-v1/qpe.md)、[Grover](imaginary-v1/grover.md)、[amplitude estimation](imaginary-v1/amplitude-estimation.md)、[Shor](imaginary-v1/shor.md)、[quantum walk](imaginary-v1/quantum-walk.md)、[QSVT](imaginary-v1/qsvt.md)の初稿を作成した。[索引](imaginary-v1/README.md)、[共通要求R01〜R14](imaginary-v1/requirements.md)、[意味論レビュー](imaginary-v1/review.md)から各題の契約・能力・所有権・効果・位相・補助回収・精度・成功／失敗・古典処理・IR方針・未解決事項を追跡できる。
+
+**P012-0〜4を完了し、v0.2.0以前の「初稿の存在と要求記録」という前提を満たした。** コードはすべて仮想・未コンパイルである。QPEの残存標的と参照系、Groverの反射符号とAEの補数反例、Shorの全空間算術・候補検証・実行失敗、Szegedy walkの反射順序、QSVTの偶奇・実多項式selector・成功／失敗instrumentをレビューした。測定結果を`CWord`に統一し、ホストの失敗伝播を本文にも明示した。新構文・標準API・一般サイズの実装を採用したのではなく、V1-C1〜C5と一般的な健全性証明は未完了のままである。
+
+**P012-5はmacOS arm64でローカル完了。** 今回の0.1.2作業ツリーで実施した検査:
+
+| 対象 | 結果 |
+| --- | --- |
+| Rust 1.98.1 | 新しいtargetディレクトリで`cargo test --all-targets --offline`全258件、全target Clippy（警告をエラー扱い）、fmtが成功 |
+| 最低Rust 1.85.0 | 既存の隔離toolchainと別の新しいtargetで全258件・Clippyが成功。既定toolchainは変更しない |
+| Lean 4.30.0 | `lake build`成功（1,212 jobs）。`lake env lean -DwarningAsError=true Audit.lean`で527宣言を監査し、公理は`propext`・`Classical.choice`・`Quot.sound`のみ |
+| 文書と数学 | 文書検査器14件、参照・差分検査が成功。既存の厳密数学例39件、新しい独立した有限数学チェック52件が成功 |
+| 実行例 | CLI全10プロジェクトのcheck/run成功。Shorは成功枝で3と5、理想成功確率1/2・再試行確率1/2を確認 |
+| 配布候補 | `cargo package --allow-dirty --offline`で155ファイルの候補を生成・展開後に再ビルド。LICENSE・NOTICE、6初稿と索引／要求／レビューの計9文書、英語枠組み、検査スクリプト等の同梱を確認 |
+
+[新しい数学チェックスクリプト](../scripts/check_imaginary_v1_examples.py)は、Fourier行列との全成分照合、QPEの参照系を含む分岐、増幅、位数候補、walk、QSVTの小行列を確認する。文書CIにも組み込んだ。Pythonの有限モデルの成功は、仮想コードのパース・型検査・IR生成・実行・Lean証明を意味しない。浮動小数点の近似照合を厳密な補助ゼロ復帰の証拠にしない。
+
+**P012-6は未実施・未公開。** Linux専用CLI検査とリモート必須CI、cleanなリリースコミットからの最終梱包、注釈付きタグ、push、GitHub公開は残件。今回コミット・タグ・push・公開・レジストリ配布はしていない。ローカルの未コミット候補検証と公開可能なコミットの確定を区別する。以下の版選択・工程0の記録は、その時点の履歴として保持する。
+
+## 0.1.2工程0: 将来に向けた英語の言語仕様整備（2026-09-27）
+
+ユーザーの追加指示に従い、goal設定と初稿作成に先立ってP012-0を整備した。[英語の言語設計枠組み](language-evolution.md)に現行規範・将来案・仕様選定・実装・検証・証明の境界、共通の仮想記法、所有権・位相・アクセス能力・厳密な補助回収・instrument／誤差の区別、拡張の記録要件を記した。言語仕様と文法の古いv0.1未完記述を現在の有限SC＋FC到達へ合わせ、stdlibの将来候補と用語集を接続した。現行の文法・受理規則・APIは変更していない。文書参照検査と`git diff --check`が成功した。
+
+## 0.1.2の版選択とロードマップ（2026-09-27）
+
+ユーザーの指定により、Rustの`Cargo.toml`とQleisli自身の`lean/lakefile.toml`を**0.1.2**へ更新した。[英語のリリース計画](releases/v0.1.2.md)と[日本語の工程表](../ROADMAP.md#v012-release-roadmap)を作り、README・作業指針・変更履歴・版方針・到達条件の現行版表示をそろえた。0.1.1の変更と検証実績は履歴として保持し、今回の成果に再計上しない。
+
+**P012-1（版と計画）は完了、公開準備中・未公開。** 0.1.2の予定成果物は、仮想Qleisli 1.0のQPE・Grover・amplitude estimation・Shor・quantum walk・QSVTの初稿、各題の意味契約、共通要求の索引、意味論レビューである。P012-2〜4は未実施であり、予定パスを示しただけでは成果物や前提完了の証拠にならない。6題と要求をそろえてからv0.2.0の仕様範囲を選び、一般化の実装と検証へ進む。V1-C1〜C5、有限コアの保証範囲、未完の一般証明は維持する。
+
+今回の版・文書変更で実施した検査:
+
+- `cargo metadata --no-deps --format-version 1 --offline`でRust版0.1.2・Apache-2.0・最低Rust 1.85を確認。Lean版0.1.2とmathlib依存v4.30.0を確認し、`cargo generate-lockfile --offline`で更新したローカルの`Cargo.lock`も0.1.2と照合した。lockfileは従来どおりGit管理対象外。
+- `cargo package --list --allow-dirty --offline`が成功し、LICENSE・NOTICE、新しいリリース計画、stdlib、例、Leanソースを含む候補一覧を確認。アーカイブの生成・展開後の再ビルドは未実施。
+- `cargo fmt --check`、文書参照検査、文書検査器自身の**14テスト**、`git diff --check`が成功。
+
+Rust実行テスト・Clippy、Lean build／公理監査、厳密数学例・CLI例・Shorは今回は再実行していない。完成した初稿を含む最終候補の検証をP012-5、cleanなリリースコミットの梱包・必須CI・注釈付きタグ・push・GitHub公開をP012-6として残す。今回、コミット・タグ・push・公開リリース・レジストリ配布は行っていない。版選択も文書検査の成功も、仮想コードの実装・検証や健全性証明の完了を意味しない。
 
 ## 0.1.1のリリース手順とGitHubルールセット（2026-09-27）
 

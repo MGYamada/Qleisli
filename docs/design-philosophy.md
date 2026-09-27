@@ -1,55 +1,146 @@
-# Qleisli の設計思想
+<a id="qleisli-の設計思想"></a>
 
-状態: **固定する設計原理**（2026-09-26）。これは構文の確定や数学的な健全性定理の成立を意味しない。具体的な型規則、標準 API、IR はこの原理に従って段階1以降に定める。
+# Qleisli design principles
 
-**プロジェクトのnorth star（2026-09-27）:** 「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」。状態準備、オラクル、反射、位相推定、逆計算などの概念と、その合成・前提を実ソースで表すことを目指す。語の意味と実際の実装を結ぶ検査も、この目標の一部とする。以下のリリース方針は[英語の正本](release-milestones.md)に従う日本語の補助要約である。
+Status: **adopted design principles** (2026-09-26), with release-direction
+additions dated 2026-09-27. This English edition is authoritative for these
+principles and replaces the earlier Japanese text without changing them.
+Adopting the principles does not finalize syntax or establish a mathematical
+soundness theorem. Concrete type rules, standard APIs, and IR are specified
+from Stage 1 onward in accordance with these principles. The
+[finite-core specification](language-spec.md) defines the current source
+rules; the [language evolution framework](language-evolution.md) separates
+future design from accepted syntax and implementation.
 
-> Qleisli は、量子データを複製不能な所有資源として扱う関数型量子言語である。プログラムを古典値と量子資源の効果付き変換として合成する。量子系に作用するコヒーレントな変換は等長写像、観測を含む変換は量子インストルメントで解釈し、不可逆な破棄を明示する。
+**Project north star (2026-09-27):** make the language people use to think
+about quantum algorithms coincide with the language they use to write
+programs. State preparation, oracles, reflections, phase estimation,
+uncomputation, and their composition and assumptions should be expressed in
+actual source. Checking the connection between these concepts' meanings and
+their implementations is part of this goal. The release-policy summaries
+below follow the authoritative [release milestones](release-milestones.md).
 
-**リリース目標の採用（2026-09-27）:** ユーザーの決定により、[v0.1 の最低条件](release-milestones.md#v01-minimum-semantic-contracts)に意味契約 `U E_in = E_out u` の有限証拠による実装交換と独立した IR 検査を置く。等長な入力・出力符号化 `E_in, E_out` を介し、理想的な純粋実装 `U` と公開仕様の論理操作 `u` を対応させる契約である。所有権だけから相関や分離を推論しない固定原理を維持し、符号化への入力適合と量子資源の線形性を別に検査する。この段落は英語のリリース計画を正本とする日本語の補助要約であり、新規な理論・実装・証明の完了を主張しない。
+> Qleisli is a functional quantum language that treats quantum data as owned
+> resources that cannot be duplicated. Programs compose effectful
+> transformations of classical values and quantum resources. Coherent
+> transformations of quantum systems are interpreted as isometries,
+> transformations involving observation as quantum instruments, and
+> irreversible discard is explicit.
 
-[v1 の具体的な到達条件](release-milestones.md#v1-north-star-textbook-algorithm-structure)は「Shor、QPE、Grover が教科書の量子アルゴリズム構造のまま読める」こととし、上のnorth starを三つの実ソースで評価する。有限コアの仕様・証明・IR 対応と、言葉の意味を実装へ結ぶv0.1の契約基盤を先行させる。サイズ付き型や操作パラメータ化は、その基盤に従ってv1を支える後続の設計課題である。
+**Release goals adopted on 2026-09-27:** the user selected implementation
+substitution through finite evidence for the meaning contract
+`U E_in = E_out u`, together with independent IR checking, as the
+[v0.1 minimum conditions](release-milestones.md#v01-minimum-semantic-contracts).
+This contract relates an ideal pure implementation operator `U` to a logical
+operation `u` fixed by its public specification, through isometric input and
+output encodings `E_in, E_out`. It preserves the principle that ownership alone
+does not establish correlations or separation. Check conformance to the input
+encoding separately from linear ownership of quantum resources. This adoption
+record follows the release plan; it does not claim a new theory or completed
+implementation or proof merely from adopting a goal.
 
-現在は[有限な厳密契約検査器と3引数の補助計算形式](semantic-contracts-v0.1.md)、[関数契約の再利用と最終IRまでの証拠保持](function-contracts-v0.1.md)を実装・検査し、v0.1の宣言した有限プロファイルを満たした。v1の一般化は未達成である。既存の紙上証明、有限回帰検査、処理系全体の正しさの証明を区別する。
+The [concrete v1 acceptance target](release-milestones.md#v1-north-star-textbook-algorithm-structure)
+is that Shor, QPE, and Grover can be read in their textbook quantum-algorithm
+structure. These three actual source programs assess the north star. The
+finite-core specification, proofs, and IR correspondence, together with v0.1's
+contract foundation connecting meaning to implementation, come first. Sized
+types and operation parameters are subsequent design tasks that build on that
+foundation to support v1.
 
-[「量子の帳尻は言語が引き受ける」](quantum-bookkeeping.md)は、これらの原理をアルゴリズムを書く人の立場から整理した設計メモである。所有権・補助回収・制御化・位相を一つの責務として捉え、QPEを先行する設計上の受け入れテストにする提案を記録する。
+The [bounded exact contract checker and three-argument auxiliary form](semantic-contracts-v0.1.md)
+and [function-contract reuse with evidence retained through final IR](function-contracts-v0.1.md)
+are now implemented and checked, meeting v0.1's declared finite profile.
+Generalization for v1 remains incomplete. Keep existing paper proofs, finite
+regression checks, and a correctness proof of the entire implementation distinct.
 
-**v0.2.0以前の前提として採用（2026-09-27）:** [仮想Qleisli 1.0の理想コードを先に書く](release-milestones.md#pre-v020-imaginary-v1-code)。6題の初稿と意味上の要求・未解決事項をそろえてから、一般化・新機能実装とv0.2.0のリリースへ進む。初稿はコンパイル不要で改訂可能とし、固定原理とv1の実行・検査の到達条件は維持する。方針採用と初稿作成完了は区別する。
+[Quantum bookkeeping is the language's responsibility](quantum-bookkeeping.md)
+is a design note presenting these principles from the algorithm author's
+perspective. It considers ownership, auxiliary cleanup, control, and phase as
+one language responsibility and proposes QPE as an early design acceptance test.
 
-## 1. 量子データは所有される資源
+**Prerequisite before v0.2.0, adopted on 2026-09-27:**
+[write ideal code in an imaginary Qleisli 1.0 first](release-milestones.md#pre-v020-imaginary-v1-code).
+Produce all six initial drafts and record their semantic requirements and open
+questions before generalization, new feature implementation, and the v0.2.0
+release. The drafts need not compile and may be revised. Preserve the fixed
+principles and v1's execution and validation conditions. Adoption of this
+policy and completion of the drafts are separate events; the current artifact
+record is the [corpus and requirements index](imaginary-v1/README.md).
 
-ソースの `Q<A>` は量子状態ベクトルをコピーできる値ではなく、基底型 `A` を持つ論理レジスタへの**所有された操作権**である。互いに素な部分系のハンドルが一つの絡み合った全体系に属せるため、各ハンドルが独立の純粋状態を所有するとは考えない。量子文脈は単なる変数名の集合ではなく、型、ワイヤ ID、各操作による所有権の消費と生成を含む。
+<a id="1-量子データは所有される資源"></a>
 
-`(q,q)` は同じ所有権を二度使うため拒否する。これは禁止すべきエイリアスであり、この式そのものが物理的な未知状態複製装置を実装するという主張ではない。一方、コヒーレントな基底添字 `x : Bit` の `x -> (x,x)` は `⟨xx|yy⟩ = δ(x,y)` なので等長な写像として許す。基底添字は測定済みの古典値ではない。
+## 1. Quantum data consists of owned resources
 
-物理的な破棄は可能だが、ソースの**暗黙の弱化**にはしない。純粋な領域では量子所有権を線形に受け渡す。任意状態を捨てるなら `observe::discard` という明示的な不可逆操作を使う。補助ビットを純粋に解放するなら、全入力に対するゼロ復帰と分離の静的証拠を要する。この意味で量子資源にはアフィン的な破棄の可能性があるが、効果を隠すアフィン型の暗黙破棄は採用しない。
+In source, `Q<A>` is an **owned right to operate** on a logical register with
+basis type `A`, not a value whose quantum state vector can be copied. Handles
+for disjoint subsystems may belong to one entangled whole system; a handle
+does not own an independent pure state. A quantum context is more than a set
+of variable names: it includes types, wire IDs, and the ownership consumed
+and produced by each operation.
 
-## 2. プログラムは資源の効果付き変換
+Reject `(q,q)` because it uses the same ownership twice. This is forbidden
+aliasing, not a claim that the expression itself implements a physical machine
+that clones an unknown state. In contrast, `x -> (x,x)` for a coherent basis
+label `x : Bit` is allowed as an isometric map because `⟨xx|yy⟩ = δ(x,y)`.
+A basis label is not a measured classical value.
 
-概念上、プログラムの署名を次のように読む。
+Physical discard is possible, but it is not **implicit weakening** in the
+source language. Pure code passes quantum ownership linearly. Discarding an
+arbitrary state requires the explicit irreversible operation `observe::discard`.
+Pure release of an auxiliary bit requires static evidence of zero return and
+separation for every input. In this sense quantum resources admit physical
+discard, as an affine discipline would allow, but the language does not adopt
+implicit affine discard that hides the effect.
+
+<a id="2-プログラムは資源の効果付き変換"></a>
+
+## 2. Programs are effectful transformations of resources
+
+Read a program signature conceptually as follows:
 
 ```text
-(古典入力 A; 量子文脈 Δin) -[効果 ε]-> (古典出力 B; 量子文脈 Δout)
+(classical input A; quantum context Δin) -[effect ε]->
+    (classical output B; quantum context Δout)
 ```
 
-`Δin` と `Δout` が、どの所有権を受け取り、返し、新しく作り、消費するかを表す。`ε` は規範仕様の `Unitary ≤ Iso ≤ Observe` を使う。ここでの表記は全計算の入出力を示す概念図であり、独立した判断形式ではない。混合値を含むソース判断からの射影は[形式化の概要](formal-core.md#1-scope-and-judgments)と[値の意味論](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)で定める。資源の遷移だけでは、等長性、測定確率、破棄で失われる相関を表せないので、効果と意味論を省略しない。
+`Δin` and `Δout` describe ownership received, returned, newly created, and
+consumed. `ε` uses the normative order `Unitary ≤ Iso ≤ Observe`. This is a
+conceptual picture of a whole computation's inputs and outputs, not a separate
+judgment form. Its projection from source judgments with mixed values is
+defined in the [formalization overview](formal-core.md#1-scope-and-judgments)
+and [value semantics](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces).
+Resource transitions alone do not describe isometry, measurement probabilities,
+or correlations lost by discard; effects and semantics must remain explicit.
 
-古典出力 `B` は、コヒーレントな操作では古典入力からのみ計算できる。量子基底の内容から `CBit` を得るには測定効果を要する。量子出力の基底型と、この古典出力型は別に追う。
+In a coherent operation, classical output `B` can be computed only from the
+classical input. Obtaining a `CBit` from quantum basis contents requires a
+measurement effect. Track the quantum output's basis type separately from
+this classical output type.
 
-| 操作 | 所有権の遷移 | 効果・意味 |
+| Operation | Ownership transition | Effect and meaning |
 | --- | --- | --- |
-| `init0` | `∅ -> {q}` | 既知の `\|0⟩` を作る等長写像 |
-| `h` | `{q} -> {q}` | ユニタリ |
-| `measure_z` | `{q} -> ∅` と `CBit` | 測定結果を返し、論理ワイヤを消費する量子インストルメント |
-| `discard` | `{q} -> ∅` | 部分跡を取る観測効果 |
+| `init0` | `∅ -> {q}` | An isometry preparing the known state `\|0⟩`. |
+| `h` | `{q} -> {q}` | A unitary. |
+| `measure_z` | `{q} -> ∅`, with a `CBit` result | A quantum instrument returning the measurement outcome and consuming the logical wire. |
+| `discard` | `{q} -> ∅` | An observation effect taking a partial trace. |
 
-測定で終わるのは論理ワイヤの所有権であり、物理素子が消えるという意味ではない。後で量子ビットが必要なら `init0` で新しい論理ワイヤを準備する。対応する物理素子を再利用できるかはバックエンドが判断する。
+Measurement ends ownership of the logical wire; it does not make a physical
+device disappear. If a qubit is needed later, prepare a new logical wire with
+`init0`. The backend decides whether the corresponding physical device can
+be reused.
 
-この観点では、表層の `h : Q<Bit> -> Q<Bit>` は妥当な**線形な関数署名**である。ただし、通常の複製可能な値を引数に取る集合上の関数という意味ではない。数学的な中心は状態値そのものではなく、その状態に作用する変換である。初期版で操作を第一級のソース値にすることまでは要求しない。
+From this perspective, `h : Q<Bit> -> Q<Bit>` is a valid **linear function
+signature**. It does not mean a function on sets of ordinary copyable values.
+Transformations acting on states, rather than state values themselves, are the
+mathematical focus. The initial version does not require operations to be
+first-class source values.
 
-## 3. 合成は Kleisli 的に行う
+<a id="3-合成は-kleisli-的に行う"></a>
 
-前の変換が返す量子文脈と、次の変換が受け取る量子文脈が適合するときに合成する。
+## 3. Composition follows a Kleisli-style principle
+
+Compose transformations when the quantum context returned by the first is
+compatible with the quantum context accepted by the next:
 
 ```text
 (A; Δ0) -[ε1]-> (B; Δ1)
@@ -58,46 +149,121 @@
 (A; Δ0) -[ε1 ∨ ε2]-> (C; Δ2)
 ```
 
-これが Qleisli の名前に込める **Kleisli 型の合成原理**である。`ε1 ∨ ε2` は合成後の効果を表す概念的な記法で、v0では規範仕様の3値の最大値を取る。量子文脈の適合には型とワイヤ所有権の検査が必要である。
+This **Kleisli-style composition principle** motivates the name Qleisli.
+`ε1 ∨ ε2` is conceptual notation for the composite effect; in v0 it is the
+maximum of the normative specification's three effect values. Context
+compatibility requires checking types and wire ownership.
 
-ここには区別すべき二つの数学的な層がある。有限基底 `A` から作る自由ベクトル空間 `Vec(A) = C^(A)` の Kleisli 合成は、コヒーレント計算の線形な由来を説明する。しかし一般の `bind` は非等長写像も作る。例えば `Bit -> Vec(Bit)` の `0 -> |0⟩, 1 -> |0⟩` は直交する二つの入力を同じ出力へ写すため、安全な実行 API として公開しない。測定・リセット・破棄を含むプログラム全体には、古典結果を伴う量子インストルメントを合成する。これを厳密な indexed monad としてどう定式化するかは、まだ証明していない。
+Distinguish two mathematical layers. Kleisli composition for the free vector
+space `Vec(A) = C^(A)` on a finite basis `A` explains the linear origin of
+coherent computation. However, unrestricted `bind` can construct nonisometric
+maps. For example, the map `Bit -> Vec(Bit)` given by
+`0 -> |0⟩, 1 -> |0⟩` sends two orthogonal inputs to the same output; it is not
+exposed as a safe execution API. Whole programs containing measurement, reset,
+or discard instead compose quantum instruments with classical outcomes.
+A rigorous formulation of this structure as an indexed monad has not been
+proved.
 
-[有限コア仕様v0](language-spec.md)の `do x <- q; pure e(x)` は、単射な基底写像のコヒーレントなリフトを示す限定構文である。上記の効果付きプログラム全体の合成を、同じ `do` 構文で実装するという決定ではない。`init0; h; measure_z` のような連続操作が一つの変換を成すことを、構文に先立つ原理として固定する。
+The [finite-core v0](language-spec.md) form `do x <- q; pure e(x)` is restricted
+syntax for the coherent lift of an injective basis map. It does not decide
+that the same `do` syntax will implement composition of whole effectful
+programs. The fact that consecutive operations such as
+`init0; h; measure_z` form one transformation is a design principle that
+precedes its choice of surface syntax.
 
-## 4. 古典と量子は型レベルで非対称
+<a id="4-古典と量子は型レベルで非対称"></a>
 
-`CBit` のような古典値はコピーして分岐条件に使える。`Q<A>` の所有権はコピーできない。`Bit` 型のコヒーレントな基底添字も、`CBit` に暗黙変換して読み出せない。読み出しには明示的な測定が必要である。古典 `if` と、制御量子ビットのコヒーレンスを保つ `qif` は別の構成として扱う。
+## 4. Classical and quantum data are asymmetric at the type level
 
-## 5. 「純粋関数型」の意味
+Classical values such as `CBit` may be copied and used as branch conditions.
+Ownership of `Q<A>` may not be copied. A coherent basis label of type `Bit`
+cannot be read through an implicit conversion to `CBit`; readout requires
+explicit measurement. Classical `if` and coherent `qif`, which preserves
+the control qubit's coherence, are different constructs.
 
-量子状態を隠れた可変グローバル値として更新しない。`let` と関数合成は所有権の新しい名前への受け渡しを記述する。測定は確率的で不可逆だが、明示した `observe` 効果と量子インストルメントの意味を持つ。ホスト I/O と機器の失敗を、暗黙に純粋関数へ混ぜない。
+<a id="5-純粋関数型の意味"></a>
 
-線形な所有権とワイヤ ID の検査で、測定後の旧ハンドル利用や同一ワイヤの二重指定は防げる。一方、等長性、制御付き操作の位相、補助ビットのゼロ復帰には量子意味論を知る型・効果検査と IR 検証が必要である。
+## 5. Meaning of purely functional
 
-## 未解決の中核課題: 所有権とエンタングルメントの分離
+Do not update quantum state as a hidden mutable global value. `let` and
+function composition describe the transfer of ownership to new names.
+Measurement is probabilistic and irreversible, but it has an explicit
+`observe` effect and quantum-instrument semantics. Host I/O and device
+failures must not silently enter pure functions.
 
-量子文脈 `Δ` は部分系への操作権を表し、部分系が積状態であることは表さない。例えば Bell 対 `(|00⟩ + |11⟩)/√2` を `split` して得た `q` と `r` は別々に所有できるが、状態は分離していない。`q` を破棄すれば `r` の状態は `I/2` となり、`q` を Z 基底で測定して結果 `b` を得れば、その結果に条件付けられた `r` の状態は `|b⟩` になる。
+Linear ownership and wire-ID checks prevent reuse of an old measured handle
+or repeated specification of the same wire. Isometry, phase under coherent
+control, and auxiliary zero return additionally require type/effect checks
+and IR verification that account for quantum semantics.
 
-**課題は、所有権が保証する資源の安全性と、相関に依存する量子的な保証の境界を、関数をまたいでも検証できる型・効果規則と IR にすること。** 局所ゲートは全体系上の作用、測定は局所インストルメント、破棄は部分跡として解釈する。純粋な `release0` には、対象が全入力と参照系に対して `|0⟩` に戻り、残りから分離する証拠を要求する。入出力の所有権集合が同じだけでは、内部の補助ビットが純粋に片付いたとは言えない。不可逆な破棄を選んだ場合は `observe` 効果に現す。
+<a id="未解決の中核課題-所有権とエンタングルメントの分離"></a>
 
-有限コアv0では、全体系への局所作用と限定された補助証拠を規範として定めた。その健全性・関数境界・IR対応の証明は段階1の残件である。一般の相関・分離の証拠を署名で受け渡す方法は後続仕様とする。初期版に一般のエンタングルメント判定を要求しない。別ワイヤの操作の並べ替えや並列化も、積状態の仮定ではなく、作用するワイヤ、古典的な依存関係、効果、対象機器の制約を調べて正当化する。
+## Open central issue: separating ownership from entanglement
 
-## 添付議論からの用語の確定
+A quantum context `Δ` describes rights to operate on subsystems, not a claim
+that those subsystems are in a product state. For example, `q` and `r` obtained
+by applying `split` to the Bell pair `(|00⟩ + |11⟩)/√2` can be owned separately, although
+their state is not separated. Discarding `q` leaves `r` in state `I/2`.
+Measuring `q` in the Z basis with outcome `b` leaves the conditional state of
+`r` equal to `|b⟩`.
 
-| 添付での表現 | Qleisli で固定する読み方 |
+**The task is to express the boundary between ownership-based resource safety
+and correlation-dependent quantum guarantees in type/effect rules and IR that
+can be checked across function boundaries.** Interpret local gates on the
+whole system, measurement as a local instrument, and discard as partial
+trace. A pure `release0` step requires evidence that the target returns to
+`|0⟩` and separates from the rest for every input and reference system.
+Matching input and output ownership sets does not establish that an internal
+auxiliary was cleaned up purely. Choosing irreversible discard must appear
+as an `observe` effect. In current v0, `release0` is an internal certified
+step, not a standalone source API.
+
+Finite core v0 makes whole-system local action and restricted auxiliary
+evidence normative. General soundness, function-boundary, and IR-correspondence
+proof obligations remain in Stage 1. Passing general correlation/separation
+evidence through signatures belongs to subsequent specifications. The initial
+version does not require a general entanglement decision procedure.
+Reordering or parallelizing operations on separate wires must be justified
+by their acted-on wires, classical dependencies, effects, and target-device
+constraints, rather than an assumed product state.
+
+<a id="添付議論からの用語の確定"></a>
+
+## Terminology adopted from the supplied discussion
+
+| Expression in the supplied discussion | Adopted Qleisli interpretation |
 | --- | --- |
-| `Qubit` や `Q<A>` | ソースでは所有権型 `Q<A>`。状態ベクトルそのものではない。 |
-| `Q(Qubit)` の外側の `Q` | 計算効果の概念。所有権型 `Q<A>` に同じ `Q` を重ねず、上の効果付き変換で表す。 |
-| 「affine なので捨てられる」 | 物理的な破棄は可能。純粋領域での暗黙破棄はなく、不可逆な破棄を明示する。 |
-| 「量子操作は普通の関数でない」 | `Q<Bit> -> Q<Bit>` という線形署名は使える。引数を複製可能な状態値とは解釈しない。 |
-| 「変換が第一級」 | 変換は意味論の中心。初期版の第一級操作値や一般の高階関数は必須条件にしない。 |
+| `Qubit` or `Q<A>` | The source ownership type `Q<A>`, not a state vector itself. |
+| The outer `Q` in `Q(Qubit)` | A computation-effect concept. Express it using the effectful transformations above rather than stacking the same `Q` on the ownership type `Q<A>`. |
+| “It is affine, so it may be discarded” | Physical discard is possible. Pure code has no implicit discard; irreversible discard is explicit. |
+| “Quantum operations are not ordinary functions” | A linear signature such as `Q<Bit> -> Q<Bit>` is valid. Its input is not interpreted as a copyable state value. |
+| “Transformations are first-class” | Transformations are central to the semantics. First-class operation values and general higher-order functions are not requirements of the initial version. |
 
-**固定するもの:** 非複製の所有権、明示的な破棄、古典値と量子資源の効果付き合成、古典と量子の非対称性、純粋操作と観測操作の意味論上の分離。
+**Fixed principles:** ownership that cannot be duplicated; explicit discard;
+effectful composition of classical values and quantum resources; asymmetry
+between classical and quantum data; and a semantic distinction between pure
+operations and observation.
 
-一般の借用構文・署名は後続仕様であり、v0では限定された補助計算の保護規則を使う。
+General borrowing syntax and signatures belong to subsequent specifications.
+v0 uses the protection rules for restricted auxiliary computation.
 
-**段階1で決めるもの:** 構文、正確な型・効果判断、Kleisli 型の合成を支える形式構造、所有権と相関の境界で必要な静的証拠、操作値を第一級にする時期。
+**Responsibilities assigned to Stage 1 in the design plan:** syntax, precise
+type/effect judgments, the formal structure supporting Kleisli-style
+composition, static evidence at the ownership/correlation boundary, and the
+decision of when operations become first-class values. The current finite
+syntax and judgments are recorded in the v0 specification; assigning these
+responsibilities does not declare all associated proofs complete.
 
-以後の草案は上の固定原理に合わせる。原理自体を変える必要が見つかった場合は、反例または新しい実行要件を示し、成立条件・言語仕様・ロードマップを同じ変更で更新する。
+Subsequent drafts must follow the fixed principles. If a principle itself
+needs to change, provide a counterexample or a new execution requirement and
+update the language requirements, specification, and roadmap in the same change.
 
-関連する要求は[量子言語としての成立条件](quantum-language-requirements.md)に、有限コアの規範と操作例は[言語仕様v0](language-spec.md)に記す。この思想をコンパイル時の健全性という観点から具体化した[「AI時代の量子言語」開発目標](ai-era-goal.md)は、現時点での証明済み保証を意味しない。暗黙の破棄がコヒーレンスへ与える影響は [QML 原著](https://people.cs.nott.ac.uk/psztxa/publ/qml.pdf)、寿命を使う逆計算の先行例は [Qurts](https://arxiv.org/pdf/2411.10835)を参照する。
+The [quantum-language requirements](quantum-language-requirements.md) record
+the related conditions; the [v0 language specification](language-spec.md)
+records finite-core rules and operation examples. The
+[AI-era quantum-language goal](ai-era-goal.md) develops these principles from
+the perspective of compile-time soundness, without claiming that the desired
+guarantees are already proved. For the effect of implicit discard on
+coherence, see the [original QML paper](https://people.cs.nott.ac.uk/psztxa/publ/qml.pdf);
+for prior work on lifetime-based uncomputation, see
+[Qurts](https://arxiv.org/pdf/2411.10835).

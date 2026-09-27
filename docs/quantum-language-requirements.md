@@ -1,52 +1,156 @@
-# Qleisli が量子プログラミング言語として満たす条件
+<a id="qleisli-が量子プログラミング言語として満たす条件"></a>
 
-状態: 設計上の要求（2026-09-26）。以下は**仕様と処理系に課す条件**である。[有限コア仕様v0](language-spec.md)はこの条件に従って範囲と規則を固定したが、一般の健全性・実装対応の証明は未完了であり、以下のすべてが証明済みの保証ではない。[設計思想](design-philosophy.md)で固定した原理の具体化として、段階0の標準ライブラリ、段階1の言語仕様、後続の Rust 処理系は同じ条件を満たす。
+# Requirements for Qleisli as a quantum programming language
 
-## 意味論と純粋性
+Status: **adopted design requirements** (2026-09-26). These are conditions
+**imposed on the specification and implementation**. This English edition
+is authoritative for those requirements and replaces the earlier Japanese
+text without changing their meaning. It introduces no new source syntax,
+API, implementation, or proof claim. The [finite-core v0 specification](language-spec.md)
+fixes its scope and rules in accordance with these requirements, but general
+soundness and implementation-correspondence proofs remain incomplete;
+the requirements are not all proved implementation guarantees.
 
-**Q1. コヒーレントな純粋操作。** 有限基底型 `A` の意味を `H(A) = C^(A)` とする。`iso fn` の意味 `V : H(A) -> H(B)` は全入力で `V†V = I_A`、`unitary fn` はさらに `VV† = I_B` を満たす。全体位相を IR と制御付き合成で保持する。純粋関数は全域・停止とし、初期版の反復は静的に有限とする。自由ベクトル空間モナドの任意の `bind` は実行 API として公開しない。
+As consequences of the [adopted design principles](design-philosophy.md),
+the Stage 0 standard-library design, Stage 1 language specification, and
+subsequent Rust implementation must satisfy the same requirements.
+The [language evolution framework](language-evolution.md) preserves them
+when distinguishing proposed extensions from the accepted language.
 
-**Q2. 関数型の実行モデル。** `.qli` のトップレベル宣言はロード時に量子操作を行わず、暗黙の可変量子状態や I/O を持たない。プログラムは古典値と量子所有権の効果付き変換として合成する。ソースの `Q<A>` は所有権型であり、計算効果の型ではない。測定による確率性は明示した `observe` 効果の意味に含め、ホストの表示・ファイル・機器操作と分ける。
+<a id="意味論と純粋性"></a>
 
-## 量子資源と補助系
+## Semantics and purity
 
-**Q3. 所有権と非複製。** `Q<A>` は線形な論理レジスタの操作権である。同一所有権の複製、同一ワイヤの多重指定、暗黙の破棄、寿命切れの利用を拒否する。物理的な破棄は `observe::discard` で明示する。`split/join` はハンドルの再束縛であり、分割されたレジスタが積状態であるとは仮定しない。v0は一般の借用構文を持たず、限定された補助計算の捕捉禁止と、生IRの保護領域・標的ワイヤの非重複を検査する。一般の借用署名とその衝突規則は後続仕様である。
+**Q1. Coherent pure operations.** Interpret a finite basis type `A` as
+`H(A) = C^(A)`. The meaning `V : H(A) -> H(B)` of an `iso fn` must satisfy
+`V†V = I_A` on the whole input space; a `unitary fn` must also satisfy
+`VV† = I_B`. Preserve global phase in IR and controlled composition. Pure
+functions are total and terminating; initial-version iteration is statically
+finite. Do not expose arbitrary `bind` from the free-vector-space monad as
+an execution API.
 
-**Q4. 基底情報の共有。** コヒーレントな基底添字は測定済み古典値 `CBit` ではない。単射な `x -> (x,x)` の線形拡張は許すが、`Q<A>` 自体の複製を許さない。`Bit -> Bit` の定数写像 `x -> 0` のような非単射写像を、純粋な量子操作として持ち上げない。
+**Q2. Functional execution model.** Top-level `.qli` declarations perform
+no quantum operations when loaded and contain no implicit mutable quantum
+state or I/O. Programs compose effectful transformations of classical values
+and quantum ownership. Source `Q<A>` is an ownership type, not a computation
+effect type. The explicit `observe` effect accounts for measurement
+probabilities; host display, file access, and device operations are separate.
 
-**Q5. 補助ビットの解放。** 純粋な解放には、任意の入力と任意の参照系に対して補助ビットが `|0⟩` に戻り、残りから分離する静的証拠を要する。従来の限定された`compute; use; uncompute`では、`use`を元と補助の基底ラベルを保つユニタリに制限する。[有限意味契約の拡張](semantic-contracts-v0.1.md)は、実際の回路Wと明示した論理操作uについて`W E_f=E_f u`を独立に厳密検査し、計算された相関を保ちながら両方を変更する操作も扱う。どちらも保護対象の測定・リセット・破棄を拒否する。一般の借用構文の実装を意味せず、借用期間だけをゼロ復帰の証拠と見なさない。
+<a id="量子資源と補助系"></a>
 
-## 観測と制御
+## Quantum resources and auxiliary systems
 
-**Q6. 不可逆操作の分離。** 測定、リセット、任意状態の破棄を `observe` 効果に置く。`observe` の意味は古典結果ごとの完全正写像の族で、その和は跡保存である。部分系の測定は絡み合った全体系に作用する。初期版の `measure_z : Q<Bit> -> CBit` は測定対象の論理所有権を消費し、新しい量子ハンドルを返さない。リセットと破棄は相関を失う操作として明示する。物理素子の再利用は別の論理ワイヤの準備とバックエンドの割当として扱う。
+**Q3. Ownership and nonduplication.** `Q<A>` is the linear right to operate
+on a logical register. Reject duplicated ownership, repeated specification
+of one wire, implicit discard, and use after the ownership's lifetime ends.
+Physical discard is explicit as `observe::discard`. `split/join` rebind
+handles; they do not assert that split registers form a product state.
+v0 has no general borrowing syntax. It checks the capture prohibition in
+restricted auxiliary computation and disjointness of protected regions and
+target wires in raw IR. General borrow signatures and their conflict rules
+belong to subsequent specifications.
 
-**Q7. 二種類の分岐。** 古典 `if` の各枝は排他的に同じ線形文脈を受け取り、互換な所有権を返す。コヒーレントな `qif` は制御量子ビットを保持し、同じ標的型上のユニタリ分岐を要求する。制御付き合成で分岐間の相対位相を失わない。古典分岐そのものは測定を意味しない。
+**Q4. Sharing basis information.** A coherent basis label is not a measured
+classical `CBit`. Allow the linear extension of the injective map
+`x -> (x,x)`, but do not allow duplication of `Q<A>` itself. Do not lift a
+noninjective map, such as the constant map `x -> 0` from `Bit -> Bit`, into
+a pure quantum operation.
 
-## 実行できる言語としての条件
+**Q5. Auxiliary-bit release.** Pure release requires static evidence that
+the auxiliary returns to `|0⟩` and separates from the rest for every input
+and every reference system. In the original restricted
+`compute; use; uncompute` form, `use` is restricted to a unitary preserving
+the source and auxiliary basis labels. The
+[finite semantic-contract extension](semantic-contracts-v0.1.md) independently
+checks `W E_f=E_f u` exactly for the actual circuit `W` and the explicit
+logical operation `u`. It also permits operations that change both registers
+while preserving the computed relation. Both forms reject measurement,
+reset, or discard of protected resources. This does not implement general
+borrowing, and a borrow lifetime alone is not evidence of zero return.
 
-**Q8. 最小限の表現力。** 初期版で、既知状態の準備、干渉するゲート、エンタングルメント、基底関数からの位相オラクル、絡み合った一部分の測定、測定結果によるフィードバックを記述できる。閉じた `main` は古典結果を返し、量子所有権を残さない。
+<a id="観測と制御"></a>
 
-**Q9. 検証可能な境界。** 標準ライブラリの通常の `.qli` 定義にも利用者コードと同じ型・効果規則を適用する。原始ゲート、単射リフト、測定、所有権の構造操作、証明付き解放は、封印された組み込み操作または検証付きの言語形式を通す。IR 検証器は証拠の存在だけでなく妥当性を検査する。参照シミュレータは受理した初期コアを実行でき、外部バックエンドは非対応機能を拒否するか意味を保つ変換を示す。
+## Observation and control
 
-**Q10. 所有権と相関の境界。** 所有権文脈は排他的な操作権を表し、別々の所有権から積状態を推論しない。局所ゲート・部分測定・リセット・破棄は、絡み合い得る全体系と任意の参照系に対して正しい意味を持つ。純粋な補助ビット解放には Q5 の分離証拠を使い、相関を捨てる場合は Q6 の `observe` 効果を使う。有限コアv0では局所操作の全体系での解釈と限定補助証拠を採用する。その関数境界を含む健全性の証明は段階1の[中核課題](design-philosophy.md)、一般の証拠署名は後続仕様とする。
+**Q6. Separate irreversible operations.** Measurement, reset, and discard
+of arbitrary states have effect `observe`. Interpret `observe` as a family
+of completely positive maps indexed by classical outcomes, whose sum is
+trace preserving. Subsystem measurement acts on the entire, possibly entangled
+system. The initial interface `measure_z : Q<Bit> -> CBit` consumes logical
+ownership of the measured subsystem and returns no new quantum handle.
+Reset and discard explicitly lose correlations. Reusing a physical device
+is handled by preparing a different logical wire and assigning it in the
+backend.
 
-**Q11. 健全性を主張する条件。** 有限・停止するコアの型規則について資源安全性を示し、封印された正当な原始操作、検査済みの単射リフトと補助解放、効果に沿う合成の下で、受理したプログラムの意味が古典結果付きの量子インストルメントになることを示す。IR 検証器とフロントエンドの受理条件がこの定理の前提に沿うまで、コンパイル成功を証明済みの物理的妥当性と呼ばない。[開発目標](ai-era-goal.md)に定理の形と保証しない性質を記す。
+**Q7. Two kinds of branching.** Each arm of classical `if` exclusively
+receives the same linear context and returns compatible ownership.
+Coherent `qif` retains the control qubit and requires unitary branches on
+the same target type. Preserve relative phase between branches under
+controlled composition. Classical branching does not itself mean measurement.
 
-## 判定に使う例
+<a id="実行できる言語としての条件"></a>
 
-| 期待 | 例 | 主な条件 |
+## Requirements for an executable language
+
+**Q8. Minimum expressiveness.** The initial version must express known-state
+preparation, gates producing interference, entanglement, phase oracles from
+basis functions, measurement of part of an entangled system, and feedback
+from measurement results. A closed `main` returns a classical result and
+leaves no quantum ownership.
+
+**Q9. Checkable boundary.** Ordinary standard-library `.qli` definitions
+obey the same type/effect rules as user code. Primitive gates, injective lifts,
+measurement, ownership-structure operations, and certified release must go
+through sealed built-in operations or checked language forms. The IR verifier
+checks validity of evidence, not just its presence. The reference simulator
+must execute the accepted initial core; external backends must reject
+unsupported features or provide meaning-preserving translations.
+
+**Q10. Boundary between ownership and correlations.** An ownership context
+represents exclusive rights to operate; separate ownership does not imply a
+product state. Local gates, partial measurement, reset, and discard must
+have the correct meaning on the possibly entangled whole system and any
+reference. Use Q5's separation evidence for pure auxiliary release and Q6's
+`observe` effect to discard correlations. Finite core v0 adopts whole-system
+interpretation of local operations and restricted auxiliary evidence.
+Proving soundness, including its function boundaries, remains a
+[central Stage 1 obligation](design-philosophy.md); general evidence
+signatures belong to subsequent specifications.
+
+**Q11. Conditions for soundness claims.** Establish resource safety for the
+finite, terminating core's type rules. Show that accepted programs denote
+quantum instruments with classical outcomes, assuming valid sealed
+primitives, checked injective lifts and auxiliary release, and composition
+following the effect rules. Until the frontend and IR verifier's acceptance
+conditions are shown to meet those theorem premises, do not describe
+compilation success as proved physical validity. The
+[development goal](ai-era-goal.md) states the intended theorem and the
+properties it does not guarantee.
+
+<a id="判定に使う例"></a>
+
+## Examples for acceptance decisions
+
+| Expected decision | Example | Main requirements |
 | --- | --- | --- |
-| 受理 | `do x <- q; pure (x,x)` | Q1・Q3・Q4 |
-| 受理 | 補助ビットで `C_f; Z; C_f†` | Q1・Q5 |
-| 受理 | Bell 対の片側を測定して残りを使う | Q3・Q6 |
-| 受理 | Bell 対の片側を明示的に破棄し、残りを混合状態として扱う | Q6・Q10 |
-| 受理 | 測定結果で `X` を選ぶ | Q6・Q7 |
-| 拒否 | `(q,q)`、`do x <- q; pure 0` | Q1・Q3・Q4 |
-| 拒否 | 限定補助計算の保護対象を測定する、証拠なしに補助を捨てる | Q5・Q6 |
-| 拒否 | Bell 対の片側を所有権だけを根拠に純粋解放する | Q5・Q10 |
+| Accept | `do x <- q; pure (x,x)` | Q1, Q3, Q4 |
+| Accept | `C_f; Z; C_f†` using an auxiliary bit | Q1, Q5 |
+| Accept | Measure one half of a Bell pair and use the remainder | Q3, Q6 |
+| Accept | Explicitly discard one half of a Bell pair and treat the remainder as mixed | Q6, Q10 |
+| Accept | Select `X` using a measurement outcome | Q6, Q7 |
+| Reject | `(q,q)` or `do x <- q; pure 0` | Q1, Q3, Q4 |
+| Reject | Measure a protected resource in restricted auxiliary computation, or discard an auxiliary without evidence in a purported pure computation | Q5, Q6 |
+| Reject | Purely release half of a Bell pair based only on its ownership | Q5, Q10 |
 
-## 参考となる先行仕様・研究
+<a id="参考となる先行仕様研究"></a>
 
-- [QML: A functional quantum programming language](https://people.cs.nott.ac.uk/psztxa/publ/qml.pdf): 有限型、基底情報の共有、コヒーレントな分岐と不可逆操作。
-- [Qurts: Automatic Quantum Uncomputation by Affine Types with Lifetime](https://arxiv.org/pdf/2411.10835): 寿命と補助系の逆計算。
-- [OpenQASM 3.1 の量子命令](https://openqasm.com/versions/3.1/language/insts.html)と [QIR Adaptive Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Adaptive_Profile.md): 途中測定・再初期化と対象機器の能力差。
+## Relevant prior specifications and research
+
+- [QML: A functional quantum programming language](https://people.cs.nott.ac.uk/psztxa/publ/qml.pdf):
+  finite types, sharing of basis information, coherent branching, and
+  irreversible operations.
+- [Qurts: Automatic Quantum Uncomputation by Affine Types with Lifetime](https://arxiv.org/pdf/2411.10835):
+  lifetimes and auxiliary uncomputation.
+- [OpenQASM 3.1 quantum instructions](https://openqasm.com/versions/3.1/language/insts.html)
+  and [QIR Adaptive Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Adaptive_Profile.md):
+  mid-circuit measurement, reinitialization, and differing device capabilities.

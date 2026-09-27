@@ -1,39 +1,70 @@
-# 量子の帳尻は言語が引き受ける
+<a id="量子の帳尻は言語が引き受ける"></a>
 
-状態: **ユーザー提供の設計論を整理した日本語の設計メモ**（2026-09-27）。既存の[設計思想](design-philosophy.md)とnorth starを、アルゴリズムを書く人の立場から言い直す。QPEから始める設計評価の順序は、v0.1の有限契約基盤からv1へ進むための提案として記録する。
+# Quantum bookkeeping is a language responsibility
 
-規範となる仕様とリリース到達条件の正本は、英語の[有限コア仕様](language-spec.md)と[リリース到達条件](release-milestones.md)にある。本メモはその補助資料であり、新しい構文・APIの確定や実装完了を宣言するものではない。
+Status: **design note organizing a user-provided design argument**
+(2026-09-27). This authoritative English edition of the note replaces its
+Japanese edition without adopting new syntax or APIs. It restates the existing
+[design principles](design-philosophy.md) and north star from the algorithm
+author's perspective. The sequence of design evaluations beginning with QPE
+remains a proposal for progressing from the finite v0.1 contract foundation
+toward v1.
 
-## 中心となる原理
+The [finite core specification](language-spec.md) and
+[release milestones](release-milestones.md) remain authoritative for normative
+language rules and release acceptance. This note supports those documents;
+it does not declare a new grammar, API decision, or completed implementation.
 
-> **帳尻は言語が引き受ける。**
->
+<a id="中心となる原理"></a>
+
+## The central principle
+
 > **Quantum bookkeeping is a language responsibility.**
 
-アルゴリズムを書く人間は、その意味と構造を書く。量子資源を正しく受け渡し、その意味を保つ回路へ変換するための帳尻合わせは、言語と処理系が担う。
+Algorithm authors describe the intended meaning and structure. The language
+and implementation take responsibility for transferring quantum resources
+correctly and translating that meaning into a circuit that preserves it.
 
-Qleisliの強みとして育てたいのは、個々の機能の数よりも、一つの原理から必要な機能と検査が導かれる一貫性である。
+The strength to develop in Qleisli is consistency: the necessary facilities
+and checks should follow from a common principle, rather than from the number
+of individual features.
 
-| 引き受ける帳尻 | 言語・処理系に求める責務 |
+| Bookkeeping responsibility | Obligation of the language and implementation |
 | --- | --- |
-| 量子ビットの所有権・線形性 | 操作権を一度ずつ受け渡し、複製・多重使用・暗黙の破棄を拒否する。 |
-| 補助ビットの生成と回収 | 補助領域を管理し、純粋な回収にはゼロ復帰と分離の証拠を要求する。 |
-| 可逆計算と逆計算 | 計算された関係と返却する論理作用を追跡し、正当化された逆計算を構成する。 |
-| 制御化と冪 | 必要な操作へのアクセス能力、入出力、効果、補助の後始末を確認する。 |
-| 全体位相と相対位相 | 制御付きの利用文脈でも意味を保てるよう、演算子の位相を保持する。 |
-| 資源・効果 | 純粋操作、準備、観測を区別し、合成した結果にもその区別を残す。 |
-| 回路への変換 | アルゴリズムの要求する意味を、実装と最終IRの検査可能な契約へ結び付ける。 |
-| 静的検査とテスト | 成立条件を明文化し、受理例と拒否例、位相・参照系に敏感な検査を再現可能にする。 |
+| Qubit ownership and linearity | Transfer each operation right exactly once; reject copying, repeated use, and implicit discard. |
+| Creating and reclaiming auxiliary qubits | Manage auxiliary regions and require evidence of zero return and separation for pure reclamation. |
+| Reversible computation and uncomputation | Track the computed relation and the logical operation returned, and construct justified uncomputation. |
+| Coherent control and powers | Check required operation-access capabilities, inputs/outputs, effects, and auxiliary cleanup. |
+| Global and relative phase | Retain operator phase so meaning survives contexts that use coherent control. |
+| Resources and effects | Distinguish pure operations, preparation, and observation, retaining the distinction under composition. |
+| Circuit translation | Bind the algorithm's required meaning to checkable contracts for its implementation and final IR. |
+| Static checks and tests | State the conditions explicitly and make acceptance/rejection cases and phase-sensitive/reference-sensitive checks reproducible. |
 
-これは「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」というnorth starを、責務の分担として表したものである。
+This division of responsibility expresses the north star: make the language
+people use to think about quantum algorithms coincide with the language they
+use to write programs.
 
-書き手は、要求する論理操作、入力の前提、利用できる操作の能力、精度や失敗条件を指定する。処理系は、その契約と実装の対応を検査し、成立を確認できない場合には診断する。証明の探索を常に自動化できることや、実機のノイズまで言語が解消することを意味しない。現在の[v0.1の意味契約](semantic-contracts-v0.1.md)と[関数境界の証拠](function-contracts-v0.1.md)は、この責務を有限な範囲で具体化した基盤である。
+Authors specify the required logical operation, input premises, available
+operation capabilities, accuracy, and failure conditions. The implementation
+checks that the circuit realizes that contract and reports a diagnostic when
+it cannot establish the conditions. This does not promise fully automatic
+proof search or that the language eliminates hardware noise. The existing
+[v0.1 semantic contracts](semantic-contracts-v0.1.md) and
+[function-boundary evidence](function-contracts-v0.1.md) realize this
+responsibility within a finite foundation.
 
-## QPEを最初の本格的な試金石にする理由
+<a id="qpeを最初の本格的な試金石にする理由"></a>
 
-QPEを教科書の構造のまま書こうとすると、状態準備、制御付き冪、逆QFT、測定、位相の解釈、レジスタの所有権が一つのプログラムで交わる。そのため、QPEは個別機能のデモにとどまらず、言語の抽象化が必要な意味を表せるかを試す題材になる。
+## Why QPE is the first substantial design test
 
-有限次元のユニタリUと正規化された固有状態について、`U|ψ⟩ = exp(2πiφ)|ψ⟩`、`0 ≤ φ < 1`とする。位相レジスタをtビット、`N = 2^t`としたとき、準備と制御付き冪の段階は次のように読める。
+Writing QPE in its textbook structure brings state preparation, controlled
+powers, inverse QFT, measurement, phase interpretation, and register ownership
+into one program. It therefore tests whether the language's abstractions can
+express the required meaning, beyond demonstrating individual features.
+
+For a finite-dimensional unitary U and a normalized eigenstate, let
+`U|ψ⟩ = exp(2πiφ)|ψ⟩` with `0 ≤ φ < 1`. With a t-bit phase register and
+`N = 2^t`, preparation and controlled powers have the following form:
 
 ```text
 |0⟩^⊗t |ψ⟩
@@ -41,66 +72,125 @@ QPEを教科書の構造のまま書こうとすると、状態準備、制御�
   → (1/√N) ∑_{k=0}^{N−1} exp(2πikφ) |k⟩ |ψ⟩.
 ```
 
-ここで`k = ∑_j 2^j k_j`とし、ビットjから`U^(2^j)`を制御する。続いて逆QFTと測定を行う。`Nφ`が整数なら理想的な測定結果はその整数になり、それ以外では有限精度の位相推定分布になる。一般入力では固有成分ごとの分布と測定後の標的・参照系も契約に含める。数式のレジスタの表示順と、実装のビット・軸順は明示して対応させる。
+Here `k = ∑_j 2^j k_j`, and bit j controls `U^(2^j)`. Inverse QFT and
+measurement follow. If `Nφ` is integral, the ideal outcome is that integer;
+otherwise the result follows a finite-precision phase-estimation distribution.
+For general inputs, the contract also includes the distribution over
+eigencomponents and the postmeasurement target/reference state. Explicitly
+relate the displayed register order to the implementation's bit and axis order.
 
-特に設計を問うのは`controlled(U^(2^j))`である。書き手が毎回ゲート列や補助配線を組み直す代わりに、位相推定や制御付き冪を、その意味を持つ部品として表したい。
+The expression `controlled(U^(2^j))` is a particularly useful design test.
+Authors should be able to express phase estimation and controlled powers as
+components with those meanings, without rebuilding gate sequences and
+auxiliary wiring on every use.
 
-以下は**将来像を示す擬似記法**であり、現在の`.qli`構文や実装済みの公開APIではない。
+The following is **pseudonotation for a future design**, not current `.qli`
+syntax or an implemented public API:
 
 ```text
 phase_estimate(U, psi)
 controlled(power(U, 2^j))
 ```
 
-実際の契約には精度t、必要なアクセス能力、入力と出力の所有権なども必要になる。単に`U:A→A`と書けることから、制御化できるとは結論しない。純粋なユニタリであることに加え、既知の回路から制御化を検査できるか、制御付き操作へのアクセスが明示的に与えられるかを確認する。未知のブラックボックスを呼べるだけでは、その能力を仮定しない。内部に補助領域があれば、その厳密な後始末と位相も公開操作の契約へつながる。
+An actual contract also needs precision t, required access capabilities, and
+input/output ownership. Merely writing `U:A→A` does not imply that controlled
+access exists. In addition to pure unitarity, require a checked controlled
+construction from a known circuit or explicitly supplied controlled-operation
+access. The ability to call an unknown black box alone does not grant that
+capability. Any private auxiliary region's exact cleanup and phase must also
+connect to the public operation contract.
 
-## 制御化が位相の意味を露出させる
+<a id="制御化が位相の意味を露出させる"></a>
 
-制御を伴わない同じ系の密度演算子への作用では、Uと`exp(iθ)U`は同じ写像を与える。
+## Coherent control exposes the meaning of phase
+
+On density operators of the same system without coherent control, U and
+`exp(iθ)U` induce the same map:
 
 ```text
 (exp(iθ)U) ρ (exp(iθ)U)† = UρU†.
 ```
 
-しかし、制御付きの演算子は次のように異なる。
+Their controlled operators differ:
 
 ```text
 ctrl(U)          = |0⟩⟨0| ⊗ I + |1⟩⟨1| ⊗ U
 ctrl(exp(iθ)U)   = |0⟩⟨0| ⊗ I + exp(iθ)|1⟩⟨1| ⊗ U.
 ```
 
-**標的操作の全体位相が、制御の二つの枝の相対位相になる。** 例えばU=I、θ=πなら、制御ビットの`|+⟩`は前者でそのまま、後者では`|−⟩`になる。したがって、制御化して再利用する操作を全体位相の違いを無視して同一視することはできない。
+**The target operation's global phase becomes relative phase between the two
+control branches.** For U=I and θ=π, for example, the first operator preserves
+a control in `|+⟩`, whereas the second changes it to `|−⟩`. Operations intended
+for reuse under coherent control therefore cannot be identified merely up to
+global phase.
 
-QPEはこの差を推定結果として露出させる。言語が何を同値な量子プログラムと見なすか、どの利用文脈で変換を認めるかが、そのまま試される。現在の意味契約が位相込みの演算子等式`U E_in = E_out u`を要求する理由もここにある。
+QPE exposes this difference in its estimates. It directly tests what the
+language considers equivalent quantum programs and the contexts in which it
+permits transformations. This is also why the current semantic contracts
+require the phase-sensitive operator equation `U E_in = E_out u`.
 
-## アルゴリズムで言語設計を順番に検証する
+<a id="アルゴリズムで言語設計を順番に検証する"></a>
 
-**v0.2.0以前の前提として、仮想Qleisli 1.0のコードを先に書く方針を採用した。** [英語正本](release-milestones.md#pre-v020-imaginary-v1-code)に従い、QPE・Grover・amplitude estimation・Shor・quantum walk・QSVTの初稿と意味上の要求・未解決事項を先にそろえる。まだコンパイルできなくてもよく、初稿は改訂できる。現時点でこのコード群の作成は未完了である。
+## Evaluate language design through successive algorithms
 
-その後、実装と契約を深める評価順として、次の流れを提案する。
+**Writing imaginary Qleisli 1.0 code first is an adopted prerequisite before
+v0.2.0.** Following the [authoritative condition](release-milestones.md#pre-v020-imaginary-v1-code),
+first assemble drafts and semantic requirements/open questions for QPE, Grover,
+amplitude estimation, Shor, quantum walk, and QSVT. They need not compile and
+remain revisable. The [six initial drafts and requirement index](imaginary-v1/README.md)
+and [semantic review](imaginary-v1/review.md) now satisfy the limited
+prerequisite of having those artifacts and requirements. They are not evidence
+of implementation or v1 completion.
 
-> **QPE → 振幅増幅 → Shor**
+After that prerequisite, the proposed order for deepening implementation and
+contracts is:
 
-| 試金石 | 主に検証する抽象化 |
+> **QPE → amplitude amplification → Shor**
+
+| Design test | Principal abstractions to evaluate |
 | --- | --- |
-| QPE | 制御化、冪、位相の意味、QFT、測定、レジスタの所有権、操作へのアクセス能力。 |
-| 振幅増幅（Groverを含む） | 状態準備とその逆、オラクル、反射の符号と位相、反復方針、成功確率の前提。 |
-| Shor | 共通QPEの再利用、可逆剰余算術、可逆な古典計算、補助領域、古典的な位数・因数検証、失敗と再試行。 |
+| QPE | Coherent control, powers, phase semantics, QFT, measurement, register ownership, and operation-access capabilities. |
+| Amplitude amplification, including Grover | State preparation and its inverse, oracles, reflection signs and phases, iteration policies, and success-probability premises. |
+| Shor | Shared QPE reuse, reversible modular arithmetic, reversible classical computation, auxiliary regions, classical order/factor validation, failure, and retries. |
 
-これは、アルゴリズムの実装を並べるだけでなく、**量子言語の意味論をアルゴリズムによって順番に圧力試験する**という進め方である。v0.xの設計反復でQPEを先行する受け入れテストとして使い、そこで得た抽象化を次の題材で再利用する。v1の正式な到達判定は、引き続き英語正本のV1-C1〜C5に従って三つのアルゴリズム全体で行う。
+This approach uses algorithms to **test the semantics of the quantum language
+in sequence**, as well as implementing the algorithms themselves. Use QPE as
+an early acceptance test in 0.x design iterations, then reuse the resulting
+abstractions in the next example. Formal v1 acceptance still evaluates all
+three algorithms against V1-C1–C5 in the authoritative release document.
 
-QPEでの目標は、教科書や論文に現れる数学的な各段階と、実際にコンパイル・検査・実行できるコードの構造を対応させることにある。固定サイズの回路や、名前だけのトップレベル関数では、その抽象化を十分に評価できない。
+For QPE, the goal is to align the mathematical stages found in textbooks and
+papers with code that can actually compile, pass checks, and run. Fixed-size
+circuits or a top-level function bearing only the algorithm's name do not
+adequately evaluate that abstraction.
 
-## 余計な帳尻合わせが現れたときの問い
+<a id="余計な帳尻合わせが現れたときの問い"></a>
 
-アルゴリズムを書くために繰り返し配線や回収の手順を露出させる必要があるなら、まず次を問う。
+## When authors still have to manage bookkeeping
 
-> **なぜ言語が引き受けられないのか？**
+If writing an algorithm repeatedly requires exposing wiring or reclamation
+steps, first ask:
 
-不足しているのは、所有権の表現か、操作へのアクセス能力か、意味契約か、それとも実装と証拠を結ぶ仕組みか。手順を関数の中へ隠すだけで解決したとせず、その関数の利用側が意味と必要な条件から構成できるかを確かめる。
+> **Why can the language not take responsibility for this?**
 
-通常のライブラリ定義は、このための重要な実装手段である。共通の構造をすべて封印操作へ増やす必要はない。言語が支える型・効果・所有権・意味契約を通じて、ライブラリの部品とその合成も検査できることが重要になる。
+Is the missing element an ownership representation, an operation-access
+capability, a semantic contract, or a connection between implementation and
+evidence? Hiding the steps inside a function is not sufficient by itself;
+check whether the client can compose that function using its meaning and
+required premises.
 
-設計上の要求を引き出す起点を、他言語との機能数の比較よりも、量子アルゴリズムの構造と成立条件に置く。先行研究は意味や検証方法を確かめる資料として参照しつつ、6題の理想コード初稿をそろえた後にQPE一本の実装と契約を深め、次に必要な抽象化を見つける。
+Ordinary library definitions are an important implementation mechanism for
+this purpose. Shared structures need not all become sealed operations. The
+language must support checking library components and their composition
+through types, effects, ownership, and semantic contracts.
 
-このメモが表す方向は、**「量子回路を書く言語」から「量子アルゴリズムを書ける言語」へ**というものである。その到達を、実ソースの読みやすさと、実装まで保たれる検査可能な意味の両方で評価する。
+Derive design requirements from quantum-algorithm structure and validity
+conditions rather than starting with feature-count comparisons to other
+languages. Use prior research to assess meanings and verification methods.
+After the six ideal-code drafts are assembled, deepen QPE's implementation
+and contracts to identify the next necessary abstractions.
+
+The direction expressed by this note is **from a language for writing quantum
+circuits toward a language for writing quantum algorithms**. Evaluate that
+progress through both readable real source and checkable meaning preserved
+through implementation.
