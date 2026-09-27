@@ -20,10 +20,11 @@ For v1, Shor, QPE, and Grover must be readable in their textbook quantum-algorit
 | v0.1.1 | Collect compatible review fixes, diagnostics, and regressions while preserving finite-core public contracts. | Implementation and local candidate validation remain recorded. Actual commit, Linux CI, and publication are identified by the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1). |
 | v0.1.2 | A design/documentation maintenance release with six imaginary-v1 initial drafts, a requirements index, and semantic review. | Released with Rust/Lean versions 0.1.2. The English specification framework, drafts, index, and review are complete. Subsequent English documentation consolidation, candidate checks, and publication are distinguished below. |
 | v0.1.3 | Repair auxiliary matrix-checker shapes and nonfinite comparisons, verify the v0.1.2 review, retain independent semantic research, and add a compatible Physlib environment. | The [release notes](docs/releases/v0.1.3.md) record scope and validation; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) identifies the commit, CI and publication. Further symbolic-kernel implementation remains deferred. |
+| v0.1.4–v0.1.9 | Consolidate the finite contract baseline through compatibility/conformance audits, evidence-boundary review, existing proof-obligation records and the next-minor design dossier. | [0.1.4 local preparation P014-1–P014-4](docs/releases/v0.1.4.md#v014-roadmap-and-completion-evidence) is complete: planning, review, local suite checks and candidate distribution. P014-5 commit/CI/publication evidence belongs to the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4). The [detailed plan and B019 boundary](docs/v0x-roadmap.md) define later work; new public features and symbolic-kernel integration are outside this maintenance series. |
 | Before v0.2.0 | First write ideal imaginary Qleisli 1.0 code for QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT; record contracts, capabilities, and open questions. Compilation is not required. | The [six drafts and index](docs/imaginary-v1/README.md), with their [review](docs/imaginary-v1/review.md), satisfy the initial-code and requirement-record prerequisite. The code remains uncompiled. |
 | v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
 
-Detailed V01-C1–C6 and V1-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version `0.1.3`. Do not infer release milestones from unrelated prior test results.
+Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version `0.1.4`. Do not infer release milestones from unrelated prior test results.
 
 | Stage | Status | Deliverables |
 | --- | --- | --- |
@@ -33,6 +34,42 @@ Detailed V01-C1–C6 and V1-C1–C5 criteria are in the [authoritative milestone
 | 3. `.qli` frontend | Minimal path implemented | Name resolution, nonrecursive calls, type/effect/ownership checking, IR generation, diagnostics |
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Not started | Output systems that check target capabilities |
+
+## v0.x plan and the v0.1.9 boundary
+
+The [detailed v0.x plan](docs/v0x-roadmap.md) is the selected direction as of
+2026-09-27. **Through v0.1.9, preserve and audit the existing finite language
+and its meaning contracts, and prepare the next-minor design decisions.**
+Each release still requires its own validation; planning is not completion.
+
+| Maintenance target | Main output |
+| --- | --- |
+| v0.1.4 | Version synchronization, roadmap and maintenance-boundary decision; [P014 local validation and distribution gates](docs/releases/v0.1.4.md#v014-roadmap-and-completion-evidence). |
+| v0.1.5 | Finite ownership/effect/static-operation conformance audit and compatible fixes. |
+| v0.1.6 | Evidence-binding, phase/layout/reference and exact-cleanup boundary audit. |
+| v0.1.7 | Existing-rule/implementation correspondence and proof-obligation ledger. |
+| v0.1.8 | Six-draft next-minor decision dossier, including capabilities, sizes, QPE angles and checking. |
+| v0.1.9 | B019-1–B019-6 consolidation review, full candidate validation and next-minor readiness decision. |
+
+The endpoint excludes new public syntax/APIs, generalized algorithms, additional
+symbolic-kernel development or production integration, and a promised general
+Rust soundness proof. A documented blocker may prevent next-minor work while
+the maintenance baseline remains complete. v0.1.9 is not a numbering ceiling;
+necessary later maintenance may use v0.1.10.
+
+The [v0.1.4 record](docs/releases/v0.1.4.md#local-candidate-validation) gives
+fresh primary/MSRV Rust, Lean/project/external audits, Python and representative
+execution results. These validate the local maintenance candidate, not the
+planned v0.1.5–v0.1.9 audits. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4) identifies exact-commit CI and publication separately.
+
+For later minors, the plan orders operation capabilities, sizes and certified
+auxiliary lifecycle, effect/instrument contracts, proof reuse, shared QPE/Grover,
+Shor, cost/usability and stabilization toward V1-C1–C5. The
+[v0.2–v0.9 themes](docs/v0x-roadmap.md#v02-toward-v1-capability-led-generalization)
+are conditional planning targets, not selected extension specifications.
+The current language already checks effects and finite semantic evidence.
+Capability propagation cannot replace evidence of implementation meaning;
+the symbolic prerequisite and separate resumption decision remain in force.
 
 <a id="v013-release-roadmap"></a>
 
@@ -62,8 +99,9 @@ algorithms are deferred to the future work below.
 
 **Deferred (2026-09-27):** retain the experimental design, prototype and
 regressions as research evidence. Further development and production adoption
-are future roadmap work, not additional completion conditions for the current
-0.1.3 maintenance release. No target release is selected. The production
+are future roadmap work, not completion conditions for the v0.1.4–v0.1.9
+maintenance series (nor retroactive conditions for v0.1.3). No target release
+is selected, including in the conditional v0.x plan. The production
 finite checker still computes dense matrices; the prototype does not remove
 that limitation from compiled `.qli` programs.
 
@@ -74,8 +112,9 @@ that limitation from compiled `.qli` programs.
 | Validate scaling and implementation correspondence | Compose nontrivial operations at multiple sizes without whole-operator matrix expansion; test substitution, phase, axis order, reference systems and invalid proofs. State leaf bounds, cost and remaining trusted components, and prove the relevant implementation/rule correspondence. | Future validation and proof; current large-frame examples and local Lean lemmas do not complete this step. |
 
 The [system design](docs/symbolic-contract-architecture.md) records the semantic
-and trust boundaries. Resume this work through G020-1 specification selection
-before production size generalization. Dense-free composition remains a
+and trust boundaries. A separate resumption/scope decision through G020-1
+specification selection is required before production size generalization;
+the new roadmap alone does not resume implementation. Dense-free composition remains a
 prerequisite for that generalization; deferral does not relax it or V1-C1–C5.
 
 The [Lean quantum-library investigation](research/quantum-libraries/README.md)
@@ -111,6 +150,12 @@ The English consolidation requested after the corpus translates current Japanese
 <a id="v020からv1へ進む順序"></a>
 
 ### Order from v0.2.0 toward v1
+
+G020-1–G020-3 remain gates for selecting and delivering the next minor, read
+with the [conditional themes](docs/v0x-roadmap.md#v02-toward-v1-capability-led-generalization).
+Their original candidate combined size and operation generalization; the
+capability-first plan permits narrowing it before specification. No generalized
+profile may bypass R14, and the deferred kernel has no assigned release.
 
 | Step | Prerequisites and deliverables | Status |
 | --- | --- | --- |

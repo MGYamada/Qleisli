@@ -1,10 +1,10 @@
 # Qleisli
 
-**Current version: 0.1.3** · [Release notes and validation](docs/releases/v0.1.3.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.4** · [Release notes and validation](docs/releases/v0.1.4.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
 
-**v0.1.3 is a maintenance and semantic-research candidate; publication is pending.** It fixes silent matrix-dimension truncation in the imaginary-design check script and adds regression tests. The [v0.1.2 review verification](docs/reviews/v0.1.2.md) records scalable evidence composition as a prerequisite for size generalization, together with the open QPE angle decisions.
+**v0.1.4 establishes the v0.x plan and its finite maintenance boundary.** The [detailed v0.x plan](docs/v0x-roadmap.md) fixes the maintenance boundary through v0.1.9: the existing finite language, semantic evidence, conformance audits and next-minor design dossier. Fresh [candidate checks](docs/releases/v0.1.4.md#local-candidate-validation) cover both Rust toolchains, Lean/audits, examples and distributions; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4) identifies exact-commit CI and publication. New operation capabilities, size/typestate/effect facilities and generalized algorithms require later minor releases and their own specifications.
 
-The [semantics-first system design](docs/symbolic-contract-architecture.md) and [independent research prototype](research/semantic-kernel/README.md) begin symbolic checking in a limited non-published package. A 128-bit actual raw-IR example is checked with a maximum 2-by-2 leaf matrix. Production finite-core contracts are preserved; source integration and general compiler soundness remain open. The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) remain design artifacts. Implementing their syntax belongs to v0.2.0 or later.
+The [semantics-first system design](docs/symbolic-contract-architecture.md) and [independent research prototype](research/semantic-kernel/README.md) retain a limited non-published symbolic checker. A 128-bit actual raw-IR example is checked with a maximum 2-by-2 leaf matrix. Further development and production integration remain [deferred with no selected release](ROADMAP.md#future-work-symbolic-semantic-kernel). Checking generalized contracts without whole dense matrices remains a prerequisite for size generalization. Production finite-core contracts are preserved; source integration and general compiler soundness remain open. The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) remain design artifacts. Implementing their syntax belongs to v0.2.0 or later.
 
 Qleisli is a purely functional quantum programming language with an implementation in Rust. It treats quantum data as owned resources that cannot be copied, and programs as composable, effectful transformations of classical values and quantum resources.
 
@@ -88,7 +88,7 @@ The [documentation map](docs/documentation-map.md) records authority, status, an
 
 1. [Design philosophy](docs/design-philosophy.md): fixed principles and remaining freedom in syntax.
 2. [A quantum language for the AI era](docs/ai-era-goal.md): assurance levels and proof targets.
-3. [Roadmap](ROADMAP.md): stages, ordering, and completion conditions.
+3. [Roadmap](ROADMAP.md) and [v0.x release plan](docs/v0x-roadmap.md): stages, ordering, completion conditions, and the v0.1.9 maintenance boundary.
 4. [Quantum-language requirements](docs/quantum-language-requirements.md): conditions for the specification and implementation.
 5. [`.qli` and the standard library](docs/standard-library.md): Stage 0 organization decisions.
 6. [Finite-core language specification v0](docs/language-spec.md): normative types, effects, ownership, and semantics.

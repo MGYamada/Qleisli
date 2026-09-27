@@ -7,19 +7,93 @@ is implemented and checked; general correspondence between all accepted Rust
 paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
-The project version is 0.1.3, a maintenance/research release, not a claim of v1
-completion. Its [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
-identifies the actual commit, CI and publication; the preceding release is
-[v0.1.2](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2).
+The project version is 0.1.4, a documentation/plan maintenance release,
+not a claim of v1 completion. Its [record](releases/v0.1.4.md) distinguishes
+fresh local candidate checks from exact-commit CI and publication; the
+[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
+identifies the released commit and publication evidence. The preceding [v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies that release's actual commit, CI and publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.3.md) and
+The current [release record](releases/v0.1.4.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## 0.1.4 release procedure and publication record (2026-09-27)
+
+The user authorized v0.1.4 release through publication. The release date is
+2026-09-27 (JST); current summaries and release notes are finalized for that
+release. The active GitHub main rules require a PR, an up-to-date base,
+resolved conversations and the four `rust`, `rust-msrv`, `lean` and `docs`
+checks, without a bypass actor. The active `v*` rules prohibit tag updates
+and deletion.
+
+The release procedure verifies the exact merged-main commit's CI and packages
+its clean source before creating and pushing an annotated tag and publishing
+the GitHub source release. The [hosted release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
+identifies the actual commit, PR, CI, archive validation and completed operations.
+No crates.io package or prebuilt binary is included in this source release.
+The historical preparation entries below preserve their original then-pending
+states and candidate counts; version/date metadata alone is not publication
+or completion of later maintenance work.
+
+## 0.1.4 roadmap progress and local candidate validation (2026-09-27)
+
+Following the request to advance v0.1.4, the
+[P014 completion record](releases/v0.1.4.md#v014-roadmap-and-completion-evidence)
+records P014-1–P014-4 complete locally: planning/review, candidate checks and
+distribution verification. P014-5 exact-commit release gates remain pending. On macOS aarch64,
+fresh Rust 1.98.1 and minimum 1.85.0 targets each passed all 258 production and
+43 research tests and both packages' all-target Clippy checks. Primary fmt,
+all 43 Python tests, 52 mathematical checks and 39 exact assertions passed.
+
+Pinned Lean/Mathlib 4.30.0 with the compatible Physlib revision built the
+selected modules successfully. Separate warning-as-error audits passed for
+577 Qleisli and eight external declarations, using only the three allowed
+standard axioms. All ten CLI examples checked and ran; Shor returned factors
+3 and 5 on successful outcomes, with success/retry probability 1/2 each.
+The [candidate validation table](releases/v0.1.4.md#local-candidate-validation)
+records package/source contents, reproduction and platform scope: the 174-file
+production package rebuilt successfully, and all 43 research tests passed from
+the extracted 179-file complete-source candidate. Final status-only documentation
+was refreshed in both archives and byte-checked, with executable inputs unchanged.
+
+No Rust/Lean source, dependency, public API, capacity or toolchain was changed.
+The independent review found no blocking issue with the maintenance scope or
+historical/semantic boundaries. The Linux-only CLI case, final clean-commit CI,
+tagging and publication are separate pending gates. These local checks do not
+complete the planned v0.1.5–v0.1.9 audits, B019, generalized source support or
+the general implementation-soundness proof. The earlier scoped checks below
+retain their original then-unperformed checks as history.
+
+## 0.1.4 version selection and v0.x maintenance boundary (2026-09-27)
+
+At the user's request, synchronize the Rust/Lean project versions at 0.1.4
+and adopt the [v0.x roadmap](v0x-roadmap.md). The
+[B019-1–B019-6 boundary](release-milestones.md#v019-maintenance-boundary)
+limits v0.1.4–v0.1.9 to compatible finite-core maintenance, conformance and
+evidence audits, existing proof-obligation records and a next-minor decision
+dossier. Later minor themes are conditional targets, not implemented features
+or finalized extension specifications. Each proposed abstraction must identify
+the programmer obligation removed and its replacement evidence/checker.
+
+The existing finite effects, static operations and SC/FC evidence remain
+implemented. New capability/typestate/effect syntax, size generalization,
+generalized algorithms and public proof interfaces are outside this patch
+series. Additional symbolic-kernel development/integration remains deferred
+without a target release, while dense-free checking remains a prerequisite
+for generalization. v0.1.9 does not promise a proof of the Rust compiler.
+
+No Rust/Lean source, dependencies, public APIs or implementation limits are
+changed. Historical results remain attached to their original releases.
+The [0.1.4 validation record](releases/v0.1.4.md#validation-for-this-working-change)
+records checks for this version/documentation change and explicitly separates
+the unperformed full release checks and publication. B019 completion remains
+future work; selecting 0.1.4 does not complete the later audits or design dossier.
 
 ## Final 0.1.3 release contents and validation (2026-09-27)
 

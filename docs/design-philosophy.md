@@ -58,6 +58,18 @@ is a design note presenting these principles from the algorithm author's
 perspective. It considers ownership, auxiliary cleanup, control, and phase as
 one language responsibility and proposes QPE as an early design acceptance test.
 
+**Abstraction criterion adopted for the v0.x plan (2026-09-27):** each new
+abstraction must identify an obligation it removes from the algorithm author,
+the evidence that replaces that obligation, and the independent check that
+enforces it. The [v0.x plan](v0x-roadmap.md#responsibilities-beyond-ownership)
+separates ownership, operation capabilities, effects, established auxiliary
+invariants, proof contracts and resource accounting. Capability is the next
+design focus, building on current finite transforms and effects. Ordinary
+composition should reuse library evidence; this is not a promise of unrestricted
+automatic proof search. Mathematical unitarity does not grant opaque controlled
+access, and a proposed clean-state label cannot replace exact cleanup evidence.
+The plan adopts no new grammar or public type.
+
 **Prerequisite before v0.2.0, adopted on 2026-09-27:**
 [write ideal code in an imaginary Qleisli 1.0 first](release-milestones.md#pre-v020-imaginary-v1-code).
 Produce all six initial drafts and record their semantic requirements and open

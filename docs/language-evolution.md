@@ -111,9 +111,11 @@ control. These are design obligations, not new compiler acceptance tests.
 
 ## 5. Next decisions
 
-First write all six algorithm bodies and their requirement records. Then use
-their shared needs to select a minimal next-minor specification: size and
-operation parameters, access capabilities, and the required evidence boundary.
+The six algorithm bodies and requirement records now exist as imaginary,
+reviewed design artifacts. Use their shared needs to select a minimal
+next-minor specification under the [v0.x plan](v0x-roadmap.md): operation
+capabilities first, with size and evidence generalization subject to the
+separate symbolic-checking prerequisite and resumption decision.
 Do not implement a hypothetical type solely because it appears in a draft.
 The [release plan](releases/v0.1.2.md) records completion of the design corpus
 separately from implementation, general soundness, and publication.

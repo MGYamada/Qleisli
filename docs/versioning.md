@@ -8,12 +8,15 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
-The current baseline is **0.1.3**, a compatible maintenance release. The
-[0.1.3 release record](releases/v0.1.3.md) describes the auxiliary-checker fix,
-review verification, independent research, Physlib environment and validation.
-The [v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
-identifies the release commit, CI and publication. Version selection alone does not
-establish publication.
+The current baseline is **0.1.4**, a compatible documentation/plan maintenance
+release. The [0.1.4 record](releases/v0.1.4.md) describes scope and validation;
+the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
+identifies its exact commit, CI, tag and publication. The [v0.x plan](v0x-roadmap.md) fixes the
+maintenance boundary through v0.1.9; that checkpoint is not a numbering ceiling
+and may be followed by 0.1.10 maintenance. The preceding
+[v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies its own release commit, CI and publication. Version selection alone
+does not establish publication.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
 version in [lean/lakefile.toml](../lean/lakefile.toml) synchronized. Compiler,
