@@ -227,9 +227,13 @@ phase_estimate(U: ControlledAccess<U_A>, m: StaticNatPositive;
 ```
 
 **Proposed classification:** a family of ordinary `.qli` definitions.
-`ControlledAccess` is a candidate capability contract for constructing
-phase-fixed controlled powers. Possession of an unknown black-box `U` alone
-is not evidence of controlled access.
+`ControlledAccess` is candidate wrapper notation for checked access evidence
+for phase-fixed controlled powers. The [selected semantic model](decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation)
+uses constraints on static operation descriptions; the wrapper, `requires`
+predicates and evidence builders are distinct surface roles, not three
+competing notions of control. The [M1 grammar](next-minor-spec.md) now selects
+static parameters and access constraints; sized QPE syntax remains future work. Possession of an
+unknown black-box `U` alone is not evidence of controlled access.
 
 Consume `q` and return the postmeasurement target. Measure and consume only
 the freshly prepared phase register; a variant disposing of the target needs

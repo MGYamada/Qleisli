@@ -16,15 +16,29 @@ and example explanations. Authority is tied to a document's subject and status:
 | Formal rules and proof accounts | [Formal core](formal-core.md), [resource rules](source-resource-rules.md), [typing rules](source-typing-rules.md), [source semantics](source-semantics.md), [static semantics](static-semantics.md), [source soundness](source-soundness.md), [IR correspondence](source-ir-correspondence.md), and [state refinement](lowering-state-refinement.md) state their models, assumptions, and proved/open obligations. A paper proof is not a claim that Rust implements every derivation correctly. |
 | Implementation and evidence records | [Frontend profile](frontend-v0.md), [IR prototype](ir-prototype.md), [architecture](implementation-architecture.md), [Lean ledger](lean-resource-proof.md), [Physlib environment](physlib-environment.md), and [conformance history](specification-status.md) describe implementation/dependency coverage and dated evidence. Finite tests and local Lean lemmas do not establish general compiler soundness. |
 | Adopted design direction and development plans | The translated documents below are the English editions for their own principles, requirements, plans, and arguments. An accepted design principle may constrain future work without being implemented. Proposed facilities remain proposed. These documents do not override current language/API rules. |
-| Release criteria and compatibility | [Release milestones](release-milestones.md), [versioning](versioning.md), the [v0.x plan and v0.1.9 boundary](v0x-roadmap.md), and version-specific [release records](releases/v0.1.4.md) determine acceptance, compatibility, and preparation/publication status. Roadmap themes do not adopt syntax or establish implementation. Product versions, development stages, specification v0, and ledger format v1 are distinct. |
+| Release criteria and compatibility | [Release milestones](release-milestones.md), [versioning](versioning.md), the [v0.x plan and v0.1.9 boundary](v0x-roadmap.md), and version-specific [release records](releases/v0.1.5.md) determine acceptance, compatibility, and preparation/publication status. Roadmap themes do not adopt syntax or establish implementation. Product versions, development stages, specification v0, and ledger format v1 are distinct. |
 | Future design material | The [language-evolution framework](language-evolution.md) and [imaginary-v1 corpus](imaginary-v1/README.md) organize future requirements. All six algorithm drafts remain imaginary and uncompiled; their existence does not adopt their notation or APIs. |
-| Independent semantic research | The [system design](symbolic-contract-architecture.md) specifies the intended meaning/implementation boundary; the [prototype record](../research/semantic-kernel/README.md) records the separately implemented and tested subset. The [quantum-library investigation](../research/quantum-libraries/README.md) records isolated mathematical interface experiments without adopting a production dependency. None changes production source acceptance or proves Rust/source correspondence. |
+| Selected future specifications | [M1 language extension](next-minor-spec.md), [machine interfaces](machine-interface-spec.md), and [bounded M2 IR/checker profile](hierarchical-ir-spec.md) specify future contracts and acceptance matrices. They govern their selected future slices, not current v0 acceptance. Their examples and acceptance tests are not implemented/executed. |
+| Independent semantic research | The [system design](symbolic-contract-architecture.md) specifies the intended meaning/implementation boundary; the [prototype record](../research/semantic-kernel/README.md) records the separately implemented and tested subset. The [quantum-library investigation](../research/quantum-libraries/README.md) records isolated mathematical interface experiments that did not adopt a dependency at that investigation step; the later [Physlib record](physlib-environment.md) preserves the compatible addition and its subsequent deferral to a future concrete bridge. None changes production source acceptance or proves Rust/source correspondence. |
 
 Use the [terminology conventions](terminology.md) across these classes. If a
 proposed design conflicts with a current contract, record the conflict and a
 future specification decision explicitly; do not silently reinterpret accepted
 programs. Selecting a feature, specifying it, implementing it, testing it, and
 proving it are separate events.
+
+## Current state and historical records
+
+[project-status.json](project-status.json) is the single editable record for
+active milestone states and the initial rule/implementation/test/proof
+inventory. [current-status.md](current-status.md) is generated from it and the
+Rust/Lean manifests; the document checker rejects version/view drift and
+missing source/test links. It is not an automatic proof or exhaustive audit.
+Detailed norms remain in their existing specifications; historical validation
+entries remain dated. [M0–M5 and the legacy-ID map](v0x-roadmap.md#legacy-id-mapping)
+replace version-assigned scheduling without renumbering theorem statements.
+AGENTS.md links durable rules to [the decision dossier](decisions/2026-09-27-v1-path.md)
+instead of repeating changing adoption paragraphs.
 
 ## Translation inventory
 
@@ -82,9 +96,11 @@ semantic contracts through final IR. The north star and executable V1-C1–C5
 criteria remain in force.
 
 The initial six-code prerequisite before v0.2.0 is complete as design material.
-Concrete sized types, operation-parameter syntax and access capabilities,
-general instrument/accuracy evidence, arithmetic/host interfaces, and the
-smallest v0.2.0 feature scope still require specification decisions. The
+Sized source syntax, general instrument/accuracy evidence, and full arithmetic
+APIs still require extension decisions. The subsequent
+[0.1.5 dossier](decisions/2026-09-27-v1-path.md) and its linked specifications
+settle fixed-width operation/access/meaning rules, machine interfaces and the
+bounded M2 checker/QPE profile, without implementing them. The
 [requirements index](imaginary-v1/requirements.md) records candidate facilities
 and open questions; translation is not their adoption. General source-to-IR
 adequacy, verifier correctness, and compiler soundness remain open.

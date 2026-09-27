@@ -5,10 +5,14 @@ This is not a dependency-adoption decision, a production API, a new release
 condition, or a resumption of the deferred symbolic-kernel implementation.
 The production Lean/Mathlib versions and imports are unchanged.
 
-**Subsequent environment addition:** the user selected Physlib after this survey.
-The [dependency record](../../docs/physlib-environment.md) describes the compatible
-`v4.30.0` tag now pinned in the existing Lean environment. The survey below
-retains its original, separate 4.34.1 Physlib experiment and its validation scope.
+**Subsequent environment decisions:** Physlib was added at compatible `v4.30.0`
+after this survey, then removed from required dependencies/CI in the v0.1.5
+maintenance candidate until a concrete instrument bridge needs it. The
+[dependency record](../../docs/physlib-environment.md) retains both decisions
+and reintroduction conditions. [PhyslibAudit.lean](PhyslibAudit.lean) preserves
+the optional eight-declaration integration probe from 4.30.0; it is not runnable
+in the current default environment. The survey below retains its separate
+4.34.1 experiment and original validation scope.
 
 Qleisli's [license](../../LICENSE) and [attribution](../../NOTICE) apply to the
 original probes and this report: Apache-2.0, Copyright 2026 Masahiko G. Yamada.

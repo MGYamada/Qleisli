@@ -1,12 +1,13 @@
 """Regression checks for stale-reference diagnostics, without Rust dependencies."""
 
 from pathlib import Path
+import json
 import sys
 import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_lean, check_links, markdown_anchors
+from check_docs import check_lean, check_links, check_status, markdown_anchors, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -23,6 +24,62 @@ class DocumentationReferences(unittest.TestCase):
 
     def check(self, markdown):
         return check_links(self.root, [self.write("docs/rules.md", markdown)])
+
+    def status_fixture(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.1.5"\n')
+        self.write("lean/lakefile.toml", 'version = "0.1.5"\n')
+        data = {
+            "format": 1,
+            "release_state": "selected",
+            "milestones": [dict(id=f"M{i}", state="planned", evidence="direction", open="work") for i in range(6)],
+            "inventory": [dict(rule="rule", implementation="code", tests="tests", proof="open")],
+        }
+        self.write("docs/project-status.json", json.dumps(data))
+        return data
+
+    def test_status_drift_is_rejected_without_rewriting_the_view(self):
+        self.status_fixture()
+        self.assertTrue(check_status(self.root))
+        self.assertEqual(check_status(self.root, write=True), [])
+        self.assertEqual(check_status(self.root), [])
+        path = self.write("docs/current-status.md", "incorrect completion claim\n")
+        self.assertIn("stale", check_status(self.root)[0])
+        self.assertEqual(path.read_text(), "incorrect completion claim\n")
+
+    def test_status_requires_synchronized_versions(self):
+        self.status_fixture()
+        self.write("lean/lakefile.toml", 'version = "0.1.4"\n')
+        self.assertIn("versions differ", check_status(self.root, write=True)[0])
+        self.assertFalse((self.root / "docs/current-status.md").exists())
+
+    def test_status_rejects_missing_proof_fields_and_duplicate_milestones(self):
+        data = self.status_fixture()
+        del data["inventory"][0]["proof"]
+        self.write("docs/project-status.json", json.dumps(data))
+        self.assertIn("missing or unknown", check_status(self.root)[0])
+        data = self.status_fixture()
+        data["milestones"][1]["id"] = "M0"
+        self.write("docs/project-status.json", json.dumps(data))
+        self.assertIn("once, in order", check_status(self.root)[0])
+
+    def test_status_invalid_format_and_cells_are_diagnosed(self):
+        for bad in ['{"format":', '{"format": 2}', 'null', '[]']:
+            self.status_fixture()
+            self.write("docs/project-status.json", bad)
+            self.assertTrue(check_status(self.root))
+        data = self.status_fixture()
+        data["inventory"][0]["proof"] = "open\n| invented row |"
+        self.write("docs/project-status.json", json.dumps(data))
+        self.assertIn("single-line", check_status(self.root)[0])
+
+    def test_generated_status_references_are_checked_by_normal_link_validation(self):
+        data = self.status_fixture()
+        data["inventory"][0]["tests"] = "[`deleted_test`](../tests/rules.rs)"
+        self.write("docs/project-status.json", json.dumps(data))
+        self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
+        self.write("docs/current-status.md", render_status(self.root))
+        errors, _ = check_links(self.root, [self.root / "docs/current-status.md"])
+        self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
 
     def test_direct_declarations_methods_and_attributed_tests(self):
         self.write("src/lower.rs", """

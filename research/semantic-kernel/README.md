@@ -8,10 +8,12 @@ meaning/implementation boundary and distinguishes the initial subset from
 production integration. Qleisli's Apache-2.0 license and
 [attribution](../../NOTICE) apply. Copyright 2026 Masahiko G. Yamada.
 
-Further kernel development and production integration are deferred to the
-[future roadmap](../../ROADMAP.md#future-work-symbolic-semantic-kernel).
-The existing prototype and regression suite are retained; no target release
-for production adoption is selected.
+The [v0.1.5 decision](../../docs/decisions/2026-09-27-v1-path.md) selects a
+bounded M2 continuation, replacing indefinite deferral. The existing prototype
+and regression suite are retained unchanged. Hierarchical IR, schema import,
+source integration and their validation are planned, not implemented here;
+new development belongs outside the compatible 0.1.x maintenance scope.
+M2 is a milestone, not a selected product version or release date.
 
 ## Purpose
 

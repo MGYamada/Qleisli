@@ -1,8 +1,66 @@
 # Physlib in the Lean proof environment
 
-Status: **dependency installed; scoped build and axiom audits passed**, 2026-09-27. This adds mathematical
-infrastructure to the existing Lean environment. It does not resume the deferred
-symbolic-kernel implementation or add source-language/IR semantics.
+Status: **future dependency candidate; removed from the required environment**
+(2026-09-27, v0.1.5 maintenance candidate). Lean/Mathlib remain at 4.30.0.
+The historical addition and its successful tests are retained below; they do
+not describe the current dependency graph.
+
+## Current decision and reintroduction gate
+
+No module in `lean/Qleisli/`, the Qleisli root, or the project axiom audit imports
+QuantumInfo. Only the separate external integration probe used it. Remove the
+Physlib requirement and its exclusively inherited documentation dependencies
+from Lake resolution, and remove the corresponding build/audit from default
+CI. Preserve all Qleisli declarations and the normal `Audit.lean` check.
+The old local dependency cache need not be deleted; it is not an active
+requirement or part of the released source.
+
+Physlib remains the first candidate for the future **finite IR instrument/CPTP
+bridge**: relate measurement, discard and reset Kraus branches to a
+classical–quantum channel while preserving coordinate and arbitrary-reference
+conventions. This task follows the verifier-first proof plan, independently
+of the M1 language implementation; it is not a v0.1.5 completion condition.
+Do not add the dependency merely to show that imports coexist.
+
+Reintroduce it in the same change as a concrete Qleisli bridge module and a
+named theorem obligation that uses its declarations. That change must:
+
+1. State the bridge's domains, coordinate order, complete outcome instrument,
+   reference extension and exact phase/cleanup boundary. A POVM's Lüders
+   instrument alone does not represent every Qleisli instrument.
+2. Re-evaluate compatible Lean/Mathlib/Physlib versions and pin the chosen
+   commit. The old `f5242c99d796b59a390d26cd7d1a8057e04c46b5` is a reproducible
+   baseline, not automatic approval of that version for future work.
+3. Restore a scoped external declaration audit alongside the project audit,
+   test the actual bridge, measure build cost and retain third-party notices.
+4. Record specification, implementation, checked theorem, Rust correspondence
+   and release compatibility separately; a toolchain increase is a MINOR issue.
+
+The [preserved external probe](../research/quantum-libraries/PhyslibAudit.lean)
+has no current build target. After explicitly restoring a compatible dependency
+in an isolated experiment or a reviewed integration change, it can be run from
+`lean/` with `lake env lean -DwarningAsError=true
+../research/quantum-libraries/PhyslibAudit.lean`, after building its selected
+QuantumInfo modules. This is an optional research reproduction, not a command
+for the default environment. Keep it separate from the earlier 4.34.1 survey.
+
+Current required checks from `lean/` are:
+
+```sh
+lake build Qleisli
+lake env lean -DwarningAsError=true Audit.lean
+```
+
+The [v0.1.5 record](releases/v0.1.5.md) records dependency-removal validation.
+Qleisli does not re-export QuantumInfo, so no public Qleisli Lean declaration
+is removed. A downstream experiment importing QuantumInfo directly must declare
+its own Physlib dependency instead of relying on Qleisli's former environment.
+
+## Historical addition (superseded)
+
+The following sections describe the earlier dependency addition, including the
+then-current commands and successful external audit. Physlib was included in
+v0.1.3/v0.1.4. Their release history and original test results are unchanged.
 
 ## Version selection
 
@@ -15,10 +73,12 @@ symbolic-kernel implementation or add source-language/IR semantics.
 
 The [Physlib tag's toolchain](https://github.com/leanprover-community/physlib/blob/f5242c99d796b59a390d26cd7d1a8057e04c46b5/lean-toolchain)
 and [dependency configuration](https://github.com/leanprover-community/physlib/blob/f5242c99d796b59a390d26cd7d1a8057e04c46b5/lakefile.toml)
-both match the existing Lean/Mathlib 4.30.0 baseline. Qleisli's
-[lakefile](../lean/lakefile.toml) pins Physlib by the full commit rather than a
-moving branch. The [manifest](../lean/lake-manifest.json) locks every transitive
-dependency. All nine pre-existing dependency records remain unchanged.
+both match the existing Lean/Mathlib 4.30.0 baseline. At that addition, Qleisli's
+[lakefile](../lean/lakefile.toml) pinned Physlib by the full commit rather than a
+moving branch. The then-current manifest locked every transitive dependency;
+all nine pre-existing dependency records remained unchanged. The current
+[lakefile](../lean/lakefile.toml) and [manifest](../lean/lake-manifest.json)
+now reflect the removal above.
 
 At the time of the remote-ref check on 2026-09-27, the newest published Physlib
 tag was `v4.34.0` (`58d73ebd01edb1c5caa3ea5db07b0245afe93cb0`); master was
@@ -60,21 +120,26 @@ Physlib exposes its quantum-information API under `QuantumInfo`, for example
 The selected module build imports the channel/state dependencies used by POVM;
 it does not build every module in Physlib or the `QuantumInfo` umbrella.
 
-[PhyslibAudit.lean](../lean/PhyslibAudit.lean) imports both Qleisli and the selected
+[preserved PhyslibAudit.lean](../research/quantum-libraries/PhyslibAudit.lean) imports both Qleisli and the selected
 QuantumInfo interface and checks transitive axiom dependencies of eight external
 declarations: independent-auxiliary partial trace, Kraus conjugation CP, channel
 identity/product/partial traces, and the POVM measurement map and its matrix
 formula. It rejects every axiom outside `propext`, `Classical.choice` and
 `Quot.sound`, including `sorryAx` and native-evaluation axioms. The separate
 [project audit](../lean/Audit.lean) continues to cover every imported Qleisli
-declaration. Both checks are included in [CI](../.github/workflows/ci.yml).
+declaration. Both checks were included in CI at that stage; current [CI](../.github/workflows/ci.yml)
+retains only the required Qleisli build/audit.
 
 This dependency integration does not import QuantumInfo into `Qleisli.lean`,
 replace Qleisli's existing matrix definitions, or establish a source/IR
 correspondence theorem. Physlib's POVM chooses a square-root/Lüders instrument;
 arbitrary instruments and phase-sensitive coherent operators remain distinct
-contract-design obligations. The [symbolic-kernel deferral](../ROADMAP.md#future-work-symbolic-semantic-kernel)
-remains in force.
+contract-design obligations. The first selected use from the
+[0.1.5 dossier](decisions/2026-09-27-v1-path.md#proof-priority-and-first-physlib-use)
+is a finite IR instrument bridge: measurement/discard/reset Kraus branches and
+their classical–quantum CPTP map, with explicit coordinate/reference conventions.
+That bridge is planned and has not been implemented or proved. The current
+decision above defers the dependency until this concrete use is introduced.
 
 ## Validation record
 
@@ -104,5 +169,5 @@ checkout; it is not relabeled as Qleisli's work and no implementation is vendore
 The newly inherited packages `doc-gen4`, `leansqlite`, `UnicodeBasic` and
 `BibtexQuery` have Apache-2.0 root licenses; `MD4Lean` has an MIT root license.
 Their own notices and any nested third-party notices continue to apply.
-The manifest records their source repositories and immutable revisions.
+The historical release manifests record their source repositories and immutable revisions.
 These inherited documentation-tool dependencies are not Rust runtime dependencies.

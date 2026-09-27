@@ -8,6 +8,61 @@ separately in [release milestones](docs/release-milestones.md).
 
 No changes yet.
 
+## 0.1.5 — 2026-09-27
+
+Compatible review/design maintenance release. Rust and Lean versions are
+synchronized at 0.1.5. The [release record](docs/releases/v0.1.5.md) separates
+local validation from the exact commit, CI, tagging and publication recorded
+in the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5).
+
+### Changed
+
+- Reflect the [v0.1.4 review](docs/reviews/v0.1.4.md) with a concrete next-scope
+  dossier and version-independent M0–M5 milestones. Fixed-width M1 may retain
+  existing finite checking; bounded kernel continuation and hierarchical IR
+  gate M2 size generalization. Replace indefinite deferral and no-go completion
+  with a selected path and dated scope checkpoint.
+- Advance the local v0.1.5 maintenance roadmap with explicit completion
+  evidence for review/specifications, checks and distribution; keep exact-commit
+  CI, tagging and publication as pending release gates.
+- Complete the selected future M1 language and machine-interface specifications:
+  static grammar/access judgments, permutation/phase meanings, portable finite
+  IR/evidence, JSON diagnostics, trajectory sampling, typed retries and source
+  limits with legacy migration. Specify the bounded M2 hierarchy/schema/QPE
+  profile and implementation acceptance matrices; no new feature is implemented.
+- Correct the follow-up specification review: retain and independently validate
+  exact root input/output type trees in portable IR, reject equal-width tree
+  substitutions in requested contracts, and define controlled operations in
+  the existing least-significant-control basis order. Add future acceptance
+  cases; these interfaces remain unimplemented.
+- Make truth-table-free reversible synthesis and hierarchical IR/evidence
+  binding explicit scaling prerequisites. Record basis-derived semantic
+  vocabulary, ideal dyadic QPE angles, early portable evidence/JSON/sampling
+  slices and special-form/public-IR migration as future MINOR work.
+- Prioritize independent IR-verifier and evidence-kernel proof obligations;
+  select finite instrument/CPTP semantics as the first planned Physlib use.
+- Defer Physlib to that future concrete bridge: remove its direct requirement
+  and five exclusive transitive packages, drop its default CI build/audit,
+  and preserve the external probe under research. Retain all nine Mathlib
+  dependency records, Lean/Mathlib 4.30.0 and Qleisli proof declarations.
+- Centralize mutable planning state and a fourteen-group rule-to-code,
+  test and proof inventory in JSON; generate Markdown and reject drift in the
+  existing document checker. Preserve historical records and legacy IDs.
+- Correct AE's conjugation-based access/cost account, Shor indentation and
+  dependency-history wording; simplify AGENTS.md to durable rules and links.
+
+### Validation
+
+Add five document-checker regressions and six phase-sensitive conjugation
+convention fixtures. The [validation record](docs/releases/v0.1.5.md#local-validation)
+states actual local checks and remaining publication gates. Numerical fixtures
+do not establish general theorems or execute imaginary source.
+
+No production/research Rust, Qleisli proof declaration, public behavior,
+supported capacity or toolchain change. The unused external Lean dependency
+is removed as above; no `.qli` migration is needed. Experiments importing
+QuantumInfo directly must declare their own Physlib dependency.
+
 ## 0.1.4 — 2026-09-27
 
 Compatible documentation/plan maintenance release. Rust and Lean project

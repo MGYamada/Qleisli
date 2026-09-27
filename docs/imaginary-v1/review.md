@@ -78,7 +78,11 @@ host sampling/failure ABI. Walk detection promises and broader QSVT encodings
 remain outside the selected first variants. A global Shor confidence contract
 and confidence-boosted amplitude estimation are also still open.
 
-The next step is to select a minimal English extension specification from
-the recorded requirements. New rules must include actual acceptance/rejection
+At this initial review, the next step was to select an English extension
+specification. The subsequent [M1 rules](../next-minor-spec.md),
+[machine contracts](../machine-interface-spec.md) and
+[M2 checker profile](../hierarchical-ir-spec.md) settle fixed-width access syntax,
+external ABI and ideal dyadic checking decisions. Remaining general requirements
+above are not implementation claims. New rules must include actual acceptance/rejection
 and source-to-IR evidence before implementation. The general finite-core
 adequacy and soundness proof obligations continue independently.

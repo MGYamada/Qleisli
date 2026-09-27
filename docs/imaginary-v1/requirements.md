@@ -62,24 +62,38 @@ continues to test the shipped finite profile.
 
 ## Decisions still open and order of work
 
-The first candidate specification slice is **static sizes plus static operation
-parameters and their finite evidence-preserving elaboration** (R01–R04, R14).
-This is a proposal for review, not a finalized 0.2.0 feature set. QPE additionally
-forces a decision about Fourier angles and accuracy (R08, R12); Grover about
-general predicate synthesis (R06); Shor about efficient arithmetic and host
-execution (R09, R13). Walk and QSVT expose broader access and subspace contracts
-(R10–R11) that need not all ship in 0.2.0 or v1.
+The [0.1.5 dossier](../decisions/2026-09-27-v1-path.md) selects fixed-width
+static operation parameters, access evidence and bounded basis-derived meanings
+for M1. Sizes and hierarchical IR with symbolic checking belong to M2;
+predicate/arithmetic synthesis without truth tables belongs to M3/M4. This
+replaces the earlier combined size/operation candidate and indefinite kernel
+deferral. The [M1 specification](../next-minor-spec.md) now selects its future
+grammar; the [machine contracts](../machine-interface-spec.md) specify the host
+boundary. Neither changes current accepted grammar or implemented APIs.
 
-The subsequent [v0.x plan](../v0x-roadmap.md) prioritizes operation capabilities
-and permits narrowing this combined candidate before specification. Through
-v0.1.9, these are decision-dossier tasks, not new production features. The
-symbolic prerequisite below still applies, and the kernel's separate deferral
-is not lifted by assigning conditional themes to later minor releases.
+### R02 notation and representation alternatives
+
+The drafts currently use two distinct surface designs: QPE/Grover/AE/Shor use
+`fn f<n,m>(static U: ...)` and operation-returning `unitary_op` builders;
+walk/QSVT use `fn f[static n, static U: ...]` followed by ordinary arguments.
+They are alternatives, not interchangeable syntax. M1 selects static parameters with checked access
+constraints; general operation-returning builders remain deferred. The selected
+[fixed-width grammar](../next-minor-spec.md#grammar-and-resolution) completes
+that M1 G020-1 decision; it does not adopt the drafts' sized notation. `ControlledAccess<U>`, a `requires` predicate and
+`with_binary_powers` respectively suggest a wrapper, a constraint and an
+evidence producer for the same underlying access judgment; none grants control
+from unitarity alone. See the [representation decision](../decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation).
+
+The [conjugation rule](../decisions/2026-09-27-v1-path.md#control-through-conjugation)
+derives controlled `V W V†` from V/inverse and controlled W. It is phase exact
+and avoids requiring controlled state preparation. Current `qif` does not
+implement that derivation as an optimization.
 
 Before implementing a selected feature, write its English inference/grammar
 rules, actual IR representation, checker algorithm and soundness premises,
 bounded examples and counterexamples, capacity policy, and migration impact.
-Then validate reuse across multiple supported sizes and operations. Do not
+Then validate distinct operations at fixed width in M1, and reuse across
+multiple supported sizes and operations in M2. Do not
 raise limits or adopt shared-call IR as a patch merely to make a draft compile.
 
 Outstanding cross-cutting decisions include exact versus approximate angle
@@ -103,7 +117,7 @@ The current bounded checker already has soundness arguments for composition
 and implemented constructors. However, `CheckedContract::then` computes the
 logical matrix product; tensor, adjoint and control also construct dense
 logical matrices, and encodings are matrices. This finite profile remains
-supported in 0.1.3. See the [review verification](../reviews/v0.1.2.md).
+supported throughout compatible 0.1.x maintenance and is permitted for fixed-width M1. See the [review verification](../reviews/v0.1.2.md).
 The `apply_contract` function-evidence checker also constructs and compares
 whole implementation/specification matrices; its acceptance path must be
 generalized along with composition.
@@ -140,6 +154,20 @@ The subsequent v0.1.3 [system design](../symbolic-contract-architecture.md) and
 work in an explicitly limited research profile. Their implemented subset does
 not constitute generalized source support or discharge R14 for the six drafts.
 
+### Complementary scaling gates: R02/R04 and R06/R09
+
+R14 does not eliminate exponential basis tables or fully expanded calls.
+Current `basis fn`/lifts enumerate their input domain; IR monomials and computed
+functions retain tables. Static inverse/control/repetition work on expanded
+circuits. Require **hierarchical calls, loops and parameterized families with
+joint evidence binding** before M2 size generalization. Require **reversible
+circuit synthesis without whole-space truth tables** for M3 predicates and M4
+arithmetic. Keep bounded tables as reference cases, not the general algorithm.
+The [joint design and MINOR migration](../decisions/2026-09-27-v1-path.md#three-scaling-gates-and-joint-irevidence-design)
+cover public IR changes, proof/definition sharing, costs, whole-space arithmetic
+and exact scratch cleanup. No gate is discharged by a compact proof over a
+fully expanded implementation.
+
 ### First generalized QPE profile: decisions required by R08/R12/R14
 
 The selected specification must state supported phase/target widths, the
@@ -154,5 +182,10 @@ Extending exact phase arithmetic and approximating the target using an
 available gate set lead to different evidence obligations. Select and document
 the approach before claiming generalized QPE support. Approximate operator
 accuracy and sampling failure remain separate from exact auxiliary zero
-return. This review records the required decision; it selects neither angle
-representation nor a new primitive or error API in 0.1.3.
+return. The 0.1.3 review originally left that choice open. The
+[0.1.5 dossier](../decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
+selects ideal exact symbolic dyadic phases for M2 and puts approximate synthesis
+at the backend boundary. The [bounded M2 profile](../hierarchical-ir-spec.md)
+now fixes widths 1–8, denominator exponent at most eight, budgets, schema
+checking and diagnostics. No new angle
+primitive, numerical executor or error API is implemented by that decision.

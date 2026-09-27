@@ -153,11 +153,11 @@ See the [Lean README](../lean/README.md) for commands. Lean and Mathlib are
 pinned to 4.30.0; the transitive dependency commits are locked in
 [lake-manifest.json](../lean/lake-manifest.json).
 
-The [Physlib environment addition](physlib-environment.md) pins a compatible
-external quantum-information library without changing this toolchain or the
-existing proof declarations. Its selected interfaces have a separate
-[dependency audit](../lean/PhyslibAudit.lean); dependency availability does not
-extend the theorem coverage in this ledger.
+Physlib is a [future dependency candidate](physlib-environment.md), removed
+from the required environment until a concrete instrument bridge uses it. Its
+[preserved optional dependency audit](../research/quantum-libraries/PhyslibAudit.lean)
+records the earlier integration experiment. The current Qleisli declarations
+and project audit use Mathlib alone; no theorem coverage is lost or added.
 
 [Examples.lean](../lean/Qleisli/Examples.lean) contains 13 named boundary lemmas:
 mixed/zero-width ownership, splitting a unit-and-bit register, explicit

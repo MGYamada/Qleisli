@@ -112,10 +112,15 @@ control. These are design obligations, not new compiler acceptance tests.
 ## 5. Next decisions
 
 The six algorithm bodies and requirement records now exist as imaginary,
-reviewed design artifacts. Use their shared needs to select a minimal
-next-minor specification under the [v0.x plan](v0x-roadmap.md): operation
-capabilities first, with size and evidence generalization subject to the
-separate symbolic-checking prerequisite and resumption decision.
+reviewed design artifacts. The [selected M1 specification](next-minor-spec.md)
+and [machine interfaces](machine-interface-spec.md) settle fixed-width
+operation/access/meaning and host contracts under the [v0.x plan](v0x-roadmap.md),
+with size and evidence
+generalization subject to R14 and hierarchical IR in M2. The
+[decision dossier](decisions/2026-09-27-v1-path.md) selects that scope and bounded
+kernel continuation. [R02](imaginary-v1/requirements.md#r02-notation-and-representation-alternatives)
+records the drafts' conflicting parameter/builder notations. Current special
+forms retain their compatibility under the specified M1 elaboration mechanism.
 Do not implement a hypothetical type solely because it appears in a draft.
 The [release plan](releases/v0.1.2.md) records completion of the design corpus
 separately from implementation, general soundness, and publication.

@@ -112,9 +112,14 @@ incorrect sign convention, not results of executing the proposed source.
 
 The builder needs A apply/inverse access and exact predicate/zero-reflection
 implementations. This client additionally needs a phase-fixed controlled G and
-its finite controlled powers. Such access can be derived from checked
-controllable components or supplied with matching evidence. An opaque unitary
-device, a state-preparation sample, or an uncontrolled oracle alone does not
+its finite controlled powers. Use the selected
+[conjugation derivation](../decisions/2026-09-27-v1-path.md#control-through-conjugation):
+controlled `A R0 A†` needs A and A† access plus controlled R0, not controlled A.
+The phase oracle can likewise control its central Z while computing/uncomputing
+its predicate unconditionally with checked exact cleanup. These are future
+capability/evidence rules, not current compiler optimizations. Alternatively,
+controlled G may be supplied with independently checked matching evidence.
+An opaque unitary device, a state-preparation sample, or an uncontrolled oracle alone does not
 satisfy it. A finite repeated implementation of powers is permitted with its
 full cost; efficient direct power access is a separate assumption.
 
@@ -150,8 +155,13 @@ work, requiring an explicit estimator and failure calculation.
 
 With straightforward repeated controlled G, the QPE powers use
 `1+2+...+2^(m-1)=M-1` controlled iterates. Each decomposed iterate contains
-one controlled A†, one controlled R0, one controlled A, and one controlled
-O_good; state preparation additionally uses A once. The phase-register
+one A†, one controlled R0, one A, and one controlled O_good when using the
+conjugation rule; A and A† are unconditional. Thus this construction uses M-1
+calls each to A† and A, and state preparation uses A once more. A computed
+O_good uses unconditional predicate compute/uncompute and controlled central Z.
+The alternative gate-by-gate construction controls A† and A as well; that is
+what current flattened `qif` would do. Neither construction makes power access
+unit-cost, and no cancellation between iterates is assumed. The phase-register
 preparation and inverse QFT, predicate compute/uncompute, classical decoding,
 and bounded numerical evaluation have separate costs. A compact `power` or
 operation description does not imply compact expanded IR or unit-cost oracle

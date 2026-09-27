@@ -265,26 +265,36 @@ arbitrary reference identity, without excluding entanglement. The relation
 between this meaning, actual Rust IR generation, and numerical execution is
 not proved by the instrument equations.
 
-**Remaining obligations, in order:**
+**Remaining obligations, in priority order (revised for the 0.1.5 review):**
 
-1. Establish adequacy of the explicit typing/name/effect rules and resource
-   calculus for v0 and for the implementation's snapshots, tombstones, and
-   implicit frames. A [local scope lookup theorem](lowering-state-refinement.md)
-   now covers projection; the trace and complete-holder premises remain open.
-   The audit and finite regressions are evidence, not the full proof.
-2. Establish that Rust realizes the [C1–C5 translation schemas](source-ir-correspondence.md)
-   and boundary relation. Their mathematical table/leaf/phi proofs now connect
-   [S1–S4](source-semantics.md) and [F1–F5](static-semantics.md); the complete
-   source/Rust adequacy theorem remains open.
-3. Transfer Q1–Q3 through that adequacy relation to the implemented source
-   checker; preserve decoded classical records and all holder interfaces.
-4. Transfer C5's conditional mathematical preservation theorem to compilation,
-   checking all typing, effect, layout, and certificate premises on actual Rust
-   paths. Audit each verifier premise against the mathematical rules; finite
-   matrix equality tests do not prove general implementation adequacy.
-5. Connect these results to the Rust implementation or a mechanized model.
-   Preserve finite Bell, partial measurement/discard, feedback, and phase-oracle
-   regressions without presenting them as general proofs.
+1. Define the finite raw IR's denotation and complete ownership interfaces in
+   Lean, using the [IR paper proof and verifier obligations](finite-core-proof.md).
+   Cover pure maps and observing instruments with arbitrary reference systems.
+   The first planned Physlib use is a bridge from finite IR Kraus branches to
+   a classical–quantum CPTP map. Physlib is a [future dependency](physlib-environment.md):
+   introduce it with that concrete bridge; the preserved external audit does not provide it.
+2. Mechanize that modeled verifier acceptance implies resource safety and ideal
+   quantum soundness. Relate each premise to the actual Rust verifier. A Lean
+   reference checker with adversarial differential testing can be an intermediate
+   artifact; finite agreement does not prove Rust equivalence.
+3. Prove selected semantic-kernel rules and their checker/model correspondence
+   under the [bounded M2 scope](decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles).
+   Preserve fixed requested meanings, entry evidence, output axes, exact phase,
+   zero return and binding to hierarchical IR. Existing local matrix theorems
+   prove equations, not acceptance soundness of the Rust implementation.
+4. Establish source typing/name/effect and resource-rule adequacy, including
+   snapshots, tombstones, pending/caller frames and the open trace premises of
+   the [scope lookup theorem](lowering-state-refinement.md). Establish that Rust
+   realizes [C1–C5](source-ir-correspondence.md), then transfer S1–S4, F1–F5 and
+   Q1–Q3 through that correspondence to source compilation. IR validity alone
+   does not establish the promised source meaning or declared source effects.
+5. Keep numerical execution and algorithm claims separate; preserve Bell,
+   partial measurement/discard, feedback and phase-oracle regressions. No finite
+   regression or library import completes a general implementation theorem.
+
+The verifier/evidence boundary is prioritized because it must check any IR
+producer, including a faulty frontend or AI. Source adequacy remains necessary
+for source-level claims; it is deferred in proof order, not removed.
 
 The resource model deliberately avoids general entanglement detection. Ownership
 tracks operation rights; quantum validity needs whole-system semantics and
