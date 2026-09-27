@@ -7,11 +7,13 @@ the [prototype record](../research/semantic-kernel/README.md) identifies the
 implemented subset and its tests. It is not new `.qli` syntax, a new stable
 Rust API, a generalized compiler, or a claim that v1 is achieved.
 
-Subsequent scheduling decision (2026-09-27): retain this design and the initial
-prototype. Further kernel development and production integration are
-[future roadmap work](../ROADMAP.md#future-work-symbolic-semantic-kernel),
-with no target release selected. The obligations below remain design and
-proof requirements for that future work.
+The [v0.1.5 scope decision](decisions/2026-09-27-v1-path.md) supersedes the
+initial indefinite deferral with bounded M2 continuation. Preserve this design
+and prototype. The [bounded hierarchy/evidence profile](hierarchical-ir-spec.md)
+now specifies their joint interface; implement/check per-size rules and selected
+schemas in M2. General
+symbolic equivalence is outside that scope. The obligations below remain
+requirements, not implemented production guarantees or 0.1.x completion gates.
 
 The existing finite [SC](semantic-contracts-v0.1.md) and
 [FC](function-contracts-v0.1.md) contracts remain normative for the shipped

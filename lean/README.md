@@ -11,19 +11,16 @@ language, the Rust compiler, positivity/trace, or the full quantum soundness
 theorem. The English
 [theorem ledger and scope](../docs/lean-resource-proof.md) is the status record.
 
-Lean and Mathlib are pinned to `v4.30.0`. Physlib is pinned to its compatible
-`v4.30.0` commit `f5242c99d796b59a390d26cd7d1a8057e04c46b5`; its quantum APIs
-use the `QuantumInfo` namespace. The committed `lake-manifest.json` pins
-transitive dependencies. See the [version/validation record](../docs/physlib-environment.md)
-for the selection, licensing and verification boundary. With `elan` installed, run:
+Lean and Mathlib are pinned to `v4.30.0`; the committed manifest pins their
+transitive dependencies. Physlib is a [future dependency candidate](../docs/physlib-environment.md),
+not required by this environment or CI. Reintroduce it with an actual instrument
+bridge, compatible version selection and a separate external audit. With `elan` installed, run:
 
 ```sh
 cd lean
 lake exe cache get
 lake build
 lake env lean -DwarningAsError=true Audit.lean
-lake build QuantumInfo.Channels.CPTP QuantumInfo.Measurements.POVM
-lake env lean -DwarningAsError=true PhyslibAudit.lean
 ```
 
 Run `lake update` only when intentionally changing dependency resolution.
@@ -40,7 +37,7 @@ the installed toolchain and cached dependencies. Julia is not a dependency.
 | [Kraus.lean](Qleisli/Kraus.lean) | Five matrix lemmas for singleton/isometry completeness, output transport, and adaptive composition |
 | [SemanticContract.lean](Qleisli/SemanticContract.lean) | Exact encoded relations, composition/reference/qualified-transform and zero-return lemmas; separate from implementation adequacy |
 | [Audit.lean](Audit.lean) | Transitive axiom audit of all declarations in imported project modules |
-| [PhyslibAudit.lean](PhyslibAudit.lean) | Qleisli/QuantumInfo import compatibility and transitive axiom audit of eight selected external declarations; not all of Physlib |
+| [Preserved external probe](../research/quantum-libraries/PhyslibAudit.lean) | Optional historical Qleisli/QuantumInfo integration audit; requires explicitly reintroducing Physlib in a separate experiment, excluded from the current build/CI |
 
 `Config` in the resource model erases lexical names and spent markers.
 The separate `Scope` model retains those distinctions through function-based

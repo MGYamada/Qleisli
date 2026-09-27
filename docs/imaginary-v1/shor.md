@@ -65,7 +65,7 @@ requires n >= 1, m >= 1, gcd(a,N) == 1, 1 < a < N, N <= 2^n {
         static k => modmul<n>(pow_mod(a,2^k,N),N)
     );
     let target = on_bit(init_zero<n>(), 0, X);  // |1>
-let (word, residual_target) = qpe<n,m>(U, target);
+    let (word, residual_target) = qpe<n,m>(U, target);
     discard(residual_target);
     word
 }

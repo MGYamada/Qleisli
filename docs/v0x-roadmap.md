@@ -1,30 +1,29 @@
-# Qleisli v0.x roadmap and the v0.1.9 boundary
+<a id="qleisli-v0x-roadmap-and-the-v019-boundary"></a>
 
-Status: **development direction and maintenance boundary selected on
-2026-09-27**. The current product version is **0.1.4**; its
-[release record](releases/v0.1.4.md) distinguishes version selection, validation,
-and publication. Later rows below are work targets, not completed releases or
-adopted language syntax. This is the detailed release plan linked from the
-[roadmap](../ROADMAP.md), subject to the [versioning policy](versioning.md) and
-[authoritative acceptance criteria](release-milestones.md).
+# Qleisli milestones toward v1
 
-## Decision: consolidate the finite foundation through v0.1.9
+Status: **revised development direction selected on 2026-09-27 for 0.1.5**.
+The [decision dossier](decisions/2026-09-27-v1-path.md) selects the next scope
+and bounded kernel restart. [Current states](current-status.md) are generated
+from one record; the [release record](releases/v0.1.5.md) separates local
+validation and publication. This plan supersedes the 0.1.4 schedule, not its
+historical evidence or the current finite language contracts.
 
-**v0.1.4–v0.1.9 is a compatible maintenance series for the existing finite
-language and its semantic contracts.** Its endpoint is an audited, reproducibly
-validated finite baseline and an explicit handoff to next-minor design. It
-does not deliver a generalized algorithm language. The new public capabilities,
-types, effects, evidence interfaces, and library APIs discussed below belong
-to v0.2.0 or later, following their own specification decisions.
+<a id="decision-consolidate-the-finite-foundation-through-v019"></a>
 
-The supplied ownership/capability/effect/typestate discussion motivates this
-plan, but its release sketch cannot be copied literally. Qleisli already has
-linear ownership, the effect order `Unitary <= Iso <= Observe`, finite static
-adjoint/control/repetition, exact auxiliary certificates, and function evidence
-retained through final IR. Future work generalizes these facilities; it does
-not defer the first effect checker or first semantic certificate until v0.4
-or v0.5. See the [current grammar](syntax-v0.md),
-[static operations](static-operations.md), and [SC/FC contracts](function-contracts-v0.1.md).
+## Decision: milestones are independent of release numbers
+
+Use M0–M5 to schedule work. Choose a product version from the
+[compatibility policy](versioning.md) when shipping a concrete change.
+A JSON diagnostic or sampling feature may ship in an early small MINOR;
+it does not consume a reserved capability/size theme. Compatible audits run
+continuously and need no patch release unless shipping a useful correction.
+The user-requested 0.1.5 is a design/documentation maintenance candidate.
+
+The 0.1.x line remains compatible finite-core maintenance. Its historical
+v0.1.9 checkpoint is retained below as B019, without requiring patches 6–9
+before new-feature work. New APIs, syntax, capacities, hierarchical IR or
+kernel integration belong in MINOR work. Later maintenance can use 0.1.10.
 
 ## Responsibilities beyond ownership
 
@@ -69,100 +68,102 @@ typestate name, or an approximately zero measurement result alone does not
 establish this equation. General entanglement-region inference and dependent
 or graded type systems remain research options, with no selected release.
 
-## Maintenance work targets: v0.1.4 through v0.1.9
+<a id="maintenance-work-targets-v014-through-v019"></a>
+<a id="v02-toward-v1-capability-led-generalization"></a>
 
-These rows assign priorities and reviewable outputs. They are not a requirement
-to manufacture six releases: compatible work may be regrouped before selecting
-each version. v0.1.9 is the planned consolidation checkpoint, not a SemVer
-ceiling; a necessary later maintenance fix may use v0.1.10. Do not ship a new
-public feature under a patch merely to meet this table.
+## Active milestones and dependencies
 
-| Target | Work and deliverable | Completion evidence | Current state |
-| --- | --- | --- | --- |
-| v0.1.4 | Synchronize the project version; adopt this roadmap, responsibility split, and v0.1.9 boundary. | Linked English plan, release record, conformance entry, metadata and documentation checks; complete local candidate preparation under P014. | P014-1–P014-4 complete locally: planning, independent review, Rust/Lean/Python/examples and candidate distribution. [P014-5](releases/v0.1.4.md#v014-roadmap-and-completion-evidence) actual commit/CI/publication evidence is recorded in the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4). |
-| v0.1.5 | Audit the finite language's ownership, effects, name/scope and static-transform acceptance against the published rules. | A rule-to-implementation/test inventory; dispositions for gaps; a reproducer and targeted regression for every repaired defect, including zero-width owners, pending/caller frames and zero repetitions where relevant. | Planned; no new audit or fix claimed here. |
-| v0.1.6 | Audit existing contract/evidence boundaries and exact cleanup. | Review implementation substitution, frozen source/dependency binding, phase, output axes, references and invalid certificates through final IR; record fixes and independent counterexamples for discovered gaps. Retain numerical execution limits separately from exact checking. | Planned; existing V01-C1–C6 evidence remains the baseline. |
-| v0.1.7 | Consolidate correspondence and proof obligations for the existing finite implementation. | Map R1/T1–T3/Q1–Q3 and C1–C5 to implementation paths, local proof artifacts and remaining premises; review the trusted boundary and separate the Qleisli/Physlib audits. Advance compatible internal proof work where useful. | Planned; no promise of whole-Rust soundness or new public Lean APIs. |
-| v0.1.8 | Prepare the next-minor decision dossier from all six imaginary drafts. | Resolve or explicitly defer capability/access, size, QPE angle/evidence, instrument/error, host and migration choices, tracing R01–R14. Classify each proposed facility and state accepted/rejected cases and its intended IR evidence. Record blockers rather than implementing imaginary syntax. | Planned; six initial drafts already exist, but selected extension specifications remain open. |
-| v0.1.9 | Consolidate and review the supported finite baseline. | Satisfy B019-1–B019-6 below, record full release validation on the final candidate, and decide next-minor readiness. | Planned; neither its release checks nor its completion are claimed by 0.1.4. |
-
-The ordinary [release validation policy](versioning.md#release-records-and-validation)
-applies whenever one of these versions is actually released, not only at
-v0.1.9. A document change can record narrower checks without being called a
-fully validated release. Public Lean declarations are part of compatibility:
-new exported facilities require classification under the minor-version policy,
-even when motivated by proof work.
-
-## v0.1.9 acceptance boundary
-
-The corresponding [release milestone](release-milestones.md#v019-maintenance-boundary)
-adopts these conditions as the maintenance endpoint. All are future acceptance
-conditions; this document does not mark them complete.
-
-| ID | Required at the consolidation checkpoint |
-| --- | --- |
-| B019-1: compatibility | Preserve the published finite grammar, standard APIs, Rust/IR/evidence and Lean interfaces, CLI conventions, semantic premises, capacities and supported toolchains. For any erroneous acceptance repaired under the patch exception, record the already violated rule, before/after behavior, diagnostic and regression. No new restriction on valid programs or hidden public API change. |
-| B019-2: finite assurance | Revalidate V01-C1–C6 in their declared bounds: one fixed client with substitutable implementations, retained final-IR evidence, exact phase and cleanup, complete ownership, and positive/negative reference-sensitive cases. The finite checker may still use bounded dense matrices. |
-| B019-3: audit dispositions | Publish the finite-rule and evidence-boundary inventories from the maintenance audits. Resolve discovered violations of the supported contracts before release; list proof gaps and out-of-profile requests separately. Regressions are evidence for specific cases, not a general theorem. |
-| B019-4: honest proof ledger | State which rules have paper proofs, which lemmas are Lean-checked, how they relate to actual Rust paths, and all remaining adequacy/verifier/numerical assumptions. Preserve separate project/external-library axiom audits. Whole-compiler soundness is not a mandatory completion claim. |
-| B019-5: design handoff | Keep the six imaginary drafts and R01–R14 review current; publish a smallest-next-scope recommendation with requirement classification, semantic premises, compatibility, verification method, and explicit unresolved decisions. A documented no-go because symbolic checking or QPE angle evidence is unresolved still completes this dossier; it does not authorize feature implementation. |
-| B019-6: reproducibility | Record the final candidate's primary-toolchain Rust fmt and primary/MSRV tests/Clippy, retained research-package checks, document/helper suites, pinned Lean build and both audits, representative CLI/Shor runs, package/source-archive and attribution checks. Distinguish local results, exact-commit CI, tagging, push and publication, with platform omissions explicit. |
-
-**Outside v0.1.9:** new capability or typestate syntax; general operation/size
-parameters; fine-grained effect or instrument APIs; new public standard-library
-facilities; arbitrary-angle or approximation support; portable proof loading;
-symbolic-kernel extensions or production integration; generalized QPE/Grover/
-Shor; resource grades or entanglement regions; external backends; and a promised
-proof of the entire Rust compiler. Compatible corrections, documentation and
-existing proof obligations remain in scope. No new public feature is adopted
-by describing its future contract here.
-
-## v0.2 toward v1: capability-led generalization
-
-The following minor-series themes provide a dependency order and evaluation
-targets. Their precise feature sets and release dates are **not fixed**. They
-may be narrowed or moved after specification review; a later version number
-does not excuse an unmet prerequisite. Maintenance and useful local proof work
-can continue alongside them.
-
-| Planning target | Main direction | Evidence needed before calling the target delivered |
+| Milestone | Selected scope and dependencies | Completion evidence |
 | --- | --- | --- |
-| v0.2 | Operation capabilities and static operation parameters, initially the smallest supported unitary/adjoint/control profile (R02–R03, R14). | English extension rules; phase-fixed access and implementation binding; the same algorithm body accepts distinct checked operations; unsupported control/inverse access is rejected. No automatic support for arbitrary black-box operations or sizes. |
-| v0.3 | Static sizes, ownership-preserving register structure, and evidence-backed auxiliary lifecycle (R01, R04, R06, R14). | Reuse definitions at multiple sizes; preserve all owners and exact cleanup, including correlated references; independently compose contracts without global dense expansion. Clean/dirty surface annotations are optional until justified by author needs. |
-| v0.4 | Effect/instrument composition and the precision/measurement boundary needed by QPE (R05, R08, R12). | Explicit outcome/residual-state contracts, phase/bit order, chosen angle and exact/approximate policy, and rejection of observation in pure transforms. Finer effect inference extends the existing checker rather than replacing it by an unspecified effect algebra. |
-| v0.5 | Reusable proof production and library contract composition (R14 and required parts of R06–R08). | Ordinary calls discharge supported obligations from checked library evidence; independent checking rejects stale or mismatched proofs. Any prover/import boundary is specified and tested; general theorem search is not required. |
-| v0.6 | Shared algorithm-level QPE and amplitude-amplification/Grover components. | Compiling, checked source exposes preparation, oracle/reflection or controlled powers, transforms and measurement across supported sizes and operations. Amplitude estimation tests reuse where its extra contracts are available. |
-| v0.7 | Reversible arithmetic and the complete Shor workflow (R09, R13). | Efficient construction within declared bounds, shared QPE, actual sampling, period/factor validation and explicit failure/retry. State whole-space arithmetic behavior and exact scratch cleanup. |
-| v0.8 | Cost reporting, diagnostics and usability across the three v1 families. | Separate circuit-generation, verification, execution, oracle and classical costs; compare implementation choices while preserving contracts and readable source. Adopt resource annotations only when needed, with their own specification. |
-| v0.9 | Stabilization against V1-C1–C5. | Independently review all three executable families, supported bounds, substitutions, failures and public contracts; complete migration and release evidence. v1 follows the evidence, not the numbering. |
+| M0: decide the path | Next-scope dossier, before new features. | Select a feasible M1 scope, capability representation, meaning language, angle policy, joint IR/evidence direction and bounded kernel go/no-go. A no-go needs dated reconsideration and cannot count as a completed handoff. [Scope selected](decisions/2026-09-27-v1-path.md); [M1 extension rules](next-minor-spec.md) and [machine interfaces](machine-interface-spec.md) specified. |
+| M1: fixed-width composition and external interfaces | Depends on M0 and G020-1 specification. Static operation parameters with checked capabilities and conjugation; bounded basis-derived meanings; preserve existing special forms as elaboration. Portable finite evidence, JSON diagnostics and sample/trial APIs are separately shippable early MINOR slices. | One fixed-width body accepts distinct checked implementations, rejects unavailable access and stale/wrong-phase evidence; independent interchange mutation cases; actual samples and explicit failure results. Existing finite dense checks are permitted within unchanged bounds. No size-generalization or V1-C2 claim. |
+| M2: scalable checking and QPE | Depends on M1's operation/evidence interfaces; specify hierarchical IR and proof binding together during M1. Bounded kernel production path, static sizes, ideal dyadic angles and shared multi-width QPE. | R14 and hierarchical-IR gates below, exact entry/cleanup, supported schema checks and phase/reference-sensitive QPE instrument cases. Same source across declared multiple widths and operations; QPE's contribution to V1-C2, not completion of all V1 criteria. |
+| M3: Grover and host trials | Depends on M2 and R06 predicate synthesis. | Reusable preparation, oracle, reflection and iteration; no whole-space table construction for the declared predicate fragment; fresh sampling, candidate checks and retries. Evaluate Grover against V1-C1–C5. |
+| M4: Shor with shared QPE | Depends on M2 and R09 arithmetic synthesis; may progress alongside M3. | Add/compare/reduce/uncompute implementation, whole-space modular meaning, controlled modular powers, exact scratch cleanup, shared QPE, actual samples, period/factor validation and explicit retry. Evaluate Shor against V1-C1–C5. |
+| M5: costs and stabilization | Depends on M3 and M4. | Separate generation, checking, execution, oracle and classical costs; migration and stable public contracts; all executable V1-C1–C5 evidence. |
+| Continuous maintenance and proof | Independent of release cadence; follow the verifier/kernel-first [proof order](formal-core.md#4-theorem-status-and-proof-work). | Rule/evidence audit dispositions, compatible fixes with regressions, Qleisli axiom audit (and a separate external audit if Physlib is reintroduced), honest proof premises and reproducible releases when selected. |
 
-This is not a promise that every theme needs an entire minor release, that
-the listed features are sufficient by themselves, or that full general
-compiler mechanization finishes by v0.9. Walk and QSVT remain design stress
-tests; implementing all six drafts is not a new v1 requirement. External
-backends, entanglement analysis, dependent types and general resource grades
-have no assigned release in this plan.
+Walk and QSVT remain design stress tests, not additional executable v1 gates.
+No release date or completion of general compiler mechanization follows from
+this table. The **2026-10-04 JST** scope checkpoint in the dossier evaluates
+M1 specification and M2 kernel/IR feasibility, not release publication.
 
-### Cross-release prerequisite: symbolic contract checking
+<a id="cross-release-prerequisite-symbolic-contract-checking"></a>
 
-The [symbolic kernel remains deferred](../ROADMAP.md#future-work-symbolic-semantic-kernel),
-with **no selected target release**. Retain its design, research implementation
-and regressions. This roadmap does not resume its implementation or assign its
-integration to v0.2, v0.3, or the 0.1.x series. Before work depending on it starts,
-make a separate scope/resumption decision through G020-1 and record the chosen
-production contract profile.
+### Cross-release prerequisites
 
-The [R14 scaling condition](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
-still gates generalization: compose symbolic meanings, encodings and evidence,
-check interfaces and actual-IR binding independently, and use dense matrices
-only for bounded leaves/regressions. Capability propagation alone cannot prove
-that a concrete implementation realizes its promised logical operation.
-Existing finite composition and the research prototype do not discharge this
-production gate. Any roadmap row requiring it waits until it is met.
+| Prerequisite | Gate |
+| --- | --- |
+| Symbolic meaning/encoding/evidence composition (R14) | Before size generalization in M2, independently check actual implementation binding with bounded leaves and shared proofs, without a global dense operator. Fixed-width M1 may retain current bounded whole-function checking. |
+| Hierarchical IR and evidence binding (R02/R04) | Design with proof interchange in M1; validate shared calls, static loops, parameterized families and checked transformations in M2. Compact proofs over fully expanded IR do not pass. Public enum/field changes require MINOR migration. |
+| Reversible synthesis without truth tables (R06/R09) | Required for M3 predicates and M4 arithmetic. Construct and certify circuits from a declared expression fragment, including zeroed scratch and whole-space behavior. No enumeration of every basis input as the delivered general construction. |
 
-Before a generalized QPE claim, select its supported widths, Fourier-angle
-representation, exact or approximate checking, error metric/budget and capacity
-diagnostics as required by [R08/R12/R14](imaginary-v1/requirements.md#first-generalized-qpe-profile-decisions-required-by-r08r12r14).
-Approximate algorithm accuracy never weakens exact auxiliary zero return.
-The next-minor dossier may document these as blockers; finishing v0.1.9 alone
-does not make v0.2 ready or satisfy executable V1-C1–C5.
+These are complementary gates. Satisfying one does not establish the others.
+[R14 and the QPE profile](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
+state the detailed obligations; the [dossier](decisions/2026-09-27-v1-path.md)
+selects ideal dyadic QPE angles and a limited per-size checker. General symbolic
+equality, arbitrary proof search and an all-n theorem are not required.
+Production integration remains unimplemented.
+
+<a id="v019-acceptance-boundary"></a>
+
+## Finite maintenance checkpoint (legacy B019)
+
+The old v0.1.9 name remains a linkable checkpoint, not a mandatory release train.
+It requires all rows below and does not delay independent M1 specification work.
+New public features and symbolic-kernel development/integration are outside
+0.1.x maintenance; they now have the M1/M2 path above.
+
+| ID | Required evidence |
+| --- | --- |
+| B019-1: compatibility | Preserve grammar, APIs, semantics, capacities and toolchains. For a patch fixing erroneous acceptance, record the already violated rule, before/after result, diagnostic and regression. |
+| B019-2: finite assurance | Revalidate V01-C1–C6 within declared bounds, including unchanged clients with substitutable implementations, phase, layout, complete ownership, exact cleanup and reference-sensitive cases. |
+| B019-3: audit dispositions | Publish rule/implementation/test/proof and evidence-boundary inventories; resolve discovered supported-contract defects. Inventory coverage and audit completion are separate. |
+| B019-4: proof ledger | Separate paper/Lean results, Rust correspondence and remaining verifier/numerical assumptions; retain project/external axiom audits. Whole-compiler proof is not a completion condition. |
+| B019-5: selected next scope | Keep the six drafts and R01–R14 current; select the next scope under G020-1 and provide its complete extension specification, compatibility and checking decisions. Record a bounded kernel go/no-go with a date and owner; no-go permits only dated reconsideration, not checkpoint completion. [M1 specification](next-minor-spec.md), [machine interfaces](machine-interface-spec.md), [M2 profile](hierarchical-ir-spec.md) and dated go decision now supply this handoff. M2 sized source grammar remains separate. |
+| B019-6: reproducibility | On an actual release candidate run the version policy's primary/MSRV Rust, research, docs/helpers, pinned Lean/audits, representative execution and distribution/attribution checks. Separate local results, exact-commit CI, tag, push and publication. |
+
+## Tracker handoff
+
+Use M1–M5 as GitHub milestone titles without product-version numbers. The
+following issue titles and linked acceptance bodies are ready for a requested
+tracker publication. The maintainer owns scope decisions; an implementer is
+assigned when work starts. This local handoff creates no external issue,
+notification or second mutable status ledger. Current states remain in
+[project-status.json](project-status.json); link tracker records back to it.
+
+| Issue title | Milestone / acceptance body | Dependency |
+| --- | --- | --- |
+| Implement fixed-width static operations and meaning contracts | M1 / [N1–N6](next-minor-spec.md#implementation-acceptance-matrix) | Selected specification |
+| Add versioned JSON command results | M1 / [X1](machine-interface-spec.md#required-conformance-before-shipping) | None of M2 |
+| Add independently checked finite IR interchange | M1 / [X2–X3](machine-interface-spec.md#required-conformance-before-shipping) | QIRF1 first; QIRF2 depends on new meaning evidence |
+| Add trajectory sampling and typed trial outcomes | M1 / [X4–X5](machine-interface-spec.md#required-conformance-before-shipping) | Existing verified IR; JSON mode after X1 |
+| Add bounded source loading with explicit legacy migration | M1 / [X6](machine-interface-spec.md#required-conformance-before-shipping) | MINOR capacity change |
+| Implement bound hierarchical proofs and the QPE schema profile | M2 / [H1–H5](hierarchical-ir-spec.md#migration-and-implementation-gates) | M1 operation interfaces; required Lean schemas and sized source specification |
+| Synthesize predicate oracles and shared Grover | M3 / [Boolean DAG contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
+| Synthesize modular arithmetic and shared-QPE Shor | M4 / [arithmetic contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
+| Stabilize cost reports and executable v1 evidence | M5 / [V1-C1–C5](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure) | M3 and M4 |
+
+Continuous verifier/kernel proof work and finite audits are not separate
+mandatory patch milestones. A discovered defect gets a concrete issue with
+the violated current rule and reproducer; an audit alone does not demand a release.
+
+## Legacy ID mapping
+
+Retain IDs and historical anchors instead of renumbering old evidence.
+
+| Previous planning label | Active home |
+| --- | --- |
+| v0.1.5 conformance / v0.1.6 evidence audit | Continuous maintenance; current inventory links rules, implementations, tests and proof gaps. |
+| v0.1.7 correspondence | Continuous verifier/kernel-first proof work, then frontend adequacy. |
+| v0.1.8 decision dossier | M0, brought forward to this change. |
+| v0.1.9 / B019 | Finite maintenance checkpoint above; no automatic no-go completion. |
+| v0.2–v0.9 themes | M1–M5 by dependency, without a reserved version assignment. |
+| G020-1 / G020-2 / G020-3 | Extension specification / implementation / validation gates for the selected scope; fixed-width M1 and sized M2 have different acceptance profiles. |
+| G013-S0–S2 / G013-S3 | Retained initial research artifacts / M2 production integration obligation. |
+| Stage/SPEC, A/L and local proof labels | Historical work areas and proof references, not new scheduling milestones or product versions. |
+| R01–R14 / V01-C / V1-C | Requirements / finite and executable-v1 acceptance criteria; retain their semantic identities. |
+
+[Historical release records](releases/v0.1.4.md) retain original plans, test
+counts and publication evidence. This mapping changes scheduling, not theorem
+statements or the current grammar.

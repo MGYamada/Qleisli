@@ -8,15 +8,13 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
-The current baseline is **0.1.4**, a compatible documentation/plan maintenance
-release. The [0.1.4 record](releases/v0.1.4.md) describes scope and validation;
-the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
-identifies its exact commit, CI, tag and publication. The [v0.x plan](v0x-roadmap.md) fixes the
-maintenance boundary through v0.1.9; that checkpoint is not a numbering ceiling
-and may be followed by 0.1.10 maintenance. The preceding
-[v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
-identifies its own release commit, CI and publication. Version selection alone
-does not establish publication.
+The selected baseline and release state are in [current status](current-status.md)
+and the [0.1.5 release record](releases/v0.1.5.md). Version selection alone
+does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
+independently of version numbers; no theme reserves a MINOR number. Continuous
+audits need no PATCH unless a useful compatible change is being released.
+The legacy B019 finite maintenance checkpoint is not a requirement to ship
+patches 6–9 first, and later maintenance may use 0.1.10.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
 version in [lean/lakefile.toml](../lean/lakefile.toml) synchronized. Compiler,
@@ -82,7 +80,12 @@ Reducing supported capacity or raising a toolchain requirement uses at least
 a minor bump before 1.0; after 1.0, apply the declared stable support contract.
 Exact human-readable diagnostic wording and internal file layout are not
 stable interfaces, but public error-code variants remain public Rust API.
-No stable serialized IR or certificate format is promised by 0.1.0.
+No stable serialized IR or certificate format is promised by the 0.1.x line.
+The planned M1 interchange, JSON diagnostics and sample API are new public
+features and require MINOR releases. A new source-file byte limit reduces
+accepted capacity and also requires a MINOR decision; it is not a patch fix
+without an already published violated limit. Hierarchical IR changes require
+explicit Rust API and format migration, including exhaustive enum matches.
 
 Rejecting a program or certificate that violated the already published
 specification is a correctness fix and may ship in a patch. Document the
@@ -121,10 +124,11 @@ For each release or prerelease:
    source archive: Cargo excludes nested packages, including this non-published
    prototype, from the production package.
 4. Build and audit the Lean development using the pinned toolchain:
-   `lake build Qleisli QuantumInfo.Channels.CPTP QuantumInfo.Measurements.POVM`,
-   `lake env lean -DwarningAsError=true Audit.lean`, and
-   `lake env lean -DwarningAsError=true PhyslibAudit.lean` from `lean/`.
-   The external audit covers the selected declarations, not all of Physlib.
+   `lake build Qleisli` and
+   `lake env lean -DwarningAsError=true Audit.lean` from `lean/`.
+   Physlib is currently a [future dependency](physlib-environment.md), not a
+   release prerequisite. If reintroduced for a concrete bridge, add its scoped
+   external build/axiom audit separately and document the declarations covered.
    This is a full release check; a documentation-only working change
    need not rerun Lean or claim that it did.
 5. Tag the exact checked commit with an annotated `vMAJOR.MINOR.PATCH` tag

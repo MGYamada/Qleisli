@@ -1,10 +1,26 @@
 # Qleisli
 
-**Current version: 0.1.4** · [Release notes and validation](docs/releases/v0.1.4.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.5** · [Release record and validation](docs/releases/v0.1.5.md) · [Current status](docs/current-status.md) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
 
-**v0.1.4 establishes the v0.x plan and its finite maintenance boundary.** The [detailed v0.x plan](docs/v0x-roadmap.md) fixes the maintenance boundary through v0.1.9: the existing finite language, semantic evidence, conformance audits and next-minor design dossier. Fresh [candidate checks](docs/releases/v0.1.4.md#local-candidate-validation) cover both Rust toolchains, Lean/audits, examples and distributions; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4) identifies exact-commit CI and publication. New operation capabilities, size/typestate/effect facilities and generalized algorithms require later minor releases and their own specifications.
+**v0.1.5 reflects the roadmap review as compatible design/documentation maintenance.**
+The [selected path](docs/decisions/2026-09-27-v1-path.md) starts with fixed-width
+operation/access contracts and basis-derived meanings, followed by bounded
+symbolic checking, hierarchical IR and multi-width QPE. [M0–M5](docs/v0x-roadmap.md)
+are independent of release numbers; maintenance audits continue alongside them.
+The [M1 language rules](docs/next-minor-spec.md),
+[machine interfaces](docs/machine-interface-spec.md), and
+[M2 checker profile](docs/hierarchical-ir-spec.md) specify the selected future
+slices; their implementations and acceptance tests remain open.
+The [local v0.1.5 roadmap is complete](docs/releases/v0.1.5.md#roadmap-completion-evidence).
+The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5)
+identifies the exact commit, CI, annotated tag and publication state.
 
-The [semantics-first system design](docs/symbolic-contract-architecture.md) and [independent research prototype](research/semantic-kernel/README.md) retain a limited non-published symbolic checker. A 128-bit actual raw-IR example is checked with a maximum 2-by-2 leaf matrix. Further development and production integration remain [deferred with no selected release](ROADMAP.md#future-work-symbolic-semantic-kernel). Checking generalized contracts without whole dense matrices remains a prerequisite for size generalization. Production finite-core contracts are preserved; source integration and general compiler soundness remain open. The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) remain design artifacts. Implementing their syntax belongs to v0.2.0 or later.
+The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and
+[semantic review](docs/imaginary-v1/review.md) are design artifacts. The
+[independent symbolic prototype](research/semantic-kernel/README.md) remains
+outside production `.qli` checking. Its bounded continuation is selected for
+M2; integration, scalable arithmetic and general compiler soundness are still
+open. Current finite-core contracts and their regression examples are preserved.
 
 Qleisli is a purely functional quantum programming language with an implementation in Rust. It treats quantum data as owned resources that cannot be copied, and programs as composable, effectful transformations of classical values and quantum resources.
 
@@ -28,7 +44,7 @@ The minimum foundation is that **v0.1 must compose and reuse semantic contracts 
 
 For v1, preparation, oracles, reflections, controlled powers, phase estimation, and order reconstruction must be assembled from shared components and parameters. Evaluation uses three algorithms that actually compile, verify, and execute; fixed-size examples or pseudocode alone do not suffice. The [release milestones](docs/release-milestones.md) are authoritative; this section summarizes them. **The declared finite v0.1 profile is implemented and tested; v1 is not achieved.** These milestones are distinct from the crate version and completion of a general compiler proof.
 
-**Before v0.2.0, write ideal code in imaginary Qleisli 1.0.** The prerequisite covers QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT: express their structure in code even before it compiles, and identify semantic contracts, capabilities, and unresolved questions before generalization, new feature implementation, or release. The [six initial drafts, contracts, and requirements index](docs/imaginary-v1/README.md), with their review, satisfy the [prerequisite](docs/release-milestones.md#pre-v020-imaginary-v1-code) of having initial code and requirement records. Concrete new syntax and APIs remain undecided. The imaginary code is revisable design material, not evidence of executable v1 completion.
+**Before v0.2.0, write ideal code in imaginary Qleisli 1.0.** The prerequisite covers QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT: express their structure in code even before it compiles, and identify semantic contracts, capabilities, and unresolved questions before generalization, new feature implementation, or release. The [six initial drafts, contracts, and requirements index](docs/imaginary-v1/README.md), with their review, satisfy the [prerequisite](docs/release-milestones.md#pre-v020-imaginary-v1-code) of having initial code and requirement records. The drafts' general syntax and APIs remain exploratory; the selected fixed-width M1 subset now has a separate future specification. The imaginary code is revisable design material, not evidence of executable v1 completion.
 
 <a id="現在の優先順位-言語仕様"></a>
 
@@ -136,8 +152,9 @@ python3 scripts/test_check_docs.py
 `Cargo.lock` and `target/` are generated and excluded from Git. Tests cover parsing, module resolution, source compilation, IR verification, and reference simulation. Agreement between compiled finite examples and numerical execution is not a general soundness proof.
 
 The separate [Lean proof environment](lean/README.md) uses Lean/Mathlib 4.30.0
-and a pinned compatible Physlib revision. Its [dependency and validation record](docs/physlib-environment.md)
-distinguishes mathematical-library availability from verified Qleisli semantics.
+without a required Physlib dependency. The [dependency decision](docs/physlib-environment.md)
+retains Physlib as a future candidate for the instrument/CPTP bridge, with
+explicit reintroduction and audit conditions.
 
 ```sh
 cargo run --bin qleisli -- check examples/bell

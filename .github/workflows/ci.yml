@@ -45,13 +45,6 @@ jobs:
       - name: Audit every project declaration for forbidden axioms
         working-directory: lean
         run: lake env lean -DwarningAsError=true Audit.lean
-      - name: Build selected Physlib quantum-information modules
-        working-directory: lean
-        run: lake build QuantumInfo.Channels.CPTP QuantumInfo.Measurements.POVM
-      - name: Check Physlib integration and selected external axioms
-        working-directory: lean
-        run: lake env lean -DwarningAsError=true PhyslibAudit.lean
-
   docs:
     runs-on: ubuntu-latest
     steps:

@@ -7,21 +7,122 @@ is implemented and checked; general correspondence between all accepted Rust
 paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
-The project version is 0.1.4, a documentation/plan maintenance release,
-not a claim of v1 completion. Its [record](releases/v0.1.4.md) distinguishes
-fresh local candidate checks from exact-commit CI and publication; the
-[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
-identifies the released commit and publication evidence. The preceding [v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
-identifies that release's actual commit, CI and publication.
+The [generated current status and rule inventory](current-status.md) derive
+from one current-state record and the manifests. The [0.1.5 record](releases/v0.1.5.md)
+separates review/design changes and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.4.md) and
+The current [release record](releases/v0.1.5.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.1.5 release procedure (2026-09-27)
+
+The user authorized publication of the completed maintenance candidate, including
+the follow-up specification fixes and Physlib deferral. Release summaries now
+refer to the [release record](releases/v0.1.5.md) and
+[GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5)
+for the final commit, PR, required CI, immutable annotated tag and source archives.
+The procedure follows protected-main requirements without bypass. The earlier
+candidate entries below retain their original validation and then-pending
+publication states. New public M1/M2 features and general soundness proofs
+remain unfinished; this PATCH does not claim those milestones.
+
+## M1 specification review corrections (2026-09-27)
+
+The follow-up review identified two defects in the selected future specifications.
+The [portable IR envelope](machine-interface-spec.md#portable-finite-ir-and-evidence)
+now retains exact root input/output type trees separately from raw bit-count
+shapes. Import validates their port binding; requested contracts reject absent
+type information and equal-width but different trees at either port. The
+[controlled-operation rule](next-minor-spec.md#access-judgments-and-composition)
+now specifies index c+2x and the permutation needed to express a block matrix.
+It preserves the current least-significant-control convention, including scalar
+phases on Unit. X2/X3 and N2 record the corresponding future acceptance cases.
+
+These are specification corrections within v0.1.5 maintenance, not implementation
+of QIRF or M1. The [follow-up validation record](releases/v0.1.5.md#specification-review-corrections)
+distinguishes document checks and exact finite label calculations from the
+unimplemented import/lowering acceptance tests. Current Rust/Lean code and
+public contracts are unchanged.
+
+## Physlib deferred to a future concrete use (2026-09-27)
+
+At the user's later request, remove Physlib from the required Lean environment
+and default CI until the finite IR instrument/CPTP bridge uses it. The
+[decision and reintroduction gate](physlib-environment.md#current-decision-and-reintroduction-gate)
+preserve the historical compatibility results and version baseline. Move the
+external probe to research; no Qleisli proof module imports QuantumInfo and no
+Qleisli declaration is removed. Lake resolution removes Physlib and five
+exclusive transitive packages, retaining all nine Mathlib dependency records
+and Lean/Mathlib 4.30.0 unchanged.
+
+Post-removal `lake build Qleisli` succeeds (1,457 jobs, including cache hits),
+and the project audit still checks 577 declarations with only the three
+standard allowed axioms. The [release validation](releases/v0.1.5.md#dependency-deferral-validation)
+separates these results from the earlier Physlib build/audit and records final
+documentation/package checks. Rust and mathematical fixture execution are not
+rerun for this dependency-only change. v0.1.5 remains the local maintenance
+candidate; publication remains separate. This entry supersedes historical
+instructions below to keep Physlib installed or run its external audit in CI.
+
+## 0.1.5 local roadmap completion (2026-09-27)
+
+Following the request to advance the roadmap, the
+[completion record](releases/v0.1.5.md#roadmap-completion-evidence) marks version/scope,
+review/specification handoff, current records, local validation and candidate
+distribution complete in the agreed v0.1.5 maintenance scope. Exact-commit CI,
+clean-source release checks, tag/push and publication remain pending. The
+generated current status now identifies this local-complete state instead of
+only version selection. M1 implementation, M2 sized syntax, the full B019 audit
+and V1 acceptance remain open.
+
+This advancement changes roadmap/status documentation only. Previous local
+Rust/Lean and mathematical execution evidence below is retained with its actual
+scope; it is not reported as rerun. Documentation checks and both candidate
+archive contents are refreshed for the final roadmap state.
+
+## 0.1.5 review response and scope selection (2026-09-27)
+
+At the user's request, synchronize Rust/Lean project versions at 0.1.5 and
+reflect the supplied review of 55510e8. The [response matrix](reviews/v0.1.4.md)
+traces every recommendation to a disposition. [M0–M5](v0x-roadmap.md) replace
+version-assigned themes; the [decision dossier](decisions/2026-09-27-v1-path.md)
+selects fixed-width M1, bounded M2 continuation and a dated scope checkpoint.
+B019-5 requires a selected scope and full extension rules rather than accepting
+a permanent no-go. M0 scope selection and G020-1 for fixed-width M1 are complete
+as specification work: [language rules](next-minor-spec.md),
+[machine interfaces](machine-interface-spec.md) and the accompanying
+[M2 IR/checker profile](hierarchical-ir-spec.md) state grammar, contracts,
+access derivations, accepted/rejected cases, budgets, import trust and migration.
+Their future acceptance matrices are not implemented tests. M1 implementation
+and M2 sized source syntax remain separate gates.
+
+The dossier addresses independent semantic vocabulary, conjugation-derived
+control, ideal dyadic QPE angles, joint hierarchical-IR/evidence design,
+reversible synthesis without whole-space tables, portable artifacts, JSON
+results, sampling/retries, special-form migration and verifier/kernel-first
+proof work. The AE draft's access/cost account and Shor indentation are corrected;
+the Physlib investigation is distinguished from its later dependency adoption.
+
+Current-state and fourteen grouped rule-boundary inventory rows are machine
+readable, with a generated table checked in CI. They identify existing
+implementation/test/proof references and open correspondence obligations;
+they do not claim a complete fresh finite-conformance audit. Historical
+records and theorem IDs are preserved. Five new document-checker regressions
+cover stale output, version divergence, incomplete/invalid records and stale
+Rust test references; six mathematical convention cases exercise the conjugation
+identity and counterexamples. The [release validation table](releases/v0.1.5.md#local-validation)
+records actual checks, with numerical fixtures distinguished from exact proofs.
+
+No production or research Rust source, public Lean declaration, `.qli` rule,
+capacity or dependency changes. The proposed byte limit and new public APIs
+remain MINOR work. No new generalized algorithm, kernel feature, or soundness
+proof is claimed, and publication is separate from this version selection.
 
 ## 0.1.4 release procedure and publication record (2026-09-27)
 
@@ -739,6 +840,10 @@ T1は基底式の型付き全域性と型の一意性、T2は結果型・構文�
 Leanのツールチェーン・依存版、ソースの受理規則、言語形式・標準APIは変更していない。以前の「Leanは変更していない」と検査件数は、それぞれの過去の到達点を記したもの。現在の到達点は規則系の紙上健全性と限定した行列補題であり、Rust処理系全体の形式検証ではない。
 
 ## 次に証明すること
+
+この節は元の証明課題の履歴です。v0.1.5で採用した現在の順序は
+[有限IR検証器・カーネルを先に扱う計画](formal-core.md#4-theorem-status-and-proof-work)
+を参照してください。以下の課題は残していますが、番号順を現在の優先順位とは扱いません。
 
 次の課題は、本節に記録した改訂後の仕様v0について、その契約を成立させる根拠を完成させる作業である。矛盾・反例が見つかった場合は仕様変更として明記する。
 

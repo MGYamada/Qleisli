@@ -90,6 +90,38 @@ def check(label, condition):
     return 1
 
 
+def conjugation_checks():
+    """Small phase-sensitive fixtures for the future access derivation rule."""
+    # The control is the high block bit; V and W act on the target.
+    def sectors(zero, one):
+        n = len(zero)
+        return [row + [0j] * n for row in zero] + [[0j] * n + row for row in one]
+
+    v = scale(1 / sqrt(2), [[1, 1], [1j, -1j]])
+    w = scale(cmath.exp(1j * pi / 3), [[1, 0], [0, cmath.exp(1j * pi / 4)]])
+    left = sectors(eye(2), mul(mul(v, w), adj(v)))
+    right = mul(mul(sectors(v, v), sectors(eye(2), w)), sectors(adj(v), adj(v)))
+    count = check('conjugation controls only W and preserves exact-phase convention', close(left, right))
+    wrong_inverse = mul(mul(sectors(v, v), sectors(eye(2), w)), sectors(v, v))
+    count += check('conjugation requires the actual inverse', not close(left, wrong_inverse))
+    changed_phase = sectors(eye(2), scale(-1, mul(mul(v, w), adj(v))))
+    count += check('conjugation cannot erase a controlled global sign', not close(left, changed_phase))
+    projection = [[1, 0], [0, 0]]
+    projected = mul(mul(sectors(projection, projection), sectors(eye(2), w)), sectors(projection, projection))
+    count += check('nonunitary conjugator does not preserve the inactive sector', not close(projected, sectors(eye(2), mul(mul(projection, w), projection))))
+
+    # Target order: data low, auxiliary high; the external control is bit 2.
+    compute = [[complex(row == (col ^ (2 * (col & 1)))) for col in range(4)] for row in range(4)]
+    z_aux = [[complex(((-1) ** (col >> 1)) if row == col else 0) for col in range(4)] for row in range(4)]
+    oracle = mul(mul(sectors(adj(compute), adj(compute)), sectors(eye(4), z_aux)), sectors(compute, compute))
+    expected = sectors(eye(4), mul(mul(adj(compute), z_aux), compute))
+    count += check('computed oracle controls only its central phase gate', close(oracle, expected))
+    encoded_columns = [[oracle[row][data + 4 * control] for control in range(2) for data in range(2)] for row in range(8)]
+    clean_phase = [[complex((-1) ** (data * control) if row == data + 4 * control else 0) for control in range(2) for data in range(2)] for row in range(8)]
+    count += check('controlled computed oracle has the specified phase and zero auxiliary on all encoded columns', close(encoded_columns, clean_phase))
+    return count
+
+
 def qpe_checks():
     count = 0
     # Transcribe the draft's elementary gate order and compare every column
@@ -260,5 +292,5 @@ def qsvt_checks():
 
 
 if __name__ == '__main__':
-    total = sum(f() for f in [qpe_checks, amplification_checks, shor_checks, walk_checks, qsvt_checks])
+    total = sum(f() for f in [conjugation_checks, qpe_checks, amplification_checks, shor_checks, walk_checks, qsvt_checks])
     print(f'All {total} finite mathematical checks passed; imaginary source was not compiled.')
