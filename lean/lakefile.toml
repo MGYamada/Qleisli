@@ -1,5 +1,5 @@
 name = "qleisli_proofs"
-version = "0.1.2"
+version = "0.1.3"
 defaultTargets = ["Qleisli"]
 
 [leanOptions]
@@ -10,6 +10,12 @@ warningAsError = true
 name = "mathlib"
 scope = "leanprover-community"
 rev = "v4.30.0"
+
+[[require]]
+name = "Physlib"
+git = "https://github.com/leanprover-community/physlib.git"
+# Upstream v4.30.0; keep the Lean/Mathlib 4.30.0 compatibility baseline.
+rev = "f5242c99d796b59a390d26cd7d1a8057e04c46b5"
 
 [[lean_lib]]
 name = "Qleisli"

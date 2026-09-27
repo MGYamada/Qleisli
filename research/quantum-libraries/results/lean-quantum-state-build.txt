@@ -1,0 +1,7 @@
+Recorded result, 2026-09-27:
+Source: Quantum/QuantumMechanics/QuantumState.lean
+Upstream commit: bf1c4f6aaec84948f1a1c76c0728432813404a0f
+Compiler: Lean 4.30.0; Qleisli's Mathlib 4.30.0 environment
+Original source compiled without edits into the isolated output directory.
+Exit status: 0
+Compiler diagnostics: none

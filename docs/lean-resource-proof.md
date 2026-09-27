@@ -1,14 +1,16 @@
-# Lean resource, scope, and Kraus theorem ledger
+# Lean resource, scope, Kraus, and semantic-rule theorem ledger
 
 Status: **R1-accounting projection, local lexical scope projection, and five
-local Kraus algebra lemmas machine checked; full source mechanization open**
+local Kraus algebra lemmas, and general exact semantic-rule lemmas machine
+checked; full source mechanization open**
 (2026-09-27). This English ledger records the scope of the
 [Lean development](../lean/README.md). It refines the
 [paper resource rules](source-resource-rules.md) without adding source syntax,
 sealed operations, acceptance rules, or public standard-library APIs.
 
-The resource model in §§1–5, exact matrix model in §6, and lexical lookup model
-in §7 address distinct obligations. The lookup model uses the resource
+The resource model in §§1–5, exact matrix model in §6, lexical lookup model
+in §7, and experimental semantic-rule support in §9 address distinct obligations.
+The lookup model uses the resource
 model's values and ownership footprints. Combining these developments does
 not establish a connection between source typing and quantum operators.
 The source rule system's
@@ -150,6 +152,12 @@ contract and must remain when extending this ledger.
 See the [Lean README](../lean/README.md) for commands. Lean and Mathlib are
 pinned to 4.30.0; the transitive dependency commits are locked in
 [lake-manifest.json](../lean/lake-manifest.json).
+
+The [Physlib environment addition](physlib-environment.md) pins a compatible
+external quantum-information library without changing this toolchain or the
+existing proof declarations. Its selected interfaces have a separate
+[dependency audit](../lean/PhyslibAudit.lean); dependency availability does not
+extend the theorem coverage in this ledger.
 
 [Examples.lean](../lean/Qleisli/Examples.lean) contains 13 named boundary lemmas:
 mixed/zero-width ownership, splitting a unit-and-bit register, explicit
@@ -338,5 +346,83 @@ not a commitment to port each one to Lean now.
    obligation. The local Kraus and scope lemmas do not provide that relation.
 
 SPEC-3, SPEC-4, and Stage 1 remain open. The machine-checked milestones are
-RA-1 through RA-10, KA-1 through KA-5, and SC-1 through SC-7 with reproducible
-checks, not a complete formal verification of the language or implementation.
+RA-1 through RA-10, KA-1 through KA-5, SC-1 through SC-7, and the local
+SEM rules below with reproducible checks, not a complete formal verification
+of the language or implementation.
+
+## 9. General exact semantic rules for experimental evidence design
+
+[SemanticContract.lean](../lean/Qleisli/SemanticContract.lean) supports an
+experimental design for composing symbolic meanings and evidence. It proves
+general finite-dimensional matrix identities over `ℂ`, without a fixed bit
+bound and without enumerating matrix entries when composing the proofs.
+These are local semantic-rule lemmas, separate from an executable symbolic
+checker, the current Rust implementation, and the language's accepted syntax.
+They add no Rust or `.qli` API and require no new dependency or toolchain.
+
+`Qleisli.SemanticContract.Encoded U Ein Eout u` states the exact,
+phase-sensitive equality `U * Ein = Eout * u`. Rows index outputs and columns
+index inputs. This relation alone does not establish physical admissibility:
+`Isometry U` separately means `Uᴴ * U = I`, and `Unitary U` additionally
+requires `U * Uᴴ = I`. An admissible encoded operation must establish its
+encoding isometries and the operation's required isometry/unitarity as well
+as the equality. Owning a theorem does not establish that a runtime state is
+in the input encoding's image or that its quantum resources are owned.
+
+The following **20 theorems are checked** in namespace
+`Qleisli.SemanticContract`:
+
+| ID | Lean declarations | Contract and restrictions |
+| --- | --- | --- |
+| SEM-1 | `encoded_identity`, `encoded_seq` | Identity and sequential equality. The intermediate encoding has identical entries, typed coordinates, and interface; equal dimensions or equal images alone are insufficient. |
+| SEM-2 | `encoded_tensor`, `encoded_reference` | Tensor composition and extension by any finite reference identity. The operator equality covers entangled inputs; no product-state premise is used. Disjoint resource placement remains separate. |
+| SEM-3 | `isometry_identity`, `isometry_seq`, `isometry_tensor`, `unitary_identity`, `unitary_seq`, `unitary_tensor`, `unitary_adjoint` | Preserve whole-domain isometry/unitarity through the stated algebraic operations. These properties are not inferred merely from matching resource interfaces. |
+| SEM-4 | `encoded_adjoint` | Swap encodings and take adjoints when both physical and logical operations are unitary. The physical left-inverse and logical right-inverse equations are used; a logical isometry alone does not authorize this rule. |
+| SEM-5 | `encoded_control`, `isometry_controlEncoding`, `unitary_control` | Control preserves equality with the same exact encoding in both sectors; the encoding stays isometric and control of a unitary stays unitary. This does not grant controlled access to an unknown external operation. |
+| SEM-6 | `compute_uncompute`, `zeroEncoding_isometry`, `encoded_zero_leakage`, `compute_uncompute_zero_leakage` | From `W (C E0) = (C E0) u` and `CᴴC=I`, derive `(CᴴWC) E0=E0u`. For the specified zero-ancilla encoding, every nonzero-ancilla output amplitude is zero for every input column. Unitarity of a physical use operation and logical action remains a separate obligation. |
+| SEM-7 | `derivation_sound` | Structural induction for a finite proof tree with checked leaves, identity, sequence, and qualified adjoint at one common encoding. Leaf soundness is an explicit hypothesis. Tensor and control change interfaces and are covered separately by SEM-2/5. This is not an executable certificate validator. |
+
+`zeroEncoding zero` inserts an ancilla with its specified basis value and
+retains the data coordinates. SEM-6 is an exact factorization, not a small
+leakage estimate, a postselection condition, or an observation operation.
+SEM-2 extends the resulting operator equality to arbitrary finite reference
+systems. The statements do not prove positivity or trace properties of
+instruments; the earlier Kraus-completeness development has its own scope.
+
+### Coordinates, interpretation, and remaining bridges
+
+The tensor uses ordered pair indices `(a,b)` with entry
+`A(a,a') * B(b,b')` and does not flatten them. For the existing Rust
+low-left convention, flatten `(a,b)` as `a + dim(A) * b`; using the usual
+high-left display order instead changes coordinates. The control definition
+uses the tagged sum `P ⊕ P`, with `Sum.inl` inactive and `Sum.inr` active.
+Its connection to a physical control-bit axis requires an explicit reindexing.
+No theorem here establishes the Rust indexing transformation.
+
+The matrix meanings are mathematical denotations. A symbolic implementation
+can retain operation expressions and instantiate these rule theorems instead
+of multiplying dense matrices at every composition. This module does not yet
+prove that a particular expression interpreter, proof DAG validator, or
+serialization implements the mathematical rules. `SameEncodingDerivation`
+is a small proof-tree model with independently justified leaf equations;
+it does not validate untrusted nodes or prove DAG traversal complexity.
+
+Remaining bridges include the exact meanings of primitive/provider operations,
+their capability and parameter premises, the arithmetic representation,
+axis/layout translations, entry-state construction, ownership-to-axis
+correspondence, and binding each proof to the actual emitted IR. Reusing a
+name, digest, theorem handle, or an operation's probability distribution is
+not a replacement for those obligations. In particular, equality up to global
+phase is insufficient for coherent control. Instrument outcomes, approximation
+bounds, and block-encoding success/failure contracts remain distinct from this
+pure-operation relation. These results do not close SPEC-3/4 or establish
+general compiler soundness.
+
+Validation on 2026-09-27 used the pinned Lean/mathlib 4.30.0 development:
+`lake build` passed with **1,457 jobs**, and
+`lake env lean -DwarningAsError=true Audit.lean` passed for **577 project
+declarations**. `Qleisli.lean` imports the new module, including its generated
+declarations in the transitive axiom audit. Only `propext`, `Classical.choice`,
+and `Quot.sound` occur; no `sorry` or additional axiom is used. Whitespace
+validation passed. The earlier 527-declaration scope-validation record above
+remains historical.

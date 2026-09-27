@@ -4,6 +4,10 @@
 Run with Python 3 and its standard library. Rational matrices, plus an exact
 Q(sqrt(2)) Hadamard example, illustrate identities and counterexamples. This
 script is not a proof of their general forms or a Qleisli implementation.
+
+Matrix helpers require nonempty rectangular matrices and compatible dimensions.
+Malformed inputs raise ValueError before arithmetic, including in negative
+examples. A scalar operation has shape 1-by-1; empty matrices are not fixtures.
 """
 
 from dataclasses import dataclass
@@ -63,7 +67,17 @@ class Quadratic:
         return f"({self.a}) + ({self.b})*sqrt(2)"
 
 
+def shape(value, name="matrix"):
+    if not value or not value[0]:
+        raise ValueError(f"{name} must have at least one row and one column")
+    columns = len(value[0])
+    if any(len(row) != columns for row in value):
+        raise ValueError(f"{name} must be rectangular")
+    return len(value), columns
+
+
 def matrix(rows):
+    shape(rows)
     return [
         [value if isinstance(value, Quadratic) else Fraction(value) for value in row]
         for row in rows
@@ -71,21 +85,30 @@ def matrix(rows):
 
 
 def zeros(rows, columns):
+    if any(not isinstance(size, int) or size < 1 for size in (rows, columns)):
+        raise ValueError("zeros requires positive integer dimensions")
     return [[Fraction(0) for _ in range(columns)] for _ in range(rows)]
 
 
 def identity(size):
+    if not isinstance(size, int) or size < 1:
+        raise ValueError("identity requires a positive integer dimension")
     return [[Fraction(i == j) for j in range(size)] for i in range(size)]
 
 
 def transpose(value):
     # All fixtures are real; transpose is their adjoint.
+    shape(value, "transpose matrix")
     return [list(row) for row in zip(*value)]
 
 
 def multiply(left, right):
-    if len(left[0]) != len(right):
-        raise ValueError("matrix dimensions do not match")
+    left_shape = shape(left, "multiply left matrix")
+    right_shape = shape(right, "multiply right matrix")
+    if left_shape[1] != right_shape[0]:
+        raise ValueError(
+            f"multiply requires matching inner dimensions; got {left_shape} and {right_shape}"
+        )
     return [
         [
             sum(
@@ -99,6 +122,10 @@ def multiply(left, right):
 
 
 def subtract(left, right):
+    left_shape = shape(left, "subtract left matrix")
+    right_shape = shape(right, "subtract right matrix")
+    if left_shape != right_shape:
+        raise ValueError(f"subtract requires equal shapes; got {left_shape} and {right_shape}")
     return [
         [x - y for x, y in zip(left_row, right_row)]
         for left_row, right_row in zip(left, right)
@@ -106,11 +133,14 @@ def subtract(left, right):
 
 
 def scale(coefficient, value):
+    shape(value, "scale matrix")
     return [[coefficient * x for x in row] for row in value]
 
 
 def tensor(left, right):
     """Usual Kronecker order: the left factor is the high-order factor."""
+    shape(left, "tensor left matrix")
+    shape(right, "tensor right matrix")
     return [
         [
             left[i][j] * right[k][l]
@@ -127,6 +157,8 @@ def column(values):
 
 
 def norm_squared(vector):
+    if shape(vector, "norm_squared vector")[1] != 1:
+        raise ValueError("norm_squared requires a column vector")
     return multiply(transpose(vector), vector)[0][0]
 
 
@@ -139,7 +171,9 @@ def permutation(size, image):
 
 def controlled(operation):
     """Control is the high-order factor; control zero applies identity."""
-    size = len(operation)
+    size, columns = shape(operation, "controlled operation")
+    if size != columns:
+        raise ValueError("controlled requires a square matrix")
     result = zeros(2 * size, 2 * size)
     for i in range(size):
         result[i][i] = Fraction(1)

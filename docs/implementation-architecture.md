@@ -6,6 +6,12 @@ specification or a proof of compiler correctness. The [v0 specification](languag
 and [Stage 1 obligations](formal-core.md) remain authoritative for language
 behavior and proof status.
 
+The subsequent [symbolic-contract system design](symbolic-contract-architecture.md)
+and [independent research package](../research/semantic-kernel/README.md) explore
+composition without whole dense operators. They do not replace the production
+path mapped below. Raw-IR binding in a research adapter and mathematical Lean
+rule lemmas are separate from a proof of source/compiler adequacy.
+
 ## Responsibilities and dependency direction
 
 | Component | Responsibility | Dependency boundary |

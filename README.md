@@ -1,8 +1,10 @@
 # Qleisli
 
-**Current version: 0.1.2** · [Release notes](docs/releases/v0.1.2.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.3** · [Release notes and validation](docs/releases/v0.1.3.md) · [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
 
-**v0.1.2 is a design and documentation maintenance release.** Its [roadmap](ROADMAP.md#v012-release-roadmap) starts with [English language specification groundwork](docs/language-evolution.md), followed by six initial imaginary Qleisli 1.0 algorithm drafts and an index of their semantic contracts, required capabilities, and open questions. The [six drafts and requirements index](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) are complete. [Local candidate validation](docs/releases/v0.1.2.md#local-candidate-validation) is recorded separately from subsequent English documentation consolidation. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) identifies the tagged commit, required CI, verified source archives, and publication status. The finite core and public contracts of v0.1.1 are preserved. Implementation of imaginary syntax belongs to v0.2.0 or later.
+**v0.1.3 is a maintenance and semantic-research candidate; publication is pending.** It fixes silent matrix-dimension truncation in the imaginary-design check script and adds regression tests. The [v0.1.2 review verification](docs/reviews/v0.1.2.md) records scalable evidence composition as a prerequisite for size generalization, together with the open QPE angle decisions.
+
+The [semantics-first system design](docs/symbolic-contract-architecture.md) and [independent research prototype](research/semantic-kernel/README.md) begin symbolic checking in a limited non-published package. A 128-bit actual raw-IR example is checked with a maximum 2-by-2 leaf matrix. Production finite-core contracts are preserved; source integration and general compiler soundness remain open. The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and [semantic review](docs/imaginary-v1/review.md) remain design artifacts. Implementing their syntax belongs to v0.2.0 or later.
 
 Qleisli is a purely functional quantum programming language with an implementation in Rust. It treats quantum data as owned resources that cannot be copied, and programs as composable, effectful transformations of classical values and quantum resources.
 
@@ -132,6 +134,10 @@ python3 scripts/test_check_docs.py
 ```
 
 `Cargo.lock` and `target/` are generated and excluded from Git. Tests cover parsing, module resolution, source compilation, IR verification, and reference simulation. Agreement between compiled finite examples and numerical execution is not a general soundness proof.
+
+The separate [Lean proof environment](lean/README.md) uses Lean/Mathlib 4.30.0
+and a pinned compatible Physlib revision. Its [dependency and validation record](docs/physlib-environment.md)
+distinguishes mathematical-library availability from verified Qleisli semantics.
 
 ```sh
 cargo run --bin qleisli -- check examples/bell

@@ -3,19 +3,27 @@
 This directory contains the **ownership-accounting projection** of the finite
 core resource rules, a **lexical scope-exit lookup model**, and a small
 exact-matrix development for **Kraus completeness under composition**.
+The later semantic-contract module proves local symbolic composition rules,
+with separate isometry and unitary premises; it does not enumerate large
+operators or verify the experimental Rust kernel.
 It does not formalize the complete source
 language, the Rust compiler, positivity/trace, or the full quantum soundness
 theorem. The English
 [theorem ledger and scope](../docs/lean-resource-proof.md) is the status record.
 
-Lean and Mathlib are pinned to `v4.30.0`. The committed
-`lake-manifest.json` pins transitive dependencies. With `elan` installed, run:
+Lean and Mathlib are pinned to `v4.30.0`. Physlib is pinned to its compatible
+`v4.30.0` commit `f5242c99d796b59a390d26cd7d1a8057e04c46b5`; its quantum APIs
+use the `QuantumInfo` namespace. The committed `lake-manifest.json` pins
+transitive dependencies. See the [version/validation record](../docs/physlib-environment.md)
+for the selection, licensing and verification boundary. With `elan` installed, run:
 
 ```sh
 cd lean
 lake exe cache get
 lake build
 lake env lean -DwarningAsError=true Audit.lean
+lake build QuantumInfo.Channels.CPTP QuantumInfo.Measurements.POVM
+lake env lean -DwarningAsError=true PhyslibAudit.lean
 ```
 
 Run `lake update` only when intentionally changing dependency resolution.
@@ -30,7 +38,9 @@ the installed toolchain and cached dependencies. Julia is not a dependency.
 | [Phi.lean](Qleisli/Phi.lean) | Complete injective renaming, resource phi agreement, branching execution |
 | [Examples.lean](Qleisli/Examples.lean) | Exact accepted boundaries and rejection theorems, including zero-width ownership |
 | [Kraus.lean](Qleisli/Kraus.lean) | Five matrix lemmas for singleton/isometry completeness, output transport, and adaptive composition |
+| [SemanticContract.lean](Qleisli/SemanticContract.lean) | Exact encoded relations, composition/reference/qualified-transform and zero-return lemmas; separate from implementation adequacy |
 | [Audit.lean](Audit.lean) | Transitive axiom audit of all declarations in imported project modules |
+| [PhyslibAudit.lean](PhyslibAudit.lean) | Qleisli/QuantumInfo import compatibility and transitive axiom audit of eight selected external declarations; not all of Physlib |
 
 `Config` in the resource model erases lexical names and spent markers.
 The separate `Scope` model retains those distinctions through function-based

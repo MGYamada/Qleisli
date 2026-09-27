@@ -14,7 +14,7 @@ acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
 these **release milestones v0.1/v1** are different labels. The existing Rust
-package version `0.1.2` and the standard-library ledger's “format v1” do not
+package version `0.1.3` and the standard-library ledger's “format v1” do not
 establish completion of either release milestone. Release claims require the
 evidence below, not a manifest version or successful fixed-size example.
 
@@ -26,17 +26,33 @@ record its contents and validation scope. The Git tag and GitHub release
 identify the released commit and publication state; registry publication is
 a separate operation.
 
-The current product version is **0.1.2**, selected for
-compatible documentation/design work after 0.1.1. The
-[0.1.2 release record](releases/v0.1.2.md) covers the six imaginary-v1
-drafts, their requirement index, semantic review, and release validation.
-The [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
-records the tagged commit, CI, and publication.
+The current product version is **0.1.3**, a compatible maintenance release with
+auxiliary-checker fixes, review clarification, independent semantic research
+and the compatible Physlib proof environment. The
+[0.1.3 release record](releases/v0.1.3.md) distinguishes local validation from
+the [GitHub publication record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3).
+The preceding [0.1.2 release record](releases/v0.1.2.md)
+covers the six imaginary-v1 drafts, their requirement index, semantic review,
+and release validation; its [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
+records the published commit.
 The [six initial drafts and requirements](imaginary-v1/README.md), their
 [semantic review](imaginary-v1/review.md), and the English specification
 groundwork are complete as design artifacts. This satisfies the corpus
 prerequisite below; future features still need their own specifications and
 validation. Selecting this patch version does not complete v1.
+
+The subsequent v0.1.3 research goal is a first-principles
+[meaning/implementation architecture](symbolic-contract-architecture.md) and
+an [independent exact-pure prototype](../research/semantic-kernel/README.md).
+It checks a limited symbolic profile and binds evidence to supported actual
+raw IR. Its non-published package does not change production compiler APIs.
+The design's G013-S0–S2 gates concern this initial slice; G013-S3 source/entry/
+release integration and generalized algorithms remain future work. Public
+feature adoption still follows the next-minor specification process.
+Further kernel development and production integration are explicitly deferred
+to the [future roadmap](../ROADMAP.md#future-work-symbolic-semantic-kernel),
+with no selected release. Retaining the initial research artifacts does not
+make that integration a completion condition for the 0.1.3 maintenance release.
 
 ## Project north star
 
@@ -224,7 +240,12 @@ policy alone does not complete the prerequisite or change the product version.
    contracts from the initial algorithm drafts.
 4. Generalize the checked interfaces with size and operation parameters,
    access capabilities, and the instrument/error contracts required by the
-   three v1 algorithms.
+   three v1 algorithms. As an architectural prerequisite, composition in the
+   generalized profile must check symbolic meanings and evidence without
+   constructing whole logical dense matrices. Specify scalable encoding and
+   interface checks, implementation binding, and the first QPE angle and
+   checking profile; see [R14 and R08/R12](imaginary-v1/requirements.md#scaling-prerequisite-for-r14).
+   The existing bounded matrix checker remains the finite baseline.
 5. Implement reusable Grover and QPE structures and use QPE in Shor's complete
    quantum/classical workflow. Evaluate V1-C1–C5 on real source and evidence.
 

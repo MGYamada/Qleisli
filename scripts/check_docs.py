@@ -245,6 +245,7 @@ def check_lean(root: Path) -> tuple[list[str], int]:
 def main() -> int:
     docs = [*ROOT.glob("*.md"), *ROOT.joinpath("docs").rglob("*.md")]
     docs += list(ROOT.joinpath("lean").glob("*.md"))
+    docs += list(ROOT.joinpath("research").glob("*/README.md"))
     errors, counts = check_links(ROOT, docs)
     lean_errors, modules = check_lean(ROOT)
     errors.extend(lean_errors)
