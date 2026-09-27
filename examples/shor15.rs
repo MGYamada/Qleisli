@@ -13,6 +13,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut success = 0.0;
     let mut retry = 0.0;
     for (bits, probability) in distribution {
+        // This example returns only the phase register, low bit first:
+        // displayed 100 means y=1, not y=4. See factor_from_phase's contract.
         let outcome = bits
             .iter()
             .enumerate()

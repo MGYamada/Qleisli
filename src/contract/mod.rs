@@ -52,6 +52,64 @@ impl From<ExactError> for ContractError {
     }
 }
 
+/// Internal diagnostic detail; the public error variants remain unchanged.
+#[derive(Debug)]
+pub(crate) struct ContractDiagnostic {
+    pub(crate) error: ContractError,
+    detail: Option<String>,
+}
+
+impl From<ContractError> for ContractDiagnostic {
+    fn from(error: ContractError) -> Self {
+        Self {
+            error,
+            detail: None,
+        }
+    }
+}
+
+impl From<ExactError> for ContractDiagnostic {
+    fn from(error: ExactError) -> Self {
+        ContractError::Arithmetic(error).into()
+    }
+}
+
+impl fmt::Display for ContractDiagnostic {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.error)?;
+        if let Some(detail) = &self.detail {
+            write!(f, "; {detail}")?;
+        }
+        Ok(())
+    }
+}
+
+fn check_equation(actual: &Matrix, expected: &Matrix) -> Result<(), ContractDiagnostic> {
+    if actual.rows() != expected.rows() || actual.cols() != expected.cols() {
+        return Err(ContractError::EquationMismatch.into());
+    }
+    // Retain a counterexample from the matrices already computed under the
+    // caller's budget. The first column is a logical input basis state.
+    for column in 0..actual.cols() {
+        for row in 0..actual.rows() {
+            let index = row * actual.cols() + column;
+            let actual = actual.entries()[index];
+            let expected = expected.entries()[index];
+            if actual != expected {
+                return Err(ContractDiagnostic {
+                    error: ContractError::EquationMismatch,
+                    detail: Some(format!(
+                        "input column {column}, output row {row} (zero-based): actual {}, expected {}",
+                        actual.diagnostic(),
+                        expected.diagnostic()
+                    )),
+                });
+            }
+        }
+    }
+    Ok(())
+}
+
 /// The exact basis tree of one owned quantum register, including Unit nodes.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum BasisType {
@@ -391,18 +449,24 @@ impl CheckedContract {
         contract: Contract,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
+        Self::check_diagnostic(circuit, contract, budget).map_err(|diagnostic| diagnostic.error)
+    }
+
+    pub(crate) fn check_diagnostic(
+        circuit: Circuit,
+        contract: Contract,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
         if circuit.basis != contract.input.physical || circuit.basis != contract.output.physical {
-            return Err(ContractError::Type(
-                "circuit type does not match the physical encodings",
-            ));
+            return Err(
+                ContractError::Type("circuit type does not match the physical encodings").into(),
+            );
         }
         let lhs = circuit
             .matrix(budget)?
             .compose(&contract.input.map, budget)?;
         let rhs = contract.output.map.compose(&contract.logical, budget)?;
-        if lhs != rhs {
-            return Err(ContractError::EquationMismatch);
-        }
+        check_equation(&lhs, &rhs)?;
         Ok(Self { circuit, contract })
     }
 
@@ -440,6 +504,13 @@ impl CheckedContract {
 
     /// Derive next ∘ self without re-evaluating either physical circuit.
     pub fn then(&self, next: &Self, budget: &mut Budget) -> Result<Self, ContractError> {
+        // Checked constructors bind both physical interfaces to the circuit's
+        // exact basis tree. Matching middle encodings therefore also fixes the
+        // basis on which the concatenated steps operate.
+        for evidence in [self, next] {
+            debug_assert_eq!(evidence.circuit.basis, evidence.contract.input.physical);
+            debug_assert_eq!(evidence.circuit.basis, evidence.contract.output.physical);
+        }
         if self.contract.output != next.contract.input {
             return Err(ContractError::Type(
                 "sequential contracts require exactly matching middle encoding",
@@ -603,6 +674,17 @@ pub(crate) fn check_computed_with_budget(
     logical_steps: &[CircuitStep],
     budget: &mut Budget,
 ) -> Result<(), ContractError> {
+    check_computed_diagnostic_with_budget(source_bits, function, use_steps, logical_steps, budget)
+        .map_err(|diagnostic| diagnostic.error)
+}
+
+pub(crate) fn check_computed_diagnostic_with_budget(
+    source_bits: usize,
+    function: &[u16],
+    use_steps: &[CircuitStep],
+    logical_steps: &[CircuitStep],
+    budget: &mut Budget,
+) -> Result<(), ContractDiagnostic> {
     let available = budget.remaining().min(DEFAULT_EXACT_WORK);
     let mut local = Budget::new(available);
     let result = check_computed_inner(source_bits, function, use_steps, logical_steps, &mut local);
@@ -616,21 +698,22 @@ fn check_computed_inner(
     use_steps: &[CircuitStep],
     logical_steps: &[CircuitStep],
     budget: &mut Budget,
-) -> Result<(), ContractError> {
+) -> Result<(), ContractDiagnostic> {
     if source_bits >= MAX_CONTRACT_BITS {
         return Err(ContractError::Limit(
             "certified computation supports at most 5 data bits plus one auxiliary",
-        ));
+        )
+        .into());
     }
     let dim = 1usize << source_bits;
     if function.len() != dim || function.iter().any(|x| *x > 1) {
-        return Err(ContractError::Type(
-            "computed predicate must be a total Bit-valued table",
-        ));
+        return Err(
+            ContractError::Type("computed predicate must be a total Bit-valued table").into(),
+        );
     }
     // Validate capacities before cloning untrusted circuit vectors.
     if use_steps.len() > MAX_CONTRACT_STEPS || logical_steps.len() > MAX_CONTRACT_STEPS {
-        return Err(ContractError::Limit("contract circuit exceeds 1024 steps"));
+        return Err(ContractError::Limit("contract circuit exceeds 1024 steps").into());
     }
     let data = BasisType::register(source_bits)?;
     let physical = BasisType::pair(data.clone(), BasisType::Bit);
@@ -645,7 +728,7 @@ fn check_computed_inner(
     let encoding = Encoding::new(data, physical, Matrix::new(2 * dim, dim, entries)?, budget)?;
     let meaning = logical.matrix(budget)?;
     let contract = Contract::new(encoding.clone(), encoding, meaning, budget)?;
-    CheckedContract::check(implementation, contract, budget)?;
+    CheckedContract::check_diagnostic(implementation, contract, budget)?;
     Ok(())
 }
 
@@ -671,5 +754,49 @@ pub(crate) fn invert_steps(steps: &mut [CircuitStep]) {
                 *phases = inverse_phases;
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn counterexample_diagnostic_preserves_the_shared_work_budget() {
+        let use_steps = [CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Hadamard { target: 1 },
+        }];
+        let mut public_budget = Budget::new(DEFAULT_EXACT_WORK);
+        let mut diagnostic_budget = Budget::new(DEFAULT_EXACT_WORK);
+        let error = check_computed_with_budget(1, &[0, 1], &use_steps, &[], &mut public_budget)
+            .unwrap_err();
+        let diagnostic = check_computed_diagnostic_with_budget(
+            1,
+            &[0, 1],
+            &use_steps,
+            &[],
+            &mut diagnostic_budget,
+        )
+        .unwrap_err();
+        assert_eq!(error, ContractError::EquationMismatch);
+        assert_eq!(diagnostic.error, error);
+        assert_eq!(public_budget.remaining(), diagnostic_budget.remaining());
+        assert!(
+            diagnostic
+                .to_string()
+                .contains("input column 0, output row 0")
+        );
+
+        let mut exhausted = Budget::new(0);
+        let diagnostic =
+            check_computed_diagnostic_with_budget(1, &[0, 1], &use_steps, &[], &mut exhausted)
+                .unwrap_err();
+        assert_eq!(
+            diagnostic.error,
+            ContractError::Arithmetic(ExactError::WorkLimit)
+        );
+        assert!(diagnostic.detail.is_none());
+        assert_eq!(exhausted.remaining(), 0);
     }
 }

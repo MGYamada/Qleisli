@@ -208,7 +208,7 @@ fn independent_output_reindexing_catches_a_reversed_join() {
     assert_eq!(
         theorem.meaning(),
         &matrix(4, |row, col| {
-            Exact::integer(i128::from(row == ((col & 1) << 1 | col >> 1)))
+            Exact::integer(i128::from(row == (((col & 1) << 1) | (col >> 1))))
         })
     );
     assert_eq!(
@@ -288,7 +288,7 @@ fn independent_extraction_handles_lifts_cnot_and_toffoli() {
             let a = input & 1;
             let b = ((input >> 1) & 1) ^ a;
             let c = ((input >> 2) & 1) ^ (a & b);
-            a | b << 1 | c << 2
+            a | (b << 1) | (c << 2)
         })
         .collect();
     let theorem = check(

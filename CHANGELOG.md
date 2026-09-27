@@ -8,6 +8,58 @@ separately in [release milestones](docs/release-milestones.md).
 
 No unreleased changes.
 
+## 0.1.1 — 2026-09-27
+
+Compatible maintenance release. Both project manifests are synchronized at
+0.1.1. See the [release notes](docs/releases/v0.1.1.md) for scope and checks;
+the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1)
+identifies the published commit and its CI evidence.
+
+### Changed
+
+- Require an initial imaginary Qleisli 1.0 code corpus before v0.2.0 feature
+  implementation or release, covering QPE, Grover, amplitude estimation,
+  Shor, quantum walk, and QSVT. Noncompiling, revisable design code and its
+  semantic requirements are distinct from executable v1 acceptance evidence.
+  The policy is adopted; the corpus is still pending and is not a prerequisite
+  for this compatible maintenance release.
+
+### Fixed
+
+- Reuse immutable function evidence within one frozen compiler project without
+  repeatedly comparing and charging its source/raw snapshots. New artifacts
+  still pay for snapshot copies; external binding checks remain exact.
+- Point independent IR contract errors at the originating source expression,
+  including nested branches, and report an exact counterexample entry.
+  Parser messages identify parse failures without changing public error codes.
+- Detect material numerical leakage before certified auxiliary projection,
+  preserving exact release certification and unnormalized probability weights.
+  Scale only the diagnostic ratio to prevent subnormal or underflowed weights
+  from hiding leakage; preserve stored amplitudes and non-finite-weight alarms.
+- Harden signed dyadic scaling against a future denominator-bound change and
+  make contract-composition basis invariants explicit.
+- Clarify CLI bit order and tiny numerical weights; address the reported
+  older-Clippy expression/lifetime patterns and add Clippy to the MSRV CI job.
+  Actual Rust 1.85 validation also identified test bit-packing expressions;
+  explicit parentheses preserve their meaning and satisfy MSRV Clippy.
+
+### Verification
+
+- Validate the 0.1.1 candidate on macOS: 258 tests and all-target Clippy pass
+  on both Rust 1.98.1 and minimum Rust 1.85.0. Documentation checks, 39 exact
+  assertions, Lean build and the 527-declaration axiom audit, all ten CLI
+  projects, Shor, and candidate source packaging/verification pass. Linux CI
+  and clean-release-commit packaging are separate publication gates, recorded
+  against the exact release commit in the GitHub release record.
+- Reproduce the cleanup alarm's underflow failure before fixing it. Add a
+  scale-invariance regression covering real/imaginary leakage, both sides of
+  the alarm threshold, subnormal and zero-rounded weights, the smallest
+  positive amplitude, and unchanged projected amplitude bits.
+- Add deterministic generated comparisons of exact circuit matrices with
+  numerical execution, adjoints, controls, and retained physical auxiliary
+  implementations. See the [review disposition](docs/reviews/claude-v0.1.0.md)
+  for checked findings, deferred design changes, and validation results.
+
 ## 0.1.0 — 2026-09-27
 
 Initial source release. See the [release notes](docs/releases/v0.1.0.md)

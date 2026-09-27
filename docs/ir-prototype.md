@@ -111,6 +111,21 @@ one, but rounding can produce true with weight around `10^-32`. The simulator
 does not remove all small positive weights by a fixed threshold; a tiny output
 weight alone does not establish an ideal nonzero probability.
 
+Before a `CertifiedCompute` auxiliary is projected away, the reference
+simulator checks the probability weight on its one-valued rows relative to the
+entire unnormalized component. A fraction above `1e-12`, or non-finite total
+weight, reports `InconsistentVerifiedIr`. This is a numerical inconsistency
+alarm after exact certification, never evidence authorizing pure release.
+For this ratio alone, real and imaginary coordinates are divided by their
+largest absolute value before squaring; this prevents tiny component weights
+from hiding material relative leakage through underflow. The original
+total-weight check still rejects non-finite values, including overflow from
+finite amplitudes. An all-zero component has no numerical leakage.
+Small numerical residuals are not renormalized, and no threshold removes small
+positive measurement outcomes. Contract actions continue to execute their
+checked extracted circuits, including proved cleanup substitutions; their
+retained raw physical witnesses are separately exercised by differential tests.
+
 Defaults are at most 16 quantum axes, 65,536 ensemble components, 1,048,576
 complex amplitude cells in total, and 1,000,000 execution steps shared across
 the whole run. `SimulationLimits::max_execution_steps` counts IR operation

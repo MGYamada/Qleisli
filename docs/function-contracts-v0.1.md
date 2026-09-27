@@ -211,6 +211,16 @@ and all declaration/dependency information that determines either program.
 No cache entry may silently survive a changed source dependency, predicate,
 output layout, or required specification.
 
+The current frontend retains all loaded project source records in each new
+artifact, including unrelated modules; this is a conservative snapshot rather
+than a minimal import/declaration closure. It charges the actual source/raw
+snapshot copies once per newly checked implementation/specification pair.
+Within one private compiler instance, resolved declarations and checked
+dependencies remain immutable, so cache hits reuse the issued evidence without
+repeated byte/raw comparisons. The cache is never shared across compilations.
+Public `check_binding` still compares supplied identities and raw snapshots
+exactly. No digest or hash-collision assumption replaces that public check.
+
 An already constructed immutable artifact remains a theorem about its frozen
 programs after files on disk change. It does not automatically become a
 theorem about the new files. Reusing it for a new compilation requires an

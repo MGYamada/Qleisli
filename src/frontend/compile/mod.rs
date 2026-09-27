@@ -151,11 +151,14 @@ struct Compiler<'a> {
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, VerifiedProgram>,
-    function_evidence: BTreeMap<(Key, Key), (Arc<crate::contract::FunctionEvidence>, usize)>,
+    // Private to this immutable loaded project. Dependencies are checked once
+    // in topological order and never replaced, so a cache hit keeps its exact
+    // source/raw binding without rescanning those frozen snapshots.
+    function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
     work: usize,
 }
 
-impl<'a> Compiler<'a> {
+impl Compiler<'_> {
     fn error(
         &self,
         module: &str,

@@ -133,6 +133,17 @@ errors point to the call. This holds across modules. Errors in a callee body
 point to that body. Ordering among multiple violations and exact message text
 are not normative.
 
+Independent IR-validation errors use a private operation-path/source-span map
+to identify the originating expression, including nested classical branches
+and isolated computed bodies. Errors without a mapped operation fall back to
+the enclosing declaration or static-operation site. This diagnostic metadata
+does not participate in IR acceptance. Exact contract mismatches include the
+first differing zero-based input column and output row with exact actual and
+expected entries. These are the logical input and physical output basis labels
+in the checked equation's declared order, not measured outcomes. Parser errors
+include `parse error:` in their message while retaining the public `Project`
+category; contract failures retain `InvalidIr`.
+
 Module-import cycle detection uses an explicit DFS stack. Import-chain depth
 does not consume the Rust call stack; cycles still report the importing file,
 the closing `use` span, and the cycle path. This graph traversal is separate

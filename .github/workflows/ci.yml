@@ -24,8 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install the minimum supported Rust toolchain
-        run: rustup toolchain install 1.85.0 --profile minimal
+        run: rustup toolchain install 1.85.0 --profile minimal --component clippy
       - run: cargo +1.85.0 test --all-targets
+      - run: cargo +1.85.0 clippy --all-targets -- -D warnings
 
   lean:
     runs-on: ubuntu-latest

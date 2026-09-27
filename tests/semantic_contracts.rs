@@ -231,6 +231,10 @@ fn exact_basis_tree_is_not_erased_by_equal_dimensions() {
         Err(ContractError::EvidenceMismatch)
     );
     assert!(matches!(
+        theorem.then(&CheckedContract::identity(other).unwrap(), &mut work()),
+        Err(ContractError::Type(_))
+    ));
+    assert!(matches!(
         CheckedContract::check(
             Circuit::new(bit_unit, vec![x(0)]).unwrap(),
             theorem.contract().clone(),
@@ -584,6 +588,31 @@ fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
             .unwrap_err()
             .message
             .contains("semantic contract")
+    );
+}
+
+#[test]
+fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
+    let leakage = certified_program(1, vec![0, 1], vec![x(1)], vec![]);
+    let error = verify(leakage).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("input column 0, output row 0 (zero-based)")
+    );
+    assert!(error.message.contains("actual 0, expected 1"));
+
+    let phase_error = certified_program(1, vec![0, 1], vec![phase(1, 1)], vec![phase(0, 4)]);
+    let error = verify(phase_error).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("input column 1, output row 3 (zero-based)")
+    );
+    assert!(
+        error
+            .message
+            .contains("actual (1/2^1)*sqrt(2) + (1/2^1)*i*sqrt(2), expected -1")
     );
 }
 

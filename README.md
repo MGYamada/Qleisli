@@ -1,6 +1,8 @@
 # Qleisli
 
-**Current version: 0.1.0** · [Release notes](docs/releases/v0.1.0.md) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.1** · [0.1.1 release notes](docs/releases/v0.1.1.md) · [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+
+**v0.1.1は互換修正のリリースです。** Claudeレビューから確認した契約再利用・診断・数値実行・厳密算術の改善と回帰検査を収めます。Rust 1.98.1／1.85.0の全target検査、Lean build／公理監査、代表例と配布候補の再ビルドを確認しました。[ロードマップ](ROADMAP.md#v011-release-roadmap)に検証と公開の条件を、GitHubのリリース記録に実際のコミット・CI・公開状態を記録します。
 
 Qleisli は、Rust で処理系を構築する純粋関数型量子プログラミング言語です。量子データを複製不能な所有資源とし、プログラムを古典値と量子資源の、効果付きで合成可能な変換として捉えます。
 
@@ -19,6 +21,8 @@ Qleisli は、Rust で処理系を構築する純粋関数型量子プログラ�
 その最低基盤として、**v0.1では `U E_in = E_out u` による意味契約を合成・再利用し、実際のIRまで独立検査できること**を必須にします。同じ契約を満たす複数の実装を、利用側を変えずに交換でき、位相・所有権・補助の厳密なゼロ復帰を保持するところまでが到達条件です。
 
 v1では準備、オラクル、反射、制御付き冪、位相推定、位数再構成を、共有する部品とパラメータから構成します。実際にコンパイル・検証・実行できる三つのアルゴリズムで評価し、既存の固定サイズ例や疑似コードだけでは達成としません。[英語の到達条件](docs/release-milestones.md)を正本とし、この節は日本語の要約です。**v0.1の宣言した有限プロファイルは実装・検査を完了し、v1は未達成**です。crateの版番号や処理系全体の証明完了とは区別します。
+
+**v0.2.0へ進む前提として、仮想Qleisli 1.0の理想コードを先に書きます。** QPE・Grover・amplitude estimation・Shor・quantum walk・QSVTの構造を、まだコンパイルできなくてもコードで表し、必要な意味契約・能力・未解決事項を洗い出します。初稿をそろえてからv0.2.0向けの一般化・新機能実装とリリースへ進みます。[英語正本の前提条件](docs/release-milestones.md#pre-v020-imaginary-v1-code)を採用済みですが、コード群の作成は未完了です。仮想コードは改訂可能な設計資料であり、v1達成の証拠とは区別します。
 
 <a id="現在の優先順位-言語仕様"></a>
 
@@ -120,6 +124,8 @@ cargo run --bin qleisli -- run examples/phase_estimation
 cargo run --bin qleisli -- run examples/order_finding
 cargo run --example shor15
 ```
+
+CLIのビット列は戻り値の古典タプルを左から右にたどった順です。位相推定の例では位相レジスタを低位ビットから返すため、`100`は整数1を表します。確率は浮動小数の近似値であり、丸めによる微小な正の値も表示します。[出力順と数値実行の規約](docs/frontend-v0.md)を参照してください。
 
 段階0の構成と有限コアv0の規範を定めました。現在は段階1の証明と処理系との対応を優先します。外部パッケージ管理やハードウェア固有 API は初期版の範囲外です。
 
