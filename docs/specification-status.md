@@ -7,17 +7,150 @@ is implemented and checked; general correspondence between all accepted Rust
 paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
-The project version is 0.1.2, not a claim of v1 completion. Actual publication
-evidence is in the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2).
+The project version is 0.1.3, a maintenance/research release, not a claim of v1
+completion. Its [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies the actual commit, CI and publication; the preceding release is
+[v0.1.2](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2).
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.2.md) and
+The current [release record](releases/v0.1.3.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## Final 0.1.3 release contents and validation (2026-09-27)
+
+The final release includes the auxiliary shape/nonfinite fixes, retained
+independent semantic research, its explicit deferral, and the compatible Physlib
+environment. Fresh macOS checks passed on Rust 1.98.1 and 1.85.0: 258 production
+and 43 prototype tests each, primary fmt and Clippy on both. Lean built Qleisli
+and selected QuantumInfo modules; the 577-project-declaration and eight-external-
+declaration audits permit only the standard three axioms. All 43 Python tests,
+52 imaginary mathematical checks, 39 exact assertions and representative
+executions passed. The [release record](releases/v0.1.3.md#final-release-validation)
+states scope; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies the exact commit, protected-branch CI and source distribution.
+These release checks supersede candidate packaging for publication without
+rewriting the historical records below or closing general soundness obligations.
+
+## Physlib dependency in the existing Lean environment (2026-09-27)
+
+At the user's request, add Physlib's `v4.30.0` compatibility tag at fixed commit
+`f5242c99d796b59a390d26cd7d1a8057e04c46b5`. Lean/Mathlib remain 4.30.0;
+all pre-existing dependency records and Qleisli's 0.1.3 version are unchanged.
+The [environment record](physlib-environment.md) gives the remote version
+comparison, lock, scoped build/audit evidence and third-party license details.
+CI now builds the selected QuantumInfo modules and checks eight external
+declarations against the same axiom allowlist as the separate Qleisli audit.
+The local combined build passed; audits passed for 577 Qleisli declarations
+and eight selected Physlib declarations, with only the three allowed standard
+axioms. Document checks and all 14 documentation-checker tests passed.
+CI configuration is recorded separately from an actual hosted CI run; Rust
+was unchanged and its tests were not rerun in this dependency-only step.
+
+This installs mathematical infrastructure without changing public Qleisli
+declarations or establishing language/IR semantic correspondence. The
+symbolic-kernel deferral remains in force. Earlier survey results against
+Physlib's newer 4.34.1 environment remain historical and are not substituted
+for validation of the installed revision.
+
+## 0.1.3 review follow-up and deferred symbolic work (2026-09-27)
+
+The full-codebase review reproduced nonfinite comparison acceptance in the
+imaginary mathematical checker and silent shape truncation in the separate
+exact-example helpers. The [follow-up record](releases/v0.1.3.md#review-follow-up)
+records the corrected input boundaries, diagnostics and regression evidence.
+All 43 Python tests (including 15 added regressions), 52 imaginary mathematical
+checks and 39 exact assertions pass. The exact suite and fixtures are included
+in documentation CI. Rust/Lean source is unchanged and was not revalidated in
+this follow-up; earlier candidate archives predate the fixes.
+
+At the user's request, further symbolic-kernel development and production
+integration are [future roadmap work](../ROADMAP.md#future-work-symbolic-semantic-kernel)
+with no target release selected. The existing architecture, research prototype
+and regression tests are retained. The production finite checker still uses
+dense matrices; scalable symbolic checking remains a prerequisite for future
+size generalization, not a delivered production guarantee.
+
+## 0.1.3 semantic-system design and independent implementation (2026-09-27)
+
+Following review verification, the user requested a first-principles system
+design and an independent implementation focused on semantics. The
+[architecture](symbolic-contract-architecture.md) fixes separate required
+meaning, actual implementation, evidence, ownership/effects and encoded-entry
+judgments. Exact pure realization is distinguished from block, instrument,
+approximation and algorithm contracts. It records primary-source comparisons,
+trust boundaries and gates G013-S0–S3.
+
+The [non-published research package](../research/semantic-kernel/README.md)
+implements an initial exact-pure slice: symbolic type/term/proof DAGs,
+structural encoding matching, bounded exact leaves, sequence/tensor/qualified
+adjoint/control/repetition, and independent binding to a supported actual
+raw-IR subset. An immutable client requirement fixes the meaning behind term
+IDs before proof production; a producer may only extend that frozen graph.
+Its actual 128-bit local-Z regression uses a single 1-bit exact
+leaf (maximum matrix dimension 2); the remaining identity frame is symbolic.
+This removes global dense materialization in the tested proof path while
+preserving the production finite checker unchanged.
+
+The new Lean module adds 20 general semantic lemmas. Full build passed with
+1,457 jobs, and the warning-as-error axiom audit passed for 577 declarations.
+The [ledger](lean-resource-proof.md) records exact assumptions and the limited
+derivation induction. These are mathematical rule proofs, not proofs that the
+Rust kernel, importer, frontend or backend implements those rules correctly.
+Final Rust, document and package evidence is in the
+[release record](releases/v0.1.3.md#local-candidate-validation).
+The final prototype passes 43 tests on both supported Rust toolchains,
+including one permanent 5,425-case exact differential test. Frozen required
+meaning, actual raw-IR binding and the narrow structural proof calculus were
+reviewed separately. The complete source archive also reproduces all 43 tests.
+
+Production source correspondence, entry establishment and certified release,
+transformation witnesses, portable evidence and generalized algorithms remain
+future work. No source feature or new production public API is adopted by this
+experimental package. Version selection and this work do not publish a release.
+
+## 0.1.3 initial review verification and maintenance candidate (2026-09-27)
+
+This entry records the earlier maintenance-only step; the subsequent semantic
+research and updated validation are recorded above.
+
+The user selected 0.1.3 and requested verification of the supplied v0.1.2
+review. Both project manifests and current-version summaries are synchronized.
+The [review record](reviews/v0.1.2.md) confirms the tagged baseline, reproduces
+silent matrix truncation, checks all six draft-contract claims, and identifies
+the exact-checker's bounds and dense logical composition. Tagged-source shape
+auditing found no dimension violations in the existing 52 checks.
+
+The auxiliary matrix helpers now reject malformed/incompatible shapes with
+`ValueError`, also for comparisons used in negative checks. Fourteen regression
+tests pass and run in documentation CI. No Rust implementation, public contract,
+Lean declaration, capacity, toolchain requirement or dependency changed.
+
+The user emphasized that dense logical multiplication is fundamentally unable
+to scale. The [requirements index](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
+now records symbolic meaning/encoding/evidence composition without whole dense
+operators as a prerequisite for generalization, together with explicit first-QPE
+angle and checking decisions. The architecture remains unimplemented; existing
+finite composition does not establish this generalized requirement.
+
+Fresh local checks passed on macOS aarch64: Rust 1.98.1 and 1.85.0 each passed
+258 tests and all-target Clippy with warnings denied; fmt passed. Lean 4.30.0
+built 1,212 jobs and passed the 527-declaration warning-as-error audit with only
+`propext`, `Classical.choice`, and `Quot.sound`. Both 14-test Python suites, 52
+design checks and 39 exact assertions passed. All ten CLI projects checked and
+ran; Shor produced factors 3 and 5 with success/retry probability 1/2 each.
+Final package/document checks are recorded in the
+[0.1.3 release notes](releases/v0.1.3.md#local-candidate-validation).
+
+The exact v0.1.2 release CI was independently inspected and confirms all four
+jobs succeeded, including 259 Linux MSRV tests and Lean build/audit. Its extra
+Linux-only CLI test was not rerun locally. This historical CI does not validate
+0.1.3. No 0.1.3 commit, tag, push, hosted release or registry publication has
+been performed. Existing general implementation/proof obligations remain open.
 
 ## 0.1.2 release procedure and publication record (2026-09-27)
 

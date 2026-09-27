@@ -6,7 +6,67 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No unreleased changes.
+No changes yet.
+
+## 0.1.3 — 2026-09-27
+
+Compatible maintenance and mathematical-research release. The Rust and Lean
+packages remain aligned at 0.1.3. The [release record](docs/releases/v0.1.3.md)
+states validation scope; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies the exact commit, CI, tag and published source distribution.
+
+### Fixed
+
+- Reject empty, ragged and dimensionally incompatible matrices in the
+  imaginary-design and exact semantic-contract helpers before `zip` can
+  silently truncate data. Preserve valid rectangular/scalar fixtures and
+  rational/quadratic arithmetic.
+- Reject NaN and infinity in either comparison operand, including complex
+  components, with `ValueError`. Invalid input cannot make positive or
+  negative mathematical checks pass. Finite comparison tolerance is unchanged.
+- Add 29 helper regression tests across the two suites and run both in CI.
+  Preserve the existing 52 imaginary-design checks and 39 exact assertions.
+
+### Design and independent research
+
+- Verify the supplied v0.1.2 review against the tag and release CI. Require
+  composition without whole logical dense matrices before size generalization,
+  with an explicit first-QPE angle and exact/approximate checking profile.
+- Record a first-principles meaning/implementation/evidence architecture and
+  an independent, non-published symbolic semantic-kernel prototype. Its typed
+  terms, frozen requested contracts and bounded exact leaves support a limited
+  raw-IR adapter; it does not change production source acceptance or execution.
+- Add 20 local Lean semantic lemmas with explicit premises. These mathematical
+  rule proofs do not prove correctness of the Rust checker or compiler.
+- Retain the prototype and regressions while deferring further kernel development
+  and production integration to future roadmap work, with no target release.
+- Record isolated Physlib/QuantumInfo and lean-quantum interface experiments,
+  with pinned sources, reproducible probes and declaration-level axiom evidence.
+
+### Lean environment
+
+- Add Physlib's compatible `v4.30.0` commit
+  `f5242c99d796b59a390d26cd7d1a8057e04c46b5`, preserving Lean/Mathlib 4.30.0
+  and all pre-existing dependency revisions. Lock the inherited documentation
+  dependencies and record their licenses.
+- Build selected QuantumInfo state/channel/measurement dependencies in CI and
+  audit eight external declarations separately from all Qleisli declarations.
+  Library availability does not establish source/IR semantic correspondence.
+
+### Validation and compatibility
+
+Local macOS release checks pass on Rust 1.98.1 and minimum Rust 1.85.0:
+258 production tests and 43 research tests each, primary fmt, and Clippy on both.
+The 43 research tests include 5,425 exact differential cases within one test.
+Python checks cover 18 imaginary-helper, 11 exact-helper and 14 document-checker
+regressions, plus the 52 mathematical checks and 39 exact assertions.
+The release record separates local checks, hosted Linux CI, package validation
+and publication evidence.
+
+Production Rust behavior, existing public contracts, capacity limits and
+supported toolchains are unchanged. No source migration is needed.
+Imaginary source and production symbolic integration remain unimplemented;
+these checks do not establish general compiler soundness.
 
 ## 0.1.2 — 2026-09-27
 

@@ -18,11 +18,12 @@ For v1, Shor, QPE, and Grover must be readable in their textbook quantum-algorit
 | --- | --- | --- |
 | v0.1 | Compose finite semantic contracts and evidence for `U E_in = E_out u`, reuse them at function boundaries, and independently check implementation correspondence through final IR. Substitute multiple implementations of the same phase-oracle contract without changing the client. Preserve phase, ownership, and exact auxiliary zero return. | V01-C1–C6 implemented and tested in the declared finite profile: public function contracts, dependency/final-IR evidence, and implementation substitution are connected. |
 | v0.1.1 | Collect compatible review fixes, diagnostics, and regressions while preserving finite-core public contracts. | Implementation and local candidate validation remain recorded. Actual commit, Linux CI, and publication are identified by the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1). |
-| v0.1.2 | A design/documentation maintenance release with six imaginary-v1 initial drafts, a requirements index, and semantic review. | Rust/Lean versions are 0.1.2. The English specification framework, drafts, index, and review are complete. Subsequent English documentation consolidation, candidate checks, and publication are distinguished below. |
+| v0.1.2 | A design/documentation maintenance release with six imaginary-v1 initial drafts, a requirements index, and semantic review. | Released with Rust/Lean versions 0.1.2. The English specification framework, drafts, index, and review are complete. Subsequent English documentation consolidation, candidate checks, and publication are distinguished below. |
+| v0.1.3 | Repair auxiliary matrix-checker shapes and nonfinite comparisons, verify the v0.1.2 review, retain independent semantic research, and add a compatible Physlib environment. | The [release notes](docs/releases/v0.1.3.md) record scope and validation; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) identifies the commit, CI and publication. Further symbolic-kernel implementation remains deferred. |
 | Before v0.2.0 | First write ideal imaginary Qleisli 1.0 code for QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT; record contracts, capabilities, and open questions. Compilation is not required. | The [six drafts and index](docs/imaginary-v1/README.md), with their [review](docs/imaginary-v1/review.md), satisfy the initial-code and requirement-record prerequisite. The code remains uncompiled. |
 | v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
 
-Detailed V01-C1–C6 and V1-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version `0.1.2`. Do not infer release milestones from unrelated prior test results.
+Detailed V01-C1–C6 and V1-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version `0.1.3`. Do not infer release milestones from unrelated prior test results.
 
 | Stage | Status | Deliverables |
 | --- | --- | --- |
@@ -32,6 +33,58 @@ Detailed V01-C1–C6 and V1-C1–C5 criteria are in the [authoritative milestone
 | 3. `.qli` frontend | Minimal path implemented | Name resolution, nonrecursive calls, type/effect/ownership checking, IR generation, diagnostics |
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Not started | Output systems that check target capabilities |
+
+<a id="v013-release-roadmap"></a>
+
+## v0.1.3 maintenance release
+
+The [0.1.3 record](docs/releases/v0.1.3.md) collects the matrix-helper repair,
+regressions, version synchronization and candidate checks. The
+[v0.1.2 review verification](docs/reviews/v0.1.2.md) confirms the supplied
+findings against the tagged source and CI. The declared finite profile and
+public contracts remain unchanged. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies the verified commit, tag and publication separately from candidate
+checks. The final contents include the subsequent checker fixes and compatible
+Physlib dependency addition.
+
+Generalization must replace mandatory dense logical-matrix construction at
+composition boundaries with symbolic meanings and checked evidence, including
+encodings and actual-IR binding. This is an architectural prerequisite, not a
+performance optimization to defer until after adding sizes. The
+[R14 constraint and QPE profile decisions](docs/imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
+record the work needed. The subsequent [system design](docs/symbolic-contract-architecture.md)
+and [independent prototype](research/semantic-kernel/README.md) start this work
+as the v0.1.3 research goal. The initial artifacts are retained; further
+kernel development, full production source/IR integration and generalized
+algorithms are deferred to the future work below.
+
+## Future work: symbolic semantic kernel
+
+**Deferred (2026-09-27):** retain the experimental design, prototype and
+regressions as research evidence. Further development and production adoption
+are future roadmap work, not additional completion conditions for the current
+0.1.3 maintenance release. No target release is selected. The production
+finite checker still computes dense matrices; the prototype does not remove
+that limitation from compiled `.qli` programs.
+
+| Step | Required result | Status |
+| --- | --- | --- |
+| Select the production contract profile | Specify symbolic meanings, encodings, proof rules, supported source operations, capacity and compatibility. Fix the first generalized QPE angle representation and exact/approximate checking policy. | Future specification; the experimental design is input, not an adopted production API. |
+| Connect source contracts to final IR | Bind the caller's required meaning to actual implementations; establish encoded entry states and certified auxiliary release; preserve evidence through lowering and transformations. | Future implementation, extending beyond the current limited raw-IR adapter (G013-S3). |
+| Validate scaling and implementation correspondence | Compose nontrivial operations at multiple sizes without whole-operator matrix expansion; test substitution, phase, axis order, reference systems and invalid proofs. State leaf bounds, cost and remaining trusted components, and prove the relevant implementation/rule correspondence. | Future validation and proof; current large-frame examples and local Lean lemmas do not complete this step. |
+
+The [system design](docs/symbolic-contract-architecture.md) records the semantic
+and trust boundaries. Resume this work through G020-1 specification selection
+before production size generalization. Dense-free composition remains a
+prerequisite for that generalization; deferral does not relax it or V1-C1–C5.
+
+The [Lean quantum-library investigation](research/quantum-libraries/README.md)
+compares pinned Physlib/QuantumInfo and lean-quantum sources with isolated
+mathematical interface probes. That preliminary research did not adopt a library.
+The subsequent [Physlib environment addition](docs/physlib-environment.md)
+pins the compatible `v4.30.0` commit while retaining Lean/Mathlib 4.30.0.
+Dependency availability does not resume kernel work or establish source/IR
+semantic correspondence.
 
 <a id="v012-release-roadmap"></a>
 
@@ -61,7 +114,7 @@ The English consolidation requested after the corpus translates current Japanese
 
 | Step | Prerequisites and deliverables | Status |
 | --- | --- | --- |
-| G020-1: select the next specification scope | After P012-2–4, select the smallest scope from shared size/operation parameters and access capabilities. Specify types, ownership, effects, accepted/rejected cases, IR evidence, capacity, and compatibility in English. | Draft, requirements, and review prerequisites complete; concrete syntax and standard APIs undecided. |
+| G020-1: select the next specification scope | After P012-2–4, select the smallest scope from shared size/operation parameters and access capabilities. Specify types, ownership, effects, accepted/rejected cases, IR evidence, capacity, and compatibility in English. Require symbolic contract/encoding composition without whole dense matrices and select the first QPE angle and checking profile. | Draft, requirements, and review prerequisites complete; concrete syntax and standard APIs undecided. |
 | G020-2: generalize while preserving contracts | Implement the selected specification from source to independently verified IR. Preserve implementation substitution, phase, and exact cleanup for all inputs and references. | Not started. |
 | G020-3: reuse and release validation | Reuse the same definitions at multiple sizes, precisions, and operations/predicates within the selected scope. Check phase, references, failures, rejections, and existing regressions. Publish migration guidance, limits, and validation scope before 0.2.0 release checks. | Not started. Selecting and publishing version 0.2.0 are separate actions. |
 | V1: three actual source programs | Satisfy V1-C1–C5 with QPE, Grover, and Shor using shared QPE; identify public contracts to stabilize. | Not achieved; completing 0.2.0 alone does not suffice. |

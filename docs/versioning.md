@@ -8,10 +8,11 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
-The current baseline is **0.1.2**. The
-[0.1.2 release record](releases/v0.1.2.md) describes the documentation/design
-patch and release checks; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
-identifies the tagged commit and publication. Version selection alone does not
+The current baseline is **0.1.3**, a compatible maintenance release. The
+[0.1.3 release record](releases/v0.1.3.md) describes the auxiliary-checker fix,
+review verification, independent research, Physlib environment and validation.
+The [v0.1.3 GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
+identifies the release commit, CI and publication. Version selection alone does not
 establish publication.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
@@ -102,13 +103,26 @@ For each release or prerelease:
    specification/conformance references. Keep past release entries intact.
 3. Validate the release tree with `cargo fmt --check`,
    `cargo test --all-targets`, `cargo clippy --all-targets -- -D warnings`,
-   `python3 scripts/test_check_docs.py`, `python3 scripts/check_docs.py`, and
+   `python3 scripts/test_check_docs.py`, `python3 scripts/check_docs.py`,
+   `python3 scripts/test_check_imaginary_v1_examples.py`,
+   `python3 scripts/check_imaginary_v1_examples.py`,
+   `python3 scripts/test_check_semantic_contract_examples.py`,
+   `python3 scripts/check_semantic_contract_examples.py`, and
    `git diff --check`. Check package metadata and that distributable archives
    include the required license/attribution files. Run documented release
    examples. Record platform exclusions and any skipped check explicitly.
+   While the independent semantic research package is in the release tree,
+   also run its documented [fmt, all-target tests and Clippy](../research/semantic-kernel/README.md#reproduction)
+   on the primary and minimum Rust toolchains (format with the primary
+   formatter). Distinguish the production `.crate` from the complete repository
+   source archive: Cargo excludes nested packages, including this non-published
+   prototype, from the production package.
 4. Build and audit the Lean development using the pinned toolchain:
-   `lake build` and `lake env lean -DwarningAsError=true Audit.lean` from
-   `lean/`. This is a full release check; a documentation-only working change
+   `lake build Qleisli QuantumInfo.Channels.CPTP QuantumInfo.Measurements.POVM`,
+   `lake env lean -DwarningAsError=true Audit.lean`, and
+   `lake env lean -DwarningAsError=true PhyslibAudit.lean` from `lean/`.
+   The external audit covers the selected declarations, not all of Physlib.
+   This is a full release check; a documentation-only working change
    need not rerun Lean or claim that it did.
 5. Tag the exact checked commit with an annotated `vMAJOR.MINOR.PATCH` tag
    (including a prerelease suffix if present). Never tag an older HEAD while

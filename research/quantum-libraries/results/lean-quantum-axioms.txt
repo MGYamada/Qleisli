@@ -1,0 +1,4 @@
+'QleisliSurvey.encoded_seq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliSurvey.discard_independent_aux' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliSurvey.branch_with_reference' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliSurvey.branch_with_reference_cp' depends on axioms: [propext, Classical.choice, Quot.sound]

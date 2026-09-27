@@ -1,0 +1,5 @@
+'QleisliPhyslibSurvey.encoded_seq' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliPhyslibSurvey.discard_independent_aux' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliPhyslibSurvey.branch_with_reference_cp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliPhyslibSurvey.lueders_output' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliPhyslibSurvey.measurement_with_reference' depends on axioms: [propext, Classical.choice, Quot.sound]

@@ -81,3 +81,72 @@ representations, scalable independent evidence checking, treatment of classical
 data in quantum signatures, host sampling errors and retry budgets, and the
 formal connection from generalized elaboration to IR. None is resolved by
 writing a type name or requiring an unimplemented certificate.
+
+### Scaling prerequisite for R14
+
+Clarified by the v0.1.2 review and adopted as a design constraint on
+2026-09-27: **generalized contract composition must not require materializing
+or multiplying the whole logical operator's dense matrix.** This is an
+architectural prerequisite for size generalization, not a later performance
+optimization. A dense operator on n bits has `4^n` entries; the current
+straightforward square-matrix product takes `O(8^n)` scalar operations.
+Merely adding `Bits<n>`, increasing a capacity, or caching checked physical
+circuits does not remove that representation cost.
+
+The current bounded checker already has soundness arguments for composition
+and implemented constructors. However, `CheckedContract::then` computes the
+logical matrix product; tensor, adjoint and control also construct dense
+logical matrices, and encodings are matrices. This finite profile remains
+supported in 0.1.3. See the [review verification](../reviews/v0.1.2.md).
+The `apply_contract` function-evidence checker also constructs and compares
+whole implementation/specification matrices; its acceptance path must be
+generalized along with composition.
+
+A candidate architecture retains typed symbolic meanings and shared proof
+derivations, with nodes such as composition, tensor, adjoint, control and
+static repetition. These names are design metanotation, not accepted syntax
+or APIs. It must also represent encodings and their equality without expanding
+whole-space matrices. Acceptance of a composition checks its component
+evidence and matching intermediate types, encodings, phase conventions and
+axis layouts, and retains binding to the actual implementation and final IR.
+Different symbolic terms require a checked equivalence derivation when they
+are not definitionally equal; a descriptive name or hash alone is not evidence.
+
+Keep dense exact comparison for explicitly bounded leaves and finite
+regressions. Size-dependent arithmetic and circuit families need separately
+checked parameterized derivations, for example induction and algebraic
+identities, rather than whole-basis enumeration. Lean may supply such proofs;
+a dedicated evidence calculus is also possible. The proof/import boundary
+and implementation correspondence must be specified whichever method is used.
+General symbolic equality is not assumed decidable by simplification alone.
+
+Before claiming scalable composition, record the symbolic meaning and encoding
+representation, allowed inference rules and their premises, proof sharing,
+independent checking algorithm and budgets, and final-IR binding. Demonstrate
+that composition in the selected profile checks the derivation without
+expanding a global dense matrix, including negative cases for wrong interfaces
+and stale evidence. This does not promise efficient checking of every possible
+equivalence or polynomial circuit size for every algorithm. Production
+integration and parameterized algorithm generalization remain unimplemented.
+
+The subsequent v0.1.3 [system design](../symbolic-contract-architecture.md) and
+[independent prototype](../../research/semantic-kernel/README.md) begin this
+work in an explicitly limited research profile. Their implemented subset does
+not constitute generalized source support or discharge R14 for the six drafts.
+
+### First generalized QPE profile: decisions required by R08/R12/R14
+
+The selected specification must state supported phase/target widths, the
+required Fourier-angle set, exact or approximate synthesis, the independent
+evidence method, its capacity diagnostics, and any error metric and composition
+budget. In the displayed QFT circuit, a four-bit phase register requires
+`2*pi/16 = pi/8`, with phase `exp(i*pi/8)`. This lies outside the current
+exact coefficient ring `Z[zeta_8,1/2]`; the width-four Python convention check
+uses floating-point arithmetic and does not implement exact QFT4 in Qleisli.
+
+Extending exact phase arithmetic and approximating the target using an
+available gate set lead to different evidence obligations. Select and document
+the approach before claiming generalized QPE support. Approximate operator
+accuracy and sampling failure remain separate from exact auxiliary zero
+return. This review records the required decision; it selects neither angle
+representation nor a new primitive or error API in 0.1.3.

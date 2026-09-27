@@ -4,6 +4,13 @@
 These independently constructed small matrices check conventions and negative
 examples. Floating-point agreement is neither a general theorem nor exact
 cleanup evidence. No imaginary source is parsed, compiled, or executed here.
+
+Matrix helpers require nonempty rectangular matrices. Malformed shapes and
+incompatible dimensions raise ValueError, including in close: an invalid
+comparison must not make a negative mathematical check pass. Zero-dimensional
+matrices are outside this script's fixtures and cannot retain both dimensions
+in the nested-list representation. Comparisons also reject nonfinite entries
+in either operand, including NaN or infinity in a complex component.
 """
 
 import cmath
@@ -11,31 +18,65 @@ from fractions import Fraction
 from math import asin, gcd, pi, sin, sqrt
 
 
+def shape(a, name='matrix'):
+    if not a or not a[0]:
+        raise ValueError(f'{name} must have at least one row and one column')
+    columns = len(a[0])
+    if any(len(row) != columns for row in a):
+        raise ValueError(f'{name} must be rectangular')
+    return len(a), columns
+
+
+def same_shape(a, b, operation):
+    a_shape = shape(a, f'{operation} left matrix')
+    b_shape = shape(b, f'{operation} right matrix')
+    if a_shape != b_shape:
+        raise ValueError(f'{operation} requires equal shapes; got {a_shape} and {b_shape}')
+
+
 def eye(n):
+    if not isinstance(n, int) or n < 1:
+        raise ValueError('eye requires a positive integer dimension')
     return [[complex(i == j) for j in range(n)] for i in range(n)]
 
 
 def mul(a, b):
+    a_shape = shape(a, 'mul left matrix')
+    b_shape = shape(b, 'mul right matrix')
+    if a_shape[1] != b_shape[0]:
+        raise ValueError(f'mul requires matching inner dimensions; got {a_shape} and {b_shape}')
     return [[sum(x * y for x, y in zip(row, col)) for col in zip(*b)] for row in a]
 
 
 def adj(a):
+    shape(a, 'adj matrix')
     return [[x.conjugate() for x in row] for row in zip(*a)]
 
 
 def add(a, b):
+    same_shape(a, b, 'add')
     return [[x + y for x, y in zip(ar, br)] for ar, br in zip(a, b)]
 
 
 def scale(c, a):
+    shape(a, 'scale matrix')
     return [[c * x for x in row] for row in a]
 
 
 def close(a, b):
+    same_shape(a, b, 'close')
+    for name, operand in (('left', a), ('right', b)):
+        if any(not cmath.isfinite(value) for row in operand for value in row):
+            raise ValueError(f'close {name} matrix must contain only finite entries')
     return max(abs(x - y) for ar, br in zip(a, b) for x, y in zip(ar, br)) < 1e-11
 
 
 def power(a, k):
+    rows, columns = shape(a, 'power matrix')
+    if rows != columns:
+        raise ValueError(f'power requires a square matrix; got {(rows, columns)}')
+    if not isinstance(k, int) or k < 0:
+        raise ValueError('power requires a nonnegative integer exponent')
     result = eye(len(a))
     for _ in range(k):
         result = mul(a, result)

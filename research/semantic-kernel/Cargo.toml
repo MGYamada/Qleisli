@@ -1,0 +1,14 @@
+[package]
+name = "qleisli-semantic-kernel-prototype"
+version = "0.1.3"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+publish = false
+description = "Experimental symbolic semantic-contract checking for Qleisli"
+
+[dependencies]
+qleisli-core = { path = "../.." }
+
+[lints.rust]
+unsafe_code = "forbid"

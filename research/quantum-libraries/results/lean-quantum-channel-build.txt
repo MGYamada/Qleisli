@@ -1,0 +1,7 @@
+/private/tmp/qleisli-quantum-survey.XbrQkV/lean-quantum/Quantum/QuantumMechanics/QuantumChannel.lean:12:7: warning:
+'Mathlib.Topology.Algebra.Module.LinearMapPiProd' has been deprecated: please replace this import by
+
+import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.PiProd
+
+
+Note: This linter can be disabled with `set_option linter.deprecated.module false`

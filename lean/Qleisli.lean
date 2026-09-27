@@ -4,3 +4,4 @@ import Qleisli.Transition
 import Qleisli.Phi
 import Qleisli.Examples
 import Qleisli.Kraus
+import Qleisli.SemanticContract
