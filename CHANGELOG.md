@@ -8,6 +8,43 @@ separately in [release milestones](docs/release-milestones.md).
 
 No changes yet.
 
+## 0.1.4 — 2026-09-27
+
+Compatible documentation/plan maintenance release. Rust and Lean project
+versions are synchronized at 0.1.4. The [release record](docs/releases/v0.1.4.md)
+records validation scope; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
+identifies the exact commit, CI, tag and published source distribution.
+
+### Changed
+
+- Adopt the [v0.x plan](docs/v0x-roadmap.md) and B019-1–B019-6 boundary through
+  v0.1.9: finite-core compatibility and conformance, evidence-boundary review,
+  explicit proof obligations, next-minor decisions and reproducible validation.
+- Make operation capabilities the next design focus alongside ownership,
+  effects, established auxiliary invariants and proof contracts. Require new
+  abstractions to remove an author obligation through independently checked
+  evidence. Existing finite effects and certificates remain the foundation.
+- Assign conditional themes from v0.2 toward v1 without adopting new syntax
+  or APIs. Preserve the symbolic-kernel deferral with no selected release,
+  the scaling prerequisite, six imaginary drafts and executable V1-C1–C5.
+- Align current-version guidance and remove the stale README statement that
+  the preceding 0.1.3 release was still awaiting publication.
+
+No production/research Rust or Lean source, public contract, supported capacity,
+toolchain requirement or dependency changes. The independent non-published
+research package retains 0.1.3. No migration is needed.
+
+### Validation
+
+Fresh local candidate checks pass on macOS with Rust 1.98.1 and 1.85.0:
+258 production and 43 research tests each, primary fmt and all-target Clippy
+for both packages. Pinned Lean builds and separate audits pass for 577 Qleisli
+and eight Physlib declarations. All 43 Python tests, 52 mathematical checks,
+39 exact assertions and all ten CLI projects and Shor pass. The
+[P014 record](docs/releases/v0.1.4.md#local-candidate-validation) separates
+candidate distribution checks, clean-commit CI and publication. These results
+do not complete later maintenance audits or new language features.
+
 ## 0.1.3 — 2026-09-27
 
 Compatible maintenance and mathematical-research release. The Rust and Lean

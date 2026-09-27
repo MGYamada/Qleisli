@@ -70,6 +70,12 @@ general predicate synthesis (R06); Shor about efficient arithmetic and host
 execution (R09, R13). Walk and QSVT expose broader access and subspace contracts
 (R10–R11) that need not all ship in 0.2.0 or v1.
 
+The subsequent [v0.x plan](../v0x-roadmap.md) prioritizes operation capabilities
+and permits narrowing this combined candidate before specification. Through
+v0.1.9, these are decision-dossier tasks, not new production features. The
+symbolic prerequisite below still applies, and the kernel's separate deferral
+is not lifted by assigning conditional themes to later minor releases.
+
 Before implementing a selected feature, write its English inference/grammar
 rules, actual IR representation, checker algorithm and soundness premises,
 bounded examples and counterexamples, capacity policy, and migration impact.

@@ -14,7 +14,7 @@ acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
 these **release milestones v0.1/v1** are different labels. The existing Rust
-package version `0.1.3` and the standard-library ledger's “format v1” do not
+package version `0.1.4` and the standard-library ledger's “format v1” do not
 establish completion of either release milestone. Release claims require the
 evidence below, not a manifest version or successful fixed-size example.
 
@@ -26,11 +26,15 @@ record its contents and validation scope. The Git tag and GitHub release
 identify the released commit and publication state; registry publication is
 a separate operation.
 
-The current product version is **0.1.3**, a compatible maintenance release with
-auxiliary-checker fixes, review clarification, independent semantic research
-and the compatible Physlib proof environment. The
-[0.1.3 release record](releases/v0.1.3.md) distinguishes local validation from
-the [GitHub publication record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3).
+The current product version is **0.1.4**, a compatible documentation/plan
+maintenance release. Its [record](releases/v0.1.4.md) and the
+[v0.x plan](v0x-roadmap.md) define the maintenance boundary through v0.1.9,
+separately from implementation and release validation. The
+[GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
+identifies the actual commit, CI, tag and publication. The preceding 0.1.3 release contains auxiliary-checker fixes,
+review clarification, independent semantic research and the compatible Physlib
+proof environment. Its [release record](releases/v0.1.3.md) distinguishes local
+validation from the [GitHub publication record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3).
 The preceding [0.1.2 release record](releases/v0.1.2.md)
 covers the six imaginary-v1 drafts, their requirement index, semantic review,
 and release validation; its [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
@@ -52,7 +56,8 @@ feature adoption still follows the next-minor specification process.
 Further kernel development and production integration are explicitly deferred
 to the [future roadmap](../ROADMAP.md#future-work-symbolic-semantic-kernel),
 with no selected release. Retaining the initial research artifacts does not
-make that integration a completion condition for the 0.1.3 maintenance release.
+make that integration a completion condition for the 0.1.3 release or the
+subsequent v0.1.4–v0.1.9 maintenance series.
 
 ## Project north star
 
@@ -124,6 +129,30 @@ milestone. The checker rules, implemented fragment, source/IR correspondence
 evidence, and remaining trusted implementation obligations must be explicit.
 Existing [Stage 1 proof obligations](formal-core.md) remain in force; meeting
 this release gate does not retrospectively mark all of SPEC-4 complete.
+
+<a id="v019-maintenance-boundary"></a>
+
+## v0.1.9 maintenance acceptance boundary
+
+**Selected on 2026-09-27; completion remains future work.** The
+[B019-1–B019-6 conditions](v0x-roadmap.md#v019-acceptance-boundary) define the
+endpoint of the v0.1.4–v0.1.9 plan: preserve public compatibility, revalidate
+the finite V01-C1–C6 profile, resolve supported-contract defects found by the
+audits, publish an honest proof/trust ledger, prepare the next-minor decision
+dossier from the six drafts, and record reproducible release validation.
+
+This adopts a finite maintenance boundary, not new source rules or a stronger
+soundness claim. New operation/size parameters, capability/typestate/effect
+APIs, proof-loading facilities and generalized algorithms require minor
+releases with their own specifications. Additional symbolic-kernel development
+and integration remain deferred without a target release; they and a complete
+Rust soundness proof are not v0.1.9 completion requirements.
+
+The dossier must decide what can proceed and what remains blocked. Completing
+it with unresolved symbolic-checking or QPE-angle blockers does not authorize
+dependent implementation. R14's no-global-dense-matrix prerequisite remains
+mandatory for generalization, and V1-C1–C5 below remain unchanged. Later
+maintenance can use v0.1.10; reaching patch 9 does not force a minor release.
 
 <a id="v1-north-star-textbook-algorithm-structure"></a>
 
@@ -250,8 +279,9 @@ policy alone does not complete the prerequisite or change the product version.
    quantum/classical workflow. Evaluate V1-C1–C5 on real source and evidence.
 
 For each proposed abstraction, ask which algorithm stage it makes readable,
-which mathematical contract it exposes, and how its implementation evidence
-survives lowering and substitution. A more compact gate listing alone does
+which programmer obligation it removes, which mathematical contract and
+replacement evidence it exposes, and how that evidence survives independent
+checking, lowering and substitution. A more compact gate listing alone does
 not meet the north star. Broader library work follows the needs and verified
 reuse of these structures.
 
