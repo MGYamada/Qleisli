@@ -10,7 +10,7 @@ supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 ## Version identity
 
 Compatible feature additions no longer need a version-policy exception.
-The previous 0.1.6/0.1.7 decisions and untagged 0.1.8 checkpoint retain their
+The previous 0.1.6/0.1.7 decisions and then-untagged 0.1.8 checkpoint retain their
 historical numbers and migration records; dated exception statements describe the former
 policy, not a continuing requirement. This revision does not reclassify their
 documented source/API breaks as compatible or authorize future incompatible

@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.8 retained at the user's request; basis parameter patterns, n-ary tuples and precise owner diagnostics implemented with the Rust AST migration documented; local validation retained; tagging/publication pending",
+  "release_state": "0.1.8 release scope finalized: fixed-width operation contracts, authoring forms, executable corpus, iterative QPE and repair diagnostics; migrations and full local validation recorded; exact commit, CI, archives and publication are recorded in the linked GitHub release",
   "milestones": [
     {
       "id": "M0",
@@ -12,7 +12,7 @@
       "id": "M1",
       "state": "Fixed-width operations/meanings implemented alongside released X1 and M1.1-A; remaining slices pending",
       "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md)",
-      "open": "Release the locally validated operation slice; X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
+      "open": "X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
       "id": "M2",

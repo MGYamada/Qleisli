@@ -20,6 +20,23 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## v0.1.8 release procedure (2026-09-28)
+
+The user authorized releasing the completed operation-contract and authoring
+work as v0.1.8. Full local checks passed: 333 production and 43 research tests
+on Rust 1.98.1/1.85.0, Clippy for both packages/toolchains, primary formatting,
+Lean build and 577-declaration audit, 53 document/helper tests, finite/exact
+checks, 14 example projects and external OpenQASM/LLVM validation. The
+[release record](releases/v0.1.8.md#release-validation-and-publication) gives
+the executed scope and distinguishes local results from exact-commit CI.
+
+Protected-main PR/CI and clean distribution checks precede the immutable
+annotated tag. The [GitHub publication record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8)
+identifies the actual commit, CI runs, archive checks and publication. Source
+keyword/public Rust AST migrations remain documented. The v0.2.0 tuple-layout
+review and other backlog items remain future work; no new general proof or
+completed M1/v1 claim follows from release.
+
 ## Iterative QPE, diagnostic repair and authoring observations (2026-09-28)
 
 The three requested 0.1.8 follow-ups are implemented: an ordinary iterative

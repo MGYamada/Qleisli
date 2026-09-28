@@ -95,8 +95,9 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Development version: 0.1.8.** The [release record](docs/releases/v0.1.8.md)
-separates implemented features, executed checks and publication status. Basis
+**Version: 0.1.8.** The [release record](docs/releases/v0.1.8.md) and
+[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8)
+separate implemented features, executed checks and publication status. Basis
 parameter patterns, n-ary tuples and binding-level ownership diagnostics address
 friction found in the executable authoring corpus.
 

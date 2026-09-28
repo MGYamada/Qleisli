@@ -6,10 +6,16 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-Selected development version: **0.1.8**, retained at the user's request. See the
-[implementation/migration record](docs/releases/v0.1.8.md). Historical entries
-retain the version policy used at the time; the revised policy below governs
-new changes.
+No changes recorded yet.
+
+## 0.1.8 — 2026-09-28
+
+Fixed-width operation contracts and executable authoring improvements, with
+version **0.1.8** retained at the user's request. See the
+[implementation/migration record](docs/releases/v0.1.8.md) and
+[GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8).
+Historical entries retain the version policy used at the time; the revised
+policy below governs new changes.
 
 ### Added
 
@@ -66,8 +72,9 @@ new changes.
 - Split parser routines to preserve existing deep-syntax acceptance/rejection
   without increasing stack requirements. Keep old IR, toolchains and limits.
 
-No tagging or publication has been performed for this development work. QIR import, remaining
-machine interfaces, size generalization and M2 remain separate work.
+QIR import, remaining machine interfaces, type/size generalization and M2 remain
+separate work. The [v0.2.0 backlog](docs/v0.2.0-backlog.md) includes reconsidering
+the tuple layout itself; 0.1.8 retains explicit binary trees and left-folded sugar.
 
 ## 0.1.7 — 2026-09-28
 
