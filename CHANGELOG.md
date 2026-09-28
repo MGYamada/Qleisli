@@ -31,8 +31,10 @@ See the [implementation/validation record](docs/releases/v0.1.9.md).
 - A dated [B019 boundary check](docs/reviews/b019-2026-09-28.md), with a local F2
   reproduction, finite revalidation and explicit audit/candidate closure work.
   Preserve it as the initial assessment; subsequent closure has separate records.
-- Completed frontend and trusted-boundary review dispositions, including an
-  independent 4,608-case exact phase/layout/control/adjoint sweep.
+- Completed [B019 finite foundation](docs/reviews/b019-completion.md), with
+  frontend/trusted-boundary review dispositions, an independent 4,608-case exact
+  phase/layout/control/adjoint sweep, successful exact-commit Linux CI and clean
+  package/complete-source-archive checks. Publication remains separate.
 - A [code-driven continuation procedure](docs/code-driven-development.md), with
   source-grounded obstacles A020-17–20 and bounded work packets for the
   user-selected 0.2.0 direction. It adopts no future grammar or checker rule.

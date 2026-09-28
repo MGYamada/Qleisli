@@ -1,0 +1,280 @@
+{
+  "format": "qleisli.b019.completion-evidence",
+  "version": 1,
+  "scope": "Immutable implementation candidate. A later documentation-only completion commit records these results; its own CI/distribution report remains separate.",
+  "candidate_validation": {
+    "candidate": {
+      "clean": true,
+      "commit": "b657e236cc94c5023746df900d42da5bfa23ab96",
+      "tree": "c11f90014536733381f52bd468df4a8c08b084bd"
+    },
+    "status": "passed",
+    "started_utc": "2026-09-28T11:32:35.347461+00:00",
+    "finished_utc": "2026-09-28T11:33:20.044461+00:00",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "source_archive": {
+      "excluded_tracked_files": [],
+      "file_count": 675,
+      "path": "/private/tmp/qleisli-b019-candidate-a-artifacts-lxnt4dkb/qleisli-core-0.1.9-source.tar",
+      "sha256": "cbf887257e8af207a30a683972459b05e862ccc218a03f23a9e678d9b8ec8a05"
+    },
+    "crate": {
+      "cargo_verification": "passed",
+      "extracted_metadata_and_lock": "validated offline with --locked",
+      "file_count": 670,
+      "path": "/private/tmp/qleisli-b019-candidate-a-artifacts-lxnt4dkb/qleisli-core-0.1.9.crate",
+      "sha256": "b27034ca259098cb9209679c2968a90f6cf1171773931a0ea43f0dfb5a447f59"
+    },
+    "source_attribution": {
+      "cases": 24,
+      "translation_files": 48,
+      "upstream_files": 39
+    },
+    "package_attribution": {
+      "cases": 24,
+      "excluded_tracked_files": [
+        "research/semantic-kernel/.gitignore",
+        "research/semantic-kernel/Cargo.toml",
+        "research/semantic-kernel/README.md",
+        "research/semantic-kernel/src/adapter.rs",
+        "research/semantic-kernel/src/adapter_tests.rs",
+        "research/semantic-kernel/src/kernel.rs",
+        "research/semantic-kernel/src/kernel_tests.rs",
+        "research/semantic-kernel/src/lib.rs"
+      ],
+      "generated_files": [
+        ".cargo_vcs_info.json",
+        "Cargo.lock",
+        "Cargo.toml",
+        "Cargo.toml.orig"
+      ],
+      "nested_research": "excluded by Cargo; retained and tested in complete source archive",
+      "translation_files": 48,
+      "upstream_files": 39
+    },
+    "report_sha256": "6608f9f90175dcee9fe51d3f30aad1ee6eb33ba25460d960b743abdc9c77d9bd",
+    "commands": [
+      {
+        "argv": [
+          "rustc",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "--version"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "metadata",
+          "--offline",
+          "--no-deps",
+          "--format-version=1"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "d45bbe94869e17e29f330c6238e19c272b2bc31dddffcd0d0459880faea0531e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "git",
+          "-c",
+          "tar.umask=0022",
+          "archive",
+          "--format=tar",
+          "b657e236cc94c5023746df900d42da5bfa23ab96"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "cbf887257e8af207a30a683972459b05e862ccc218a03f23a9e678d9b8ec8a05",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_input_corpus.py"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "1c675721e3654a9c71e88398f9a9309c8bd8e5f263d0fd26abf5e463cbe6db3e",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "package",
+          "--offline",
+          "--list"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "b2e98ce2499928b50bd58ceba3479a90057f47cee818ad40f063f10d8e067e82",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "package",
+          "--offline",
+          "--target-dir",
+          "/private/tmp/qleisli-b019-distribution-build/package"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "735112ac45179dfad4ea04e862f7d9cf5afd3d953ef4cdbf2648eca4f973f278"
+      },
+      {
+        "argv": [
+          "cargo",
+          "metadata",
+          "--offline",
+          "--locked",
+          "--format-version=1"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "0cd66bda4d7e6ada576cacecd830fc68573577000831753a177af7df0c89fbb2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--offline",
+          "--all-targets",
+          "--target-dir",
+          "/private/tmp/qleisli-b019-distribution-build/source-production"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "ff8725cca63b90d2044dea9d52b97a89c53ece6bf99b3cb2310b3dfcf2bc247e",
+        "stderr_sha256": "abece9d8818d004f5aa90658e8ee8c0d2710f17cc5e9989373dac95792059306"
+      },
+      {
+        "argv": [
+          "cargo",
+          "test",
+          "--offline",
+          "--all-targets",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--target-dir",
+          "/private/tmp/qleisli-b019-distribution-build/source-research"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "ef47bcce22d74ff92a77113638486ed69931936831b5b701e3d27c6553a93ce0",
+        "stderr_sha256": "798874d35aa23521c446773a3f0390859a546824d8c21837994589f15f3d5ae1"
+      },
+      {
+        "argv": [
+          "cargo",
+          "metadata",
+          "--offline",
+          "--no-deps",
+          "--format-version=1",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml"
+        ],
+        "exit_code": 0,
+        "stdout_sha256": "f8e7b14fed29bfe38b7691457ac098925e20a45566dc062f8901ed2817bf7892",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "tests": {
+      "primary": [
+        354,
+        43
+      ],
+      "msrv": [
+        354,
+        43
+      ]
+    }
+  },
+  "hosted_ci": {
+    "event": "push",
+    "head_sha": "b657e236cc94c5023746df900d42da5bfa23ab96",
+    "run_id": 36416267580,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045453",
+        "name": "interop",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045677",
+        "name": "rust-msrv",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045691",
+        "name": "docs",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045717",
+        "name": "lean",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045763",
+        "name": "distribution",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/job/108908045777",
+        "name": "rust",
+        "status": "completed"
+      }
+    ],
+    "artifact": {
+      "id": 10968120963,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36416267580/artifacts/10968120963",
+      "sha256": "a161d4f82716996406c66d1088f4aaa0fba2ac0c07a0895e0f279d13df888b40",
+      "download_sha256_verified": true
+    },
+    "distribution_report": {
+      "status": "passed",
+      "candidate": {
+        "clean": true,
+        "commit": "b657e236cc94c5023746df900d42da5bfa23ab96",
+        "tree": "c11f90014536733381f52bd468df4a8c08b084bd"
+      },
+      "crate": {
+        "cargo_verification": "passed",
+        "extracted_metadata_and_lock": "validated offline with --locked",
+        "file_count": 670,
+        "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-e7ymu6sz/qleisli-core-0.1.9.crate",
+        "sha256": "b27034ca259098cb9209679c2968a90f6cf1171773931a0ea43f0dfb5a447f59"
+      },
+      "source_archive": {
+        "excluded_tracked_files": [],
+        "file_count": 675,
+        "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-e7ymu6sz/qleisli-core-0.1.9-source.tar",
+        "sha256": "cbf887257e8af207a30a683972459b05e862ccc218a03f23a9e678d9b8ec8a05"
+      }
+    }
+  },
+  "publication": {
+    "branch_pushed": true,
+    "pull_request": "https://github.com/MGYamada/Qleisli/pull/12",
+    "tag": false,
+    "merge": false,
+    "hosted_release": false,
+    "registry": false
+  }
+}

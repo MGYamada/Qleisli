@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.9 compatible F1/F2 repairs, 24 three-source finite translations and code-driven preparation implemented; [B019-1–5 dispositions complete](reviews/b019-completion.md), B019-6 clean candidate/CI/distribution pending; no tag or publication performed",
+  "release_state": "0.1.9 finite [B019 foundation complete](reviews/b019-completion.md): compatible F1/F2 repairs, all 20 audit dispositions, exact-commit Linux CI and clean distribution checks passed for the recorded candidate; 24 three-source translations and code-driven handoff prepared; branch pushed and draft PR open; no version tag, merge or publication performed",
   "milestones": [
     {
       "id": "M0",

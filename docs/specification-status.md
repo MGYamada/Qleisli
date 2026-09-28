@@ -30,7 +30,10 @@ snapshot removes duplicate source copy/work without changing public owned
 identities, exact checking or limits. The independent 4,608-case exact sweep
 adds control/phase/layout/adjoint coverage. Both Rust toolchains pass 354
 production and 43 research tests; the pinned 577-declaration Lean audit passes.
-Final clean-candidate distribution and hosted CI outcomes belong to that record.
+All six exact-commit Linux CI jobs and clean package/source-archive checks
+passed for candidate `b657e236cc94c5023746df900d42da5bfa23ab96`, completing
+B019 within its finite contract. The later documentation-only closure is
+separately rechecked; no version tag, merge or publication is implied.
 
 The [code-driven procedure](code-driven-development.md) predeclares concrete
 obstacles A020-17–20 and bounded M1/M2 work packets for the user's selected

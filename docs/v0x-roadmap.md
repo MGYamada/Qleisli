@@ -141,8 +141,9 @@ M1/M2 gates above rather than this maintenance checklist. This is a scope
 distinction, not a ban on compatible features in 0.1.x.
 
 The [initial boundary check](reviews/b019-2026-09-28.md) found B019 incomplete.
-The subsequent [completion record](reviews/b019-completion.md) records the F2
-repair, completed review dispositions and actual candidate validation. The
+The subsequent [completion record](reviews/b019-completion.md) closes all six
+conditions with the F2 repair, completed review dispositions, exact-commit CI
+and clean candidate distribution checks. The
 [code-driven handoff](code-driven-development.md) fixes the next work packets
 and obstacles without changing the acceptance conditions below.
 

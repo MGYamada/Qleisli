@@ -28,10 +28,13 @@ and bundled library files; [CLI tests](../tests/cli_json.rs) preserve the single
 JSON parse diagnostic at EOF. This is robustness validation, not a new measured
 authoring session or a model benchmark.
 
-[A020-09 and A020-10](v0.2.0-backlog.md) retain two open design/implementation
-issues: constructor-derived access beyond direct header constraints, and source
-snapshot copies consuming the reuse budget. The [0.1.9 record](releases/v0.1.9.md)
-separates compatible repairs and clarifications from future breaking changes.
+[A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors)
+retains the future opaque-provider capability design question.
+[A020-10](v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
+is resolved by private shared retention: source bytes are copied/charged once
+across providers and contract pairs, with public identities and exact checking
+preserved. The 100 KB/256-provider and unrelated-comment regressions pass.
+The [0.1.9 record](releases/v0.1.9.md) separates compatible repairs and clarifications from future breaking changes.
 
 Claude's additional supplied feedback reports ten diagnostic probes and about
 13 seconds for 35,786 mutated-project checks in a release build. These are

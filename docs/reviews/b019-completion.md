@@ -4,10 +4,11 @@ Date: 2026-09-28. Product: **0.1.9**, on
 `codex/v0.1.9-review-fixes`, based on published 0.1.8 commit
 `f36a57d0661eac4b9790925f59dc124a49cb5ff7`.
 
-**Candidate preparation:** B019-1–5 have completed dispositions and local
-validation. B019-6 still requires the clean committed candidate and its hosted
-CI/distribution results below. This status will be updated from executed
-results; selecting 0.1.9 or publishing an inventory does not close a gate.
+**Result: all six B019 conditions are met for implementation candidate
+`b657e236cc94c5023746df900d42da5bfa23ab96`.** Its clean archive checks and all
+six exact-commit Linux CI jobs passed. This later documentation-only closure
+records those observed results; its own containing commit must also pass CI
+and distribution verification before handoff. No tag or publication is implied.
 
 The [initial assessment](b019-2026-09-28.md) and its frozen JSON/corpus report
 remain historical evidence of the failed F2 case. The later user request was
@@ -24,7 +25,7 @@ The acceptance conditions themselves have not been weakened.
 | B019-3: audit dispositions | Met. Completed [frontend audit](b019-frontend-audit.md) and independent [trusted-boundary audit](b019-trusted-audit.md) cover all 20 inventory groups below. F1/F2 are resolved; F3 is consistent with current norms; F4/F5 are addressed; F6 is classified nonsemantic implementation debt. No discovered supported-contract defect is deferred as a future feature. Raw-only acceptance debt remains governed by its published contract and migration rule. |
 | B019-4: proof ledger | Met as the specified ledger/audit condition. Paper/Lean/implementation/numerical assumptions remain separate in the [formal ledger](../formal-core.md), [source correspondence](../source-ir-correspondence.md) and [Lean ledger](../lean-resource-proof.md). Fresh Lean 4.30.0 build and 577-declaration audit pass with only the three permitted axioms. The historical [Physlib audit and reintroduction gate](../physlib-environment.md) remain explicit; no current Physlib dependency or new general compiler proof is claimed. |
 | B019-5: selected next scope | Met. Six drafts/R01–R14, the complete fixed-width [M1 specification](../next-minor-spec.md), [machine interfaces](../machine-interface-spec.md), [M2 profile](../hierarchical-ir-spec.md), and [dated maintainer-owned bounded-kernel go decision](../decisions/2026-09-27-v1-path.md#scope-decision-and-dated-follow-up) supply the handoff. The 2026-10-04 JST readiness checkpoint is still prospective. CD-1–4 now identify actual source, oracles, failure experiments and dependency boundaries. Sized grammar and production M2 remain unfinished, as required by the plan. |
-| B019-6: reproducibility | Local validation passed; exact committed candidate, Linux CI and clean distribution/source-archive results pending. The [distribution checker](../distribution-validation.md) requires a clean HEAD, exact Git bytes/modes and attribution, normal Cargo package verification, extracted locked metadata and fresh production/research tests from the complete archive. Its report identifies commit, tree, artifacts and executed commands. Tagging and publication are separate. |
+| B019-6: reproducibility | Met for the recorded candidate. Clean local distribution/source-archive checks and all six exact-commit Linux CI jobs passed; immutable run and artifact identities are below. The [distribution checker](../distribution-validation.md) requires a clean HEAD, exact Git bytes/modes and attribution, normal Cargo package verification, extracted locked metadata and fresh production/research tests from the complete archive. Its report identifies commit, tree, artifacts and executed commands. Tagging and publication are separate. |
 
 ## Inventory coverage and supported-contract findings
 
@@ -82,16 +83,45 @@ Executed on macOS aarch64 after F2 and the exact sweep were integrated:
 | Representative execution | All 14 example projects passed JSON check/run with independent decoding and distribution normalization. Shor15 reports period 4, factors 3/5 and success/retry weights 1/2 each. |
 | External formats | Three independent OpenQASM-parser/LLVM syntax and profile tests passed with the newly built interop example. No device execution or complete-format claim. |
 
-Document, helper, whitespace and archive checks are recorded against the final
-candidate below rather than credited from a pre-edit tree.
+Document/helper tests passed: 19 document, five authoring-record, nine corpus,
+20 distribution, 18 imaginary-helper and 11 exact-helper tests. Record checking
+validated three sessions/five snapshots/eleven observations. All 58 finite
+mathematical checks and 39 exact assertions passed. Imaginary source was not
+compiled. Generated status/references and full committed-tree whitespace also
+passed in the candidate's Linux CI.
 
 ## Candidate and distribution evidence
 
-Pending the first clean commit of the implementation and these records. The
-final entry must name an actual commit and successful exact-commit CI run,
-record package/archive hashes and include the nested research package, proofs,
-all frozen originals and source-specific notices. A dirty-tree package or the
-old 0.1.8 HEAD cannot substitute for that candidate.
+The immutable [implementation candidate](https://github.com/MGYamada/Qleisli/commit/b657e236cc94c5023746df900d42da5bfa23ab96)
+is bound to Git tree `c11f90014536733381f52bd468df4a8c08b084bd`. The
+[exact-commit push CI](https://github.com/MGYamada/Qleisli/actions/runs/36416267580)
+completed successfully: `rust`, `rust-msrv`, `lean`, `docs`, `interop`, and
+`distribution`. The latter preserves its full report, command logs and archives
+in the [distribution artifact](https://github.com/MGYamada/Qleisli/actions/runs/36416267580/artifacts/10968120963).
+[Machine-readable evidence](b019-completion-evidence.json) records these
+observed identities, local checks and explicitly unperformed publication actions.
+
+The local clean distribution run passed against that same candidate:
+
+| Artifact | Exact verified contents | SHA-256 for this local run |
+| --- | --- | --- |
+| Complete Git source tar | 675 files; every tracked byte/mode, including the eight nested research files, Lean roots/toolchain and all corpus attribution | `cbf887257e8af207a30a683972459b05e862ccc218a03f23a9e678d9b8ec8a05` |
+| Production `.crate` | 670 files; normal Cargo build verification, original manifest, clean VCS identity, normalized metadata/locked inspection and exact non-generated payload | `b27034ca259098cb9209679c2968a90f6cf1171773931a0ea43f0dfb5a447f59` |
+
+Both archives retain all 39 frozen upstream records, 48 final QLI source files
+and required notices. Cargo excludes only the eight nested research files;
+the complete archive excludes no tracked file. Its extracted sources freshly
+passed 354 production and 43 research all-target tests. SHA-256 identifies these
+particular local artifacts; cross-platform reproducible compiler output is not
+claimed. The Linux distribution job independently repeated this procedure.
+
+The [draft PR](https://github.com/MGYamada/Qleisli/pull/12) makes the candidate
+reviewable. This completion record and wording corrections are a subsequent
+**documentation-only** commit; implementation/tests/scripts/corpus/proofs stay
+identical to the verified candidate. The containing commit's push CI and its
+own distribution artifact are the final handoff evidence, rather than claiming
+that the older candidate's archive hashes identify a later documentation tree.
+This avoids a self-referential commit-hash claim inside its own source.
 
 No tag, merge, hosted release or registry publication is claimed by this record.
 Branch push and a reviewable pull request support candidate CI and are reported
