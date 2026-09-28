@@ -21,6 +21,19 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## v0.1.9 release procedure (2026-09-28)
+
+After completing B019, the user authorized releasing 0.1.9. The
+[release procedure](releases/v0.1.9.md#release-validation-and-publication)
+finalizes the changelog and summaries and requires all six protected-branch
+checks on the PR and exact merged commit, clean package/source-archive validation,
+an annotated immutable tag and verification of the GitHub source archives.
+The [GitHub record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9)
+supplies the actual publication identities and outcomes. The production package
+is a validation artifact; distribution follows the complete-source format of
+0.1.8. No source/API change, crates.io upload or prebuilt binary is included in
+this finalization. Earlier candidate checks and proof limits remain historical.
+
 ## B019 completion and code-driven preparation (2026-09-28)
 
 The later [completion record](reviews/b019-completion.md) retains the F2 repair,

@@ -103,10 +103,13 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Development version: 0.1.9.** The [review-fix record](docs/releases/v0.1.9.md)
-separates implementation, validation and publication. This update fixes truncated
-static-argument parsing and improves repair diagnostics while retaining current
-APIs and finite checking rules. The [0.1.8 record](docs/releases/v0.1.8.md) preserves
+**Version: 0.1.9.** The [release record](docs/releases/v0.1.9.md) and
+[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9)
+separate implementation, validation and publication. This update fixes truncated
+static-argument parsing and repeated source-snapshot costs, improves repair
+diagnostics, and completes the finite B019 foundation with 24 corpus translations
+and the code-driven handoff. It retains current APIs and finite checking rules.
+The [0.1.8 record](docs/releases/v0.1.8.md) preserves
 the operation-contract and authoring changes and their publication evidence.
 
 The [operation-contract example](examples/operation_contracts/main.qli) uses one

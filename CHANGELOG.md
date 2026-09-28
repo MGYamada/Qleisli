@@ -8,10 +8,11 @@ separately in [release milestones](docs/release-milestones.md).
 
 No changes recorded yet.
 
-## 0.1.9 — Unreleased
+## 0.1.9 — 2026-09-28
 
-Compatible review fixes and repair diagnostics, selected on 2026-09-28.
-See the [implementation/validation record](docs/releases/v0.1.9.md).
+Compatible review fixes, the completed finite B019 foundation and preparation
+for code-driven development. See the [release record](docs/releases/v0.1.9.md)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9).
 
 ### Added
 

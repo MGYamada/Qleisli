@@ -5,7 +5,7 @@ from 0.2.0 onward, practice the
 [program-first method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
 through concrete quantum programs and their checked contracts. This document
 prepares that work. It does not select 0.2.0, adopt new syntax, or declare any
-pending M1/M2 implementation complete. Current development remains 0.1.9.
+pending M1/M2 implementation complete. The current product version is 0.1.9.
 
 ## What the 0.1.x handoff must establish
 

@@ -48,8 +48,9 @@ Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
 with stable IDs, concrete source/design evidence, the obligation to remove,
 and a checking/acceptance experiment. Update it when current work exposes a
 new issue; retain resolution links. Backlog entries do not select a release or
-adopt syntax. The current development version is 0.1.9, selected for the
-compatible review fixes and diagnostic improvements.
+adopt syntax. The current product version is 0.1.9; its compatible review fixes,
+finite B019 closure and publication procedure are recorded in the
+[release record](docs/releases/v0.1.9.md).
 
 For the user-selected code-driven continuation from 0.2.0 onward, follow the
 [preparation and work packets](docs/code-driven-development.md). Start from
