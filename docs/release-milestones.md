@@ -27,8 +27,9 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 implementation, the
-user's explicit version exception and local validation from publication.
+in the [generated status](current-status.md). The [0.1.8 record](releases/v0.1.8.md)
+separates fixed-width M1 implementation, migration and local validation from
+publication. Compatible features now follow the revised PATCH policy.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
 older [release records](releases/v0.1.4.md) retain their historical evidence.
 The [six initial drafts and requirements](imaginary-v1/README.md), their
@@ -44,11 +45,12 @@ It checks a limited symbolic profile and binds evidence to supported actual
 raw IR. Its non-published package does not change production compiler APIs.
 The design's G013-S0–S2 gates concern this initial slice; G013-S3 source/entry/
 release integration and generalized algorithms remain future work. Public
-feature adoption still follows the next-minor specification process.
+feature adoption still requires an extension specification, independently of
+the compatibility-based version increment.
 The [0.1.5 decision dossier](decisions/2026-09-27-v1-path.md) now selects a
 bounded M2 continuation, replacing indefinite deferral. It does not change
-past release conditions or add kernel features to 0.1.x. Fixed-width M1 retains
-finite checking; size generalization requires R14 and hierarchical IR, and
+past release conditions or implement production kernel features. Fixed-width M1
+retains finite checking; size generalization requires R14 and hierarchical IR, and
 general predicate/arithmetic construction additionally requires circuit
 synthesis without whole-space truth tables.
 
@@ -144,8 +146,10 @@ handoff. X1 check/run is implemented; other M1 slices and M2 sized source rules 
 this does not complete all B019 conditions.
 
 New public APIs, syntax, size generalization and kernel integration require
-MINOR releases. R14 gates size generalization in M2; existing bounded dense
-checks remain permitted for fixed-width M1. Hierarchical IR and circuit-based
+specification and validation. Use PATCH for compatible changes in 0.y.z (y > 0)
+and MINOR for incompatible ones, under the [version policy](versioning.md).
+R14 gates size generalization in M2; existing bounded dense checks remain
+permitted for fixed-width M1. Hierarchical IR and circuit-based
 predicate/arithmetic synthesis are complementary scaling gates. V1-C1–C5 are
 unchanged. Later maintenance may use 0.1.10; patch 9 does not force a minor.
 

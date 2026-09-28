@@ -37,15 +37,15 @@ and update the [authoring report](docs/qli-authoring-feedback.md). Keep the
 An authoring exercise is not a measured model benchmark or an algorithm proof.
 
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
-[version-independent M0–M5 plan](docs/v0x-roadmap.md). Normally, 0.1.x is compatible
-maintenance; an audit does not require a PATCH. New features require a MINOR,
-subject to the explicit exceptions below. Fixed-width M1 may use existing finite
+[version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,
+compatible fixes and features use PATCH; breaking changes use MINOR. An audit
+does not itself require a release. Fixed-width M1 may use existing finite
 checks. Before generalizing sizes, establish composition of meanings, encodings
 and evidence without global dense matrices, together with an evidence-bound
 hierarchical IR. General predicates and arithmetic require reversible circuit
 synthesis rather than full-space truth tables. The bounded symbolic-kernel
 continuation is an M2 design decision, not production integration or blanket
-permission for new 0.1.x implementations.
+permission to bypass the feature's specification and validation gates.
 
 Evaluate abstractions by which user obligations they remove and which checker
 validates their evidence. Mathematical unitarity does not imply access to an
@@ -120,17 +120,10 @@ dossier and executed results in conformance/release records.
 
 [Versioning](docs/versioning.md) is authoritative.
 
-**Explicit exceptions, 2026-09-28:** after the MINOR rule was explained, the
-user retained v0.1.6 for the comment/docstring extension, recorded in its
-[extension/migration contract](docs/documentation-comments.md). The user then
-selected v0.1.7 for starting M1 features, initially X1 check/run JSON results
-and structured diagnostics, and added [M1.1 connections](docs/interop-m1.1.md).
-The user subsequently released that X1/M1.1-A slice, then selected v0.1.8
-for continued implementation on an appropriate branch. Record the fixed-width
-operation parameters/contracts and remaining gates in the
-[0.1.8 record](docs/releases/v0.1.8.md); QIR input remains separate pending work.
-These are scoped feature exceptions, not maintenance-only claims or permission
-for future PATCH features.
+The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
+features need no exception. Preserve historical release/migration records and
+the already selected 0.1.8; record delivered work and remaining gates in the
+[0.1.8 record](docs/releases/v0.1.8.md).
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
   `lean/lakefile.toml`. Compiler, bundled library and proofs currently share a
@@ -139,10 +132,11 @@ for future PATCH features.
   Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task
   or commit. Align version, changelog and current descriptions when selecting
   a release. Prereleases such as `0.2.0-rc.1` are allowed.
-- In 0.x, PATCH is compatible fixes/refactoring/documentation/proof clarification
-  and maintenance. MINOR is new features, syntax, deprecations or breaking
-  changes, resetting PATCH to zero. Document migration for breaking changes;
-  choose the largest required increment for combined changes.
+- In 0.y.z with y > 0, PATCH covers compatible fixes, refactoring, documentation,
+  features, syntax additions and deprecations without removal. MINOR is for
+  breaking changes, resetting PATCH to zero. In 0.0.z, successive PATCH releases
+  are incompatible. Document migration and use the largest required increment
+  for combined changes; new features still need specifications and validation.
 - From 1.0.0, use PATCH for compatible fixes, MINOR for compatible additions and
   deprecations, and MAJOR for breaking changes. Reaching 1.0 requires evidence
   for V1-C1–C5 and explicitly stabilized public contracts.
@@ -153,9 +147,10 @@ for future PATCH features.
   can also be breaking changes.
 - Rejecting an input/evidence that already violated published rules can be a
   PATCH fix. Record the violated rule, before/after behavior, diagnostic and
-  regression. A new restriction/meaning or incompatible Rust change cannot use
-  this exception. Reduced capacities and raised toolchain requirements need
-  compatibility review and at least a MINOR in 0.x.
+  regression. A new restriction or changed meaning for previously supported
+  inputs, or an incompatible Rust change, cannot use this exception.
+  Reduced capacities and raised toolchain requirements need
+  compatibility review and at least MINOR in 0.y.z with y > 0.
 - Keep specification v0, ledger format v1, development stages and product
   versions separate. Never mechanically renumber historical checks/spec files.
 - For release, check changelog, norms, conformance, Rust fmt/all-target tests/

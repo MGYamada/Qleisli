@@ -87,10 +87,8 @@ For a future LLM benchmark, record prompt/context, model/version, first source,
 diagnostics, repair attempts and semantic results separately; this exercise is
 not that benchmark.
 
-The version-policy suggestion is valid as an alternative convention:
-[Cargo's compatibility guide](https://doc.rust-lang.org/cargo/reference/semver.html#change-categories)
-treats 0.y.z's z as a compatible minor step. Qleisli currently deliberately uses
-the stricter [project policy](versioning.md). Adopting Cargo's convention would
-reduce exceptions for compatible additions, but not erase the reserved-name and
-public AST breaks already recorded in 0.1.8. This source-corpus task retains
-0.1.8 and historical records; a policy revision is a separate decision.
+**Follow-up adopted on 2026-09-28:** the user requested the Cargo-compatible
+[version policy](versioning.md). Compatible features in 0.y.z (y > 0) now use
+PATCH without exceptions; breaking changes use MINOR. Historical decisions and
+0.1.8's documented reserved-name/public-AST migration remain recorded. This
+policy change does not implement the language candidates above.

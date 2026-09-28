@@ -2,8 +2,8 @@
 
 Status: **M1.1-A contract selected and initial implementation validated locally and in Linux CI on 2026-09-28**. M1.1 is a
 submilestone of M1, not a product version or completion of interoperability.
-The user requested this additional slice during 0.1.7 feature development;
-the existing explicit version exception covers this requested continuation.
+The user requested this additional slice during 0.1.7 feature development.
+Future additions use the [compatibility-based version policy](versioning.md).
 Implementation and validation are recorded separately in the
 [0.1.7 record](releases/v0.1.7.md). Python bindings, QIR import and adaptive
 programs retain separate gates. The compiler and evidence kernel stay unchanged.

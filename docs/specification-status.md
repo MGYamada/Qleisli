@@ -9,7 +9,7 @@ mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
 from one current-state record and the manifests. The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 implementation,
-its explicit version exception and local validation from publication.
+its migration and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
@@ -19,6 +19,15 @@ English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## Cargo-compatible version policy (2026-09-28)
+
+At the user's request, [versioning](versioning.md) now permits compatible
+features in PATCH for 0.y.z with y > 0; breaking changes require MINOR.
+Historical selections/migrations and the selected 0.1.8 remain intact.
+Specification, verification and release gates are unchanged. Document-checker
+tests (19), generated-status/link checks and whitespace checks passed;
+Rust/Lean were not rerun for this documentation-only change.
 
 ## Executable QLI authoring corpus in v0.1.8 (2026-09-28)
 

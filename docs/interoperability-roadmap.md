@@ -3,8 +3,8 @@
 Status: **direction selected on 2026-09-28; initial M1.1-A connections implemented**.
 The [bounded connection contract](interop-m1.1.md) specifies the current host
 adapters: OpenQASM 3 input/output and QIR 2.0 Base text output. The user's added
-M1.1 request extends the explicit 0.1.7 feature exception; it changes no `.qli`
-syntax, existing capacity or evidence-checking rule. QIR input, Python bindings,
+M1.1 request added these adapters to 0.1.7; they change no `.qli` syntax,
+existing capacity or evidence-checking rule. QIR input, Python bindings,
 adaptive operations and general format/target coverage remain pending. The
 internal execution consolidation below remains a distinct 0.1.6 maintenance
 step; planned interfaces are not thereby implemented.
@@ -134,7 +134,8 @@ The next core reduction needs a complete migration contract before implementatio
    evidence-extractor cases. Record the actual trusted rules removed. Do not
    count file moves, numeric sharing, or deleting tests as trusted-core reduction.
 
-These steps require a MINOR when public IR/API or specified capacities change.
+These steps require MINOR when they break public IR/API contracts or reduce
+specified capacities; compatible additions follow the PATCH policy.
 Keep the reference executor during external-backend development. The later [M1.1-A adapter work](interop-m1.1.md) uses these existing rules.
 Neither step establishes a general translation proof, a minimal kernel or M2 hierarchy.
 

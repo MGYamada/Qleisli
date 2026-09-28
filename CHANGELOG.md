@@ -6,8 +6,10 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-Selected development version: **0.1.8**, by explicit user feature-version
-exception. See the [implementation/migration record](docs/releases/v0.1.8.md).
+Selected development version: **0.1.8**. See the
+[implementation/migration record](docs/releases/v0.1.8.md). Historical entries
+retain the version policy used at the time; the revised policy below governs
+new changes.
 
 ### Added
 
@@ -29,6 +31,10 @@ exception. See the [implementation/migration record](docs/releases/v0.1.8.md).
 
 ### Changed
 
+- Align initial-development versioning with Cargo: for 0.y.z with y > 0,
+  compatible fixes/features/syntax additions use PATCH; breaking changes use
+  MINOR. Compatible features need no exception. Preserve historical migrations
+  and the already selected 0.1.8; 1.0+ rules and verification gates are unchanged.
 - Reserve the new M1 keywords and extend public AST/token/error records;
   follow the release record's source and Rust migration. JSON v1 gains emitted
   `capability` / `contract` cases within its specified category set.

@@ -1,35 +1,21 @@
 # Versioning and compatibility
 
-Status: **adopted project policy, starting at 0.1.0** (2026-09-27).
+Status: **adopted project policy, revised at the user's request on 2026-09-28**.
 This is the authoritative English policy. The repository working rules in
 [AGENTS.md](../AGENTS.md) summarize it. The project uses the version format
 and release immutability rules of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html),
-with the explicit initial-development policy below.
+with Cargo-compatible initial-development version selection below. This
+supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 
 ## Version identity
 
-**Recorded exception, 2026-09-28:** after the comment/docstring extension's
-MINOR requirement was explained, the user explicitly retained **0.1.6** for
-that work. The [extension and migration record](documentation-comments.md)
-therefore includes new comment syntax, documentation APIs/CLI and documented
-source-acceptance changes in 0.1.6. This is an
-explicit exception, not a compatible-maintenance claim or permission to put
-other new features in PATCH releases. The normal policy below remains in force.
-
-**Additional explicit exception, 2026-09-28:** the user again chose **0.1.7**
-for starting M1 features after the normal MINOR requirement was explained.
-The selected initial implementation is X1 JSON check/run results and structured
-frontend diagnostics. The user subsequently added M1.1 OpenQASM 3/QIR connection
-work to this development version; its initial bounded scope is recorded in the
-[connection contract](interop-m1.1.md). The [0.1.7 record](releases/v0.1.7.md) identifies new
-functionality, migration and unimplemented M1 work; this exception is not
-permission for future PATCH feature releases.
-
-**Further explicit exception, 2026-09-28:** the user selected **0.1.8** for
-continued implementation after the v0.1.7 release. The delivered slice is
-fixed-width operation parameters and meaning contracts, with reserved-name and
-public Rust AST/error migration in the [0.1.8 record](releases/v0.1.8.md).
-This is a scoped feature exception, not maintenance-only work.
+Compatible feature additions no longer need a version-policy exception.
+The previous 0.1.6/0.1.7 decisions and already selected 0.1.8 retain their
+numbers and migration records; dated exception statements describe the former
+policy, not a continuing requirement. This revision does not reclassify their
+documented source/API breaks as compatible or authorize future incompatible
+PATCH releases. See the [0.1.6](releases/v0.1.6.md),
+[0.1.7](releases/v0.1.7.md) and [0.1.8](releases/v0.1.8.md) records.
 
 The selected baseline and release state are in [current status](current-status.md)
 and the [0.1.8 implementation record](releases/v0.1.8.md). Version selection alone
@@ -59,22 +45,26 @@ provide evidence gates: a manifest number alone does not satisfy them.
 
 ## Choosing the next version
 
-Before 1.0, SemVer allows an unstable API. Qleisli adopts a more explicit
-policy within each `0.MINOR` line:
+For `0.y.z` with `y > 0`, Qleisli follows
+[Cargo's compatibility convention](https://doc.rust-lang.org/cargo/reference/semver.html#change-categories):
+`y` identifies the incompatible release line and `z` may include compatible
+features as well as fixes. In the table, MINOR and PATCH name the numeric
+positions, not the size or importance of the work.
 
-| Change | Before 1.0 | From 1.0 onward |
+| Change | 0.y.z, with y > 0 | From 1.0 onward |
 | --- | --- | --- |
 | Compatible bug fix, internal refactoring, documentation/proof clarification, or maintenance with unchanged public behavior and requirements | Increment PATCH, for example `0.1.0 -> 0.1.1`, when shipping another release. Documentation alone need not trigger a release. | Increment PATCH when released. |
-| New public functionality, a new language form, or a deprecation | Increment MINOR and reset PATCH, for example `0.1.0 -> 0.2.0`. | Increment MINOR if backward compatible; otherwise MAJOR. |
+| Backward-compatible public functionality, syntax addition, or deprecation without removal | Increment PATCH, for example `0.1.8 -> 0.1.9`; no feature exception is needed. | Increment MINOR and reset PATCH. |
 | Breaking change to a supported public contract | Increment MINOR and reset PATCH; document migration. | Increment MAJOR and reset MINOR/PATCH; document migration. |
 
-If a release contains several kinds of change, use the largest required bump.
-New functionality uses a minor release even when compatible during 0.x; this
-is Qleisli's policy, not a claim that SemVer requires that particular 0.x rule.
-For Rust API classification, also consult
-[Cargo's compatibility guide](https://doc.rust-lang.org/cargo/reference/semver.html).
-For example, adding a variant to an exhaustive public enum or a required
-field to a publicly constructible struct can break callers.
+For `0.0.z`, Cargo treats successive PATCH versions as incompatible; that is
+not the project's current release line. If a release contains several kinds
+of change, use the largest required bump. An additive feature can still break
+compatibility: reserving a previously valid identifier, adding a variant to an
+exhaustive public enum, or adding a required field to a publicly constructible
+struct requires MINOR in 0.y.z with y > 0. Classify the whole public change, not only
+its new CLI or source entry point. Specification, evidence and validation
+requirements apply equally to compatible features shipped in PATCH releases.
 
 Before starting `0.2.0` feature implementation or releasing `0.2.0` (including
 its prereleases), complete the
@@ -100,12 +90,13 @@ review as a signature change.
 
 Record changes to implementation limits and supported Rust/Lean toolchains.
 Reducing supported capacity or raising a toolchain requirement uses at least
-a minor bump before 1.0; after 1.0, apply the declared stable support contract.
+a MINOR bump in 0.y.z with y > 0; after 1.0, apply the declared stable support contract.
 Exact human-readable diagnostic wording and internal file layout are not
 stable interfaces, but public error-code variants remain public Rust API.
 No stable serialized IR or certificate format is promised by the 0.1.x line.
-The planned M1 interchange, JSON diagnostics and sample API are new public
-features and require MINOR releases. A new source-file byte limit reduces
+M1 interchange, JSON diagnostics and sampling may use PATCH when the complete
+change is compatible; they do not require MINOR merely because they add
+functionality. A new source-file byte limit reduces
 accepted capacity and also requires a MINOR decision; it is not a patch fix
 without an already published violated limit. Hierarchical IR changes require
 explicit Rust API and format migration, including exhaustive enum matches.

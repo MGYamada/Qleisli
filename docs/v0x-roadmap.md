@@ -15,19 +15,18 @@ historical evidence or the current finite language contracts.
 
 Use M0–M5 to schedule work. Choose a product version from the
 [compatibility policy](versioning.md) when shipping a concrete change.
-A JSON diagnostic or sampling feature may ship in an early small MINOR;
-it does not consume a reserved capability/size theme. Compatible audits run
-continuously and need no patch release unless shipping a useful correction.
-The user-requested 0.1.5 is a design/documentation maintenance candidate.
+A compatible JSON diagnostic or sampling feature may ship in PATCH within
+0.y.z (y > 0); incompatible changes require MINOR. No capability/size theme
+reserves a release number. Audits run continuously and need no release of their own.
 
-The 0.1.x line normally remains compatible finite-core maintenance. The
-[explicit 0.1.6/0.1.7/0.1.8 exceptions](versioning.md#version-identity) do not
-generalize to future PATCH features. X1 check/run implementation is now
-recorded in the [0.1.7 development record](releases/v0.1.7.md). Fixed-width operation parameters and meanings are implemented in the
-[0.1.8 record](releases/v0.1.8.md). The historical
-v0.1.9 checkpoint is retained below as B019, without requiring patches 6–9
-before new-feature work. New APIs, syntax, capacities, hierarchical IR or
-kernel integration belong in MINOR work. Later maintenance can use 0.1.10.
+The [2026-09-28 version-policy revision](versioning.md) permits compatible
+features in 0.1.x without exceptions. X1 check/run is recorded in the
+[0.1.7 record](releases/v0.1.7.md); fixed-width operation parameters and meanings
+are implemented in the [0.1.8 record](releases/v0.1.8.md), with their previously
+selected version and explicit migrations preserved. The historical v0.1.9
+checkpoint remains B019, without requiring patches 6–9 before new features.
+New work retains its specification, semantic and validation gates, regardless
+of the numeric bump. Later compatible work may use 0.1.10.
 
 ## Responsibilities beyond ownership
 
@@ -80,7 +79,7 @@ or graded type systems remain research options, with no selected release.
 | Milestone | Selected scope and dependencies | Completion evidence |
 | --- | --- | --- |
 | M0: decide the path | Next-scope dossier, before new features. | Select a feasible M1 scope, capability representation, meaning language, angle policy, joint IR/evidence direction and bounded kernel go/no-go. A no-go needs dated reconsideration and cannot count as a completed handoff. [Scope selected](decisions/2026-09-27-v1-path.md); [M1 extension rules](next-minor-spec.md) and [machine interfaces](machine-interface-spec.md) specified. |
-| M1: fixed-width composition and external interfaces | Depends on M0 and G020-1 specification. Static operation parameters with checked capabilities and conjugation; bounded basis-derived meanings; preserve existing special forms as elaboration. Portable finite evidence, JSON diagnostics and sample/trial APIs are separately shippable early MINOR slices. | One fixed-width body accepts distinct checked implementations, rejects unavailable access and stale/wrong-phase evidence; independent interchange mutation cases; actual samples and explicit failure results. Existing finite dense checks are permitted within unchanged bounds. No size-generalization or V1-C2 claim. |
+| M1: fixed-width composition and external interfaces | Depends on M0 and G020-1 specification. Static operation parameters with checked capabilities and conjugation; bounded basis-derived meanings; preserve existing special forms as elaboration. Portable finite evidence, JSON diagnostics and sample/trial APIs are separately shippable slices, versioned by compatibility. | One fixed-width body accepts distinct checked implementations, rejects unavailable access and stale/wrong-phase evidence; independent interchange mutation cases; actual samples and explicit failure results. Existing finite dense checks are permitted within unchanged bounds. No size-generalization or V1-C2 claim. |
 | M2: scalable checking and QPE | Depends on M1's operation/evidence interfaces; specify hierarchical IR and proof binding together during M1. Bounded kernel production path, static sizes, ideal dyadic angles and shared multi-width QPE. | R14 and hierarchical-IR gates below, exact entry/cleanup, supported schema checks and phase/reference-sensitive QPE instrument cases. Same source across declared multiple widths and operations; QPE's contribution to V1-C2, not completion of all V1 criteria. |
 | M3: Grover and host trials | Depends on M2 and R06 predicate synthesis. | Reusable preparation, oracle, reflection and iteration; no whole-space table construction for the declared predicate fragment; fresh sampling, candidate checks and retries. Evaluate Grover against V1-C1–C5. |
 | M4: Shor with shared QPE | Depends on M2 and R09 arithmetic synthesis; may progress alongside M3. | Add/compare/reduce/uncompute implementation, whole-space modular meaning, controlled modular powers, exact scratch cleanup, shared QPE, actual samples, period/factor validation and explicit retry. Evaluate Shor against V1-C1–C5. |
@@ -117,7 +116,7 @@ M1 specification and M2 kernel/IR feasibility, not release publication.
 | Prerequisite | Gate |
 | --- | --- |
 | Symbolic meaning/encoding/evidence composition (R14) | Before size generalization in M2, independently check actual implementation binding with bounded leaves and shared proofs, without a global dense operator. Fixed-width M1 may retain current bounded whole-function checking. |
-| Hierarchical IR and evidence binding (R02/R04) | Design with proof interchange in M1; validate shared calls, static loops, parameterized families and checked transformations in M2. Compact proofs over fully expanded IR do not pass. Public enum/field changes require MINOR migration. |
+| Hierarchical IR and evidence binding (R02/R04) | Design with proof interchange in M1; validate shared calls, static loops, parameterized families and checked transformations in M2. Compact proofs over fully expanded IR do not pass. Breaking public enum/field changes require MINOR migration. |
 | Reversible synthesis without truth tables (R06/R09) | Required for M3 predicates and M4 arithmetic. Construct and certify circuits from a declared expression fragment, including zeroed scratch and whole-space behavior. No enumeration of every basis input as the delivered general construction. |
 
 These are complementary gates. Satisfying one does not establish the others.

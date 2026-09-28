@@ -1,10 +1,10 @@
 # Comments and documentation in `.qli`
 
 Status: **implemented extension specification; validation recorded separately**
-(2026-09-28). The user requested Rust-style comments/documentation and explicitly
-kept the product version at **0.1.6** after the MINOR requirement was explained.
-This is a recorded exception for this extension, not a reclassification of new
-features as routine PATCH maintenance. Other version-policy rules remain intact.
+(2026-09-28). Rust-style comments/documentation shipped in **0.1.6**. Its
+[release record](releases/v0.1.6.md) retains the version decision under the former
+policy and the source/API migration. The later [policy revision](versioning.md)
+allows compatible feature additions in PATCH; it does not erase those migrations.
 
 ## Lexical forms and attachment
 

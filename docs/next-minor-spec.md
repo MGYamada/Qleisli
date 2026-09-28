@@ -1,7 +1,7 @@
 # Fixed-width operation parameters and meaning contracts (M1)
 
 Status: **selected on 2026-09-27; fixed-width language slice implemented in
-0.1.8 on 2026-09-28 by explicit user version exception**. This is the normative
+0.1.8 on 2026-09-28**. This is the normative
 M1 supplement to [current v0](language-spec.md); the finite grammar and older
 special forms retain their contracts. The [implementation/release record](releases/v0.1.8.md)
 records executed validation and migration. Separate [machine interfaces](machine-interface-spec.md)
