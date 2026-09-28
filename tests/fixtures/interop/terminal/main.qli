@@ -1,0 +1,10 @@
+//! Closed Bell preparation supported by the terminal interoperability profile.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+observe fn main() -> (CBit, CBit) {
+    let (a, b) = cnot(h(init0()), init0());
+    (measure_z(b), measure_z(a))
+}

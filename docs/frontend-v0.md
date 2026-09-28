@@ -214,3 +214,13 @@ remain Stage 1 priorities. General borrowing, operation parameters, literal
 auxiliary execution as an independent comparison, exact reference execution,
 and backend capability checks remain later work. Distinct ownership never
 implies state separation.
+
+## Machine-readable check and run results
+
+The 0.1.7 development tree adds `--format=json` to `qleisli check` and
+`qleisli run`, using [qleisli.result version 1](machine-interface-spec.md#diagnostics).
+The flag opts into one JSON result, including failures; human output remains
+the default. This is M1 X1 under the user's explicit version exception, not
+a new `.qli` form or checker rule. Structured diagnostic APIs retain parser
+provenance and source coordinates while existing error records remain compatible.
+Other M1 commands and formats are not implemented.

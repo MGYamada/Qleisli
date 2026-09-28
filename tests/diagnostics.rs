@@ -4,12 +4,72 @@ mod common;
 
 use common::SourceRoot;
 use qleisli_core::frontend::compile::{ErrorCode, check_project};
+use qleisli_core::frontend::compile::{check_project_diagnostic, compile_project_diagnostic};
 
 const IMPORTS: &str = "use std::quantum::x;
 use std::quantum::z;
 basis fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
+
+#[test]
+fn structured_parse_diagnostics_preserve_unicode_crlf_and_eof_spans() {
+    for source in [
+        "/* 🦀日本語 */ @",
+        "// 日本語\r\nobserve fn main() -> Unit {",
+        "@",
+    ] {
+        let root = SourceRoot::new(source);
+        let diagnostic = check_project_diagnostic(&root.0).unwrap_err();
+        assert_eq!(diagnostic.code, "parse");
+        let location = diagnostic.primary.unwrap();
+        let start = source.find('@').unwrap_or(source.len());
+        assert_eq!(location.span.start, start);
+        assert_eq!(
+            location.span.end,
+            if start == source.len() {
+                start
+            } else {
+                start + 1
+            }
+        );
+        let prefix = &source[..start];
+        assert_eq!(
+            location.line,
+            prefix.chars().filter(|c| *c == '\n').count() + 1
+        );
+        assert_eq!(
+            location.column,
+            prefix.rsplit('\n').next().unwrap().chars().count() + 1
+        );
+        let legacy = check_project(&root.0).unwrap_err();
+        assert_eq!(legacy.code, ErrorCode::Project);
+        assert_eq!(
+            (legacy.span, legacy.line, legacy.column),
+            (location.span, location.line, location.column)
+        );
+    }
+}
+
+#[test]
+fn structured_load_errors_distinguish_source_spans_from_missing_files() {
+    let root = SourceRoot::new("/* 日本語 */ use absent::name;");
+    let error = check_project_diagnostic(&root.0).unwrap_err();
+    assert_eq!(error.code, "project");
+    let location = error.primary.unwrap();
+    assert_eq!(
+        (location.span.start, location.line, location.column),
+        (16, 1, 11)
+    );
+    let error = check_project_diagnostic(&root.0.join("missing")).unwrap_err();
+    assert_eq!(error.code, "project");
+    assert!(error.primary.is_none());
+    root.write("main.qli", "");
+    assert!(check_project_diagnostic(&root.0).is_ok());
+    let error = compile_project_diagnostic(&root.0).unwrap_err();
+    assert_eq!(error.code, "invalid_entry");
+    assert!(error.primary.is_none());
+}
 
 #[test]
 fn invalid_computed_contract_points_to_its_expression_including_nested_branches() {

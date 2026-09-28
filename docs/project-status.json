@@ -1,18 +1,18 @@
 {
   "format": 1,
-  "release_state": "0.1.6 release procedure authorized; IR maintenance and Rust-style documentation extension implemented under the explicit version exception; exact commit, CI, tag and publication evidence are recorded in the GitHub release record",
+  "release_state": "0.1.7 selected for M1 features by explicit user exception; X1 check/run JSON and M1.1-A bounded OpenQASM/QIR adapters implemented and locally validated; tagging/publication pending",
   "milestones": [
     {
       "id": "M0",
       "state": "original M1 scope/specification complete; added interoperability direction selected",
       "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [M1 specification](next-minor-spec.md)",
-      "open": "Implementation-readiness checkpoint 2026-10-04 JST; interoperability extension specifications pending; no implemented-feature claim"
+      "open": "Implementation-readiness checkpoint 2026-10-04 JST; remaining Python, QIR input and adaptive extension specifications pending"
     },
     {
       "id": "M1",
-      "state": "original slices specified; interoperability direction selected; unimplemented",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md)",
-      "open": "Implement/validate N1–N6 and X1–X6 per shipping MINOR slice; first specify Python, OpenQASM and QIR extensions"
+      "state": "X1 check/run JSON and M1.1-A OpenQASM import/export + QIR output implemented; remaining slices pending",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md)",
+      "open": "Release locally validated slices; implement N1–N6 and X2–X6; QIR import through a standard reader, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
       "id": "M2",
@@ -129,6 +129,18 @@
       "implementation": "[Lexer](../src/frontend/lexer.rs); [parser](../src/frontend/parser.rs); [documentation sidecar and Markdown](../src/frontend/documentation.rs)",
       "tests": "[`rust_style_docs_attach_to_modules_imports_and_functions_in_source_order`](../tests/documentation.rs); [`documentation_neither_changes_ir_nor_authorizes_invalid_ownership`](../tests/documentation.rs); [`every_bundled_module_and_public_or_private_definition_has_documentation`](../tests/documentation.rs)",
       "proof": "Lexical/attachment and unchanged-IR regressions; doc prose issues no semantic evidence; general frontend adequacy remains open"
+    },
+    {
+      "rule": "[Versioned JSON command results (X1)](machine-interface-spec.md#diagnostics)",
+      "implementation": "[CLI transport](../src/bin/qleisli/json.rs); [structured diagnostics](../src/frontend/diagnostic.rs); [project loading](../src/frontend/project.rs)",
+      "tests": "[CLI golden cases](../tests/cli_json.rs); [source locations](../tests/diagnostics.rs); [independent JSON decoding](../scripts/test_cli_json.py)",
+      "proof": "Result transport and finite conformance tests; no additional semantic evidence or compiler soundness claim"
+    },
+    {
+      "rule": "[M1.1 terminal foreign-format connections](interop-m1.1.md)",
+      "implementation": "[Bounded OpenQASM parser/lowering](../src/interop/openqasm.rs); [profile/ownership adapter](../src/interop/profile.rs); [QIR writer](../src/interop/qir.rs)",
+      "tests": "[Independent import and rejection cases](../tests/interop.rs); [exact gate columns](../src/interop/profile.rs); [reference parser and LLVM checks](../scripts/test_interop_external.py)",
+      "proof": "Finite translation regressions and independent target syntax/profile smoke checks; no general translator proof, imported evidence authority or device execution claim"
     }
   ]
 }

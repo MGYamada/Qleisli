@@ -1,13 +1,17 @@
 # Selected M1 machine interfaces
 
-Status: **specified, unimplemented** (2026-09-27). These are independently
-shippable MINOR slices of [M1](next-minor-spec.md), not 0.1.5 APIs. Formats below
+Status: **X1 check/run implemented in the 0.1.7 development tree; X2–X6
+specified, unimplemented** (updated 2026-09-28). These are independently
+shippable slices of [M1](next-minor-spec.md), normally requiring MINOR.
+The user's explicit [0.1.7 exception](versioning.md#version-identity) selects
+X1 as the first M1 implementation; this is not maintenance-only work. Formats below
 have their own versions; product/package versions never change their meaning.
 Current `check`/`run`, Rust IR and exhaustive reference simulation stay intact.
 
 The later [interoperability direction](interoperability-roadmap.md) adds future
-Python, OpenQASM 3 and QIR entry points. Their extension specifications are
-pending and do not change X1–X6 below. In particular, this document's **QIRF**
+Python, OpenQASM 3 and QIR entry points. The bounded OpenQASM input/output
+and QIR output now have a separate [M1.1-A contract and implementation](interop-m1.1.md);
+Python, QIR input and adaptive extensions remain pending. They do not change X1–X6 below. In particular, this document's **QIRF**
 is Qleisli's JSON interchange, not QIR Alliance LLVM IR.
 
 For these adapters, **[desugaring](terminology.md#desugaring-layer)** means
@@ -21,6 +25,11 @@ arbitrary-domain arithmetic in the current finite format.
 
 ## Diagnostics
 
+**Implemented scope:** `check` and `run`. `doc` remains Markdown-only and
+rejects `--format=json` as usage. `sample`, `emit-ir` and `verify-ir` are still
+unimplemented commands, so requests for them are usage failures, including
+in JSON mode. The rules below specify their future result transport as well.
+
 Add the opt-in flag `--format=json` to `check`, `run`, `sample`, `emit-ir` and
 `verify-ir`. Flags may precede/follow positional arguments; duplicates, unknown
 flags and missing values are usage errors. With this flag, stdout is exactly
@@ -28,6 +37,14 @@ one UTF-8 JSON object plus LF, also on failure. Diagnostic prose is never mixed
 into stdout. Stderr is empty for handled results; an OS-level failure to write
 the JSON document may use stderr and exits 1. No NDJSON/progress stream is used.
 Human mode for the two existing commands preserves existing output/exit rules.
+The supported spelling is exactly `--format=json`, once, anywhere in the argument
+list (including before the command). `--format`, `--format=`, separate format
+values and other formats are usage errors. If the exact JSON flag appears,
+handled usage errors also use JSON. Otherwise usage stays on stderr. A path
+starting with `-` must be written with a `./` prefix so it is not a flag.
+The envelope's `command` is the first argument remaining after removing exact
+JSON flags; use the empty string if absent or non-UTF-8. Unknown UTF-8 command
+names are preserved as JSON strings, never executed.
 
 ```json
 {"format":"qleisli.result","version":1,"command":"check","outcome":"error",
@@ -64,6 +81,27 @@ bit-vector order; `emit-ir` is `{path:string}`; `verify-ir` is
 `{verified:true,request_checked:bool}`; `sample` is specified below. Probabilities
 are finite numbers in [0,1]; reference floating output is not an exact proof.
 The envelope only reports the check actually performed.
+
+The JSON adapter clamps reference probabilities to [0,1] only when endpoint
+roundoff is at most 2^-40, inclusive. Nonfinite values or larger excursions
+produce `numerical`, exit 1 and no partial distribution. It does not renormalize
+the distribution, change the underlying simulator or weaken exact evidence.
+Simulation capacity errors map to `limit`; other current runtime failures map
+to `simulation`. Existing compiler codes, including contract failures currently
+classified as `InvalidIr`, retain their specified snake_case category. Future
+`contract`/`capability` codes are reserved for their corresponding new checks.
+
+The additive Rust functions `check_project_diagnostic` and
+`compile_project_diagnostic` use the same checker as the legacy entry points,
+returning `frontend::diagnostic::Diagnostic` (`code`, `message`, optional
+`primary`). `SourceLocation` retains a `PathBuf`, `Span`, line and column;
+portable relative/`std://` rendering belongs to the CLI. Parser provenance and
+coordinates are retained from the loaded source rather than inferred from
+message text or a later file read. Load failures with source spans retain them;
+I/O/path failures and a missing entry point have null locations. No related
+locations or warnings are currently produced; the required `related` field
+is an empty array. Legacy `CompileError`, `ErrorCode` and `ProjectError`
+shapes/categories remain unchanged, including parser failures as `Project`.
 
 ## Portable finite IR and evidence
 
@@ -352,6 +390,10 @@ projects is explicit opt-in legacy loading or larger bounds. 0.1.5 adds no cap.
 | X5 trials | Accept on first/later attempt, all retries, zero bound, injected RNG/runtime/numerical failure, invalid/odd periods, trivial gcds and checked factors; count preparation/attempts precisely. |
 | X6 migration/capacity | Boundary byte sizes, multibyte UTF-8, many small files, bundle accounting, overflow and legacy override; old source/IR behavior preserved through explicit adapters. |
 
-These tests have not been implemented or executed in the documentation release.
-Formats, API contracts, failure policies and limits are selected here; shipping
-requires implementation, validation and a new MINOR release record.
+The original documentation release did not execute these tests. X1 check/run
+now has [Rust CLI regressions](../tests/cli_json.rs),
+[structured location checks](../tests/diagnostics.rs) and an
+[independent JSON decoder suite](../scripts/test_cli_json.py); execution results
+belong in the [0.1.7 record](releases/v0.1.7.md). X2–X6 remain unimplemented.
+Their future shipping still requires implementation, validation and a MINOR
+release decision. This X1 transport is not portable IR or evidence.

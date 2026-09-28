@@ -6,9 +6,18 @@ use qleisli_core::frontend::compile::{check_project, compile_project};
 use qleisli_core::frontend::documentation::render_markdown;
 use qleisli_core::sim::{SimulationLimits, run_closed};
 
+#[path = "qleisli/json.rs"]
+mod json;
+
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
-    if args.len() != 2 || !matches!(args[0].to_str(), Some("check" | "run" | "doc")) {
+    if args.iter().any(|arg| arg == "--format=json") {
+        return json::run(&args);
+    }
+    if args.len() != 2
+        || !matches!(args[0].to_str(), Some("check" | "run" | "doc"))
+        || args[1].as_encoded_bytes().starts_with(b"-")
+    {
         eprintln!("usage: qleisli <check|run> <source-root>\n       qleisli doc <source-file>");
         return ExitCode::from(2);
     }

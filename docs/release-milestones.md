@@ -27,9 +27,8 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.6 record](releases/v0.1.6.md)
-separates IR/evidence maintenance, the user's explicit comment-extension version
-exception and their validation from publication.
+in the [generated status](current-status.md). The [0.1.7 record](releases/v0.1.7.md) separates M1 X1 and M1.1-A implementations, the
+user's explicit version exception and local validation from publication.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
 older [release records](releases/v0.1.4.md) retain their historical evidence.
 The [six initial drafts and requirements](imaginary-v1/README.md), their
@@ -141,7 +140,7 @@ reconsideration. [M0](decisions/2026-09-27-v1-path.md) selects fixed-width M1 an
 a bounded M2 kernel path, with a 2026-10-04 JST implementation-readiness checkpoint.
 The [M1 rules](next-minor-spec.md), [external contracts](machine-interface-spec.md)
 and [M2 checker profile](hierarchical-ir-spec.md) complete the selected design
-handoff. M1 implementation/validation and M2 sized source rules remain pending;
+handoff. X1 check/run is implemented; other M1 slices and M2 sized source rules remain pending;
 this does not complete all B019 conditions.
 
 New public APIs, syntax, size generalization and kernel integration require

@@ -1,12 +1,13 @@
 # Interoperability: Python, OpenQASM 3 and QIR
 
-Status: **architectural direction selected on 2026-09-28; extension specifications
-and implementations pending**. This records the user's proposal to lower adoption
-cost and move toward a reusable quantum compiler infrastructure. It adds future
-MINOR work to [M1](v0x-roadmap.md), without changing the current `.qli` language,
-Rust API or finite capacities. The internal reduction step below is 0.1.6
-maintenance; external interfaces remain pending. Proposed host
-interfaces below are neither accepted `.qli` forms nor implemented APIs.
+Status: **direction selected on 2026-09-28; initial M1.1-A connections implemented**.
+The [bounded connection contract](interop-m1.1.md) specifies the current host
+adapters: OpenQASM 3 input/output and QIR 2.0 Base text output. The user's added
+M1.1 request extends the explicit 0.1.7 feature exception; it changes no `.qli`
+syntax, existing capacity or evidence-checking rule. QIR input, Python bindings,
+adaptive operations and general format/target coverage remain pending. The
+internal execution consolidation below remains a distinct 0.1.6 maintenance
+step; planned interfaces are not thereby implemented.
 
 ## Goal and user benefit
 
@@ -27,7 +28,9 @@ coverage, arbitrary circuit sizes and cloud-device setup are separate costs;
 
 ## Compiler layers
 
-The following is the selected direction, not the current execution path:
+The following is the selected architecture. M1.1-A connects the existing finite
+verifier to the bounded OpenQASM importer/exporter and QIR writer; the Python,
+QIR-import and hierarchical paths remain future work:
 
 ```text
 .qli frontend     OpenQASM importer     QIR importer     Python circuit builder
@@ -93,11 +96,11 @@ matching it in a visitor, accounting routine or test. Current emitters and debt:
 | Representation | Current production emitter / acceptance consumer | Reduction disposition |
 | --- | --- | --- |
 | `Gate`, `Cnot`, `Toffoli` | [Primitive lowering](../src/frontend/compile/lower/primitives.rs); raw verifier, exact extractor and simulator | Emitted today. Candidates for later desugaring into the shared unitary vocabulary; preserve separate owners, output ordering, source locations and limits. Do not remove them in a PATCH. |
-| `ApplyUnitary` and `CircuitStep` | [Static lowering](../src/frontend/compile/lower/mod.rs), including source `qif`, inverse/control and repetition; raw verifier, exact circuit checker and simulator | Existing common finite unitary vocabulary: controls, Hadamard, exact monomial actions and retained contract calls. Use this vocabulary for the initial internal adapter; it is not yet a selected foreign-format subset. |
+| `ApplyUnitary` and `CircuitStep` | [Static lowering](../src/frontend/compile/lower/mod.rs), including source `qif`, inverse/control and repetition, plus [M1.1 OpenQASM lowering](../src/interop/profile.rs); raw verifier, exact circuit checker and simulator | Existing common finite unitary vocabulary: controls, Hadamard, exact monomial actions and retained contract calls. The internal compatibility adapter and M1.1-A importer use this vocabulary; the importer emits only the selected Hadamard/monomial subset. No foreign gate requires a new verifier rule. |
 | `QuantumIf` and its `UnitaryStep` arms | No current source-lowering constructor; raw Rust callers/tests can supply them. Verifier, evidence preflight/extractor and simulator still accept them. The frontend function-contract size visitor only inspects them. | Explicit compatibility debt. First replace the dedicated numeric interpreter with an adapter to `CircuitStep`; then specify legacy desugaring and migrate this convenience variant out of the core in a MINOR. |
 | `ComputeUseUncompute` / `ProtectedUse` | [Restricted source lowering](../src/frontend/compile/lower/mod.rs) emits an empty target list and only Z/T `ProtectedGate` on its single ancilla. Raw verifier/extractor/simulator also support target gates, controlled phase, source protection and broader layouts. | Emitted subset has a cleanup obligation; the larger raw-only vocabulary is additional debt. Do not expand it for hypothetical importers. Investigate migration to explicit circuits with checked cleanup evidence, without treating a name or unitarity as zero-return evidence. No equivalence or migration is implemented yet. |
 | `CertifiedCompute` and retained `Contract` actions | [Certified lowering](../src/frontend/compile/lower/certified.rs) and [function contracts](../src/frontend/compile/lower/function_contract.rs); independent evidence checks | Keep exact actual/logical binding and dependency checking. A convenience form may disappear only when these obligations are represented and checked elsewhere. |
-| Preparation, observation, ownership structure, lifts, classical operations and branch phis | [Primitive](../src/frontend/compile/lower/primitives.rs), [expression](../src/frontend/compile/lower/mod.rs) and [branch](../src/frontend/compile/lower/branch.rs) lowering; raw verifier and execution/extraction where applicable | Emitted today. Retain their resource, instrument and ordering obligations; external physical IDs or LLVM control flow alone do not establish them. |
+| Preparation, observation, ownership structure, lifts, classical operations and branch phis | [Primitive](../src/frontend/compile/lower/primitives.rs), [expression](../src/frontend/compile/lower/mod.rs) and [branch](../src/frontend/compile/lower/branch.rs) lowering; M1.1-A emits Init0/Join/Split/MeasureZ/Discard; raw verifier and execution/extraction where applicable | Emitted today. Retain their resource, instrument and ordering obligations; external physical IDs or LLVM control flow alone do not establish them. |
 
 This is an initial constructor-family inventory, not a proof of complete
 frontend coverage. Review it when adding an emitter, core constructor or
@@ -132,14 +135,14 @@ The next core reduction needs a complete migration contract before implementatio
    count file moves, numeric sharing, or deleting tests as trusted-core reduction.
 
 These steps require a MINOR when public IR/API or specified capacities change.
-Keep the reference executor during external-backend development. QIR/OpenQASM
-adapters and their correctness checks are still pending; this maintenance step
-does not claim standard-format support, a minimal kernel or M2 hierarchy.
+Keep the reference executor during external-backend development. The later [M1.1-A adapter work](interop-m1.1.md) uses these existing rules.
+Neither step establishes a general translation proof, a minimal kernel or M2 hierarchy.
 
 ## Initial implementation slices
 
-All rows need a complete English extension specification before implementation,
-including versioned signatures/formats, limits, diagnostics and migration.
+Every implemented row needs a complete English contract for signatures/formats,
+limits, diagnostics and migration. [M1.1-A](interop-m1.1.md) supplies it for the
+bounded OpenQASM direction and QIR output; the remaining rows are future gates.
 
 | Slice | Initial scope and obligation removed | Evidence and acceptance boundary |
 | --- | --- | --- |
@@ -240,8 +243,8 @@ explicit compatibility decision.
   Its measured-qubit reuse is a concrete translation obligation above.
 - [OpenQASM 3.1 quantum instructions](https://openqasm.com/versions/3.1/language/insts.html)
   and [gate modifiers/global phase](https://openqasm.com/versions/3.1/language/gates.html)
-  supply the external semantic reference. The exact supported 3.x version and
-  subset still require selection; using these references is not a 3.1 support claim.
+  supply the external semantic reference. M1.1-A selects a common 3.0/3.1 terminal subset with explicit initialization;
+  it is not full OpenQASM 3.1 support.
 - [PyQIR](https://github.com/qir-alliance/pyqir) supplies QIR APIs;
   [PyO3 distribution guidance](https://pyo3.rs/v0.29.2/building-and-distribution.html)
   describes packaging native Python extensions. These are candidates to evaluate,

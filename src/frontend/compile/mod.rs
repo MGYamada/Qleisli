@@ -10,6 +10,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use super::ast::*;
+use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{ImportOrigin, Project};
 use crate::{VerifiedProgram, ir::Effect};
 
@@ -461,18 +462,45 @@ fn process_project(
     root: &Path,
     require_entry: bool,
 ) -> Result<Option<VerifiedProgram>, CompileError> {
-    let project = Project::load(root).map_err(|failure| {
-        let source = std::fs::read_to_string(&failure.path).unwrap_or_default();
-        let (line, column) = coordinates(&source, failure.span);
+    let project = Project::load_detailed(root).map_err(|failure| {
+        let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
             code: ErrorCode::Project,
-            path: failure.path,
-            span: failure.span,
+            path: failure.error.path,
+            span: failure.error.span,
             line,
             column,
-            message: failure.message,
+            message: failure.error.message,
         }
     })?;
+    process_loaded_project(root, &project, require_entry)
+}
+
+/// Check source and IR with structured parse/load categories and optional locations.
+/// The existing `check_project` error API remains unchanged.
+pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic> {
+    process_project_diagnostic(root, false).map(|_| ())
+}
+
+/// Compile through the same source and independent IR checks as `compile_project`,
+/// retaining structured diagnostics without interpreting human-readable messages.
+pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic> {
+    Ok(process_project_diagnostic(root, true)?.expect("required entry was compiled"))
+}
+
+fn process_project_diagnostic(
+    root: &Path,
+    require_entry: bool,
+) -> Result<Option<VerifiedProgram>, Diagnostic> {
+    let project = Project::load_detailed(root).map_err(|failure| failure.into_diagnostic())?;
+    process_loaded_project(root, &project, require_entry).map_err(Diagnostic::from_compile)
+}
+
+fn process_loaded_project(
+    root: &Path,
+    project: &Project,
+    require_entry: bool,
+) -> Result<Option<VerifiedProgram>, CompileError> {
     let declarations = project
         .modules
         .iter()
@@ -485,7 +513,7 @@ fn process_project(
         })
         .collect();
     let mut compiler = Compiler {
-        project: &project,
+        project,
         declarations,
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
@@ -533,27 +561,4 @@ fn process_project(
         }
     }
     Ok(main)
-}
-
-fn coordinates(source: &str, span: Span) -> (usize, usize) {
-    let mut line = 1;
-    let mut column = 1;
-    let mut previous_cr = false;
-    for ch in source.get(..span.start).unwrap_or("").chars() {
-        match ch {
-            '\r' => {
-                line += 1;
-                column = 1;
-            }
-            '\n' => {
-                if !previous_cr {
-                    line += 1;
-                }
-                column = 1;
-            }
-            _ => column += 1,
-        }
-        previous_cr = ch == '\r';
-    }
-    (line, column)
 }

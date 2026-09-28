@@ -1,7 +1,7 @@
 # Versioning and compatibility
 
 Status: **adopted project policy, starting at 0.1.0** (2026-09-27).
-This is the authoritative English policy. The Japanese working rules in
+This is the authoritative English policy. The repository working rules in
 [AGENTS.md](../AGENTS.md) summarize it. The project uses the version format
 and release immutability rules of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html),
 with the explicit initial-development policy below.
@@ -16,8 +16,17 @@ source-acceptance changes in 0.1.6. This is an
 explicit exception, not a compatible-maintenance claim or permission to put
 other new features in PATCH releases. The normal policy below remains in force.
 
+**Additional explicit exception, 2026-09-28:** the user again chose **0.1.7**
+for starting M1 features after the normal MINOR requirement was explained.
+The selected initial implementation is X1 JSON check/run results and structured
+frontend diagnostics. The user subsequently added M1.1 OpenQASM 3/QIR connection
+work to this development version; its initial bounded scope is recorded in the
+[connection contract](interop-m1.1.md). The [0.1.7 record](releases/v0.1.7.md) identifies new
+functionality, migration and unimplemented M1 work; this exception is not
+permission for future PATCH feature releases.
+
 The selected baseline and release state are in [current status](current-status.md)
-and the [0.1.6 release record](releases/v0.1.6.md). Version selection alone
+and the [0.1.7 implementation record](releases/v0.1.7.md). Version selection alone
 does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
 independently of version numbers; no theme reserves a MINOR number. Continuous
 audits need no PATCH unless a useful compatible change is being released.
