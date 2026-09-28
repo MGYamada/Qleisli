@@ -1,6 +1,6 @@
 # A fixed client contract with interchangeable implementations
 
-`meaning.qli` defines the client's exact logical phase operation. The client
+`specification.qli` defines the client's exact logical phase operation. The client
 uses `apply_contract(selected, phase, q)`, which independently checks the
 selected implementation against that fixed specification and retains the
 checked evidence in the final IR.

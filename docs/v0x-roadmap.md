@@ -21,9 +21,10 @@ continuously and need no patch release unless shipping a useful correction.
 The user-requested 0.1.5 is a design/documentation maintenance candidate.
 
 The 0.1.x line normally remains compatible finite-core maintenance. The
-[explicit 0.1.6/0.1.7 exceptions](versioning.md#version-identity) do not
+[explicit 0.1.6/0.1.7/0.1.8 exceptions](versioning.md#version-identity) do not
 generalize to future PATCH features. X1 check/run implementation is now
-recorded in the [0.1.7 development record](releases/v0.1.7.md). Its historical
+recorded in the [0.1.7 development record](releases/v0.1.7.md). Fixed-width operation parameters and meanings are implemented in the
+[0.1.8 record](releases/v0.1.8.md). The historical
 v0.1.9 checkpoint is retained below as B019, without requiring patches 6–9
 before new-feature work. New APIs, syntax, capacities, hierarchical IR or
 kernel integration belong in MINOR work. Later maintenance can use 0.1.10.

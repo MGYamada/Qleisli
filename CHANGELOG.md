@@ -6,7 +6,32 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No changes recorded after 0.1.7.
+Selected development version: **0.1.8**, by explicit user feature-version
+exception. See the [implementation/migration record](docs/releases/v0.1.8.md).
+
+### Added
+
+- Fixed-width static operation parameters, explicit access constraints and
+  bracket arguments, phase-fixed permutation/phase meanings, `bind_op`, and
+  six checked composition constructors. One unchanged client can accept
+  independently checked implementations of the same meaning.
+- `FiniteMeaning` / `MeaningEvidence` reuse existing monomial and function
+  evidence. Final IR retains receipts; no core acceptance rule is added.
+- Parametric access/type/ownership checking and concrete exact cleanup checks,
+  bounded specialization, source/evidence rejection regressions and a runnable
+  operation-contract example.
+
+### Changed
+
+- Reserve the new M1 keywords and extend public AST/token/error records;
+  follow the release record's source and Rust migration. JSON v1 gains emitted
+  `capability` / `contract` cases within its specified category set.
+- Render meaning definitions and access requirements in source documentation.
+- Split parser routines to preserve existing deep-syntax acceptance/rejection
+  without increasing stack requirements. Keep old IR, toolchains and limits.
+
+No v0.1.8 tagging or publication has been performed. QIR import, remaining
+machine interfaces, size generalization and M2 remain separate work.
 
 ## 0.1.7 — 2026-09-28
 

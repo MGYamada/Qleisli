@@ -80,12 +80,17 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Current version: 0.1.7.** The [release record](docs/releases/v0.1.7.md)
+**Development version: 0.1.8.** The [release record](docs/releases/v0.1.8.md)
 separates implemented features, executed checks and publication status.
+
+The [operation-contract example](examples/operation_contracts/main.qli) uses one
+static operation parameter with two independently checked implementations.
+Run it with `cargo run --bin qleisli -- run examples/operation_contracts`.
 
 Today, Qleisli checks and executes finite programs with modules, linear
 ownership, measurement/feedback, static inverse/control/repetition, and exact
-finite semantic contracts. Small Grover, QPE and order-finding examples are
+finite semantic contracts, plus bounded static operation parameters and
+basis-derived meanings. Small Grover, QPE and order-finding examples are
 regressions. Function contracts allow different checked implementations of the
 same meaning to serve an unchanged client.
 

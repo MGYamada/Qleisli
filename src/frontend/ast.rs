@@ -42,6 +42,8 @@ pub struct UseDecl {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FnKind {
+    /// A finite mathematical target, never a callable runtime function.
+    Meaning,
     Basis,
     Iso,
     Unitary,
@@ -53,6 +55,8 @@ pub struct Decl {
     pub public: bool,
     pub kind: FnKind,
     pub name: Ident,
+    pub static_params: Vec<StaticParam>,
+    pub requires: Vec<AccessConstraint>,
     pub params: Vec<Param>,
     pub return_type: Type,
     pub body: FnBody,
@@ -83,6 +87,7 @@ pub enum TypeKind {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum FnBody {
+    Meaning { permutation: bool, function: Ident },
     Basis(BasisExpr),
     Quantum(Block),
 }
@@ -156,6 +161,7 @@ pub enum ExprKind {
     Xor(Box<Expr>, Box<Expr>),
     Call {
         callee: Ident,
+        static_args: Vec<StaticOp>,
         args: Vec<Expr>,
     },
     If {
@@ -184,6 +190,47 @@ pub enum ExprKind {
         ancilla_binder: Box<Ident>,
         body: Block,
     },
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Access {
+    Apply,
+    Adjoint,
+    Controlled,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AccessConstraint {
+    pub access: Access,
+    pub name: Ident,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StaticParam {
+    pub name: Ident,
+    pub basis: Type,
+    pub meaning: Option<Ident>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StaticOp {
+    pub kind: StaticOpKind,
+    pub span: Span,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum StaticOpKind {
+    Name(Ident),
+    Bind {
+        implementation: Ident,
+        meaning: Ident,
+    },
+    Inverse(Box<StaticOp>),
+    Then(Box<StaticOp>, Box<StaticOp>),
+    Tensor(Box<StaticOp>, Box<StaticOp>),
+    Controlled(Box<StaticOp>),
+    Repeat(u16, Box<StaticOp>),
+    Conjugate(Box<StaticOp>, Box<StaticOp>),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]

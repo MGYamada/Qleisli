@@ -25,6 +25,14 @@ It is retained in product 0.1.6 by the user's explicit version-policy exception.
 Attachment and line-ending changes have migration guidance in that specification;
 docstrings carry no quantum meaning or evidence authority.
 
+The 0.1.8 [fixed-width operation supplement](next-minor-spec.md) additionally
+specifies meaning declarations, static parameters/arguments, access constraints
+and operation constructors. These are language forms, not runtime values or
+sealed gates. Their complete normative productions and reserved words are in
+that supplement; they extend the base EBNF below. Follow its source/Rust
+migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
+accept eligible static parameter names with the corresponding declared access.
+
 <a id="構文と組み込みの境界"></a>
 
 ## Boundary between syntax and built-in operations
@@ -82,12 +90,16 @@ rejected as an unexpected character. In particular, a leading U+FEFF byte order
 mark (BOM) is rejected rather than stripped. Non-ASCII identifiers are not
 permitted.
 
-The reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
+The base reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
 `let`, `if`, `else`, `do`, `pure`, `with_computed`, `adjoint`, `repeat_static`,
 `qif`, `apply_contract`, `true`, `false`, `not`, `xor`, `and`, `Unit`, `Bit`, `CBit`, and `Q`.
+The M1 supplement also reserves `meaning`, `static`, `Op`, `requires`,
+`Apply`, `Adjoint`, `Controlled`, `permutation_by`, `phase_by`, `bind_op`,
+`inverse_op`, `then_op`, `tensor_op`, `controlled_op`, `repeat_op`, and
+`conjugate_op`; rename colliding identifiers, including module components.
 The only basis `Bit`
 literals are `0` and `1`. A decimal natural number is allowed only in the count
-position of `repeat_static`, with no leading zero except for `0` itself. The
+position of `repeat_static` or M1 `repeat_op`, with no leading zero except for `0` itself. The
 current implementation profile accepts counts from 0 through 4,096 and diagnoses
 larger counts. A consecutive run of digits is one token, so `10` and `2` remain
 invalid basis literals. Strings, floating-point numbers, arrays, general
@@ -392,7 +404,7 @@ or execution; the compilation and execution regressions are recorded in the
 
 ## Deferred syntax
 
-- First-class static operations, operations with classical parameters, and
+- Runtime first-class operations, operations with classical parameters, and
   inverses between different basis types remain deferred. Current `qif`,
   `adjoint`, and `repeat_static` resolve function names statically and target
   only `Q<A> -> Q<A>` unitaries with no classical arguments.

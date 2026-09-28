@@ -36,7 +36,7 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if env.contains_key(&function.text) {
+        if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
             return Err(self.error(
                 module,
                 function.span,
@@ -107,6 +107,12 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
+        if self.abstract_check {
+            // This skeleton is used only for parametric source checking. No
+            // certificate or executable generic body is produced from it.
+            self.apply_circuit(source_slot, logical_steps);
+            return Ok(source);
+        }
         let wire = self.wire();
         let output = self.token();
         self.operations.push(RawOp::CertifiedCompute {
@@ -141,6 +147,15 @@ impl Lowerer<'_, '_> {
             body.span,
             joint.tree_size().nodes.saturating_mul(3) + env_size(env),
         )?;
+        self.compiler.charge(
+            module,
+            body.span,
+            total_size(
+                self.bindings
+                    .values()
+                    .map(super::super::operations::Operation::copy_size),
+            ),
+        )?;
         let mut inner = Lowerer {
             compiler: self.compiler,
             registers: BTreeMap::new(),
@@ -152,6 +167,8 @@ impl Lowerer<'_, '_> {
             next_slot: 0,
             effect: Effect::Unitary,
             depth: self.depth,
+            bindings: self.bindings.clone(),
+            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];

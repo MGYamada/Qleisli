@@ -41,6 +41,8 @@ impl Diagnostic {
             ErrorCode::Unsupported => "unsupported",
             ErrorCode::Limit => "limit",
             ErrorCode::InvalidIr => "invalid_ir",
+            ErrorCode::Capability => "capability",
+            ErrorCode::Contract => "contract",
         };
         let primary = (error.span != Span::default()).then_some(SourceLocation {
             path: error.path,

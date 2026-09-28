@@ -14,6 +14,13 @@ The [static semantics](static-semantics.md) gives local phase-preserving proofs;
 general source-to-IR meaning preservation and Rust implementation correctness
 remain open.
 
+The 0.1.8 [M1 supplement](next-minor-spec.md) additionally permits static
+parameter names in these three forms, requiring Adjoint, Apply, and Controlled
+access respectively. Its six-bit operation profile is separate from the
+existing twelve-bit closed named-function profile below. `apply_contract` and
+both computed forms keep their original closed name operands. Static operation
+constructors use bracket arguments; they are not runtime closures.
+
 <a id="表層の契約"></a>
 
 ## Surface contracts

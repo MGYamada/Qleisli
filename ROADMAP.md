@@ -36,9 +36,20 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
 
+## v0.1.8: fixed-width operation parameters and meanings
+
+**Current development version: v0.1.8**, selected by explicit user feature-version
+exception. Implement the [M1 language supplement](docs/next-minor-spec.md):
+phase-fixed meanings, explicit operation arguments/access and checked
+composition through existing retained finite evidence. One generic body can
+accept two checked providers of the same meaning. The
+[implementation/migration record](docs/releases/v0.1.8.md) separates local
+validation from release gates. QIR input, X2–X6 and M2 remain pending; this
+slice does not establish general-size algorithms or V1-C1–C5.
+
 ## v0.1.7: start M1 with JSON results and M1.1 connections
 
-**Current development version: v0.1.7.** After the MINOR requirement was
+**Previous released version: v0.1.7.** After the MINOR requirement was
 explained, the user explicitly chose a new exception for starting M1 features.
 The first implemented slice is [X1 check/run JSON](docs/machine-interface-spec.md#diagnostics):
 versioned success/error envelopes, original-source locations and structured

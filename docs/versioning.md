@@ -25,8 +25,14 @@ work to this development version; its initial bounded scope is recorded in the
 functionality, migration and unimplemented M1 work; this exception is not
 permission for future PATCH feature releases.
 
+**Further explicit exception, 2026-09-28:** the user selected **0.1.8** for
+continued implementation after the v0.1.7 release. The delivered slice is
+fixed-width operation parameters and meaning contracts, with reserved-name and
+public Rust AST/error migration in the [0.1.8 record](releases/v0.1.8.md).
+This is a scoped feature exception, not maintenance-only work.
+
 The selected baseline and release state are in [current status](current-status.md)
-and the [0.1.7 implementation record](releases/v0.1.7.md). Version selection alone
+and the [0.1.8 implementation record](releases/v0.1.8.md). Version selection alone
 does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
 independently of version numbers; no theme reserves a MINOR number. Continuous
 audits need no PATCH unless a useful compatible change is being released.

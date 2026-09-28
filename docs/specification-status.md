@@ -8,17 +8,35 @@ paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.7 record](releases/v0.1.7.md) separates the new M1 X1 implementation,
+from one current-state record and the manifests. The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 implementation,
 its explicit version exception and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.7.md) and
+The current [release record](releases/v0.1.8.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## Fixed-width M1 implementation in v0.1.8 (2026-09-28)
+
+The user selected v0.1.8 for continued implementation on a suitable branch.
+The normative [M1 supplement](next-minor-spec.md) now has static operation
+parameters, independent access constraints, basis-derived meanings and checked
+composition. The existing monomial/FunctionEvidence boundary expresses these
+obligations; no new core checker rule or IR variant is introduced. Generic
+source checks do not issue evidence; each concrete computed equation still
+requires exact independent checking.
+
+The [release record](releases/v0.1.8.md#validation) records primary/MSRV Rust,
+source/evidence regressions, docs/helpers, representative execution and pinned
+Lean audit results, along with skipped release gates. Reserved identifiers and
+public AST/error additions require migration; the old function-contract example
+renames its `meaning` module to `specification` while retaining its operator.
+No v0.1.8 publication, general Rust theorem, completed M1/M2 milestone or V1
+algorithm acceptance follows from this implementation.
 
 ## v0.1.7 release procedure (2026-09-28)
 

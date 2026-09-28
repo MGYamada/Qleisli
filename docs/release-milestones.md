@@ -27,7 +27,7 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.7 record](releases/v0.1.7.md) separates M1 X1 and M1.1-A implementations, the
+in the [generated status](current-status.md). The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 implementation, the
 user's explicit version exception and local validation from publication.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
 older [release records](releases/v0.1.4.md) retain their historical evidence.

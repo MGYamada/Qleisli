@@ -7,6 +7,7 @@
 
 pub mod exact;
 pub mod function;
+pub mod meaning;
 pub use function::{FunctionEvidence, FunctionIdentity};
 
 use std::fmt;

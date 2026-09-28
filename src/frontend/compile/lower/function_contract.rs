@@ -135,7 +135,7 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
     ) -> Result<Key, CompileError> {
-        if env.contains_key(&name.text) {
+        if env.contains_key(&name.text) || self.bindings.contains_key(&name.text) {
             return Err(self.error(
                 module,
                 name.span,
@@ -157,6 +157,14 @@ impl Lowerer<'_, '_> {
                 name.span,
                 ErrorCode::Effect,
                 "apply_contract requires declared unitary functions",
+            ));
+        }
+        if !self.compiler.declarations[&key].static_params.is_empty() {
+            return Err(self.error(
+                module,
+                name.span,
+                ErrorCode::Arity,
+                "contract functions must be closed",
             ));
         }
         let expected = Ty::Q(Box::new(basis.clone()));

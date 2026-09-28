@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.7 release scope finalized under the explicit user feature exception: X1 check/run JSON and M1.1-A OpenQASM input/output + QIR output; exact-commit publication evidence is in the linked release record",
+  "release_state": "0.1.8 selected by explicit user feature exception; fixed-width operation parameters and meanings implemented and locally validated; tagging/publication pending",
   "milestones": [
     {
       "id": "M0",
@@ -10,9 +10,9 @@
     },
     {
       "id": "M1",
-      "state": "X1 check/run JSON and M1.1-A OpenQASM import/export + QIR output implemented; remaining slices pending",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md)",
-      "open": "Implement N1–N6 and X2–X6; QIR import through a standard reader, adaptive connections and Python bindings/distribution remain separate gates"
+      "state": "Fixed-width operations/meanings implemented alongside released X1 and M1.1-A; remaining slices pending",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md)",
+      "open": "Release the locally validated operation slice; X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
       "id": "M2",
@@ -141,6 +141,12 @@
       "implementation": "[Bounded OpenQASM parser/lowering](../src/interop/openqasm.rs); [profile/ownership adapter](../src/interop/profile.rs); [QIR writer](../src/interop/qir.rs)",
       "tests": "[Independent import and rejection cases](../tests/interop.rs); [exact gate columns](../src/interop/profile.rs); [reference parser and LLVM checks](../scripts/test_interop_external.py)",
       "proof": "Finite translation regressions and independent target syntax/profile smoke checks; no general translator proof, imported evidence authority or device execution claim"
+    },
+    {
+      "rule": "[Fixed-width operation parameters and meanings](next-minor-spec.md)",
+      "implementation": "[Static descriptions](../src/frontend/compile/operations.rs); [generic lowering](../src/frontend/compile/lower/operations.rs); [target adapter](../src/contract/meaning.rs)",
+      "tests": "[Operation regressions](../tests/operation_parameters.rs); [exact target/binding regressions](../tests/meaning_evidence.rs)",
+      "proof": "Existing finite evidence boundary reused; parametric source checking and per-instance exact checks, not general Rust adequacy or a new Lean theorem"
     }
   ]
 }

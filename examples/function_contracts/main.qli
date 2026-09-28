@@ -5,7 +5,7 @@ use std::quantum::cnot;
 use std::observe::measure_z;
 use std::observe::discard;
 use implementation::selected;
-use meaning::phase;
+use specification::phase;
 
 unitary fn contracted_phase(q: Q<Bit>) -> Q<Bit> {
     apply_contract(selected, phase, q)

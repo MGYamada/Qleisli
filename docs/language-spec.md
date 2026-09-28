@@ -2,7 +2,7 @@
 
 # Qleisli finite core language specification v0
 
-Status: **Normative finite core specification, revised for product patterns and classical expressions** (2026-09-26). This version covers finite types and static operations before sized types and operation parameters. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
+Status: **Normative finite core specification, revised for product patterns and classical expressions** (2026-09-26). This base specification covers finite types and static operations; the [M1 supplement](next-minor-spec.md) adds fixed-width operation parameters in product 0.1.8. Sized types remain outside this profile. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
 
 <a id="1-範囲と規範の扱い"></a>
 
@@ -17,6 +17,16 @@ adds the three-argument form in §9 below. Together with the
 checks V01-C1–C6 within the declared finite profile. The two-argument form
 retains its structural rule. General implementation soundness and the
 structured algorithm families required for v1 remain open.
+
+The [fixed-width M1 supplement](next-minor-spec.md) is normative for meaning
+declarations, `Op<A>` / `Op<A,m>` static parameters, explicit access constraints
+and static constructors. Application consumes and returns one exact `Q<A>`
+with own effect Unitary, joined with argument effects. Descriptions are
+compile-time data without captured owners. Parametric checking validates each
+declared access requirement; concrete lowering retains exact evidence in the
+existing core. The supplement specifies accepted/rejected examples, budgets,
+phase/axis conventions and migration. Existing mathematical v0 proofs do not
+by themselves establish adequacy of this new Rust frontend path.
 
 `Q<A>` is an **ownership type** for quantum resources. It is neither a computation effect nor a value type that permits arbitrary quantum states to be copied. Arbitrary `bind` on the free vector space `H(A)=ℂ^A` is not an executable API. The design principle of Kleisli-style composition with classical values, resources, and effects is distinct from a proof of a strict monad structure.
 

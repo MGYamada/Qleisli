@@ -8,6 +8,14 @@ execution for [finite core v0](language-spec.md) and its [grammar](syntax-v0.md)
 The explicit mathematical rules have paper soundness results; general Rust
 adequacy, source-to-IR preservation, and external backends remain open.
 
+Product 0.1.8 implements the [fixed-width operation supplement](next-minor-spec.md):
+static parameters/arguments, independent access constraints, basis-derived
+meanings and checked composition. Generic bodies are source-checked before
+specialization; abstract checking produces no `VerifiedProgram` or cleanup
+evidence. Each concrete expansion passes the existing independent checker.
+The [release record](releases/v0.1.8.md) gives public AST/error and reserved-word
+migration, executed validation and remaining gates.
+
 <a id="入口と信頼境界"></a>
 
 ## Entry points and trust boundary
@@ -34,8 +42,8 @@ commands, not new `.qli` forms or quantum operations.
 
 The [documentation extension](documentation-comments.md) adds
 `qleisli doc <source-file>`, `parse_documented_module` and Markdown rendering.
-The source parser validates Rust-style doc placement while retaining the existing
-public AST shape. Documentation is returned separately; `doc` only parses one
+The source parser validates Rust-style doc placement using a sidecar distinct from the
+public AST. The M1 extension separately adds AST fields/variants. Documentation is returned separately; `doc` only parses one
 file and does not resolve imports or check types, ownership or contracts.
 
 The CLI preserves the source-root argument as an OS path, including non-UTF-8
