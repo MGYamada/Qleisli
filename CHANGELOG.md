@@ -6,7 +6,55 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No changes yet.
+No changes recorded after 0.1.7.
+
+## 0.1.7 — 2026-09-28
+
+Start M1 with JSON results and bounded OpenQASM 3/QIR connections, under the
+user's explicit feature-release exception. This is new functionality, not
+compatible-maintenance-only work. The [release record](docs/releases/v0.1.7.md)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.7)
+separate implementation, validation and publication.
+
+### Added
+
+- Start M1.1-A with bounded OpenQASM 3 import/export and QIR 2.0 Base text output.
+  Require explicit OpenQASM initialization, retain exact gate phases and output
+  order, and independently verify imported ownership through the existing core.
+  Add a Rust host example, adversarial/exact tests and independent parser/LLVM
+  validation. See the [connection contract](docs/interop-m1.1.md).
+- Start M1 X1 with opt-in `--format=json` for `check` and `run`: one version-1
+  `qleisli.result` object on stdout, including failures, stable categories,
+  nullable original-source locations, and lexicographically ordered distributions.
+- Add structured frontend diagnostic APIs alongside the unchanged legacy error
+  APIs. Preserve parser/load provenance and coordinates from the loaded source
+  snapshot, including Unicode, CRLF and empty EOF spans.
+- Validate JSON independently with Python's JSON decoder as well as Rust CLI
+  golden and diagnostic regressions; run the JSON suite in primary/MSRV CI.
+
+### Changed
+
+- Adopt the project title “Qleisli: A Language for Structured Quantum Algorithms”
+  and the tagline “Write quantum algorithms in the language you use to think
+  about them.” in a shorter README with a runnable introduction.
+- Translate AGENTS.md into English, preserving the working rules and explicit
+  version exceptions. Retain historical Japanese validation records, bilingual
+  glossary terms and legacy link anchors.
+
+### Compatibility and scope
+
+- Human output and existing successful invocations remain unchanged. Unknown,
+  duplicate or missing-value flags are usage errors. Prefix a path starting with
+  `-` by `./`. `doc` keeps its existing Markdown interface and rejects JSON mode.
+- JSON mode requires UTF-8 path identities. Non-UTF-8 paths report `project`
+  without an invented location; legacy human mode retains its path support.
+- Clamp only JSON probability endpoint roundoff within 2^-40; reject nonfinite
+  or materially out-of-range output as `numerical`. The numerical reference
+  simulator and exact evidence checker are unchanged.
+- No new `.qli` form, core checking rule, IR variant, production dependency, existing capacity or
+  toolchain requirement. New adapters have explicit local bounds; validation-only
+  OpenQASM/ANTLR and LLVM dependencies run separately. QIR import, adaptive
+  connections and Python distribution remain pending. X2–X6, N1–N6 and M2 remain unimplemented.
 
 ## 0.1.6 — 2026-09-28
 

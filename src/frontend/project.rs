@@ -9,6 +9,7 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 use super::ast::{self, FnKind, Span, UseDecl};
+use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
 use super::lexer::keyword_kind;
 use super::parser::parse_module;
 
@@ -90,20 +91,68 @@ impl fmt::Display for ProjectError {
 
 impl std::error::Error for ProjectError {}
 
-fn error(path: &Path, span: Span, message: impl Into<String>) -> ProjectError {
-    ProjectError {
-        path: path.to_path_buf(),
-        span,
-        message: message.into(),
+pub(crate) struct LoadFailure {
+    pub error: ProjectError,
+    pub coordinates: Option<(usize, usize)>,
+    parse: bool,
+}
+
+impl LoadFailure {
+    pub(crate) fn into_diagnostic(self) -> Diagnostic {
+        Diagnostic {
+            code: if self.parse { "parse" } else { "project" },
+            message: self.error.message,
+            primary: self.coordinates.map(|(line, column)| SourceLocation {
+                path: self.error.path,
+                span: self.error.span,
+                line,
+                column,
+            }),
+        }
     }
 }
 
-fn io_error(path: &Path, failure: std::io::Error) -> ProjectError {
+fn source_error(module: &SourceModule, span: Span, message: impl Into<String>) -> LoadFailure {
+    located_error(&module.path, &module.source, span, "project", message)
+}
+
+fn located_error(
+    path: &Path,
+    source: &str,
+    span: Span,
+    code: &'static str,
+    message: impl Into<String>,
+) -> LoadFailure {
+    let mut failure = error(path, span, message);
+    let (line, column) = coordinates(source, span);
+    failure.parse = code == "parse";
+    failure.coordinates = Some((line, column));
+    failure
+}
+
+fn error(path: &Path, span: Span, message: impl Into<String>) -> LoadFailure {
+    let message = message.into();
+    LoadFailure {
+        error: ProjectError {
+            path: path.to_path_buf(),
+            span,
+            message,
+        },
+        coordinates: None,
+        parse: false,
+    }
+}
+
+fn io_error(path: &Path, failure: std::io::Error) -> LoadFailure {
     error(path, Span::default(), failure.to_string())
 }
 
 impl Project {
     pub fn load(root: &Path) -> Result<Self, ProjectError> {
+        Self::load_detailed(root).map_err(|failure| failure.error)
+    }
+
+    pub(crate) fn load_detailed(root: &Path) -> Result<Self, LoadFailure> {
         let root = fs::canonicalize(root).map_err(|failure| io_error(root, failure))?;
         if !root.is_dir() {
             return Err(error(
@@ -132,9 +181,11 @@ impl Project {
         for &(name, source) in BUNDLED_SOURCES {
             let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
             let ast = parse_module(source).map_err(|failure| {
-                error(
+                located_error(
                     &path,
+                    source,
                     failure.span,
+                    "parse",
                     format!("parse error: {}", failure.message),
                 )
             })?;
@@ -160,7 +211,7 @@ impl Project {
         self.modules.get(name)
     }
 
-    fn resolve_imports(&mut self) -> Result<(), ProjectError> {
+    fn resolve_imports(&mut self) -> Result<(), LoadFailure> {
         // Resolve against immutable module declarations first, then publish the
         // completed scopes. Declaration order cannot change import meaning.
         let mut scopes = BTreeMap::new();
@@ -176,8 +227,8 @@ impl Project {
                 let imported = self.resolve_one_import(module, use_decl)?;
                 let local_name = imported.name.clone();
                 if !used_names.insert(&use_decl.path.last().expect("parser requires name").text) {
-                    return Err(error(
-                        &module.path,
+                    return Err(source_error(
+                        module,
                         use_decl.path.last().expect("parser requires name").span,
                         format!("name `{local_name}` collides with another declaration or import"),
                     ));
@@ -199,11 +250,11 @@ impl Project {
         &self,
         caller: &SourceModule,
         use_decl: &UseDecl,
-    ) -> Result<ResolvedImport, ProjectError> {
+    ) -> Result<ResolvedImport, LoadFailure> {
         let segments = &use_decl.path;
         if segments.len() < 2 {
-            return Err(error(
-                &caller.path,
+            return Err(source_error(
+                caller,
                 use_decl.span,
                 "import needs a module and a name",
             ));
@@ -225,15 +276,15 @@ impl Project {
                     span: use_decl.span,
                 });
             }
-            return Err(error(
-                &caller.path,
+            return Err(source_error(
+                caller,
                 segments.last().expect("nonempty import path").span,
                 format!("sealed module `{source_module}` has no public name `{name}`"),
             ));
         }
         let target = self.modules.get(&source_module).ok_or_else(|| {
-            error(
-                &caller.path,
+            source_error(
+                caller,
                 use_decl.span,
                 format!("missing module `{source_module}`"),
             )
@@ -244,15 +295,15 @@ impl Project {
             .iter()
             .find(|declaration| declaration.name.text == *name)
             .ok_or_else(|| {
-                error(
-                    &caller.path,
+                source_error(
+                    caller,
                     segments.last().expect("nonempty import path").span,
                     format!("module `{source_module}` has no name `{name}`"),
                 )
             })?;
         if !declaration.public {
-            return Err(error(
-                &caller.path,
+            return Err(source_error(
+                caller,
                 segments.last().expect("nonempty import path").span,
                 format!("`{source_module}::{name}` is not public"),
             ));
@@ -269,7 +320,7 @@ impl Project {
         })
     }
 
-    fn reject_cycles(&self) -> Result<(), ProjectError> {
+    fn reject_cycles(&self) -> Result<(), LoadFailure> {
         let mut marks = BTreeMap::<&str, u8>::new();
         // Each frame records the next import to visit. Keep the active path on
         // the heap so a long acyclic module chain cannot exhaust the Rust stack.
@@ -303,8 +354,8 @@ impl Project {
                         let mut cycle: Vec<_> =
                             stack[start..].iter().map(|(name, _)| *name).collect();
                         cycle.push(dependency);
-                        return Err(error(
-                            &module.path,
+                        return Err(source_error(
+                            module,
                             use_decl.span,
                             format!("cyclic import: {}", cycle.join(" -> ")),
                         ));
@@ -320,7 +371,7 @@ impl Project {
     }
 }
 
-fn collect_qli_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), ProjectError> {
+fn collect_qli_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), LoadFailure> {
     let mut entries = fs::read_dir(directory)
         .map_err(|failure| io_error(directory, failure))?
         .collect::<Result<Vec<_>, _>>()
@@ -347,7 +398,7 @@ fn collect_qli_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), P
     Ok(())
 }
 
-fn local_module_name(root: &Path, path: &Path) -> Result<String, ProjectError> {
+fn local_module_name(root: &Path, path: &Path) -> Result<String, LoadFailure> {
     let relative = path.strip_prefix(root).expect("collected beneath root");
     let mut parts = Vec::new();
     let file = relative.file_name().expect("collected file has a name");
@@ -401,12 +452,14 @@ fn parse_source(
     name: String,
     path: PathBuf,
     origin: ModuleOrigin,
-) -> Result<SourceModule, ProjectError> {
+) -> Result<SourceModule, LoadFailure> {
     let source = fs::read_to_string(&path).map_err(|failure| io_error(&path, failure))?;
     let ast = parse_module(&source).map_err(|failure| {
-        error(
+        located_error(
             &path,
+            &source,
             failure.span,
+            "parse",
             format!("parse error: {}", failure.message),
         )
     })?;
@@ -422,12 +475,12 @@ fn parse_source(
     Ok(module)
 }
 
-fn check_declarations(module: &SourceModule) -> Result<(), ProjectError> {
+fn check_declarations(module: &SourceModule) -> Result<(), LoadFailure> {
     let mut seen = BTreeSet::new();
     for declaration in &module.ast.decls {
         if !seen.insert(declaration.name.text.as_str()) {
-            return Err(error(
-                &module.path,
+            return Err(source_error(
+                module,
                 declaration.name.span,
                 format!("duplicate declaration `{}`", declaration.name.text),
             ));

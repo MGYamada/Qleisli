@@ -1,0 +1,18 @@
+OPENQASM 3.1;
+include "stdgates.inc";
+qubit[3] q;
+bit[3] c;
+reset q;
+h q[0];
+x q[1];
+y q[2];
+z q[0];
+s q[1];
+sdg q[1];
+t q[0];
+tdg q[0];
+cx q[2], q[0];
+cz q[0], q[1];
+swap q[2], q[1];
+ccx q[2], q[1], q[0];
+c = measure q;

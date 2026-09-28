@@ -20,7 +20,10 @@ it does not consume a reserved capability/size theme. Compatible audits run
 continuously and need no patch release unless shipping a useful correction.
 The user-requested 0.1.5 is a design/documentation maintenance candidate.
 
-The 0.1.x line remains compatible finite-core maintenance. Its historical
+The 0.1.x line normally remains compatible finite-core maintenance. The
+[explicit 0.1.6/0.1.7 exceptions](versioning.md#version-identity) do not
+generalize to future PATCH features. X1 check/run implementation is now
+recorded in the [0.1.7 development record](releases/v0.1.7.md). Its historical
 v0.1.9 checkpoint is retained below as B019, without requiring patches 6–9
 before new-feature work. New APIs, syntax, capacities, hierarchical IR or
 kernel integration belong in MINOR work. Later maintenance can use 0.1.10.
@@ -87,8 +90,9 @@ Walk and QSVT remain design stress tests, not additional executable v1 gates.
 The [2026-09-28 interoperability direction](interoperability-roadmap.md) adds
 independently shippable M1 slices: Python access to the shared compiler/checker,
 bounded OpenQASM 3 import/export and QIR Base output/input, followed by a
-specified adaptive fragment. These additional extension specifications are
-pending. Early finite interoperability can precede operation parameters and M2,
+specified adaptive fragment. [M1.1-A](interop-m1.1.md) now specifies and implements
+the bounded OpenQASM adapter and QIR output; QIR import, adaptive behavior and
+Python extension specifications/implementations remain pending. Early finite interoperability can precede operation parameters and M2,
 while the hierarchical IR/evidence and R14 gates remain prerequisites for sizes.
 
 The [coefficient-domain recommendation](coefficient-domains.md), also recorded
@@ -152,8 +156,8 @@ notification or second mutable status ledger. Current states remain in
 | Add trajectory sampling and typed trial outcomes | M1 / [X4–X5](machine-interface-spec.md#required-conformance-before-shipping) | Existing verified IR; JSON mode after X1 |
 | Add bounded source loading with explicit legacy migration | M1 / [X6](machine-interface-spec.md#required-conformance-before-shipping) | MINOR capacity change |
 | Specify and implement the Python host binding and wheel distribution | M1 / [interoperability gates](interoperability-roadmap.md#required-evidence-and-scheduling) | Complete Python extension contract; X4 before exposing sampling |
-| Specify and implement bounded OpenQASM 3 import/export | M1 / [translation obligations](interoperability-roadmap.md#translation-obligations) | Versioned subset and independent import/export fixtures |
-| Specify and implement QIR Base output/input | M1 / [interoperability gates](interoperability-roadmap.md#required-evidence-and-scheduling) | Pinned QIR/LLVM/QIS profile and target-lowering contract |
+| Bounded OpenQASM 3 import/export | M1.1-A / [terminal profile](interop-m1.1.md) | Initial implementation and local validation recorded; release gates pending |
+| QIR Base output/input | M1.1-A/B / [connection gates](interop-m1.1.md#acceptance-and-remaining-gates) | Initial output implemented; independent LLVM/PyQIR input and adversarial profile checks pending |
 | Implement bound hierarchical proofs and the QPE schema profile | M2 / [H1–H5](hierarchical-ir-spec.md#migration-and-implementation-gates) | M1 operation interfaces; required Lean schemas and sized source specification |
 | Synthesize predicate oracles and shared Grover | M3 / [Boolean DAG contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
 | Synthesize modular arithmetic and shared-QPE Shor | M4 / [arithmetic contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |

@@ -8,18 +8,61 @@ paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.6 record](releases/v0.1.6.md)
-separates IR/evidence maintenance, the explicit documentation-extension version
-exception and local validation from publication.
+from one current-state record and the manifests. The [0.1.7 record](releases/v0.1.7.md) separates the new M1 X1 implementation,
+its explicit version exception and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.6.md) and
+The current [release record](releases/v0.1.7.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.1.7 release procedure (2026-09-28)
+
+The user prioritized releasing the completed JSON diagnostic and bounded
+OpenQASM input/output + QIR output slice. Operation parameters, independent
+meaning declarations and QIR input remain unreleased work. The shorter README
+and English working guidelines preserve the project contracts and proof limits.
+Implementation CI passed all five jobs, including the new external-interop job;
+the [release record](releases/v0.1.7.md#release-preparation-and-hosted-validation)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.7)
+identify exact-commit release checks, source distributions and publication.
+Earlier candidate records below retain their original scope and pending states.
+
+## M1.1-A connections start in v0.1.7 (2026-09-28)
+
+The user's additional M1.1 request now has a [normative terminal profile](interop-m1.1.md)
+and additive Rust adapters for OpenQASM 3 input/output and QIR 2.0 Base text
+output. Explicit fresh initialization, exact gate phase, physical/logical IDs,
+measurement consumption, hidden terminal disposal and result order are specified.
+Unknown gates, missing initialization, reuse, malformed/aliased IDs and capacity
+excess reject before returning an artifact. Imported IR passes the same verifier;
+no new verifier rule, source form or certificate authority was added.
+
+Independent input fixtures, exact gate matrices, negative cases and external
+OpenQASM/LLVM checks are recorded in the [0.1.7 continuation](releases/v0.1.7.md#m11-a-connection-continuation).
+QIR import, adaptive instruments and Python packaging remain open. LLVM
+validity and local tests do not establish general translation correctness,
+backend execution, M1 completion or publication. Earlier dated records below
+retain the status and validation scope of their own work.
+
+## M1 X1 implementation starts in v0.1.7 (2026-09-28)
+
+The user explicitly selected v0.1.7 for M1 new-feature work after the normal
+MINOR rule was explained. X1 check/run now emits versioned JSON through an
+opt-in flag, with stable error categories, nullable source locations, original
+UTF-8 offsets and ordered finite distributions. Structured diagnostic APIs
+preserve legacy public error types and route through the same source/IR checks.
+The [machine-interface contract](machine-interface-spec.md#diagnostics) records
+flag/path migration, endpoint roundoff and still-unimplemented commands.
+
+The [implementation record](releases/v0.1.7.md) reports actual validation.
+This is new functionality, not compatible-only maintenance. N1–N6, X2–X6,
+M2, general compiler correspondence and publication are separate pending work.
+No new core rule, dependency or proof declaration is introduced.
 
 ## v0.1.6 release procedure (2026-09-28)
 

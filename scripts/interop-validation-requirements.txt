@@ -1,0 +1,4 @@
+# Validation only; neither package is a production Rust dependency.
+# openqasm3: Apache-2.0; ANTLR Python runtime: BSD-3-Clause.
+openqasm3[parser]==1.0.1
+antlr4-python3-runtime==4.13.2

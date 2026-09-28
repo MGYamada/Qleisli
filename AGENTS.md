@@ -1,80 +1,217 @@
-# Qleisli 作業指針
+# Qleisli working guidelines
 
-このリポジトリは設計先行です。作業前に [README.md](README.md)、[固定した設計思想](docs/design-philosophy.md)、[AI時代の量子言語という第1目標](docs/ai-era-goal.md)、[量子アルゴリズムの構造化という第2目標](docs/algorithm-structure-goal.md)、[有限コアの形式化](docs/formal-core.md)、[ROADMAP.md](ROADMAP.md)、[量子言語としての成立条件](docs/quantum-language-requirements.md)を読み、関連する草案を確認してください。アルゴリズムの部品を追加するときは[コーパス](docs/algorithm-corpus.md)と[部品の契約](docs/algorithm-routines.md)も確認してください。ユーザーの最新の指示を優先します。
+## Start from the design
 
-標準ライブラリを拡張するときは[第3層の計画](docs/stdlib-roadmap.md)と[契約台帳](docs/stdlib-contracts.md)を確認し、公開APIの契約・検証状態・採用基準を記録してください。静的操作の実装範囲は[逆・制御・反復の契約](docs/static-operations.md)で確認してください。計画中のメタ記法を実装済みの型やAPIとして扱わないでください。
+This repository is design-first. Before working, read [README](README.md),
+[design philosophy](docs/design-philosophy.md), the [AI-era goal](docs/ai-era-goal.md),
+[algorithm-structure goal](docs/algorithm-structure-goal.md), [formal core](docs/formal-core.md),
+[ROADMAP](ROADMAP.md), and [quantum-language requirements](docs/quantum-language-requirements.md).
+Consult the relevant drafts. The user's latest instructions take precedence.
 
-現在の版は `Cargo.toml` を正とし、[生成した現在状態・規則対応表](docs/current-status.md)と対応するリリース記録を参照してください。版選定、設計採用、実装、検証、証明、タグ・公開を区別します。現在の有限契約基盤を維持し、[英語の到達条件](docs/release-milestones.md)、[適合履歴](docs/specification-status.md)、[有限コア仕様v0](docs/language-spec.md)・[文法](docs/syntax-v0.md)に従ってください。一般的なRust実装対応・健全性証明は未完了です。
+When adding algorithm components, read the [corpus](docs/algorithm-corpus.md)
+and [routine contracts](docs/algorithm-routines.md). For standard-library work,
+read the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
+record each public API's contract, verification state and adoption criteria.
+Use the [static-operation contract](docs/static-operations.md) to determine the
+implemented inverse/control/repetition scope. Planned notation is not an API.
 
-**north starは「人間が量子アルゴリズムについて考えるときの言葉と、プログラムを書くときの言葉を一致させる」こと**です。v1ではShor・QPE・Groverが教科書の構造のまま読める実ソースでV1-C1〜C5を満たすことを要求します。固定サイズ例は回帰として保持し、疑似コードや命名だけで達成としません。
+`Cargo.toml` is authoritative for the current version. Consult the
+[generated status and rule inventory](docs/current-status.md) and the matching
+release record. Distinguish version selection, design adoption, implementation,
+validation, proof, tagging and publication. Preserve the finite contract
+foundation and follow the [acceptance criteria](docs/release-milestones.md),
+[conformance history](docs/specification-status.md), [language v0](docs/language-spec.md)
+and [grammar](docs/syntax-v0.md). General Rust adequacy and soundness proofs are open.
 
-[設計決定と次期範囲](docs/decisions/2026-09-27-v1-path.md)と[版番号から独立したM0〜M5](docs/v0x-roadmap.md)に従ってください。0.1.xは互換保守とし、監査ごとのPATCHは要求しません。新機能はMINORで扱い、固定幅のM1では既存の有限検査を使用できます。サイズ一般化の前に、全体密行列を展開しない意味・符号化・証拠の合成と、証拠を結合した階層IRを確立してください。一般的な述語・算術には全空間真理値表に頼らない可逆回路合成が必要です。記号的カーネルの限定した再開はM2の設計方針であり、0.1.xの追加実装や本番統合を意味しません。
+**North star: make the language people use to think about quantum algorithms
+coincide with the language they use to write programs.** V1 requires actual
+source for Shor, QPE and Grover that preserves textbook structure and meets
+V1-C1–C5. Retain fixed-size examples as regressions; names or pseudocode alone
+cannot satisfy these gates.
 
-新抽象化は、利用者のどの義務を減らし、どの証拠をどの検査器が確認するかで評価します。数学的ユニタリ性だけから制御・逆操作へのアクセスを推論せず、Cleanという名前や寿命をゼロ復帰の証拠にしません。現行の特殊形式の意味と互換性を保ち、将来APIを実装済みとして扱わないでください。
+Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
+[version-independent M0–M5 plan](docs/v0x-roadmap.md). Normally, 0.1.x is compatible
+maintenance; an audit does not require a PATCH. New features require a MINOR,
+subject to the explicit exceptions below. Fixed-width M1 may use existing finite
+checks. Before generalizing sizes, establish composition of meanings, encodings
+and evidence without global dense matrices, together with an evidence-bound
+hierarchical IR. General predicates and arithmetic require reversible circuit
+synthesis rather than full-space truth tables. The bounded symbolic-kernel
+continuation is an M2 design decision, not production integration or blanket
+permission for new 0.1.x implementations.
 
-**信頼基盤の境界:** 「信頼基盤を小さく保つ規律が続く限りでしか成り立ちません。便利さのための機能は脱糖層に置き、検査器には入れないことです。」を作業規律とします。[英語の設計原則](docs/design-philosophy.md#keep-the-trusted-core-small)を正本とし、表層構文・外部形式・ホストAPIの便宜は信頼しない変換層で既存コアへ落とし、独立検査を通してください。新しい検査規則には既存コアでは表せない意味・証拠上の義務を明記し、便宜だけを理由に追加しません。フロントエンドが生成しないIR変種が検査器に残ることを規律からのずれの兆しとして扱い、[生成元・互換負債・縮小計画](docs/interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)を更新してください。既存公開APIの削除は版付き移行で扱い、数値実行器の共通化やコード移動だけを信頼基盤の縮小と呼ばないでください。
+Evaluate abstractions by which user obligations they remove and which checker
+validates their evidence. Mathematical unitarity does not imply access to an
+inverse or controlled implementation. A `Clean` name or lifetime is not evidence
+of zero return. Preserve existing special-form semantics and compatibility.
 
-**脱糖層の定義:** [用語の正本](docs/terminology.md#desugaring-layer)に従い、便宜的な構文・表現を、既に意味が定義されたコア操作と明示的な所有権・効果へ意味を保って変換する層を指します。新しい原始的意味や受理規則を追加せず、生成したIR・証拠案は独立検査を通します。構文解析・ソース型検査・近似合成は別の責務であり、検査後の数値実行アダプタも脱糖層とは呼びません。検査済みIRを生成できることだけでは元の入力との意味保存を保証しません。
+## Keep the trusted core small
 
-[係数領域と近似の設計メモ](docs/coefficient-domains.md)では、将来の論理ゲート集合を読み違えるリスクと、係数環の型パラメータ化・厳密契約と近似契約の分離という提案を記録しています。現行の `Z[ζ8,1/2]` 実装やM2の選定済み角度範囲を変更したとは扱わず、新しい領域の算術・等価判定・複素数への解釈・資源上限・証拠の結合を仕様化してから導入してください。任意のtrait実装や浮動小数点許容誤差に証拠発行を委ねず、理想意味・近似誤差・実機ノイズ・厳密な補助ゼロ復帰を分けてください。
+Follow the authoritative [trusted-core principle](docs/design-philosophy.md#keep-the-trusted-core-small):
+convenience belongs in untrusted desugaring/adapters, with independent checking
+of the result. New checker rules must identify a semantic or evidence obligation
+that the existing core cannot express; convenience alone is insufficient.
 
-次期MINORでは[固定幅M1の選定仕様](docs/next-minor-spec.md)、[外部インターフェース](docs/machine-interface-spec.md)、[M2のIR・検査プロファイル](docs/hierarchical-ir-spec.md)を参照し、仕様と実装を区別してください。設計には[仮想v1の6草案・要求索引](docs/imaginary-v1/README.md)と[意味論レビュー](docs/imaginary-v1/review.md)を使います。初稿の存在という前提は満たしていますが、構文・APIの仕様確定、実装、検証、証明は別です。[R14とQPEの設計条件](docs/imaginary-v1/requirements.md#scaling-prerequisite-for-r14)を維持し、草案は反例に応じて改訂してください。
+Treat verifier variants with no frontend producer as signs of compatibility
+debt. Update the [producer/debt/reduction inventory](docs/interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary).
+Remove public APIs only through a versioned migration. Sharing numerical
+execution code or moving files is not a reduction of the trusted acceptance base.
 
-証明作業は[形式化の優先順位](docs/formal-core.md#4-theorem-status-and-proof-work)に従い、独立IR検証器と証拠カーネルを先に扱います。Lean／Mathlib 4.30.0を維持し、`Audit.lean` を実行してください。Physlibは[将来依存と再導入条件](docs/physlib-environment.md)に移し、具体的な意味論ブリッジで利用する変更と同時に互換性・外部公理を再検査してください。ライブラリの利用可能性をQleisli意味論の証明と混同しません。
+Use the [authoritative definition of desugaring](docs/terminology.md#desugaring-layer):
+meaning-preserving translation of convenient syntax/representations to already
+specified core operations with explicit ownership and effects. It introduces
+no primitive meaning or acceptance rule. Proposed IR/evidence remains untrusted.
+Parsing, source checking, approximate synthesis and post-verification execution
+adapters are separate responsibilities. Verified output IR alone does not prove
+preservation of the original input's meaning.
 
-現在状態は `docs/project-status.json` とマニフェストを更新し、`python3 scripts/check_docs.py --write-status` で表を生成してください。過去の採択・検査結果は書き換えず、設計判断は上記決定記録、実施結果は適合・リリース記録に残します。
+The [coefficient-domain note](docs/coefficient-domains.md) records future
+parameterization and separation of exact and approximate contracts. It changes
+neither the current `Z[ζ8,1/2]` implementation nor M2's selected angle profile.
+Before adding a domain, specify its arithmetic, equality, complex interpretation,
+limits and evidence binding. Arbitrary trait implementations or floating-point
+tolerances cannot issue evidence. Keep ideal semantics, approximation error,
+device noise and exact auxiliary zero return distinct.
 
-## ライセンス
+Use the [M1 specification](docs/next-minor-spec.md), [machine interfaces](docs/machine-interface-spec.md)
+and [M2 IR/checker profile](docs/hierarchical-ir-spec.md), distinguishing their
+specifications from implementation. The [six imaginary-v1 drafts and index](docs/imaginary-v1/README.md)
+and [semantic review](docs/imaginary-v1/review.md) satisfy the initial-draft
+prerequisite only. Final syntax/APIs, implementation, validation and proof are
+separate. Preserve [R14 and the QPE prerequisites](docs/imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
+and revise drafts when counterexamples require it.
 
-- Qleisli自身のコード、標準ライブラリ、例、テスト、スクリプト、Lean証明、文書は、個別の明記がない限り**Apache-2.0**とする。[LICENSE](LICENSE)、[NOTICE](NOTICE)、[貢献方針](CONTRIBUTING.md)を維持する。
-- プロジェクトの著作権者名は **Masahiko G. Yamada** と明記し、初期表示を `Copyright 2026 Masahiko G. Yamada` とする。LICENSE・NOTICE・READMEの表示を一致させる。各貢献者が保持する著作権や第三者の帰属表示をこの名義へ置き換えない。
-- 既存の著作権・ライセンス・帰属表示を保持する。第三者由来のコードや文書を取り込む場合は出典と許諾条件を記録し、互換性と必要な表示を確認する。依存物をQleisliの著作物として再表示しない。
-- 新しい公開パッケージにも適切なライセンスメタデータを付ける。Rustの指定は `license = "Apache-2.0"` とする。
+## Proofs and records
 
-## バージョン管理とリリース
+Follow the [proof priorities](docs/formal-core.md#4-theorem-status-and-proof-work):
+independent IR verification and the evidence kernel precede general frontend
+adequacy. Keep Lean/Mathlib at 4.30.0 and run `Audit.lean` for proof work.
+Physlib remains a [future dependency](docs/physlib-environment.md); recheck its
+compatibility and external axioms when adding a concrete semantic bridge that
+uses it. Library availability is not a proof of Qleisli semantics.
 
-[英語のバージョン方針](docs/versioning.md)を正本とし、以下を作業規則とする。
+Update current state through `docs/project-status.json` and the manifests;
+generate tables with `python3 scripts/check_docs.py --write-status`. Preserve
+historical adoption and validation results. Record design decisions in the
+dossier and executed results in conformance/release records.
 
-2026-09-28の明示例外として、ユーザーはMINOR要件の説明後もコメント・docstring拡張を `v0.1.6` に含めるよう指定した。[拡張仕様と移行](docs/documentation-comments.md)に新機能・受理変更を明記し、互換保守だけとは記さない。この例外を他の新機能や将来のPATCHへ一般化しない。
+## Licensing
 
-- `Cargo.toml`の`package.version`を正とし、Qleisli自身の`lean/lakefile.toml`の版も一致させる。現時点では処理系・同梱stdlib・証明を一つのリリースとして扱う。依存先の版を連動して変更しない。
-- 版は`MAJOR.MINOR.PATCH`、Gitタグは`vMAJOR.MINOR.PATCH`とする。作業やコミットのたびには上げず、未リリースの変更を[CHANGELOG.md](CHANGELOG.md)の`Unreleased`へ蓄積する。次のリリースを選ぶ際に版・変更履歴・現在版の説明をそろえる。必要なプレリリースは`0.2.0-rc.1`等とする。
-- **0.xのPATCH**（例`0.1.1`）は互換性を保つ不具合修正・内部整理・文書や証明の明確化・保守に使う。**0.xのMINOR**（例`0.2.0`）は新機能・新構文・非推奨化・破壊的変更に使い、PATCHを0へ戻す。破壊的変更には移行方法を記す。複数の変更を含む場合は必要な最大の増分を選ぶ。
-- **1.0.0以降**は互換修正をPATCH、互換な機能追加・非推奨化をMINOR、破壊的変更をMAJORとする。1.0.0への移行にはV1-C1〜C5の到達根拠と、安定させる公開契約を要する。
-- 互換性には`.qli`構文・名前解決、公開Rust API・IR・証拠API、標準API、CLIのコマンド・終了状態・結果形式、公開Lean宣言を含める。位相・ビット／軸順・所有権・効果・入口条件・補助ゼロ復帰は公開された意味の一部であり、実装詳細として変更しない。公開enumのvariantや公開structのフィールド追加も破壊的になり得る。
-- 公開仕様に既に違反していた入力や証拠の誤受理を拒否する修正はPATCHにできる。その際は違反していた規則、変更前後、診断、回帰検査を記録する。新しい仕様上の制限や別の意味への変更、非互換なRust API変更をこの例外でPATCHにしない。容量上限の縮小・必要toolchainの引き上げも互換性を評価し、0.xでは少なくともMINORとする。
-- 有限コア仕様`v0`、契約台帳の形式`v1`、開発段階番号、製品の版を区別する。版更新で過去の検査結果や仕様ファイル名を機械的に書き換えない。
-- リリースには、変更履歴・規範・適合記録、Rustのfmt／全targetテスト／Clippy、文書検査、Lean build／公理監査、代表例、配布物のライセンス表示を確認する。実施・未実施を明示し、文書だけの変更で未実行のRust／Lean検査に合格したと書かない。
-- 注釈付きタグはリリース内容を含む検証済みコミットへ付ける。未コミットの実装を残したまま古いHEADをタグ付けしない。公開済みタグ・配布物は変更せず、修正には新しい版を使う。版の確定、タグ作成、push、リリース公開、レジストリ配布を区別し、依頼の範囲と実際の実施状態を記録する。
+- Unless individually stated otherwise, Qleisli's code, standard library,
+  examples, tests, scripts, Lean proofs and documentation are **Apache-2.0**.
+  Maintain [LICENSE](LICENSE), [NOTICE](NOTICE) and [CONTRIBUTING](CONTRIBUTING.md).
+- Identify the project copyright holder as **Masahiko G. Yamada**, initially
+  `Copyright 2026 Masahiko G. Yamada`. Keep LICENSE/NOTICE/README attribution
+  consistent. Do not replace contributor or third-party attribution with it.
+- Preserve existing copyright, license and attribution notices. Record the
+  source and permission terms of third-party material, check compatibility,
+  and retain required notices. Dependencies are not Qleisli-owned work.
+- Include appropriate metadata in new public packages; Rust packages use
+  `license = "Apache-2.0"`.
 
-## 本番の仕様と標準ライブラリの記述言語
+## Versioning and releases
 
-- 本番向けの言語仕様は**英語**で記述する。規範となる文法、型・効果・所有権規則、意味論、受理・拒否例、IR対応の説明を対象とする。
-- 標準ライブラリの公開API名、仕様・契約、リファレンス、ソースコメント、使用例の説明は**英語**で記述する。
-- 英語版を規範の正本とする。日本語の設計メモ・議論・補助的な翻訳は併存してよいが、正本との関係を明示する。現行の設計・計画文書の英語化対象と文書ごとの位置づけは[文書索引](docs/documentation-map.md)に従う。日本語の過去の適合記録は、その時点の検証履歴として保持する。
-- 既存の日本語文書を本番向けに整備・公開するときは英語化する。翻訳時も、提案・確定・実装・検証・証明の状態と数学的な前提・契約を変えない。
+[Versioning](docs/versioning.md) is authoritative.
 
-## 状態を正確に記す
+**Explicit exceptions, 2026-09-28:** after the MINOR rule was explained, the
+user retained v0.1.6 for the comment/docstring extension, recorded in its
+[extension/migration contract](docs/documentation-comments.md). The user then
+selected v0.1.7 for starting M1 features, initially X1 check/run JSON results
+and structured diagnostics, and added [M1.1 connections](docs/interop-m1.1.md).
+The user subsequently prioritized releasing the completed X1/M1.1-A slice.
+Operation parameters/contracts and QIR input remain separate unreleased work.
+Record each delivered scope and remaining gate in
+the [0.1.7 record](docs/releases/v0.1.7.md). These are feature exceptions, not
+maintenance-only claims or permission for future PATCH features.
 
-- 提案、暫定決定、確定、実装済み、検証済みを区別する。型検査と IR 生成がない間、パースできる `.qli` の例も「実行できる」と書かない。
-- 数学的な性質を主張するときは、対象の型、前提、等式または反例を記す。文書上の設計と実装済みの保証を混同しない。
-- 資源安全性、理想意味論での量子的健全性、個別プロトコル、アルゴリズム、実機動作の保証を区別する。健全性定理を証明・実装する前に「型が通れば物理的に正しい」と断言しない。
-- AI 生成の `.qli`、証明案、IR も人手のものと同じ検証に通す。生成元や説明文を証拠として扱わず、封印された原始操作と IR 検証器を迂回させない。
-- 段階0の決定が [有限コア言語仕様v0](docs/language-spec.md) と衝突したら、関連文書を同じ作業で整合させるか、未決事項として明示する。
+- `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
+  `lean/lakefile.toml`. Compiler, bundled library and proofs currently share a
+  release. Do not synchronize dependency versions with the project version.
+- Use `MAJOR.MINOR.PATCH` and annotated Git tags `vMAJOR.MINOR.PATCH`.
+  Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task
+  or commit. Align version, changelog and current descriptions when selecting
+  a release. Prereleases such as `0.2.0-rc.1` are allowed.
+- In 0.x, PATCH is compatible fixes/refactoring/documentation/proof clarification
+  and maintenance. MINOR is new features, syntax, deprecations or breaking
+  changes, resetting PATCH to zero. Document migration for breaking changes;
+  choose the largest required increment for combined changes.
+- From 1.0.0, use PATCH for compatible fixes, MINOR for compatible additions and
+  deprecations, and MAJOR for breaking changes. Reaching 1.0 requires evidence
+  for V1-C1–C5 and explicitly stabilized public contracts.
+- Compatibility includes `.qli` syntax/resolution; public Rust, IR and evidence
+  APIs; standard APIs; CLI commands, exits and results; and public Lean
+  declarations. Phase, bit/axis order, ownership, effects, entry premises and
+  auxiliary zero return are public semantics. Enum variants and struct fields
+  can also be breaking changes.
+- Rejecting an input/evidence that already violated published rules can be a
+  PATCH fix. Record the violated rule, before/after behavior, diagnostic and
+  regression. A new restriction/meaning or incompatible Rust change cannot use
+  this exception. Reduced capacities and raised toolchain requirements need
+  compatibility review and at least a MINOR in 0.x.
+- Keep specification v0, ledger format v1, development stages and product
+  versions separate. Never mechanically renumber historical checks/spec files.
+- For release, check changelog, norms, conformance, Rust fmt/all-target tests/
+  Clippy, document checks, Lean build/axiom audit, representative examples and
+  package license notices. Record performed and skipped checks accurately;
+  documentation-only edits do not justify claims of rerun Rust/Lean tests.
+- Tag the verified commit containing the actual release changes. Never tag an
+  older HEAD while implementation remains uncommitted. Do not mutate published
+  tags/artifacts; corrections require a new version. Version selection, tagging,
+  push, hosted publication and registry distribution are distinct actions;
+  record authorization scope and what actually happened.
 
-## 守るべき量子条件
+## Language and status discipline
 
-- 自由ベクトル空間の任意の `bind` を安全な実行 API と見なさない。純粋操作の等長性と、ユニタリ操作の可逆性を区別する。
-- `Q<A>` は所有権型であり、計算効果の型ではない。資源・古典値・効果を追う合成を Kleisli 的な原理として扱い、厳密なモナド構造を証明済みと書かない。
-- `Q<A>` は線形に扱う。未知状態の複製、同一ワイヤの多重指定、暗黙の破棄を許さない。基底添字の共有と量子資源の複製を区別する。
-- 別々に所有するワイヤから積状態や非エンタングルメントを推論しない。局所操作・測定・破棄は全体系で解釈し、純粋な解放には相関を消した証拠を要求する。
-- 測定、リセット、破棄を純粋操作に紛れ込ませない。古典 `if` とコヒーレントな `qif` を区別し、制御付き操作に必要な位相を保持する。
-- 初期版の `measure_z` は対象の論理所有権を消費して `CBit` だけを返す。測定後の物理素子の利用と、新しい論理ワイヤの所有権を混同しない。
-- 補助ビットの純粋な解放には、全入力と参照系に対するゼロ復帰・分離の静的証拠を要求する。借用期間だけを証拠にしない。
-- バックエンドが機能を実現できないときは診断する。意味を暗黙に変えない。
+- Write production language specifications in **English**, including normative
+  grammar, typing/effect/ownership rules, semantics, examples and IR mappings.
+  Standard-library public names, contracts, references, comments and example
+  explanations must also be English.
+- English is authoritative. Supporting Japanese design discussions/translations
+  may coexist if their relationship is explicit. Follow the
+  [documentation map](docs/documentation-map.md). Preserve dated Japanese
+  conformance entries as historical evidence.
+- Translate existing Japanese material when preparing it for production use;
+  preserve mathematical premises, contracts and proposed/adopted/implemented/
+  tested/proved status. These working guidelines are now English too.
+- Distinguish proposal, provisional decision, adoption, implementation and
+  validation. Parsable source is not executable without checking and lowering.
+- Mathematical claims need types, premises and equations or counterexamples.
+  Separate resource safety, ideal quantum soundness, protocol/algorithm
+  correctness and hardware behavior. Do not claim that typing proves physical
+  correctness before the applicable theorem is implemented and proved.
+- Human/AI source, evidence proposals and raw IR follow identical verification.
+  Author identity and prose are not evidence; never bypass sealed primitives
+  or the independent verifier.
+- Resolve conflicts between stage-0 decisions and [language v0](docs/language-spec.md)
+  in the same change, or record them explicitly as unresolved.
 
-## 仕様変更の記録
+## Quantum invariants
 
-新しい `.qli` 構文や標準 API には、所属を「言語形式」「封印された組み込み操作」「通常の `.qli` 定義」のいずれかとして明記する。量子資源や効果を扱うものには入出力型、所有権、効果、受理例と拒否例、IR への変換方針を併記する。基底関数には全域性と型を示す。段階0では [標準ライブラリ構成](docs/standard-library.md)、段階1では [有限コア言語仕様v0](docs/language-spec.md) と [ROADMAP.md](ROADMAP.md) を更新する。
+- Arbitrary free-vector-space `bind` is not a safe execution API. Distinguish
+  isometries for pure operations from reversible unitary operations.
+- `Q<A>` is an ownership type, not a computation-effect type. Composition tracks
+  resources, classical values and effects with Kleisli-inspired principles;
+  a strict monad structure is not proved.
+- Quantum ownership is linear: no unknown-state cloning, aliased wire operands
+  or implicit discard. Sharing basis indices does not copy quantum resources.
+- Separate owners do not imply product states or absence of entanglement.
+  Interpret local operations, measurement and discard globally; pure release
+  requires evidence eliminating correlations.
+- Keep measurement/reset/discard out of pure operations. Distinguish classical
+  `if` from coherent `qif` and retain phase required by controlled operations.
+- Initial `measure_z` consumes logical ownership and returns only `CBit`.
+  Reusing a physical element does not resurrect that logical owner.
+- Pure auxiliary release needs static zero-return/separation evidence for all
+  inputs and reference systems. A borrow duration alone is insufficient.
+- Diagnose unsupported backend capabilities; never silently change meaning.
 
-Rust コードを追加した後は、変更に関係する検査を実行して結果を記録する。意味論の文書だけを変更した場合、未実装のテストに合格したとは書かない。
+## Recording specification changes
+
+Classify each new `.qli` syntax or standard API as a language form, sealed
+built-in operation, or ordinary `.qli` definition. For quantum/effectful forms,
+record input/output types, ownership, effects, acceptance/rejection examples
+and lowering. Specify totality and types of basis functions. Update
+[standard-library organization](docs/standard-library.md) for stage 0, and
+[language v0](docs/language-spec.md) plus [ROADMAP](ROADMAP.md) for stage 1.
+Run relevant checks after Rust changes and record actual results. Semantic
+prose alone does not make unimplemented tests pass.

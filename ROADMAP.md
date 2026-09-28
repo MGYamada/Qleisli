@@ -34,7 +34,25 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 2. Typed IR | Partially implemented | Rust IR, verifier, evidence formats |
 | 3. `.qli` frontend | Minimal path implemented | Name resolution, nonrecursive calls, type/effect/ownership checking, IR generation, diagnostics |
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
-| 5. External backends | Not started | Output systems that check target capabilities |
+| 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
+
+## v0.1.7: start M1 with JSON results and M1.1 connections
+
+**Current development version: v0.1.7.** After the MINOR requirement was
+explained, the user explicitly chose a new exception for starting M1 features.
+The first implemented slice is [X1 check/run JSON](docs/machine-interface-spec.md#diagnostics):
+versioned success/error envelopes, original-source locations and structured
+frontend diagnostics through the existing checks. This is new functionality;
+it changes neither core acceptance rules nor the finite evidence boundary.
+The [implementation record](docs/releases/v0.1.7.md) separates local validation
+from pending release gates. N1–N6, X2–X6 and M2 remain open; the exception does
+not generalize to future PATCH releases.
+
+The user's additional M1.1 request starts [bounded OpenQASM 3/QIR connections](docs/interop-m1.1.md).
+M1.1-A implements OpenQASM import/export and QIR Base text output for fixed,
+explicitly initialized terminal circuits. M1.1-B (LLVM/PyQIR-based QIR input)
+and M1.1-C (adaptive/reset/reuse correspondence) remain open. This adds host
+adapters, not `.qli` syntax, evidence transport or new trusted rules.
 
 ## v0.1.6 maintenance implementation
 
@@ -46,7 +64,7 @@ docstrings. Its placement/line-ending migration is recorded; it is not an
 implementation of N1–N6/X1–X6 or a compatible-only maintenance change. The
 maintenance implementation described below retains its original scope.
 
-**Current version: v0.1.6.** The user selected
+**Historical version: v0.1.6.** The user selected
 compatible IR/evidence fixes on 2026-09-28. The first implemented correction
 enforces the existing 64-level raw-IR branch limit at the branch itself,
 including empty arms. Boundary regressions preserve 64-level acceptance and
@@ -94,9 +112,10 @@ verifier/kernel proof obligations remain active alongside this work.
 The later [interoperability direction](docs/interoperability-roadmap.md) adds
 Python bindings and bounded OpenQASM 3/QIR input and output as early M1 MINOR
 slices. Its aim is to reuse existing programs through a shared checked compiler
-core. These additional interface specifications and implementations are pending;
-0.1.6 records the external direction and internal maintenance only. M2 retains
-its hierarchical IR/evidence gate.
+core. Version 0.1.6 records the direction and internal maintenance only; the
+subsequent 0.1.7 M1.1-A work implements bounded OpenQASM input/output and QIR
+output. Python, QIR input and adaptive work remain pending. M2 retains its
+hierarchical IR/evidence gate.
 
 The [coefficient-domain recommendation](docs/coefficient-domains.md) records the
 risk of assuming the wrong future gate architecture. Prepare future exact
