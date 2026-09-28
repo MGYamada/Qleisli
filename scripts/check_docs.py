@@ -319,6 +319,8 @@ def main() -> int:
     docs = [*ROOT.glob("*.md"), *ROOT.joinpath("docs").rglob("*.md")]
     docs += list(ROOT.joinpath("lean").glob("*.md"))
     docs += list(ROOT.joinpath("research").glob("*/README.md"))
+    docs += list(ROOT.joinpath("examples").rglob("*.md"))
+    docs += list(ROOT.joinpath("tests/fixtures").rglob("*.md"))
     errors, counts = check_links(ROOT, docs)
     errors.extend(status_errors)
     lean_errors, modules = check_lean(ROOT)

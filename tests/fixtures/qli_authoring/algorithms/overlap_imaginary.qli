@@ -1,0 +1,10 @@
+//! E[(-1)^meter] = 1/sqrt(2) for T on |1>; the target is still |1>.
+use interference::imaginary_overlap;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> (CBit,CBit) {
+    let (meter,target) = imaginary_overlap[eighth_phase](x(init0()));
+    (meter,measure_z(target))
+}

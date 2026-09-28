@@ -1,0 +1,1 @@
+basis fn phase((a,b): (Bit,Bit)) -> (Bit,(Bit,Bit)) { (0,(0,a and b)) }

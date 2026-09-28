@@ -11,6 +11,12 @@ exception. See the [implementation/migration record](docs/releases/v0.1.8.md).
 
 ### Added
 
+- Runnable Bell/teleportation/dense-coding/swapping components and shared
+  operation-parameter QPE, amplitude-amplification and Hadamard-test examples.
+  A checked-in `.qli` corpus covers successful clients, rejected authoring
+  attempts and type-correct algorithm faults, including reference correlations.
+- A concise implemented-source reference whose complete code fences compile
+  and execute in Rust CI, and an evidence-based authoring feedback report.
 - Fixed-width static operation parameters, explicit access constraints and
   bracket arguments, phase-fixed permutation/phase meanings, `bind_op`, and
   six checked composition constructors. One unchanged client can accept

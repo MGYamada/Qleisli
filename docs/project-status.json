@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.8 selected by explicit user feature exception; fixed-width operation parameters and meanings implemented and locally validated; tagging/publication pending",
+  "release_state": "0.1.8 selected; fixed-width operations/meanings and executable authoring corpus locally validated; tagging/publication pending",
   "milestones": [
     {
       "id": "M0",
@@ -147,6 +147,12 @@
       "implementation": "[Static descriptions](../src/frontend/compile/operations.rs); [generic lowering](../src/frontend/compile/lower/operations.rs); [target adapter](../src/contract/meaning.rs)",
       "tests": "[Operation regressions](../tests/operation_parameters.rs); [exact target/binding regressions](../tests/meaning_evidence.rs)",
       "proof": "Existing finite evidence boundary reused; parametric source checking and per-instance exact checks, not general Rust adequacy or a new Lean theorem"
+    },
+    {
+      "rule": "[Executable QLI authoring and algorithm contracts](qli-authoring-feedback.md)",
+      "implementation": "[Protocol components](../examples/protocols/README.md); [operation algorithms](../examples/operation_algorithms/README.md)",
+      "tests": "[Source corpus and reference compilation](../tests/qli_corpus.rs); [checked-in source fixtures](../tests/fixtures/qli_authoring/README.md)",
+      "proof": "Finite branch/reference-sensitive simulation and existing exact checks; not a general protocol/compiler proof or measured LLM benchmark"
     }
   ]
 }

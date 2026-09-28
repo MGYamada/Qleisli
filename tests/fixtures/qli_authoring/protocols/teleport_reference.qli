@@ -1,0 +1,9 @@
+//! The input is entangled with a retained reference. Decode the recovered Bell pair.
+use bell::prepare;
+use bell::measure;
+use teleportation::teleport;
+observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+    let (reference,input) = prepare();
+    let (message,output) = teleport(input);
+    (message,measure(reference,output))
+}

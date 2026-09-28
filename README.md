@@ -7,7 +7,7 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-[Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
+[Quick reference](docs/qli-quick-reference.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
 
 ## A small example
@@ -42,6 +42,8 @@ cargo run --bin qleisli -- check examples/bell
 cargo run --bin qleisli -- run examples/bell
 cargo run --bin qleisli -- run examples/grover
 cargo run --bin qleisli -- run examples/phase_estimation
+cargo run --bin qleisli -- run examples/protocols
+cargo run --bin qleisli -- run examples/operation_algorithms
 cargo run --example shor15
 ```
 
@@ -53,6 +55,14 @@ from left to right; probabilities are floating-point approximations.
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
 Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
 documentation. See the [CLI and source guide](docs/frontend-v0.md).
+
+For complete programs to adapt, start with the
+[protocol components](examples/protocols/README.md) or
+[operation-parameter algorithms](examples/operation_algorithms/README.md).
+Their [source corpus](tests/fixtures/qli_authoring/README.md) checks inputs,
+reference correlations and deliberate algorithm mistakes. The
+[authoring report](docs/qli-authoring-feedback.md) turns observed writing
+difficulties into language-design candidates.
 
 ## Connect existing circuits
 

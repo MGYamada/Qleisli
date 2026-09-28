@@ -1,0 +1,3 @@
+use std::quantum::h;
+unitary fn apply[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) { U(q) }
+unitary fn prepare(q: Q<Bit>) -> Q<Bit> { apply[h](q) }

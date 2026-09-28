@@ -20,6 +20,24 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## Executable QLI authoring corpus in v0.1.8 (2026-09-28)
+
+The user prioritized source programs and tests as evidence for language
+ergonomics. The [source corpus](../tests/fixtures/qli_authoring/README.md) adds
+shared protocols and operation-parameter algorithms, with independent finite
+distribution expectations and intentional type-correct faults. The
+[quick reference](qli-quick-reference.md) is compiled and executed in Rust CI.
+The [feedback report](qli-authoring-feedback.md) records reproduced tuple,
+product-meaning, diagnostic and abstraction limitations, including the supplied
+Claude feedback, without adopting future syntax or a new R14 ordering.
+
+All 319 Rust tests and all-target Clippy passed on Rust 1.98.1 and 1.85.0;
+formatting, 19 document-checker tests and document/status checks passed. Exact
+scope and checks not repeated are in the
+[continuation record](releases/v0.1.8.md#executable-source-and-authoring-continuation).
+These are finite regressions, not a measured model benchmark, a general
+protocol theorem, completed V1-C2 or v0.1.8 publication.
+
 ## Fixed-width M1 implementation in v0.1.8 (2026-09-28)
 
 The user selected v0.1.8 for continued implementation on a suitable branch.

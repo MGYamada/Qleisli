@@ -40,6 +40,14 @@ or accompanying explanation. Operations that cannot be checked receive no
 special treatment based on who generated them. Diagnostics should identify
 the failing resource, effect, or evidence and its source location.
 
+**Authoring priority (2026-09-28):** expand executable `.qli` components,
+examples and source-level semantic regressions before adding abstractions.
+Record concrete writing failures and workarounds in the
+[authoring report](qli-authoring-feedback.md); use the checked
+[quick reference](qli-quick-reference.md) as the concise LLM/human entry point.
+Judge convenience by obligations removed and evidence retained. A successful
+authoring session is not a measured model benchmark or a protocol proof.
+
 <a id="v01-と-v1-の到達条件"></a>
 
 ## v0.1 and v1 acceptance conditions

@@ -29,6 +29,13 @@ source for Shor, QPE and Grover that preserves textbook structure and meets
 V1-C1–C5. Retain fixed-size examples as regressions; names or pseudocode alone
 cannot satisfy these gates.
 
+Prioritize executable `.qli` examples and source fixtures when evaluating
+authoring ergonomics, especially for LLMs. Discover missing abstractions from
+real programs, retain minimal failed attempts and semantic counterexamples,
+and update the [authoring report](docs/qli-authoring-feedback.md). Keep the
+[quick reference](docs/qli-quick-reference.md) copyable and its code CI-checked.
+An authoring exercise is not a measured model benchmark or an algorithm proof.
+
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
 [version-independent M0–M5 plan](docs/v0x-roadmap.md). Normally, 0.1.x is compatible
 maintenance; an audit does not require a PATCH. New features require a MINOR,

@@ -1,0 +1,20 @@
+//! Closed unitary preparations, each applied to a fresh |0> by its caller.
+//! Named wrappers are required for current static operation arguments.
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::t;
+
+/// |0> from |0>; phase +1 on the whole interface.
+pub unitary fn zero(q: Q<Bit>) -> Q<Bit> { q }
+/// |1> from |0>.
+pub unitary fn one(q: Q<Bit>) -> Q<Bit> { x(q) }
+/// The +1 eigenstate of X from |0>.
+pub unitary fn plus(q: Q<Bit>) -> Q<Bit> { h(q) }
+/// The -1 eigenstate of X from |0>, matching the user's input h(x(init0())).
+pub unitary fn minus(q: Q<Bit>) -> Q<Bit> { h(x(q)) }
+/// (|0> + i|1>)/sqrt(2) from |0>.
+pub unitary fn y_plus(q: Q<Bit>) -> Q<Bit> { t(t(h(q))) }
+/// (|0> - i|1>)/sqrt(2) from |0>.
+pub unitary fn y_minus(q: Q<Bit>) -> Q<Bit> { adjoint(t, adjoint(t, h(q))) }
+/// (|0> + exp(i*pi/4)|1>)/sqrt(2) from |0>.
+pub unitary fn magic(q: Q<Bit>) -> Q<Bit> { t(h(q)) }

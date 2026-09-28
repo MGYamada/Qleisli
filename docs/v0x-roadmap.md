@@ -96,6 +96,11 @@ the bounded OpenQASM adapter and QIR output; QIR import, adaptive behavior and
 Python extension specifications/implementations remain pending. Early finite interoperability can precede operation parameters and M2,
 while the hierarchical IR/evidence and R14 gates remain prerequisites for sizes.
 
+The [2026-09-28 source-authoring corpus](qli-authoring-feedback.md) supplies
+executable evidence for missing tuple/basis ergonomics and type-level QPE reuse.
+Its finite-template-before-R14 suggestion is an open scheduling alternative;
+it changes neither the current size gate nor the V1 acceptance criteria.
+
 The [coefficient-domain recommendation](coefficient-domains.md), also recorded
 on 2026-09-28, keeps future exact-domain parameterization separate from
 approximation and device contracts. It is preparation for uncertain future
