@@ -66,11 +66,11 @@ impl Lowerer<'_, '_> {
             ));
         }
         if namespace == "std::observe" {
-            self.effect = Effect::Observe;
+            self.add_effect(module, span, Effect::Observe);
         }
         match name {
             "init0" => {
-                self.effect = self.effect.max(Effect::Iso);
+                self.add_effect(module, span, Effect::Iso);
                 let wire = self.wire();
                 let value = self.register(Ty::Bit, vec![wire]);
                 let slot = self.quantum(module, span, &value, true)?;

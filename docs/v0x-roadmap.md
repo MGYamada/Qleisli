@@ -5,8 +5,9 @@
 Status: **revised development direction selected on 2026-09-27 for 0.1.5**.
 The [decision dossier](decisions/2026-09-27-v1-path.md) selects the next scope
 and bounded kernel restart. [Current states](current-status.md) are generated
-from one record; the [release record](releases/v0.1.5.md) separates local
-validation and publication. This plan supersedes the 0.1.4 schedule, not its
+from one record; the current [release record](releases/v0.1.9.md) separates local
+validation and publication. The [0.1.5 record](releases/v0.1.5.md) retains the
+original selection. This plan supersedes the 0.1.4 schedule, not its
 historical evidence or the current finite language contracts.
 
 <a id="decision-consolidate-the-finite-foundation-through-v019"></a>
@@ -135,8 +136,16 @@ Production integration remains unimplemented.
 
 The old v0.1.9 name remains a linkable checkpoint, not a mandatory release train.
 It requires all rows below and does not delay independent M1 specification work.
-New public features and symbolic-kernel development/integration are outside
-0.1.x maintenance; they now have the M1/M2 path above.
+New public features and symbolic-kernel development/integration follow the
+M1/M2 gates above rather than this maintenance checklist. This is a scope
+distinction, not a ban on compatible features in 0.1.x.
+
+The [initial boundary check](reviews/b019-2026-09-28.md) found B019 incomplete.
+The subsequent [completion record](reviews/b019-completion.md) closes all six
+conditions with the F2 repair, completed review dispositions, exact-commit CI
+and clean candidate distribution checks. The
+[code-driven handoff](code-driven-development.md) fixes the next work packets
+and obstacles without changing the acceptance conditions below.
 
 | ID | Required evidence |
 | --- | --- |
@@ -164,8 +173,8 @@ notification or second mutable status ledger. Current states remain in
 | Add trajectory sampling and typed trial outcomes | M1 / [X4–X5](machine-interface-spec.md#required-conformance-before-shipping) | Existing verified IR; JSON mode after X1 |
 | Add bounded source loading with explicit legacy migration | M1 / [X6](machine-interface-spec.md#required-conformance-before-shipping) | MINOR capacity change |
 | Specify and implement the Python host binding and wheel distribution | M1 / [interoperability gates](interoperability-roadmap.md#required-evidence-and-scheduling) | Complete Python extension contract; X4 before exposing sampling |
-| Bounded OpenQASM 3 import/export | M1.1-A / [terminal profile](interop-m1.1.md) | Initial implementation and local validation recorded; release gates pending |
-| QIR Base output/input | M1.1-A/B / [connection gates](interop-m1.1.md#acceptance-and-remaining-gates) | Initial output implemented; independent LLVM/PyQIR input and adversarial profile checks pending |
+| Bounded OpenQASM 3 import/export | M1.1-A / [terminal profile](interop-m1.1.md) | Bounded terminal profile implemented, validated and released in [0.1.7](releases/v0.1.7.md); extensions need their own gates |
+| QIR Base output/input | M1.1-A/B / [connection gates](interop-m1.1.md#acceptance-and-remaining-gates) | Bounded output validated and released in [0.1.7](releases/v0.1.7.md); standard-reader input and its adversarial acceptance checks pending |
 | Implement bound hierarchical proofs and the QPE schema profile | M2 / [H1–H5](hierarchical-ir-spec.md#migration-and-implementation-gates) | M1 operation interfaces; required Lean schemas and sized source specification |
 | Synthesize predicate oracles and shared Grover | M3 / [Boolean DAG contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
 | Synthesize modular arithmetic and shared-QPE Shor | M4 / [arithmetic contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |

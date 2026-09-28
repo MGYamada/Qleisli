@@ -7,7 +7,7 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use super::exact::{Budget, Matrix};
 use super::{
@@ -20,7 +20,7 @@ pub const MAX_FUNCTION_DEPTH: usize = 32;
 pub const MAX_FUNCTION_SOURCES: usize = 128;
 pub const MAX_FUNCTION_SOURCE_BYTES: usize = 1_048_576;
 pub const MAX_FUNCTION_EXPANDED_STEPS: usize = 1_000_000;
-const MAX_IDENTITY_NAME_BYTES: usize = 4096;
+pub(crate) const MAX_IDENTITY_NAME_BYTES: usize = 4096;
 
 /// Exact source metadata attached to an implementation/specification pair.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -28,6 +28,72 @@ pub struct FunctionIdentity {
     pub implementation: String,
     pub specification: String,
     pub sources: Vec<(String, String)>,
+}
+
+/// Untrusted metadata storage; every evidence constructor still validates it.
+/// The frontend shares one frozen project without changing the public owned API.
+pub(crate) enum RetainedIdentity {
+    Owned(FunctionIdentity),
+    Shared {
+        implementation: String,
+        specification: String,
+        sources: Arc<Vec<(String, String)>>,
+        exposed: OnceLock<FunctionIdentity>,
+    },
+}
+
+impl RetainedIdentity {
+    pub(crate) fn shared(
+        implementation: String,
+        specification: String,
+        sources: Arc<Vec<(String, String)>>,
+    ) -> Self {
+        Self::Shared {
+            implementation,
+            specification,
+            sources,
+            exposed: OnceLock::new(),
+        }
+    }
+
+    fn parts(&self) -> (&str, &str, &[(String, String)]) {
+        match self {
+            Self::Owned(identity) => (
+                &identity.implementation,
+                &identity.specification,
+                &identity.sources,
+            ),
+            Self::Shared {
+                implementation,
+                specification,
+                sources,
+                ..
+            } => (implementation, specification, sources),
+        }
+    }
+
+    fn exposed(&self) -> &FunctionIdentity {
+        match self {
+            Self::Owned(identity) => identity,
+            Self::Shared {
+                implementation,
+                specification,
+                sources,
+                exposed,
+            } => exposed.get_or_init(|| FunctionIdentity {
+                implementation: implementation.clone(),
+                specification: specification.clone(),
+                sources: sources.as_ref().clone(),
+            }),
+        }
+    }
+
+    fn matches(&self, identity: &FunctionIdentity) -> bool {
+        let (implementation, specification, sources) = self.parts();
+        identity.implementation == implementation
+            && identity.specification == specification
+            && identity.sources == sources
+    }
 }
 
 /// An exact theorem for two concrete, independently verified raw functions.
@@ -40,7 +106,7 @@ pub struct FunctionEvidence {
     signature: BasisType,
     implementation: RawProgram,
     specification: RawProgram,
-    identity: FunctionIdentity,
+    identity: Arc<RetainedIdentity>,
     circuit: Circuit,
     meaning: Matrix,
     depth: usize,
@@ -61,10 +127,11 @@ impl Eq for FunctionEvidence {}
 
 impl fmt::Debug for FunctionEvidence {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let (implementation, specification, _) = self.identity.parts();
         f.debug_struct("FunctionEvidence")
             .field("signature", &self.signature)
-            .field("implementation", &self.identity.implementation)
-            .field("specification", &self.identity.specification)
+            .field("implementation", &implementation)
+            .field("specification", &specification)
             .field("depth", &self.depth)
             .field("expanded_steps", &self.expanded_steps)
             .finish_non_exhaustive()
@@ -88,6 +155,22 @@ impl FunctionEvidence {
         implementation: RawProgram,
         specification: RawProgram,
         identity: FunctionIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
+        Self::check_retained_diagnostic(
+            signature,
+            implementation,
+            specification,
+            RetainedIdentity::Owned(identity),
+            budget,
+        )
+    }
+
+    pub(crate) fn check_retained_diagnostic(
+        signature: BasisType,
+        implementation: RawProgram,
+        specification: RawProgram,
+        identity: RetainedIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
         let bits = signature.bits()?;
@@ -114,7 +197,7 @@ impl FunctionEvidence {
             signature,
             implementation,
             specification,
-            identity,
+            identity: Arc::new(identity),
             circuit,
             meaning,
             depth,
@@ -132,8 +215,12 @@ impl FunctionEvidence {
     pub fn specification(&self) -> &RawProgram {
         &self.specification
     }
+    /// Inspect exact source metadata. Frontend receipts lazily materialize this
+    /// owned compatibility view once; normal checking, cloning and execution
+    /// share the frozen snapshot without this copy. Evidence clones share the
+    /// same view, and the original metadata limits bound its allocation.
     pub fn identity(&self) -> &FunctionIdentity {
-        &self.identity
+        self.identity.exposed()
     }
     pub fn circuit(&self) -> &Circuit {
         &self.circuit
@@ -155,7 +242,7 @@ impl FunctionEvidence {
         implementation: &RawProgram,
         specification: &RawProgram,
     ) -> Result<(), ContractError> {
-        if identity != &self.identity
+        if !self.identity.matches(identity)
             || implementation != &self.implementation
             || specification != &self.specification
         {
@@ -181,22 +268,23 @@ fn expanded_steps(circuit: &Circuit) -> Result<usize, ContractError> {
 }
 
 fn validate_identity(
-    identity: &FunctionIdentity,
+    identity: &RetainedIdentity,
     budget: &mut Budget,
 ) -> Result<(), ContractError> {
-    if identity.implementation.is_empty()
-        || identity.specification.is_empty()
-        || identity.implementation.len() > MAX_IDENTITY_NAME_BYTES
-        || identity.specification.len() > MAX_IDENTITY_NAME_BYTES
-        || identity.sources.len() > MAX_FUNCTION_SOURCES
+    let (implementation, specification, sources) = identity.parts();
+    if implementation.is_empty()
+        || specification.is_empty()
+        || implementation.len() > MAX_IDENTITY_NAME_BYTES
+        || specification.len() > MAX_IDENTITY_NAME_BYTES
+        || sources.len() > MAX_FUNCTION_SOURCES
     {
         return Err(ContractError::Limit(
             "function identity exceeds its metadata profile",
         ));
     }
-    let mut bytes = identity.implementation.len() + identity.specification.len();
+    let mut bytes = implementation.len() + specification.len();
     let mut names = BTreeSet::new();
-    for (name, source) in &identity.sources {
+    for (name, source) in sources {
         if name.len() > MAX_IDENTITY_NAME_BYTES || !names.insert(name) {
             return Err(ContractError::Type(
                 "source identity paths must be bounded and unique",
@@ -889,5 +977,142 @@ fn diagonal_step(indices: &[usize], phases: Vec<u8>) -> CircuitStep {
             permutation: (0..phases.len() as u16).collect(),
             phases,
         },
+    }
+}
+
+#[cfg(test)]
+mod snapshot_tests {
+    use super::*;
+    use crate::contract::DEFAULT_EXACT_WORK;
+
+    fn raw() -> RawProgram {
+        RawProgram {
+            quantum_inputs: vec![QuantumPort {
+                token: TokenId(0),
+                wires: vec![],
+                shape: BasisShape { bits: 0 },
+            }],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![TokenId(0)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        }
+    }
+
+    fn check(sources: Arc<Vec<(String, String)>>) -> Result<FunctionEvidence, ContractDiagnostic> {
+        FunctionEvidence::check_retained_diagnostic(
+            BasisType::Unit,
+            raw(),
+            raw(),
+            RetainedIdentity::shared("implementation".into(), "specification".into(), sources),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+    }
+
+    #[test]
+    fn shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies() {
+        let sources = Arc::new(vec![("main".into(), "p".repeat(100_000))]);
+        let first = check(Arc::clone(&sources)).unwrap();
+        let second = check(Arc::clone(&sources)).unwrap();
+        let cloned = first.clone();
+        assert!(Arc::ptr_eq(&first.identity, &cloned.identity));
+        assert!(!Arc::ptr_eq(&first.identity, &second.identity));
+        assert_eq!(Arc::strong_count(&sources), 3);
+        let expected = FunctionIdentity {
+            implementation: "implementation".into(),
+            specification: "specification".into(),
+            sources: sources.as_ref().clone(),
+        };
+        first.check_binding(&expected, &raw(), &raw()).unwrap();
+        assert!(format!("{first:?}").contains("implementation"));
+        for receipt in [&first, &second, &cloned] {
+            let RetainedIdentity::Shared {
+                sources: retained,
+                exposed,
+                ..
+            } = receipt.identity.as_ref()
+            else {
+                panic!("expected shared storage")
+            };
+            assert!(Arc::ptr_eq(retained, &sources));
+            assert!(exposed.get().is_none());
+        }
+        // An explicit public inspection owns one bounded compatibility copy.
+        assert_eq!(first.identity(), &expected);
+        assert!(std::ptr::eq(first.identity(), cloned.identity()));
+        assert!(std::ptr::eq(first.identity(), first.identity()));
+        assert_ne!(
+            first.identity().sources[0].1.as_ptr(),
+            sources[0].1.as_ptr()
+        );
+        let RetainedIdentity::Shared { exposed, .. } = second.identity.as_ref() else {
+            unreachable!()
+        };
+        assert!(exposed.get().is_none());
+    }
+
+    #[test]
+    fn shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification() {
+        for sources in [
+            vec![("main".into(), "p".repeat(MAX_FUNCTION_SOURCE_BYTES))],
+            vec![
+                ("main".into(), String::new()),
+                ("main".into(), String::new()),
+            ],
+            (0..=MAX_FUNCTION_SOURCES)
+                .map(|i| (i.to_string(), String::new()))
+                .collect(),
+            vec![("n".repeat(MAX_IDENTITY_NAME_BYTES + 1), String::new())],
+        ] {
+            assert!(check(Arc::new(sources)).is_err());
+        }
+        let sources = Arc::new(vec![("main".into(), "p".repeat(100_000))]);
+        for work in [0, 99_999] {
+            assert!(
+                FunctionEvidence::check_retained_diagnostic(
+                    BasisType::Unit,
+                    raw(),
+                    raw(),
+                    RetainedIdentity::shared("i".into(), "s".into(), Arc::clone(&sources)),
+                    &mut Budget::new(work),
+                )
+                .is_err()
+            );
+        }
+        let mut invalid = raw();
+        invalid
+            .operations
+            .push(RawOp::Discard { input: TokenId(0) });
+        assert!(
+            FunctionEvidence::check_retained_diagnostic(
+                BasisType::Unit,
+                invalid,
+                raw(),
+                RetainedIdentity::shared("i".into(), "s".into(), Arc::clone(&sources)),
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .is_err()
+        );
+        // Even a shared source handle does not establish equality of meanings.
+        let mut phase = raw();
+        phase.operations.push(RawOp::ApplyUnitary {
+            input: TokenId(0),
+            output: TokenId(1),
+            steps: vec![diagonal_step(&[], vec![4])],
+        });
+        phase.quantum_outputs = vec![TokenId(1)];
+        assert_eq!(
+            FunctionEvidence::check_retained_diagnostic(
+                BasisType::Unit,
+                phase,
+                raw(),
+                RetainedIdentity::shared("i".into(), "s".into(), sources),
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .unwrap_err()
+            .error,
+            ContractError::EquationMismatch
+        );
     }
 }

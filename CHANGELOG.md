@@ -8,6 +8,76 @@ separately in [release milestones](docs/release-milestones.md).
 
 No changes recorded yet.
 
+## 0.1.9 — 2026-09-28
+
+Compatible review fixes, the completed finite B019 foundation and preparation
+for code-driven development. See the [release record](docs/releases/v0.1.9.md)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9).
+
+### Added
+
+- A closed three-source [input corpus](corpus/README.md): 24 finite executable
+  translations from QuantumKatas, Qualtran Bloqs and PennyLane Demos, pinned
+  originals/licenses/hashes, per-case contracts and exclusions, initial authoring
+  snapshots and real diagnostics. Independent numerical oracles check 9,412
+  semantic probes, with four local rejection fixtures. No upstream framework
+  or general algorithm implementation is claimed.
+- Adopted [source/licensing policy](corpus/POLICY.md): preserve MIT for Katas
+  translations and Apache-2.0 for the other two; Qleisli stays Apache-2.0.
+  Source additions/replacements require an explicit policy amendment.
+- Explicit [development method](docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write):
+  start with quantum programs as they ought to be expressed, then develop the
+  language with AI. Record current-source friction as A020-14–16 without
+  adopting syntax, new checker rules or continuous-angle APIs.
+- A dated [B019 boundary check](docs/reviews/b019-2026-09-28.md), with a local F2
+  reproduction, finite revalidation and explicit audit/candidate closure work.
+  Preserve it as the initial assessment; subsequent closure has separate records.
+- Completed [B019 finite foundation](docs/reviews/b019-completion.md), with
+  frontend/trusted-boundary review dispositions, an independent 4,608-case exact
+  phase/layout/control/adjoint sweep, successful exact-commit Linux CI and clean
+  package/complete-source-archive checks. Publication remains separate.
+- A [code-driven continuation procedure](docs/code-driven-development.md), with
+  source-grounded obstacles A020-17–20 and bounded work packets for the
+  user-selected 0.2.0 direction. It adopts no future grammar or checker rule.
+- A clean-commit distribution checker for the verified production package and
+  complete source archive, including nested research, proofs, exact source bytes
+  and third-party notices; CI also checks its adversarial regressions.
+
+### Fixed
+
+- Reject incomplete or invalid M1 `StaticOp` syntax at the current token/EOF
+  before consuming a constructor. Previously `g[` could panic (exit 101),
+  violating the existing grammar error and X1 single-JSON failure contracts;
+  it now returns `expected a static operation description`, `parse`, exit 1.
+  Keep EOF as a parser sentinel. Regressions cover all constructor/example/std
+  token prefixes, exact spans, JSON `check/run` and Markdown `doc` failure.
+- Make CI whitespace checking compare the entire committed tree with the empty
+  tree, so a clean checkout no longer turns the check into an empty comparison.
+- Share a single bounded immutable source snapshot across static-provider and
+  function-contract receipts, charging source bytes once before copying.
+  [F2/A020-10](docs/reviews/b019-f2-resolution.md) is resolved without changing
+  public owned identities, source/raw binding, exact checks or existing limits.
+  The 100 KB/256-provider case and an additional 25 KB comment module now pass.
+
+### Changed
+
+- Locate function-effect failures at a causal expression and show derived and
+  declared effects, retaining declared callee effects and both-branch checking.
+- Suggest checked separate imports and ordinary unary wrappers for unsupported
+  grouped imports and static `h/x/z/t` arguments. Explain retained source copies
+  when a new provider/contract snapshot exhausts the existing work budget.
+- Clarify direct versus constructor-derived capabilities and record source
+  snapshot accounting omitted from the original M1 work-unit description.
+  Preserve current accepted derivations and limits; A020-09 remains future
+  opaque-provider design work, while A020-10 is resolved by shared retention.
+- Distinguish ideal iterative-QPE probability one from floating-point residuals.
+  Record additional authoring feedback and pending multi-error/boilerplate/display
+  work as A020-11–13, without a model benchmark or new syntax claim.
+
+No public Rust/IR/evidence API, accepted source meaning, JSON v1 schema,
+dependency or toolchain requirement changes. No capacity is reduced; duplicate
+snapshot work is removed. The 0.1.8 migrations remain historical.
+
 ## 0.1.8 — 2026-09-28
 
 Fixed-width operation contracts and executable authoring improvements, with

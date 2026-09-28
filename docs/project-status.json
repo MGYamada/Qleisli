@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.8 release scope finalized: fixed-width operation contracts, authoring forms, executable corpus, iterative QPE and repair diagnostics; migrations and full local validation recorded; exact commit, CI, archives and publication are recorded in the linked GitHub release",
+  "release_state": "0.1.9 release scope finalized: finite [B019 foundation complete](reviews/b019-completion.md), compatible F1/F2 repairs, 24 three-source translations and code-driven handoff; candidate CI/distribution passed; the [release procedure and publication record](releases/v0.1.9.md#release-validation-and-publication) identify final commit checks, immutable tag and GitHub source distribution; registry publication is not included",
   "milestones": [
     {
       "id": "M0",
@@ -49,7 +49,7 @@
     {
       "rule": "[Declared effects and observations](language-spec.md#4-効果と意味論)",
       "implementation": "[Source checking](../src/frontend/compile/mod.rs); [IR verifier](../src/verify.rs)",
-      "tests": "[`declared_effects_survive_arguments_tuples_conditions_and_both_arms`](../tests/source_judgments.rs); [`measurement_cannot_claim_pure_effect`](../tests/verify.rs)",
+      "tests": "[`declared_effects_survive_arguments_tuples_conditions_and_both_arms`](../tests/source_judgments.rs); [`measurement_cannot_claim_pure_effect`](../tests/verify.rs); [causal effect diagnostics](../tests/repair_diagnostics.rs)",
       "proof": "[T3/Q1–Q3 paper results](formal-core.md); verifier acceptance-to-denotation mechanization open"
     },
     {
@@ -85,13 +85,13 @@
     {
       "rule": "[Function evidence, phase, output axes and dependencies](function-contracts-v0.1.md)",
       "implementation": "[Function evidence checker](../src/contract/function.rs); [retained IR actions](../src/ir.rs)",
-      "tests": "[`unchanged_client_requires_one_specification_across_private_layouts`](../tests/function_contracts.rs); [`dependency_source_changes_invalidate_the_previous_compilation`](../tests/function_contracts.rs); [`retained_contract_preserves_phase_with_an_entangled_reference`](../tests/function_contracts.rs); [`independent_output_reindexing_catches_a_reversed_join`](../tests/function_evidence.rs)",
+      "tests": "[`unchanged_client_requires_one_specification_across_private_layouts`](../tests/function_contracts.rs); [`dependency_source_changes_invalidate_the_previous_compilation`](../tests/function_contracts.rs); [`retained_contract_preserves_phase_with_an_entangled_reference`](../tests/function_contracts.rs); [`independent_output_reindexing_catches_a_reversed_join`](../tests/function_evidence.rs); [source snapshot sharing/binding](../tests/source_snapshots.rs); [independent exact boundary sweep](../tests/b019_trusted_boundary.rs)",
       "proof": "[SC/FC paper arguments](function-contracts-v0.1.md); bounded tests do not prove implementation adequacy or portable evidence safety"
     },
     {
       "rule": "[Lexical grammar and located errors](syntax-v0.md)",
       "implementation": "[Parser](../src/frontend/parser.rs)",
-      "tests": "[`accepts_comments_and_reports_utf8_byte_offsets`](../tests/parser.rs); [`invisible_separators_and_bad_bit_literals_have_precise_errors`](../tests/parser.rs)",
+      "tests": "[`accepts_comments_and_reports_utf8_byte_offsets`](../tests/parser.rs); [`invisible_separators_and_bad_bit_literals_have_precise_errors`](../tests/parser.rs); [`example_and_stdlib_token_prefixes_parse_without_panicking`](../tests/parser.rs); [`static_operation_errors_point_to_the_unconsumed_token_or_eof`](../tests/parser.rs)",
       "proof": "Normative grammar and finite parser regressions; complete parser-to-grammar adequacy unproved"
     },
     {
@@ -121,7 +121,7 @@
     {
       "rule": "[Finite work, width, depth and numeric execution limits](frontend-v0.md)",
       "implementation": "[Frontend](../src/frontend/compile/mod.rs); [verifier](../src/verify.rs); [simulator](../src/sim.rs)",
-      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`branch_depth_limit_counts_empty_branches_in_both_arms`](../tests/verify.rs); [`branch_preflight_checks_both_functions_and_inactive_empty_arms`](../tests/function_evidence.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs)",
+      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`branch_depth_limit_counts_empty_branches_in_both_arms`](../tests/verify.rs); [`branch_preflight_checks_both_functions_and_inactive_empty_arms`](../tests/function_evidence.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs); [shared source retention bounds](../tests/source_snapshots.rs)",
       "proof": "Operational boundedness regressions; no end-to-end resource-complexity or floating-error theorem; future source-byte limits are separately specified"
     },
     {
@@ -145,7 +145,7 @@
     {
       "rule": "[Fixed-width operation parameters and meanings](next-minor-spec.md)",
       "implementation": "[Static descriptions](../src/frontend/compile/operations.rs); [generic lowering](../src/frontend/compile/lower/operations.rs); [target adapter](../src/contract/meaning.rs)",
-      "tests": "[Operation regressions](../tests/operation_parameters.rs); [exact target/binding regressions](../tests/meaning_evidence.rs)",
+      "tests": "[Operation regressions](../tests/operation_parameters.rs); [exact target/binding regressions](../tests/meaning_evidence.rs); [`controlled_only_access_derives_transparent_inverse_and_controlled_circuits`](../tests/operation_parameters.rs)",
       "proof": "Existing finite evidence boundary reused; parametric source checking and per-instance exact checks, not general Rust adequacy or a new Lean theorem"
     },
     {

@@ -276,6 +276,45 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
 }
 
 #[test]
+fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() {
+    // A020-09: preserve M1's transparent constructor rules until a versioned
+    // migration; this does not grant direct Apply(U) or Adjoint(U).
+    // T is non-Hermitian, so replacing its derived inverse by T must fail.
+    for body in [
+        "let (c,q) = ctrl[inverse_op(U)](c,q); join(c,q)",
+        "adjoint2[controlled_op(U)](join(c,q))",
+        "adjoint2[controlled_op(U)](apply2[controlled_op(U)](adjoint2[controlled_op(U)](join(c,q))))",
+    ] {
+        deterministic(
+            &format!(
+                "unitary fn ctrl[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
+                 requires Controlled(U){{qif(c,q){{0=>ident,1=>U}}}}
+                 unitary fn apply2[static V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+                 requires Apply(V){{V(q)}}
+                 unitary fn adjoint2[static V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+                 requires Adjoint(V){{adjoint(V,q)}}
+                 unitary fn derived[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->Q<(Bit,Bit)>
+                 requires Controlled(U){{{body}}}
+                 observe fn main()->(CBit,CBit){{
+                     let (c,q) = split(derived[phase](x(init0()),t(h(init0()))));
+                     (measure_z(x(c)),measure_z(h(q)))
+                 }}"
+            ),
+            &[false, false],
+        );
+    }
+    for body in ["U(q)", "adjoint(U,q)", "use_op[inverse_op(U)](q)"] {
+        rejects(
+            &format!(
+                "unitary fn direct[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+                 requires Controlled(U){{{body}}}"
+            ),
+            ErrorCode::Capability,
+        );
+    }
+}
+
+#[test]
 fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
     rejects(
         "unitary fn client[static U:Op<Bit,ZMeaning>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}

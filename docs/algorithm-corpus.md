@@ -43,6 +43,13 @@ size-generic algorithm. [Tests](../tests/iterative_qpe.rs) check the joint phase
 reference instrument, and [session records](../tests/fixtures/authoring_sessions/README.md)
 preserve the first source and subsequent observations.
 
+The separately [licensed input corpus](../corpus/README.md), adopted on
+2026-09-28, provides 24 executed finite translations from a closed set of three
+sources. It is distinct from the C01–C20 research inventory above. Its fixed
+QAOA/VQE kernels do not change the unimplemented general-algorithm claims in
+that inventory. Contracts, original sources, actual authoring attempts and
+independent semantic oracles accompany the translations.
+
 ## Next extraction tasks
 
 - Include signs and control capability in public S3 reflection contracts so

@@ -211,10 +211,19 @@ and all declaration/dependency information that determines either program.
 No cache entry may silently survive a changed source dependency, predicate,
 output layout, or required specification.
 
-The current frontend retains all loaded project source records in each new
-artifact, including unrelated modules; this is a conservative snapshot rather
-than a minimal import/declaration closure. It charges the actual source/raw
-snapshot copies once per newly checked implementation/specification pair.
+The frontend retains all loaded project source records, including unrelated
+modules; this is a conservative snapshot rather than a minimal import/declaration
+closure. Since 0.1.9, private immutable storage shares this snapshot across all
+provider and function-contract receipts in one compilation. Source bytes spend
+lowering work once, before copying, under the [frontend bounds](frontend-v0.md).
+Copied raw representations and pair names still spend work once per newly
+checked implementation/specification pair. Each receipt independently validates
+all metadata and exact equality; sharing storage supplies no evidence by itself.
+The public `FunctionIdentity.sources: Vec<(String, String)>` and
+`FunctionEvidence::identity() -> &FunctionIdentity` APIs are unchanged. Explicit
+inspection may initialize a bounded owned view once per receipt; evidence clones
+share that view. Normal checking, execution and binding comparison do not need
+to materialize it. Publicly supplied owned identities retain their original path.
 Within one private compiler instance, resolved declarations and checked
 dependencies remain immutable, so cache hits reuse the issued evidence without
 repeated byte/raw comparisons. The cache is never shared across compilations.

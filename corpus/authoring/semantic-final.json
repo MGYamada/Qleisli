@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-09-28T09:30:23.252384+00:00",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "target/v019-review/debug/qleisli",
+    "--exhaustive",
+    "--report",
+    "corpus/validation.json"
+  ],
+  "exit_code": 0,
+  "stdout": "Passed 24 cases, 9412 semantic probes, all shipped mains and 4 rejection cases; upstream frameworks not executed.\n",
+  "stderr": "",
+  "report": "corpus/validation.json",
+  "report_sha256": "57815513d65eb553fcb9ebd230efd6fceccccca4c60aa203607e54353f9c5cef"
+}

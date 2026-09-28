@@ -1,0 +1,27 @@
+// Upstream authors (repository usernames): adgran. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_vqe/demo.py
+// Selected symbol(s): circuit / DoubleExcitation
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::quantum::toffoli;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+basis fn occupied(a: Bit, b: Bit, c: Bit, d: Bit) -> Bit { a and b and not c and not d }
+basis fn swap_excitation(a: Bit, b: Bit, c: Bit, d: Bit) -> (Bit, Bit, Bit, Bit) {
+    let flip = (a and b and not c and not d) or (not a and not b and c and d);
+    (a xor flip, b xor flip, c xor flip, d xor flip)
+}
+pub unitary fn kernel(q: Q<(Bit, Bit, Bit, Bit)>) -> Q<(Bit, Bit, Bit, Bit)> {
+    let q = with_computed(q, occupied) { |flag| z(flag) };
+    do (a, b, c, d) <- q;
+    pure swap_excitation(a, b, c, d)
+}

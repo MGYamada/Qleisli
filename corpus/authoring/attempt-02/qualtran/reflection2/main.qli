@@ -1,0 +1,24 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/reflections/reflection_using_prepare.py
+// Selected symbol(s): ReflectionUsingPrepare
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::quantum::toffoli;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use kernel::kernel;
+
+observe fn main() -> (CBit, CBit) {
+    let q = kernel(join(init0(), init0()));
+    let (a, b) = split(q);
+    (measure_z(a), measure_z(b))
+}

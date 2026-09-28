@@ -2,6 +2,14 @@
 
 Write quantum algorithms in the language you use to think about them.
 
+Start with quantum programs written as they ought to be expressed, then grow
+the language with AI so it can express and check them. This
+[development method](docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
+uses desired source, executable translations and concrete failures to guide
+language design. The [code-driven development procedure](docs/code-driven-development.md)
+defines the 0.1.x foundation, concrete obstacles and acceptance experiments for
+the user-selected continuation from 0.2.0 onward.
+
 Qleisli is an experimental quantum programming language implemented in Rust.
 It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
@@ -95,11 +103,14 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Version: 0.1.8.** The [release record](docs/releases/v0.1.8.md) and
-[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8)
-separate implemented features, executed checks and publication status. Basis
-parameter patterns, n-ary tuples and binding-level ownership diagnostics address
-friction found in the executable authoring corpus.
+**Version: 0.1.9.** The [release record](docs/releases/v0.1.9.md) and
+[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9)
+separate implementation, validation and publication. This update fixes truncated
+static-argument parsing and repeated source-snapshot costs, improves repair
+diagnostics, and completes the finite B019 foundation with 24 corpus translations
+and the code-driven handoff. It retains current APIs and finite checking rules.
+The [0.1.8 record](docs/releases/v0.1.8.md) preserves
+the operation-contract and authoring changes and their publication evidence.
 
 The [operation-contract example](examples/operation_contracts/main.qli) uses one
 static operation parameter with two independently checked implementations.
@@ -147,3 +158,8 @@ documentation are licensed under [Apache-2.0](LICENSE), unless a file states
 otherwise. See [NOTICE](NOTICE) and the [contribution policy](CONTRIBUTING.md).
 Third-party material retains its own licenses and notices. This license does
 not automatically apply to independently authored programs written in Qleisli.
+
+The [input corpus](corpus/README.md) is restricted to QuantumKatas, Qualtran
+Bloqs and PennyLane Demos by the adopted [corpus and licensing policy](corpus/POLICY.md).
+Katas translations are MIT; the other two sources' translations are Apache-2.0.
+The repository is not dual-licensed `Apache-2.0 OR MIT`.

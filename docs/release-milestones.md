@@ -27,9 +27,10 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.8 record](releases/v0.1.8.md)
-separates fixed-width M1 and authoring implementation, migration and local validation from
-publication. Compatible features now follow the revised PATCH policy.
+in the [generated status](current-status.md). The [0.1.9 record](releases/v0.1.9.md)
+separates compatible review maintenance and local validation from publication;
+the [0.1.8 record](releases/v0.1.8.md) preserves M1/authoring migrations.
+Compatible features follow the revised PATCH policy.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
 older [release records](releases/v0.1.4.md) retain their historical evidence.
 The [six initial drafts and requirements](imaginary-v1/README.md), their
@@ -128,6 +129,9 @@ this release gate does not retrospectively mark all of SPEC-4 complete.
 <a id="v019-maintenance-boundary"></a>
 
 ## v0.1.9 maintenance acceptance boundary
+
+The product [0.1.9 review update](releases/v0.1.9.md) does not itself complete
+this broader legacy checkpoint; its unresolved audit items remain explicit.
 
 **Legacy checkpoint, revised by the 0.1.5 review; not completed.** The
 [B019-1–B019-6 conditions](v0x-roadmap.md#v019-acceptance-boundary) require

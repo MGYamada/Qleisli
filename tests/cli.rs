@@ -4,6 +4,24 @@ use common::SourceRoot;
 use std::process::Command;
 
 #[test]
+fn doc_reports_truncated_static_arguments_without_panicking() {
+    let root = SourceRoot::new("unitary fn f(q: Q<Bit>) -> Q<Bit> { g[");
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("doc")
+        .arg(root.0.join("main.qli"))
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1), "{output:?}");
+    assert!(output.stdout.is_empty());
+    let stderr = String::from_utf8(output.stderr).unwrap();
+    assert!(
+        stderr.contains("expected a static operation description"),
+        "{stderr}"
+    );
+    assert!(!stderr.contains("panicked"), "{stderr}");
+}
+
+#[test]
 fn check_and_run_accept_source_roots_with_spaces_and_unicode() {
     let root = SourceRoot::new("observe fn main() -> CBit { true }");
     let source_root = root.0.join("source root 日本語");

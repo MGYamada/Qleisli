@@ -1,0 +1,293 @@
+{
+  "created_utc": "2026-09-28T09:13:09.204441+00:00",
+  "results": [
+    {
+      "case": "quantum_katas/global_phase",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/global_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/ghz3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/ghz3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/measure_plus",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/measure_plus",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/teleport",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/dense_coding",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/dense_coding",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/bernstein_vazirani",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bernstein_vazirani",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/grover2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/qpe3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/add2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/add2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/xor2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/xor2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/less_than2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/less_than2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `)`, found identifier\",\"primary\":{\"path\":\"kernel.qli\",\"start\":744,\"end\":746,\"line\":19,\"column\":42},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qrom2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qrom2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/and_phase",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/and_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qft2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qft2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qpe2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qpe2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/reflection2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/reflection2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qubit_rotation",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qubit_rotation",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"kernel.qli\",\"start\":829,\"end\":865,\"line\":21,\"column\":27},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/teleport",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qaoa_vertex_cover",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_vertex_cover",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"kernel.qli\",\"start\":840,\"end\":876,\"line\":21,\"column\":27},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qaoa_maxcut",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_maxcut",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"kernel.qli\",\"start\":842,\"end\":878,\"line\":21,\"column\":27},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/vqe_excitation",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/vqe_excitation",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `(`, found `let`\",\"primary\":{\"path\":\"kernel.qli\",\"start\":849,\"end\":852,\"line\":20,\"column\":5},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/classifier_layer",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/classifier_layer",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qpe3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/phase_lock",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/phase_lock",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

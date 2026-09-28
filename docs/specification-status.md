@@ -8,17 +8,102 @@ paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 and authoring
-implementation, migration and local validation from publication.
+from one current-state record and the manifests. The [0.1.9 record](releases/v0.1.9.md) separates compatible review fixes,
+diagnostic improvements and local validation from publication; the historical
+[0.1.8 record](releases/v0.1.8.md) retains its migrations.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.8.md) and
+The current [release record](releases/v0.1.9.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.1.9 release procedure (2026-09-28)
+
+After completing B019, the user authorized releasing 0.1.9. The
+[release procedure](releases/v0.1.9.md#release-validation-and-publication)
+finalizes the changelog and summaries and requires all six protected-branch
+checks on the PR and exact merged commit, clean package/source-archive validation,
+an annotated immutable tag and verification of the GitHub source archives.
+The [GitHub record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9)
+supplies the actual publication identities and outcomes. The production package
+is a validation artifact; distribution follows the complete-source format of
+0.1.8. No source/API change, crates.io upload or prebuilt binary is included in
+this finalization. Earlier candidate checks and proof limits remain historical.
+
+## B019 completion and code-driven preparation (2026-09-28)
+
+The later [completion record](reviews/b019-completion.md) retains the F2 repair,
+completed frontend/trusted audit dispositions and actual candidate validation
+separately from the historical assessment below. The new private immutable
+snapshot removes duplicate source copy/work without changing public owned
+identities, exact checking or limits. The independent 4,608-case exact sweep
+adds control/phase/layout/adjoint coverage. Both Rust toolchains pass 354
+production and 43 research tests; the pinned 577-declaration Lean audit passes.
+All six exact-commit Linux CI jobs and clean package/source-archive checks
+passed for candidate `b657e236cc94c5023746df900d42da5bfa23ab96`, completing
+B019 within its finite contract. The later documentation-only closure is
+separately rechecked; no version tag, merge or publication is implied.
+
+The [code-driven procedure](code-driven-development.md) predeclares concrete
+obstacles A020-17–20 and bounded M1/M2 work packets for the user's selected
+post-0.1.x direction. It adopts no future syntax, new trusted rule, fourth input
+corpus or general compiler-proof claim.
+
+## B019 boundary and plan check (2026-09-28)
+
+The [dated six-condition assessment](reviews/b019-2026-09-28.md) records that
+B019 is incomplete: F2/A020-10 and audit closure remain open under B019-3;
+final candidate reproducibility is partial under B019-6. The local replay
+retains the source and both actual JSON results. B019-1/2/4/5 are met within
+their explicitly bounded scopes. This does not complete M1, M2 or V1.
+
+Active G020 and draft/connection summaries now reflect the implemented and
+released fixed-width M1 slices. The selected dependency order is preserved.
+Fresh checks passed 345 production and 43 research tests per Rust toolchain,
+Clippy, primary formatting, JSON decoding, pinned Lean build and the
+577-declaration audit. The exhaustive corpus rerun passed 9,412 probes, 24
+mains and four rejection cases. The dated record retains check details and
+does not claim exact-commit CI, fresh archive verification or publication.
+
+## v0.1.9 closed input corpus (2026-09-28)
+
+The user fixed the external input set and licensing in [corpus policy](../corpus/POLICY.md)
+and adopted the [program-first development method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write).
+The [24 finite translations](../corpus/README.md) add executable source and
+independent numerical oracles, not accepted syntax or trusted rules. Initial
+source/diagnostic history is retained. The exhaustive run passed 9,412 probes,
+all 24 mains and four local rejection cases; no upstream framework was run.
+See [the release continuation](releases/v0.1.9.md#input-corpus-continuation)
+for scope and local checks. General algorithms, upstream runtime equivalence
+and formal translation adequacy remain unproved.
+
+## v0.1.9 review fixes and repair diagnostics (2026-09-28)
+
+The user selected 0.1.9 for the supplied review plan. F1's truncated-static-argument
+panic is fixed with constructor validation and an EOF sentinel; the existing
+StaticOp grammar and X1 failure envelope now yield a located `parse` error and
+exit 1. F3's current transparent capability derivations have regression coverage;
+F2's omitted snapshot charging is documented and its diagnostic explains the
+copy. A020-09/10 retain the unresolved design/capacity changes. QPE's numerical
+residual explanation and whole-tree whitespace CI check are corrected.
+
+Additional authoring feedback led to causal effect spans, derived/declared effect
+names and checked import/gate-provider rewrite hints. Source acceptance, public
+APIs, JSON schema, finite limits and proof claims remain unchanged. Multiple-error
+recovery and other conveniences remain backlog candidates, not implemented syntax.
+
+On macOS aarch64, Rust 1.98.1 and 1.85.0 each passed **343 production and 43
+research tests**, Clippy and independent JSON decoding (7 executed, 1 Linux-only
+skip). Primary formatting, **53 helper tests**, document/status checks, **58 finite
+mathematical checks**, **39 exact assertions**, **14 example projects**, Shor15,
+Lean build and the **577-declaration axiom audit** passed. A local **383-file**
+dirty-tree package was built and its notices inspected. The [0.1.9 record](releases/v0.1.9.md)
+lists performed/skipped checks; no tag, push, hosted CI or publication is claimed.
+Selecting 0.1.9 does not complete the broader legacy B019 checkpoint.
 
 ## v0.1.8 release procedure (2026-09-28)
 

@@ -35,9 +35,25 @@ steps per materialized contract circuit and the existing exact work budget of
 10,000,000. Control/tensor count their entire resulting interface against six
 bits. Static repetitions accept 0–4,096. Type/syntax depth remains 64 and type
 trees at most 4,096 nodes. New specialization is limited to 256 distinct
-instances per project, depth 64 and 1,000,000 aggregate lowering work units;
-one work unit is one visited AST node or emitted circuit step, charged on every
-visit/emission. Existing non-generic programs retain their existing profile.
+instances per project, depth 64 and 1,000,000 aggregate lowering work units.
+AST visits, emitted circuit steps and the other copied representations listed
+in the [frontend limits](frontend-v0.md) consume this shared budget.
+
+**Source retention, corrected in 0.1.9:** the original M1 text omitted the
+0.1.8 implementation's repeated source-byte copy/charge for each distinct
+provider binding and `apply_contract` pair. The frontend now shares one frozen
+full-project snapshot between both paths and charges its source bytes once,
+before copying. It retains all loaded modules, comments and bundled std;
+the existing evidence metadata profile is preflighted before allocation and
+independently checked for every receipt. Per-pair raw/name work under
+[FC-CACHE](function-contracts-v0.1.md), per-receipt exact checking, specialization
+limits and all other work charges remain. Public identity inspection keeps its
+owned API through a bounded lazy compatibility view. The
+[F2 resolution](reviews/b019-f2-resolution.md) records the compatible repair,
+source/dependency binding and the 100 KB/256-provider experiment. These finite
+limits still apply together; 256 is a specialization cap, not an unconditional
+capacity promise for arbitrary programs.
+Existing non-generic programs retain their existing profile.
 Budget exhaustion diagnoses `limit`, never changes semantics or omits checks.
 
 ## Grammar and resolution
@@ -141,8 +157,14 @@ and the complete external interface retained.
 
 A generic body is checked against **only its declared access constraints**.
 `Op` alone supplies no executable access. Constraints have no implicit
-entailments: `Controlled(U)` does not silently provide `Apply(U)` or
-`Adjoint(U)`. M1 transparent providers can supply all three after independent
+entailments for **direct access to U**: `Controlled(U)` does not permit `U(q)`
+or `adjoint(U,q)`. The constructor table below separately derives
+Apply/Adjoint/Controlled for `controlled_op(U)` and Controlled for
+`inverse_op(U)` from `Controlled(U)`. A helper can therefore use a derived
+controlled inverse with its control in `|1>` to apply u†. This is accepted M1
+behavior, recorded by [A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors),
+not independence under arbitrary constructor composition.
+M1 transparent providers can supply all three after independent
 extraction and verification of the derived circuits; that does not prove that
 every abstract unitary has accessible control/inverse. Opaque external providers
 are excluded from M1. Every requested derived circuit must fit the profile.
@@ -182,6 +204,12 @@ finite structural inverse/control checker and exact comparison, including its
 phase; failure to extract it is `unsupported`. Constructors check all operands
 even when a result cancels mathematically. Identity result never erases an
 unavailable premise or malformed dependency.
+
+In particular, the inverse-of-controlled entries rely on access to the actual
+verified transparent circuit. They must not be inherited by a future opaque
+provider profile solely from `Controlled(U)`. Such a profile needs its own
+capability rules and compatibility decision; tightening current M1 derivations
+would reject supported programs and requires a MINOR migration.
 
 The controlled conjugation executes V†, then controlled W, then V, with the
 control excluded from V's ports. Its inactive sector is v v†=I, and active

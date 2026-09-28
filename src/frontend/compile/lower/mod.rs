@@ -57,12 +57,21 @@ struct Lowerer<'c, 'p> {
     next_classical: u32,
     next_slot: u32,
     effect: Effect,
+    // Origin of the strongest derived effect; diagnostic metadata only.
+    effect_source: Option<(String, Span)>,
     depth: usize,
     bindings: super::operations::Bindings,
     abstract_check: bool,
 }
 
 impl Lowerer<'_, '_> {
+    fn add_effect(&mut self, module: &str, span: Span, effect: Effect) {
+        if effect > self.effect {
+            self.effect_source = Some((module.to_owned(), span));
+        }
+        self.effect = self.effect.max(effect);
+    }
+
     fn error(
         &self,
         module: &str,
@@ -220,6 +229,7 @@ impl Lowerer<'_, '_> {
             env.insert(name.text.clone(), Some(value));
         }
         let previous_effect = self.effect;
+        let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
         let FnBody::Quantum(body) = &decl.body else {
             unreachable!("ordinary function")
@@ -248,14 +258,29 @@ impl Lowerer<'_, '_> {
             }),
         )?;
         if self.effect > effect(decl.kind) {
+            let (module, span) = self
+                .effect_source
+                .as_ref()
+                .map_or((key.0.as_str(), decl.span), |(module, span)| {
+                    (module.as_str(), *span)
+                });
             return Err(self.error(
-                &key.0,
-                decl.span,
+                module,
+                span,
                 ErrorCode::Effect,
-                "body exceeds the declared function effect",
+                format!(
+                    "body effect `{:?}` exceeds declared `{:?}` effect of `{}`",
+                    self.effect,
+                    effect(decl.kind),
+                    decl.name.text
+                ),
             ));
         }
-        self.effect = previous_effect.max(effect(decl.kind));
+        self.effect = previous_effect;
+        self.effect_source = previous_effect_source;
+        let (module, span) =
+            site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
+        self.add_effect(module, span, effect(decl.kind));
         Ok(value)
     }
 
@@ -873,6 +898,7 @@ impl Lowerer<'_, '_> {
             next_classical: 0,
             next_slot: 0,
             effect: Effect::Unitary,
+            effect_source: None,
             depth: self.depth,
             bindings: BTreeMap::new(),
             abstract_check: self.abstract_check,
@@ -976,7 +1002,7 @@ impl Lowerer<'_, '_> {
             },
         );
         if bits > reg.wires.len() {
-            self.effect = self.effect.max(Effect::Iso);
+            self.add_effect(module, span, Effect::Iso);
         }
         Ok(Value::Quantum(slot, basis))
     }
@@ -1051,6 +1077,7 @@ impl Lowerer<'_, '_> {
         local.insert(binder.text.clone(), Some(ancilla));
         let start = self.operations.len();
         let previous_effect = self.effect;
+        let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
         let result = self.block(module, body, &mut local)?;
         self.no_owned_bindings(module, body.span, &local, [binder])?;
@@ -1063,6 +1090,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.effect = previous_effect;
+        self.effect_source = previous_effect_source;
         if result != Value::Quantum(ancilla_slot, Ty::Bit) {
             return Err(self.error(
                 module,
@@ -1148,6 +1176,7 @@ fn lower_function_inner(
         next_classical: 0,
         next_slot: 0,
         effect: Effect::Unitary,
+        effect_source: None,
         depth: 0,
         bindings,
         abstract_check,

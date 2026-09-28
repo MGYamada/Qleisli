@@ -48,6 +48,12 @@ Record concrete writing failures and workarounds in the
 Judge convenience by obligations removed and evidence retained. A successful
 authoring session is not a measured model benchmark or a protocol proof.
 
+The [adopted development method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
+starts with quantum programs as they ought to be written, then grows the
+language with AI to express and check them. Keep desired-source drafts distinct
+from implemented syntax. The [fixed three-source corpus](../corpus/README.md)
+provides executable translations and concrete authoring evidence for that cycle.
+
 <a id="v01-と-v1-の到達条件"></a>
 
 ## v0.1 and v1 acceptance conditions

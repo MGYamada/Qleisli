@@ -17,7 +17,7 @@ and example explanations. Authority is tied to a document's subject and status:
 | Formal rules and proof accounts | [Formal core](formal-core.md), [resource rules](source-resource-rules.md), [typing rules](source-typing-rules.md), [source semantics](source-semantics.md), [static semantics](static-semantics.md), [source soundness](source-soundness.md), [IR correspondence](source-ir-correspondence.md), and [state refinement](lowering-state-refinement.md) state their models, assumptions, and proved/open obligations. A paper proof is not a claim that Rust implements every derivation correctly. |
 | Implementation and evidence records | [Frontend profile](frontend-v0.md), [IR prototype](ir-prototype.md), [architecture](implementation-architecture.md), [Lean ledger](lean-resource-proof.md), [Physlib environment](physlib-environment.md), and [conformance history](specification-status.md) describe implementation/dependency coverage and dated evidence. Finite tests and local Lean lemmas do not establish general compiler soundness. |
 | Adopted design direction and development plans | The translated documents below are the English editions for their own principles, requirements, plans, and arguments. An accepted design principle may constrain future work without being implemented. Proposed facilities remain proposed. These documents do not override current language/API rules. |
-| Release criteria and compatibility | [Release milestones](release-milestones.md), [versioning](versioning.md), the [v0.x plan and v0.1.9 boundary](v0x-roadmap.md), and version-specific [release records](releases/v0.1.8.md) determine acceptance, compatibility, and preparation/publication status. Roadmap themes do not adopt syntax or establish implementation. Product versions, development stages, specification v0, and ledger format v1 are distinct. |
+| Release criteria and compatibility | [Release milestones](release-milestones.md), [versioning](versioning.md), the [v0.x plan and v0.1.9 boundary](v0x-roadmap.md), and version-specific [release records](releases/v0.1.9.md) determine acceptance, compatibility, and preparation/publication status. Roadmap themes do not adopt syntax or establish implementation. Product versions, development stages, specification v0, and ledger format v1 are distinct. |
 | Future design material | The [v0.2.0 backlog](v0.2.0-backlog.md) is the living authoring-issue intake, with evidence and acceptance experiments; it is not an adopted release scope. The [language-evolution framework](language-evolution.md) and [imaginary-v1 corpus](imaginary-v1/README.md) organize future requirements. All six algorithm drafts remain imaginary and uncompiled; their existence does not adopt their notation or APIs. |
 | Extension specifications and future profiles | [M1 language extension](next-minor-spec.md) is the normative fixed-width supplement implemented at the 0.1.8 checkpoint. The [0.1.8 grammar supplement](syntax-v0.md#authoring-forms-added-in-product-018) specifies basis parameter patterns and n-ary tuples. [Machine interfaces](machine-interface-spec.md) have implemented X1 and pending X2–X6. The [bounded M2 IR/checker profile](hierarchical-ir-spec.md) remains a future specification. Release records identify executed tests; selection alone does not establish implementation. |
 | Independent semantic research | The [system design](symbolic-contract-architecture.md) specifies the intended meaning/implementation boundary; the [prototype record](../research/semantic-kernel/README.md) records the separately implemented and tested subset. The [quantum-library investigation](../research/quantum-libraries/README.md) records isolated mathematical interface experiments that did not adopt a dependency at that investigation step; the later [Physlib record](physlib-environment.md) preserves the compatible addition and its subsequent deferral to a future concrete bridge. None changes production source acceptance or proves Rust/source correspondence. |
@@ -35,6 +35,13 @@ active milestone states and the initial rule/implementation/test/proof
 inventory. [current-status.md](current-status.md) is generated from it and the
 Rust/Lean manifests; the document checker rejects version/view drift and
 missing source/test links. It is not an automatic proof or exhaustive audit.
+The [initial B019 boundary check](reviews/b019-2026-09-28.md) preserves its
+then-unresolved defect and executed checks. The later
+[completion record](reviews/b019-completion.md) collects actual review
+dispositions, repairs and candidate validation without rewriting that history.
+The [code-driven procedure](code-driven-development.md) fixes the user's
+post-foundation direction, sources, obstacles and acceptance experiments; it
+does not adopt future syntax or mark remaining M1–M5 work complete.
 Detailed norms remain in their existing specifications; historical validation
 entries remain dated. [M0–M5 and the legacy-ID map](v0x-roadmap.md#legacy-id-mapping)
 replace version-assigned scheduling without renumbering theorem statements.
@@ -61,6 +68,7 @@ existing links, including links in historical records, continue to resolve.
 | [AI-era goal](ai-era-goal.md) | Assurance levels, resource/ideal-semantic proof targets, AI verification boundary, and exclusions | Adopted development goal, with bounded achieved results and open general proofs distinguished. |
 | [Algorithm-structure goal](algorithm-structure-goal.md) | Common structures S1–S8, design contracts, A0–A4, corpus and future composition | Adopted goal and plan; higher-order/generalized facilities are not current APIs. |
 | [Algorithm corpus](algorithm-corpus.md) | Twenty entries C01–C20, primary-source links, input models, promises, evidence needs, and unsupported parts | Research/design inventory, not twenty implemented algorithms. |
+| [Input corpus](../corpus/README.md) and [source/license policy](../corpus/POLICY.md) | 24 finite QLI translations, original files, pinned commits, notices, authoring records and independent semantic tests | Closed three-source intake adopted by the user; finite validation, not whole upstream algorithm ports or general proofs. |
 | [Quantum-language requirements](quantum-language-requirements.md) | Resource/effect/phase/reference conditions and specification obligations | Adopted requirements with implementation/proof scope stated separately. |
 | [Standard-library roadmap](stdlib-roadmap.md) | Seven areas, contract fields, four proposed skeletons, adoption criteria, AI feedback, L0–L5 | Authoritative library design plan; proposed generalized APIs remain unimplemented. |
 | [Quantum bookkeeping](quantum-bookkeeping.md) | Language responsibility, semantic composition, phase-sensitive QPE, and proposed evaluation order | Supporting design argument and proposal, subordinate to release acceptance criteria. |
@@ -106,7 +114,9 @@ Sized source syntax, general instrument/accuracy evidence, and full arithmetic
 APIs still require extension decisions. The subsequent
 [0.1.5 dossier](decisions/2026-09-27-v1-path.md) and its linked specifications
 settle fixed-width operation/access/meaning rules, machine interfaces and the
-bounded M2 checker/QPE profile, without implementing them. The
+bounded M2 checker/QPE profile. Subsequent [0.1.7](releases/v0.1.7.md) and
+[0.1.8](releases/v0.1.8.md) records implement and validate X1, M1.1-A and
+fixed-width operations/meanings; remaining machine slices and M2 are pending. The
 [requirements index](imaginary-v1/requirements.md) records candidate facilities
 and open questions; translation is not their adoption. General source-to-IR
 adequacy, verifier correctness, and compiler soundness remain open.

@@ -1,0 +1,3 @@
+# Keep frozen sources byte-identical, including upstream whitespace.
+corpus/** text eol=lf
+corpus/upstream/** -text -whitespace

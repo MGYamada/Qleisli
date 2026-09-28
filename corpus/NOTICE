@@ -1,0 +1,34 @@
+Qleisli input corpus
+QLI adaptations and original verification material:
+Copyright 2026 Masahiko G. Yamada
+
+This collection contains third-party material. It does not change the license
+of the Qleisli compiler, bundled standard library or proof libraries.
+See POLICY.md and manifest.json for the closed source list and file mapping.
+
+QuantumKatas: Copyright (c) Microsoft Corporation. All rights reserved.
+Original Q# source and its QLI adaptations are licensed under MIT.
+The full permission notice is in upstream/quantum_katas/LICENSE.
+The upstream NOTICE.txt is preserved verbatim for provenance. Its dependency
+catalog is not a statement that those dependencies are included or used here.
+
+Qualtran: Copyright 2023 Google LLC; Copyright 2024 Google LLC.
+Per-file years and notices remain in the originals and QLI adaptations.
+Licensed under Apache-2.0; see upstream/qualtran/LICENSE.
+
+PennyLane Demos: upstream demonstration authors are retained in each original
+demo's adjacent metadata.json and in each QLI translation header:
+qubit_rotation: josh
+teleportation: timmysilv
+qaoa_intro: jceroni (Jack Ceroni, named in the original demo)
+qaoa_maxcut: alowe, Jay
+vqe: adgran
+variational_classifier: mariaschuld
+qpe: ixfoduap, KetPuntoG
+phase_kickback: Dan
+These are upstream author usernames, not substituted copyright claims.
+Licensed under Apache-2.0; see upstream/pennylane_demos/LICENSE and README.txt.
+
+Original source files and their notices are unmodified. QLI files prominently
+mark their translation/modification status and link the pinned upstream files.
+The source projects do not endorse Qleisli or these adaptations.

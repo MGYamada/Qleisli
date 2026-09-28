@@ -126,18 +126,27 @@ impl Parser {
                 span: token.span,
             });
             self.expect(&TokenKind::DoubleColon)?;
-            path.push(self.ident()?);
+            path.push(self.import_ident()?);
         } else {
-            path.push(self.ident()?);
+            path.push(self.import_ident()?);
         }
         while self.consume(&TokenKind::DoubleColon).is_some() {
-            path.push(self.ident()?);
+            path.push(self.import_ident()?);
         }
         let end = self.expect(&TokenKind::Semicolon)?.span.end;
         Ok(UseDecl {
             path,
             span: Span::new(start, end),
         })
+    }
+
+    fn import_ident(&mut self) -> Result<Ident, ParseError> {
+        if self.at(&TokenKind::LBrace) {
+            return Err(self.error(
+                "grouped imports are unsupported; write one name per `use`, for example `use std::quantum::init0; use std::quantum::h;`",
+            ));
+        }
+        self.ident()
     }
 
     fn decl(&mut self) -> Result<Decl, ParseError> {
@@ -311,6 +320,18 @@ impl Parser {
                 span: name.span,
                 kind: StaticOpKind::Name(name),
             });
+        }
+        if !matches!(
+            self.current().kind,
+            TokenKind::BindOp
+                | TokenKind::RepeatOp
+                | TokenKind::InverseOp
+                | TokenKind::ControlledOp
+                | TokenKind::ThenOp
+                | TokenKind::TensorOp
+                | TokenKind::ConjugateOp
+        ) {
+            return Err(self.error("expected a static operation description"));
         }
         let constructor = self.bump();
         self.expect(&TokenKind::LParen)?;
@@ -1169,7 +1190,10 @@ impl Parser {
 
     fn bump(&mut self) -> Token {
         let token = self.current().clone();
-        self.pos += 1;
+        // Keep the EOF sentinel available for diagnostics after truncated input.
+        if token.kind != TokenKind::Eof {
+            self.pos += 1;
+        }
         token
     }
 

@@ -1,8 +1,11 @@
 # Three-bit iterative phase estimation
 
 Run `cargo run --bin qleisli -- run examples/iterative_phase_estimation`.
-The [entry point](main.qli) applies T to `|1>` and returns `1001`: low-weight
-phase bits first, followed by the target's Z measurement.
+The [entry point](main.qli) applies T to `|1>`. Its ideal distribution is
+`1001` with probability one: low-weight phase bits first, followed by the
+target's Z measurement. The floating-point reference `run` also lists
+`0001`, `0011`, `0101` and `0111` with rounding residuals of about `1e-33`;
+these are numerical artifacts, not additional ideal outcomes.
 
 [iterative::phase3](iterative.qli) is an ordinary experimental `.qli` definition:
 `Observe`, with `static U: Op<Bit>`, `requires Controlled(U)`, and runtime type

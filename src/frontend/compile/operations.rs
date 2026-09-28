@@ -2,9 +2,10 @@
 //! finite contract receipts can authorize an executable operation.
 use super::*;
 use crate::contract::{
-    BasisType, Circuit, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
-    MAX_CONTRACT_BITS, MAX_CONTRACT_STEPS,
+    BasisType, Circuit, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, MAX_CONTRACT_BITS,
+    MAX_CONTRACT_STEPS,
     exact::{Budget, Exact, Matrix},
+    function::RetainedIdentity,
     meaning::{FiniteMeaning, MeaningEvidence},
 };
 use crate::ir::*;
@@ -236,13 +237,19 @@ impl Compiler<'_> {
         name: &Ident,
         meaning: Option<&Ident>,
     ) -> Result<Operation, CompileError> {
-        let Callee::User(key) = self.resolve(module, name)? else {
-            return Err(self.error(
-                module,
-                name.span,
-                ErrorCode::TypeMismatch,
-                "static provider requires an ordinary declared unitary function",
-            ));
+        let key = match self.resolve(module, name)? {
+            Callee::User(key) => key,
+            Callee::Sealed(namespace, gate) => {
+                let mut message =
+                    "static provider requires an ordinary declared unitary function".to_owned();
+                if namespace == "std::quantum" && matches!(gate.as_str(), "h" | "x" | "z" | "t") {
+                    message.push_str(&format!(
+                        "; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
+                        name.text
+                    ));
+                }
+                return Err(self.error(module, name.span, ErrorCode::TypeMismatch, message));
+            }
         };
         let decl = self.declarations[&key];
         if decl.kind != FnKind::Unitary {
@@ -298,8 +305,7 @@ impl Compiler<'_> {
             self.charge(module, name.span, cost)?;
             return Ok(self.providers[&cache].clone());
         }
-        let source_cost = total_size(self.project.modules.values().map(|s| s.source.len()));
-        self.charge(module, name.span, source_cost)?;
+        let sources = self.retained_sources(module, name.span)?;
         let program = self.checked.get(&key).ok_or_else(|| {
             self.error(
                 module,
@@ -309,22 +315,17 @@ impl Compiler<'_> {
             )
         })?;
         let implementation = program.program().clone();
-        let identity = FunctionIdentity {
-            implementation: format!("{}::{}", key.0, key.1),
-            specification: mkey.as_ref().map_or_else(
+        let identity = RetainedIdentity::shared(
+            format!("{}::{}", key.0, key.1),
+            mkey.as_ref().map_or_else(
                 || format!("{}::{}", key.0, key.1),
                 |m| format!("meaning {}::{}", m.0, m.1),
             ),
-            sources: self
-                .project
-                .modules
-                .iter()
-                .map(|(name, s)| (name.clone(), s.source.clone()))
-                .collect(),
-        };
+            sources,
+        );
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let evidence = if let Some(mkey) = &mkey {
-            MeaningEvidence::check(
+            MeaningEvidence::check_retained(
                 implementation,
                 self.meanings[mkey].target.clone(),
                 identity,
@@ -332,7 +333,7 @@ impl Compiler<'_> {
             )
             .map(|e| e.receipt())
         } else {
-            FunctionEvidence::check(
+            FunctionEvidence::check_retained_diagnostic(
                 contract_basis(basis),
                 implementation.clone(),
                 implementation,
@@ -340,6 +341,7 @@ impl Compiler<'_> {
                 &mut budget,
             )
             .map(Arc::new)
+            .map_err(|diagnostic| diagnostic.error)
         }
         .map_err(|e| self.op_error(module, name.span, e))?;
         let op = Operation {

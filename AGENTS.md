@@ -29,6 +29,12 @@ source for Shor, QPE and Grover that preserves textbook structure and meets
 V1-C1–C5. Retain fixed-size examples as regressions; names or pseudocode alone
 cannot satisfy these gates.
 
+Follow the [program-first development method](docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write):
+first write quantum programs as they ought to be expressed, then develop the
+language with AI to express and check them. Keep ideal-source drafts distinct
+from executable translations; use concrete gaps to select abstractions without
+bypassing semantic contracts, independent checking or release gates.
+
 Prioritize executable `.qli` examples and source fixtures when evaluating
 authoring ergonomics, especially for LLMs. Discover missing abstractions from
 real programs, retain minimal failed attempts and semantic counterexamples,
@@ -42,7 +48,18 @@ Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
 with stable IDs, concrete source/design evidence, the obligation to remove,
 and a checking/acceptance experiment. Update it when current work exposes a
 new issue; retain resolution links. Backlog entries do not select a release or
-adopt syntax, and the current development version remains 0.1.8.
+adopt syntax. The current product version is 0.1.9; its compatible review fixes,
+finite B019 closure and publication procedure are recorded in the
+[release record](docs/releases/v0.1.9.md).
+
+For the user-selected code-driven continuation from 0.2.0 onward, follow the
+[preparation and work packets](docs/code-driven-development.md). Start from
+actual desired `.qli` source, preserve first attempts and counterexamples, and
+select a bounded implementation slice with a contract and independent checking
+experiment before changing acceptance. Complete the finite B019 foundation in
+0.1.x; do not mislabel later M1/M2 scaling or sampling work as already complete.
+The external translation corpus remains exactly the three sources in
+[its policy](corpus/POLICY.md). Local negative fixtures are not a fourth source.
 
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
 [version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,
@@ -112,6 +129,13 @@ dossier and executed results in conformance/release records.
 
 ## Licensing
 
+- The external input corpus is restricted to QuantumKatas, Qualtran Bloqs and
+  PennyLane Demos by the adopted [corpus policy](corpus/POLICY.md). Adding or
+  replacing a source requires explicit user approval and a policy amendment.
+  Pin commits and file hashes; retain source-specific licenses and notices.
+  Qleisli remains Apache-2.0, Katas translations are MIT, and the other two
+  translations are Apache-2.0. Do not label the collection Apache-2.0 OR MIT.
+
 - Unless individually stated otherwise, Qleisli's code, standard library,
   examples, tests, scripts, Lean proofs and documentation are **Apache-2.0**.
   Maintain [LICENSE](LICENSE), [NOTICE](NOTICE) and [CONTRIBUTING](CONTRIBUTING.md).
@@ -129,10 +153,10 @@ dossier and executed results in conformance/release records.
 [Versioning](docs/versioning.md) is authoritative.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
-features need no exception. Preserve historical release/migration records and
-the selected development version 0.1.8, explicitly retained by the user for
-the authoring continuation. Record its public Rust AST migration and remaining
-gates in the [0.1.8 record](docs/releases/v0.1.8.md). Type/size
+features need no exception. The user selected development version 0.1.9 on
+2026-09-28 for compatible review fixes; follow its [record](docs/releases/v0.1.9.md).
+Preserve the historical 0.1.8 authoring decision and public Rust AST migration
+in the [0.1.8 record](docs/releases/v0.1.8.md). Type/size
 parameters and cross-interface QPE reuse remain future work at the user's request.
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own

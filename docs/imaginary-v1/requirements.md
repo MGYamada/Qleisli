@@ -67,9 +67,11 @@ static operation parameters, access evidence and bounded basis-derived meanings
 for M1. Sizes and hierarchical IR with symbolic checking belong to M2;
 predicate/arithmetic synthesis without truth tables belongs to M3/M4. This
 replaces the earlier combined size/operation candidate and indefinite kernel
-deferral. The [M1 specification](../next-minor-spec.md) now selects its future
-grammar; the [machine contracts](../machine-interface-spec.md) specify the host
-boundary. Neither changes current accepted grammar or implemented APIs.
+deferral. The [M1 specification](../next-minor-spec.md) defines the fixed-width
+grammar implemented and validated in [0.1.8](../releases/v0.1.8.md).
+The [machine contracts](../machine-interface-spec.md) specify the host boundary;
+X1 is implemented, while X2–X6 remain pending. These finite implementations do
+not adopt the imaginary drafts' sized notation or general operation builders.
 
 ### R02 notation and representation alternatives
 
@@ -86,8 +88,11 @@ from unitarity alone. See the [representation decision](../decisions/2026-09-27-
 
 The [conjugation rule](../decisions/2026-09-27-v1-path.md#control-through-conjugation)
 derives controlled `V W V†` from V/inverse and controlled W. It is phase exact
-and avoids requiring controlled state preparation. Current `qif` does not
-implement that derivation as an optimization.
+and avoids requiring controlled state preparation. The fixed-width constructor
+`controlled_op(conjugate_op(V,W))` implements this derivation, with
+[phase-sensitive regression coverage](../../tests/operation_parameters.rs).
+It does not automatically factor an arbitrary named `qif` arm into a conjugation,
+or implement the drafts' sized state-preparation builders.
 
 Before implementing a selected feature, write its English inference/grammar
 rules, actual IR representation, checker algorithm and soundness premises,
