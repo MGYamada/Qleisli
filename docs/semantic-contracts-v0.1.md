@@ -97,6 +97,12 @@ Integer overflow, dimension exhaustion, and evidence budget exhaustion must
 produce a diagnostic rather than a positive result. Intermediate arithmetic
 may exhaust capacity even if an alternative evaluation order would fit.
 
+The [coefficient-domain design note](coefficient-domains.md) records a future
+type-parameterization recommendation and separates exact, approximation and
+device contracts. It does not generalize this concrete R8 checker or its public
+types, admit arbitrary angles or introduce an approximate acceptance tolerance.
+The current ring, capacities and pure-cleanup requirements remain normative.
+
 The initial dense-matrix profile is bounded at **six physical or logical bits** per
 checked circuit, including controls and temporary computed auxiliaries, and
 **1,024 steps** per flat circuit. This

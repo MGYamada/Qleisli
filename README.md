@@ -1,8 +1,21 @@
-# Qleisli
+# Qleisli: Quantum Vibecoding Language
 
-**Current version: 0.1.5** · [Release record and validation](docs/releases/v0.1.5.md) · [Current status](docs/current-status.md) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
+**Current version: 0.1.6** · [Release record and validation](docs/releases/v0.1.6.md) · [Current status](docs/current-status.md) · [Apache-2.0](LICENSE) · [Changelog](CHANGELOG.md) · [Versioning policy](docs/versioning.md)
 
-**v0.1.5 reflects the roadmap review as compatible design/documentation maintenance.**
+**Rust-style source documentation is available.** Use `//!` for a module and
+`///` for a function; nested block comments and inner/outer block docs are also
+supported. `qleisli doc stdlib/src/transforms.qli` renders source documentation
+without checking types/contracts or executing it. Every bundled definition is documented in
+English. See the [comment rules and migration](docs/documentation-comments.md),
+including the user's explicit exception to retain this feature in 0.1.6.
+
+**v0.1.6 starts compatible IR/evidence maintenance.** The independent verifier
+now enforces its existing 64-level classical-branch limit even when the deepest
+arms are empty. Boundary regressions also cover the separate 32-level function
+evidence profile. Legacy qif-arm execution now shares the existing finite circuit
+executor while retaining public IR compatibility. Version selection and local
+checks do not establish publication.
+
 The [selected path](docs/decisions/2026-09-27-v1-path.md) starts with fixed-width
 operation/access contracts and basis-derived meanings, followed by bounded
 symbolic checking, hierarchical IR and multi-width QPE. [M0–M5](docs/v0x-roadmap.md)
@@ -12,8 +25,24 @@ The [M1 language rules](docs/next-minor-spec.md),
 [M2 checker profile](docs/hierarchical-ir-spec.md) specify the selected future
 slices; their implementations and acceptance tests remain open.
 The [local v0.1.5 roadmap is complete](docs/releases/v0.1.5.md#roadmap-completion-evidence).
-The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5)
+The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6)
 identifies the exact commit, CI, annotated tag and publication state.
+
+The selected [interoperability direction](docs/interoperability-roadmap.md)
+adds future Python bindings and bounded OpenQASM 3/QIR import/export around the
+shared verifier. Specifications and implementation of these adapters are pending.
+The [small trusted-core boundary](docs/design-philosophy.md#keep-the-trusted-core-small)
+puts convenience in desugaring, not the checker. The [IR reduction inventory](docs/interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
+records raw-only variants as compatibility debt; numeric execution sharing
+does not yet remove trusted verification rules.
+
+Here **[desugaring](docs/terminology.md#desugaring-layer)** means translating
+convenience syntax/representations into already specified core operations,
+preserving meaning and submitting the untrusted result to independent checking.
+It adds no new primitive or checker rule. The [coefficient-domain note](docs/coefficient-domains.md)
+records future parameterization of exact algebra and separate approximation
+and hardware contracts, so the design need not assume one future gate set;
+these extensions are not implemented.
 
 The [six imaginary-v1 drafts](docs/imaginary-v1/README.md) and
 [semantic review](docs/imaginary-v1/review.md) are design artifacts. The

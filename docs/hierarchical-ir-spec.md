@@ -8,6 +8,19 @@ APIs and their G020-1 extension review remain M2 work; this document fixes the
 checker/IR contract they must satisfy. No current research rule or Lean theorem
 is credited with implementing the new profile.
 
+The subsequent [interoperability direction](interoperability-roadmap.md) places
+QIR/OpenQASM target lowering below this semantic/evidence layer and adds external
+frontends that still submit untrusted IR. It neither replaces this hierarchy
+with LLVM IR nor establishes H1–H5 by adding a file converter.
+
+The **[desugaring layer](terminology.md#desugaring-layer)** translates convenience
+forms into already specified core operations without adding primitive meanings
+or checker rules. Its output is untrusted and independently checked. In this
+future profile, desugaring may target the specified hierarchy; it need not
+expand shared calls or repetitions into flat gates. The [coefficient-domain
+recommendation](coefficient-domains.md) is a further design direction, not new
+nodes, arithmetic domains or acceptance rules for this versioned profile.
+
 ## Scope and representation
 
 Select `qleisli.hierarchical-ir` version 1 with profile `qpe-dyadic8-v1`.
@@ -173,6 +186,14 @@ comparison. Addition uses checked integers at the larger denominator; reject
 an out-of-profile denominator before shifting. H is a separate exact primitive.
 Current ζ8 leaves remain unchanged; π/8 and finer phases use this symbolic
 node/schema path, not the existing exact scalar representation.
+
+Keep the ideal angle/meaning domain separate from a hardware gate-set forecast.
+Future coefficient-domain type parameters must bind arithmetic, interpretation
+and evidence identities to a reviewed domain; they do not enable arbitrary
+real-angle equality automatically. Native-rotation support needs a separately
+specified domain/meaning and approximation/device contract as described in the
+[design note](coefficient-domains.md). The `qpe-dyadic8-v1` bounds, R8 leaves
+and exact cleanup rules here remain unchanged.
 
 For M=2^m, QPE outcome y has Kraus operator on the unmeasured target
 

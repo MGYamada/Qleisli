@@ -828,6 +828,66 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
 }
 
 #[test]
+fn branch_preflight_checks_both_functions_and_inactive_empty_arms() {
+    for in_then_arm in [true, false] {
+        for levels in [31, 32, 33] {
+            for in_implementation in [true, false] {
+                let mut operations = vec![];
+                let mut output = t(0);
+                for level in 1..=levels {
+                    let (then_ops, else_ops, then_token, else_token) = if in_then_arm {
+                        (operations, vec![], output, t(0))
+                    } else {
+                        (vec![], operations, t(0), output)
+                    };
+                    output = t(level);
+                    operations = vec![RawOp::ClassicalBranch {
+                        condition: c(0),
+                        then_ops,
+                        else_ops,
+                        quantum_phis: vec![QuantumPhi {
+                            then_token,
+                            else_token,
+                            output,
+                            output_wires: vec![],
+                        }],
+                        classical_phis: vec![],
+                    }];
+                }
+                // Extraction selects the shallow arm. Preflight must still
+                // inspect the inactive nested arm before cloning raw IR.
+                operations.insert(
+                    0,
+                    RawOp::ClassicalConst {
+                        output: c(0),
+                        value: !in_then_arm,
+                    },
+                );
+                let nested = raw(0, operations, output.0);
+                let empty = raw(0, vec![], 0);
+                let (implementation, specification) = if in_implementation {
+                    (nested, empty)
+                } else {
+                    (empty, nested)
+                };
+                let result = FunctionEvidence::check(
+                    BasisType::Unit,
+                    implementation,
+                    specification,
+                    identity(),
+                    &mut work(),
+                );
+                if levels <= 32 {
+                    assert_eq!(result.unwrap().meaning(), &Matrix::identity(1).unwrap());
+                } else {
+                    assert!(matches!(result, Err(ContractError::Limit(_))));
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn dependency_depth_and_expanded_execution_cost_are_bounded() {
     let mut child = Arc::new(check(0, raw(0, vec![], 0), raw(0, vec![], 0)));
     for expected_depth in 2..=MAX_FUNCTION_DEPTH {

@@ -32,6 +32,12 @@ The CLI provides `qleisli check <source-root>` and `qleisli run <source-root>`.
 with approximate probabilities. Unit leaves contribute no bits. These are host
 commands, not new `.qli` forms or quantum operations.
 
+The [documentation extension](documentation-comments.md) adds
+`qleisli doc <source-file>`, `parse_documented_module` and Markdown rendering.
+The source parser validates Rust-style doc placement while retaining the existing
+public AST shape. Documentation is returned separately; `doc` only parses one
+file and does not resolve imports or check types, ownership or contracts.
+
 The CLI preserves the source-root argument as an OS path, including non-UTF-8
 paths where the filesystem permits them. Human-readable path displays may use
 replacement characters; filesystem access uses the original path. Invalid

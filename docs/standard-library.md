@@ -39,7 +39,7 @@ allocation. A `let` binds a name to a value, not to a mutable cell.
 | Entry point | Execution requires one parameterless `observe fn main() -> T` in root-level `main.qli`. `T` is `Unit`, `CBit`, or a finite nested binary product of classical types. No quantum ownership may remain at termination. Library checking does not require `main.qli`. |
 | Packages | No external dependencies or manifest in this version. Resolve only `.qli` files within the supplied root and bundled `std`. |
 
-The CLI commands are `qleisli check src` and `qleisli run src`. `check` checks
+The checking/execution commands are `qleisli check src` and `qleisli run src`. `check` checks
 types, effects, and ownership in all source declarations and independently
 verifies the IR generated for every ordinary function. `run` checks all
 declarations, then interprets the closed program in `main.qli`. Features beyond
@@ -65,6 +65,17 @@ There is no implicit conversion between `Bit` and `CBit`, and no implicitly
 opened `std::prelude`: library functions require explicit imports.
 
 <a id="標準ライブラリの最小構成"></a>
+
+## Source documentation
+
+Bundled `.qli` uses Rust-style `//!` module descriptions and `///` function
+documentation. [Block forms, inner/outer attachment, API and migration](documentation-comments.md)
+are specified separately. All four source files and all twelve public/three
+private definitions are documented in English. Read a file's documentation with
+`qleisli doc stdlib/src/routines.qli`, or use the parser's documented-module API.
+This output describes source; it does not check contracts or execute examples.
+The existing [contract ledger](stdlib-contracts.md) remains authoritative.
+Documentation grants no stdlib-specific exemption or evidence authority.
 
 ## Initial standard-library organization
 

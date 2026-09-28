@@ -1,23 +1,23 @@
 {
   "format": 1,
-  "release_state": "maintenance release record; exact commit, CI, tag and publication are recorded in the linked GitHub release",
+  "release_state": "0.1.6 release procedure authorized; IR maintenance and Rust-style documentation extension implemented under the explicit version exception; exact commit, CI, tag and publication evidence are recorded in the GitHub release record",
   "milestones": [
     {
       "id": "M0",
-      "state": "scope and M1 specification complete",
+      "state": "original M1 scope/specification complete; added interoperability direction selected",
       "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [M1 specification](next-minor-spec.md)",
-      "open": "Implementation-readiness checkpoint 2026-10-04 JST; no implemented-feature claim"
+      "open": "Implementation-readiness checkpoint 2026-10-04 JST; interoperability extension specifications pending; no implemented-feature claim"
     },
     {
       "id": "M1",
-      "state": "specified; unimplemented",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md)",
-      "open": "Implement and validate N1–N6 and X1–X6 for each shipping MINOR slice"
+      "state": "original slices specified; interoperability direction selected; unimplemented",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md)",
+      "open": "Implement/validate N1–N6 and X1–X6 per shipping MINOR slice; first specify Python, OpenQASM and QIR extensions"
     },
     {
       "id": "M2",
       "state": "IR/checker profile specified; unimplemented",
-      "evidence": "[Hierarchy/schema/QPE profile](hierarchical-ir-spec.md)",
+      "evidence": "[Hierarchy/schema/QPE profile](hierarchical-ir-spec.md); [coefficient-domain recommendation, not a profile extension](coefficient-domains.md)",
       "open": "Sized source extension specification; schema proofs, production implementation and H1–H5 validation"
     },
     {
@@ -108,8 +108,8 @@
     },
     {
       "rule": "[Sealed gates, register ordering and unitary circuits](finite-core-proof.md)",
-      "implementation": "[IR](../src/ir.rs); [verifier](../src/verify.rs); [reference execution](../src/sim.rs)",
-      "tests": "[`join_and_permutation_lift_use_register_bit_order`](../tests/sim.rs); [`toffoli_and_classical_boolean_ops_execute`](../tests/sim.rs); [`coherent_qif_rejects_aliasing_and_bad_target_indices`](../tests/verify.rs)",
+      "implementation": "[IR](../src/ir.rs); [verifier](../src/verify.rs); [reference execution](../src/sim.rs); [private legacy adapter](../src/ir/compat.rs)",
+      "tests": "[`join_and_permutation_lift_use_register_bit_order`](../tests/sim.rs); [`toffoli_and_classical_boolean_ops_execute`](../tests/sim.rs); [`coherent_qif_rejects_aliasing_and_bad_target_indices`](../tests/verify.rs); [`legacy_qif_matches_independent_exact_extraction_and_retains_limits`](../src/sim/tests.rs)",
       "proof": "Theorem B sealed-matrix/effect induction; Rust circuit extraction and floating executor correctness unproved"
     },
     {
@@ -121,8 +121,14 @@
     {
       "rule": "[Finite work, width, depth and numeric execution limits](frontend-v0.md)",
       "implementation": "[Frontend](../src/frontend/compile/mod.rs); [verifier](../src/verify.rs); [simulator](../src/sim.rs)",
-      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs)",
+      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`branch_depth_limit_counts_empty_branches_in_both_arms`](../tests/verify.rs); [`branch_preflight_checks_both_functions_and_inactive_empty_arms`](../tests/function_evidence.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs)",
       "proof": "Operational boundedness regressions; no end-to-end resource-complexity or floating-error theorem; future source-byte limits are separately specified"
+    },
+    {
+      "rule": "[Comments and descriptive documentation](documentation-comments.md)",
+      "implementation": "[Lexer](../src/frontend/lexer.rs); [parser](../src/frontend/parser.rs); [documentation sidecar and Markdown](../src/frontend/documentation.rs)",
+      "tests": "[`rust_style_docs_attach_to_modules_imports_and_functions_in_source_order`](../tests/documentation.rs); [`documentation_neither_changes_ir_nor_authorizes_invalid_ownership`](../tests/documentation.rs); [`every_bundled_module_and_public_or_private_definition_has_documentation`](../tests/documentation.rs)",
+      "proof": "Lexical/attachment and unchanged-IR regressions; doc prose issues no semantic evidence; general frontend adequacy remains open"
     }
   ]
 }

@@ -256,6 +256,17 @@ arithmetic. Either extend the exact semantics and checker or specify an
 approximate synthesis/error contract. Sized types alone resolve neither this
 arithmetic issue nor the evidence representation problem.
 
+The later [coefficient-domain recommendation](coefficient-domains.md) prepares
+for differing future gate architectures by parameterizing exact algebra and
+separating exact, approximation and device contracts. This does not extend the
+current production/research kernels or alter the selected M2 symbolic angles.
+The **[desugaring layer](terminology.md#desugaring-layer)** translates convenient
+representations into already specified core operations without new primitive
+meanings or checker rules; its proposed IR/evidence remains untrusted. Such a
+producer may construct a derivation, but only the independent kernel checks it.
+New arithmetic/equality implementations require their own reviewed obligations;
+they cannot enter trusted acceptance as an unchecked user plugin.
+
 ## 7. Prior work and decisions drawn from it
 
 The following are design comparisons, not imported proofs of Qleisli. No

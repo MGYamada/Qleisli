@@ -1,6 +1,7 @@
 //! ASCII-keyword lexer with UTF-8 byte positions.
 
 use super::ast::Span;
+use super::documentation::{DocComment, DocStyle};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
@@ -164,27 +165,25 @@ impl std::fmt::Display for LexError {
 impl std::error::Error for LexError {}
 
 pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
+    scan(source, false).map(|(tokens, _)| tokens)
+}
+
+pub(crate) fn lex_documented(source: &str) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
+    scan(source, true)
+}
+
+fn scan(source: &str, retain_docs: bool) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
     let mut lexer = Lexer { source, pos: 0 };
     let mut tokens = Vec::new();
+    let mut docs = Vec::new();
     while let Some(ch) = lexer.peek() {
         if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             lexer.bump();
             continue;
         }
-        if source[lexer.pos..].starts_with("//") {
-            while let Some(c) = lexer.peek() {
-                if c == '\n' || c == '\r' {
-                    break;
-                }
-                if !matches!(c, ' ' | '\t') {
-                    if let Some(message) = forbidden_character(c) {
-                        return Err(LexError {
-                            message: message.to_owned(),
-                            span: Span::new(lexer.pos, lexer.pos + c.len_utf8()),
-                        });
-                    }
-                }
-                lexer.bump();
+        if source[lexer.pos..].starts_with("//") || source[lexer.pos..].starts_with("/*") {
+            if let Some(comment) = lexer.comment(retain_docs)? {
+                docs.push(comment);
             }
             continue;
         }
@@ -263,7 +262,7 @@ pub fn lex(source: &str) -> Result<Vec<Token>, LexError> {
         kind: TokenKind::Eof,
         span: Span::new(source.len(), source.len()),
     });
-    Ok(tokens)
+    Ok((tokens, docs))
 }
 
 fn forbidden_character(ch: char) -> Option<&'static str> {
@@ -292,6 +291,89 @@ struct Lexer<'a> {
 }
 
 impl Lexer<'_> {
+    fn comment(&mut self, retain_docs: bool) -> Result<Option<DocComment>, LexError> {
+        let start = self.pos;
+        let rest = &self.source[start..];
+        let line = rest.starts_with("//");
+        let style = if rest.starts_with("//!") || rest.starts_with("/*!") {
+            Some(DocStyle::Inner)
+        } else if (rest.starts_with("///") && !rest.starts_with("////"))
+            || (rest.starts_with("/**") && !rest.starts_with("/***") && !rest.starts_with("/**/"))
+        {
+            Some(DocStyle::Outer)
+        } else {
+            None
+        };
+        self.pos += 2;
+        let content_end;
+        let span_end;
+        if line {
+            while let Some(ch) = self.peek() {
+                if ch == '\n' {
+                    break;
+                }
+                self.comment_character(ch, style.is_some())?;
+                self.bump();
+            }
+            // CRLF is one line ending, but all source offsets stay original.
+            content_end =
+                if self.source[start..self.pos].ends_with('\r') && self.peek() == Some('\n') {
+                    self.pos - 1
+                } else {
+                    self.pos
+                };
+            span_end = content_end;
+        } else {
+            let mut depth = 1usize;
+            while depth != 0 {
+                if self.source[self.pos..].starts_with("/*") {
+                    depth += 1;
+                    self.pos += 2;
+                } else if self.source[self.pos..].starts_with("*/") {
+                    depth -= 1;
+                    self.pos += 2;
+                } else if let Some(ch) = self.peek() {
+                    self.comment_character(ch, style.is_some())?;
+                    self.bump();
+                } else {
+                    return Err(LexError {
+                        message: "unterminated block comment".into(),
+                        span: Span::new(start, self.pos),
+                    });
+                }
+            }
+            content_end = self.pos - 2;
+            span_end = self.pos;
+        }
+        Ok(if retain_docs {
+            style.map(|style| DocComment {
+                style,
+                text: self.source[start + 3..content_end].replace("\r\n", "\n"),
+                span: Span::new(start, span_end),
+            })
+        } else {
+            None
+        })
+    }
+
+    fn comment_character(&self, ch: char, doc: bool) -> Result<(), LexError> {
+        let message = if doc && ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
+            Some("bare carriage return is forbidden in documentation")
+        } else if matches!(ch, ' ' | '\t' | '\n' | '\r') {
+            None
+        } else {
+            forbidden_character(ch)
+        };
+        if let Some(message) = message {
+            Err(LexError {
+                message: message.into(),
+                span: Span::new(self.pos, self.pos + ch.len_utf8()),
+            })
+        } else {
+            Ok(())
+        }
+    }
+
     fn peek(&self) -> Option<char> {
         self.source[self.pos..].chars().next()
     }

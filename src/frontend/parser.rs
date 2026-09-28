@@ -10,7 +10,8 @@ use super::ast::{
     BasisExpr, BasisExprKind, Block, Decl, Expr, ExprKind, FnBody, FnKind, Ident, Module, Param,
     Pattern, PatternKind, Span, Stmt, StmtKind, Type, TypeKind, UseDecl,
 };
-use super::lexer::{LexError, Token, TokenKind, lex};
+use super::documentation::{DocumentedModule, attach};
+use super::lexer::{LexError, Token, TokenKind, lex_documented};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ParseError {
@@ -40,13 +41,20 @@ impl From<LexError> for ParseError {
 }
 
 pub fn parse_module(source: &str) -> Result<Module, ParseError> {
-    let tokens = lex(source)?;
-    Parser {
+    parse_documented_module(source).map(|documented| documented.syntax)
+}
+
+/// Parse the same source grammar, retaining descriptive comments separately
+/// from the existing AST. Documentation never establishes quantum validity.
+pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseError> {
+    let (tokens, comments) = lex_documented(source)?;
+    let mut parser = Parser {
         tokens,
         pos: 0,
         nesting: 0,
-    }
-    .module(source.len())
+    };
+    let syntax = parser.module(source.len())?;
+    attach(syntax, &parser.tokens, comments)
 }
 
 /// An implementation limit on recursive syntax and left-associated expression ASTs.

@@ -8,8 +8,16 @@ with the explicit initial-development policy below.
 
 ## Version identity
 
+**Recorded exception, 2026-09-28:** after the comment/docstring extension's
+MINOR requirement was explained, the user explicitly retained **0.1.6** for
+that work. The [extension and migration record](documentation-comments.md)
+therefore includes new comment syntax, documentation APIs/CLI and documented
+source-acceptance changes in 0.1.6. This is an
+explicit exception, not a compatible-maintenance claim or permission to put
+other new features in PATCH releases. The normal policy below remains in force.
+
 The selected baseline and release state are in [current status](current-status.md)
-and the [0.1.5 release record](releases/v0.1.5.md). Version selection alone
+and the [0.1.6 release record](releases/v0.1.6.md). Version selection alone
 does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
 independently of version numbers; no theme reserves a MINOR number. Continuous
 audits need no PATCH unless a useful compatible change is being released.

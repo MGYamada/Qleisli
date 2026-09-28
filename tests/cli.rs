@@ -60,8 +60,58 @@ fn non_utf8_command_reports_usage_without_panicking() {
     assert_eq!(output.status.code(), Some(2), "{output:?}");
     assert_eq!(
         String::from_utf8(output.stderr).unwrap(),
-        "usage: qleisli <check|run> <source-root>\n"
+        "usage: qleisli <check|run> <source-root>\n       qleisli doc <source-file>\n"
     );
+}
+
+#[test]
+fn doc_reads_one_file_and_does_not_claim_type_checking() {
+    let root = SourceRoot::new(
+        "//! Example module.\n/// A source-only claim.\npub unitary fn invalid() -> Q<Bit> { missing() }",
+    );
+    let path = root.0.join("documentation 日本語.qli");
+    std::fs::rename(root.0.join("main.qli"), &path).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("doc")
+        .arg(&path)
+        .output()
+        .unwrap();
+    assert!(output.status.success(), "{output:?}");
+    assert!(output.stderr.is_empty());
+    let markdown = String::from_utf8(output.stdout).unwrap();
+    assert!(markdown.contains("Example module."));
+    assert!(markdown.contains("invalid (public)"));
+    assert!(markdown.contains("no type, ownership or contract verification"));
+    let check = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("check")
+        .arg(&root.0)
+        .output()
+        .unwrap();
+    assert_eq!(check.status.code(), Some(1));
+}
+
+#[test]
+fn doc_reports_io_and_comment_errors_without_partial_output() {
+    let root = SourceRoot::new("/// orphan");
+    for path in [
+        root.0.join("main.qli"),
+        root.0.join("missing.qli"),
+        root.0.clone(),
+    ] {
+        let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .arg("doc")
+            .arg(path)
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stdout.is_empty());
+        assert!(!output.stderr.is_empty());
+    }
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("doc")
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(2));
 }
 
 // Linux filesystems permit non-UTF-8 directory names; macOS may reject them.

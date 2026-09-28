@@ -12,6 +12,11 @@ composition without whole dense operators. They do not replace the production
 path mapped below. Raw-IR binding in a research adapter and mathematical Lean
 rule lemmas are separate from a proof of source/compiler adequacy.
 
+The [2026-09-28 interoperability direction](interoperability-roadmap.md) proposes
+Python bindings and QIR/OpenQASM import/export around this independent boundary.
+Those adapters and their extension specifications remain pending; the current
+component and execution map below describes implemented code only.
+
 ## Responsibilities and dependency direction
 
 | Component | Responsibility | Dependency boundary |
@@ -21,6 +26,7 @@ rule lemmas are separate from a proof of source/compiler adequacy.
 | [Semantic contracts](../src/contract/mod.rs) | Check exact circuit/encoding equations and compose immutable evidence | Uses sealed circuit validation and bounded exact arithmetic, never frontend acceptance or numerical simulation. Raw `CertifiedCompute` invokes this independent boundary. |
 | [Function evidence](../src/contract/function.rs) | Independently extract and compare verified raw functions, retaining their complete binding | Does not call frontend flattening. Opaque checked dependencies carry a cached exact meaning and are shared in final IR under transforms. |
 | [Frontend](../src/frontend/mod.rs) | Parse and resolve source; check declarations and lower to raw IR | Uses IR and the independent verifier. Source-only obligations, such as declared effects and exact type trees, stay here. |
+| [Source documentation](../src/frontend/documentation.rs) | Attach comment metadata to parsed items and render Markdown | Uses lexical spans and syntax only. Keeps the public AST shape unchanged; has no dependency on evidence issuance or the verifier and cannot grant acceptance. |
 | [Simulator](../src/sim.rs) | Numerically interpret a closed `VerifiedProgram` | Uses IR and the verified wrapper, not the source checker. Enforces its own execution limits. |
 | [Host utilities](../src/host.rs) and [CLI](../src/bin/qleisli.rs) | Classical postprocessing and user-facing orchestration | Keep host I/O and algorithm-specific success conditions outside the verification core. |
 | [Lean development](../lean/README.md) | Check the recorded ownership and matrix lemmas | Its model and theorem scope are recorded separately from Rust acceptance. |
@@ -42,6 +48,28 @@ Share data representations when useful, but keep the verifier's acceptance
 checks independent of frontend bookkeeping. Reusing the frontend's decision
 would remove the second check. Numerical agreement on examples does not prove
 either implementation correct.
+
+The [small trusted-core boundary](design-philosophy.md#keep-the-trusted-core-small)
+requires convenience features to stay in desugaring outside the checker.
+**[Desugaring](terminology.md#desugaring-layer)** means meaning-preserving
+translation of convenient representations into already specified core operations,
+producing raw IR and proposed evidence for independent checks. It adds no new
+primitive meaning or acceptance rule. Source typing and evidence checking remain
+separate even when they share a frontend module. The current implementation has
+no standalone universal desugaring module; the runtime adapter below acts after
+verification and is not that producer layer.
+Maintain the [constructor/emitter and compatibility-debt inventory](interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary),
+especially raw variants not emitted by a production frontend. The private
+[legacy unitary adapter](../src/ir/compat.rs) now routes verified `QuantumIf`
+arms through the simulator's existing `CircuitStep` execution path. It does not
+replace raw verification or the independent exact extractor; this runtime
+consolidation is not a reduction of the evidence-acceptance trusted base.
+
+The [coefficient-domain note](coefficient-domains.md) describes future
+parameterization and exact/approximate/device contracts. Current exact scalars
+and matrices remain concrete R8 types. Any future domain arithmetic, equality
+or embedding used for evidence belongs to the reviewed trusted base; generic
+type parameters must not open an arbitrary user-defined proof oracle.
 
 ## Checked lowering
 

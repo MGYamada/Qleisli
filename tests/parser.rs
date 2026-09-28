@@ -296,7 +296,7 @@ fn reserved_std_module_keywords_allow_further_identifier_components() {
 fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
     let declaration = "basis fn visible() -> Bit { 0 }";
     for format_character in ['\u{200b}', '\u{feff}'] {
-        for line_ending in ["\n", "\r", "\r\n"] {
+        for line_ending in ["\n", "\r\n"] {
             let source = format!(
                 "// note{format_character}basis fn hidden() -> Bit {{ 1 }}{line_ending}{declaration}"
             );
@@ -310,6 +310,9 @@ fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
         }
         let trailing_comment = format!("{declaration} // note{format_character}");
         assert_eq!(parse_module(&trailing_comment).unwrap().decls.len(), 1);
+        // Rust-style line comments end at LF/EOF; bare CR remains comment text.
+        let bare_cr = format!("// note{format_character}\r{declaration}");
+        assert!(parse_module(&bare_cr).unwrap().decls.is_empty());
 
         // In particular, a leading U+FEFF is not stripped as a BOM.
         let source = format!("{format_character}{declaration}");

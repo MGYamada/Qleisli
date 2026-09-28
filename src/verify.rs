@@ -250,12 +250,6 @@ impl State {
         operation: &RawOp,
         path: &[usize],
     ) -> Result<(), ValidationError> {
-        if path.len() > 2 * MAX_NESTED_BRANCHES + 1 {
-            return Err(err(
-                path,
-                "nested branch exceeds the initial IR depth limit",
-            ));
-        }
         match operation {
             RawOp::CertifiedCompute {
                 source,
@@ -522,6 +516,15 @@ impl State {
         classical_phis: &[ClassicalPhi],
         path: &[usize],
     ) -> Result<(), ValidationError> {
+        // Each enclosing branch adds an operation index and an arm selector.
+        // Count this branch before entering its arms: an empty arm has no
+        // child operation at which to enforce the nesting limit.
+        if path.len() / 2 >= MAX_NESTED_BRANCHES {
+            return Err(err(
+                path,
+                "nested branch exceeds the initial IR depth limit",
+            ));
+        }
         global.require_classical(condition, path)?;
 
         let mut then_state = self.clone();

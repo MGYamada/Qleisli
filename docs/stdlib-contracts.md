@@ -21,6 +21,15 @@ contracts with independently checked implementation evidence for v0.1;
 the bounded checking path is implemented separately. Documentation and
 regression evidence in this ledger do not automatically issue those proofs.
 
+**Source-documentation follow-up (2026-09-28):** all four bundled files have
+module documentation and their twelve public/three private definitions have
+English docstrings. [The documentation extension](documentation-comments.md)
+retains descriptions outside executable IR; no public `.qli` signature, effect,
+meaning, ledger contract version or adoption status changes. The
+[`every_bundled_module_and_public_or_private_definition_has_documentation`](../tests/documentation.rs)
+regression checks coverage, not semantic truth of the prose. Existing semantic
+regressions and independent verification remain required.
+
 <a id="共通項目"></a>
 
 ## Common contract fields

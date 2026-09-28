@@ -19,12 +19,19 @@ and [`apply_contract`](function-contracts-v0.1.md). The latter reserves a new
 keyword; source identifiers with that spelling must be renamed. Their exact
 evidence requirements and capacity limits are separate from parsing.
 
+The 2026-09-28 [documentation-comment extension](documentation-comments.md)
+adds Rust-style line/block documentation and nested ordinary block comments.
+It is retained in product 0.1.6 by the user's explicit version-policy exception.
+Attachment and line-ending changes have migration guidance in that specification;
+docstrings carry no quantum meaning or evidence authority.
+
 <a id="構文と組み込みの境界"></a>
 
 ## Boundary between syntax and built-in operations
 
 | Notation | Classification | Types, ownership, and effects | IR translation |
 | --- | --- | --- | --- |
+| `//`, `/* ... */`, `///`, `//!`, `/** ... */`, `/*! ... */` | Lexical language forms; documentation metadata where marked | No value type, ownership, effect or proof authority. Doc comments have independently validated syntactic attachment. | Ordinary comments disappear; doc text is available through a sidecar API and emits no IR. |
 | `use`, `pub`, the four kinds of `fn`, `let`, `if` | Language forms | `basis` declares a total finite basis function; `iso` a pure isometry; `unitary` a pure unitary; `observe` permits observation. `let` rebinds linear ownership, and `if` branches exclusively on a `CBit`. | Resolve declarations/imports; represent `let` by SSA bindings and `if` by `ClassicalBranch`. |
 | `do p <- q; pure e` | Language form | Consume `q:Q<A>` once. Match the name/wildcard/tuple pattern `p` against the exact basis tree `A`; its names are coherent basis labels, not measurements. Produce `Q<B>` only when `e:B` defines a total injection over the whole input basis. | Destructure each finite input label according to `p`, check the full table, and emit `LiftBasis`. |
 | `true`, `false`, `not e`, `e1 and e2`, `e1 xor e2` | Language forms | Literals return `CBit`; Boolean operators require and return `CBit`. They have own effect `Unitary` and preserve quantum ownership themselves. Evaluate operands eagerly from left to right, retaining their effects and resource transitions. | Emit classical SSA `ClassicalConst`, `ClassicalNot`, `ClassicalAnd`, or `ClassicalXor`; independently verify input visibility and fresh outputs. |
@@ -49,8 +56,14 @@ form is not part of v0.
 A `.qli` file is UTF-8. Identifiers are ASCII
 `[A-Za-z_][A-Za-z0-9_]*`, excluding the reserved words below; `_` alone is
 reserved for wildcard patterns. Token-separating whitespace is limited to
-ASCII space, tab, LF, and CR. A `//` comment ends at LF, CR, or end of file.
-Diagnostic spans use UTF-8 byte offsets.
+ASCII space, tab, LF, and CR. A `//` comment ends at LF or end of file; block
+comments nest. `//!`/`/*! ... */` document the containing module/function and
+`///`/`/** ... */` the following supported item, under the
+[attachment rules](documentation-comments.md#lexical-forms-and-attachment).
+Doc text normalizes CRLF to LF and rejects bare CR; ordinary line comments no
+longer end at bare CR. Diagnostic spans retain original UTF-8 byte offsets.
+The grammar below describes executable tokens after comment extraction;
+documentation attachment is checked separately before parsing succeeds.
 
 The following characters are forbidden both inside and outside comments:
 
