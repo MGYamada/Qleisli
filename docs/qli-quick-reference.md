@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented source, Qleisli 0.2.0.** Start here and copy a complete program
+**Implemented source, Qleisli 0.1.8.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite

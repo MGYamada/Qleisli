@@ -6,9 +6,8 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-Selected development version: **0.2.0**. See the
-[implementation/migration record](docs/releases/v0.2.0.md). It includes the
-untagged 0.1.8 checkpoint. Historical entries
+Selected development version: **0.1.8**, retained at the user's request. See the
+[implementation/migration record](docs/releases/v0.1.8.md). Historical entries
 retain the version policy used at the time; the revised policy below governs
 new changes.
 
@@ -39,8 +38,8 @@ new changes.
 ### Changed
 
 - Replace public Rust `Param.name` with `Param.pattern`; this incompatible
-  AST migration requires 0.2.0 under the revised policy. Existing accepted
-  binary `.qli` programs retain their meaning.
+  AST migration is documented while the user retains development version
+  0.1.8. Existing accepted binary `.qli` programs retain their meaning.
 - Locate unreturned quantum ownership at its actual binding, including
   nested patterns, shadowing, parameters and computed-region binders.
 
@@ -55,7 +54,7 @@ new changes.
 - Split parser routines to preserve existing deep-syntax acceptance/rejection
   without increasing stack requirements. Keep old IR, toolchains and limits.
 
-No v0.1.8 or v0.2.0 tagging or publication has been performed. QIR import, remaining
+No tagging or publication has been performed for this development work. QIR import, remaining
 machine interfaces, size generalization and M2 remain separate work.
 
 ## 0.1.7 — 2026-09-28

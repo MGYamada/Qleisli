@@ -27,7 +27,7 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.2.0 record](releases/v0.2.0.md)
+in the [generated status](current-status.md). The [0.1.8 record](releases/v0.1.8.md)
 separates fixed-width M1 and authoring implementation, migration and local validation from
 publication. Compatible features now follow the revised PATCH policy.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;

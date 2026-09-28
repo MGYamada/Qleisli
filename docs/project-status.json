@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.2.0 selected for the public Rust parameter-AST migration; basis parameter patterns, n-ary tuple sugar and precise owner diagnostics implemented; fixed-width M1 and executable authoring corpus locally validated; tagging/publication pending",
+  "release_state": "0.1.8 retained at the user's request; basis parameter patterns, n-ary tuples and precise owner diagnostics implemented with the Rust AST migration documented; local validation retained; tagging/publication pending",
   "milestones": [
     {
       "id": "M0",
@@ -11,7 +11,7 @@
     {
       "id": "M1",
       "state": "Fixed-width operations/meanings implemented alongside released X1 and M1.1-A; remaining slices pending",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.2.0 implementation and validation](releases/v0.2.0.md)",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md)",
       "open": "Release the locally validated operation slice; X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
@@ -155,7 +155,7 @@
       "proof": "Finite branch/reference-sensitive simulation and existing exact checks; not a general protocol/compiler proof or measured LLM benchmark"
     },
     {
-      "rule": "[Basis parameter patterns and n-ary tuple sugar](syntax-v0.md#authoring-forms-added-in-product-020)",
+      "rule": "[Basis parameter patterns and n-ary tuple sugar](syntax-v0.md#authoring-forms-added-in-product-018)",
       "implementation": "[Binary AST parsing](../src/frontend/parser.rs); [finite basis bindings](../src/frontend/compile/basis.rs); [binding locations](../src/frontend/compile/lower/scope.rs)",
       "tests": "[Source, semantic, rejection, location and depth regressions](../tests/authoring_ergonomics.rs); [scope rebinding regressions](../tests/source_scope.rs)",
       "proof": "Existing finite checking boundary reused; no new IR rule or Lean theorem; full source-to-core preservation remains open"

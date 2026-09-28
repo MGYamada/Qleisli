@@ -33,7 +33,7 @@ that supplement; they extend the base EBNF below. Follow its source/Rust
 migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
 accept eligible static parameter names with the corresponding declared access.
 
-## Authoring forms added in product 0.2.0
+## Authoring forms added in product 0.1.8
 
 Tuple types, values and patterns with two or more fields elaborate by a **left
 fold**: `(a,b,c)` means `((a,b),c)`, and `(a,b,c,d)` means `(((a,b),c),d)`.

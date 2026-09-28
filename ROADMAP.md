@@ -36,12 +36,13 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
 
-## v0.2.0: authoring ergonomics
+## v0.1.8: authoring ergonomics
 
-**Current development version: v0.2.0.** The user's selected priorities 1–3
-are implemented: product patterns in basis parameters, left-associated n-ary
-tuples, and ownership diagnostics at bindings. The public Rust `Param` change
-requires MINOR; see the [migration and validation record](docs/releases/v0.2.0.md).
+**Current development version: v0.1.8, retained at the user's request.**
+Priorities 1–3 are implemented: product patterns in basis parameters,
+left-associated n-ary tuples, and ownership diagnostics at bindings. The
+public Rust `Param` change remains incompatible; see the
+[migration and validation record](docs/releases/v0.1.8.md#authoring-ergonomics-continuation).
 These conveniences reuse binary core operations and existing finite checks.
 Continue discovering language requirements through actual `.qli` algorithms
 and semantic tests, with particular attention to LLM authoring ergonomics.
@@ -50,7 +51,7 @@ work; this change neither adopts finite templates nor revises R14.
 
 ## v0.1.8: fixed-width operation parameters and meanings
 
-**Untagged checkpoint, included in v0.2.0.** Version selection and source/API
+**Initial scope of the current untagged v0.1.8 development version.** Version selection and source/API
 migration are recorded separately. Implemented the [M1 language supplement](docs/next-minor-spec.md):
 phase-fixed meanings, explicit operation arguments/access and checked
 composition through existing retained finite evidence. One generic body can

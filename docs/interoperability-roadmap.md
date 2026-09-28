@@ -102,7 +102,7 @@ matching it in a visitor, accounting routine or test. Current emitters and debt:
 | `CertifiedCompute` and retained `Contract` actions | [Certified lowering](../src/frontend/compile/lower/certified.rs) and [function contracts](../src/frontend/compile/lower/function_contract.rs), and [M1 operations](../src/frontend/compile/operations.rs) with the [meaning adapter](../src/contract/meaning.rs); independent evidence checks | Keep exact actual/logical binding and dependency checking. A convenience form may disappear only when these obligations are represented and checked elsewhere. |
 | Preparation, observation, ownership structure, lifts, classical operations and branch phis | [Primitive](../src/frontend/compile/lower/primitives.rs), [expression](../src/frontend/compile/lower/mod.rs) and [branch](../src/frontend/compile/lower/branch.rs) lowering; M1.1-A emits Init0/Join/Split/MeasureZ/Discard; raw verifier and execution/extraction where applicable | Emitted today. Retain their resource, instrument and ordering obligations; external physical IDs or LLVM control flow alone do not establish them. |
 
-**0.2.0 producer continuation:** [n-ary tuple syntax](syntax-v0.md#authoring-forms-added-in-product-020)
+**0.1.8 producer continuation:** [n-ary tuple syntax](syntax-v0.md#authoring-forms-added-in-product-018)
 folds to existing binary AST nodes; basis parameter patterns use the existing
 finite label binder. Their tables flow through the same lift/computed/meaning
 producers above. No IR constructor, verifier rule or compatibility-debt row is

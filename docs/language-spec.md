@@ -138,7 +138,7 @@ coherent lift. Patterns have no quantum effects or ownership; names across all
 parameters are distinct, and every component remains in the function's domain
 whether named or ignored. One product pattern is one source argument. N-ary
 types, expressions and patterns left-fold into the existing ordered binary
-products; explicit trees are preserved. The [grammar](syntax-v0.md#authoring-forms-added-in-product-020)
+products; explicit trees are preserved. The [grammar](syntax-v0.md#authoring-forms-added-in-product-018)
 gives acceptance/rejection cases, translation and depth limits.
 
 The body of `basis fn f(p1:A1,…,pn:An)->B` must be type-checkable and evaluable on every input. Its semantic domain is `Unit` for zero parameters, `A1` for one, and the left-associated product `((A1,A2),…)` for two or more. Label order is `label(a,b)=label(a)+2^bits(A)label(b)`.
