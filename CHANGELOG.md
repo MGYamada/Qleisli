@@ -8,6 +8,78 @@ separately in [release milestones](docs/release-milestones.md).
 
 No changes yet.
 
+## 0.1.6 — 2026-09-28
+
+IR/evidence maintenance plus the user's explicit version-policy exception for
+the comment/docstring extension. Rust and Lean project versions remain at
+0.1.6. The [implementation and validation record](docs/releases/v0.1.6.md)
+separates local checks from exact-commit CI, tagging and publication in the
+[GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6).
+
+### Documentation feature and migration
+
+- Add nested `/* ... */` comments and Rust-style `//!`, `///`, `/*! ... */`
+  and `/** ... */` documentation. Check attachment, retain original byte spans
+  and expose metadata separately through `parse_documented_module`; existing
+  public AST fields and lexer token variants stay unchanged.
+- Add `qleisli doc <source-file>` and Markdown rendering without execution or
+  a verification claim. Document every bundled module and all twelve public /
+  three private definitions in English; ordinary stdlib checking is unchanged.
+- Doc spellings previously treated as arbitrary comments now require valid
+  placement. Line comments end at LF/EOF; bare CR is forbidden in doc text.
+  Use ordinary comment spellings or LF/CRLF when migrating, as described in
+  the [extension specification](docs/documentation-comments.md).
+- Keep 0.1.6 at the user's explicit request despite the normal MINOR rule.
+  This feature and its source-acceptance changes are not compatible-only
+  maintenance; the exception does not apply to future feature work.
+
+### Fixed
+
+- Enforce the existing raw-IR limit of 64 nested classical branches before
+  entering either arm. Previously a 65th branch with empty arms was accepted;
+  it now receives the existing depth-limit diagnostic at that branch.
+
+### Validation
+
+- Add raw-IR cases at 63, 64 and 65 levels, with empty/nonempty deepest arms
+  on both sides, checking acceptance and rejection locations.
+- Check function-evidence preflight at 31, 32 and 33 levels in both the
+  implementation and specification, including inactive empty branches and
+  complete zero-width ownership. Its existing 32-level bound is unchanged.
+
+### Design
+
+- Select future Python bindings and bounded OpenQASM 3/QIR import/export to
+  reduce adoption cost through a shared checked compiler core. Record phase,
+  ownership, measurement-reuse, evidence-binding and wheel-installation gates.
+  This is a [direction](docs/interoperability-roadmap.md), not implemented
+  interoperability or a completed extension specification; features require MINOR.
+- Adopt the small trusted-core boundary: convenience belongs in untrusted
+  desugaring, not in the checker. Inventory raw-only IR variants as compatibility
+  debt and specify the obligations for a future versioned core reduction.
+- Define desugaring consistently as meaning-preserving translation to already
+  specified core operations with untrusted output for independent checks.
+  Distinguish it from source checking, runtime adaptation and approximation.
+- Record the risk of fixing the design to one future gate architecture and the
+  recommendation to parameterize coefficient domains, separating exact,
+  approximation and device/noise contracts. Cite STAR primary work; keep the
+  current R8 implementation and selected M2 angle profile unchanged.
+
+### Internal
+
+- Route legacy raw `QuantumIf` arm execution through the existing finite
+  `CircuitStep` vocabulary. Preserve public IR, independent exact extraction,
+  in-place primitive execution and existing execution-step limits. This removes
+  duplicate numeric interpretation, not verifier rules or evidence obligations.
+- Compare all legacy arm primitives, both polarities, empty/Unit arms and mixed
+  sequences with independent exact extraction, including coherent references,
+  reversed physical axes, exact budget boundaries and state-vector reuse.
+
+The IR/evidence changes preserve existing valid core programs and public IR.
+The comment extension adds APIs and the documented lexical/attachment changes
+above. Quantum rules, declared capacities, dependencies and toolchains are
+unchanged; no original M1/M2 slice or general proof is implemented.
+
 ## 0.1.5 — 2026-09-27
 
 Compatible review/design maintenance release. Rust and Lean versions are

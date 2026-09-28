@@ -5,6 +5,20 @@ shippable MINOR slices of [M1](next-minor-spec.md), not 0.1.5 APIs. Formats belo
 have their own versions; product/package versions never change their meaning.
 Current `check`/`run`, Rust IR and exhaustive reference simulation stay intact.
 
+The later [interoperability direction](interoperability-roadmap.md) adds future
+Python, OpenQASM 3 and QIR entry points. Their extension specifications are
+pending and do not change X1–X6 below. In particular, this document's **QIRF**
+is Qleisli's JSON interchange, not QIR Alliance LLVM IR.
+
+For these adapters, **[desugaring](terminology.md#desugaring-layer)** means
+meaning-preserving translation of convenient representations to already
+specified core operations, emitting untrusted IR/evidence without new primitive
+meanings or checker rules. Parsing and approximate synthesis are separate.
+The [coefficient-domain recommendation](coefficient-domains.md) requires future
+domain/approximation extensions to bind their domain version, interpretation
+and error claims explicitly. It does not add fields or tags to X1–X6 or permit
+arbitrary-domain arithmetic in the current finite format.
+
 ## Diagnostics
 
 Add the opt-in flag `--format=json` to `check`, `run`, `sample`, `emit-ir` and

@@ -136,6 +136,196 @@ fn assert_numeric_matrix(circuit: &Circuit, expected: &Matrix) {
     }
 }
 
+fn assert_qif_matches_independent_extraction(
+    target_width: usize,
+    zero_ops: Vec<UnitaryStep>,
+    one_ops: Vec<UnitaryStep>,
+) {
+    let width = target_width + 1;
+    let cost = 3 + zero_ops.len() + one_ops.len();
+    let wires: Vec<_> = (1..=width).rev().map(|i| WireId(i as u32)).collect();
+    let raw = RawProgram {
+        quantum_inputs: vec![QuantumPort {
+            token: TokenId(0),
+            wires: wires.clone(),
+            shape: BasisShape { bits: width as u8 },
+        }],
+        classical_inputs: vec![],
+        operations: vec![
+            RawOp::Split {
+                input: TokenId(0),
+                left: TokenId(1),
+                right: TokenId(2),
+                left_bits: 1,
+            },
+            RawOp::QuantumIf {
+                control: TokenId(1),
+                target: TokenId(2),
+                control_out: TokenId(3),
+                target_out: TokenId(4),
+                zero_ops,
+                one_ops,
+            },
+            RawOp::Join {
+                left: TokenId(3),
+                right: TokenId(4),
+                output: TokenId(5),
+            },
+        ],
+        quantum_outputs: vec![TokenId(5)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    // This checks raw ownership/indices first and obtains a phase-sensitive
+    // matrix from the independently maintained evidence extractor. That
+    // extractor must not call the runtime compatibility adapter being tested.
+    let evidence = FunctionEvidence::check(
+        basis(width),
+        raw.clone(),
+        raw.clone(),
+        FunctionIdentity {
+            implementation: "qif runtime".into(),
+            specification: "independent extraction".into(),
+            sources: vec![],
+        },
+        &mut work(),
+    )
+    .unwrap();
+    let axes: Vec<_> = (1..=width).rev().collect();
+    let dimension = 1 << width;
+    for column in 0..dimension {
+        let other = column ^ (dimension - 1);
+        let mut state = Component {
+            axes: (0..=width).map(|i| WireId(i as u32)).collect(),
+            amplitudes: vec![Complex::ZERO; dimension * 2],
+            tokens: BTreeMap::from([(TokenId(0), wires.clone())]),
+            classical: BTreeMap::new(),
+        };
+        state.amplitudes[placed_index(column, &axes)] = Complex::ONE;
+        state.amplitudes[placed_index(other, &axes) | 1] = Complex { re: 0.0, im: 0.5 };
+        // A coherent reference and reversed placement expose lost relative
+        // phase, wrong control polarity, and incorrect local axis remapping.
+        if column == 0 {
+            let mut insufficient = ExecutionBudget {
+                remaining: cost - 1,
+                max: cost - 1,
+            };
+            assert!(matches!(
+                execute_ops(
+                    vec![state.clone()],
+                    &raw.operations,
+                    SimulationLimits::default(),
+                    &mut insufficient
+                ),
+                Err(SimulationError::ExecutionLimit { .. })
+            ));
+        }
+        let allocation = state.amplitudes.as_ptr();
+        let mut budget = ExecutionBudget {
+            remaining: cost,
+            max: cost,
+        };
+        let output = execute_ops(
+            vec![state],
+            &raw.operations,
+            SimulationLimits::default(),
+            &mut budget,
+        )
+        .unwrap();
+        assert_eq!(budget.remaining, 0, "retain the legacy execution-step cost");
+        assert_eq!(output.len(), 1);
+        let actual = &output[0];
+        assert_eq!(actual.tokens, BTreeMap::from([(TokenId(5), wires.clone())]));
+        assert_eq!(
+            actual.amplitudes.as_ptr(),
+            allocation,
+            "primitive qif must execute in place"
+        );
+        for row in 0..dimension {
+            close(
+                actual.amplitudes[placed_index(row, &axes)],
+                numeric(evidence.meaning().get(row, column).unwrap()),
+            );
+            close(
+                actual.amplitudes[placed_index(row, &axes) | 1],
+                numeric(evidence.meaning().get(row, other).unwrap()) * Complex { re: 0.0, im: 0.5 },
+            );
+        }
+    }
+}
+
+#[test]
+fn legacy_qif_matches_independent_exact_extraction_and_retains_limits() {
+    let mut cases = vec![];
+    for gate in [SingleGate::H, SingleGate::X, SingleGate::Z, SingleGate::T] {
+        for target_index in 0..3 {
+            cases.push((3, vec![UnitaryStep::Gate { gate, target_index }]));
+        }
+    }
+    for control_index in 0..3 {
+        for target_index in 0..3 {
+            if control_index == target_index {
+                continue;
+            }
+            cases.push((
+                3,
+                vec![UnitaryStep::Cnot {
+                    control_index,
+                    target_index,
+                }],
+            ));
+            cases.push((
+                3,
+                vec![UnitaryStep::Toffoli {
+                    control_a_index: control_index,
+                    control_b_index: 3 - control_index - target_index,
+                    target_index,
+                }],
+            ));
+        }
+    }
+    for width in [0, 3] {
+        cases.push((width, vec![]));
+        for phase in [ScalarPhase::MinusOne, ScalarPhase::EighthTurn] {
+            cases.push((width, vec![UnitaryStep::ScalarPhase(phase)]));
+        }
+    }
+    for (width, arm) in cases {
+        assert_qif_matches_independent_extraction(width, arm.clone(), vec![]);
+        assert_qif_matches_independent_extraction(width, vec![], arm);
+    }
+    assert_qif_matches_independent_extraction(
+        3,
+        vec![
+            UnitaryStep::Gate {
+                gate: SingleGate::H,
+                target_index: 1,
+            },
+            UnitaryStep::Gate {
+                gate: SingleGate::T,
+                target_index: 1,
+            },
+            UnitaryStep::Cnot {
+                control_index: 1,
+                target_index: 0,
+            },
+            UnitaryStep::ScalarPhase(ScalarPhase::EighthTurn),
+        ],
+        vec![
+            UnitaryStep::Toffoli {
+                control_a_index: 2,
+                control_b_index: 0,
+                target_index: 1,
+            },
+            UnitaryStep::Gate {
+                gate: SingleGate::H,
+                target_index: 2,
+            },
+            UnitaryStep::ScalarPhase(ScalarPhase::MinusOne),
+        ],
+    );
+}
+
 #[test]
 fn generated_circuits_match_exact_amplitudes_adjoint_and_control_laws() {
     let mut generator = Generator(0x514c_4549_534c_4901);

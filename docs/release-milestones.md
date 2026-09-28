@@ -27,8 +27,9 @@ identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.5 record](releases/v0.1.5.md)
-separates this compatible review/design update's validation from publication.
+in the [generated status](current-status.md). The [0.1.6 record](releases/v0.1.6.md)
+separates IR/evidence maintenance, the user's explicit comment-extension version
+exception and their validation from publication.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
 older [release records](releases/v0.1.4.md) retain their historical evidence.
 The [six initial drafts and requirements](imaginary-v1/README.md), their

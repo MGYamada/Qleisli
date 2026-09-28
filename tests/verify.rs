@@ -791,6 +791,59 @@ fn wire_ids_are_never_reallocated_even_after_measurement() {
 }
 
 #[test]
+fn branch_depth_limit_counts_empty_branches_in_both_arms() {
+    // An operation at the end of the chain must not determine whether the
+    // enclosing branches count toward the documented 64-level limit.
+    for in_then_arm in [true, false] {
+        for with_leaf in [false, true] {
+            for levels in [63, 64, 65] {
+                let mut nested = if with_leaf {
+                    vec![RawOp::ClassicalNot {
+                        input: c(0),
+                        output: c(1),
+                    }]
+                } else {
+                    vec![]
+                };
+                for _ in 0..levels {
+                    let (then_ops, else_ops) = if in_then_arm {
+                        (nested, vec![])
+                    } else {
+                        (vec![], nested)
+                    };
+                    nested = vec![RawOp::ClassicalBranch {
+                        condition: c(0),
+                        then_ops,
+                        else_ops,
+                        quantum_phis: vec![],
+                        classical_phis: vec![],
+                    }];
+                }
+                let result = verify(program(
+                    vec![],
+                    vec![c(0)],
+                    nested,
+                    vec![],
+                    vec![],
+                    Effect::Unitary,
+                ));
+                if levels <= 64 {
+                    assert_eq!(result.unwrap().derived_effect(), Effect::Unitary);
+                } else {
+                    let error = result.expect_err("the 65th branch exceeds the IR profile");
+                    assert!(error.message.contains("depth limit"), "{error}");
+                    // Diagnose the excessive branch itself, before entering
+                    // either arm; each ancestor contributes an index/arm pair.
+                    let arm = usize::from(!in_then_arm);
+                    let expected: Vec<_> = (0..64).flat_map(|_| [0, arm]).chain([0]).collect();
+                    assert_eq!(error.path, expected);
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn oversized_register_and_deeply_nested_branch_are_rejected() {
     rejected(
         program(

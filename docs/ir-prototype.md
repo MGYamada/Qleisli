@@ -78,7 +78,10 @@ remain in the trust boundary. The wrapper restricts construction through safe
 Rust APIs; it is not a guarantee against arbitrary external `unsafe` code.
 
 Table-related registers and auxiliary widths are each at most 12 bits, with
-at most 64 nested classical branches. These are capacity limits of this
+at most 64 nested classical branches, counting each branch before entering
+its arms, including empty arms. The [0.1.6 correction](releases/v0.1.6.md)
+repairs erroneous acceptance of a 65th branch with empty arms; it does not
+change the published limit. These are capacity limits of this
 prototype, not mathematical finite-type restrictions. The verifier places no
 global cap on live wires or instruction count. It indexes live wires for
 logarithmic duplicate checks. Freshness history and classical scopes are shared
@@ -95,6 +98,20 @@ preserve all quantum ownership and have derived effect `Unitary`; any effects
 of evaluating source operands remain in the preceding IR.
 
 ## Reference execution
+
+Legacy raw `QuantumIf` arms use a private adapter from `UnitaryStep` to the
+existing `CircuitStep` executor. Both arms retain their original precharged
+step cost, outer control polarity, axis order and scalar phase on `Unit`.
+Primitive monomial gates and scalar phases execute in place. The public raw
+variants and their independent verifier/extractor remain available; current
+source `qif` already lowers to `ApplyUnitary`. See the [IR reduction inventory](interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
+for compatibility debt and the future core migration.
+
+The future **[desugaring layer](terminology.md#desugaring-layer)** instead
+translates convenience forms into already specified core operations before
+independent acceptance, preserving meaning and adding no primitive/checker rule.
+Its output/evidence is untrusted. The runtime adapter above operates after
+verification and does not implement that migration or remove legacy checks.
 
 `sim::run_closed` runs only a `VerifiedProgram` with no classical or quantum
 inputs and no quantum outputs. It returns a map from bits in `classical_outputs`

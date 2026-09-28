@@ -1,5 +1,8 @@
-// Finite algorithm building blocks; ordinary checked Qleisli definitions.
-// Contracts, including reflection phase, are in docs/algorithm-routines.md.
+//! Finite algorithm building blocks; ordinary checked Qleisli definitions.
+//!
+//! Separate owners may remain entangled; no routine assumes a product state.
+//! Contracts, including reflection phase and observation instruments, are in
+//! docs/algorithm-routines.md and docs/stdlib-contracts.md, R001-R005.
 use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::z;
@@ -8,30 +11,45 @@ use std::quantum::split;
 use std::quantum::join;
 use std::observe::measure_z;
 
+/// Apply H tensor H to a two-bit register, preserving both owners and order.
+/// This unitary has no input-state promise and uses no auxiliary.
 pub unitary fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let (a, b) = split(q);
     join(h(a), h(b))
 }
 
-// Phase +1 on 00 and -1 elsewhere: 2|00><00| - I, including its sign.
+/// Return 0 exactly on (0,0), and 1 on every other pair of basis labels.
+/// Computing this predicate and applying Z to its auxiliary gives phase +1
+/// on 00 and -1 elsewhere: 2|00><00| - I, including its sign.
 basis fn nonzero2(a: Bit, b: Bit) -> Bit { not (not a and not b) }
 
+/// Apply the phase-fixed reflection 2|s><s| - I, with |s> = (H tensor H)|00>.
+/// Consume and return the two data owners with no input-state promise.
+/// The protected computed scope checks zero return of its temporary auxiliary;
+/// the name of this routine and this documentation do not grant that evidence.
 pub unitary fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let q = hadamard2(q);
     let q = with_computed(q, nonzero2) { |ancilla| z(ancilla) };
     hadamard2(q)
 }
 
+/// Measure the X eigenvalue (-1)^b and return the classical result b.
+/// Consume the target owner; interpret the measurement with all references.
 pub observe fn measure_x(q: Q<Bit>) -> CBit {
     measure_z(h(q))
 }
 
+/// Measure both bits in Z and consume both quantum owners.
+/// Return (left result, right result), corresponding to register weights 1,2.
 pub observe fn measure_z2(q: Q<(Bit, Bit)>) -> (CBit, CBit) {
     let (a, b) = split(q);
     (measure_z(a), measure_z(b))
 }
 
-// Measure Z(a) Z(b); consume the meter and retain both data wires.
+/// Measure Z(a) Z(b), consuming the internal meter and returning both data owners.
+/// For result s, the data projector is (I + (-1)^s Z tensor Z)/2.
+/// Preserve coherence within each parity subspace and return ((a,b),s).
+/// Inputs must be distinct owners, but may be entangled with each other or a reference.
 pub observe fn parity_zz(a: Q<Bit>, b: Q<Bit>) -> ((Q<Bit>, Q<Bit>), CBit) {
     let meter = init0();
     let (a, meter) = cnot(a, meter);

@@ -5,6 +5,7 @@
 
 pub mod ast;
 pub mod compile;
+pub mod documentation;
 pub mod lexer;
 pub mod parser;
 pub mod project;

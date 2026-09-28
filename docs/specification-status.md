@@ -2,23 +2,155 @@
 
 # Finite-core v0: decisions, conformance, and proof obligations
 
-Current status (2026-09-27): **the declared finite v0.1 semantic-contract profile
+Current status (2026-09-28): **the declared finite v0.1 semantic-contract profile
 is implemented and checked; general correspondence between all accepted Rust
 paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.5 record](releases/v0.1.5.md)
-separates review/design changes and local validation from publication.
+from one current-state record and the manifests. The [0.1.6 record](releases/v0.1.6.md)
+separates IR/evidence maintenance, the explicit documentation-extension version
+exception and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.5.md) and
+The current [release record](releases/v0.1.6.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.1.6 release procedure (2026-09-28)
+
+The user authorized final review, distribution verification and publication.
+The scoped [review and release record](releases/v0.1.6.md#publication-request-review)
+covers comments/diagnostics, metadata separation, public IR compatibility and
+the existing regressions; no additional implementation defect was identified.
+Current-version records and the README heading are finalized, with concrete
+comment-migration examples. The
+[GitHub release evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6)
+identifies the exact commit, protected-branch PR, Linux CI, source distributions,
+annotated tag and publication. Earlier entries retain their original counts,
+package contents and then-pending publication states.
+
+## Rust-style source documentation, retained in 0.1.6 (2026-09-28)
+
+The user requested comments/docstrings aligned with Rust conventions and then
+explicitly retained v0.1.6 after the normal MINOR requirement was explained.
+The [extension specification](documentation-comments.md) records this exception,
+lexical forms, attachment, public sidecar API, Markdown output and migration.
+This is new functionality with source-acceptance changes, not compatible-only
+maintenance. Earlier dated maintenance and validation entries remain intact.
+
+The lexer now handles nested ordinary/doc block comments iteratively. Parsing
+validates inner/outer doc attachment while preserving existing public AST fields
+and token variants. [`parse_documented_module`](../src/frontend/parser.rs)
+retains doc text/style and original UTF-8 spans separately; `qleisli doc` renders
+one source file without type/ownership/contract checking or execution. The IR
+verifier and evidence kernel gain no new rule or primitive. Comment claims cannot
+authorize invalid source, and full source snapshots still bind function evidence.
+
+All four bundled files and all twelve public/three private definitions carry
+English documentation, with phase, bit order, ownership/effects and assumptions
+matching the existing contract ledger. The [documentation suite](../tests/documentation.rs)
+covers attachment, nested/delimiter corner cases, Unicode/CRLF byte spans,
+20,000 nested blocks, metadata-neutral IR, ownership rejection and complete
+stdlib coverage; [CLI tests](../tests/cli.rs) check rendering and errors.
+The [release validation](releases/v0.1.6.md#rust-style-comments-and-stdlib-documentation)
+records actual test/toolchain scope and remaining publication gates.
+
+## Desugaring definition and coefficient-domain recommendation (2026-09-28)
+
+The user requested explicit terminology and supplied a comment about the risk
+of predicting the wrong future logical gate architecture. The
+**[desugaring layer](terminology.md#desugaring-layer)** is now defined as a
+meaning-preserving translation of convenient representations into already
+specified core operations, with untrusted IR/proposed evidence submitted to
+independent checks and no new primitive meanings or acceptance rules. Related
+documents repeat this definition locally and distinguish source checking,
+post-verification runtime adaptation and approximate synthesis.
+
+The [coefficient-domain note](coefficient-domains.md) records the recommendation
+to parameterize future exact algebra and separate exact meaning, approximation
+and device/noise contracts. It cites primary STAR work, gives an out-of-R8 phase
+example and requires reviewed domain arithmetic/equality, explicit embeddings,
+evidence binding and bounded error composition. Generic type notation is not an
+implemented API or permission to trust user-supplied equality. The current R8
+kernel and M1/M2 profiles remain unchanged.
+
+This follow-up changes documentation/current-state metadata only. Its
+[validation record](releases/v0.1.6.md#desugaring-and-coefficient-domain-documentation)
+separates document checks from earlier Rust/Lean results; no new kernel,
+arbitrary-angle support, approximation checker, proof or backend is implemented.
+
+## Small-core boundary and initial IR reduction (2026-09-28)
+
+The user adopted the [small trusted-core boundary](design-philosophy.md#keep-the-trusted-core-small):
+convenience belongs in desugaring, not in the checker. The
+[constructor/emitter inventory](interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
+identifies raw `QuantumIf` and broader raw-only `ProtectedUse` forms as
+compatibility debt; existing matching visitors are not production emitters.
+The decision record and AGENTS.md make this an ongoing development constraint.
+
+As compatible 0.1.6 maintenance, verified legacy qif arms now adapt to
+`CircuitStep` and share numeric execution. Primitive/scalar execution stays
+in place, preserving both-arm step charging, phase, axis order and ownership.
+Public raw IR, verifier acceptance and independent exact extraction are
+unchanged. This is runtime consolidation; trusted-core rule removal remains
+pending a specified MINOR migration.
+
+The added regression compares 61 arm configurations against the independent
+exact extractor, with both polarities, every legacy primitive, empty arms,
+`Unit` scalar phases, composed sequences, reversed physical axes, a coherent
+reference, exact step-budget boundaries and state-vector allocation reuse.
+The [release follow-up](releases/v0.1.6.md#internal-ir-reduction-and-trusted-core-boundary)
+records executed checks and remaining release gates. This bounded comparison
+does not prove general translation correctness.
+
+## Interoperability direction (2026-09-28)
+
+The user proposed QIR/OpenQASM 3 entry points and Python bindings to reduce
+adoption cost and make the IR useful as shared quantum compiler infrastructure.
+The [selected direction](interoperability-roadmap.md) records compiler layers,
+initial finite import/export profiles, binding/wheel objectives and translation
+obligations. Original M1 specifications remain intact; the additional extension
+specifications and implementations are pending. The decision, roadmap and
+generated status distinguish that scope from the completed initial M1 design.
+
+Primary QIR Base/Adaptive, OpenQASM 3.1 and binding-tool references were inspected.
+The review identified post-measurement ownership, controlled phase, exact versus
+floating angles, external QIS meanings and evidence retention as explicit adapter
+obligations. Successful parsing or LLVM validation alone does not establish
+Qleisli semantic contracts or translation correspondence. QIRF remains a distinct
+Qleisli JSON format.
+
+Document/generated-status checks, all 19 document-checker tests and whitespace
+checks pass. This follow-up changes documentation only. Rust/Lean tests and
+interoperability acceptance tests were not run for this addition; no new binding,
+importer, exporter, dependency or proof is implemented. The earlier 0.1.6 test and
+package results below retain their original scope.
+
+## v0.1.6 initial IR/evidence maintenance (2026-09-28)
+
+The user selected 0.1.6 for compatible maintenance. The raw-IR verifier
+erroneously accepted 65 nested classical branches when the deepest arms were
+empty, violating its existing 64-level profile. Checking depth at the branch
+itself fixes this without changing the declared limit or any public API.
+The rejection path identifies the excessive branch before entering its arms.
+
+The [release record](releases/v0.1.6.md#reproduction-and-regression-evidence)
+records the reproduced failure and twelve raw-IR boundary cases. Twelve
+additional function-evidence cases preserve the separate 32-level limit and
+check both raw functions and their inactive branches with zero-width ownership.
+Its preflight already enforced that limit; no evidence-checker defect was
+found in this scoped comparison. The existing iterative raw-IR destructor
+also needed no change. This is not a complete B019 or evidence-boundary audit.
+
+Rust/Lean project versions and current records are synchronized at 0.1.6;
+the [local validation record](releases/v0.1.6.md#local-validation) reports only
+executed checks. M1/M2 implementations, general Rust adequacy proofs and
+publication remain separate. Prior release and test histories below are intact.
 
 ## v0.1.5 release procedure (2026-09-27)
 

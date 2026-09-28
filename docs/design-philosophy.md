@@ -3,7 +3,8 @@
 # Qleisli design principles
 
 Status: **adopted design principles** (2026-09-26), with release-direction
-additions dated 2026-09-27. This English edition is authoritative for these
+additions dated 2026-09-27 and a trusted-core boundary adopted on 2026-09-28.
+This English edition is authoritative for these
 principles and replaces the earlier Japanese text without changing them.
 Adopting the principles does not finalize syntax or establish a mathematical
 soundness theorem. Concrete type rules, standard APIs, and IR are specified
@@ -78,6 +79,58 @@ release. The drafts need not compile and may be revised. Preserve the fixed
 principles and v1's execution and validation conditions. Adoption of this
 policy and completion of the drafts are separate events; the current artifact
 record is the [corpus and requirements index](imaginary-v1/README.md).
+
+## Keep the trusted core small
+
+**Boundary adopted on 2026-09-28:** the independent-checking architecture is
+viable only while the discipline of keeping its trusted base small continues.
+Convenience features belong in the desugaring layer, not in the checker.
+
+The **[desugaring layer](terminology.md#desugaring-layer)** translates convenient
+source/adapter representations into already specified core operations with
+explicit ownership and effects, preserving their meaning. It adds no primitive
+meaning or acceptance rule. Its output and proposed evidence remain untrusted
+until independently checked; core validity alone does not prove translation
+correctness. Parsing, source checking and approximate synthesis remain distinct
+responsibilities. A post-verification runtime adapter is not this layer.
+
+Surface syntax, library conveniences, foreign-format spellings and host APIs
+must lower to the shared core outside its acceptance boundary. The checker
+validates ownership, effects, sealed primitive meanings and evidence bound to
+the actual interfaces and operations. Do not add a checker case merely to
+mirror a frontend feature or an external gate name. A necessary new core rule
+must identify the irreducible semantic/proof obligation and why the existing
+core cannot express it; convenience alone is never that justification.
+
+Maintain a constructor inventory with production emitters, consumers, required
+checking obligations and a migration/removal plan. IR variants accepted by
+the trusted core but never emitted by a production frontend are an early sign
+of drift from this discipline. Tests, handwritten examples or a hypothetical
+future importer do not by themselves justify keeping such a variant in the
+core. Record existing compatibility debt explicitly, stop expanding it, and
+move convenience representations to untrusted adapters through a versioned
+migration. Preserve current public acceptance until that migration is adopted.
+
+Trust follows the assurance claimed, not the module name. The IR verifier,
+independent evidence extractor and exact arithmetic lie on the finite evidence
+acceptance path. Moving code into a helper or sharing a numerical interpreter
+does not shrink that trusted base. Desugaring output must still pass independent
+checking; preserving the input program's meaning is a separate translation
+obligation, not a consequence of producing valid core IR. Keep ownership,
+phase, effects, zero-return evidence and resource limits intact during reduction.
+
+The [IR reduction inventory](interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
+records the current deviations and initial maintenance work. This adopted
+boundary constrains future work; it is not a claim that the current trusted
+core is already minimal or that its correctness has been proved.
+
+The [coefficient-domain recommendation](coefficient-domains.md) records a related
+risk: do not tie the long-term language to one forecast of early-FTQC gates.
+Prepare future exact algebra for a coefficient-domain type parameter and keep
+exact meanings, approximation bounds and device/noise claims separate. Domain
+arithmetic/equality remains trusted code requiring review; a generic parameter
+cannot delegate evidence acceptance to arbitrary user implementations. This is
+a future design direction, not a change to the current R8 implementation.
 
 <a id="1-量子データは所有される資源"></a>
 

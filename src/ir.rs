@@ -1,5 +1,7 @@
 //! Untrusted, finite Qleisli IR. All public fields must be checked by `verify`.
 
+mod compat;
+
 /// A linear SSA ownership token. A gate consumes one token and creates another.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct TokenId(pub u32);

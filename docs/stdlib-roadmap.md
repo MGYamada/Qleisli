@@ -50,6 +50,12 @@ adopted into the standard library.
 
 <a id="1-三つの層の関係"></a>
 
+**Documentation follow-up (2026-09-28):** the [Rust-style comment extension](documentation-comments.md)
+adds module/function descriptions to all existing bundled definitions. Keep
+these in English, aligned with the contract ledger's phase, ordering, ownership,
+effects and assumptions. Docstrings are descriptive and grant no verification
+privilege. This adds no ordinary quantum API or generalized library facility.
+
 ## 1. How the three layers relate
 
 | Layer | Role | Deliverables |

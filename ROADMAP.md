@@ -36,9 +36,42 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Not started | Output systems that check target capabilities |
 
+## v0.1.6 maintenance implementation
+
+**Subsequent scope exception:** the user retained 0.1.6 for the
+[Rust-style comment/docstring extension](docs/documentation-comments.md) after
+the normal MINOR requirement was explained. That implemented extension adds
+source documentation metadata, nested comments, rendering and complete bundled
+docstrings. Its placement/line-ending migration is recorded; it is not an
+implementation of N1–N6/X1–X6 or a compatible-only maintenance change. The
+maintenance implementation described below retains its original scope.
+
+**Current version: v0.1.6.** The user selected
+compatible IR/evidence fixes on 2026-09-28. The first implemented correction
+enforces the existing 64-level raw-IR branch limit at the branch itself,
+including empty arms. Boundary regressions preserve 64-level acceptance and
+check the separate 32-level function-evidence limit in both raw functions.
+An internal follow-up routes legacy qif arms through the existing finite circuit
+executor. The [small trusted-core boundary](docs/design-philosophy.md#keep-the-trusted-core-small)
+and [emitter/debt inventory](docs/interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
+require convenience to stay outside the checker. Public-IR migration and removal
+of trusted cases remain future MINOR work; runtime sharing is not core removal.
+The **[desugaring layer](docs/terminology.md#desugaring-layer)** is the
+meaning-preserving translation of convenience representations into already
+specified core operations, with untrusted output for independent checks and
+no new primitive meanings or checker rules.
+The [release record](docs/releases/v0.1.6.md) distinguishes reproduction,
+implementation and local validation from exact-commit CI, tagging and publication
+in the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6).
+
+This is continuous maintenance under the selected M0–M5 plan. M1/M2 feature
+implementation, the complete B019 audit and general Rust soundness proofs
+remain open. The IR maintenance adds no capacity limit or toolchain change;
+the documentation extension's added syntax/API and exception are listed above.
+
 ## v0.1.5 maintenance roadmap
 
-**Current maintenance version: v0.1.5.** The [release completion record](docs/releases/v0.1.5.md#roadmap-completion-evidence)
+**Previous maintenance version: v0.1.5.** The [release completion record](docs/releases/v0.1.5.md#roadmap-completion-evidence)
 accounts for each required result: synchronized version/records, all sixteen
 review dispositions, selected future specifications, the generated fourteen-group
 rule inventory, compatible checker regressions, local validation and candidate
@@ -57,6 +90,19 @@ and the independently shippable [machine-interface slices](docs/machine-interfac
 New public features use a MINOR release selected when shipping; no subsequent
 patch number is reserved for them. Continuous finite-core maintenance and
 verifier/kernel proof obligations remain active alongside this work.
+
+The later [interoperability direction](docs/interoperability-roadmap.md) adds
+Python bindings and bounded OpenQASM 3/QIR input and output as early M1 MINOR
+slices. Its aim is to reuse existing programs through a shared checked compiler
+core. These additional interface specifications and implementations are pending;
+0.1.6 records the external direction and internal maintenance only. M2 retains
+its hierarchical IR/evidence gate.
+
+The [coefficient-domain recommendation](docs/coefficient-domains.md) records the
+risk of assuming the wrong future gate architecture. Prepare future exact
+algebra for domain parameterization while keeping approximation and device
+contracts separate. This is a design follow-up, not a replacement of the
+selected M2 angle profile or a 0.1.6 implementation of arbitrary rotations.
 
 ## v0.x plan and the v0.1.9 boundary
 

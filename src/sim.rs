@@ -11,8 +11,9 @@ use std::fmt;
 
 use crate::VerifiedProgram;
 use crate::ir::{
-    CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, ProtectedBit, ProtectedRegion,
-    ProtectedUse, QuantumPhi, RawOp, ScalarPhase, SingleGate, TokenId, UnitaryStep, WireId,
+    BitControl, CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, ProtectedBit,
+    ProtectedRegion, ProtectedUse, QuantumPhi, RawOp, ScalarPhase, SingleGate, TokenId,
+    UnitaryStep, WireId,
 };
 
 /// A practical cap on the number of live state-vector axes in this initial
@@ -448,69 +449,40 @@ fn run_protected_use(
     Ok(())
 }
 
-fn run_unitary_steps(
+fn run_qif_arm(
     component: &mut Component,
     target_axes: &[usize],
     control_axis: usize,
     when_one: bool,
     steps: &[UnitaryStep],
 ) {
+    let mut axes = target_axes.to_vec();
+    axes.push(control_axis);
     for step in steps {
-        match step {
-            UnitaryStep::Gate { gate, target_index } => {
-                apply_gate(
-                    &mut component.amplitudes,
-                    target_axes[*target_index],
-                    *gate,
-                    |index| bit(index, control_axis) == when_one,
-                );
-            }
-            UnitaryStep::Cnot {
-                control_index,
-                target_index,
-            } => {
-                let inner_control_axis = target_axes[*control_index];
-                apply_gate(
-                    &mut component.amplitudes,
-                    target_axes[*target_index],
-                    SingleGate::X,
-                    |index| bit(index, control_axis) == when_one && bit(index, inner_control_axis),
-                );
-            }
-            UnitaryStep::Toffoli {
-                control_a_index,
-                control_b_index,
-                target_index,
-            } => {
-                let first_axis = target_axes[*control_a_index];
-                let second_axis = target_axes[*control_b_index];
-                apply_gate(
-                    &mut component.amplitudes,
-                    target_axes[*target_index],
-                    SingleGate::X,
-                    |index| {
-                        bit(index, control_axis) == when_one
-                            && bit(index, first_axis)
-                            && bit(index, second_axis)
-                    },
-                );
-            }
-            UnitaryStep::ScalarPhase(phase) => {
-                let factor = match phase {
-                    ScalarPhase::MinusOne => Complex { re: -1.0, im: 0.0 },
-                    ScalarPhase::EighthTurn => Complex {
-                        re: std::f64::consts::FRAC_1_SQRT_2,
-                        im: std::f64::consts::FRAC_1_SQRT_2,
-                    },
-                };
-                for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                    if bit(index, control_axis) == when_one {
-                        *amplitude = *amplitude * factor;
-                    }
-                }
-            }
-        }
+        let mut step = step.to_circuit_step();
+        step.controls.push(BitControl {
+            index: target_axes.len(),
+            when_one,
+        });
+        // QuantumIf precharges both arms before consuming either owner. This
+        // compatibility adapter must neither charge again nor create evidence.
+        run_circuit_precharged(component, &axes, &[step]);
     }
+}
+
+fn phase_factor(exponent: u8) -> Complex {
+    let s = std::f64::consts::FRAC_1_SQRT_2;
+    let (re, im) = [
+        (1.0, 0.0),
+        (s, s),
+        (0.0, 1.0),
+        (-s, s),
+        (-1.0, 0.0),
+        (-s, -s),
+        (0.0, -1.0),
+        (s, -s),
+    ][usize::from(exponent)];
+    Complex { re, im }
 }
 
 fn run_circuit(
@@ -584,6 +556,32 @@ fn run_circuit_precharged(component: &mut Component, axes: &[usize], steps: &[Ci
                 permutation,
                 phases,
             } => {
+                // Retain in-place execution for the small gates emitted by
+                // compatibility adapters. Canonicalization must not allocate
+                // another full state vector for an X, Z, T or scalar phase.
+                let gate = match (
+                    indices.as_slice(),
+                    permutation.as_slice(),
+                    phases.as_slice(),
+                ) {
+                    ([_], [1, 0], [0, 0]) => Some(SingleGate::X),
+                    ([_], [0, 1], [0, 4]) => Some(SingleGate::Z),
+                    ([_], [0, 1], [0, 1]) => Some(SingleGate::T),
+                    _ => None,
+                };
+                if let Some(gate) = gate {
+                    apply_gate(&mut component.amplitudes, axes[indices[0]], gate, enabled);
+                    continue;
+                }
+                if indices.is_empty() {
+                    let factor = phase_factor(phases[0]);
+                    for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
+                        if enabled(index) {
+                            *amplitude = *amplitude * factor;
+                        }
+                    }
+                    continue;
+                }
                 let targets: Vec<_> = indices.iter().map(|i| axes[*i]).collect();
                 let mut amplitudes = vec![Complex::ZERO; component.amplitudes.len()];
                 for (index, amplitude) in component.amplitudes.iter().copied().enumerate() {
@@ -597,18 +595,7 @@ fn run_circuit_precharged(component: &mut Component, axes: &[usize], steps: &[Ci
                         output = (output & !(1 << axis))
                             | (((usize::from(permutation[label]) >> place) & 1) << axis);
                     }
-                    let s = std::f64::consts::FRAC_1_SQRT_2;
-                    let (re, im) = [
-                        (1.0, 0.0),
-                        (s, s),
-                        (0.0, 1.0),
-                        (-s, s),
-                        (-1.0, 0.0),
-                        (-s, -s),
-                        (0.0, -1.0),
-                        (s, -s),
-                    ][usize::from(phases[label])];
-                    amplitudes[output] += amplitude * Complex { re, im };
+                    amplitudes[output] += amplitude * phase_factor(phases[label]);
                 }
                 component.amplitudes = amplitudes;
             }
@@ -783,8 +770,8 @@ fn execute_op(
                 .iter()
                 .map(|wire| component.position(*wire))
                 .collect::<Result<Vec<_>, _>>()?;
-            run_unitary_steps(&mut component, &target_axes, control_axis, false, zero_ops);
-            run_unitary_steps(&mut component, &target_axes, control_axis, true, one_ops);
+            run_qif_arm(&mut component, &target_axes, control_axis, false, zero_ops);
+            run_qif_arm(&mut component, &target_axes, control_axis, true, one_ops);
             component.tokens.insert(*control_out, control_wires);
             component.tokens.insert(*target_out, target_wires);
         }
