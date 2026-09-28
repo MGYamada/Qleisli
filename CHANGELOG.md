@@ -13,6 +13,9 @@ new changes.
 
 ### Added
 
+- A living v0.2.0 issue backlog connecting authoring friction to concrete
+  source evidence, acceptance experiments and existing checking dependencies.
+
 - Basis function parameter patterns for product components, whole subtrees
   and ignored basis values, checked through existing finite tables.
 - N-ary tuple types, values and patterns, left-folded to exact binary trees.

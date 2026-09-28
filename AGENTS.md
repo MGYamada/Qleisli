@@ -35,6 +35,11 @@ real programs, retain minimal failed attempts and semantic counterexamples,
 and update the [authoring report](docs/qli-authoring-feedback.md). Keep the
 [quick reference](docs/qli-quick-reference.md) copyable and its code CI-checked.
 An authoring exercise is not a measured model benchmark or an algorithm proof.
+Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
+with stable IDs, concrete source/design evidence, the obligation to remove,
+and a checking/acceptance experiment. Update it when current work exposes a
+new issue; retain resolution links. Backlog entries do not select a release or
+adopt syntax, and the current development version remains 0.1.8.
 
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
 [version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,

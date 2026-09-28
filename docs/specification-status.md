@@ -20,6 +20,14 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## v0.2.0 issue intake (2026-09-28)
+
+The user requested accumulating future issues during 0.1.8 development. The
+[backlog](v0.2.0-backlog.md) records eight candidates with evidence and acceptance
+experiments; it does not adopt new syntax or change R14. The
+[release record](releases/v0.1.8.md#v020-issue-collection-2026-09-28) records the
+document-only validation; no Rust/Lean checks were rerun.
+
 ## Authoring priorities 1–3 in v0.1.8 (2026-09-28)
 
 The user's selected basis parameter patterns, n-ary tuple sugar and precise

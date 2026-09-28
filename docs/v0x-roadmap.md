@@ -99,6 +99,9 @@ The [2026-09-28 source-authoring corpus](qli-authoring-feedback.md) supplies
 executable evidence for missing tuple/basis ergonomics and type-level QPE reuse.
 Its finite-template-before-R14 suggestion is an open scheduling alternative;
 it changes neither the current size gate nor the V1 acceptance criteria.
+The [v0.2.0 backlog](v0.2.0-backlog.md) collects these authoring issues with
+stable IDs, source evidence and acceptance experiments. It supplies scope-review
+inputs without duplicating active milestone states or assigning all M2 work to 0.2.0.
 
 The [coefficient-domain recommendation](coefficient-domains.md), also recorded
 on 2026-09-28, keeps future exact-domain parameterization separate from

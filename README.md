@@ -62,7 +62,8 @@ For complete programs to adapt, start with the
 Their [source corpus](tests/fixtures/qli_authoring/README.md) checks inputs,
 reference correlations and deliberate algorithm mistakes. The
 [authoring report](docs/qli-authoring-feedback.md) turns observed writing
-difficulties into language-design candidates.
+difficulties into language-design candidates, collected with acceptance
+experiments in the [v0.2.0 backlog](docs/v0.2.0-backlog.md).
 
 ## Connect existing circuits
 
