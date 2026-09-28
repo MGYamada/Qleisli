@@ -20,6 +20,18 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## v0.1.7 release procedure (2026-09-28)
+
+The user prioritized releasing the completed JSON diagnostic and bounded
+OpenQASM input/output + QIR output slice. Operation parameters, independent
+meaning declarations and QIR input remain unreleased work. The shorter README
+and English working guidelines preserve the project contracts and proof limits.
+Implementation CI passed all five jobs, including the new external-interop job;
+the [release record](releases/v0.1.7.md#release-preparation-and-hosted-validation)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.7)
+identify exact-commit release checks, source distributions and publication.
+Earlier candidate records below retain their original scope and pending states.
+
 ## M1.1-A connections start in v0.1.7 (2026-09-28)
 
 The user's additional M1.1 request now has a [normative terminal profile](interop-m1.1.md)

@@ -80,7 +80,7 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Development version: 0.1.7.** The [release record](docs/releases/v0.1.7.md)
+**Current version: 0.1.7.** The [release record](docs/releases/v0.1.7.md)
 separates implemented features, executed checks and publication status.
 
 Today, Qleisli checks and executes finite programs with modules, linear

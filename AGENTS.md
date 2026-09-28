@@ -118,8 +118,9 @@ user retained v0.1.6 for the comment/docstring extension, recorded in its
 [extension/migration contract](docs/documentation-comments.md). The user then
 selected v0.1.7 for starting M1 features, initially X1 check/run JSON results
 and structured diagnostics, and added [M1.1 connections](docs/interop-m1.1.md).
-The latest request continues M1 operation parameters/contracts and QIR input
-in this development tree. Record each delivered scope and remaining gate in
+The user subsequently prioritized releasing the completed X1/M1.1-A slice.
+Operation parameters/contracts and QIR input remain separate unreleased work.
+Record each delivered scope and remaining gate in
 the [0.1.7 record](docs/releases/v0.1.7.md). These are feature exceptions, not
 maintenance-only claims or permission for future PATCH features.
 

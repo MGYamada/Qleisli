@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "release_state": "0.1.7 selected for M1 features by explicit user exception; X1 check/run JSON and M1.1-A bounded OpenQASM/QIR adapters implemented and locally validated; tagging/publication pending",
+  "release_state": "0.1.7 release scope finalized under the explicit user feature exception: X1 check/run JSON and M1.1-A OpenQASM input/output + QIR output; exact-commit publication evidence is in the linked release record",
   "milestones": [
     {
       "id": "M0",
@@ -12,7 +12,7 @@
       "id": "M1",
       "state": "X1 check/run JSON and M1.1-A OpenQASM import/export + QIR output implemented; remaining slices pending",
       "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md)",
-      "open": "Release locally validated slices; implement N1–N6 and X2–X6; QIR import through a standard reader, adaptive connections and Python bindings/distribution remain separate gates"
+      "open": "Implement N1–N6 and X2–X6; QIR import through a standard reader, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
       "id": "M2",

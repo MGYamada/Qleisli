@@ -1,6 +1,6 @@
 # M1.1: bounded OpenQASM 3 and QIR connections
 
-Status: **M1.1-A contract selected and initial implementation validated locally on 2026-09-28**. M1.1 is a
+Status: **M1.1-A contract selected and initial implementation validated locally and in Linux CI on 2026-09-28**. M1.1 is a
 submilestone of M1, not a product version or completion of interoperability.
 The user requested this additional slice during 0.1.7 feature development;
 the existing explicit version exception covers this requested continuation.
@@ -191,8 +191,8 @@ Validation-only dependencies are OpenQASM's reference Python parser **1.0.1**
 (Apache-2.0) and ANTLR Python runtime **4.13.2** (BSD-3-Clause). They are installed
 separately, not vendored or linked into the Rust package. LLVM retains its own
 Apache-2.0-with-LLVM-exception licensing. Local QIR assembly/verification used
-**LLVM 22.1.6**; the dedicated CI job selects **LLVM 18** on Ubuntu 24.04, pending
-hosted execution. LLVM 17-compatible textual syntax is the target, not a claim
+**LLVM 22.1.6**; the dedicated CI job passed with **LLVM 18** on Ubuntu 24.04
+in [implementation CI](https://github.com/MGYamada/Qleisli/actions/runs/36382687389). LLVM 17-compatible textual syntax is the target, not a claim
 that LLVM 17 was executed. Native device/runtime execution remains untested.
 
 [PyQIR's reader API](https://www.qir-alliance.org/pyqir/api/pyqir.html#pyqir.Module.from_ir)

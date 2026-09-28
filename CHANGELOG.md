@@ -6,10 +6,15 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-Selected development version: **0.1.7**, with the user's explicit exception to
-start M1 features in a PATCH number. This is new functionality, not compatible-only
-maintenance. See the [implementation record](docs/releases/v0.1.7.md); tagging
-and publication have not been performed.
+No changes recorded after 0.1.7.
+
+## 0.1.7 — 2026-09-28
+
+Start M1 with JSON results and bounded OpenQASM 3/QIR connections, under the
+user's explicit feature-release exception. This is new functionality, not
+compatible-maintenance-only work. The [release record](docs/releases/v0.1.7.md)
+and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.7)
+separate implementation, validation and publication.
 
 ### Added
 
@@ -31,7 +36,10 @@ and publication have not been performed.
 
 - Adopt the project title “Qleisli: A Language for Structured Quantum Algorithms”
   and the tagline “Write quantum algorithms in the language you use to think
-  about them.” in the README.
+  about them.” in a shorter README with a runnable introduction.
+- Translate AGENTS.md into English, preserving the working rules and explicit
+  version exceptions. Retain historical Japanese validation records, bilingual
+  glossary terms and legacy link anchors.
 
 ### Compatibility and scope
 
