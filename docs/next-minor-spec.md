@@ -8,6 +8,12 @@ records executed validation and migration. Separate [machine interfaces](machine
 and the [M2 profile](hierarchical-ir-spec.md) retain their own open gates.
 This implementation completes neither M1 as a whole nor G020-3's release gates.
 
+The [0.2.0 authoring supplement](syntax-v0.md#authoring-forms-added-in-product-020)
+allows one basis parameter to decompose a product, so `perm_by`/`phase_by`
+targets can inspect its components without changing their unary interface.
+Flat tuples are left-associated; the phase exponent result remains the exact
+right-associated `(Bit,(Bit,Bit))` type specified below.
+
 ## Scope, vocabulary and limits
 
 M1 has fixed basis trees `Unit`, `Bit`, and ordered pairs only. A static operation

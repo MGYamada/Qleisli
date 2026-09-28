@@ -220,19 +220,23 @@ impl Parser {
         let mut params = Vec::new();
         if !self.at(&TokenKind::RParen) {
             loop {
-                let param_name = self.ident()?;
+                let pattern = if kind == FnKind::Basis {
+                    self.pattern()?
+                } else {
+                    let name = self.ident()?;
+                    Pattern {
+                        span: name.span,
+                        kind: PatternKind::Name(name),
+                    }
+                };
                 self.expect(&TokenKind::Colon)?;
                 let ty = if kind == FnKind::Basis {
                     self.basis_type()?
                 } else {
                     self.ty()?
                 };
-                let span = Span::new(param_name.span.start, ty.span.end);
-                params.push(Param {
-                    name: param_name,
-                    ty,
-                    span,
-                });
+                let span = Span::new(pattern.span.start, ty.span.end);
+                params.push(Param { pattern, ty, span });
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
@@ -290,7 +294,9 @@ impl Parser {
     }
 
     fn ty(&mut self) -> Result<Type, ParseError> {
-        self.nested(Self::ty_inner)
+        let ty = self.nested(Self::ty_inner)?;
+        Self::type_depth(&ty)?;
+        Ok(ty)
     }
 
     fn static_op(&mut self) -> Result<StaticOp, ParseError> {
@@ -385,7 +391,9 @@ impl Parser {
     }
 
     fn basis_type(&mut self) -> Result<Type, ParseError> {
-        self.nested(Self::basis_type_inner)
+        let ty = self.nested(Self::basis_type_inner)?;
+        Self::type_depth(&ty)?;
+        Ok(ty)
     }
 
     fn basis_type_inner(&mut self) -> Result<Type, ParseError> {
@@ -406,22 +414,51 @@ impl Parser {
 
     fn tuple_type(&mut self, basis_only: bool) -> Result<Type, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
-        let left = if basis_only {
+        let mut left = if basis_only {
             self.basis_type()?
         } else {
             self.ty()?
         };
         self.expect(&TokenKind::Comma)?;
-        let right = if basis_only {
-            self.basis_type()?
-        } else {
-            self.ty()?
-        };
+        loop {
+            let right = if basis_only {
+                self.basis_type()?
+            } else {
+                self.ty()?
+            };
+            left = Type {
+                span: left.span.cover(right.span),
+                kind: TypeKind::Tuple(Box::new(left), Box::new(right)),
+            };
+            // Check each fold before the tree can grow beyond bounded depth.
+            Self::type_depth(&left)?;
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
         let close = self.expect(&TokenKind::RParen)?;
-        Ok(Type {
-            kind: TypeKind::Tuple(Box::new(left), Box::new(right)),
-            span: open.span.cover(close.span),
-        })
+        left.span = open.span.cover(close.span);
+        Ok(left)
+    }
+
+    fn type_depth(ty: &Type) -> Result<(), ParseError> {
+        let mut pending = vec![(ty, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "type AST exceeds the initial 64-level limit".into(),
+                    span: node.span,
+                });
+            }
+            match &node.kind {
+                TypeKind::Tuple(a, b) => {
+                    pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
+                }
+                TypeKind::Q(inner) => pending.push((inner, depth + 1)),
+                _ => {}
+            }
+        }
+        Ok(())
     }
 
     fn basis_block(&mut self) -> Result<(BasisExpr, Span), ParseError> {
@@ -475,7 +512,9 @@ impl Parser {
     }
 
     fn pattern(&mut self) -> Result<Pattern, ParseError> {
-        self.nested(Self::pattern_inner)
+        let pattern = self.nested(Self::pattern_inner)?;
+        Self::pattern_depth(&pattern)?;
+        Ok(pattern)
     }
 
     fn pattern_inner(&mut self) -> Result<Pattern, ParseError> {
@@ -496,14 +535,38 @@ impl Parser {
             });
         }
         let open = self.expect(&TokenKind::LParen)?;
-        let left = self.pattern()?;
+        let mut left = self.pattern()?;
         self.expect(&TokenKind::Comma)?;
-        let right = self.pattern()?;
+        loop {
+            let right = self.pattern()?;
+            left = Pattern {
+                span: left.span.cover(right.span),
+                kind: PatternKind::Tuple(Box::new(left), Box::new(right)),
+            };
+            Self::pattern_depth(&left)?;
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
         let close = self.expect(&TokenKind::RParen)?;
-        Ok(Pattern {
-            kind: PatternKind::Tuple(Box::new(left), Box::new(right)),
-            span: open.span.cover(close.span),
-        })
+        left.span = open.span.cover(close.span);
+        Ok(left)
+    }
+
+    fn pattern_depth(pattern: &Pattern) -> Result<(), ParseError> {
+        let mut pending = vec![(pattern, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "pattern AST exceeds the initial 64-level limit".into(),
+                    span: node.span,
+                });
+            }
+            if let PatternKind::Tuple(a, b) = &node.kind {
+                pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]);
+            }
+        }
+        Ok(())
     }
 
     fn expr(&mut self) -> Result<Expr, ParseError> {
@@ -848,12 +911,20 @@ impl Parser {
         }
         let mut left = self.expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
-            let right = self.expr()?;
+            loop {
+                let right = self.expr()?;
+                left = Expr {
+                    span: left.span.cover(right.span),
+                    kind: ExprKind::Tuple(Box::new(left), Box::new(right)),
+                };
+                Self::expr_depth(&left)?;
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
             let close = self.expect(&TokenKind::RParen)?;
-            return Ok(Expr {
-                kind: ExprKind::Tuple(Box::new(left), Box::new(right)),
-                span: open.span.cover(close.span),
-            });
+            left.span = open.span.cover(close.span);
+            return Ok(left);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);
@@ -909,9 +980,14 @@ impl Parser {
 
     fn basis_expr(&mut self) -> Result<BasisExpr, ParseError> {
         let expr = self.basis_xor()?;
+        Self::basis_depth(&expr)?;
+        Ok(expr)
+    }
+
+    fn basis_depth(expr: &BasisExpr) -> Result<(), ParseError> {
         // A left-associated chain can grow the AST without growing the parse
         // stack. Nested chains must also share the AST depth budget.
-        let mut pending = vec![(&expr, 1)];
+        let mut pending = vec![(expr, 1)];
         while let Some((node, depth)) = pending.pop() {
             if depth > MAX_NESTING {
                 return Err(ParseError {
@@ -932,7 +1008,7 @@ impl Parser {
                 _ => {}
             }
         }
-        Ok(expr)
+        Ok(())
     }
 
     fn basis_xor(&mut self) -> Result<BasisExpr, ParseError> {
@@ -1042,12 +1118,20 @@ impl Parser {
         }
         let mut left = self.basis_expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
-            let right = self.basis_expr()?;
+            loop {
+                let right = self.basis_expr()?;
+                left = BasisExpr {
+                    span: left.span.cover(right.span),
+                    kind: BasisExprKind::Tuple(Box::new(left), Box::new(right)),
+                };
+                Self::basis_depth(&left)?;
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
             let close = self.expect(&TokenKind::RParen)?;
-            return Ok(BasisExpr {
-                kind: BasisExprKind::Tuple(Box::new(left), Box::new(right)),
-                span: open.span.cover(close.span),
-            });
+            left.span = open.span.cover(close.span);
+            return Ok(left);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);

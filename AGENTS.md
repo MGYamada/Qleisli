@@ -122,8 +122,10 @@ dossier and executed results in conformance/release records.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. Preserve historical release/migration records and
-the already selected 0.1.8; record delivered work and remaining gates in the
-[0.1.8 record](docs/releases/v0.1.8.md).
+the untagged 0.1.8 checkpoint. The authoring continuation selects 0.2.0 because
+the public Rust parameter AST changes incompatibly; record delivered work and
+remaining gates in the [0.2.0 record](docs/releases/v0.2.0.md). Type/size
+parameters and cross-interface QPE reuse remain future work at the user's request.
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
   `lean/lakefile.toml`. Compiler, bundled library and proofs currently share a

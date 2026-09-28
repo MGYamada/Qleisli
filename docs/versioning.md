@@ -10,15 +10,18 @@ supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 ## Version identity
 
 Compatible feature additions no longer need a version-policy exception.
-The previous 0.1.6/0.1.7 decisions and already selected 0.1.8 retain their
-numbers and migration records; dated exception statements describe the former
+The previous 0.1.6/0.1.7 decisions and untagged 0.1.8 checkpoint retain their
+historical numbers and migration records; dated exception statements describe the former
 policy, not a continuing requirement. This revision does not reclassify their
 documented source/API breaks as compatible or authorize future incompatible
 PATCH releases. See the [0.1.6](releases/v0.1.6.md),
 [0.1.7](releases/v0.1.7.md) and [0.1.8](releases/v0.1.8.md) records.
 
 The selected baseline and release state are in [current status](current-status.md)
-and the [0.1.8 implementation record](releases/v0.1.8.md). Version selection alone
+and the [0.2.0 implementation record](releases/v0.2.0.md). The authoring
+continuation replaces the public Rust `Param.name` field with `Param.pattern`,
+requiring MINOR even though the added source forms are compatible. It includes
+the unpublished 0.1.8 work. Version selection alone
 does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
 independently of version numbers; no theme reserves a MINOR number. Continuous
 audits need no PATCH unless a useful compatible change is being released.

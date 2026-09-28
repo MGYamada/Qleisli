@@ -2,5 +2,6 @@
 use amplification::uniform;
 use amplification::amplify_once;
 use oracles::mark11;
+use oracles::Mark11;
 use std::routines::measure_z2;
-observe fn main() -> (CBit,CBit) { measure_z2(amplify_once[uniform,mark11]()) }
+observe fn main() -> (CBit,CBit) { measure_z2(amplify_once[uniform,bind_op(mark11,Mark11)]()) }

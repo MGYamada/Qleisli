@@ -1,0 +1,1 @@
+unitary fn bad() -> CBit { let (a,b,a) = (false,false,true); b }

@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented source, Qleisli 0.1.8.** Start here and copy a complete program
+**Implemented source, Qleisli 0.2.0.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite
@@ -15,8 +15,9 @@ Import each operation explicitly. `Q<Bit>` is one owned qubit; using it consumes
 that binding. An operation may return its successor under the same name.
 `measure_z` consumes its qubit and returns `CBit`. `if` branches on a classical
 bit and both arms must return compatible ownership. `false`/`true` are `CBit`;
-`0`/`1` are `Bit` in basis computations. Tuple syntax is **binary**: write
-`((a,b),c)` and `((CBit,CBit),CBit)`, not `(a,b,c)`.
+`0`/`1` are `Bit` in basis computations. N-ary tuples
+left-associate: `(a,b,c)` and `(CBit,CBit,CBit)` mean `((a,b),c)` and
+`((CBit,CBit),CBit)`. Explicit `(a,(b,c))` remains a different tree.
 
 This teleportation sends `|->`. The first two results are independent uniform
 message bits; the last is always one. The body is the user-supplied Claude
@@ -70,7 +71,7 @@ use std::quantum::z;
 use std::routines::hadamard2;
 use std::routines::measure_z2;
 
-basis fn balanced(a: Bit, b: Bit) -> Bit { a xor b }
+basis fn balanced((a,b): (Bit,Bit)) -> Bit { a xor b }
 unitary fn oracle(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     with_computed(q, balanced) { |flag| z(flag) }
 }
@@ -111,7 +112,10 @@ meaning `m`, supplied using `bind_op(provider,m)`. See the
 [implemented contract example](../examples/operation_contracts/main.qli) and
 [operation-parameter algorithms](../examples/operation_algorithms/README.md).
 
-There are no n-ary tuples, type/size parameters, runtime operation values,
+A patterned basis parameter is one argument; names and `_` match the declared
+product tree. For phase meanings keep the exact `(Bit,(Bit,Bit))` exponent type:
+`(Bit,Bit,Bit)` left-associates differently. Ordinary function parameters still
+require names. There are no type/size parameters, runtime operation values,
 general loops or arbitrary angles in this profile. Finite operation contracts
 currently support at most six interface bits and the documented work limits.
 Do not infer auxiliary zero return from a variable name, lifetime or successful

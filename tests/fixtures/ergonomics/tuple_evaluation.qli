@@ -1,0 +1,9 @@
+//! Each operand is evaluated once, from left to right, even with mixed ownership.
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> (CBit,CBit,CBit) {
+    let q = init0();
+    let (one,(zero,owner),last) = (measure_z(x(q)),(measure_z(init0()),x(init0())),true);
+    (one,zero,measure_z(owner) and last)
+}

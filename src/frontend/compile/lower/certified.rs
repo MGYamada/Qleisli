@@ -184,7 +184,7 @@ impl Lowerer<'_, '_> {
         local.insert(data_binder.text.clone(), Some(*data));
         local.insert(ancilla_binder.text.clone(), Some(*ancilla));
         let result = inner.block(module, body, &mut local)?;
-        inner.no_owned_bindings(module, body.span, &local)?;
+        inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
         if inner.effect != Effect::Unitary {
             return Err(inner.error(
                 module,

@@ -13,8 +13,14 @@ static parameters/arguments, independent access constraints, basis-derived
 meanings and checked composition. Generic bodies are source-checked before
 specialization; abstract checking produces no `VerifiedProgram` or cleanup
 evidence. Each concrete expansion passes the existing independent checker.
-The [release record](releases/v0.1.8.md) gives public AST/error and reserved-word
+The [release record](releases/v0.2.0.md) gives public AST/error and reserved-word
 migration, executed validation and remaining gates.
+
+The 0.2.0 authoring extension adds product patterns to basis parameters and
+left-associated n-ary tuple sugar in types, values and patterns. See the
+[grammar](syntax-v0.md#authoring-forms-added-in-product-020). Unreturned owners
+now point to their actual parameter, local or computed-region binder, including
+shadowed names; diagnostic codes/schema and ownership acceptance are unchanged.
 
 <a id="入口と信頼境界"></a>
 

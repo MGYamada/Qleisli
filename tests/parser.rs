@@ -349,9 +349,9 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
 
     parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { do _ <- q; pure 0 }").unwrap();
     // Duplicate names are syntactically valid; the basis pattern checker must
-    // reject them. A unit pattern and tuples with more than two fields are not.
+    // reject them. Unit/singleton patterns and trailing commas remain invalid.
     parse_module("unitary fn f(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,a) <- q; pure a }").unwrap();
-    for pattern in ["()", "(a)", "(a,)", "(a,b,c)"] {
+    for pattern in ["()", "(a)", "(a,)", "(a,b,c,)"] {
         let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {pattern} <- q; pure 0 }}");
         assert!(parse_module(&source).is_err(), "{source}");
     }

@@ -197,6 +197,9 @@ impl Lowerer<'_, '_> {
         }
         let mut env = Env::new();
         for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
+            let PatternKind::Name(name) = &param.pattern.kind else {
+                unreachable!("ordinary parameters are parsed as names")
+            };
             let (module, span) = site.map_or((key.0.as_str(), param.span), |site| {
                 (site.module, site.args[index].span)
             });
@@ -207,10 +210,10 @@ impl Lowerer<'_, '_> {
                     module,
                     span,
                     ErrorCode::TypeMismatch,
-                    format!("argument `{}` has the wrong type", param.name.text),
+                    format!("argument `{}` has the wrong type", name.text),
                 ));
             }
-            env.insert(param.name.text.clone(), Some(value));
+            env.insert(name.text.clone(), Some(value));
         }
         let previous_effect = self.effect;
         self.effect = Effect::Unitary;
@@ -228,7 +231,18 @@ impl Lowerer<'_, '_> {
                 "result does not match the function return type",
             ));
         }
-        self.no_owned_bindings(&key.0, body.span, &env)?;
+        self.no_owned_bindings(
+            &key.0,
+            body.span,
+            &env,
+            decl.params.iter().filter_map(|param| {
+                if let PatternKind::Name(name) = &param.pattern.kind {
+                    Some(name)
+                } else {
+                    None
+                }
+            }),
+        )?;
         if self.effect > effect(decl.kind) {
             return Err(self.error(
                 &key.0,
@@ -241,11 +255,21 @@ impl Lowerer<'_, '_> {
         Ok(value)
     }
 
-    fn no_owned_bindings(&self, module: &str, span: Span, env: &Env) -> Result<(), CompileError> {
+    fn no_owned_bindings<'b>(
+        &self,
+        module: &str,
+        fallback: Span,
+        env: &Env,
+        bindings: impl IntoIterator<Item = &'b Ident>,
+    ) -> Result<(), CompileError> {
         if let Some((name, _)) = env
             .iter()
             .find(|(_, value)| value.as_ref().is_some_and(Value::owns_quantum))
         {
+            let span = bindings
+                .into_iter()
+                .find(|binding| binding.text == *name)
+                .map_or(fallback, |binding| binding.span);
             Err(self.error(
                 module,
                 span,
@@ -287,7 +311,14 @@ impl Lowerer<'_, '_> {
         }
         let result = self.expr(module, &block.result, &mut local)?;
         scope::close_scope(&mut entry, &local, &rebound).map_err(|name| {
-            self.error(module, block.span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
+            // A direct rebinding supersedes an earlier binder of the same name.
+            // Nested scopes diagnose their own locals before returning here.
+            let span = block.statements.iter().rev().find_map(|stmt| {
+                if let StmtKind::Let { pattern, .. } = &stmt.kind {
+                    scope::binding_span(pattern, name)
+                } else { None }
+            }).unwrap_or(block.span);
+            self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
         *env = entry;
         Ok(result)
@@ -1002,7 +1033,7 @@ impl Lowerer<'_, '_> {
         let previous_effect = self.effect;
         self.effect = Effect::Unitary;
         let result = self.block(module, body, &mut local)?;
-        self.no_owned_bindings(module, body.span, &local)?;
+        self.no_owned_bindings(module, body.span, &local, [binder])?;
         if self.effect != Effect::Unitary {
             return Err(self.error(
                 module,

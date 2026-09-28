@@ -8,17 +8,32 @@ paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 implementation,
-its migration and local validation from publication.
+from one current-state record and the manifests. The [0.2.0 record](releases/v0.2.0.md) separates fixed-width M1 and authoring
+implementation, migration and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.8.md) and
+The current [release record](releases/v0.2.0.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## Authoring priorities 1–3 in v0.2.0 (2026-09-28)
+
+The user's selected basis parameter patterns, n-ary tuple sugar and precise
+owner-binding diagnostics are implemented. The [grammar supplement](syntax-v0.md#authoring-forms-added-in-product-020)
+preserves source arity and exact binary product trees; existing finite tables
+and evidence checks remain authoritative. The public Rust `Param` field change
+requires 0.2.0 under the revised policy. Type/size parameters and cross-interface
+QPE sharing are explicitly future work; R14 and general proof obligations remain.
+
+Rust 1.98.1 and 1.85.0 each passed **325 all-target tests** and Clippy; formatting,
+all **13 example projects**, independent JSON decoding, document/helper checks,
+Lean build (**1,457 jobs**) and audit (**577 declarations**) passed. The
+[release record](releases/v0.2.0.md#validation) gives executed and skipped scopes.
+No core verifier rule, new theorem, tag or publication is claimed.
 
 ## Cargo-compatible version policy (2026-09-28)
 

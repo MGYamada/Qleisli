@@ -283,15 +283,30 @@ impl Compiler<'_> {
         }
         let mut params = Vec::new();
         for param in &decl.params {
-            if !names.insert(&param.name.text) {
-                return Err(self.error(
-                    &key.0,
-                    param.name.span,
-                    ErrorCode::Ownership,
-                    "duplicate parameter name",
-                ));
+            let mut pending = vec![&param.pattern];
+            while let Some(pattern) = pending.pop() {
+                match &pattern.kind {
+                    PatternKind::Name(name) => {
+                        if !names.insert(&name.text) {
+                            return Err(self.error(
+                                &key.0,
+                                name.span,
+                                ErrorCode::Ownership,
+                                "duplicate parameter name",
+                            ));
+                        }
+                    }
+                    PatternKind::Tuple(a, b) => pending.extend([b.as_ref(), a.as_ref()]),
+                    PatternKind::Wildcard => {}
+                }
             }
-            params.push(self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?);
+            let ty = self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?;
+            if decl.kind == FnKind::Basis && !matches!(param.pattern.kind, PatternKind::Name(_)) {
+                // Reuse the coherent basis-pattern binding judgment. A zero
+                // label suffices to validate shape; enumeration binds all labels.
+                self.bind_basis_pattern(&key.0, &param.pattern, &ty, 0)?;
+            }
+            params.push(ty);
         }
         Ok((
             params,

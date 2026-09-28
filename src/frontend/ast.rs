@@ -65,7 +65,9 @@ pub struct Decl {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Param {
-    pub name: Ident,
+    /// Basis functions accept name/wildcard/product patterns. Ordinary
+    /// function parameters remain names. Tuple sugar is already binary here.
+    pub pattern: Pattern,
     pub ty: Type,
     pub span: Span,
 }

@@ -6,12 +6,19 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-Selected development version: **0.1.8**. See the
-[implementation/migration record](docs/releases/v0.1.8.md). Historical entries
+Selected development version: **0.2.0**. See the
+[implementation/migration record](docs/releases/v0.2.0.md). It includes the
+untagged 0.1.8 checkpoint. Historical entries
 retain the version policy used at the time; the revised policy below governs
 new changes.
 
 ### Added
+
+- Basis function parameter patterns for product components, whole subtrees
+  and ignored basis values, checked through existing finite tables.
+- N-ary tuple types, values and patterns, left-folded to exact binary trees.
+  Independently checked pair meanings, executable clients and negative
+  ownership/shape/depth regressions exercise these forms.
 
 - Runnable Bell/teleportation/dense-coding/swapping components and shared
   operation-parameter QPE, amplitude-amplification and Hadamard-test examples.
@@ -31,10 +38,16 @@ new changes.
 
 ### Changed
 
+- Replace public Rust `Param.name` with `Param.pattern`; this incompatible
+  AST migration requires 0.2.0 under the revised policy. Existing accepted
+  binary `.qli` programs retain their meaning.
+- Locate unreturned quantum ownership at its actual binding, including
+  nested patterns, shadowing, parameters and computed-region binders.
+
 - Align initial-development versioning with Cargo: for 0.y.z with y > 0,
   compatible fixes/features/syntax additions use PATCH; breaking changes use
   MINOR. Compatible features need no exception. Preserve historical migrations
-  and the already selected 0.1.8; 1.0+ rules and verification gates are unchanged.
+  and the 0.1.8 checkpoint; 1.0+ rules and verification gates are unchanged.
 - Reserve the new M1 keywords and extend public AST/token/error records;
   follow the release record's source and Rust migration. JSON v1 gains emitted
   `capability` / `contract` cases within its specified category set.
@@ -42,7 +55,7 @@ new changes.
 - Split parser routines to preserve existing deep-syntax acceptance/rejection
   without increasing stack requirements. Keep old IR, toolchains and limits.
 
-No v0.1.8 tagging or publication has been performed. QIR import, remaining
+No v0.1.8 or v0.2.0 tagging or publication has been performed. QIR import, remaining
 machine interfaces, size generalization and M2 remain separate work.
 
 ## 0.1.7 — 2026-09-28

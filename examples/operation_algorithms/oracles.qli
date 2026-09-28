@@ -7,6 +7,11 @@ basis fn is01(a: Bit, b: Bit) -> Bit { not a and b }
 basis fn is11(a: Bit, b: Bit) -> Bit { a and b }
 basis fn nonzero(a: Bit, b: Bit) -> Bit { not (not a and not b) }
 
+// An independently stated unary product meaning, separate from the oracle body.
+// phase_by retains its exact right-associated three-bit exponent interface.
+basis fn phase11((a,b): (Bit,Bit)) -> (Bit,(Bit,Bit)) { (0,(0,a and b)) }
+pub meaning Mark11: (Bit,Bit) = phase_by(phase11);
+
 /// Each mark negates exactly its named bit string: I - 2|marked><marked|.
 pub unitary fn mark00(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     with_computed(q,is00) { |flag| z(flag) }

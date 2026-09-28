@@ -12,8 +12,6 @@ use std::path::Path;
 type Distribution = BTreeMap<Vec<bool>, f64>;
 const STATES: &[&str] = &["zero", "one", "plus", "minus", "y_plus", "y_minus", "magic"];
 const REJECTED: &[(&str, &str)] = &[
-    ("tuple_arity", "parse"),
-    ("basis_tuple_pattern", "parse"),
     ("basis_type_parameter", "parse"),
     ("static_nat", "parse"),
     ("meaning_pair_predicate", "type_mismatch"),
@@ -266,9 +264,16 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
             root.0.join("main.qli").canonicalize().unwrap()
         );
         assert!(source.get(location.span.start..location.span.end).is_some());
-        // Do not enshrine the imprecise dropped-owner location as a requirement.
-        // The current observation, with coordinates, is recorded in the report.
+        // Precise binding provenance is tested in authoring_ergonomics.rs.
     }
+    distribution(
+        &execute(&SourceRoot::new(&fixture("accepted/nary_tuple"))),
+        &[(vec![false; 3], 1.0)],
+    );
+    distribution(
+        &execute(&SourceRoot::new(&fixture("accepted/basis_tuple_pattern"))),
+        &[(vec![true, true], 1.0)],
+    );
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/auxiliary_hh"))),
         &[(vec![false], 1.0)],
@@ -351,6 +356,8 @@ fn every_source_fixture_belongs_to_an_exercised_case() {
     ] {
         expected.insert(format!("faults/{name}"));
     }
+    expected.insert("accepted/nary_tuple".into());
+    expected.insert("accepted/basis_tuple_pattern".into());
     expected.insert("accepted/auxiliary_hh".into());
     expected.insert("accepted/pair_contract".into());
     expected.insert("accepted/product_reassociation".into());

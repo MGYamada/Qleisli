@@ -5,7 +5,9 @@ source/examples/tests first, with language requirements discovered from actually
 writing algorithms. The [protocols](../examples/protocols/README.md),
 [operation algorithms](../examples/operation_algorithms/README.md) and
 [source fixtures](../tests/fixtures/qli_authoring/README.md) are the deliverable.
-This report records observations and candidates; it adopts no new syntax.
+The initial observations below led to the user-selected 0.2.0 fixes; the
+[grammar](syntax-v0.md#authoring-forms-added-in-product-020) specifies the
+delivered forms. Other candidates remain future work.
 
 The user also supplied Claude's account of a successful first-attempt
 teleportation and Ubuntu build. Those are external reports, not locally
@@ -29,21 +31,23 @@ also fails on half the minus-state branches. Forward QFT returns phase 7/8
 instead of 1/8. Reference-sensitive tests and signed T/T† overlap tests exercise
 more than a plausible-looking final bit string. They remain finite regressions.
 
-## Reproduced friction and next candidates
+## Reproduced friction, delivered fixes and next candidates
 
 Fixture paths below are relative to
-[the corpus](../tests/fixtures/qli_authoring/README.md). Priorities are a proposed
-implementation order, not adopted source/API changes.
+[the corpus](../tests/fixtures/qli_authoring/README.md). The user selected the
+first three issues for implementation and explicitly deferred type/size
+parameters and cross-interface QPE reuse. The
+[0.2.0 regressions](../tests/fixtures/ergonomics/README.md) exercise the new forms.
 
 | Priority / issue | Reproduction and current workaround | Obligation to remove; checking boundary |
 | --- | --- | --- |
-| 1: product-valued basis functions cannot inspect components | `rejected/meaning_pair_predicate.qli` gives `type_mismatch`: `phase_by` needs one argument of the exact pair type, while the useful predicate has two arguments. `basis_tuple_pattern.qli` gives `parse`; there are no basis projections. `accepted/pair_contract.qli` checks the same phase against an independently written circuit using `apply_contract`. | Let authors state nonconstant pair targets directly. Specify basis parameter patterns or projections with totality/types and basis-table correspondence; no new semantic acceptance axiom is needed. |
-| 1: tuple arity and association leak into composition | `tuple_arity.qli` gives `parse` at the third comma. `product_association.qli` gives `type_mismatch` calling qft3 on a right-associated tree. `accepted/product_reassociation.qli` spells out the split/join adapter. | N-ary sugar can remove punctuation bookkeeping; choose one exact association and preserve leaf/axis order, Unit factors, pattern ownership and spans. It does not by itself equate all existing product trees. Test meaning preservation and migrations; the cost is not zero. |
-| 1: dropped-owner location is too broad | `dropped_owner.qli` names `b` correctly but points to line 3, column 27 (the body opening), rather than its line-4 binding. | Retain binding provenance for an actionable primary/related location. Keep rejection; change no ownership rule. The test deliberately does not freeze the poor location. |
-| 2: gate providers need wrappers | `sealed_provider.qli` rejects `[h]`, although `adjoint(h,q)` is supported. [states](../examples/protocols/states.qli) and [gates](../examples/operation_algorithms/gates.qli) add closed ordinary wrappers. | Consider uniform static access to eligible sealed operations through the existing elaboration/checking path. Preserve exact signatures, effects and capability distinctions; never infer access merely from unitarity. |
-| 2: type/size abstraction is missing | `basis_type_parameter.qli` and `static_nat.qli` give `parse`. `phase2`/`phase3` and `amplify_once`/`amplify_twice` retain duplication. The four-bit [order-finding QPE](../examples/order_finding/estimation.qli) cannot call the Bit-target client. | Separate finite template authoring from scalable family checking; see the decision question below. M1 alone does not satisfy shared Shor/QPE. |
-| 2: anonymous classical result roles are easy to exchange | Both correction-order faults compile: phase and parity are both `CBit`. Comments and descriptive bindings are the current aid. | Consider named result structure or clearer generated signature docs; preserve full message/reference-sensitive tests even if records are introduced. |
-| 2: cleanup evidence is hard to discover | `rejected/auxiliary_hh.qli` gives `unsupported`, although H H is identity. `accepted/auxiliary_hh.qli` succeeds with the explicit three-argument logical identity contract. | Explain the two forms and suggest the evidence-bearing form. Do not widen the two-argument body's certificate by assertion. |
+| 1: product-valued basis functions — addressed in 0.2.0 | The original `rejected/basis_tuple_pattern.qli` parse failure is now `accepted/basis_tuple_pattern.qli`: a unary pair pattern supplies an independently checked CZ meaning. The separate two-argument `rejected/meaning_pair_predicate.qli` still rejects, as required by the unary contract. | Basis parameter patterns remove manual workarounds for nonconstant product targets. They preserve full domain types and source arity and reuse finite basis binding/table checks. |
+| 2: tuple arity — addressed in 0.2.0; layout equality remains explicit | The original third-field parse failure is now `accepted/nary_tuple.qli`. `rejected/product_association.qli` still rejects a right-associated input for a left-associated interface; `accepted/product_reassociation.qli` shows the adapter. | Types, expressions and patterns left-fold to existing pairs: `(a,b,c)` means `((a,b),c)`. Evaluation order, Unit factors, ownership, leaf order and depth limits are tested. This removes punctuation but does not equate all product trees. |
+| 3: dropped-owner location — addressed in 0.2.0 | `rejected/dropped_owner.qli` originally pointed to the body opening, line 3 column 27. It now points to binding `b`, line 4 column 9. | Locate the actual parameter/local/computed binder without changing ownership rejection. Regressions include nested patterns, shadowing, UTF-8/CRLF and module paths. |
+| Future: gate providers need wrappers | `sealed_provider.qli` rejects `[h]`, although `adjoint(h,q)` is supported. [states](../examples/protocols/states.qli) and [gates](../examples/operation_algorithms/gates.qli) add closed ordinary wrappers. | Consider uniform static access to eligible sealed operations through the existing elaboration/checking path. Preserve exact signatures, effects and capability distinctions; never infer access merely from unitarity. |
+| 4: type/size abstraction — explicitly future work | `rejected/basis_type_parameter.qli` and `rejected/static_nat.qli` give `parse`. `phase2`/`phase3` and `amplify_once`/`amplify_twice` retain duplication. The four-bit [order-finding QPE](../examples/order_finding/estimation.qli) cannot call the Bit-target client. | Separate finite template authoring from scalable family checking; see the decision question below. M1 alone does not satisfy shared Shor/QPE. No template/R14 ordering change is adopted in 0.2.0. |
+| Future: anonymous classical result roles are easy to exchange | Both correction-order faults compile: phase and parity are both `CBit`. Comments and descriptive bindings are the current aid. | Consider named result structure or clearer generated signature docs; preserve full message/reference-sensitive tests even if records are introduced. |
+| Future: cleanup evidence is hard to discover | `rejected/auxiliary_hh.qli` gives `unsupported`, although H H is identity. `accepted/auxiliary_hh.qli` succeeds with the explicit three-argument logical identity contract. | Explain the two forms and suggest the evidence-bearing form. Do not widen the two-argument body's certificate by assertion. |
 
 The `spent_owner`, `aliased_owner`, `missing_adjoint` and
 `controlled_is_not_apply` fixtures are useful guardrails, not rules to weaken.
@@ -63,6 +67,7 @@ The hierarchical profile's checked-instantiation semantics does not, by itself,
 supply source substitution, type arithmetic, termination/budgets, diagnostics,
 dependency identity or evidence binding for such templates.
 
+The user explicitly deferred this issue while selecting authoring fixes 1–3.
 The current [R14 prerequisite](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
 and [roadmap](v0x-roadmap.md) explicitly put evidence-bound hierarchy and
 non-dense composition before size generalization. Moving a bounded template
@@ -91,4 +96,8 @@ not that benchmark.
 [version policy](versioning.md). Compatible features in 0.y.z (y > 0) now use
 PATCH without exceptions; breaking changes use MINOR. Historical decisions and
 0.1.8's documented reserved-name/public-AST migration remain recorded. This
-policy change does not implement the language candidates above.
+policy change alone did not implement the language candidates above. The
+subsequent 0.2.0 continuation implements issues 1–3 and includes the untagged
+0.1.8 checkpoint; the public Rust `Param` field migration requires MINOR.
+Continue evaluating LLM authoring through actual source and independent
+semantic regressions, preserving failures that reveal missing abstractions.
