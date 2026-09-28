@@ -1,5 +1,5 @@
 name = "qleisli_proofs"
-version = "0.1.8"
+version = "0.1.9"
 defaultTargets = ["Qleisli"]
 
 [leanOptions]

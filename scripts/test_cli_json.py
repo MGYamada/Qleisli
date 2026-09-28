@@ -81,6 +81,21 @@ class JsonCliTests(unittest.TestCase):
                     "line": source[:start].count("\n") + 1, "column": len(source[:start].split("\n")[-1]) + 1,
                 })
 
+    def test_truncated_static_arguments_are_located_parse_failures(self):
+        for source in ["unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
+                       "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,"]:
+            self.source(source)
+            for command in ["check", "run"]:
+                with self.subTest(source=source, command=command):
+                    result = self.invoke(command, self.root, "--format=json", status=1)
+                    self.assertEqual(len(result["diagnostics"]), 1)
+                    diagnostic = result["diagnostics"][0]
+                    self.assertEqual(diagnostic["code"], "parse")
+                    self.assertEqual(diagnostic["primary"], {
+                        "path": "main.qli", "start": len(source), "end": len(source),
+                        "line": 1, "column": len(source) + 1,
+                    })
+
     def test_error_categories_and_nested_project_relative_paths(self):
         sources = {
             "type_mismatch": "observe fn main() -> CBit { () }",

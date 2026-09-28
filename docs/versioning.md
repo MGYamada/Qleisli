@@ -18,8 +18,9 @@ PATCH releases. See the [0.1.6](releases/v0.1.6.md),
 [0.1.7](releases/v0.1.7.md) and [0.1.8](releases/v0.1.8.md) records.
 
 The selected baseline and release state are in [current status](current-status.md)
-and the [0.1.8 implementation record](releases/v0.1.8.md). The user explicitly
-retained development version 0.1.8 for the authoring continuation after its
+and the [0.1.9 review-fix record](releases/v0.1.9.md). The user selected 0.1.9
+for compatible review fixes and diagnostic improvements on 2026-09-28.
+Previously, the user explicitly retained version 0.1.8 for the authoring continuation after its
 temporary 0.2.0 selection. The public Rust `Param.name` → `Param.pattern`
 migration remains incompatible and documented; the general compatibility
 policy below is unchanged. Version selection alone

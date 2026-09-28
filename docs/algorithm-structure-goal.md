@@ -20,6 +20,12 @@ to develop the concepts, compositions, and premises that appear in that thinking
 into abstractions that can actually compile. Shor, QPE, and Grover are the three
 concrete targets for evaluating that direction in v1.
 
+Follow the [program-first development method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write):
+write how a quantum program ought to express its algorithm, then evolve the
+language with AI from the gap between that source and a checked implementation.
+The [input corpus](../corpus/README.md) supplies finite translation experiments;
+it does not turn unimplemented ideal notation into a current API.
+
 **Current priority (2026-09-27):** make evidence-bearing semantic contracts
 `U E_in = E_out u` and independent certificate checking the
 [v0.1 minimum](release-milestones.md#v01-minimum-semantic-contracts). Develop the

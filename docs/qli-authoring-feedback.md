@@ -18,6 +18,71 @@ body's four-branch distribution, with explicit imports, on macOS. The new
 programs were authored and revised in this session: there is no controlled
 comparison of models or estimate of general LLM success rate.
 
+## Review follow-up, 0.1.9
+
+The supplied 0.1.8 review exposed a parser panic on truncated static arguments
+such as `unitary fn f(q: Q<Bit>) -> Q<Bit> { g[`. This is especially relevant to
+incomplete generated source. The [parser regressions](../tests/parser.rs) now
+exercise every token-boundary prefix of static constructors, executable examples
+and bundled library files; [CLI tests](../tests/cli_json.rs) preserve the single
+JSON parse diagnostic at EOF. This is robustness validation, not a new measured
+authoring session or a model benchmark.
+
+[A020-09 and A020-10](v0.2.0-backlog.md) retain two open design/implementation
+issues: constructor-derived access beyond direct header constraints, and source
+snapshot copies consuming the reuse budget. The [0.1.9 record](releases/v0.1.9.md)
+separates compatible repairs and clarifications from future breaking changes.
+
+Claude's additional supplied feedback reports ten diagnostic probes and about
+13 seconds for 35,786 mutated-project checks in a release build. These are
+external observations, not a reproduced timing benchmark. It praises precise
+ownership/type diagnostics and JSON, while identifying coarse effect locations,
+missing rewrite hints, single-error reporting, repeated imports/adapters and
+noisy numerical output. The local [repair regressions](../tests/repair_diagnostics.rs)
+reproduce the effect/import/provider cases and check their improved locations
+and working rewrites. Effect provenance covers primitive and imported calls,
+both classical arms, conditions, coherent lifts and stronger declared effects.
+Snapshot-limit messages now expose retained sources. A020-11–13 retain multi-error
+collection, boilerplate and optional numerical presentation as open candidates.
+This is regression work informed by feedback, not a new controlled repair study.
+
+## Three-source translation exercise, 0.1.9
+
+The [input corpus](../corpus/README.md) adds 24 executable finite translations,
+eight each from QuantumKatas, Qualtran and PennyLane Demos, under the
+[adopted source/license policy](../corpus/POLICY.md). The
+[session](../corpus/authoring/session.json) records prior repository and upstream
+access, untouched first sources, hashes and actual JSON checks. No external
+model or upstream Q#/Python framework was executed. This was informed authoring,
+not a controlled evaluation of how well an unfamiliar LLM writes QLI.
+
+The first check accepted 19 cases and rejected five. Unsupported Boolean `or`
+and local `let` in basis bodies caused two parse errors; `repeat_static` in a
+restricted auxiliary phase body caused three unsupported-body errors. The next
+attempt used existing expression syntax and seven explicit T calls, accepting
+all 24. The third attempt only removed unused imports and also checked.
+A020-14/15 retain the concrete obligations and the actual rejected source.
+
+Semantic validation covers 20 whole finite unitaries by every complex matrix
+entry under controlled X/Y interference, two branch-sensitive teleportation
+instruments, measurement polarity and four dense-coding messages: 9,412 probes
+plus all 24 shipped mains. Four deliberate QLI counterexamples reject. These
+checks caught no semantic discrepancy after the source repairs. They validate
+the recorded specializations numerically, not upstream frameworks, scalability,
+Rust adequacy or a general translation theorem.
+
+The applications expose further scope limits: fixed angles, a changed-angle
+QPE example, a signed-permutation VQE kernel and host-side observable aggregation.
+The experiment did not import optimizers or chemistry data. A020-07/16 retain
+those limitations. The rotation adapter preserves its scalar using seven
+explicit T calls in this implementation; the Qualtran reflection needs the opposite sign from the existing
+standard reflection. This is why ordinary outcome-only comparisons would be
+insufficient evidence for reusable controlled operations.
+
+These results follow the [adopted development method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write):
+start with the quantum program we want to write, then develop the language with
+AI from concrete gaps while retaining its contracts and independent checking.
+
 ## Iterative QPE and repair observations, 0.1.8
 
 The [iterative QPE source](../examples/iterative_phase_estimation/README.md)

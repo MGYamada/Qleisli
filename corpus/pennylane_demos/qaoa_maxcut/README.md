@@ -1,0 +1,28 @@
+# Qaoa Maxcut
+
+Source: [U_B; U_C; circuit](https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py).
+The [original](../../upstream/pennylane_demos/demonstrations_v2__tutorial_qaoa_maxcut__demo.py) is preserved.
+License: **Apache-2.0**; [intake policy](../../POLICY.md).
+
+## Contract and translation scope
+
+One original gate layer: product RX(2*beta), after product exp(-i*gamma*Zi*Zj/2), after H^4. gamma=pi/2, beta=pi/4; edges (0,1),(0,3),(1,2),(2,3).
+
+Matches the demo gate convention, which omits a cost identity scalar. The scalar of every RZ/RX gate itself is retained. One fixed layer, no optimizer or shots; host computes expected cut size.
+
+All tuple leaves follow source wire order. Where a register is an integer,
+its first leaf has weight 1. The interpreter prints leaves from left to right.
+All quantum inputs are consumed and all surviving owners are returned; measured
+owners cannot be reused. The kernels use existing ordinary QLI definitions only.
+
+Run from the repository root:
+
+```sh
+cargo run --bin qleisli -- run corpus/pennylane_demos/qaoa_maxcut
+python3 scripts/check_input_corpus.py target/debug/qleisli --case pennylane_demos/qaoa_maxcut
+```
+
+The semantic runner uses independent finite mathematical oracles, including
+coherence/controlled-phase probes for unitary kernels and branch-sensitive
+checks for measurement protocols. See [validation scope](../../README.md).
+No upstream Python/Q# framework is executed by these checks.

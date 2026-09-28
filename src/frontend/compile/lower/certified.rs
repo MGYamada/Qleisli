@@ -166,6 +166,7 @@ impl Lowerer<'_, '_> {
             next_classical: 0,
             next_slot: 0,
             effect: Effect::Unitary,
+            effect_source: None,
             depth: self.depth,
             bindings: self.bindings.clone(),
             abstract_check: self.abstract_check,

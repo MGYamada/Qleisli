@@ -28,6 +28,14 @@ neither JSON v1 fields nor category, location or exit-code contracts. Consumers
 should use the structured category rather than matching full message prose.
 [Repair tests](../tests/repair_diagnostics.rs) exercise text and JSON paths.
 
+The 0.1.9 compatible review update also locates effect failures at a causal
+expression and names derived/declared effects; import/provider and snapshot-limit
+messages explain repairs or causes. Truncated static arguments produce a located
+`parse` error at EOF, exit 1 and one JSON envelope instead of panicking.
+Fields, categories, coordinate conventions and success results are unchanged.
+Multiple-error recovery remains future work even though the envelope contains
+a diagnostics array.
+
 ## Diagnostics
 
 **Implemented scope:** `check` and `run`. `doc` remains Markdown-only and

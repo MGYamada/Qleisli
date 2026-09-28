@@ -195,6 +195,9 @@ struct Compiler<'a> {
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
+    // One immutable, full-project snapshot. It is copied only when evidence is
+    // first needed and charged before allocation. Individual receipts share it.
+    function_sources: Option<Arc<Vec<(String, String)>>>,
     meanings: BTreeMap<Key, operations::DeclaredMeaning>,
     providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
     instances: Vec<(Key, Vec<operations::Operation>)>,
@@ -236,6 +239,67 @@ impl Compiler<'_> {
         }
         self.work += amount;
         Ok(())
+    }
+
+    fn retained_sources(
+        &mut self,
+        module: &str,
+        span: Span,
+    ) -> Result<Arc<Vec<(String, String)>>, CompileError> {
+        if let Some(sources) = &self.function_sources {
+            return Ok(Arc::clone(sources));
+        }
+        // The evidence checker independently checks the metadata again. This
+        // preflight bounds the vector and source/path storage before cloning.
+        if self.project.modules.len() > crate::contract::function::MAX_FUNCTION_SOURCES {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "function identity exceeds its metadata profile (at most 128 source modules)",
+            ));
+        }
+        let source_bytes = total_size(self.project.modules.values().map(|s| s.source.len()));
+        self.charge(module, span, source_bytes).map_err(|mut error| {
+            error.message.push_str(&format!(
+                "; retaining {source_bytes} source bytes in the shared project snapshot (all loaded modules, comments and bundled std); this snapshot is charged once across static providers and function contracts"
+            ));
+            error
+        })?;
+        // Loaded module paths are already bounded by the filesystem. Keep the
+        // evidence profile explicit here instead of cloning arbitrary strings.
+        if self
+            .project
+            .modules
+            .keys()
+            .any(|name| name.len() > crate::contract::function::MAX_IDENTITY_NAME_BYTES)
+        {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "function source identity paths exceed their 4096-byte limit",
+            ));
+        }
+        let retained_bytes =
+            source_bytes.saturating_add(total_size(self.project.modules.keys().map(String::len)));
+        if retained_bytes > crate::contract::function::MAX_FUNCTION_SOURCE_BYTES {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                "shared function source snapshot exceeds 1 MiB including module names",
+            ));
+        }
+        let sources = Arc::new(
+            self.project
+                .modules
+                .iter()
+                .map(|(name, source)| (name.clone(), source.source.clone()))
+                .collect(),
+        );
+        self.function_sources = Some(Arc::clone(&sources));
+        Ok(sources)
     }
 
     fn check_tree(&mut self, module: &str, span: Span, size: TreeSize) -> Result<(), CompileError> {
@@ -604,6 +668,7 @@ fn process_loaded_project(
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
+        function_sources: None,
         meanings: BTreeMap::new(),
         providers: BTreeMap::new(),
         instances: vec![],
@@ -665,4 +730,117 @@ fn process_loaded_project(
         }
     }
     Ok(main)
+}
+
+#[cfg(test)]
+mod snapshot_tests {
+    use super::*;
+    use crate::frontend::project::{ModuleOrigin, SourceModule};
+
+    fn project(extra: usize) -> Project {
+        let mut modules = BTreeMap::new();
+        for (name, bytes) in [("main", 100_000), ("unrelated", extra)] {
+            let source = "p".repeat(bytes);
+            modules.insert(
+                name.into(),
+                SourceModule {
+                    name: name.into(),
+                    path: PathBuf::from(format!("{name}.qli")),
+                    source,
+                    ast: Module {
+                        uses: vec![],
+                        decls: vec![],
+                        span: Span::default(),
+                    },
+                    imports: BTreeMap::new(),
+                    origin: ModuleOrigin::Local,
+                },
+            );
+        }
+        Project {
+            root: PathBuf::new(),
+            modules,
+        }
+    }
+
+    fn compiler(project: &Project) -> Compiler<'_> {
+        Compiler {
+            project,
+            declarations: BTreeMap::new(),
+            basis: BTreeMap::new(),
+            checked: BTreeMap::new(),
+            function_evidence: BTreeMap::new(),
+            function_sources: None,
+            meanings: BTreeMap::new(),
+            providers: BTreeMap::new(),
+            instances: vec![],
+            work: 0,
+        }
+    }
+
+    #[test]
+    fn retained_source_bytes_are_charged_once_for_256_receipts() {
+        for extra in [0, 25_003] {
+            let project = project(extra);
+            let mut compiler = compiler(&project);
+            let snapshots = (0..256)
+                .map(|_| compiler.retained_sources("main", Span::default()).unwrap())
+                .collect::<Vec<_>>();
+            assert_eq!(compiler.work, 100_000 + extra);
+            assert_eq!(
+                total_size(snapshots[0].iter().map(|(_, source)| source.len())),
+                100_000 + extra
+            );
+            assert!(
+                snapshots
+                    .iter()
+                    .all(|source| Arc::ptr_eq(source, &snapshots[0]))
+            );
+            assert_ne!(
+                snapshots[0][0].1.as_ptr(),
+                project.modules["main"].source.as_ptr()
+            );
+        }
+    }
+
+    #[test]
+    fn the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary() {
+        let project = project(25_003);
+        let mut accepted = compiler(&project);
+        accepted.work = MAX_WORK - 125_003;
+        accepted.retained_sources("main", Span::default()).unwrap();
+        assert_eq!(accepted.work, MAX_WORK);
+        accepted.retained_sources("main", Span::default()).unwrap();
+        assert_eq!(accepted.work, MAX_WORK);
+        let mut rejected = compiler(&project);
+        rejected.work = MAX_WORK - 125_002;
+        let error = rejected
+            .retained_sources("main", Span::default())
+            .unwrap_err();
+        assert_eq!(error.code, ErrorCode::Limit);
+        assert!(error.message.contains("charged once"));
+        assert!(rejected.function_sources.is_none());
+    }
+
+    #[test]
+    fn metadata_storage_limits_are_preflighted_before_the_source_copy() {
+        for (count, name_bytes, extra_source) in [(127, 4, 0), (1, 4097, 0), (126, 4096, 440_000)] {
+            let mut project = project(extra_source);
+            let mut empty = project.modules["main"].clone();
+            empty.source.clear();
+            for index in 0..count {
+                let name = format!("{index:03}{}", "n".repeat(name_bytes - 3));
+                project.modules.insert(name, empty.clone());
+            }
+            let mut compiler = compiler(&project);
+            assert_eq!(
+                compiler
+                    .retained_sources("main", Span::default())
+                    .unwrap_err()
+                    .code,
+                ErrorCode::Limit
+            );
+            assert!(compiler.function_sources.is_none());
+        }
+    }
 }

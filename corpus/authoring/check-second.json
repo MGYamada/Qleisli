@@ -1,0 +1,293 @@
+{
+  "created_utc": "2026-09-28T09:13:48.391046+00:00",
+  "results": [
+    {
+      "case": "quantum_katas/global_phase",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/global_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/ghz3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/ghz3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/measure_plus",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/measure_plus",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/teleport",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/dense_coding",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/dense_coding",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/bernstein_vazirani",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bernstein_vazirani",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/grover2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "quantum_katas/qpe3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/add2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/add2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/xor2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/xor2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/less_than2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/less_than2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qrom2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qrom2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/and_phase",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/and_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qft2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qft2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/qpe2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/qpe2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "qualtran/reflection2",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/qualtran/reflection2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qubit_rotation",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qubit_rotation",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/teleport",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qaoa_vertex_cover",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_vertex_cover",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qaoa_maxcut",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_maxcut",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/vqe_excitation",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/vqe_excitation",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/classifier_layer",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/classifier_layer",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/qpe3",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "case": "pennylane_demos/phase_lock",
+      "argv": [
+        "target/v019-review/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/phase_lock",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

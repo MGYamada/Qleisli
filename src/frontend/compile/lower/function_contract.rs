@@ -2,8 +2,8 @@
 
 use super::*;
 use crate::contract::{
-    BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity, MAX_CONTRACT_BITS,
-    exact::Budget,
+    BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, MAX_CONTRACT_BITS, exact::Budget,
+    function::RetainedIdentity,
 };
 use std::sync::Arc;
 
@@ -44,37 +44,26 @@ impl Lowerer<'_, '_> {
         } else {
             let implementation_name = format!("{}::{}", implementation_key.0, implementation_key.1);
             let specification_name = format!("{}::{}", specification_key.0, specification_key.1);
-            let source_size = total_size(
-                self.compiler
-                    .project
-                    .modules
-                    .iter()
-                    .map(|(name, source)| name.len().saturating_add(source.source.len())),
-            );
+            let sources = self.compiler.retained_sources(module, span)?;
             let snapshot_size = total_size(
                 [&implementation_key, &specification_key]
                     .into_iter()
                     .filter_map(|key| self.compiler.checked.get(key))
                     .map(|program| representation_size(program.program())),
             );
-            let snapshot_work = source_size
-                .saturating_add(snapshot_size)
+            let snapshot_work = snapshot_size
                 .saturating_add(implementation_name.len())
                 .saturating_add(specification_name.len());
-            // Charge the snapshots before cloning them, once for each new
-            // implementation/specification pair rather than at every call.
-            self.compiler.charge(module, span, snapshot_work)?;
-            let identity = FunctionIdentity {
-                implementation: implementation_name,
-                specification: specification_name,
-                sources: self
-                    .compiler
-                    .project
-                    .modules
-                    .iter()
-                    .map(|(name, source)| (name.clone(), source.source.clone()))
-                    .collect(),
-            };
+            // Raw snapshots and pair names remain private to each distinct
+            // pair. Source bytes were retained and charged once for the project.
+            self.compiler.charge(module, span, snapshot_work).map_err(|mut error| {
+                error.message.push_str(&format!(
+                    "; retaining a new function-contract pair snapshot ({snapshot_size} raw representation units, plus pair names); source bytes use the shared project snapshot"
+                ));
+                error
+            })?;
+            let identity =
+                RetainedIdentity::shared(implementation_name, specification_name, sources);
             let raw = |key: &Key| {
                 self.compiler
                     .checked
@@ -93,7 +82,7 @@ impl Lowerer<'_, '_> {
             let specification = raw(&specification_key)?;
             let signature = contract_basis(&basis);
             let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-            let evidence = FunctionEvidence::check_diagnostic(
+            let evidence = FunctionEvidence::check_retained_diagnostic(
                 signature,
                 implementation,
                 specification,

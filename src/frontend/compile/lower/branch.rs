@@ -31,18 +31,24 @@ impl Lowerer<'_, '_> {
         let outer_ops = std::mem::take(&mut self.operations);
         let outer_sources = std::mem::take(&mut self.operation_sources);
         let entry_effect = self.effect;
+        let entry_effect_source = self.effect_source.clone();
         let mut then_env = env.clone();
         let then_result = self.block(module, then_block, &mut then_env)?;
         let then_ops = std::mem::take(&mut self.operations);
         let then_sources = std::mem::take(&mut self.operation_sources);
         let mut then_registers = std::mem::replace(&mut self.registers, entry_registers.clone());
         let then_effect = self.effect;
+        let then_effect_source = self.effect_source.take();
         self.effect = entry_effect;
+        self.effect_source = entry_effect_source;
         let mut else_env = env.clone();
         let else_result = self.block(module, else_block, &mut else_env)?;
         let else_ops = std::mem::replace(&mut self.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
         let mut else_registers = std::mem::take(&mut self.registers);
+        if then_effect >= self.effect {
+            self.effect_source = then_effect_source;
+        }
         self.effect = self.effect.max(then_effect);
         if then_env != else_env {
             return Err(self.error(

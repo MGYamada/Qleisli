@@ -2,6 +2,73 @@ use qleisli_core::frontend::ast::{
     BasisExprKind, ExprKind, FnBody, FnKind, PatternKind, StmtKind, TypeKind,
 };
 use qleisli_core::frontend::parser::parse_module;
+use qleisli_core::frontend::{ast::Span, lexer::lex};
+
+fn check_token_prefixes(source: &str, label: &str) {
+    parse_module(source).unwrap_or_else(|error| panic!("{label}: {error}"));
+    let mut boundaries = vec![0, source.len()];
+    for token in lex(source).unwrap() {
+        boundaries.extend([token.span.start, token.span.end]);
+    }
+    boundaries.sort_unstable();
+    boundaries.dedup();
+    for end in boundaries {
+        let result = std::panic::catch_unwind(|| parse_module(&source[..end]));
+        assert!(result.is_ok(), "{label}: parser panicked at byte {end}");
+    }
+}
+
+#[test]
+fn static_operation_errors_point_to_the_unconsumed_token_or_eof() {
+    let prefix = "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[";
+    for suffix in ["", "]", "0", "(", "true", "let"] {
+        let source = format!("{prefix}{suffix}");
+        let error = parse_module(&source).unwrap_err();
+        assert_eq!(error.message, "expected a static operation description");
+        assert_eq!(error.span, Span::new(prefix.len(), source.len()));
+    }
+    let source = format!("{prefix}repeat_op(0,");
+    let error = parse_module(&source).unwrap_err();
+    assert_eq!(error.message, "expected a static operation description");
+    assert_eq!(error.span, Span::new(source.len(), source.len()));
+}
+
+#[test]
+fn all_static_constructor_token_prefixes_parse_without_panicking() {
+    for operation in [
+        "bind_op(u,m)",
+        "repeat_op(0,u)",
+        "inverse_op(u)",
+        "controlled_op(u)",
+        "then_op(u,v)",
+        "tensor_op(u,v)",
+        "conjugate_op(u,v)",
+        "then_op(bind_op(u,m),controlled_op(inverse_op(repeat_op(2,v))))",
+    ] {
+        let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ g[{operation}](q) }}");
+        check_token_prefixes(&source, operation);
+    }
+}
+
+#[test]
+fn example_and_stdlib_token_prefixes_parse_without_panicking() {
+    let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    let mut directories = vec![root.join("examples"), root.join("stdlib/src")];
+    let mut files = 0;
+    while let Some(directory) = directories.pop() {
+        for entry in std::fs::read_dir(directory).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                directories.push(path);
+            } else if path.extension().is_some_and(|ext| ext == "qli") {
+                let source = std::fs::read_to_string(&path).unwrap();
+                check_token_prefixes(&source, &path.display().to_string());
+                files += 1;
+            }
+        }
+    }
+    assert!(files > 0, "the source corpus must not be empty");
+}
 
 #[test]
 fn parses_bell_modules_and_keeps_owned_resource_syntax_distinct() {

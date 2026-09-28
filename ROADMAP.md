@@ -36,9 +36,21 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
 
+## v0.1.9: review fixes and repair diagnostics
+
+**Current development version: v0.1.9, selected by the user on 2026-09-28.**
+Repair static-argument EOF panics, locate effect violations at their cause and
+provide checked import/provider rewrite hints. Preserve current capability
+derivations and snapshot accounting, documenting the open issues as A020-09/10.
+Clarify iterative QPE numerical output and check the entire committed tree for
+whitespace in CI. The [record](docs/releases/v0.1.9.md) distinguishes local
+validation from tagging/publication and from the broader legacy B019 checkpoint.
+Multiple-error collection and remaining authoring conveniences are backlog
+candidates; existing APIs, finite semantics and M2/R14 gates remain intact.
+
 ## v0.1.8: authoring ergonomics
 
-**Current development version: v0.1.8, retained at the user's request.**
+**Historical authoring version: v0.1.8, retained at the user's request.**
 Priorities 1–3 are implemented: product patterns in basis parameters,
 left-associated n-ary tuples, and ownership diagnostics at bindings. The
 public Rust `Param` change remains incompatible; see the
@@ -49,7 +61,7 @@ and semantic tests, with particular attention to LLM authoring ergonomics.
 Priority 4, type/size parameters and cross-interface QPE reuse, remains future
 work; this change neither adopts finite templates nor revises R14.
 Accumulate unresolved issues and acceptance experiments in the
-[v0.2.0 backlog](docs/v0.2.0-backlog.md) while continuing 0.1.8 development;
+[v0.2.0 backlog](docs/v0.2.0-backlog.md), established during 0.1.8 development;
 its candidates are not a committed release scope. The subsequent
 [iterative QPE and repair continuation](docs/releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
 adds fixed-width feedback source, actionable diagnostics and preserved authoring
@@ -57,7 +69,7 @@ records; type/size abstraction remains future work.
 
 ## v0.1.8: fixed-width operation parameters and meanings
 
-**Initial scope of the current untagged v0.1.8 development version.** Version selection and source/API
+**Initial scope of the v0.1.8 development version.** Version selection and source/API
 migration are recorded separately. Implemented the [M1 language supplement](docs/next-minor-spec.md):
 phase-fixed meanings, explicit operation arguments/access and checked
 composition through existing retained finite evidence. One generic body can
@@ -258,8 +270,8 @@ The selected fixed-width M1 profile is distinct from M2 size generalization.
 | Step | Required evidence | State |
 | --- | --- | --- |
 | G020-1: extension specification | M0 scope selection followed by English grammar/types, capabilities, ownership/effects, meanings, positive/negative cases, IR binding, budgets and migration. M1 retains bounded dense checking; M2 must discharge R14/hierarchical-IR and exact dyadic-angle decisions. | Complete for fixed-width M1: [language rules](docs/next-minor-spec.md) and [machine interfaces](docs/machine-interface-spec.md). [M2 IR/checker profile](docs/hierarchical-ir-spec.md) selected; its sized source grammar is a separate extension gate. |
-| G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Pending. |
-| G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | Pending; the imaginary corpus is not execution evidence. |
+| G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Implemented for fixed-width N1–N6 in [0.1.8](docs/releases/v0.1.8.md), and X1/M1.1-A in [0.1.7](docs/releases/v0.1.7.md). Other M1 slices and M2 production integration remain pending. |
+| G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | The implemented fixed-width N1–N6, X1 and M1.1-A profiles have validation and release records above. The [B019 check](docs/reviews/b019-2026-09-28.md) records current local revalidation and remaining audit/candidate gates. Remaining M1 slices, M2 and V1 are not validated; imaginary source is not execution evidence. |
 | V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. | Not achieved. |
 
 Algorithmic approximation error/success probability and exact auxiliary zero return are separate contracts. The amplitude-estimation, walk, and QSVT drafts evaluate abstractions without expanding the three executable v1 targets to six. Finite-core regressions and the open general proofs in SPEC-3/4 continue alongside design work.

@@ -116,8 +116,10 @@ its finite controlled powers. Use the selected
 [conjugation derivation](../decisions/2026-09-27-v1-path.md#control-through-conjugation):
 controlled `A R0 A†` needs A and A† access plus controlled R0, not controlled A.
 The phase oracle can likewise control its central Z while computing/uncomputing
-its predicate unconditionally with checked exact cleanup. These are future
-capability/evidence rules, not current compiler optimizations. Alternatively,
+its predicate unconditionally with checked exact cleanup. Fixed-width
+`controlled_op(conjugate_op(A,R0))` now supports the first derivation under the
+[M1 contract](../next-minor-spec.md); the sized builder and automatic recognition
+of arbitrary computed predicates in this draft remain future work. Alternatively,
 controlled G may be supplied with independently checked matching evidence.
 An opaque unitary device, a state-preparation sample, or an uncontrolled oracle alone does not
 satisfy it. A finite repeated implementation of powers is permitted with its

@@ -13,14 +13,18 @@ licensed under the [Apache License, Version 2.0](LICENSE). See [NOTICE](NOTICE)
 for the project attribution.
 
 By intentionally submitting a contribution for inclusion, you provide it
-under Apache-2.0, as described in section 5 of that license. Contribute only
+under Apache-2.0, as described in section 5 of that license, unless the file
+explicitly has different terms. Contributions to MIT-licensed QuantumKatas
+translations remain MIT. Follow the closed three-source [corpus policy](corpus/POLICY.md);
+do not add or replace an input source without an explicit user-approved amendment.
+Contribute only
 material that you have the right to submit under those terms. Contributors
 retain their copyright; this policy does not require an assignment of ownership.
 
 Preserve existing copyright, license, and attribution notices. Identify the
 origin and license of any third-party material added to the repository, keep
 its required notices, and review compatibility before incorporating it.
-Dependencies retain their own licenses. Do not relabel third-party material
+Dependencies and corpus inputs retain their own licenses. Do not relabel third-party material
 as Qleisli-owned code.
 
 Human-written and AI-assisted contributions follow the same review and

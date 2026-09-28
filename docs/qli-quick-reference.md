@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented source, Qleisli 0.1.8.** Start here and copy a complete program
+**Implemented source, Qleisli 0.1.9.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite
@@ -86,7 +86,13 @@ observe fn main() -> (CBit,CBit) {
 Pass an ordinary closed `unitary fn` in brackets, wrapping a sealed gate when
 needed. `Op<Bit>` fixes the basis interface; it does **not** declare a generic
 type variable. Declare each access separately: `Apply(U)`, `Adjoint(U)`,
-`Controlled(U)`. One does not imply another. `adjoint(U,q)` is inverse application;
+`Controlled(U)`. Each permits only its declared direct access to U. The
+[M1 constructor rules](next-minor-spec.md#access-judgments-and-composition)
+also derive Apply/Adjoint for `controlled_op(U)` and Controlled for
+`inverse_op(U)` from `Controlled(U)`, using checked transparent circuits.
+This does not extend to future opaque providers; see
+[A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors).
+`adjoint(U,q)` is inverse application;
 `qif(c,q) { 0 => f, 1 => U }` coherently applies branch operations and returns
 `(control,target)`, preserving phase. `qif` is not classical `if`.
 

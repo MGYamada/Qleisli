@@ -21,6 +21,39 @@ actual source. Checking the connection between these concepts' meanings and
 their implementations is part of this goal. The release-policy summaries
 below follow the authoritative [release milestones](release-milestones.md).
 
+## Start with the quantum programs we want to write
+
+**Development method adopted by the user on 2026-09-28:** first write quantum
+programs that express how the algorithms ought to be written; then develop,
+together with AI, a language capable of expressing and checking those programs.
+The desired program and its mathematical contract lead the design. Existing
+parser limitations should not silently define the ideal algorithm vocabulary.
+
+Keep both the intended source and an executable version in the current finite
+language where possible. Compare them to discover missing abstractions,
+repeated author obligations and poor diagnostics. Retain failed attempts and
+counterexamples, specify the proposed meaning and evidence obligations, and
+then implement and validate the smallest justified language or library change.
+Repeat this cycle on concrete algorithms with AI as a collaborator.
+
+The user selected [code-driven development from 0.2.0 onward](code-driven-development.md),
+after completing the finite B019 foundation in 0.1.x. That procedure records
+existing desired/current sources, obstacles, independent acceptance experiments
+and bounded work packets. It does not replace the specification or evidence
+gates with successful authoring alone.
+
+Desired source may be an explicitly labelled, unimplemented design draft;
+it is not accepted syntax or proof of a supported algorithm. Executable
+translations in the [three-source input corpus](../corpus/README.md) and the
+[imaginary-v1 drafts](imaginary-v1/README.md) serve different roles in this
+process. Neither AI authorship nor an attractive notation can bypass the
+trusted-core boundary, mathematical premises or release acceptance criteria.
+
+The user's formulation, retained as a supporting Japanese statement of the
+English policy above:
+
+> 「こう書けるべきだ」という量子プログラムを先に置いて、それを書ける言語をAIと育てていく。
+
 > Qleisli is a functional quantum language that treats quantum data as owned
 > resources that cannot be duplicated. Programs compose effectful
 > transformations of classical values and quantum resources. Coherent

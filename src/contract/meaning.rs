@@ -3,6 +3,7 @@
 //! Targets lower canonically to the existing monomial IR. This checked adapter
 //! reuses FunctionEvidence; it adds no trusted action or fabricated source fn.
 use super::exact::{Budget, Matrix};
+use super::function::RetainedIdentity;
 use super::{BasisType, Circuit, ContractError, FunctionEvidence, FunctionIdentity};
 use crate::ir::*;
 use std::sync::Arc;
@@ -120,13 +121,28 @@ impl MeaningEvidence {
         identity: FunctionIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        let receipt = FunctionEvidence::check(
+        Self::check_retained(
+            implementation,
+            target,
+            RetainedIdentity::Owned(identity),
+            budget,
+        )
+    }
+
+    pub(crate) fn check_retained(
+        implementation: RawProgram,
+        target: FiniteMeaning,
+        identity: RetainedIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractError> {
+        let receipt = FunctionEvidence::check_retained_diagnostic(
             target.signature.clone(),
             implementation,
             target.target_ir()?,
             identity,
             budget,
-        )?;
+        )
+        .map_err(|diagnostic| diagnostic.error)?;
         Ok(Self {
             target,
             receipt: Arc::new(receipt),

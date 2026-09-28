@@ -173,6 +173,16 @@ in the checked equation's declared order, not measured outcomes. Parser errors
 include `parse error:` in their message while retaining the public `Project`
 category; contract failures retain `InvalidIr`.
 
+In 0.1.9, function-effect failures locate a cause of the strongest derived
+effect and name both derived and declared effects. Declared callee effects
+remain binding even for an empty body; callers point to their own call site,
+and both classical arms are checked. This provenance is diagnostic metadata,
+not a new acceptance rule. Unsupported grouped imports show separate `use`
+examples, and static `h/x/z/t` arguments show a closed unary wrapper. The
+[repair tests](../tests/repair_diagnostics.rs) check those rewrites.
+The frontend still reports one error per invocation; collection/recovery is
+[A020-11](v0.2.0-backlog.md#a020-11--independent-errors-require-repeated-checking-rounds).
+
 Module-import cycle detection uses an explicit DFS stack. Import-chain depth
 does not consume the Rust call stack; cycles still report the importing file,
 the closing `use` span, and the cycle path. This graph traversal is separate
@@ -187,7 +197,23 @@ checked; excess yields `Limit`.
 
 Statements, evaluation, expansion, finite tables, constructed/copied trees,
 environment/register snapshots, and phi construction spend a shared work budget
-of 1,000,000. These checks bound exponential nonrecursive expansion and classical
+of 1,000,000. Since 0.1.9, source retention spends one unit per source byte
+**once per compilation**, when the first static-provider or `apply_contract`
+receipt needs it. Both paths share one immutable snapshot containing all loaded
+modules, comments and bundled std sources, including unimported modules.
+Before copying, the frontend checks the remaining work and the existing
+evidence metadata bounds (128 modules, 4,096 bytes per module name, 1 MiB for
+source records including names). Each receipt independently checks the complete
+metadata, including its implementation/specification names, against the same
+evidence profile and exact-check budget. Distinct contract pairs still charge
+their copied raw representations and pair names under
+[FC-CACHE](function-contracts-v0.1.md). No source byte is multiplied by receipt
+count in the shared lowering budget. This resolves
+[A020-10](v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
+without changing the public owned identity API or increasing a limit. Explicit
+public identity inspection may materialize one bounded owned compatibility view
+per receipt; compilation, checking and execution do not require that copy.
+These checks bound exponential nonrecursive expansion and classical
 copying as well as quantum data. They are implementation limits, not limits on
 the mathematical finite types. The simulator has separate
 [capacity and numerical limits](ir-prototype.md#参照実行系の範囲).

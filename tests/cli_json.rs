@@ -11,6 +11,33 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
 }
 
 #[test]
+fn truncated_static_arguments_emit_one_located_json_parse_error() {
+    for source in [
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,",
+    ] {
+        let root = SourceRoot::new(source);
+        let end = source.len();
+        let column = end + 1;
+        for command in ["check", "run"] {
+            let output = cli(&[
+                command.as_ref(),
+                root.0.as_os_str(),
+                "--format=json".as_ref(),
+            ]);
+            assert_eq!(output.status.code(), Some(1), "{output:?}");
+            assert!(output.stderr.is_empty(), "{output:?}");
+            assert_eq!(
+                String::from_utf8(output.stdout).unwrap(),
+                format!(
+                    "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"{command}\",\"outcome\":\"error\",\"diagnostics\":[{{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{{\"path\":\"main.qli\",\"start\":{end},\"end\":{end},\"line\":1,\"column\":{column}}},\"related\":[]}}],\"result\":null}}\n"
+                )
+            );
+        }
+    }
+}
+
+#[test]
 fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
     let root = SourceRoot::new("observe fn main() -> CBit { true }");
     for (command, result) in [
