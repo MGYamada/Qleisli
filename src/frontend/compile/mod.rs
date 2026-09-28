@@ -76,6 +76,42 @@ enum Ty {
     Pair(Box<Ty>, Box<Ty>),
 }
 
+impl fmt::Display for Ty {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Preserve the exact binary tree, including Unit. Iterative rendering
+        // also keeps error reporting independent of the Rust call-stack depth.
+        enum Part<'a> {
+            Type(&'a Ty),
+            Text(&'static str),
+        }
+        let mut pending = vec![Part::Type(self)];
+        while let Some(part) = pending.pop() {
+            match part {
+                Part::Text(text) => f.write_str(text)?,
+                Part::Type(ty) => match ty {
+                    Ty::Unit => f.write_str("Unit")?,
+                    Ty::Bit => f.write_str("Bit")?,
+                    Ty::CBit => f.write_str("CBit")?,
+                    Ty::Q(inner) => {
+                        f.write_str("Q<")?;
+                        pending.extend([Part::Text(">"), Part::Type(inner)]);
+                    }
+                    Ty::Pair(a, b) => {
+                        f.write_str("(")?;
+                        pending.extend([
+                            Part::Text(")"),
+                            Part::Type(b),
+                            Part::Text(","),
+                            Part::Type(a),
+                        ]);
+                    }
+                },
+            }
+        }
+        Ok(())
+    }
+}
+
 impl Ty {
     fn tree_size(&self) -> TreeSize {
         let mut size = TreeSize::default();

@@ -101,7 +101,7 @@ impl Lowerer<'_, '_> {
                     site.module,
                     arg.span,
                     ErrorCode::TypeMismatch,
-                    "static argument has a different exact basis tree",
+                    format!("static argument has a different exact basis tree: expected `Op<{}>`, found `Op<{}>`", required.basis, actual.basis),
                 ));
             }
             if required
@@ -167,7 +167,7 @@ impl Lowerer<'_, '_> {
                 module,
                 name.span,
                 ErrorCode::TypeMismatch,
-                "operation and input have different exact basis trees",
+                format!("operation and input have different exact basis trees: expected `Q<{}>`, found `Q<{basis}>`", op.basis),
             ));
         }
         Ok(Some(op.steps(module, name.span, access, self.compiler)?))

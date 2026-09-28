@@ -36,6 +36,13 @@ corpus without changing its assumptions or implementation-status claims.
 
 <a id="次の抽出課題"></a>
 
+The [0.1.8 iterative QPE experiment](../examples/iterative_phase_estimation/README.md)
+uses existing operations, measurement and classical feedback. Its fixed Bit
+interface and three explicit rounds are retained as authoring evidence, not a
+size-generic algorithm. [Tests](../tests/iterative_qpe.rs) check the joint phase/
+reference instrument, and [session records](../tests/fixtures/authoring_sessions/README.md)
+preserve the first source and subsequent observations.
+
 ## Next extraction tasks
 
 - Include signs and control capability in public S3 reflection contracts so

@@ -383,7 +383,7 @@ impl Compiler<'_> {
                     module,
                     span,
                     ErrorCode::TypeMismatch,
-                    "static composition requires identical basis trees",
+                    format!("static composition requires identical basis trees: expected `Op<{}>`, found `Op<{}>`", a.basis, b.basis),
                 ));
             }
         }

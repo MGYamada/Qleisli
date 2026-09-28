@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "task": "Fixed three-bit iterative QPE with classical feedback",
+  "baseline_commit": "45ad65e158a61faea27cc4299e473d92c0038175",
+  "project_version": "0.1.8",
+  "author": "Codex; exact model deployment/version unavailable",
+  "context": "context.md",
+  "created_utc": "2026-09-28T07:32:54.968046+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Initial source, saved before first check",
+      "sha256": {
+        "iterative.qli": "01621974a64cad924b806bcb818ad41cc0754e549567b693f946818e85aa4605",
+        "main.qli": "407220b2d2dd869f1ae438a14660ecc2c9e3cc134f703a2b68733b081e3329e0"
+      },
+      "observations": [
+        "check-initial.json",
+        "run-initial.json",
+        "semantic-tests.json"
+      ]
+    }
+  ],
+  "kind": "informed_first_attempt"
+}

@@ -121,6 +121,12 @@ currently support at most six interface bits and the documented work limits.
 Do not infer auxiliary zero return from a variable name, lifetime or successful
 type check. Algorithm correctness needs its own oracle or evidence.
 
+For a complete measurement-feedback algorithm, see
+[iterative QPE](../examples/iterative_phase_estimation/README.md). Type errors
+print expected/actual binary trees; check association before adding an adapter.
+For unsupported `with_computed` bodies, the diagnostic names the explicit
+logical-contract form. Its exact cleanup check must still succeed.
+
 For details, consult [frontend v0](frontend-v0.md), [static operations](static-operations.md),
 [M1 forms](next-minor-spec.md) and the [stdlib index](standard-library.md).
 The [authoring report](qli-authoring-feedback.md) records runnable counterexamples

@@ -22,7 +22,11 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::TypeMismatch,
-                "operation requires quantum ownership",
+                format!(
+                    "operation requires quantum ownership: expected `{}`, found `{}`",
+                    if bit_only { "Q<Bit>" } else { "Q<A>" },
+                    value.ty()
+                ),
             ));
         };
         if bit_only && *basis != Ty::Bit {
@@ -30,7 +34,10 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::TypeMismatch,
-                "operation requires Q<Bit>",
+                format!(
+                    "operation requires Q<Bit>: expected `Q<Bit>`, found `{}`",
+                    value.ty()
+                ),
             ));
         }
         Ok(*slot)

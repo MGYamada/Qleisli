@@ -50,7 +50,10 @@ Priority 4, type/size parameters and cross-interface QPE reuse, remains future
 work; this change neither adopts finite templates nor revises R14.
 Accumulate unresolved issues and acceptance experiments in the
 [v0.2.0 backlog](docs/v0.2.0-backlog.md) while continuing 0.1.8 development;
-its candidates are not a committed release scope.
+its candidates are not a committed release scope. The subsequent
+[iterative QPE and repair continuation](docs/releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
+adds fixed-width feedback source, actionable diagnostics and preserved authoring
+records; type/size abstraction remains future work.
 
 ## v0.1.8: fixed-width operation parameters and meanings
 

@@ -35,6 +35,9 @@ real programs, retain minimal failed attempts and semantic counterexamples,
 and update the [authoring report](docs/qli-authoring-feedback.md). Keep the
 [quick reference](docs/qli-quick-reference.md) copyable and its code CI-checked.
 An authoring exercise is not a measured model benchmark or an algorithm proof.
+For new authoring/repair studies, follow the [session record procedure](tests/fixtures/authoring_sessions/README.md):
+save the first source before checking, append real diagnostics and revisions,
+and distinguish informed/curated work from controlled model evaluation.
 Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
 with stable IDs, concrete source/design evidence, the obligation to remove,
 and a checking/acceptance experiment. Update it when current work exposes a

@@ -22,6 +22,12 @@ domain/approximation extensions to bind their domain version, interpretation
 and error claims explicitly. It does not add fields or tags to X1–X6 or permit
 arbitrary-domain arithmetic in the current finite format.
 
+The 0.1.8 authoring continuation enriches explanatory `message` text with
+expected/actual exact types and a restricted-cleanup repair hint. It changes
+neither JSON v1 fields nor category, location or exit-code contracts. Consumers
+should use the structured category rather than matching full message prose.
+[Repair tests](../tests/repair_diagnostics.rs) exercise text and JSON paths.
+
 ## Diagnostics
 
 **Implemented scope:** `check` and `run`. `doc` remains Markdown-only and

@@ -20,6 +20,20 @@ The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
 
+## Iterative QPE, diagnostic repair and authoring observations (2026-09-28)
+
+The three requested 0.1.8 follow-ups are implemented: an ordinary iterative
+three-bit QPE example, expected/actual type and cleanup-repair messages, and
+preserved first-source/curated repair records. Independent Fourier-polynomial
+and coherent-QPE comparisons include off-grid entangled inputs. Rejection rules,
+JSON schemas and core verifier cases are unchanged. This is finite validation,
+not a general algorithm/compiler proof or controlled LLM benchmark.
+
+Both Rust 1.98.1 and 1.85.0 passed **333 tests** and Clippy; formatting, **14
+example projects**, independent CLI decoding, **19 document** and **5 record
+checker tests** passed. The [release record](releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
+records full executed/skipped scopes, including no new Lean or hosted CI run.
+
 ## v0.2.0 issue intake (2026-09-28)
 
 The user requested accumulating future issues during 0.1.8 development. The

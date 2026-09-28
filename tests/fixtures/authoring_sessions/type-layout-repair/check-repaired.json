@@ -1,0 +1,22 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/type-layout-repair/attempt-02",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T07:40:31.954280+00:00",
+  "compiler_stage": "after diagnostic changes",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  },
+  "stderr": ""
+}

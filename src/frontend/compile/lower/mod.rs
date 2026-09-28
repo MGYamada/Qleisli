@@ -210,7 +210,11 @@ impl Lowerer<'_, '_> {
                     module,
                     span,
                     ErrorCode::TypeMismatch,
-                    format!("argument `{}` has the wrong type", name.text),
+                    format!(
+                        "argument `{}` has the wrong type: expected `{ty}`, found `{}`",
+                        name.text,
+                        value.ty()
+                    ),
                 ));
             }
             env.insert(name.text.clone(), Some(value));
@@ -228,7 +232,7 @@ impl Lowerer<'_, '_> {
                 &key.0,
                 body.result.span,
                 ErrorCode::TypeMismatch,
-                "result does not match the function return type",
+                format!("result does not match the function return type: expected `{return_ty}`, found `{}`", value.ty()),
             ));
         }
         self.no_owned_bindings(
@@ -551,12 +555,16 @@ impl Lowerer<'_, '_> {
                 Ok(Value::Classical(output))
             }
             ExprKind::Not(input) => {
-                let Value::Classical(input) = self.expr(module, input, env)? else {
+                let value = self.expr(module, input, env)?;
+                let Value::Classical(input) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "not requires a CBit operand",
+                        format!(
+                            "not requires a CBit operand: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 let output = self.classical();
@@ -564,22 +572,30 @@ impl Lowerer<'_, '_> {
                 Ok(Value::Classical(output))
             }
             ExprKind::And(left, right) | ExprKind::Xor(left, right) => {
-                let Value::Classical(left) = self.expr(module, left, env)? else {
+                let value = self.expr(module, left, env)?;
+                let Value::Classical(left) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "and/xor require CBit operands",
+                        format!(
+                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 // Both operands are evaluated, left to right. In particular,
                 // false AND must still execute effects in its right operand.
-                let Value::Classical(right) = self.expr(module, right, env)? else {
+                let value = self.expr(module, right, env)?;
+                let Value::Classical(right) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "and/xor require CBit operands",
+                        format!(
+                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 let output = self.classical();
@@ -707,12 +723,16 @@ impl Lowerer<'_, '_> {
                 then_branch,
                 else_branch,
             } => {
-                let Value::Classical(condition) = self.expr(module, condition, env)? else {
+                let value = self.expr(module, condition, env)?;
+                let Value::Classical(condition) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "if requires a CBit condition",
+                        format!(
+                            "if requires a CBit condition: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 self.branch(module, expr.span, condition, then_branch, else_branch, env)
@@ -1006,7 +1026,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must map the source basis type to Bit",
+                format!("predicate must map the source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", self.registers[&source_slot].basis, predicate.result),
             ));
         }
         let wire = self.wire();
@@ -1059,7 +1079,7 @@ impl Lowerer<'_, '_> {
                     use_ops.push(ProtectedUse::ProtectedGate { bit: ProtectedBit { region: ProtectedRegion::Ancilla, index: 0 }, gate: *gate });
                     expected_input = *output;
                 }
-                _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla")),
+                _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking")),
             }
         }
         self.operations.truncate(start);

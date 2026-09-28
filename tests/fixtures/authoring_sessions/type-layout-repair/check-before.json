@@ -1,0 +1,34 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/type-layout-repair/attempt-01",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T07:34:59.485379+00:00",
+  "compiler_stage": "before diagnostic changes",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "argument `q` has the wrong type",
+        "primary": {
+          "path": "main.qli",
+          "start": 100,
+          "end": 101,
+          "line": 2,
+          "column": 74
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

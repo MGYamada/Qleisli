@@ -24,6 +24,15 @@ shadowed names; diagnostic codes/schema and ownership acceptance are unchanged.
 
 <a id="入口と信頼境界"></a>
 
+Concrete type mismatches now include expected/actual types in ordinary/basis
+calls and returns, branches, static operation interfaces, primitives and
+classical conditions/Boolean operands. Types print exact binary trees including
+Unit factors. The restricted `with_computed` diagnostic points to the explicit
+logical-contract form and its exact cleanup obligation. These are explanatory
+message changes; categories, source locations, JSON v1 and acceptance remain
+unchanged. [Repair regressions](../tests/repair_diagnostics.rs) cover both a
+working correction and a false contract that still rejects.
+
 ## Entry points and trust boundary
 
 The Rust APIs `frontend::compile::check_project(&Path)` and

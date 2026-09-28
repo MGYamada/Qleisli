@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "task": "type-layout-repair",
+  "kind": "curated_repair_replay",
+  "baseline_commit": "45ad65e158a61faea27cc4299e473d92c0038175",
+  "project_version": "0.1.8",
+  "author": "Codex; exact model deployment/version unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged pre-existing rejected corpus example",
+      "sha256": {
+        "main.qli": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf"
+      },
+      "observations": [
+        "check-before.json",
+        "check-after.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Replay the already-known accepted workaround; not blind model repair",
+      "sha256": {
+        "main.qli": "a9f780cca445b0a54c6185ea41b081e12062d4ec2bb04b82555ca3cbe3ad691c"
+      },
+      "observations": [
+        "check-repaired.json",
+        "run-repaired.json"
+      ]
+    }
+  ]
+}

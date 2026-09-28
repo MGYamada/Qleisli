@@ -18,6 +18,21 @@ body's four-branch distribution, with explicit imports, on macOS. The new
 programs were authored and revised in this session: there is no controlled
 comparison of models or estimate of general LLM success rate.
 
+## Iterative QPE and repair observations, 0.1.8
+
+The [iterative QPE source](../examples/iterative_phase_estimation/README.md)
+passed its initial check/run without source repair, then matched all exact
+phase cases and independent off-grid Bell-branch tomography. This was an
+informed repository session. The [saved records](../tests/fixtures/authoring_sessions/README.md)
+also retain two curated diagnostic repairs; the accepted workarounds were
+already known, so they do not measure how much diagnostics help an unfamiliar LLM.
+
+Three explicit rounds and a Bit-specific helper remain necessary. This adds
+concrete source evidence to A020-02/03. Each measured meter requires fresh
+logical preparation; no implicit reuse is introduced. Type errors now show
+exact expected/actual trees; restricted cleanup points to the explicit contract
+form, with a negative test ensuring false cleanup still rejects.
+
 ## What writing and running code established
 
 Linear rebinding and ordinary `if` express feed-forward directly. Bell preparation,

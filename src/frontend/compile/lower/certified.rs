@@ -77,7 +77,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must map the exact source basis type to Bit",
+                format!("predicate must map the exact source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", source_reg.basis, predicate.result),
             ));
         }
         if data_binder.text == ancilla_binder.text {

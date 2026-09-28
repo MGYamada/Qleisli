@@ -62,7 +62,11 @@ For complete programs to adapt, start with the
 Their [source corpus](tests/fixtures/qli_authoring/README.md) checks inputs,
 reference correlations and deliberate algorithm mistakes. The
 [authoring report](docs/qli-authoring-feedback.md) turns observed writing
-difficulties into language-design candidates, collected with acceptance
+difficulties into language-design candidates. The
+[iterative QPE example](examples/iterative_phase_estimation/README.md) exercises
+measurement feedback against coherent QPE and independent branch checks;
+[authoring records](tests/fixtures/authoring_sessions/README.md) preserve first
+sources and diagnostic repair observations. Future issues are collected with acceptance
 experiments in the [v0.2.0 backlog](docs/v0.2.0-backlog.md).
 
 ## Connect existing circuits

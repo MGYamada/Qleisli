@@ -66,7 +66,7 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::TypeMismatch,
-                "if arms must return the same type",
+                format!("if arms must return the same type: expected `{}` from the then arm, found `{}` in the else arm", then_result.ty(), else_result.ty()),
             ));
         }
         let mut quantum_phis = Vec::new();
@@ -141,7 +141,10 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::TypeMismatch,
-                "branch quantum shapes differ",
+                format!(
+                    "branch quantum shapes differ: expected `Q<{}>`, found `Q<{}>`",
+                    a.basis, b.basis
+                ),
             ));
         }
         let token = self.token();

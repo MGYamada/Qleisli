@@ -133,7 +133,7 @@
     {
       "rule": "[Versioned JSON command results (X1)](machine-interface-spec.md#diagnostics)",
       "implementation": "[CLI transport](../src/bin/qleisli/json.rs); [structured diagnostics](../src/frontend/diagnostic.rs); [project loading](../src/frontend/project.rs)",
-      "tests": "[CLI golden cases](../tests/cli_json.rs); [source locations](../tests/diagnostics.rs); [independent JSON decoding](../scripts/test_cli_json.py)",
+      "tests": "[CLI golden cases](../tests/cli_json.rs); [source locations](../tests/diagnostics.rs); [independent JSON decoding](../scripts/test_cli_json.py); [expected/actual types and cleanup repair](../tests/repair_diagnostics.rs)",
       "proof": "Result transport and finite conformance tests; no additional semantic evidence or compiler soundness claim"
     },
     {
@@ -150,8 +150,8 @@
     },
     {
       "rule": "[Executable QLI authoring and algorithm contracts](qli-authoring-feedback.md)",
-      "implementation": "[Protocol components](../examples/protocols/README.md); [operation algorithms](../examples/operation_algorithms/README.md)",
-      "tests": "[Source corpus and reference compilation](../tests/qli_corpus.rs); [checked-in source fixtures](../tests/fixtures/qli_authoring/README.md)",
+      "implementation": "[Protocol components](../examples/protocols/README.md); [operation algorithms](../examples/operation_algorithms/README.md); [iterative QPE](../examples/iterative_phase_estimation/README.md)",
+      "tests": "[Source corpus and reference compilation](../tests/qli_corpus.rs); [checked-in source fixtures](../tests/fixtures/qli_authoring/README.md); [independent iterative instrument checks](../tests/iterative_qpe.rs); [preserved authoring records](../tests/fixtures/authoring_sessions/README.md)",
       "proof": "Finite branch/reference-sensitive simulation and existing exact checks; not a general protocol/compiler proof or measured LLM benchmark"
     },
     {

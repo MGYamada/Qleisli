@@ -106,7 +106,7 @@ impl Compiler<'_> {
                     &key.0,
                     body.span,
                     ErrorCode::TypeMismatch,
-                    "basis result does not match its declared type",
+                    format!("basis result does not match its declared type: expected `{result}`, found `{}`", value.ty),
                 ));
             }
             table.push(value.label);
@@ -240,7 +240,10 @@ impl Compiler<'_> {
                             module,
                             arg.span,
                             ErrorCode::TypeMismatch,
-                            "basis argument type does not match",
+                            format!(
+                                "basis argument type does not match: expected `{ty}`, found `{}`",
+                                value.ty
+                            ),
                         ));
                     }
                     label |= usize::from(value.label) << offset;

@@ -13,6 +13,11 @@ new changes.
 
 ### Added
 
+- Fixed three-bit iterative QPE in ordinary `.qli`, compared with coherent QPE
+  and an independent Fourier-instrument oracle on off-grid entangled inputs.
+- Preserved first-source and curated repair sessions, with actual diagnostics,
+  revision snapshots and CI checks for record integrity.
+
 - A living v0.2.0 issue backlog connecting authoring friction to concrete
   source evidence, acceptance experiments and existing checking dependencies.
 
@@ -39,6 +44,10 @@ new changes.
   operation-contract example.
 
 ### Changed
+
+- Include expected/actual exact types in concrete mismatch diagnostics and
+  suggest the explicit logical-contract form for restricted cleanup failures;
+  keep acceptance, source locations, error categories and JSON v1 unchanged.
 
 - Replace public Rust `Param.name` with `Param.pattern`; this incompatible
   AST migration is documented while the user retains development version

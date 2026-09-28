@@ -1,0 +1,1 @@
+unitary fn bad(q:Q<Unit>) -> CBit { true and q }

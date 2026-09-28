@@ -1,0 +1,1 @@
+unitary fn bad(flag:CBit) -> CBit { if flag { true } else { () } }
