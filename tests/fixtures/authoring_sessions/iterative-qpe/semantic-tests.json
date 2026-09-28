@@ -1,0 +1,12 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "iterative_qpe"
+  ],
+  "recorded_utc": "2026-09-28T07:40:31.980446+00:00",
+  "exit_code": 0,
+  "transcript": "   Compiling qleisli-core v0.1.8 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.86s\n     Running tests/iterative_qpe.rs (target/debug/deps/iterative_qpe-1ee64610c19fd446)\n\nrunning 5 tests\ntest preserved_first_attempt_and_shipped_example_execute ... ok\ntest semantic_oracles_detect_compiling_feedback_and_weight_faults ... ok\ntest degenerate_phase_preserves_reference_coherence ... ok\ntest adaptive_and_coherent_qpe_match_independent_off_grid_branch_tomography ... ok\ntest iterative_phase3_recovers_all_eighth_roots_and_both_x_eigenstates ... ok\n\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s\n\n",
+  "scope": "Five tests: initial/shipped program, eight exact phases, both X eigenstates, coherent comparison, H T Bell-branch tomography in nine bases, degenerate coherence, two deliberate faults. No source repair was made."
+}

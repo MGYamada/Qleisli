@@ -161,6 +161,20 @@ a `unitary` body are rejected.
 
 ## Execution and verification
 
+The later 0.1.8 [protocol components](../examples/protocols/README.md) and
+[operation-parameter algorithms](../examples/operation_algorithms/README.md)
+extend this corpus with ordinary example definitions: shared Bell preparation,
+measurement/correction, fixed-width QPE, amplification and Hadamard tests.
+The [iterative three-bit QPE example](../examples/iterative_phase_estimation/README.md)
+adds classical feedback with fresh logical meters and a retained conditional
+target; its Fourier-instrument contract is compared against coherent QPE and
+independent off-grid/reference tests. It is also an ordinary experimental API.
+Their linked tables and source give types, effects, ownership, ideal contracts,
+lowering, finite evidence and adoption limits. They are not additions to
+`std::routines`. [Source fixtures](../tests/fixtures/qli_authoring/README.md)
+retain successful clients, rejected attempts and intentional algorithm faults;
+run them with `cargo test --test qli_corpus`.
+
 ```sh
 cargo run --bin qleisli -- run examples/grover
 cargo run --bin qleisli -- run examples/bernstein_vazirani

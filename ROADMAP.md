@@ -36,17 +36,47 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
 
+## v0.1.8: authoring ergonomics
+
+**Current development version: v0.1.8, retained at the user's request.**
+Priorities 1–3 are implemented: product patterns in basis parameters,
+left-associated n-ary tuples, and ownership diagnostics at bindings. The
+public Rust `Param` change remains incompatible; see the
+[migration and validation record](docs/releases/v0.1.8.md#authoring-ergonomics-continuation).
+These conveniences reuse binary core operations and existing finite checks.
+Continue discovering language requirements through actual `.qli` algorithms
+and semantic tests, with particular attention to LLM authoring ergonomics.
+Priority 4, type/size parameters and cross-interface QPE reuse, remains future
+work; this change neither adopts finite templates nor revises R14.
+Accumulate unresolved issues and acceptance experiments in the
+[v0.2.0 backlog](docs/v0.2.0-backlog.md) while continuing 0.1.8 development;
+its candidates are not a committed release scope. The subsequent
+[iterative QPE and repair continuation](docs/releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
+adds fixed-width feedback source, actionable diagnostics and preserved authoring
+records; type/size abstraction remains future work.
+
+## v0.1.8: fixed-width operation parameters and meanings
+
+**Initial scope of the current untagged v0.1.8 development version.** Version selection and source/API
+migration are recorded separately. Implemented the [M1 language supplement](docs/next-minor-spec.md):
+phase-fixed meanings, explicit operation arguments/access and checked
+composition through existing retained finite evidence. One generic body can
+accept two checked providers of the same meaning. The
+[implementation/migration record](docs/releases/v0.1.8.md) separates local
+validation from release gates. QIR input, X2–X6 and M2 remain pending; this
+slice does not establish general-size algorithms or V1-C1–C5.
+
 ## v0.1.7: start M1 with JSON results and M1.1 connections
 
-**Current development version: v0.1.7.** After the MINOR requirement was
-explained, the user explicitly chose a new exception for starting M1 features.
+**Previous released version: v0.1.7.** This release starts M1 features;
+[versioning](docs/versioning.md) now allows compatible additions in PATCH.
 The first implemented slice is [X1 check/run JSON](docs/machine-interface-spec.md#diagnostics):
 versioned success/error envelopes, original-source locations and structured
 frontend diagnostics through the existing checks. This is new functionality;
 it changes neither core acceptance rules nor the finite evidence boundary.
 The [implementation record](docs/releases/v0.1.7.md) separates local validation
-from pending release gates. N1–N6, X2–X6 and M2 remain open; the exception does
-not generalize to future PATCH releases.
+from release gates. N1–N6, X2–X6 and M2 were still open at that release;
+subsequent operation-parameter work is recorded under 0.1.8 above.
 
 The user's additional M1.1 request starts [bounded OpenQASM 3/QIR connections](docs/interop-m1.1.md).
 M1.1-A implements OpenQASM import/export and QIR Base text output for fixed,
@@ -56,9 +86,9 @@ adapters, not `.qli` syntax, evidence transport or new trusted rules.
 
 ## v0.1.6 maintenance implementation
 
-**Subsequent scope exception:** the user retained 0.1.6 for the
-[Rust-style comment/docstring extension](docs/documentation-comments.md) after
-the normal MINOR requirement was explained. That implemented extension adds
+**Subsequent scope addition:** 0.1.6 includes the
+[Rust-style comment/docstring extension](docs/documentation-comments.md).
+Its historical version decision is retained in the release record. The extension adds
 source documentation metadata, nested comments, rendering and complete bundled
 docstrings. Its placement/line-ending migration is recorded; it is not an
 implementation of N1–N6/X1–X6 or a compatible-only maintenance change. The
@@ -85,7 +115,7 @@ in the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/
 This is continuous maintenance under the selected M0–M5 plan. M1/M2 feature
 implementation, the complete B019 audit and general Rust soundness proofs
 remain open. The IR maintenance adds no capacity limit or toolchain change;
-the documentation extension's added syntax/API and exception are listed above.
+the documentation extension's added syntax/API and migration are listed above.
 
 ## v0.1.5 maintenance roadmap
 
@@ -105,12 +135,12 @@ B019 audit, M1 implementation, M2 sized source extension, or executable V1-C1–
 
 The next development work is [M1 implementation](docs/next-minor-spec.md#implementation-acceptance-matrix)
 and the independently shippable [machine-interface slices](docs/machine-interface-spec.md#required-conformance-before-shipping).
-New public features use a MINOR release selected when shipping; no subsequent
-patch number is reserved for them. Continuous finite-core maintenance and
+Compatible public features use PATCH in 0.y.z (y > 0); breaking changes use
+MINOR. Version numbers are selected for concrete releases, not reserved for themes. Continuous finite-core maintenance and
 verifier/kernel proof obligations remain active alongside this work.
 
 The later [interoperability direction](docs/interoperability-roadmap.md) adds
-Python bindings and bounded OpenQASM 3/QIR input and output as early M1 MINOR
+Python bindings and bounded OpenQASM 3/QIR input and output as early M1
 slices. Its aim is to reuse existing programs through a shared checked compiler
 core. Version 0.1.6 records the direction and internal maintenance only; the
 subsequent 0.1.7 M1.1-A work implements bounded OpenQASM input/output and QIR
@@ -182,8 +212,9 @@ truth-table expansion is the complementary M3/M4 gate. The finite M1 profile
 may use existing bounded dense checks; it does not claim size generalization.
 The [scope checkpoint](docs/decisions/2026-09-27-v1-path.md#scope-decision-and-dated-follow-up)
 has a date and disposition rule, not a promised release date or automatic task.
-These features remain outside 0.1.x maintenance and require their own MINOR
-specification, implementation, validation and compatibility records.
+These features require their own specification, implementation, validation
+and compatibility records. Their version increment follows the current policy;
+allowing compatible PATCH additions does not discharge the scaling gates.
 
 The [Lean quantum-library investigation](research/quantum-libraries/README.md)
 compares pinned Physlib/QuantumInfo and lean-quantum sources with isolated

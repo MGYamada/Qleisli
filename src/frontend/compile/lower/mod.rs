@@ -7,6 +7,8 @@
 mod branch;
 mod certified;
 mod function_contract;
+mod operations;
+pub(super) use operations::check_generic;
 mod primitives;
 mod scope;
 mod value;
@@ -56,6 +58,8 @@ struct Lowerer<'c, 'p> {
     next_slot: u32,
     effect: Effect,
     depth: usize,
+    bindings: super::operations::Bindings,
+    abstract_check: bool,
 }
 
 impl Lowerer<'_, '_> {
@@ -173,7 +177,7 @@ impl Lowerer<'_, '_> {
         let decl = self.compiler.declarations[key];
         self.compiler.tick(&key.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
-        if decl.kind == FnKind::Basis {
+        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
             return Err(self.error(
                 &key.0,
                 decl.span,
@@ -193,6 +197,9 @@ impl Lowerer<'_, '_> {
         }
         let mut env = Env::new();
         for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
+            let PatternKind::Name(name) = &param.pattern.kind else {
+                unreachable!("ordinary parameters are parsed as names")
+            };
             let (module, span) = site.map_or((key.0.as_str(), param.span), |site| {
                 (site.module, site.args[index].span)
             });
@@ -203,10 +210,14 @@ impl Lowerer<'_, '_> {
                     module,
                     span,
                     ErrorCode::TypeMismatch,
-                    format!("argument `{}` has the wrong type", param.name.text),
+                    format!(
+                        "argument `{}` has the wrong type: expected `{ty}`, found `{}`",
+                        name.text,
+                        value.ty()
+                    ),
                 ));
             }
-            env.insert(param.name.text.clone(), Some(value));
+            env.insert(name.text.clone(), Some(value));
         }
         let previous_effect = self.effect;
         self.effect = Effect::Unitary;
@@ -221,10 +232,21 @@ impl Lowerer<'_, '_> {
                 &key.0,
                 body.result.span,
                 ErrorCode::TypeMismatch,
-                "result does not match the function return type",
+                format!("result does not match the function return type: expected `{return_ty}`, found `{}`", value.ty()),
             ));
         }
-        self.no_owned_bindings(&key.0, body.span, &env)?;
+        self.no_owned_bindings(
+            &key.0,
+            body.span,
+            &env,
+            decl.params.iter().filter_map(|param| {
+                if let PatternKind::Name(name) = &param.pattern.kind {
+                    Some(name)
+                } else {
+                    None
+                }
+            }),
+        )?;
         if self.effect > effect(decl.kind) {
             return Err(self.error(
                 &key.0,
@@ -237,11 +259,21 @@ impl Lowerer<'_, '_> {
         Ok(value)
     }
 
-    fn no_owned_bindings(&self, module: &str, span: Span, env: &Env) -> Result<(), CompileError> {
+    fn no_owned_bindings<'b>(
+        &self,
+        module: &str,
+        fallback: Span,
+        env: &Env,
+        bindings: impl IntoIterator<Item = &'b Ident>,
+    ) -> Result<(), CompileError> {
         if let Some((name, _)) = env
             .iter()
             .find(|(_, value)| value.as_ref().is_some_and(Value::owns_quantum))
         {
+            let span = bindings
+                .into_iter()
+                .find(|binding| binding.text == *name)
+                .map_or(fallback, |binding| binding.span);
             Err(self.error(
                 module,
                 span,
@@ -283,7 +315,14 @@ impl Lowerer<'_, '_> {
         }
         let result = self.expr(module, &block.result, &mut local)?;
         scope::close_scope(&mut entry, &local, &rebound).map_err(|name| {
-            self.error(module, block.span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
+            // A direct rebinding supersedes an earlier binder of the same name.
+            // Nested scopes diagnose their own locals before returning here.
+            let span = block.statements.iter().rev().find_map(|stmt| {
+                if let StmtKind::Let { pattern, .. } = &stmt.kind {
+                    scope::binding_span(pattern, name)
+                } else { None }
+            }).unwrap_or(block.span);
+            self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
         *env = entry;
         Ok(result)
@@ -406,12 +445,24 @@ impl Lowerer<'_, '_> {
                 let value = self.expr(module, input, env)?;
                 let slot = self.quantum(module, input.span, &value, false)?;
                 let basis = self.registers[&slot].basis.clone();
-                let mut steps = self.static_steps(module, function, &basis, env)?;
+                let access = if matches!(expr.kind, ExprKind::Adjoint { .. }) {
+                    Access::Adjoint
+                } else {
+                    Access::Apply
+                };
+                let operation = self.operation_steps(module, function, &basis, env, access)?;
+                let is_operation = operation.is_some();
+                let mut steps = match operation {
+                    Some(steps) => steps,
+                    None => self.static_steps(module, function, &basis, env)?,
+                };
                 let cost = total_size(steps.iter().map(super::circuit::size));
                 match &expr.kind {
                     ExprKind::Adjoint { .. } => {
                         self.compiler.charge(module, expr.span, cost)?;
-                        super::circuit::invert(&mut steps);
+                        if !is_operation {
+                            super::circuit::invert(&mut steps);
+                        }
                     }
                     ExprKind::RepeatStatic { count, .. } => {
                         self.compiler.charge(
@@ -419,6 +470,17 @@ impl Lowerer<'_, '_> {
                             expr.span,
                             cost.saturating_add(1).saturating_mul(usize::from(*count)),
                         )?;
+                        if is_operation
+                            && steps.len().saturating_mul(usize::from(*count))
+                                > crate::contract::MAX_CONTRACT_STEPS
+                        {
+                            return Err(self.error(
+                                module,
+                                expr.span,
+                                ErrorCode::Limit,
+                                "operation repetition exceeds 1024 steps",
+                            ));
+                        }
                         steps = (0..*count).flat_map(|_| steps.iter().cloned()).collect();
                     }
                     _ => unreachable!(),
@@ -439,18 +501,44 @@ impl Lowerer<'_, '_> {
                 let basis = self.registers[&slot].basis.clone();
                 let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
                 let mut steps = Vec::new();
+                let mut operation_arm = false;
                 for (name, when_one) in [(zero, false), (one, true)] {
-                    let mut arm = self.static_steps(module, name, &basis, env)?;
+                    let operation =
+                        self.operation_steps(module, name, &basis, env, Access::Controlled)?;
+                    let is_operation = operation.is_some();
+                    operation_arm |= is_operation;
+                    let mut arm = match operation {
+                        Some(steps) => steps,
+                        None => self.static_steps(module, name, &basis, env)?,
+                    };
                     self.compiler.charge(
                         module,
                         expr.span,
                         total_size(arm.iter().map(super::circuit::size)).saturating_add(arm.len()),
                     )?;
                     for step in &mut arm {
-                        super::circuit::remap(step, &axes);
-                        step.controls.push(BitControl { index: 0, when_one });
+                        if is_operation {
+                            // The outer predicate is on axis zero. Nested controls
+                            // retain their own polarity and shifted axes.
+                            for control in &mut step.controls {
+                                if control.index == 0 {
+                                    control.when_one = when_one;
+                                }
+                            }
+                        } else {
+                            super::circuit::remap(step, &axes);
+                            step.controls.push(BitControl { index: 0, when_one });
+                        }
                     }
                     steps.extend(arm);
+                }
+                if operation_arm && steps.len() > crate::contract::MAX_CONTRACT_STEPS {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::Limit,
+                        "controlled operation circuit exceeds 1024 steps",
+                    ));
                 }
                 let joined = self.sealed(module, expr.span, "std::quantum", "join", vec![c, q])?;
                 let slot = self.quantum(module, expr.span, &joined, false)?;
@@ -467,12 +555,16 @@ impl Lowerer<'_, '_> {
                 Ok(Value::Classical(output))
             }
             ExprKind::Not(input) => {
-                let Value::Classical(input) = self.expr(module, input, env)? else {
+                let value = self.expr(module, input, env)?;
+                let Value::Classical(input) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "not requires a CBit operand",
+                        format!(
+                            "not requires a CBit operand: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 let output = self.classical();
@@ -480,22 +572,30 @@ impl Lowerer<'_, '_> {
                 Ok(Value::Classical(output))
             }
             ExprKind::And(left, right) | ExprKind::Xor(left, right) => {
-                let Value::Classical(left) = self.expr(module, left, env)? else {
+                let value = self.expr(module, left, env)?;
+                let Value::Classical(left) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "and/xor require CBit operands",
+                        format!(
+                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 // Both operands are evaluated, left to right. In particular,
                 // false AND must still execute effects in its right operand.
-                let Value::Classical(right) = self.expr(module, right, env)? else {
+                let value = self.expr(module, right, env)?;
+                let Value::Classical(right) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "and/xor require CBit operands",
+                        format!(
+                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 let output = self.classical();
@@ -548,31 +648,72 @@ impl Lowerer<'_, '_> {
                 let b = self.expr(module, b, env)?;
                 Ok(Value::pair(a, b))
             }
-            ExprKind::Call { callee, args } => {
-                if env.contains_key(&callee.text) {
-                    return Err(self.error(
-                        module,
-                        callee.span,
-                        ErrorCode::TypeMismatch,
-                        "a local value is not callable",
-                    ));
-                }
-                let target = self.compiler.resolve(module, callee)?;
+            ExprKind::Call {
+                callee,
+                static_args,
+                args,
+            } => {
+                // Keep legacy ordinary-call resolution and diagnostics. New
+                // static calls resolve descriptions after runtime arguments.
+                let legacy_target =
+                    if static_args.is_empty() && !self.bindings.contains_key(&callee.text) {
+                        if env.contains_key(&callee.text) {
+                            return Err(self.error(
+                                module,
+                                callee.span,
+                                ErrorCode::TypeMismatch,
+                                "a local value is not callable",
+                            ));
+                        }
+                        Some(self.compiler.resolve(module, callee)?)
+                    } else {
+                        None
+                    };
                 let values = args
                     .iter()
                     .map(|arg| self.expr(module, arg, env))
                     .collect::<Result<Vec<_>, _>>()?;
-                match target {
-                    Callee::User(key) => self.call_user(
-                        &key,
-                        values,
-                        Some(CallSite {
+                self.static_name(module, callee, env)?;
+                if self.bindings.contains_key(&callee.text) {
+                    if !static_args.is_empty() || values.len() != 1 {
+                        return Err(self.error(
                             module,
-                            span: expr.span,
-                            args,
-                        }),
-                    ),
+                            expr.span,
+                            ErrorCode::Arity,
+                            "operation application requires one quantum argument",
+                        ));
+                    }
+                    let value = values.into_iter().next().expect("one argument");
+                    let slot = self.quantum(module, expr.span, &value, false)?;
+                    let basis = self.registers[&slot].basis.clone();
+                    let steps = self
+                        .operation_steps(module, callee, &basis, env, Access::Apply)?
+                        .expect("bound operation");
+                    self.apply_circuit(slot, steps);
+                    return Ok(value);
+                }
+                let site = CallSite {
+                    module,
+                    span: expr.span,
+                    args,
+                };
+                match legacy_target
+                    .map(Ok)
+                    .unwrap_or_else(|| self.compiler.resolve(module, callee))?
+                {
+                    Callee::User(key) => {
+                        let bindings = self.bind_operations(&key, static_args, env, site)?;
+                        self.call_bound(&key, values, Some(site), bindings)
+                    }
                     Callee::Sealed(namespace, name) => {
+                        if !static_args.is_empty() {
+                            return Err(self.error(
+                                module,
+                                expr.span,
+                                ErrorCode::Arity,
+                                "sealed operations have no static parameters",
+                            ));
+                        }
                         self.sealed(module, expr.span, &namespace, &name, values)
                     }
                 }
@@ -582,12 +723,16 @@ impl Lowerer<'_, '_> {
                 then_branch,
                 else_branch,
             } => {
-                let Value::Classical(condition) = self.expr(module, condition, env)? else {
+                let value = self.expr(module, condition, env)?;
+                let Value::Classical(condition) = value else {
                     return Err(self.error(
                         module,
                         expr.span,
                         ErrorCode::TypeMismatch,
-                        "if requires a CBit condition",
+                        format!(
+                            "if requires a CBit condition: expected `CBit`, found `{}`",
+                            value.ty()
+                        ),
                     ));
                 };
                 self.branch(module, expr.span, condition, then_branch, else_branch, env)
@@ -607,7 +752,7 @@ impl Lowerer<'_, '_> {
                 body,
             } => {
                 let source = self.expr(module, source, env)?;
-                if env.contains_key(&function.text) {
+                if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
                     return Err(self.error(
                         module,
                         function.span,
@@ -659,7 +804,7 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
     ) -> Result<Vec<CircuitStep>, CompileError> {
-        if env.contains_key(&name.text) {
+        if env.contains_key(&name.text) || self.bindings.contains_key(&name.text) {
             return Err(self.error(
                 module,
                 name.span,
@@ -677,6 +822,14 @@ impl Lowerer<'_, '_> {
                         name.span,
                         ErrorCode::Effect,
                         "static operation requires a unitary function",
+                    ));
+                }
+                if !self.compiler.declarations[key].static_params.is_empty() {
+                    return Err(self.error(
+                        module,
+                        name.span,
+                        ErrorCode::Arity,
+                        "static target requires a closed function",
                     ));
                 }
                 let (params, result) = self.compiler.signature(key)?;
@@ -721,12 +874,14 @@ impl Lowerer<'_, '_> {
             next_slot: 0,
             effect: Effect::Unitary,
             depth: self.depth,
+            bindings: BTreeMap::new(),
+            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
         let arg = inner.input(&ty, &mut quantum_inputs, &mut classical_inputs);
         let result = match target {
-            Callee::User(key) => inner.call_user(&key, vec![arg], None)?,
+            Callee::User(key) => inner.call_bound(&key, vec![arg], None, BTreeMap::new())?,
             Callee::Sealed(namespace, gate) => {
                 inner.sealed(module, name.span, &namespace, &gate, vec![arg])?
             }
@@ -871,7 +1026,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must map the source basis type to Bit",
+                format!("predicate must map the source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", self.registers[&source_slot].basis, predicate.result),
             ));
         }
         let wire = self.wire();
@@ -898,7 +1053,7 @@ impl Lowerer<'_, '_> {
         let previous_effect = self.effect;
         self.effect = Effect::Unitary;
         let result = self.block(module, body, &mut local)?;
-        self.no_owned_bindings(module, body.span, &local)?;
+        self.no_owned_bindings(module, body.span, &local, [binder])?;
         if self.effect != Effect::Unitary {
             return Err(self.error(
                 module,
@@ -924,7 +1079,7 @@ impl Lowerer<'_, '_> {
                     use_ops.push(ProtectedUse::ProtectedGate { bit: ProtectedBit { region: ProtectedRegion::Ancilla, index: 0 }, gate: *gate });
                     expected_input = *output;
                 }
-                _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla")),
+                _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking")),
             }
         }
         self.operations.truncate(start);
@@ -965,6 +1120,22 @@ pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
 ) -> Result<VerifiedProgram, CompileError> {
+    lower_function_inner(compiler, key, BTreeMap::new(), false)?.ok_or_else(|| {
+        compiler.error(
+            &key.0,
+            compiler.declarations[key].span,
+            ErrorCode::InvalidIr,
+            "missing concrete program",
+        )
+    })
+}
+
+fn lower_function_inner(
+    compiler: &mut Compiler<'_>,
+    key: &Key,
+    bindings: super::operations::Bindings,
+    abstract_check: bool,
+) -> Result<Option<VerifiedProgram>, CompileError> {
     let decl = compiler.declarations[key];
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
@@ -978,6 +1149,8 @@ pub(super) fn lower_function(
         next_slot: 0,
         effect: Effect::Unitary,
         depth: 0,
+        bindings,
+        abstract_check,
     };
     let mut quantum_inputs = Vec::new();
     let mut classical_inputs = Vec::new();
@@ -1025,7 +1198,10 @@ pub(super) fn lower_function(
         classical_outputs,
         declared_effect: effect(decl.kind),
     };
-    crate::verify(raw).map_err(|failure| {
+    if abstract_check {
+        return Ok(None);
+    }
+    crate::verify(raw).map(Some).map_err(|failure| {
         verification_error(
             lower.compiler,
             &lower.operation_sources,

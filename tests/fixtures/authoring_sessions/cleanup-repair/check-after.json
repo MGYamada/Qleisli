@@ -1,0 +1,34 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/cleanup-repair/attempt-01",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T07:40:31.965942+00:00",
+  "compiler_stage": "after diagnostic changes; same rejected source",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking",
+        "primary": {
+          "path": "main.qli",
+          "start": 137,
+          "end": 158,
+          "line": 4,
+          "column": 32
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

@@ -1,0 +1,10 @@
+use iterative::phase3;
+use gates::flip;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> ((CBit,CBit,CBit),CBit) {
+    let (word,target) = phase3[flip](h(init0()));
+    (word,measure_z(h(target)))
+}

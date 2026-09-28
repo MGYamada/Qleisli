@@ -25,6 +25,45 @@ It is retained in product 0.1.6 by the user's explicit version-policy exception.
 Attachment and line-ending changes have migration guidance in that specification;
 docstrings carry no quantum meaning or evidence authority.
 
+The 0.1.8 [fixed-width operation supplement](next-minor-spec.md) additionally
+specifies meaning declarations, static parameters/arguments, access constraints
+and operation constructors. These are language forms, not runtime values or
+sealed gates. Their complete normative productions and reserved words are in
+that supplement; they extend the base EBNF below. Follow its source/Rust
+migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
+accept eligible static parameter names with the corresponding declared access.
+
+## Authoring forms added in product 0.1.8
+
+Tuple types, values and patterns with two or more fields elaborate by a **left
+fold**: `(a,b,c)` means `((a,b),c)`, and `(a,b,c,d)` means `(((a,b),c),d)`.
+The same rule applies to ordinary and basis expressions, types including `Q<A>`,
+`let` patterns, coherent-lift patterns and basis parameter patterns. Explicit
+parentheses keep their existing tree: `(a,(b,c))` is not implicitly reassociated.
+A folded child span covers its source fields; the outer span includes parentheses.
+Evaluation visits leaves once from left to right, preserving effects, ownership,
+phase and result/axis order. No tuple IR variant, coercion or new gate is added.
+
+`basis fn f((a,b): (Bit,Bit)) -> Bit { a xor b }` has **one** parameter.
+Names, `_` and nested product patterns use the existing finite basis-binding
+judgment, with distinct names across all parameters. Names can bind subtrees;
+`_` discards basis information, not quantum ownership. Pattern/type mismatches
+reject even in unused functions. Calls do not implicitly pack/unpack parameters.
+Ordinary `iso`/`unitary`/`observe` parameter declarations still require names.
+There are no unit/singleton patterns or trailing commas; expression grouping
+and the Unit expression `()` retain their old meanings. Flat folds and mixed
+nesting share the existing 64-level AST limit, rather than bypassing it.
+
+For example, accept `basis fn swap((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}`;
+reject `basis fn bad((a,a):(Bit,Bit))->Bit{a}` (duplicate name), a pair pattern
+on `Bit` (shape mismatch), and `swap(0,1)` (two arguments to a unary function).
+The [source corpus](../tests/fixtures/ergonomics/README.md) checks these forms
+and retained whole-domain injectivity, including ignored components and Unit.
+Product-basis parameter patterns are language forms, not sealed operations or
+stdlib definitions. Their elaboration binds finite labels with existing rules
+and emits the same basis tables; ordinary compilation and independent table/
+evidence verification remain required. General frontend adequacy is unproved.
+
 <a id="構文と組み込みの境界"></a>
 
 ## Boundary between syntax and built-in operations
@@ -82,12 +121,16 @@ rejected as an unexpected character. In particular, a leading U+FEFF byte order
 mark (BOM) is rejected rather than stripped. Non-ASCII identifiers are not
 permitted.
 
-The reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
+The base reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
 `let`, `if`, `else`, `do`, `pure`, `with_computed`, `adjoint`, `repeat_static`,
 `qif`, `apply_contract`, `true`, `false`, `not`, `xor`, `and`, `Unit`, `Bit`, `CBit`, and `Q`.
+The M1 supplement also reserves `meaning`, `static`, `Op`, `requires`,
+`Apply`, `Adjoint`, `Controlled`, `permutation_by`, `phase_by`, `bind_op`,
+`inverse_op`, `then_op`, `tensor_op`, `controlled_op`, `repeat_op`, and
+`conjugate_op`; rename colliding identifiers, including module components.
 The only basis `Bit`
 literals are `0` and `1`. A decimal natural number is allowed only in the count
-position of `repeat_static`, with no leading zero except for `0` itself. The
+position of `repeat_static` or M1 `repeat_op`, with no leading zero except for `0` itself. The
 current implementation profile accepts counts from 0 through 4,096 and diagnoses
 larger counts. A consecutive run of digits is one token, so `10` and `2` remain
 invalid basis literals. Strings, floating-point numbers, arrays, general
@@ -123,23 +166,23 @@ BasisDecl    ::= "basis" "fn" Ident "(" BasisParams? ")"
 QuantumDecl  ::= Kind "fn" Ident "(" Params? ")" "->" Type Block
 Kind         ::= "iso" | "unitary" | "observe"
 BasisParams  ::= BasisParam ("," BasisParam)*
-BasisParam   ::= Ident ":" BasisType
+BasisParam   ::= Pattern ":" BasisType
 Params       ::= Param ("," Param)*
 Param        ::= Ident ":" Type
 Type         ::= BasisType | "CBit" | "Q" "<" BasisType ">"
-               | "(" Type "," Type ")"
-BasisType    ::= "Unit" | "Bit" | "(" BasisType "," BasisType ")"
-ClassicalType ::= "Unit" | "CBit" | "(" ClassicalType "," ClassicalType ")"
+               | "(" Type "," Type ("," Type)* ")"
+BasisType    ::= "Unit" | "Bit" | "(" BasisType "," BasisType ("," BasisType)* ")"
+ClassicalType ::= "Unit" | "CBit" | "(" ClassicalType "," ClassicalType ("," ClassicalType)* ")"
 Block        ::= "{" Stmt* Expr "}"
 BasisBlock   ::= "{" BasisExpr "}"
 Stmt         ::= "let" Pattern "=" Expr ";" | Expr ";"
-Pattern      ::= Ident | "_" | "(" Pattern "," Pattern ")"
+Pattern      ::= Ident | "_" | "(" Pattern "," Pattern ("," Pattern)* ")"
 Expr         ::= RuntimeXor
 RuntimeXor   ::= RuntimeAnd ("xor" RuntimeAnd)*
 RuntimeAnd   ::= RuntimeUnary ("and" RuntimeUnary)*
 RuntimeUnary ::= "not" RuntimeUnary | RuntimeAtom
 RuntimeAtom  ::= Name | "true" | "false" | "()"
-               | "(" Expr ")" | "(" Expr "," Expr ")"
+               | "(" Expr ")" | "(" Expr "," Expr ("," Expr)* ")"
                | Call | If | CoherentLift | WithComputed | Adjoint | Repeat | Qif
                | ApplyContract
 ApplyContract ::= "apply_contract" "(" Name "," Name "," Expr ")"
@@ -161,7 +204,7 @@ XorExpr      ::= AndExpr ("xor" AndExpr)*
 AndExpr      ::= UnaryExpr ("and" UnaryExpr)*
 UnaryExpr    ::= "not" UnaryExpr | BasisAtom
 BasisAtom    ::= Ident | "0" | "1" | "()" | "(" BasisExpr ")"
-               | "(" BasisExpr "," BasisExpr ")"
+               | "(" BasisExpr "," BasisExpr ("," BasisExpr)* ")"
                | BasisCall
 BasisCall    ::= Name "(" BasisArgs? ")"
 BasisArgs    ::= BasisExpr ("," BasisExpr)*
@@ -392,7 +435,7 @@ or execution; the compilation and execution regressions are recorded in the
 
 ## Deferred syntax
 
-- First-class static operations, operations with classical parameters, and
+- Runtime first-class operations, operations with classical parameters, and
   inverses between different basis types remain deferred. Current `qif`,
   `adjoint`, and `repeat_static` resolve function names statically and target
   only `Q<A> -> Q<A>` unitaries with no classical arguments.

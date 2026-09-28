@@ -52,11 +52,15 @@ pub(crate) fn attach(
         .decls
         .iter()
         .enumerate()
-        .map(|(index, decl)| {
-            let opening =
-                tokens.partition_point(|token| token.span.start < decl.return_type.span.end);
+        .filter_map(|(index, decl)| {
+            let start = match &decl.body {
+                super::ast::FnBody::Meaning { .. } => return None,
+                super::ast::FnBody::Quantum(body) => body.span.start,
+                super::ast::FnBody::Basis(_) => decl.return_type.span.end,
+            };
+            let opening = tokens.partition_point(|token| token.span.start < start);
             debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));
-            (opening, index)
+            Some((opening, index))
         })
         .collect();
     let mut result = DocumentedModule {
@@ -129,10 +133,12 @@ pub fn render_markdown(source: &str) -> Result<String, ParseError> {
             decl.name.text,
             if decl.public { "public" } else { "private" }
         ));
-        render_source(
-            &mut output,
-            &source[decl.span.start..decl.return_type.span.end],
-        );
+        let end = match &decl.body {
+            super::ast::FnBody::Meaning { .. } => decl.span.end,
+            super::ast::FnBody::Quantum(body) if !decl.requires.is_empty() => body.span.start,
+            _ => decl.return_type.span.end,
+        };
+        render_source(&mut output, source[decl.span.start..end].trim_end());
         render_comments(&mut output, docs);
     }
     Ok(output)

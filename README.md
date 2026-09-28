@@ -7,7 +7,7 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-[Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
+[Quick reference](docs/qli-quick-reference.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
 
 ## A small example
@@ -42,6 +42,8 @@ cargo run --bin qleisli -- check examples/bell
 cargo run --bin qleisli -- run examples/bell
 cargo run --bin qleisli -- run examples/grover
 cargo run --bin qleisli -- run examples/phase_estimation
+cargo run --bin qleisli -- run examples/protocols
+cargo run --bin qleisli -- run examples/operation_algorithms
 cargo run --example shor15
 ```
 
@@ -53,6 +55,19 @@ from left to right; probabilities are floating-point approximations.
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
 Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
 documentation. See the [CLI and source guide](docs/frontend-v0.md).
+
+For complete programs to adapt, start with the
+[protocol components](examples/protocols/README.md) or
+[operation-parameter algorithms](examples/operation_algorithms/README.md).
+Their [source corpus](tests/fixtures/qli_authoring/README.md) checks inputs,
+reference correlations and deliberate algorithm mistakes. The
+[authoring report](docs/qli-authoring-feedback.md) turns observed writing
+difficulties into language-design candidates. The
+[iterative QPE example](examples/iterative_phase_estimation/README.md) exercises
+measurement feedback against coherent QPE and independent branch checks;
+[authoring records](tests/fixtures/authoring_sessions/README.md) preserve first
+sources and diagnostic repair observations. Future issues are collected with acceptance
+experiments in the [v0.2.0 backlog](docs/v0.2.0-backlog.md).
 
 ## Connect existing circuits
 
@@ -80,12 +95,20 @@ lists directions, limits, optional tools and verification boundaries.
 
 ## Status and direction
 
-**Current version: 0.1.7.** The [release record](docs/releases/v0.1.7.md)
-separates implemented features, executed checks and publication status.
+**Version: 0.1.8.** The [release record](docs/releases/v0.1.8.md) and
+[GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8)
+separate implemented features, executed checks and publication status. Basis
+parameter patterns, n-ary tuples and binding-level ownership diagnostics address
+friction found in the executable authoring corpus.
+
+The [operation-contract example](examples/operation_contracts/main.qli) uses one
+static operation parameter with two independently checked implementations.
+Run it with `cargo run --bin qleisli -- run examples/operation_contracts`.
 
 Today, Qleisli checks and executes finite programs with modules, linear
 ownership, measurement/feedback, static inverse/control/repetition, and exact
-finite semantic contracts. Small Grover, QPE and order-finding examples are
+finite semantic contracts, plus bounded static operation parameters and
+basis-derived meanings. Small Grover, QPE and order-finding examples are
 regressions. Function contracts allow different checked implementations of the
 same meaning to serve an unchanged client.
 

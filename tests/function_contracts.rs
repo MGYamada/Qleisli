@@ -107,10 +107,10 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS}
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| t(a) }} }}
-        unitary fn meaning(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
-        unitary fn first(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,meaning,q) }}
-        unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,meaning,q) }}
-        unitary fn top(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,meaning,q) }}
+        unitary fn specified(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
+        unitary fn first(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
+        unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,specified,q) }}
+        unitary fn top(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified,q) }}
         unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ adjoint(top,q) }}
         observe fn main() -> (CBit,CBit) {{
             let q=repeat_static(2,top,h(init0()));
@@ -300,8 +300,8 @@ fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS}
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| t(a) }} }}
-        unitary fn meaning(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
-        unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,meaning,q) }}
+        unitary fn specified(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
+        unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
         observe fn main() -> (CBit,CBit) {{
             let q=repeat_static(2,phase,h(init0()));
             let q=adjoint(phase,adjoint(phase,q));
@@ -359,13 +359,13 @@ fn ordered_function_outputs_are_part_of_the_contract() {
         unitary fn implementation(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
             let (a,b)=split(q); join(b,a)
         }}
-        unitary fn meaning(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
+        unitary fn specified(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
             do (a,b) <- q; pure (b,a)
         }}"
     );
     let result = run(&format!(
         "{definitions} observe fn main() -> (CBit,CBit) {{
-            let q=apply_contract(implementation,meaning,join(x(init0()),init0()));
+            let q=apply_contract(implementation,specified,join(x(init0()),init0()));
             let (a,b)=split(q); (measure_z(a),measure_z(b))
         }}"
     ));
@@ -489,9 +489,9 @@ fn zero_width_contract_phase_survives_coherent_control() {
         "{IMPORTS}
         basis fn yes(value: Unit) -> Bit {{ 1 }}
         unitary fn implementation(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}
-        unitary fn meaning(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(t(t(t(a)))) }} }}
+        unitary fn specified(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(t(t(t(a)))) }} }}
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
-        unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ apply_contract(implementation,meaning,q) }}
+        unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ apply_contract(implementation,specified,q) }}
         observe fn main() -> CBit {{
             let pair=do value <- init0(); pure ((),value);
             let (unit,q)=split(pair);

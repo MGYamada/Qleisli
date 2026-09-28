@@ -3,8 +3,8 @@
 Status: **direction selected on 2026-09-28; initial M1.1-A connections implemented**.
 The [bounded connection contract](interop-m1.1.md) specifies the current host
 adapters: OpenQASM 3 input/output and QIR 2.0 Base text output. The user's added
-M1.1 request extends the explicit 0.1.7 feature exception; it changes no `.qli`
-syntax, existing capacity or evidence-checking rule. QIR input, Python bindings,
+M1.1 request added these adapters to 0.1.7; they change no `.qli` syntax,
+existing capacity or evidence-checking rule. QIR input, Python bindings,
 adaptive operations and general format/target coverage remain pending. The
 internal execution consolidation below remains a distinct 0.1.6 maintenance
 step; planned interfaces are not thereby implemented.
@@ -99,8 +99,15 @@ matching it in a visitor, accounting routine or test. Current emitters and debt:
 | `ApplyUnitary` and `CircuitStep` | [Static lowering](../src/frontend/compile/lower/mod.rs), including source `qif`, inverse/control and repetition, plus [M1.1 OpenQASM lowering](../src/interop/profile.rs); raw verifier, exact circuit checker and simulator | Existing common finite unitary vocabulary: controls, Hadamard, exact monomial actions and retained contract calls. The internal compatibility adapter and M1.1-A importer use this vocabulary; the importer emits only the selected Hadamard/monomial subset. No foreign gate requires a new verifier rule. |
 | `QuantumIf` and its `UnitaryStep` arms | No current source-lowering constructor; raw Rust callers/tests can supply them. Verifier, evidence preflight/extractor and simulator still accept them. The frontend function-contract size visitor only inspects them. | Explicit compatibility debt. First replace the dedicated numeric interpreter with an adapter to `CircuitStep`; then specify legacy desugaring and migrate this convenience variant out of the core in a MINOR. |
 | `ComputeUseUncompute` / `ProtectedUse` | [Restricted source lowering](../src/frontend/compile/lower/mod.rs) emits an empty target list and only Z/T `ProtectedGate` on its single ancilla. Raw verifier/extractor/simulator also support target gates, controlled phase, source protection and broader layouts. | Emitted subset has a cleanup obligation; the larger raw-only vocabulary is additional debt. Do not expand it for hypothetical importers. Investigate migration to explicit circuits with checked cleanup evidence, without treating a name or unitarity as zero-return evidence. No equivalence or migration is implemented yet. |
-| `CertifiedCompute` and retained `Contract` actions | [Certified lowering](../src/frontend/compile/lower/certified.rs) and [function contracts](../src/frontend/compile/lower/function_contract.rs); independent evidence checks | Keep exact actual/logical binding and dependency checking. A convenience form may disappear only when these obligations are represented and checked elsewhere. |
+| `CertifiedCompute` and retained `Contract` actions | [Certified lowering](../src/frontend/compile/lower/certified.rs) and [function contracts](../src/frontend/compile/lower/function_contract.rs), and [M1 operations](../src/frontend/compile/operations.rs) with the [meaning adapter](../src/contract/meaning.rs); independent evidence checks | Keep exact actual/logical binding and dependency checking. A convenience form may disappear only when these obligations are represented and checked elsewhere. |
 | Preparation, observation, ownership structure, lifts, classical operations and branch phis | [Primitive](../src/frontend/compile/lower/primitives.rs), [expression](../src/frontend/compile/lower/mod.rs) and [branch](../src/frontend/compile/lower/branch.rs) lowering; M1.1-A emits Init0/Join/Split/MeasureZ/Discard; raw verifier and execution/extraction where applicable | Emitted today. Retain their resource, instrument and ordering obligations; external physical IDs or LLVM control flow alone do not establish them. |
+
+**0.1.8 producer continuation:** [n-ary tuple syntax](syntax-v0.md#authoring-forms-added-in-product-018)
+folds to existing binary AST nodes; basis parameter patterns use the existing
+finite label binder. Their tables flow through the same lift/computed/meaning
+producers above. No IR constructor, verifier rule or compatibility-debt row is
+added or removed; this is source convenience, not a reduction of the trusted
+acceptance base.
 
 This is an initial constructor-family inventory, not a proof of complete
 frontend coverage. Review it when adding an emitter, core constructor or
@@ -134,7 +141,8 @@ The next core reduction needs a complete migration contract before implementatio
    evidence-extractor cases. Record the actual trusted rules removed. Do not
    count file moves, numeric sharing, or deleting tests as trusted-core reduction.
 
-These steps require a MINOR when public IR/API or specified capacities change.
+These steps require MINOR when they break public IR/API contracts or reduce
+specified capacities; compatible additions follow the PATCH policy.
 Keep the reference executor during external-backend development. The later [M1.1-A adapter work](interop-m1.1.md) uses these existing rules.
 Neither step establishes a general translation proof, a minimal kernel or M2 hierarchy.
 

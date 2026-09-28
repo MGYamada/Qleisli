@@ -93,7 +93,7 @@ linearly. The following interfaces summarize types and effects; the
 [v0 specification](language-spec.md) supplies exact typing rules. A product
 domain is **semantic metanotation**, not an instruction to pack multiple source
 arguments into one tuple. For example, `xor2(x: Bit, y: Bit)` has two parameters,
-whereas a hypothetical `f(p: (Bit,Bit))` has one product parameter. `cnot` and
+whereas `f((x,y): (Bit,Bit))` has one patterned basis parameter. `cnot` and
 `join` take two arguments; `toffoli` takes three; `parity_zz` takes two. Every
 other ordinary quantum API listed here takes one argument.
 

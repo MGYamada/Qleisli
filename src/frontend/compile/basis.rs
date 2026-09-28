@@ -84,14 +84,20 @@ impl Compiler<'_> {
             let mut offset = 0;
             for (param, ty) in decl.params.iter().zip(&params) {
                 let width = ty.basis_bits().expect("basis type");
-                self.charge(&key.0, param.span, ty.tree_size().nodes)?;
-                env.insert(
-                    param.name.text.clone(),
-                    BasisValue {
-                        ty: ty.clone(),
-                        label: (label >> offset) & ((1 << width) - 1),
-                    },
-                );
+                let label = (label >> offset) & ((1 << width) - 1);
+                if let PatternKind::Name(name) = &param.pattern.kind {
+                    // Retain the existing work accounting for legacy binders.
+                    self.charge(&key.0, param.span, ty.tree_size().nodes)?;
+                    env.insert(
+                        name.text.clone(),
+                        BasisValue {
+                            ty: ty.clone(),
+                            label,
+                        },
+                    );
+                } else {
+                    env.extend(self.bind_basis_pattern(&key.0, &param.pattern, ty, label)?);
+                }
                 offset += width;
             }
             let value = self.eval_basis(&key.0, body, &env, 0)?;
@@ -100,7 +106,7 @@ impl Compiler<'_> {
                     &key.0,
                     body.span,
                     ErrorCode::TypeMismatch,
-                    "basis result does not match its declared type",
+                    format!("basis result does not match its declared type: expected `{result}`, found `{}`", value.ty),
                 ));
             }
             table.push(value.label);
@@ -234,7 +240,10 @@ impl Compiler<'_> {
                             module,
                             arg.span,
                             ErrorCode::TypeMismatch,
-                            "basis argument type does not match",
+                            format!(
+                                "basis argument type does not match: expected `{ty}`, found `{}`",
+                                value.ty
+                            ),
                         ));
                     }
                     label |= usize::from(value.label) << offset;

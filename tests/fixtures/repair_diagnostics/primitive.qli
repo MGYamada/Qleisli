@@ -1,0 +1,2 @@
+use std::quantum::h;
+unitary fn bad(b:CBit) -> Q<Bit> { h(b) }

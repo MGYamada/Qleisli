@@ -1,0 +1,2 @@
+basis fn first((u,b):(Unit,Bit)) -> Bit { b }
+basis fn bad(b:Bit) -> Bit { first(b) }

@@ -1,0 +1,9 @@
+use std::quantum::init0;
+use std::observe::measure_z;
+observe fn main() -> CBit {
+    if true {
+        let (a,b,c) = (init0(),init0(),init0());
+        let ignored = measure_z(a);
+        measure_z(c)
+    } else { false }
+}

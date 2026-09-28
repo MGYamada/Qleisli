@@ -97,7 +97,10 @@ fn equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner() {
             error.message,
             "local quantum ownership `v` escapes neither through the result nor an explicit discard"
         );
-        assert_eq!(&source[error.span.start..error.span.end], block);
+        let binding_start = source.find("let v=carry").unwrap() + "let ".len();
+        assert_eq!(error.span.start, binding_start);
+        assert_eq!(error.span.end, binding_start + 1);
+        assert_eq!(&source[error.span.start..error.span.end], "v");
         // No operation or phi intervenes between the entry value and the
         // final local v here: equality of spelling, type, slot, and Value
         // cannot substitute for the identity of the original binding.

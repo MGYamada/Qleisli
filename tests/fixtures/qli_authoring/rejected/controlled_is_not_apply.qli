@@ -1,0 +1,2 @@
+unitary fn apply[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Controlled(U) { U(q) }

@@ -7,6 +7,20 @@
 use std::collections::BTreeSet;
 
 use super::value::{Env, Value};
+use crate::frontend::ast::{Pattern, PatternKind, Span};
+
+/// Locate the source binder without changing the ownership/scope projection.
+pub(super) fn binding_span(pattern: &Pattern, name: &str) -> Option<Span> {
+    let mut pending = vec![pattern];
+    while let Some(pattern) = pending.pop() {
+        match &pattern.kind {
+            PatternKind::Name(ident) if ident.text == name => return Some(ident.span),
+            PatternKind::Tuple(a, b) => pending.extend([b.as_ref(), a.as_ref()]),
+            _ => {}
+        }
+    }
+    None
+}
 
 /// Reject unreturned local quantum owners, then restore the entry scope.
 /// Failure leaves `entry` unchanged. The result value and suspended frame are

@@ -1,0 +1,14 @@
+//! Joint branch tomography for U = H T, whose eigenphases are off the 1/8 grid.
+use iterative::phase3;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::observe::measure_z;
+unitary fn tilted(q:Q<Bit>) -> Q<Bit> { h(t(q)) }
+unitary fn quarter_phase(q:Q<Bit>) -> Q<Bit> { repeat_static(2,t,q) }
+observe fn main() -> ((CBit,CBit,CBit),(CBit,CBit)) {
+    let (reference,target) = cnot(h(init0()),init0());
+    let (word,target) = phase3[tilted](target);
+    (word,(measure_z(reference),measure_z(h(target))))
+}

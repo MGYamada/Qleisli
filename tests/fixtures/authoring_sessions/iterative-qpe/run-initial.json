@@ -1,0 +1,67 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T07:33:12.407799+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            false,
+            true
+          ],
+          "probability": 2.6302144545229465e-33
+        },
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            true
+          ],
+          "probability": 4.51273456496633e-34
+        },
+        {
+          "bits": [
+            false,
+            true,
+            false,
+            true
+          ],
+          "probability": 2.6302144545229465e-33
+        },
+        {
+          "bits": [
+            false,
+            true,
+            true,
+            true
+          ],
+          "probability": 4.51273456496633e-34
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  },
+  "stderr": ""
+}

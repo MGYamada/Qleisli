@@ -1,0 +1,1 @@
+unitary fn bad(q:Q<Unit>) -> Unit { let (a,_,c) = (false,q,true); () }

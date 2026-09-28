@@ -3,6 +3,7 @@
 mod basis;
 mod circuit;
 mod lower;
+mod operations;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -35,6 +36,8 @@ pub enum ErrorCode {
     Unsupported,
     Limit,
     InvalidIr,
+    Capability,
+    Contract,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -71,6 +74,42 @@ enum Ty {
     CBit,
     Q(Box<Ty>),
     Pair(Box<Ty>, Box<Ty>),
+}
+
+impl fmt::Display for Ty {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Preserve the exact binary tree, including Unit. Iterative rendering
+        // also keeps error reporting independent of the Rust call-stack depth.
+        enum Part<'a> {
+            Type(&'a Ty),
+            Text(&'static str),
+        }
+        let mut pending = vec![Part::Type(self)];
+        while let Some(part) = pending.pop() {
+            match part {
+                Part::Text(text) => f.write_str(text)?,
+                Part::Type(ty) => match ty {
+                    Ty::Unit => f.write_str("Unit")?,
+                    Ty::Bit => f.write_str("Bit")?,
+                    Ty::CBit => f.write_str("CBit")?,
+                    Ty::Q(inner) => {
+                        f.write_str("Q<")?;
+                        pending.extend([Part::Text(">"), Part::Type(inner)]);
+                    }
+                    Ty::Pair(a, b) => {
+                        f.write_str("(")?;
+                        pending.extend([
+                            Part::Text(")"),
+                            Part::Type(b),
+                            Part::Text(","),
+                            Part::Type(a),
+                        ]);
+                    }
+                },
+            }
+        }
+        Ok(())
+    }
 }
 
 impl Ty {
@@ -156,6 +195,9 @@ struct Compiler<'a> {
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
     function_evidence: BTreeMap<(Key, Key), Arc<crate::contract::FunctionEvidence>>,
+    meanings: BTreeMap<Key, operations::DeclaredMeaning>,
+    providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
+    instances: Vec<(Key, Vec<operations::Operation>)>,
     work: usize,
 }
 
@@ -265,17 +307,42 @@ impl Compiler<'_> {
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
         let mut names = BTreeSet::new();
-        let mut params = Vec::new();
-        for param in &decl.params {
+        for param in &decl.static_params {
             if !names.insert(&param.name.text) {
                 return Err(self.error(
                     &key.0,
                     param.name.span,
                     ErrorCode::Ownership,
-                    "duplicate parameter name",
+                    "duplicate static parameter",
                 ));
             }
-            params.push(self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?);
+        }
+        let mut params = Vec::new();
+        for param in &decl.params {
+            let mut pending = vec![&param.pattern];
+            while let Some(pattern) = pending.pop() {
+                match &pattern.kind {
+                    PatternKind::Name(name) => {
+                        if !names.insert(&name.text) {
+                            return Err(self.error(
+                                &key.0,
+                                name.span,
+                                ErrorCode::Ownership,
+                                "duplicate parameter name",
+                            ));
+                        }
+                    }
+                    PatternKind::Tuple(a, b) => pending.extend([b.as_ref(), a.as_ref()]),
+                    PatternKind::Wildcard => {}
+                }
+            }
+            let ty = self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?;
+            if decl.kind == FnKind::Basis && !matches!(param.pattern.kind, PatternKind::Name(_)) {
+                // Reuse the coherent basis-pattern binding judgment. A zero
+                // label suffices to validate shape; enumeration binds all labels.
+                self.bind_basis_pattern(&key.0, &param.pattern, &ty, 0)?;
+            }
+            params.push(ty);
         }
         Ok((
             params,
@@ -289,7 +356,15 @@ impl Compiler<'_> {
         let mut users = BTreeMap::<Key, Vec<Key>>::new();
         for (key, decl) in &self.declarations {
             let mut dependencies = BTreeSet::new();
-            for name in called_names(&decl.body) {
+            let static_names: BTreeSet<_> =
+                decl.static_params.iter().map(|p| &p.name.text).collect();
+            for name in called_names(&decl.body)
+                .into_iter()
+                .chain(decl.static_params.iter().filter_map(|p| p.meaning.as_ref()))
+            {
+                if static_names.contains(&name.text) {
+                    continue;
+                }
                 if let Callee::User(target) = self.resolve(&key.0, name)? {
                     dependencies.insert(target);
                 }
@@ -330,7 +405,7 @@ impl Compiler<'_> {
 
 fn effect(kind: FnKind) -> Effect {
     match kind {
-        FnKind::Basis | FnKind::Unitary => Effect::Unitary,
+        FnKind::Basis | FnKind::Meaning | FnKind::Unitary => Effect::Unitary,
         FnKind::Iso => Effect::Iso,
         FnKind::Observe => Effect::Observe,
     }
@@ -342,7 +417,11 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
         Basis(&'a BasisExpr),
         Block(&'a Block),
     }
+    if let FnBody::Meaning { function, .. } = body {
+        return vec![function];
+    }
     let mut stack = vec![match body {
+        FnBody::Meaning { .. } => unreachable!(),
         FnBody::Basis(expr) => Node::Basis(expr),
         FnBody::Quantum(block) => Node::Block(block),
     }];
@@ -389,8 +468,15 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     stack.push(Node::Expr(a));
                     stack.push(Node::Expr(b));
                 }
-                ExprKind::Call { callee, args } => {
+                ExprKind::Call {
+                    callee,
+                    static_args,
+                    args,
+                } => {
                     names.push(callee);
+                    for op in static_args {
+                        operations::called_static_names(op, &mut names);
+                    }
                     stack.extend(args.iter().map(Node::Expr));
                 }
                 ExprKind::If {
@@ -518,13 +604,20 @@ fn process_loaded_project(
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
+        meanings: BTreeMap::new(),
+        providers: BTreeMap::new(),
+        instances: vec![],
         work: 0,
     };
     let order = compiler.order()?;
     let entry = ("main".to_owned(), "main".to_owned());
     if let Some(decl) = compiler.declarations.get(&entry).copied() {
         let (_, result) = compiler.signature(&entry)?;
-        if decl.kind != FnKind::Observe || !decl.params.is_empty() || !result.classical() {
+        if decl.kind != FnKind::Observe
+            || !decl.params.is_empty()
+            || !decl.static_params.is_empty()
+            || !result.classical()
+        {
             return Err(compiler.error(
                 "main",
                 decl.span,
@@ -550,9 +643,20 @@ fn process_loaded_project(
             compiler.basis.insert(key.clone(), function);
         }
     }
+    for key in &order {
+        if compiler.declarations[key].kind == FnKind::Meaning {
+            compiler.compile_meaning(key)?;
+        }
+    }
     let mut main = None;
     for key in &order {
-        if compiler.declarations[key].kind != FnKind::Basis {
+        if !compiler.declarations[key].static_params.is_empty() {
+            let bindings = compiler.abstract_bindings(key)?;
+            lower::check_generic(&mut compiler, key, bindings)?;
+        } else if !matches!(
+            compiler.declarations[key].kind,
+            FnKind::Basis | FnKind::Meaning
+        ) {
             let program = lower::lower_function(&mut compiler, key)?;
             if *key == entry {
                 main = Some(program.clone());

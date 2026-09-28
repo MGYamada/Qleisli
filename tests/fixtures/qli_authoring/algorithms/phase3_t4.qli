@@ -1,0 +1,10 @@
+//! Estimate phase 4/8; print the weight-one bit first and retain the target.
+use estimation::phase3;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> (((CBit,CBit),CBit),CBit) {
+    let (phase_word,target) = phase3[repeat_op(4,eighth_phase)](x(init0()));
+    (phase_word,measure_z(target))
+}

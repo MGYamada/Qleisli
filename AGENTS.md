@@ -29,16 +29,31 @@ source for Shor, QPE and Grover that preserves textbook structure and meets
 V1-C1–C5. Retain fixed-size examples as regressions; names or pseudocode alone
 cannot satisfy these gates.
 
+Prioritize executable `.qli` examples and source fixtures when evaluating
+authoring ergonomics, especially for LLMs. Discover missing abstractions from
+real programs, retain minimal failed attempts and semantic counterexamples,
+and update the [authoring report](docs/qli-authoring-feedback.md). Keep the
+[quick reference](docs/qli-quick-reference.md) copyable and its code CI-checked.
+An authoring exercise is not a measured model benchmark or an algorithm proof.
+For new authoring/repair studies, follow the [session record procedure](tests/fixtures/authoring_sessions/README.md):
+save the first source before checking, append real diagnostics and revisions,
+and distinguish informed/curated work from controlled model evaluation.
+Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
+with stable IDs, concrete source/design evidence, the obligation to remove,
+and a checking/acceptance experiment. Update it when current work exposes a
+new issue; retain resolution links. Backlog entries do not select a release or
+adopt syntax, and the current development version remains 0.1.8.
+
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
-[version-independent M0–M5 plan](docs/v0x-roadmap.md). Normally, 0.1.x is compatible
-maintenance; an audit does not require a PATCH. New features require a MINOR,
-subject to the explicit exceptions below. Fixed-width M1 may use existing finite
+[version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,
+compatible fixes and features use PATCH; breaking changes use MINOR. An audit
+does not itself require a release. Fixed-width M1 may use existing finite
 checks. Before generalizing sizes, establish composition of meanings, encodings
 and evidence without global dense matrices, together with an evidence-bound
 hierarchical IR. General predicates and arithmetic require reversible circuit
 synthesis rather than full-space truth tables. The bounded symbolic-kernel
 continuation is an M2 design decision, not production integration or blanket
-permission for new 0.1.x implementations.
+permission to bypass the feature's specification and validation gates.
 
 Evaluate abstractions by which user obligations they remove and which checker
 validates their evidence. Mathematical unitarity does not imply access to an
@@ -113,16 +128,12 @@ dossier and executed results in conformance/release records.
 
 [Versioning](docs/versioning.md) is authoritative.
 
-**Explicit exceptions, 2026-09-28:** after the MINOR rule was explained, the
-user retained v0.1.6 for the comment/docstring extension, recorded in its
-[extension/migration contract](docs/documentation-comments.md). The user then
-selected v0.1.7 for starting M1 features, initially X1 check/run JSON results
-and structured diagnostics, and added [M1.1 connections](docs/interop-m1.1.md).
-The user subsequently prioritized releasing the completed X1/M1.1-A slice.
-Operation parameters/contracts and QIR input remain separate unreleased work.
-Record each delivered scope and remaining gate in
-the [0.1.7 record](docs/releases/v0.1.7.md). These are feature exceptions, not
-maintenance-only claims or permission for future PATCH features.
+The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
+features need no exception. Preserve historical release/migration records and
+the selected development version 0.1.8, explicitly retained by the user for
+the authoring continuation. Record its public Rust AST migration and remaining
+gates in the [0.1.8 record](docs/releases/v0.1.8.md). Type/size
+parameters and cross-interface QPE reuse remain future work at the user's request.
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
   `lean/lakefile.toml`. Compiler, bundled library and proofs currently share a
@@ -131,10 +142,11 @@ maintenance-only claims or permission for future PATCH features.
   Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task
   or commit. Align version, changelog and current descriptions when selecting
   a release. Prereleases such as `0.2.0-rc.1` are allowed.
-- In 0.x, PATCH is compatible fixes/refactoring/documentation/proof clarification
-  and maintenance. MINOR is new features, syntax, deprecations or breaking
-  changes, resetting PATCH to zero. Document migration for breaking changes;
-  choose the largest required increment for combined changes.
+- In 0.y.z with y > 0, PATCH covers compatible fixes, refactoring, documentation,
+  features, syntax additions and deprecations without removal. MINOR is for
+  breaking changes, resetting PATCH to zero. In 0.0.z, successive PATCH releases
+  are incompatible. Document migration and use the largest required increment
+  for combined changes; new features still need specifications and validation.
 - From 1.0.0, use PATCH for compatible fixes, MINOR for compatible additions and
   deprecations, and MAJOR for breaking changes. Reaching 1.0 requires evidence
   for V1-C1–C5 and explicitly stabilized public contracts.
@@ -145,9 +157,10 @@ maintenance-only claims or permission for future PATCH features.
   can also be breaking changes.
 - Rejecting an input/evidence that already violated published rules can be a
   PATCH fix. Record the violated rule, before/after behavior, diagnostic and
-  regression. A new restriction/meaning or incompatible Rust change cannot use
-  this exception. Reduced capacities and raised toolchain requirements need
-  compatibility review and at least a MINOR in 0.x.
+  regression. A new restriction or changed meaning for previously supported
+  inputs, or an incompatible Rust change, cannot use this exception.
+  Reduced capacities and raised toolchain requirements need
+  compatibility review and at least MINOR in 0.y.z with y > 0.
 - Keep specification v0, ledger format v1, development stages and product
   versions separate. Never mechanically renumber historical checks/spec files.
 - For release, check changelog, norms, conformance, Rust fmt/all-target tests/

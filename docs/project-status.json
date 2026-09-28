@@ -1,18 +1,18 @@
 {
   "format": 1,
-  "release_state": "0.1.7 release scope finalized under the explicit user feature exception: X1 check/run JSON and M1.1-A OpenQASM input/output + QIR output; exact-commit publication evidence is in the linked release record",
+  "release_state": "0.1.8 release scope finalized: fixed-width operation contracts, authoring forms, executable corpus, iterative QPE and repair diagnostics; migrations and full local validation recorded; exact commit, CI, archives and publication are recorded in the linked GitHub release",
   "milestones": [
     {
       "id": "M0",
       "state": "original M1 scope/specification complete; added interoperability direction selected",
-      "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [M1 specification](next-minor-spec.md)",
+      "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [M1 specification](next-minor-spec.md); [v0.2.0 authoring issue intake, not adopted scope](v0.2.0-backlog.md)",
       "open": "Implementation-readiness checkpoint 2026-10-04 JST; remaining Python, QIR input and adaptive extension specifications pending"
     },
     {
       "id": "M1",
-      "state": "X1 check/run JSON and M1.1-A OpenQASM import/export + QIR output implemented; remaining slices pending",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md)",
-      "open": "Implement N1–N6 and X2–X6; QIR import through a standard reader, adaptive connections and Python bindings/distribution remain separate gates"
+      "state": "Fixed-width operations/meanings implemented alongside released X1 and M1.1-A; remaining slices pending",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md)",
+      "open": "X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
     },
     {
       "id": "M2",
@@ -133,7 +133,7 @@
     {
       "rule": "[Versioned JSON command results (X1)](machine-interface-spec.md#diagnostics)",
       "implementation": "[CLI transport](../src/bin/qleisli/json.rs); [structured diagnostics](../src/frontend/diagnostic.rs); [project loading](../src/frontend/project.rs)",
-      "tests": "[CLI golden cases](../tests/cli_json.rs); [source locations](../tests/diagnostics.rs); [independent JSON decoding](../scripts/test_cli_json.py)",
+      "tests": "[CLI golden cases](../tests/cli_json.rs); [source locations](../tests/diagnostics.rs); [independent JSON decoding](../scripts/test_cli_json.py); [expected/actual types and cleanup repair](../tests/repair_diagnostics.rs)",
       "proof": "Result transport and finite conformance tests; no additional semantic evidence or compiler soundness claim"
     },
     {
@@ -141,6 +141,24 @@
       "implementation": "[Bounded OpenQASM parser/lowering](../src/interop/openqasm.rs); [profile/ownership adapter](../src/interop/profile.rs); [QIR writer](../src/interop/qir.rs)",
       "tests": "[Independent import and rejection cases](../tests/interop.rs); [exact gate columns](../src/interop/profile.rs); [reference parser and LLVM checks](../scripts/test_interop_external.py)",
       "proof": "Finite translation regressions and independent target syntax/profile smoke checks; no general translator proof, imported evidence authority or device execution claim"
+    },
+    {
+      "rule": "[Fixed-width operation parameters and meanings](next-minor-spec.md)",
+      "implementation": "[Static descriptions](../src/frontend/compile/operations.rs); [generic lowering](../src/frontend/compile/lower/operations.rs); [target adapter](../src/contract/meaning.rs)",
+      "tests": "[Operation regressions](../tests/operation_parameters.rs); [exact target/binding regressions](../tests/meaning_evidence.rs)",
+      "proof": "Existing finite evidence boundary reused; parametric source checking and per-instance exact checks, not general Rust adequacy or a new Lean theorem"
+    },
+    {
+      "rule": "[Executable QLI authoring and algorithm contracts](qli-authoring-feedback.md)",
+      "implementation": "[Protocol components](../examples/protocols/README.md); [operation algorithms](../examples/operation_algorithms/README.md); [iterative QPE](../examples/iterative_phase_estimation/README.md)",
+      "tests": "[Source corpus and reference compilation](../tests/qli_corpus.rs); [checked-in source fixtures](../tests/fixtures/qli_authoring/README.md); [independent iterative instrument checks](../tests/iterative_qpe.rs); [preserved authoring records](../tests/fixtures/authoring_sessions/README.md)",
+      "proof": "Finite branch/reference-sensitive simulation and existing exact checks; not a general protocol/compiler proof or measured LLM benchmark"
+    },
+    {
+      "rule": "[Basis parameter patterns and n-ary tuple sugar](syntax-v0.md#authoring-forms-added-in-product-018)",
+      "implementation": "[Binary AST parsing](../src/frontend/parser.rs); [finite basis bindings](../src/frontend/compile/basis.rs); [binding locations](../src/frontend/compile/lower/scope.rs)",
+      "tests": "[Source, semantic, rejection, location and depth regressions](../tests/authoring_ergonomics.rs); [scope rebinding regressions](../tests/source_scope.rs)",
+      "proof": "Existing finite checking boundary reused; no new IR rule or Lean theorem; full source-to-core preservation remains open"
     }
   ]
 }

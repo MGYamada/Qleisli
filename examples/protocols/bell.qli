@@ -1,0 +1,17 @@
+//! Shared Bell preparation and destructive Bell-basis measurement.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+/// Prepare (|00> + |11>)/sqrt(2), returning both distinct owners.
+pub iso fn prepare() -> (Q<Bit>, Q<Bit>) {
+    cnot(h(init0()), init0())
+}
+
+/// Consume both inputs; return (phase bit, parity bit), in that order.
+/// This observation can act on qubits entangled with external references.
+pub observe fn measure(left: Q<Bit>, right: Q<Bit>) -> (CBit, CBit) {
+    let (left, right) = cnot(left, right);
+    (measure_z(h(left)), measure_z(right))
+}

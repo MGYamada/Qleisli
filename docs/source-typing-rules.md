@@ -30,6 +30,14 @@ public signature and independently checked function equality are additional
 premises; the original T1–T3 record and Lean model do not verify the new
 implementation path.
 
+**0.1.8 authoring supplement:** [tuple syntax](syntax-v0.md#authoring-forms-added-in-product-018)
+left-folds to the existing binary constructors before these judgments. Basis
+parameter patterns use the same BP-NAME/BP-WILD/BP-PAIR binding relation as
+basis `do`, applied to each declared argument independently. This changes no
+core type, source argument arity or exact product-tree equality. Parameter
+names must be distinct across all patterns; ordinary parameters remain names.
+These implementation additions do not extend the scope of the older proofs.
+
 ## 1. Types and judgment interfaces
 
 Type formation is inductive, with **exact tree equality**:

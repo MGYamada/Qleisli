@@ -8,17 +8,120 @@ paths and the mathematical source/IR rules remains unproved.** The stated
 mathematical rules have ideal-soundness paper proofs Q1–Q3. Local Lean results
 have the scope recorded in the [proof ledger](lean-resource-proof.md).
 The [generated current status and rule inventory](current-status.md) derive
-from one current-state record and the manifests. The [0.1.7 record](releases/v0.1.7.md) separates the new M1 X1 implementation,
-its explicit version exception and local validation from publication.
+from one current-state record and the manifests. The [0.1.8 record](releases/v0.1.8.md) separates fixed-width M1 and authoring
+implementation, migration and local validation from publication.
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.7.md) and
+The current [release record](releases/v0.1.8.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.1.8 release procedure (2026-09-28)
+
+The user authorized releasing the completed operation-contract and authoring
+work as v0.1.8. Full local checks passed: 333 production and 43 research tests
+on Rust 1.98.1/1.85.0, Clippy for both packages/toolchains, primary formatting,
+Lean build and 577-declaration audit, 53 document/helper tests, finite/exact
+checks, 14 example projects and external OpenQASM/LLVM validation. The
+[release record](releases/v0.1.8.md#release-validation-and-publication) gives
+the executed scope and distinguishes local results from exact-commit CI.
+
+Protected-main PR/CI and clean distribution checks precede the immutable
+annotated tag. The [GitHub publication record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8)
+identifies the actual commit, CI runs, archive checks and publication. Source
+keyword/public Rust AST migrations remain documented. The v0.2.0 tuple-layout
+review and other backlog items remain future work; no new general proof or
+completed M1/v1 claim follows from release.
+
+## Iterative QPE, diagnostic repair and authoring observations (2026-09-28)
+
+The three requested 0.1.8 follow-ups are implemented: an ordinary iterative
+three-bit QPE example, expected/actual type and cleanup-repair messages, and
+preserved first-source/curated repair records. Independent Fourier-polynomial
+and coherent-QPE comparisons include off-grid entangled inputs. Rejection rules,
+JSON schemas and core verifier cases are unchanged. This is finite validation,
+not a general algorithm/compiler proof or controlled LLM benchmark.
+
+Both Rust 1.98.1 and 1.85.0 passed **333 tests** and Clippy; formatting, **14
+example projects**, independent CLI decoding, **19 document** and **5 record
+checker tests** passed. The [release record](releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
+records full executed/skipped scopes, including no new Lean or hosted CI run.
+
+## v0.2.0 issue intake (2026-09-28)
+
+The user requested accumulating future issues during 0.1.8 development. The
+[backlog](v0.2.0-backlog.md) records eight candidates with evidence and acceptance
+experiments; it does not adopt new syntax or change R14. The
+[release record](releases/v0.1.8.md#v020-issue-collection-2026-09-28) records the
+document-only validation; no Rust/Lean checks were rerun.
+
+## Authoring priorities 1–3 in v0.1.8 (2026-09-28)
+
+The user's selected basis parameter patterns, n-ary tuple sugar and precise
+owner-binding diagnostics are implemented. The [grammar supplement](syntax-v0.md#authoring-forms-added-in-product-018)
+preserves source arity and exact binary product trees; existing finite tables
+and evidence checks remain authoritative. The public Rust `Param` field change
+remains incompatible. The user retained 0.1.8 after the temporary 0.2.0
+selection; the [authoring migration](releases/v0.1.8.md#authoring-migration)
+records the change. Type/size parameters and cross-interface QPE sharing are
+explicitly future work; R14 and general proof obligations remain.
+
+Rust 1.98.1 and 1.85.0 each passed **325 all-target tests** and Clippy; formatting,
+all **13 example projects**, independent JSON decoding, document/helper checks,
+Lean build (**1,457 jobs**) and audit (**577 declarations**) passed. The
+[release record](releases/v0.1.8.md#authoring-validation) gives executed and
+skipped scopes, including the temporary manifest version at validation time.
+After restoring 0.1.8, metadata/document checks passed; Rust/Lean were not rerun
+for that correction. No core verifier rule, new theorem, tag or publication is claimed.
+
+## Cargo-compatible version policy (2026-09-28)
+
+At the user's request, [versioning](versioning.md) now permits compatible
+features in PATCH for 0.y.z with y > 0; breaking changes require MINOR.
+Historical selections/migrations and the selected 0.1.8 remain intact.
+Specification, verification and release gates are unchanged. Document-checker
+tests (19), generated-status/link checks and whitespace checks passed;
+Rust/Lean were not rerun for this documentation-only change.
+
+## Executable QLI authoring corpus in v0.1.8 (2026-09-28)
+
+The user prioritized source programs and tests as evidence for language
+ergonomics. The [source corpus](../tests/fixtures/qli_authoring/README.md) adds
+shared protocols and operation-parameter algorithms, with independent finite
+distribution expectations and intentional type-correct faults. The
+[quick reference](qli-quick-reference.md) is compiled and executed in Rust CI.
+The [feedback report](qli-authoring-feedback.md) records reproduced tuple,
+product-meaning, diagnostic and abstraction limitations, including the supplied
+Claude feedback, without adopting future syntax or a new R14 ordering.
+
+All 319 Rust tests and all-target Clippy passed on Rust 1.98.1 and 1.85.0;
+formatting, 19 document-checker tests and document/status checks passed. Exact
+scope and checks not repeated are in the
+[continuation record](releases/v0.1.8.md#executable-source-and-authoring-continuation).
+These are finite regressions, not a measured model benchmark, a general
+protocol theorem, completed V1-C2 or v0.1.8 publication.
+
+## Fixed-width M1 implementation in v0.1.8 (2026-09-28)
+
+The user selected v0.1.8 for continued implementation on a suitable branch.
+The normative [M1 supplement](next-minor-spec.md) now has static operation
+parameters, independent access constraints, basis-derived meanings and checked
+composition. The existing monomial/FunctionEvidence boundary expresses these
+obligations; no new core checker rule or IR variant is introduced. Generic
+source checks do not issue evidence; each concrete computed equation still
+requires exact independent checking.
+
+The [release record](releases/v0.1.8.md#validation) records primary/MSRV Rust,
+source/evidence regressions, docs/helpers, representative execution and pinned
+Lean audit results, along with skipped release gates. Reserved identifiers and
+public AST/error additions require migration; the old function-contract example
+renames its `meaning` module to `specification` while retaining its operator.
+No v0.1.8 publication, general Rust theorem, completed M1/M2 milestone or V1
+algorithm acceptance follows from this implementation.
 
 ## v0.1.7 release procedure (2026-09-28)
 

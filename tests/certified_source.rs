@@ -221,8 +221,8 @@ fn temporary_binders_do_not_consume_shadowed_outer_owners() {
 #[test]
 fn exact_basis_shape_and_declared_unitary_effect_are_required() {
     for declaration in [
-        "unitary fn meaning(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { q }",
-        "iso fn meaning(q: Q<Bit>) -> Q<Bit> { q }",
+        "unitary fn specified(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { q }",
+        "iso fn specified(q: Q<Bit>) -> Q<Bit> { q }",
     ] {
         let code = if declaration.starts_with("iso") {
             ErrorCode::Effect
@@ -232,7 +232,7 @@ fn exact_basis_shape_and_declared_unitary_effect_are_required() {
         rejects(
             &format!(
                 "{IMPORTS} {declaration} unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
-                    with_computed(q,predicate,meaning) {{ |d,a| (d,a) }}
+                    with_computed(q,predicate,specified) {{ |d,a| (d,a) }}
                 }}"
             ),
             code,

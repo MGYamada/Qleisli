@@ -7,8 +7,9 @@ use std::fmt;
 use std::mem::discriminant;
 
 use super::ast::{
-    BasisExpr, BasisExprKind, Block, Decl, Expr, ExprKind, FnBody, FnKind, Ident, Module, Param,
-    Pattern, PatternKind, Span, Stmt, StmtKind, Type, TypeKind, UseDecl,
+    Access, AccessConstraint, BasisExpr, BasisExprKind, Block, Decl, Expr, ExprKind, FnBody,
+    FnKind, Ident, Module, Param, Pattern, PatternKind, Span, StaticOp, StaticOpKind, StaticParam,
+    Stmt, StmtKind, Type, TypeKind, UseDecl,
 };
 use super::documentation::{DocumentedModule, attach};
 use super::lexer::{LexError, Token, TokenKind, lex_documented};
@@ -91,6 +92,7 @@ impl Parser {
                 || self.at(&TokenKind::Iso)
                 || self.at(&TokenKind::Unitary)
                 || self.at(&TokenKind::Observe)
+                || self.at(&TokenKind::Meaning)
             {
                 decls.push(self.decl()?);
             } else {
@@ -142,6 +144,36 @@ impl Parser {
         let pub_token = self.consume(&TokenKind::Pub);
         let public = pub_token.is_some();
         let start = pub_token.map_or_else(|| self.current().span.start, |token| token.span.start);
+        if self.consume(&TokenKind::Meaning).is_some() {
+            let name = self.ident()?;
+            self.expect(&TokenKind::Colon)?;
+            let return_type = self.basis_type()?;
+            self.expect(&TokenKind::Equals)?;
+            let permutation = if self.consume(&TokenKind::PermutationBy).is_some() {
+                true
+            } else {
+                self.expect(&TokenKind::PhaseBy)?;
+                false
+            };
+            self.expect(&TokenKind::LParen)?;
+            let function = self.ident()?;
+            self.expect(&TokenKind::RParen)?;
+            let end = self.expect(&TokenKind::Semicolon)?.span.end;
+            return Ok(Decl {
+                public,
+                kind: FnKind::Meaning,
+                name,
+                static_params: vec![],
+                requires: vec![],
+                params: vec![],
+                return_type,
+                body: FnBody::Meaning {
+                    permutation,
+                    function,
+                },
+                span: Span::new(start, end),
+            });
+        }
         let kind = if self.consume(&TokenKind::Basis).is_some() {
             FnKind::Basis
         } else if self.consume(&TokenKind::Iso).is_some() {
@@ -155,23 +187,56 @@ impl Parser {
         };
         self.expect(&TokenKind::Fn)?;
         let name = self.ident()?;
+        let mut static_params = Vec::new();
+        if self.consume(&TokenKind::LBracket).is_some() {
+            if kind == FnKind::Basis {
+                return Err(self.error("basis functions cannot have static operation parameters"));
+            }
+            loop {
+                self.expect(&TokenKind::Static)?;
+                let name = self.ident()?;
+                self.expect(&TokenKind::Colon)?;
+                self.expect(&TokenKind::Op)?;
+                self.expect(&TokenKind::LAngle)?;
+                let basis = self.basis_type()?;
+                let meaning = if self.consume(&TokenKind::Comma).is_some() {
+                    Some(self.ident()?)
+                } else {
+                    None
+                };
+                self.expect(&TokenKind::RAngle)?;
+                static_params.push(StaticParam {
+                    name,
+                    basis,
+                    meaning,
+                });
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
+            self.expect(&TokenKind::RBracket)?;
+        }
         self.expect(&TokenKind::LParen)?;
         let mut params = Vec::new();
         if !self.at(&TokenKind::RParen) {
             loop {
-                let param_name = self.ident()?;
+                let pattern = if kind == FnKind::Basis {
+                    self.pattern()?
+                } else {
+                    let name = self.ident()?;
+                    Pattern {
+                        span: name.span,
+                        kind: PatternKind::Name(name),
+                    }
+                };
                 self.expect(&TokenKind::Colon)?;
                 let ty = if kind == FnKind::Basis {
                     self.basis_type()?
                 } else {
                     self.ty()?
                 };
-                let span = Span::new(param_name.span.start, ty.span.end);
-                params.push(Param {
-                    name: param_name,
-                    ty,
-                    span,
-                });
+                let span = Span::new(pattern.span.start, ty.span.end);
+                params.push(Param { pattern, ty, span });
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
@@ -184,6 +249,29 @@ impl Parser {
         } else {
             self.ty()?
         };
+        let mut requires = Vec::new();
+        if self.consume(&TokenKind::Requires).is_some() {
+            if static_params.is_empty() {
+                return Err(self.error("requires needs static parameters"));
+            }
+            loop {
+                let access = if self.consume(&TokenKind::ApplyAccess).is_some() {
+                    Access::Apply
+                } else if self.consume(&TokenKind::AdjointAccess).is_some() {
+                    Access::Adjoint
+                } else {
+                    self.expect(&TokenKind::ControlledAccess)?;
+                    Access::Controlled
+                };
+                self.expect(&TokenKind::LParen)?;
+                let name = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                requires.push(AccessConstraint { access, name });
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
+        }
         let (body, end) = if kind == FnKind::Basis {
             let (basis, block_span) = self.basis_block()?;
             (FnBody::Basis(basis), block_span.end)
@@ -196,6 +284,8 @@ impl Parser {
             public,
             kind,
             name,
+            static_params,
+            requires,
             params,
             return_type,
             body,
@@ -204,7 +294,69 @@ impl Parser {
     }
 
     fn ty(&mut self) -> Result<Type, ParseError> {
-        self.nested(Self::ty_inner)
+        let ty = self.nested(Self::ty_inner)?;
+        Self::type_depth(&ty)?;
+        Ok(ty)
+    }
+
+    fn static_op(&mut self) -> Result<StaticOp, ParseError> {
+        self.nested(Self::static_op_inner)
+    }
+
+    fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
+        let start = self.current().span;
+        if matches!(self.current().kind, TokenKind::Ident(_)) {
+            let name = self.ident()?;
+            return Ok(StaticOp {
+                span: name.span,
+                kind: StaticOpKind::Name(name),
+            });
+        }
+        let constructor = self.bump();
+        self.expect(&TokenKind::LParen)?;
+        let kind = match constructor.kind {
+            TokenKind::BindOp => {
+                let implementation = self.ident()?;
+                self.expect(&TokenKind::Comma)?;
+                StaticOpKind::Bind {
+                    implementation,
+                    meaning: self.ident()?,
+                }
+            }
+            TokenKind::RepeatOp => {
+                let count = match &self.current().kind {
+                    TokenKind::Zero => 0,
+                    TokenKind::One => 1,
+                    TokenKind::Natural(n) if !n.starts_with('0') => n
+                        .parse::<u16>()
+                        .ok()
+                        .filter(|n| *n <= 4096)
+                        .ok_or_else(|| self.error("static repetition exceeds 4096"))?,
+                    _ => return Err(self.error("expected canonical static natural number")),
+                };
+                self.bump();
+                self.expect(&TokenKind::Comma)?;
+                StaticOpKind::Repeat(count, Box::new(self.static_op()?))
+            }
+            TokenKind::InverseOp => StaticOpKind::Inverse(Box::new(self.static_op()?)),
+            TokenKind::ControlledOp => StaticOpKind::Controlled(Box::new(self.static_op()?)),
+            TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp => {
+                let a = Box::new(self.static_op()?);
+                self.expect(&TokenKind::Comma)?;
+                let b = Box::new(self.static_op()?);
+                match constructor.kind {
+                    TokenKind::ThenOp => StaticOpKind::Then(a, b),
+                    TokenKind::TensorOp => StaticOpKind::Tensor(a, b),
+                    _ => StaticOpKind::Conjugate(a, b),
+                }
+            }
+            _ => return Err(self.error("expected a static operation description")),
+        };
+        let end = self.expect(&TokenKind::RParen)?.span;
+        Ok(StaticOp {
+            kind,
+            span: start.cover(end),
+        })
     }
 
     fn ty_inner(&mut self) -> Result<Type, ParseError> {
@@ -239,7 +391,9 @@ impl Parser {
     }
 
     fn basis_type(&mut self) -> Result<Type, ParseError> {
-        self.nested(Self::basis_type_inner)
+        let ty = self.nested(Self::basis_type_inner)?;
+        Self::type_depth(&ty)?;
+        Ok(ty)
     }
 
     fn basis_type_inner(&mut self) -> Result<Type, ParseError> {
@@ -260,22 +414,51 @@ impl Parser {
 
     fn tuple_type(&mut self, basis_only: bool) -> Result<Type, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
-        let left = if basis_only {
+        let mut left = if basis_only {
             self.basis_type()?
         } else {
             self.ty()?
         };
         self.expect(&TokenKind::Comma)?;
-        let right = if basis_only {
-            self.basis_type()?
-        } else {
-            self.ty()?
-        };
+        loop {
+            let right = if basis_only {
+                self.basis_type()?
+            } else {
+                self.ty()?
+            };
+            left = Type {
+                span: left.span.cover(right.span),
+                kind: TypeKind::Tuple(Box::new(left), Box::new(right)),
+            };
+            // Check each fold before the tree can grow beyond bounded depth.
+            Self::type_depth(&left)?;
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
         let close = self.expect(&TokenKind::RParen)?;
-        Ok(Type {
-            kind: TypeKind::Tuple(Box::new(left), Box::new(right)),
-            span: open.span.cover(close.span),
-        })
+        left.span = open.span.cover(close.span);
+        Ok(left)
+    }
+
+    fn type_depth(ty: &Type) -> Result<(), ParseError> {
+        let mut pending = vec![(ty, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "type AST exceeds the initial 64-level limit".into(),
+                    span: node.span,
+                });
+            }
+            match &node.kind {
+                TypeKind::Tuple(a, b) => {
+                    pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
+                }
+                TypeKind::Q(inner) => pending.push((inner, depth + 1)),
+                _ => {}
+            }
+        }
+        Ok(())
     }
 
     fn basis_block(&mut self) -> Result<(BasisExpr, Span), ParseError> {
@@ -329,7 +512,9 @@ impl Parser {
     }
 
     fn pattern(&mut self) -> Result<Pattern, ParseError> {
-        self.nested(Self::pattern_inner)
+        let pattern = self.nested(Self::pattern_inner)?;
+        Self::pattern_depth(&pattern)?;
+        Ok(pattern)
     }
 
     fn pattern_inner(&mut self) -> Result<Pattern, ParseError> {
@@ -350,14 +535,38 @@ impl Parser {
             });
         }
         let open = self.expect(&TokenKind::LParen)?;
-        let left = self.pattern()?;
+        let mut left = self.pattern()?;
         self.expect(&TokenKind::Comma)?;
-        let right = self.pattern()?;
+        loop {
+            let right = self.pattern()?;
+            left = Pattern {
+                span: left.span.cover(right.span),
+                kind: PatternKind::Tuple(Box::new(left), Box::new(right)),
+            };
+            Self::pattern_depth(&left)?;
+            if self.consume(&TokenKind::Comma).is_none() {
+                break;
+            }
+        }
         let close = self.expect(&TokenKind::RParen)?;
-        Ok(Pattern {
-            kind: PatternKind::Tuple(Box::new(left), Box::new(right)),
-            span: open.span.cover(close.span),
-        })
+        left.span = open.span.cover(close.span);
+        Ok(left)
+    }
+
+    fn pattern_depth(pattern: &Pattern) -> Result<(), ParseError> {
+        let mut pending = vec![(pattern, 1)];
+        while let Some((node, depth)) = pending.pop() {
+            if depth > MAX_NESTING {
+                return Err(ParseError {
+                    message: "pattern AST exceeds the initial 64-level limit".into(),
+                    span: node.span,
+                });
+            }
+            if let PatternKind::Tuple(a, b) = &node.kind {
+                pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]);
+            }
+        }
+        Ok(())
     }
 
     fn expr(&mut self) -> Result<Expr, ParseError> {
@@ -542,105 +751,121 @@ impl Parser {
             });
         }
         if let Some(start) = self.consume(&TokenKind::Qif) {
-            self.expect(&TokenKind::LParen)?;
-            let control = Box::new(self.expr()?);
-            self.expect(&TokenKind::Comma)?;
-            let target = Box::new(self.expr()?);
-            self.expect(&TokenKind::RParen)?;
-            self.expect(&TokenKind::LBrace)?;
-            self.expect(&TokenKind::Zero)?;
-            self.expect(&TokenKind::FatArrow)?;
-            let zero = self.ident()?;
-            self.expect(&TokenKind::Comma)?;
-            self.expect(&TokenKind::One)?;
-            self.expect(&TokenKind::FatArrow)?;
-            let one = self.ident()?;
-            let end = self.expect(&TokenKind::RBrace)?;
-            return Ok(Expr {
-                kind: ExprKind::QuantumIf {
-                    control,
-                    target,
-                    zero,
-                    one,
-                },
-                span: start.span.cover(end.span),
-            });
+            return self.quantum_if(start);
         }
         if let Some(if_token) = self.consume(&TokenKind::If) {
-            let condition = self.expr()?;
-            let then_branch = self.block()?;
-            self.expect(&TokenKind::Else)?;
-            let else_branch = self.block()?;
-            let span = Span::new(if_token.span.start, else_branch.span.end);
-            return Ok(Expr {
-                kind: ExprKind::If {
-                    condition: Box::new(condition),
-                    then_branch,
-                    else_branch,
-                },
-                span,
-            });
+            return self.classical_if(if_token);
         }
         if let Some(do_token) = self.consume(&TokenKind::Do) {
-            let binder = self.pattern()?;
-            self.expect(&TokenKind::LeftArrow)?;
-            let input = self.expr()?;
-            self.expect(&TokenKind::Semicolon)?;
-            self.expect(&TokenKind::Pure)?;
-            let basis = self.basis_expr()?;
-            let span = Span::new(do_token.span.start, basis.span.end);
-            return Ok(Expr {
-                kind: ExprKind::CoherentLift {
-                    binder,
-                    input: Box::new(input),
-                    basis,
-                },
-                span,
-            });
+            return self.coherent_lift(do_token);
         }
         if let Some(with_token) = self.consume(&TokenKind::WithComputed) {
-            self.expect(&TokenKind::LParen)?;
-            let source = self.expr()?;
-            self.expect(&TokenKind::Comma)?;
-            let function = self.ident()?;
-            let logical = if self.consume(&TokenKind::Comma).is_some() {
-                Some(self.ident()?)
-            } else {
-                None
-            };
-            self.expect(&TokenKind::RParen)?;
-            let open = self.expect(&TokenKind::LBrace)?;
-            self.expect(&TokenKind::Pipe)?;
-            let binder = self.ident()?;
-            let ancilla_binder = if logical.is_some() {
-                self.expect(&TokenKind::Comma)?;
-                Some(self.ident()?)
-            } else {
-                None
-            };
-            self.expect(&TokenKind::Pipe)?;
-            let body = self.block_contents(open.span.start)?;
-            let span = Span::new(with_token.span.start, body.span.end);
-            let kind = if let Some(logical) = logical {
-                ExprKind::CertifiedComputed {
-                    source: Box::new(source),
-                    function,
-                    logical: Box::new(logical),
-                    data_binder: Box::new(binder),
-                    ancilla_binder: Box::new(ancilla_binder.expect("certified binder")),
-                    body,
-                }
-            } else {
-                ExprKind::WithComputed {
-                    source: Box::new(source),
-                    function,
-                    binder,
-                    body,
-                }
-            };
-            return Ok(Expr { kind, span });
+            return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    fn quantum_if(&mut self, start: Token) -> Result<Expr, ParseError> {
+        self.expect(&TokenKind::LParen)?;
+        let control = Box::new(self.expr()?);
+        self.expect(&TokenKind::Comma)?;
+        let target = Box::new(self.expr()?);
+        self.expect(&TokenKind::RParen)?;
+        self.expect(&TokenKind::LBrace)?;
+        self.expect(&TokenKind::Zero)?;
+        self.expect(&TokenKind::FatArrow)?;
+        let zero = self.ident()?;
+        self.expect(&TokenKind::Comma)?;
+        self.expect(&TokenKind::One)?;
+        self.expect(&TokenKind::FatArrow)?;
+        let one = self.ident()?;
+        let end = self.expect(&TokenKind::RBrace)?;
+        Ok(Expr {
+            kind: ExprKind::QuantumIf {
+                control,
+                target,
+                zero,
+                one,
+            },
+            span: start.span.cover(end.span),
+        })
+    }
+
+    fn classical_if(&mut self, if_token: Token) -> Result<Expr, ParseError> {
+        let condition = self.expr()?;
+        let then_branch = self.block()?;
+        self.expect(&TokenKind::Else)?;
+        let else_branch = self.block()?;
+        let span = Span::new(if_token.span.start, else_branch.span.end);
+        Ok(Expr {
+            kind: ExprKind::If {
+                condition: Box::new(condition),
+                then_branch,
+                else_branch,
+            },
+            span,
+        })
+    }
+
+    fn coherent_lift(&mut self, do_token: Token) -> Result<Expr, ParseError> {
+        let binder = self.pattern()?;
+        self.expect(&TokenKind::LeftArrow)?;
+        let input = self.expr()?;
+        self.expect(&TokenKind::Semicolon)?;
+        self.expect(&TokenKind::Pure)?;
+        let basis = self.basis_expr()?;
+        let span = Span::new(do_token.span.start, basis.span.end);
+        Ok(Expr {
+            kind: ExprKind::CoherentLift {
+                binder,
+                input: Box::new(input),
+                basis,
+            },
+            span,
+        })
+    }
+
+    fn with_computed(&mut self, with_token: Token) -> Result<Expr, ParseError> {
+        self.expect(&TokenKind::LParen)?;
+        let source = self.expr()?;
+        self.expect(&TokenKind::Comma)?;
+        let function = self.ident()?;
+        let logical = if self.consume(&TokenKind::Comma).is_some() {
+            Some(self.ident()?)
+        } else {
+            None
+        };
+        self.expect(&TokenKind::RParen)?;
+        let open = self.expect(&TokenKind::LBrace)?;
+        self.expect(&TokenKind::Pipe)?;
+        let binder = self.ident()?;
+        let ancilla_binder = if logical.is_some() {
+            self.expect(&TokenKind::Comma)?;
+            Some(self.ident()?)
+        } else {
+            None
+        };
+        self.expect(&TokenKind::Pipe)?;
+        let body = self.block_contents(open.span.start)?;
+        let span = Span::new(with_token.span.start, body.span.end);
+        let kind = if let Some(logical) = logical {
+            ExprKind::CertifiedComputed {
+                source: Box::new(source),
+                function,
+                logical: Box::new(logical),
+                data_binder: Box::new(binder),
+                ancilla_binder: Box::new(ancilla_binder.expect("certified binder")),
+                body,
+            }
+        } else {
+            ExprKind::WithComputed {
+                source: Box::new(source),
+                function,
+                binder,
+                body,
+            }
+        };
+        Ok(Expr { kind, span })
     }
 
     fn apply_contract(&mut self, start: Span) -> Result<Expr, ParseError> {
@@ -675,23 +900,7 @@ impl Parser {
             });
         }
         if let TokenKind::Ident(_) = self.current().kind {
-            let ident = self.ident()?;
-            if self.consume(&TokenKind::LParen).is_some() {
-                let args = self.expr_args()?;
-                let close = self.expect(&TokenKind::RParen)?;
-                let span = ident.span.cover(close.span);
-                return Ok(Expr {
-                    kind: ExprKind::Call {
-                        callee: ident,
-                        args,
-                    },
-                    span,
-                });
-            }
-            return Ok(Expr {
-                span: ident.span,
-                kind: ExprKind::Name(ident),
-            });
+            return self.named_expr();
         }
         let open = self.expect(&TokenKind::LParen)?;
         if let Some(close) = self.consume(&TokenKind::RParen) {
@@ -702,16 +911,58 @@ impl Parser {
         }
         let mut left = self.expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
-            let right = self.expr()?;
+            loop {
+                let right = self.expr()?;
+                left = Expr {
+                    span: left.span.cover(right.span),
+                    kind: ExprKind::Tuple(Box::new(left), Box::new(right)),
+                };
+                Self::expr_depth(&left)?;
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
             let close = self.expect(&TokenKind::RParen)?;
-            return Ok(Expr {
-                kind: ExprKind::Tuple(Box::new(left), Box::new(right)),
-                span: open.span.cover(close.span),
-            });
+            left.span = open.span.cover(close.span);
+            return Ok(left);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);
         Ok(left)
+    }
+
+    fn named_expr(&mut self) -> Result<Expr, ParseError> {
+        let ident = self.ident()?;
+        let mut static_args = Vec::new();
+        if self.consume(&TokenKind::LBracket).is_some() {
+            loop {
+                static_args.push(self.static_op()?);
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
+            self.expect(&TokenKind::RBracket)?;
+            if !self.at(&TokenKind::LParen) {
+                return Err(self.error("static arguments require a call"));
+            }
+        }
+        if self.consume(&TokenKind::LParen).is_some() {
+            let args = self.expr_args()?;
+            let close = self.expect(&TokenKind::RParen)?;
+            let span = ident.span.cover(close.span);
+            return Ok(Expr {
+                kind: ExprKind::Call {
+                    callee: ident,
+                    static_args,
+                    args,
+                },
+                span,
+            });
+        }
+        Ok(Expr {
+            span: ident.span,
+            kind: ExprKind::Name(ident),
+        })
     }
 
     fn expr_args(&mut self) -> Result<Vec<Expr>, ParseError> {
@@ -729,9 +980,14 @@ impl Parser {
 
     fn basis_expr(&mut self) -> Result<BasisExpr, ParseError> {
         let expr = self.basis_xor()?;
+        Self::basis_depth(&expr)?;
+        Ok(expr)
+    }
+
+    fn basis_depth(expr: &BasisExpr) -> Result<(), ParseError> {
         // A left-associated chain can grow the AST without growing the parse
         // stack. Nested chains must also share the AST depth budget.
-        let mut pending = vec![(&expr, 1)];
+        let mut pending = vec![(expr, 1)];
         while let Some((node, depth)) = pending.pop() {
             if depth > MAX_NESTING {
                 return Err(ParseError {
@@ -752,7 +1008,7 @@ impl Parser {
                 _ => {}
             }
         }
-        Ok(expr)
+        Ok(())
     }
 
     fn basis_xor(&mut self) -> Result<BasisExpr, ParseError> {
@@ -862,12 +1118,20 @@ impl Parser {
         }
         let mut left = self.basis_expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
-            let right = self.basis_expr()?;
+            loop {
+                let right = self.basis_expr()?;
+                left = BasisExpr {
+                    span: left.span.cover(right.span),
+                    kind: BasisExprKind::Tuple(Box::new(left), Box::new(right)),
+                };
+                Self::basis_depth(&left)?;
+                if self.consume(&TokenKind::Comma).is_none() {
+                    break;
+                }
+            }
             let close = self.expect(&TokenKind::RParen)?;
-            return Ok(BasisExpr {
-                kind: BasisExprKind::Tuple(Box::new(left), Box::new(right)),
-                span: open.span.cover(close.span),
-            });
+            left.span = open.span.cover(close.span);
+            return Ok(left);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);

@@ -1,12 +1,18 @@
-# Selected next-MINOR specification: fixed-width operations
+# Fixed-width operation parameters and meaning contracts (M1)
 
-Status: **selected extension specification, not implemented** (2026-09-27).
-This completes G020-1 for the M1 scope selected in the
-[decision dossier](decisions/2026-09-27-v1-path.md). It does not change
-[current v0](language-spec.md), assign a release number, or complete G020-2/3.
-The separately shippable [machine interfaces](machine-interface-spec.md) and
-the subsequent [bounded M2 profile](hierarchical-ir-spec.md) have their own
-acceptance gates. All examples below are future syntax, not compiled examples.
+Status: **selected on 2026-09-27; fixed-width language slice implemented in
+0.1.8 on 2026-09-28**. This is the normative
+M1 supplement to [current v0](language-spec.md); the finite grammar and older
+special forms retain their contracts. The [implementation/release record](releases/v0.1.8.md)
+records executed validation and migration. Separate [machine interfaces](machine-interface-spec.md)
+and the [M2 profile](hierarchical-ir-spec.md) retain their own open gates.
+This implementation completes neither M1 as a whole nor G020-3's release gates.
+
+The [0.1.8 authoring supplement](syntax-v0.md#authoring-forms-added-in-product-018)
+allows one basis parameter to decompose a product, so `perm_by`/`phase_by`
+targets can inspect its components without changing their unary interface.
+Flat tuples are left-associated; the phase exponent result remains the exact
+right-associated `(Bit,(Bit,Bit))` type specified below.
 
 ## Scope, vocabulary and limits
 
@@ -195,9 +201,9 @@ provider itself must satisfy the unary unitary signature above.
 
 ## Accepted and rejected examples
 
-Future examples (not runnable in 0.1.5):
+Runnable examples in 0.1.8 (not accepted by 0.1.7):
 
-```text
+```qli
 use std::quantum::z;
 use std::quantum::t;
 
@@ -248,36 +254,49 @@ cleanup obligations cannot authorize execution; they are discharged for each
 instance. No symbolic all-size theorem is claimed.
 
 Lower static calls to finite `ApplyUnitary` circuits retaining semantic
-evidence. A versioned successor to function evidence supports the independently
-specified permutation/phase target; do not forge a source function or erase
-the target into an unverified string. Existing current FunctionEvidence records
-retain their circuit-specification meaning. The new checked type has private
-fields and checked constructors; final IR independently checks its binding.
-Adding the successor evidence/action is a MINOR public Rust change. Keep an
-explicit adapter for current finite raw IR; unknown new actions are rejected
-by old consumers. The [portable profile](machine-interface-spec.md#portable-finite-ir-and-evidence)
-specifies the boundary separately.
+evidence. **Implementation refinement, 2026-09-28:** `FiniteMeaning` lowers its
+complete target to canonical monomial raw IR; `MeaningEvidence` checks that
+target against the implementation through existing `FunctionEvidence`. The
+private checked receipt retains both full raw programs, exact type tree and
+source/dependency identity. Final IR uses existing `CircuitAction::Contract`
+and the independent verifier checks its binding. The proposed new core action
+is unnecessary: no irreducible obligation requires a new acceptance rule.
+Existing raw-IR/evidence consumers need no migration or adapter replacement.
+The public AST, tokens and frontend diagnostic variants do require the
+[documented migration](releases/v0.1.8.md#compatibility-and-migration).
+Portable interchange remains unimplemented under its separate specification.
+
+Each generic body is checked with abstract operations and only declared access.
+Disposable identity placeholders support resource checking but never produce
+an executable generic program or evidence. Three-argument computed equations
+inside that check remain obligations: concrete specialization rebuilds the
+body and verifies every exact equation, including zero-count and unselected
+source branches. No uninstantiated cleanup claim authorizes execution.
+A per-project registry counts full immutable concrete bindings; lowering still
+expands each call and charges its work rather than caching unchecked output.
 
 Existing named-function cases of all five static/contract language forms keep
 their evaluation order, local/spent-name shadowing, effects, phase, tree and
 zero-count checks. Computed forms keep their different cleanup premises.
 No keyword becomes an ordinary function. Existing programs need only rename
 identifiers colliding with the newly reserved words when migrating to this
-MINOR. Old public Rust exhaustive matches must use the documented successor
-or adapter. New source-capacity defaults have an explicit legacy override in
-the machine-interface specification; they do not apply in 0.1.5.
+extension. Old public Rust AST/token/error matches must handle the documented
+additions; core IR matches remain unchanged. New source-capacity defaults have an explicit legacy override in
+the machine-interface specification; they remain unimplemented and do not
+apply in 0.1.8.
 
 ## Implementation acceptance matrix
 
-| Gate | Required future evidence |
+| Gate | Required evidence (implementation validation in the release record) |
 | --- | --- |
 | N1 grammar/resolution | Parse every new production and reject category misuse, duplicate static names, missing arguments, captures, cycles and runtime operation values; preserve old parser/name-resolution cases. |
 | N2 meanings | Compare all columns for permutation and phase fixtures on Unit, Bit and nested pairs; include low-bit controlled-X `[0,3,2,1]`, reject the high-bit control table `[0,1,3,2]`, and retain controlled scalar phases on Unit; reject collisions, wrong trees, minus-sign changes, stale sources and output permutations. |
 | N3 capabilities | Parametric body rejects missing access before specialization; test all constructors, unavailable zero-repeat access, both qif arms and conjugation with non-Hermitian V and phased W. |
 | N4 ownership/effects | Preserve pending frames, entangled references, Q<Unit>, declared effects and all old computed/static rejection cases. |
-| N5 binding/limits | Feed independently mutated successor evidence directly to the verifier; enforce exact arithmetic/work/width/instance limits without recursion or unchecked allocations. |
-| N6 reuse/migration | Compile and execute the two providers above through one unchanged client; round-trip the old-IR adapter, retain old CLI behavior, and document reserved-name/public API migration. |
+| N5 binding/limits | Feed independently mutated target/receipt attachments directly to the verifier; enforce exact arithmetic/work/width/instance limits without recursion or unchecked allocations. |
+| N6 reuse/migration | Compile and execute the two providers above through one unchanged client; exercise the canonical target/existing-receipt adapter, retain old CLI behavior, and document reserved-name/public API migration. |
 
 G020-2 requires implementation of the selected shipping slice and G020-3 its
 matrix, Rust/Lean/release checks and evidence ledger. These are **acceptance
-requirements**, not tests reported as passing in the documentation release.
+requirements**; dated executed results belong to the implementation/release
+record, not the original documentation-only adoption.

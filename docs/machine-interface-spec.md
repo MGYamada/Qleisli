@@ -2,9 +2,8 @@
 
 Status: **X1 check/run implemented in the 0.1.7 development tree; X2–X6
 specified, unimplemented** (updated 2026-09-28). These are independently
-shippable slices of [M1](next-minor-spec.md), normally requiring MINOR.
-The user's explicit [0.1.7 exception](versioning.md#version-identity) selects
-X1 as the first M1 implementation; this is not maintenance-only work. Formats below
+shippable slices of [M1](next-minor-spec.md), versioned by
+[compatibility](versioning.md), with X1 first implemented in 0.1.7. Formats below
 have their own versions; product/package versions never change their meaning.
 Current `check`/`run`, Rust IR and exhaustive reference simulation stay intact.
 
@@ -22,6 +21,12 @@ The [coefficient-domain recommendation](coefficient-domains.md) requires future
 domain/approximation extensions to bind their domain version, interpretation
 and error claims explicitly. It does not add fields or tags to X1–X6 or permit
 arbitrary-domain arithmetic in the current finite format.
+
+The 0.1.8 authoring continuation enriches explanatory `message` text with
+expected/actual exact types and a restricted-cleanup repair hint. It changes
+neither JSON v1 fields nor category, location or exit-code contracts. Consumers
+should use the structured category rather than matching full message prose.
+[Repair tests](../tests/repair_diagnostics.rs) exercise text and JSON paths.
 
 ## Diagnostics
 
@@ -395,5 +400,6 @@ now has [Rust CLI regressions](../tests/cli_json.rs),
 [structured location checks](../tests/diagnostics.rs) and an
 [independent JSON decoder suite](../scripts/test_cli_json.py); execution results
 belong in the [0.1.7 record](releases/v0.1.7.md). X2–X6 remain unimplemented.
-Their future shipping still requires implementation, validation and a MINOR
-release decision. This X1 transport is not portable IR or evidence.
+Their future shipping still requires implementation, validation and a
+compatibility-based release decision; reduced acceptance in X6 requires MINOR.
+This X1 transport is not portable IR or evidence.

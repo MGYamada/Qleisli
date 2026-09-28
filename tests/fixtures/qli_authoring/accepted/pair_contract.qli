@@ -1,0 +1,21 @@
+//! Current workaround for a nonconstant pair meaning: an independent circuit specification.
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::join;
+use std::quantum::split;
+use std::routines::measure_z2;
+
+basis fn marked(a: Bit, b: Bit) -> Bit { a and b }
+unitary fn oracle(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,marked) { |flag| z(flag) }
+}
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn specified(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let (a,b) = qif(a,b) { 0 => identity, 1 => z };
+    join(a,b)
+}
+observe fn main() -> (CBit,CBit) {
+    measure_z2(apply_contract(oracle,specified,join(x(init0()),x(init0()))))
+}

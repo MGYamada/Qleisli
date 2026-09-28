@@ -1,6 +1,6 @@
 use std::quantum::z;
 use std::quantum::h;
-use meaning::phase;
+use specification::phase;
 
 basis fn copy_label(value: Bit) -> Bit { value }
 

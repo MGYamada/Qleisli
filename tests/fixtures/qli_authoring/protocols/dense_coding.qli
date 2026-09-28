@@ -1,0 +1,6 @@
+//! Encode and recover all four possible two-bit classical messages.
+use dense_coding::round_trip;
+observe fn main() -> (((CBit,CBit),(CBit,CBit)),((CBit,CBit),(CBit,CBit))) {
+    ((round_trip(false,false),round_trip(false,true)),
+     (round_trip(true,false),round_trip(true,true)))
+}

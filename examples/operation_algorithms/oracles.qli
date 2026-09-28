@@ -1,0 +1,32 @@
+//! Phase oracles on four labels; the first bit has integer weight one.
+use std::quantum::z;
+
+basis fn is00(a: Bit, b: Bit) -> Bit { not a and not b }
+basis fn is10(a: Bit, b: Bit) -> Bit { a and not b }
+basis fn is01(a: Bit, b: Bit) -> Bit { not a and b }
+basis fn is11(a: Bit, b: Bit) -> Bit { a and b }
+basis fn nonzero(a: Bit, b: Bit) -> Bit { not (not a and not b) }
+
+// An independently stated unary product meaning, separate from the oracle body.
+// phase_by retains its exact right-associated three-bit exponent interface.
+basis fn phase11((a,b): (Bit,Bit)) -> (Bit,(Bit,Bit)) { (0,(0,a and b)) }
+pub meaning Mark11: (Bit,Bit) = phase_by(phase11);
+
+/// Each mark negates exactly its named bit string: I - 2|marked><marked|.
+pub unitary fn mark00(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,is00) { |flag| z(flag) }
+}
+pub unitary fn mark10(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,is10) { |flag| z(flag) }
+}
+pub unitary fn mark01(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,is01) { |flag| z(flag) }
+}
+pub unitary fn mark11(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,is11) { |flag| z(flag) }
+}
+
+/// +1 at 00 and -1 elsewhere: 2|00><00| - I, the negative of mark00.
+pub unitary fn zero_reflection(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,nonzero) { |flag| z(flag) }
+}

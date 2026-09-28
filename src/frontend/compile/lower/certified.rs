@@ -36,7 +36,7 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if env.contains_key(&function.text) {
+        if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
             return Err(self.error(
                 module,
                 function.span,
@@ -77,7 +77,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must map the exact source basis type to Bit",
+                format!("predicate must map the exact source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", source_reg.basis, predicate.result),
             ));
         }
         if data_binder.text == ancilla_binder.text {
@@ -106,6 +106,12 @@ impl Lowerer<'_, '_> {
                     "semantic contract circuits currently allow at most {MAX_CONTRACT_STEPS} steps each"
                 ),
             ));
+        }
+        if self.abstract_check {
+            // This skeleton is used only for parametric source checking. No
+            // certificate or executable generic body is produced from it.
+            self.apply_circuit(source_slot, logical_steps);
+            return Ok(source);
         }
         let wire = self.wire();
         let output = self.token();
@@ -141,6 +147,15 @@ impl Lowerer<'_, '_> {
             body.span,
             joint.tree_size().nodes.saturating_mul(3) + env_size(env),
         )?;
+        self.compiler.charge(
+            module,
+            body.span,
+            total_size(
+                self.bindings
+                    .values()
+                    .map(super::super::operations::Operation::copy_size),
+            ),
+        )?;
         let mut inner = Lowerer {
             compiler: self.compiler,
             registers: BTreeMap::new(),
@@ -152,6 +167,8 @@ impl Lowerer<'_, '_> {
             next_slot: 0,
             effect: Effect::Unitary,
             depth: self.depth,
+            bindings: self.bindings.clone(),
+            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
@@ -167,7 +184,7 @@ impl Lowerer<'_, '_> {
         local.insert(data_binder.text.clone(), Some(*data));
         local.insert(ancilla_binder.text.clone(), Some(*ancilla));
         let result = inner.block(module, body, &mut local)?;
-        inner.no_owned_bindings(module, body.span, &local)?;
+        inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
         if inner.effect != Effect::Unitary {
             return Err(inner.error(
                 module,

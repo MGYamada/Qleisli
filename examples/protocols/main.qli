@@ -1,0 +1,20 @@
+//! The user's inline teleportation example, with required explicit imports.
+//! Output order: ((phase correction bit, parity correction bit), X readout).
+//! The input is |->, so the final bit is one for every random message.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+observe fn main() -> ((CBit, CBit), CBit) {
+    let psi = h(x(init0()));
+    let (alice, bob) = cnot(h(init0()), init0());
+    let (psi, alice) = cnot(psi, alice);
+    let m1 = measure_z(h(psi));
+    let m2 = measure_z(alice);
+    let bob = if m2 { x(bob) } else { bob };
+    let bob = if m1 { z(bob) } else { bob };
+    ((m1, m2), measure_z(h(bob)))
+}

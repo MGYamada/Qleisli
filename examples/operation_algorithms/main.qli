@@ -1,0 +1,11 @@
+//! Estimate T's phase on |1>: output 1001, with low-weight phase bits first.
+use gates::eighth_phase;
+use estimation::phase3;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+
+observe fn main() -> (((CBit,CBit),CBit),CBit) {
+    let (phase_word,target) = phase3[eighth_phase](x(init0()));
+    (phase_word,measure_z(target))
+}

@@ -1,0 +1,1 @@
+observe fn main() -> (CBit,CBit,CBit) { (false,false,false) }

@@ -6,7 +6,75 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No changes recorded after 0.1.7.
+No changes recorded yet.
+
+## 0.1.8 — 2026-09-28
+
+Fixed-width operation contracts and executable authoring improvements, with
+version **0.1.8** retained at the user's request. See the
+[implementation/migration record](docs/releases/v0.1.8.md) and
+[GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8).
+Historical entries retain the version policy used at the time; the revised
+policy below governs new changes.
+
+### Added
+
+- Fixed three-bit iterative QPE in ordinary `.qli`, compared with coherent QPE
+  and an independent Fourier-instrument oracle on off-grid entangled inputs.
+- Preserved first-source and curated repair sessions, with actual diagnostics,
+  revision snapshots and CI checks for record integrity.
+
+- A living v0.2.0 issue backlog connecting authoring friction to concrete
+  source evidence, acceptance experiments and existing checking dependencies.
+
+- Basis function parameter patterns for product components, whole subtrees
+  and ignored basis values, checked through existing finite tables.
+- N-ary tuple types, values and patterns, left-folded to exact binary trees.
+  Independently checked pair meanings, executable clients and negative
+  ownership/shape/depth regressions exercise these forms.
+
+- Runnable Bell/teleportation/dense-coding/swapping components and shared
+  operation-parameter QPE, amplitude-amplification and Hadamard-test examples.
+  A checked-in `.qli` corpus covers successful clients, rejected authoring
+  attempts and type-correct algorithm faults, including reference correlations.
+- A concise implemented-source reference whose complete code fences compile
+  and execute in Rust CI, and an evidence-based authoring feedback report.
+- Fixed-width static operation parameters, explicit access constraints and
+  bracket arguments, phase-fixed permutation/phase meanings, `bind_op`, and
+  six checked composition constructors. One unchanged client can accept
+  independently checked implementations of the same meaning.
+- `FiniteMeaning` / `MeaningEvidence` reuse existing monomial and function
+  evidence. Final IR retains receipts; no core acceptance rule is added.
+- Parametric access/type/ownership checking and concrete exact cleanup checks,
+  bounded specialization, source/evidence rejection regressions and a runnable
+  operation-contract example.
+
+### Changed
+
+- Include expected/actual exact types in concrete mismatch diagnostics and
+  suggest the explicit logical-contract form for restricted cleanup failures;
+  keep acceptance, source locations, error categories and JSON v1 unchanged.
+
+- Replace public Rust `Param.name` with `Param.pattern`; this incompatible
+  AST migration is documented while the user retains development version
+  0.1.8. Existing accepted binary `.qli` programs retain their meaning.
+- Locate unreturned quantum ownership at its actual binding, including
+  nested patterns, shadowing, parameters and computed-region binders.
+
+- Align initial-development versioning with Cargo: for 0.y.z with y > 0,
+  compatible fixes/features/syntax additions use PATCH; breaking changes use
+  MINOR. Compatible features need no exception. Preserve historical migrations
+  and the 0.1.8 checkpoint; 1.0+ rules and verification gates are unchanged.
+- Reserve the new M1 keywords and extend public AST/token/error records;
+  follow the release record's source and Rust migration. JSON v1 gains emitted
+  `capability` / `contract` cases within its specified category set.
+- Render meaning definitions and access requirements in source documentation.
+- Split parser routines to preserve existing deep-syntax acceptance/rejection
+  without increasing stack requirements. Keep old IR, toolchains and limits.
+
+QIR import, remaining machine interfaces, type/size generalization and M2 remain
+separate work. The [v0.2.0 backlog](docs/v0.2.0-backlog.md) includes reconsidering
+the tuple layout itself; 0.1.8 retains explicit binary trees and left-folded sugar.
 
 ## 0.1.7 — 2026-09-28
 
