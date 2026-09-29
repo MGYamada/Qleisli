@@ -6,6 +6,11 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+- Record the 0.3.0 design-coherence review. GitHub issues #14–#25, backlog
+  entries A020-23–A020-32 and an A020-01 update list syntactic distinctions
+  that have no physical or mathematical counterpart. Probe diagnostics were
+  reproduced with the 0.2.0 CLI. No syntax, API or version is selected.
+
 ## 0.2.0 — 2026-09-29
 
 Finite machine interfaces, sampling and trials, arity-preserving tuples,
