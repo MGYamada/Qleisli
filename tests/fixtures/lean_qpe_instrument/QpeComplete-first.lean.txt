@@ -1,0 +1,68 @@
+import Qleisli.Qpe
+import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+
+/-! Completeness of the actual checked QPE instrument, conditional on the
+independently verified provider's whole-space isometry equation.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace Qleisli.Qpe
+open scoped BigOperators Matrix
+
+variable {T : Type} [Fintype T] [DecidableEq T]
+
+theorem character_star {N : Nat} [NeZero N] (j : ZMod N) :
+    star (ZMod.stdAddChar j) = ZMod.stdAddChar (-j) := by
+  simp only [ZMod.stdAddChar_apply, AddChar.map_neg_eq_inv]
+  exact (Circle.coe_inv_eq_conj _).symm
+
+theorem character_sum {N : Nat} [NeZero N] (j : ZMod N) :
+    ∑ y : ZMod N, ZMod.stdAddChar (j * y) = if j = 0 then (N : ℂ) else 0 := by
+  split_ifs with h
+  · simp [h]
+  · exact AddChar.sum_eq_zero_of_ne_one (ZMod.isPrimitive_stdAddChar N h)
+
+/-- QPE uses 1/N, not the normalized QFT's 1/sqrt(N). -/
+noncomputable def weight {N : Nat} [NeZero N] (y j : ZMod N) : ℂ :=
+  ZMod.stdAddChar (-(j * y)) / N
+
+theorem weight_orthogonal {N : Nat} [NeZero N] (j k : ZMod N) :
+    ∑ y : ZMod N, star (weight y j) * weight y k =
+      if j = k then (N : ℂ)⁻¹ else 0 := by
+  have nonzero : (N : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  simp only [weight, star_div₀, star_natCast, character_star, neg_neg,
+    div_mul_div_comm, ← AddChar.map_add_eq_mul, ← sub_eq_add_neg, ← sub_mul,
+    ← Finset.sum_div, character_sum, sub_eq_zero]
+  split_ifs <;> simp [nonzero]
+
+/-- Mixing arbitrary operators exposes precisely the coefficient Gram matrix. -/
+theorem mix_gram {I Y : Type} [Fintype I] [Fintype Y]
+    (c : Y → I → ℂ) (A : I → Matrix T T ℂ) :
+    ∑ y, (∑ j, c y j • A j)ᴴ * (∑ k, c y k • A k) =
+      ∑ j, ∑ k, (∑ y, star (c y j) * c y k) • ((A j)ᴴ * A k) := by
+  simp only [Matrix.conjTranspose_sum, Matrix.conjTranspose_smul,
+    Matrix.sum_mul, Matrix.mul_sum, Matrix.smul_mul, Matrix.mul_smul, smul_smul,
+    Finset.sum_smul]
+  rw [Finset.sum_comm]
+  apply Finset.sum_congr rfl
+  intro j _
+  rw [Finset.sum_comm]
+
+theorem mixed_complete {N : Nat} [NeZero N] (A : ZMod N → Matrix T T ℂ)
+    (isometries : ∀ j, (A j)ᴴ * A j = 1) :
+    Kraus.Complete (fun y => ∑ j, weight y j • A j) := by
+  unfold Kraus.Complete
+  rw [mix_gram]
+  simp only [weight_orthogonal, ite_smul, zero_smul, Finset.sum_ite_eq,
+    Finset.mem_univ, if_true, isometries]
+  have nonzero : (N : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr (NeZero.ne N)
+  simp [← Nat.cast_smul_eq_nsmul ℂ, smul_smul, nonzero]
+
+theorem power_isometry (U : Matrix T T ℂ) (isometry : Uᴴ * U = 1) (j : Nat) :
+    (U^j)ᴴ * U^j = 1 := by
+  induction j with
+  | zero => simp
+  | succ j ih =>
+    rw [pow_succ]
+    exact Kraus.isometry_comp U (U^j) isometry ih
+
+end Qleisli.Qpe

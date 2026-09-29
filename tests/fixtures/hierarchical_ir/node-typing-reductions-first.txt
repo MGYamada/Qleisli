@@ -1,0 +1,5 @@
+Command: lake env lean Tests.lean (lean-kernel/)
+Exit: 1
+Tests.lean:308:25: error: Ambiguous term Definition
+Possible interpretations: Artifact.Definition, Hierarchy.Definition.
+Subsequent elaboration errors included generated sorry placeholders and a recursion-depth diagnostic; no admitted proof was accepted. The repair qualified Artifact.Definition without changing elaboration limits.

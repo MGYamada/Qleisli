@@ -20,8 +20,9 @@ pub struct VerifiedProgram {
 }
 
 impl VerifiedProgram {
+    /// Compatibility alias for [`Self::raw`].
     pub fn program(&self) -> &RawProgram {
-        &self.program
+        self.raw()
     }
 
     pub fn raw(&self) -> &RawProgram {
@@ -91,6 +92,7 @@ struct Global<'a> {
     current_scope: usize,
     next_scope: usize,
     contract_budget: &'a mut Budget,
+    limit_failure: bool,
 }
 
 impl Default for State {
@@ -113,6 +115,7 @@ impl<'a> Global<'a> {
             current_scope: 0,
             next_scope: 1,
             contract_budget,
+            limit_failure: false,
         }
     }
 }
@@ -185,6 +188,7 @@ impl State {
         path: &[usize],
     ) -> Result<(), ValidationError> {
         if register.wires.len() > usize::from(MAX_REGISTER_BITS) {
+            global.limit_failure = true;
             return Err(err(path, "register exceeds the initial 12-bit IR limit"));
         }
         let mut local = BTreeSet::new();
@@ -276,7 +280,10 @@ impl State {
                     logical_steps,
                     global.contract_budget,
                 )
-                .map_err(|error| err(path, format!("semantic contract: {error}")))?;
+                .map_err(|error| {
+                    global.limit_failure = error.error.is_capacity();
+                    err(path, format!("semantic contract: {error}"))
+                })?;
                 self.insert_token(global, *source_out, reg, path)?;
             }
             RawOp::ApplyUnitary {
@@ -396,6 +403,7 @@ impl State {
                 let input_width = reg.wires.len();
                 let output_width = output_wires.len();
                 if output_width > usize::from(MAX_REGISTER_BITS) {
+                    global.limit_failure = true;
                     return Err(err(path, "lift output exceeds the initial 12-bit IR limit"));
                 }
                 if output_width < input_width || !output_wires.starts_with(&reg.wires) {
@@ -520,6 +528,7 @@ impl State {
         // Count this branch before entering its arms: an empty arm has no
         // child operation at which to enforce the nesting limit.
         if path.len() / 2 >= MAX_NESTED_BRANCHES {
+            global.limit_failure = true;
             return Err(err(
                 path,
                 "nested branch exceeds the initial IR depth limit",
@@ -624,6 +633,7 @@ impl State {
         let source_width = source_reg.wires.len();
         let ancilla_width = ancilla_wires.len();
         if ancilla_width > usize::from(MAX_REGISTER_BITS) {
+            global.limit_failure = true;
             return Err(err(
                 path,
                 "computed ancilla exceeds the initial 12-bit IR limit",
@@ -867,11 +877,27 @@ pub(crate) fn verify_with_budget(
     program: RawProgram,
     budget: &mut Budget,
 ) -> Result<VerifiedProgram, ValidationError> {
-    let mut state = State::default();
+    verify_with_budget_classified(program, budget).map_err(|(error, _)| error)
+}
+
+/// Internal transport classification preserves the legacy public error shape.
+pub(crate) fn verify_with_budget_classified(
+    program: RawProgram,
+    budget: &mut Budget,
+) -> Result<VerifiedProgram, (ValidationError, bool)> {
     let mut global = Global::new(budget);
+    verify_in_context(program, &mut global).map_err(|error| (error, global.limit_failure))
+}
+
+fn verify_in_context(
+    program: RawProgram,
+    global: &mut Global<'_>,
+) -> Result<VerifiedProgram, ValidationError> {
+    let mut state = State::default();
     let mut input_bits = 0usize;
     for port in &program.quantum_inputs {
         if port.shape.bits > MAX_REGISTER_BITS || port.wires.len() != usize::from(port.shape.bits) {
+            global.limit_failure = port.shape.bits > MAX_REGISTER_BITS;
             return Err(err(
                 &[],
                 "quantum input does not match its finite basis shape",
@@ -881,7 +907,7 @@ pub(crate) fn verify_with_budget(
             global.reserve_wire(*wire, &[])?;
         }
         state.insert_token(
-            &mut global,
+            global,
             port.token,
             Register {
                 wires: port.wires.clone(),
@@ -893,7 +919,7 @@ pub(crate) fn verify_with_budget(
     for id in &program.classical_inputs {
         global.insert_classical(*id, &[])?;
     }
-    state.verify_ops(&mut global, &program.operations, &[])?;
+    state.verify_ops(global, &program.operations, &[])?;
 
     let mut outputs = BTreeSet::new();
     for token in &program.quantum_outputs {

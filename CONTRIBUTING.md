@@ -44,3 +44,30 @@ Run the checks appropriate to the affected files and record actual results.
 For release preparation, use the complete checklist in
 [Versioning](docs/versioning.md#release-records-and-validation). Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
+
+## Executable verification kernel
+
+The [Lean migration](docs/lean-kernel-migration.md) keeps the Rust frontend and
+moves acceptance logic in bounded, proved steps to [lean-kernel](lean-kernel/README.md).
+That executable package depends on Lean 4.30.0 Init/Std only; Mathlib remains in
+the separate proof/model package. Follow the package's build, compiled audit,
+proof replay and native differential checks when changing its code. Development
+Python checks require Python 3.11 or later; Rust's minimum remains 1.85.0.
+Record the actual theorem scope and residual native/transport assumptions.
+
+## Community development from v0.5
+
+Qleisli currently develops through an individual-led effort with public source
+and checks. The [adopted roadmap](docs/v0x-roadmap.md#community-development-from-v05)
+plans broader community development from v0.5 onward, anchored in the
+[Qleisli Soundness Theorem](docs/release-milestones.md#qleisli-soundness-theorem-v050).
+Contributions and review can begin before that milestone.
+
+During 0.4.x, prepare reproducible contributor setup, bounded issues, proof/code
+review requirements, maintainer responsibilities and release/security reporting
+procedures. At v0.5.0, publish the theorem, its coverage and assumptions, review
+results and reproduction commands. Thereafter expand participation in the
+kernel, source tooling, algorithms, examples and documentation through those
+processes. These are planned deliverables; no additional maintainer roles or
+completed external reviews are claimed. Existing licensing and corpus policy
+continue to apply.

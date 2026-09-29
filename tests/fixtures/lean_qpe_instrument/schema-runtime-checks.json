@@ -1,0 +1,61 @@
+[
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "Build completed successfully (32 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "exit": 0,
+    "stdout": "Audited 2558 kernel/transport declarations, 1050 pure import modules and 1043 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "QleisliKernel"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/check_lean_kernel.py"
+    ],
+    "exit": 0,
+    "stdout": "Checked 19 executable kernel/transport source modules; no external Lake dependencies.\n",
+    "stderr": ""
+  }
+]

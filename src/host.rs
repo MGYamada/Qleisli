@@ -3,6 +3,92 @@
 
 use std::fmt;
 
+mod factoring;
+pub use factoring::{
+    FactorPrecheck, FactorRetry, FactorTrialError, PeriodFactors, factor_precheck,
+    factor_trial_from_phase,
+};
+
+/// Maximum callback count in the bounded reference trial driver.
+pub const MAX_TRIAL_ATTEMPTS: u64 = 1_000_000;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TrialDecision<T, R> {
+    Accepted(T),
+    Retry(R),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TrialRetry<R> {
+    pub attempt: u64,
+    pub reason: R,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TrialRun<T, R> {
+    Accepted {
+        value: T,
+        attempts: u64,
+        retries: Vec<TrialRetry<R>>,
+    },
+    Exhausted {
+        attempts: u64,
+        retries: Vec<TrialRetry<R>>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum TrialFailure<R, E> {
+    InvalidLimit {
+        requested: u64,
+        max: u64,
+    },
+    Execution {
+        attempts_started: u64,
+        error: E,
+        retries: Vec<TrialRetry<R>>,
+    },
+}
+
+/// Run independent trials until acceptance, exhaustion or an execution error.
+/// Quantum callbacks must prepare/sample a fresh state on every call. This
+/// host driver retains no quantum state and does not choose a random seed.
+pub fn run_trials<T, R, E>(
+    max_attempts: u64,
+    mut trial: impl FnMut(u64) -> Result<TrialDecision<T, R>, E>,
+) -> Result<TrialRun<T, R>, TrialFailure<R, E>> {
+    if max_attempts > MAX_TRIAL_ATTEMPTS {
+        return Err(TrialFailure::InvalidLimit {
+            requested: max_attempts,
+            max: MAX_TRIAL_ATTEMPTS,
+        });
+    }
+    let mut retries = Vec::new();
+    for attempt in 1..=max_attempts {
+        match trial(attempt) {
+            Ok(TrialDecision::Accepted(value)) => {
+                return Ok(TrialRun::Accepted {
+                    value,
+                    attempts: attempt,
+                    retries,
+                });
+            }
+            Ok(TrialDecision::Retry(reason)) => retries.push(TrialRetry { attempt, reason }),
+            Err(error) => {
+                return Err(TrialFailure::Execution {
+                    attempts_started: attempt,
+                    error,
+                    retries,
+                });
+            }
+        }
+    }
+    Ok(TrialRun::Exhausted {
+        attempts: max_attempts,
+        retries,
+    })
+}
+
 /// A checked nontrivial factor pair. Neither factor is claimed to be prime.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct Factors {

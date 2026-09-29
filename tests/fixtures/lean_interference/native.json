@@ -1,0 +1,33 @@
+{
+  "native_words": 422,
+  "joint_amplitude_comparisons": 1260,
+  "deliberate_semantic_faults": 4,
+  "max_error": 2.8774787681579407e-13,
+  "largest_dense_oracle_dimension": 8,
+  "kernel_dense_dimension": 0,
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "temporary native harness",
+      "exit": 0,
+      "stdout": "\u2714 [15/17] Built Main (7.8s)\n\u2714 [16/17] Built Main:c.o (688ms)\n\u2714 [17/17] Built \u00abinterference-test\u00bb:exe (310ms)\nBuild completed successfully (17 jobs).\n",
+      "stderr": "info: interference_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "interference-test"
+      ],
+      "exit": 0,
+      "executable_sha256": "c8fc55192309ccdb303e5a3b57f1bdb7c2f843709cad5c4e5615dc589db3df00",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Interference.lean": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+    "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6",
+    "scripts/test_lean_interference.py": "54c8663ae34b093c00dd96258168a1bd53a4510772c952ffb642f794c5cdc891"
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "recorded_utc": "2026-09-28T16:57:26.580882+00:00",
+  "package_directory": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-layout-clean-r_smnjlb/lean-kernel",
+  "external_packages": [],
+  "sources": {
+    ".DS_Store": "6893d5d842e5d1cefca6ab2d387829426663ea69949211bdc38bae5090dcf257",
+    "Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    "Main.lean": "180ece4c7a2603e60e6dab5dfa67b22939ba99e8efc92487785c18deea127277",
+    "Protocol.lean": "c579bdc6d2b77f7b972978998827a790bc160b6b5f2d207fddd95f3a6058ee5f",
+    "QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "QleisliKernel/Layout.lean": "482658d4c0059174ed63e889b7d05389830051723f4120df1463257c75aa27a2",
+    "QleisliKernel/PhaseWord.lean": "909fbf903f4ed7ffd7ce0fd50b5c92095bcba6e1aac1ae4cbfabde83906e760c",
+    "QleisliKernel.lean": "0b18d63f8e5ba86583ba264675335a53cdba2bcdfc8d9f0f1a087d834f71a228",
+    "README.md": "789161689ba12ef3057b1572acf63e5f6d3f4c3bb97d2038cb98606a76fdf149",
+    "Tests.lean": "fad770169e310f27e42065df0f44a81e545d09657f5d9f01f95e0d303ce946a0",
+    "lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
+    "lakefile.toml": "ac56021b7ca47f07acd15a64d8d54972ebd35e1d59503b50640a47f7f934ec8a",
+    "lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+  },
+  "observations": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [2/18] Built QleisliKernel.PhaseWord (503ms)\n\u2714 [3/18] Built QleisliKernel.Layout (611ms)\n\u2714 [4/18] Built QleisliKernel.PhaseWord:c.o (298ms)\n\u2714 [5/18] Built QleisliKernel.Composition (424ms)\n\u2714 [6/18] Built QleisliKernel.Layout:c.o (296ms)\n\u2714 [7/18] Built QleisliKernel.Composition:c.o (67ms)\n\u2714 [8/18] Built QleisliKernel.Dag (424ms)\n\u2714 [9/18] Built QleisliKernel.Dag:c.o (147ms)\n\u2714 [10/18] Built QleisliKernel.Hierarchy (521ms)\n\u2714 [11/18] Built QleisliKernel.Hierarchy:c.o (247ms)\n\u2714 [12/18] Built QleisliKernel (337ms)\n\u2714 [13/18] Built Protocol (529ms)\n\u2714 [15/18] Built Protocol:c.o (375ms)\n\u2714 [16/18] Built Main (478ms)\n\u2714 [17/18] Built Main:c.o (170ms)\n\u2714 [18/18] Built \u00abqleisli-kernel\u00bb:exe (263ms)\nBuild completed successfully (18 jobs).\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "Audited 967 kernel/transport declarations, 1039 pure import modules and 1040 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/masa/git/Qleisli/scripts/test_lean_layout.py",
+        "--binary",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-layout-clean-r_smnjlb/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "Native typed-layout decisions: 230\n",
+      "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 2.218s\n\nOK\n"
+    }
+  ]
+}

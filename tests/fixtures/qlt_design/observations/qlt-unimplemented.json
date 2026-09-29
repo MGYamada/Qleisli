@@ -1,0 +1,13 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "test",
+    "tests/fixtures/qlt_design/first-source",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T19:54:19.721321+00:00",
+  "exit_code": 2,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"test\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage: qleisli <check|run> <source-root> [--format=json]\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "scope": "Unsupported command boundary, not QLT parsing or assertion evaluation"
+}

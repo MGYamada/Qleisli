@@ -1,0 +1,13 @@
+{
+  "source_sha256": "071cb0b6ba93ba379bd5e879765b4cab537a1265a1681de5e85059ef74620fd0",
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/lean_qft/first_source",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+  "stderr": "",
+  "remaining_obligation": "One shared QFT body and a theorem binding the exact positive Fourier transform to its actual hierarchical gate structure; finite round trip is only a baseline."
+}

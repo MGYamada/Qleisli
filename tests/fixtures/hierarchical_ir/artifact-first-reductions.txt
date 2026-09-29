@@ -1,0 +1,4 @@
+Command: lake env lean Tests.lean (lean-kernel/)
+Exit: 1
+Tests.lean:293:58: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+The positive prepare example used cbv; no native proof evaluation occurred.

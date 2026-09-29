@@ -1,0 +1,7 @@
+{
+  "status": "saved before first Lean check",
+  "source": "lean/Qleisli/QpeComplete.lean",
+  "sha256": "90f2216c01494d79bcf075d50316368b9829ada1a7102a9a7745489af3e58de5",
+  "contract": "Accepted literal QPE branches form a complete Kraus family when the independently supplied target operator is a whole-space isometry.",
+  "counterexample": "U = 2I with one precision bit yields K0 = 3I/2 and K1 = -I/2, so sum K^H K = 5I/2; equality of branch formulas alone cannot prove completeness."
+}

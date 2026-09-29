@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-09-28T16:43:00.485186+00:00",
+  "kind": "informed development record; not a controlled model benchmark",
+  "sources": {
+    "reorder.qhl": "83253b54b231d9e83a433a46e63ea274d6d54cc935d32984699ac2725869df31",
+    "reorder.qhr": "542340e2cc93a77d40b5ec6cb9ba2ac20e86bdb7cc274c2ec92d89de9efda9ad",
+    "first_source/main.qli": "f5920286250b4786c37bb36d376267ca9e0bac6cfe079cc4acda696f563b24f9"
+  },
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout",
+        "tests/fixtures/lean_layout/reorder.qhl",
+        "tests/fixtures/lean_layout/reorder.qhr"
+      ],
+      "exit_code": 2,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":false,\"code\":\"usage\",\"stage\":\"usage\"}\n",
+      "stderr": ""
+    }
+  ]
+}

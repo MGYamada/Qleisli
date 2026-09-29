@@ -1,10 +1,8 @@
 //! Explicit function-contract applications retain independently checked evidence.
 
+use super::super::operations::contract_basis;
 use super::*;
-use crate::contract::{
-    BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, MAX_CONTRACT_BITS, exact::Budget,
-    function::RetainedIdentity,
-};
+use crate::contract::{FunctionEvidence, MAX_CONTRACT_BITS, function::RetainedIdentity};
 use std::sync::Arc;
 
 impl Lowerer<'_, '_> {
@@ -81,19 +79,23 @@ impl Lowerer<'_, '_> {
             let implementation = raw(&implementation_key)?;
             let specification = raw(&specification_key)?;
             let signature = contract_basis(&basis);
-            let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+            let budget = &mut self.compiler.exact_work;
             let evidence = FunctionEvidence::check_retained_diagnostic(
                 signature,
                 implementation,
                 specification,
                 identity,
-                &mut budget,
+                budget,
             )
             .map_err(|error| {
                 self.error(
                     module,
                     span,
-                    ErrorCode::InvalidIr,
+                    if error.error.is_capacity() {
+                        ErrorCode::Limit
+                    } else {
+                        ErrorCode::InvalidIr
+                    },
                     format!("function semantic contract: {error}"),
                 )
             })?;
@@ -167,17 +169,6 @@ impl Lowerer<'_, '_> {
             ));
         }
         Ok(key)
-    }
-}
-
-// Source types have already passed their depth/node bounds. Contract construction
-// independently enforces its stricter type-tree profile before accepting evidence.
-fn contract_basis(basis: &Ty) -> BasisType {
-    match basis {
-        Ty::Unit => BasisType::Unit,
-        Ty::Bit => BasisType::Bit,
-        Ty::Pair(left, right) => BasisType::pair(contract_basis(left), contract_basis(right)),
-        _ => unreachable!("quantum basis type"),
     }
 }
 

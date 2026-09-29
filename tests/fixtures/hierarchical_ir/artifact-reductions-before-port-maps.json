@@ -1,0 +1,14 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Tests.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "tests_sha256": "ad43ee9e916fbc94c0c00e739dce6be23e560032602cc04a0547f60d8a596998",
+  "note": "Positive prepare example uses decide +kernel; remaining examples use kernel cbv reduction. Native evaluation is not used."
+}

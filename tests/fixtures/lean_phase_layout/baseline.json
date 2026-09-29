@@ -1,0 +1,40 @@
+{
+  "kind": "informed implementation, not a controlled model study",
+  "sha256": {
+    "tests/fixtures/lean_phase_layout/first_source/main.qli": "9d479e02485412d84005f08fedf4b54a3f87566e727f8ccf117c37c30ec9128b"
+  },
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_phase_layout/first_source"
+      ],
+      "exit_code": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/lean_phase_layout/first_source\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "not-yet-supported",
+        "independent-request"
+      ],
+      "exit_code": 2,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":false,\"code\":\"usage\",\"stage\":\"usage\"}\n",
+      "stderr": ""
+    }
+  ],
+  "context": {
+    "version": "0.2.0 unreleased",
+    "baseline_commit": "3c19c7669b5b14b738bceaa5f3eff18f92e2190e",
+    "workspace": "existing uncommitted implementation from earlier packets",
+    "knowledge": "informed maintainer-requested implementation, with access to current contracts and prior prototypes",
+    "model_evaluation": false
+  },
+  "initial_artifact_sha256": {
+    "tests/fixtures/lean_phase_layout/shared.qhd": "804448a3c7499ae4aede5306094c03b429015caa0c05d75599ef878646e07858",
+    "tests/fixtures/lean_phase_layout/expected.qhr": "0cdcb987a96947a26d406231ed76e82feb102e0866e3c87927af659bf8cee524"
+  }
+}

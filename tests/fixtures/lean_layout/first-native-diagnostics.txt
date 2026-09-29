@@ -1,0 +1,18 @@
+.F.......
+======================================================================
+FAIL: test_maps_inverses_ranges_and_axis_partition (__main__.LayoutTests.test_maps_inverses_ranges_and_axis_partition)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_lean_layout.py", line 216, in test_maps_inverses_ranges_and_axis_partition
+    self.invoke(bad, good, False)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/masa/git/Qleisli/scripts/test_lean_layout.py", line 126, in invoke
+    self.assertEqual(result.returncode, 0 if accepted else 1, result)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : CompletedProcess(args=['/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel', '--layout', '/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-layout-1wwpdeof/artifact.qhl', '/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-layout-1wwpdeof/requirement.qhr'], returncode=0, stdout=b'{"format":"qleisli.kernel-result","version":1,"profile":"typed-layout-v1","accepted":true,"code":"accepted","stage":"verification","stats":{"owners":3,"axes":3,"type_atoms":6,"work_units":1352,"dense_dimension":0}}\n', stderr=b'')
+
+----------------------------------------------------------------------
+Ran 9 tests in 1.690s
+
+FAILED (failures=1)
+Native typed-layout decisions: 229

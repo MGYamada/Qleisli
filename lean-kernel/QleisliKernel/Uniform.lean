@@ -1,0 +1,40 @@
+import QleisliKernel.PathSum
+
+/-! Literal H preparation on a fresh zero precision register.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace QleisliKernel.Uniform
+open Interference PathSum
+
+def word (width : Nat) : List Interference.Gate := (List.range width).map .hadamard
+
+def zero : PathState := ⟨fun _ => false, 0, 0⟩
+
+def prepared (width : Nat) (choices : Bits) : PathState :=
+  ⟨fun i => if i < width then choices i else false, 0, width⟩
+
+theorem step_prepared (width : Nat) (choices : Bits) :
+    PathSum.step choices (prepared width choices) (.hadamard width) = prepared (width + 1) choices := by
+  simp only [PathSum.step, prepared, Nat.lt_irrefl, ↓reduceIte, Bool.false_and, Bool.false_eq_true,
+    Nat.zero_add, Nat.zero_mod]
+  congr 1
+  funext i
+  by_cases same : i = width
+  · subst i; simp [setBit]
+  · by_cases inside : i < width
+    · simp [setBit, same, inside, show i < width + 1 by omega]
+    · simp [setBit, same, inside, show ¬i < width + 1 by omega]
+
+theorem run_word (width : Nat) (choices : Bits) :
+    runFrom (word width) choices zero = prepared width choices := by
+  induction width with
+  | zero =>
+    simp [word, runFrom, zero, prepared]
+  | succ width ih =>
+    have expanded : word (width + 1) = word width ++ [.hadamard width] := by
+      simp [word, List.range_succ]
+    rw [expanded]
+    simp only [runFrom, List.foldl_append, List.foldl_cons, List.foldl_nil] at ih ⊢
+    rw [ih, step_prepared]
+
+end QleisliKernel.Uniform

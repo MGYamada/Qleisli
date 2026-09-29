@@ -5,7 +5,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
-observe fn main() -> (((CBit,CBit),CBit),(CBit,CBit)) {
+observe fn main() -> ((CBit,CBit,CBit),(CBit,CBit)) {
     let (reference,target) = cnot(h(init0()),init0());
     let (word,target) = phase3[eighth_phase](target);
     (word,(measure_z(reference),measure_z(target)))

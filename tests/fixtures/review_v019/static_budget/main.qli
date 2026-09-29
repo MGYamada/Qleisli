@@ -1,0 +1,4 @@
+unitary fn p(q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { q }
+unitary fn keep[static U: Op<(Bit,Bit,Bit,Bit,Bit)>](q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { q }
+unitary fn client(q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { keep[repeat_op(150,repeat_op(150,p))](q) }
+observe fn main() -> CBit { false }

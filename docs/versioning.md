@@ -17,7 +17,18 @@ documented source/API breaks as compatible or authorize future incompatible
 PATCH releases. See the [0.1.6](releases/v0.1.6.md),
 [0.1.7](releases/v0.1.7.md) and [0.1.8](releases/v0.1.8.md) records.
 
-The selected baseline and release state are in [current status](current-status.md)
+The user initially selected **0.2.0 development** for shared QPE. The
+2026-09-29 [scope revision](v0.2.0-plan.md) retains the implemented tuple/public-AST,
+capacity and lexical changes, finite interfaces and experimental Lean foundation
+in 0.2.0. Validation and publication evidence are recorded separately in the
+[release record](releases/v0.2.0.md). The remaining shared-QPE work
+targets [0.2.1](v0.2.1-plan.md). That target grants no incompatible PATCH
+exception: preserve existing public interfaces with additive successor APIs
+and adapters, or select 0.3.0 if a breaking change is necessary. The
+[development record](releases/v0.2.0.md) retains earlier checkpoints; no tag
+or publication follows from this scope selection.
+
+The historical finite baseline and release state are in [current status](current-status.md)
 and the [0.1.9 review-fix record](releases/v0.1.9.md). The user selected 0.1.9
 for compatible review fixes and diagnostic improvements on 2026-09-28.
 Previously, the user explicitly retained version 0.1.8 for the authoring continuation after its
@@ -31,13 +42,14 @@ The legacy B019 finite maintenance checkpoint is not a requirement to ship
 patches 6–9 first, and later maintenance may use 0.1.10.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
-version in [lean/lakefile.toml](../lean/lakefile.toml) synchronized. Compiler,
+versions in [lean/lakefile.toml](../lean/lakefile.toml) and
+[lean-kernel/lakefile.toml](../lean-kernel/lakefile.toml) synchronized. Compiler,
 bundled standard library, examples, and proof development currently share
 one release version; this does not imply that their verification is complete.
 
 Manifests use `MAJOR.MINOR.PATCH`, without a leading `v`; release tags use
 `vMAJOR.MINOR.PATCH`. A prerelease, when needed, uses an explicit suffix such
-as `0.2.0-rc.1`, synchronized in both manifests and its tag. The current
+as `0.2.0-rc.1`, synchronized in all three manifests and its tag. The current
 release number is not changed merely because a task, commit, or test run
 finishes. Accumulate pending changes under `Unreleased` in the changelog;
 update the number when selecting the next release or prerelease.
@@ -121,7 +133,7 @@ the completed initial imaginary-code corpus and its requirement records.
 
 For each release or prerelease:
 
-1. Select the version from the compatibility review. Synchronize both project
+1. Select the version from the compatibility review. Synchronize all three project
    manifests and the changelog; update current-version summaries and links.
 2. Record added/changed/fixed behavior, breaking changes and migration,
    supported bounds/toolchains, license or dependency changes, and relevant
@@ -145,6 +157,15 @@ For each release or prerelease:
 4. Build and audit the Lean development using the pinned toolchain:
    `lake build Qleisli` and
    `lake env lean -DwarningAsError=true Audit.lean` from `lean/`.
+   For the executable package, run `lake build`, `lake env lean Tests.lean`,
+   `lake env lean Audit.lean`, `lake env leanchecker --fresh QleisliKernel`
+   and `lake env leanchecker --fresh Main`
+   from `lean-kernel/`. From the repository root run
+   `python3 scripts/check_lean_kernel.py`,
+   `python3 scripts/test_check_lean_kernel.py --compiled` and
+   `cargo run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test`.
+   Its source/dependency policy and compiled audit are separate from the
+   existing Mathlib proof audit; neither grants full compiler soundness.
    Physlib is currently a [future dependency](physlib-environment.md), not a
    release prerequisite. If reintroduced for a concrete bridge, add its scoped
    external build/axiom audit separately and document the declarations covered.

@@ -1,0 +1,11 @@
+//! Three owners, including Q<Unit>, move without implicit tuple reassociation.
+unitary fn reorder(empty: Q<Unit>, target: Q<Bit>, precision: Q<(Bit,Unit,Bit)>)
+    -> (Q<(Bit,Unit,Bit)>, Q<Unit>, Q<Bit>) {
+    (precision, empty, target)
+}
+unitary fn round_trip(empty: Q<Unit>, target: Q<Bit>, precision: Q<(Bit,Unit,Bit)>)
+    -> (Q<Unit>, Q<Bit>, Q<(Bit,Unit,Bit)>) {
+    let (precision, empty, target) = reorder(empty, target, precision);
+    (empty, target, precision)
+}
+observe fn main() -> Unit { () }

@@ -14,6 +14,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import tempfile
@@ -410,7 +411,11 @@ def main():
     report = {
         "format": 1,
         "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "project_version": "0.1.9",
+        "project_version": re.search(
+            r'^version\s*=\s*"([^"]+)"',
+            (ROOT / "Cargo.toml").read_text().split("[package]", 1)[1].split("\n[", 1)[0],
+            re.MULTILINE,
+        ).group(1),
         "compiler_sha256": sha256(binary),
         "oracle_script_sha256": sha256(Path(__file__)),
         "manifest_sha256": sha256(CORPUS / "manifest.json"),

@@ -1,0 +1,9 @@
+{
+  "command": [
+    "lake",
+    "build"
+  ],
+  "exit_code": 1,
+  "stdout": "\u2716 [38/41] Building QleisliKernel.Hierarchical.Rule (518ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/Rule.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Rule.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Rule.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Rule.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Rule.setup.json --json\nerror: QleisliKernel/Hierarchical/Rule.lean:131:33: `simp` made no progress\nerror: QleisliKernel/Hierarchical/Rule.lean:133:18: `simp` made no progress\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.Hierarchical.Rule\n",
+  "stderr": "error: build failed\n"
+}

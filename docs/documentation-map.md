@@ -13,13 +13,13 @@ and example explanations. Authority is tied to a document's subject and status:
 | Document class | Authority and limits |
 | --- | --- |
 | Authoring entry point and observations | [Quick reference](qli-quick-reference.md) gives CI-compiled current examples and links to authoritative norms. [Authoring feedback](qli-authoring-feedback.md) records executable reproductions, delivered fixes and future candidates; the [session records](../tests/fixtures/authoring_sessions/README.md) preserve informed first attempts and curated repairs with integrity checks. They are not a comparative LLM benchmark. |
-| Current language and API specifications | [Language v0](language-spec.md), [grammar](syntax-v0.md), [modules/sealed APIs](standard-library.md), [static operations](static-operations.md), [SC](semantic-contracts-v0.1.md), [FC](function-contracts-v0.1.md), and the [ordinary-library ledger](stdlib-contracts.md) govern current specified acceptance and public contracts within their declared scope. |
+| Current language and API specifications | [Language v0](language-spec.md), [consolidated type contract](type-system.md), [grammar](syntax-v0.md), [modules/sealed APIs](standard-library.md), [static operations](static-operations.md), [SC](semantic-contracts-v0.1.md), [FC](function-contracts-v0.1.md), and the [ordinary-library ledger](stdlib-contracts.md) govern current specified acceptance and public contracts within their declared scope. |
 | Formal rules and proof accounts | [Formal core](formal-core.md), [resource rules](source-resource-rules.md), [typing rules](source-typing-rules.md), [source semantics](source-semantics.md), [static semantics](static-semantics.md), [source soundness](source-soundness.md), [IR correspondence](source-ir-correspondence.md), and [state refinement](lowering-state-refinement.md) state their models, assumptions, and proved/open obligations. A paper proof is not a claim that Rust implements every derivation correctly. |
 | Implementation and evidence records | [Frontend profile](frontend-v0.md), [IR prototype](ir-prototype.md), [architecture](implementation-architecture.md), [Lean ledger](lean-resource-proof.md), [Physlib environment](physlib-environment.md), and [conformance history](specification-status.md) describe implementation/dependency coverage and dated evidence. Finite tests and local Lean lemmas do not establish general compiler soundness. |
-| Adopted design direction and development plans | The translated documents below are the English editions for their own principles, requirements, plans, and arguments. An accepted design principle may constrain future work without being implemented. Proposed facilities remain proposed. These documents do not override current language/API rules. |
+| Adopted design direction and development plans | The translated documents below are the English editions for their own principles, requirements, plans, and arguments. The [Lean kernel migration](lean-kernel-migration.md) governs the adopted runtime/proof split and staged authority transfer; its [first word slice](lean-kernel-migration.md#first-executable-slice) and [initial shared-DAG slice](lean-hierarchy-slice.md) specify separate experimental boundaries. An accepted design principle may constrain future work without being implemented. Proposed facilities remain proposed. These documents do not override current language/API rules. |
 | Release criteria and compatibility | [Release milestones](release-milestones.md), [versioning](versioning.md), the [v0.x plan and v0.1.9 boundary](v0x-roadmap.md), and version-specific [release records](releases/v0.1.9.md) determine acceptance, compatibility, and preparation/publication status. Roadmap themes do not adopt syntax or establish implementation. Product versions, development stages, specification v0, and ledger format v1 are distinct. |
 | Future design material | The [v0.2.0 backlog](v0.2.0-backlog.md) is the living authoring-issue intake, with evidence and acceptance experiments; it is not an adopted release scope. The [language-evolution framework](language-evolution.md) and [imaginary-v1 corpus](imaginary-v1/README.md) organize future requirements. All six algorithm drafts remain imaginary and uncompiled; their existence does not adopt their notation or APIs. |
-| Extension specifications and future profiles | [M1 language extension](next-minor-spec.md) is the normative fixed-width supplement implemented at the 0.1.8 checkpoint. The [0.1.8 grammar supplement](syntax-v0.md#authoring-forms-added-in-product-018) specifies basis parameter patterns and n-ary tuples. [Machine interfaces](machine-interface-spec.md) have implemented X1 and pending X2–X6. The [bounded M2 IR/checker profile](hierarchical-ir-spec.md) remains a future specification. Release records identify executed tests; selection alone does not establish implementation. |
+| Extension specifications and future profiles | [M1 language extension](next-minor-spec.md) is the normative fixed-width supplement implemented at the 0.1.8 checkpoint. The [0.1.8 grammar supplement](syntax-v0.md#authoring-forms-added-in-product-018) introduced basis parameter patterns and tuple sugar; the [0.2.0 tuple correction](tuple-shapes.md) supersedes its left-folding rule with exact arity and nesting. [Machine interfaces](machine-interface-spec.md) have X1–X6 implementations in the 0.2.0 finite profile. The [bounded M2 IR/checker profile](hierarchical-ir-spec.md) remains a future specification whose new checker is to be implemented in Lean. The experimental phase-word, shared-DAG, [typed layout](lean-layout-slice.md) [typed-call](lean-layout-dag-slice.md) and [combined phase/layout](lean-phase-layout-slice.md) slices the [interference/complex bridge](lean-interference-slice.md) and [QFT circuit proof](lean-qft-proof-packet.md), including [typed graph binding](lean-qft-graph-packet.md), and [QPE instrument/conditional completeness](lean-qpe-instrument-packet.md) do not complete it. Release records identify executed tests; selection alone does not establish implementation. |
 | Independent semantic research | The [system design](symbolic-contract-architecture.md) specifies the intended meaning/implementation boundary; the [prototype record](../research/semantic-kernel/README.md) records the separately implemented and tested subset. The [quantum-library investigation](../research/quantum-libraries/README.md) records isolated mathematical interface experiments that did not adopt a dependency at that investigation step; the later [Physlib record](physlib-environment.md) preserves the compatible addition and its subsequent deferral to a future concrete bridge. None changes production source acceptance or proves Rust/source correspondence. |
 
 Use the [terminology conventions](terminology.md) across these classes. If a
@@ -27,6 +27,19 @@ proposed design conflicts with a current contract, record the conflict and a
 future specification decision explicitly; do not silently reinterpret accepted
 programs. Selecting a feature, specifying it, implementing it, testing it, and
 proving it are separate events.
+
+[QLT design](qlt-design.md) is an adopted future test-language direction,
+with [preserved desired sources and semantic faults](../tests/fixtures/qlt_design/README.md).
+Its proposed syntax, `denote`, cost interface, doctests and test command are
+unimplemented. It neither extends accepted `.qli` grammar nor supplies quantum
+evidence; the Rust experiment and later Lean evaluation proofs have their own
+TQL-0–TQL-3 milestones.
+
+[Lean-assisted mathematical debugging](lean-debugger-plan.md) is an adopted
+future 0.x.0 tooling direction: obligation reports, independently checked
+mismatch witnesses and IR/source/backend tracing. No debugger API, command,
+implementation or diagnostic theorem is supplied by this plan. It preserves
+the fixed trust boundary and the existing release/theorem gates.
 
 ## Current state and historical records
 
@@ -45,6 +58,16 @@ does not adopt future syntax or mark remaining M1–M5 work complete.
 Detailed norms remain in their existing specifications; historical validation
 entries remain dated. [M0–M5 and the legacy-ID map](v0x-roadmap.md#legacy-id-mapping)
 replace version-assigned scheduling without renumbering theorem statements.
+The [Qleisli Soundness Theorem and S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050)
+are the adopted v0.5.0 target, still unproved. The
+[community roadmap](v0x-roadmap.md#community-development-from-v05) prepares
+contribution and review processes during 0.4.x and expands development from
+v0.5 onward; existing Apache-2.0 licensing continues.
+
+The [K0–K4 migration axis](lean-kernel-migration.md#staged-migration) runs alongside
+M0–M5, with intended 0.2.0-to-0.x.0 compatibility boundaries and separate proof,
+implementation and authority-transfer gates. It does not replace H1–H5 or claim
+that current `check`/`run` already rely on Lean.
 AGENTS.md links durable rules to [the decision dossier](decisions/2026-09-27-v1-path.md)
 instead of repeating changing adoption paragraphs.
 
@@ -116,7 +139,11 @@ APIs still require extension decisions. The subsequent
 settle fixed-width operation/access/meaning rules, machine interfaces and the
 bounded M2 checker/QPE profile. Subsequent [0.1.7](releases/v0.1.7.md) and
 [0.1.8](releases/v0.1.8.md) records implement and validate X1, M1.1-A and
-fixed-width operations/meanings; remaining machine slices and M2 are pending. The
+fixed-width operations/meanings. Finite X2–X6 implementation is now recorded in
+[0.2.0](releases/v0.2.0.md). The [revised foundation plan](v0.2.0-plan.md)
+retains migration and release checks; the [0.2.1 plan](v0.2.1-plan.md) carries
+remaining production hierarchy, sized QPE and execution/H1–H5 work without
+weakening its gates. Full M2 and Lean migration remain pending. The
 [requirements index](imaginary-v1/requirements.md) records candidate facilities
 and open questions; translation is not their adoption. General source-to-IR
 adequacy, verifier correctness, and compiler soundness remain open.

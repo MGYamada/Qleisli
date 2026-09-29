@@ -15,6 +15,16 @@ source integration and their validation are planned, not implemented here;
 new development belongs outside the compatible 0.1.x maintenance scope.
 M2 is a milestone, not a selected product version or release date.
 
+The subsequent [Lean kernel migration](../../docs/lean-kernel-migration.md)
+selects Lean 4 without Mathlib runtime dependencies for new M2 kernel work.
+This Rust prototype and its 43-test suite remain an independent comparison
+implementation, not a second production kernel being extended in parallel.
+The [first Lean slice](../../docs/lean-kernel-migration.md#first-executable-slice)
+checks one-bit phase words and proves its actual acceptance function sound for
+cyclic-phase action. It does not yet replace this prototype's term/proof DAGs,
+bind full raw IR, implement QPE, or change production Rust `check`/`run` authority.
+The migration and existing H1–H5 gates must be satisfied separately.
+
 ## Purpose
 
 Given an implementation U, isometric encodings Ei/Eo and a separately required

@@ -1,0 +1,152 @@
+import QleisliKernel.Hierarchical.Ports
+
+/-! Explicit ownership-structure conversions, with checked basis bijections.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+These nodes change types/owner counts explicitly. They never authorize an
+implicit coercion, an arbitrary gate equation or an external evidence handle. -/
+
+namespace QleisliKernel.Hierarchical.Structural
+open Artifact
+
+def swapped (interface : Interface) : Interface := ⟨interface.outputs,interface.inputs⟩
+
+def types (side : Side) : Array Basis := side.quantum.map QuantumPort.basis
+
+def one (side : Side) (basis : Basis) : Bool := types side == #[basis]
+
+/-- Split only the immediate fields. Flattening a nested field changes this
+prefix tree and is rejected even when the number of wires is unchanged. -/
+def splitTuple (interface : Interface) : Bool :=
+  let fields := interface.outputs.quantum
+  2 ≤ fields.size && fields.size ≤ 64 &&
+  one interface.inputs (fields.foldl (fun tree field => tree ++ field.basis) #[.tuple fields.size]) &&
+  wires interface.inputs == wires interface.outputs
+
+def takeBit (interface : Interface) (width position : Nat) : Bool :=
+  one interface.inputs #[.bits width] &&
+  types interface.outputs == #[#[.bit],#[.bits (width - 1)]] &&
+  (do
+    let source ← interface.inputs.quantum[0]?
+    let selected ← interface.outputs.quantum[0]?
+    let remainder ← interface.outputs.quantum[1]?
+    let axis ← source.axes[position]?
+    return selected.axes == #[axis] &&
+      remainder.axes == ((source.axes.toList.take position) ++
+        (source.axes.toList.drop (position + 1))).toArray).getD false
+
+def bitToBits (interface : Interface) : Bool :=
+  one interface.inputs #[.bit] && one interface.outputs #[.bits 1] &&
+    wires interface.inputs == wires interface.outputs
+
+def packEmpty (interface : Interface) (basis : Basis) : Bool :=
+  interface.inputs.quantum.isEmpty && one interface.outputs basis
+
+/-- Every operation has a closed, explicit owner transition. No frame is
+silently inferred: frames are composed by checked tensor/call nodes. -/
+def shape (operation : StructuralOp) (interface : Interface) : Bool := match operation with
+  | .takeBit width position => takeBit interface width position
+  | .putBit width position => takeBit (swapped interface) width position
+  | .splitTuple => splitTuple interface
+  | .joinTuple => splitTuple (swapped interface)
+  | .bitToBits => bitToBits interface
+  | .bitsToBit => bitToBits (swapped interface)
+  | .packUnit => packEmpty interface #[.unit]
+  | .unpackUnit => packEmpty (swapped interface) #[.unit]
+  | .packEmptyBits => packEmpty interface #[.bits 0]
+  | .unpackEmptyBits => packEmpty (swapped interface) #[.bits 0]
+
+/-- Whole old owners are consumed. New owners are distinct and fresh; zero-wire
+owners obey this rule just like owners with nonempty axis arrays. -/
+def fresh (interface : Interface) : Bool :=
+  interface.outputs.quantum.all (fun output =>
+    !interface.inputs.quantum.any (fun input => input.owner == output.owner))
+
+/-- Output basis positions select actual input wires, in declared order.
+Local labels need not be contiguous or small positional indices. -/
+def axisMap (interface : Interface) : List Nat :=
+  let inputs := (wires interface.inputs).toList
+  (wires interface.outputs).toList.map (fun axis => inputs.findIdx (· == axis))
+
+def inverseAxes (interface : Interface) : List Nat :=
+  Ports.inverse (wires interface.inputs).size (axisMap interface).toArray
+
+def valid (operation : StructuralOp) (interface : Interface) : Bool :=
+  operation.bounded && interface.valid &&
+  interface.inputs.classical.isEmpty && interface.outputs.classical.isEmpty &&
+  fresh interface && shape operation interface &&
+  decide (Layout.Permutation (wires interface.inputs).size
+    (axisMap interface) (inverseAxes interface))
+
+/-- Charge header array sizes before traversal, then charge type/axis scans,
+uniqueness, routing lookup and both inverse laws before performing them. -/
+def scanCharge (interface : Interface) : Nat := 8 * (1 + interface.scan)^2
+
+def workCharge (interface : Interface) : Nat :=
+  scanCharge interface + 16 * (1 + interface.charge) +
+    8 * (1 + Ports.wireCount interface.inputs + Ports.wireCount interface.outputs)^2
+
+structure Checked where
+  visits : Nat
+  deriving Repr
+
+def check (operation : StructuralOp) (interface : Interface) (remaining : Nat) : Except Error Checked :=
+  if remaining > 2000000 || scanCharge interface > remaining then .error .limit
+  else if workCharge interface > remaining then .error .limit
+  else if !valid operation interface then .error .invalidIr
+  else .ok ⟨workCharge interface⟩
+
+theorem check_conditions (operation : StructuralOp) (interface : Interface) (remaining : Nat)
+    (checked : Checked) (accepted : check operation interface remaining = .ok checked) :
+    checked.visits = workCharge interface ∧ checked.visits ≤ remaining ∧
+    remaining ≤ 2000000 ∧ valid operation interface = true := by
+  unfold check at accepted
+  split at accepted
+  next invalid => contradiction
+  next bounded =>
+    split at accepted
+    next invalid => contradiction
+    next enough =>
+      split at accepted
+      next invalid => contradiction
+      next correct =>
+        cases Except.ok.inj accepted
+        have limits : remaining ≤ 2000000 ∧ scanCharge interface ≤ remaining := by
+          simpa only [Bool.or_eq_true, decide_eq_true_eq, not_or, Nat.not_lt] using bounded
+        exact ⟨rfl, Nat.le_of_not_gt enough, limits.1, by simpa using correct⟩
+
+theorem check_shape (operation : StructuralOp) (interface : Interface) (remaining : Nat)
+    (checked : Checked) (accepted : check operation interface remaining = .ok checked) :
+    operation.bounded = true ∧ interface.valid = true ∧
+    interface.inputs.classical.isEmpty = true ∧ interface.outputs.classical.isEmpty = true ∧
+    fresh interface = true ∧ shape operation interface = true := by
+  have h := (check_conditions operation interface remaining checked accepted).2.2.2
+  simp only [valid, Bool.and_eq_true] at h
+  exact ⟨h.1.1.1.1.1.1,h.1.1.1.1.1.2,h.1.1.1.1.2,h.1.1.1.2,h.1.1.2,h.1.2⟩
+
+theorem check_axes (operation : StructuralOp) (interface : Interface) (remaining : Nat)
+    (checked : Checked) (accepted : check operation interface remaining = .ok checked) :
+    Layout.Permutation (wires interface.inputs).size (axisMap interface) (inverseAxes interface) := by
+  have h := (check_conditions operation interface remaining checked accepted).2.2.2
+  simp only [valid, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact h.2
+
+/-- Reindex only the quantum basis. Coefficients (including their phase) and an
+arbitrary reference coordinate remain unchanged, in both inverse directions. -/
+theorem check_reference_round_trips (operation : StructuralOp) (interface : Interface) (remaining : Nat)
+    (checked : Checked) (accepted : check operation interface remaining = .ok checked) {R C : Type}
+    (amplitude : (Fin (wires interface.inputs).size → Bool) → R → C) :
+    let h := check_axes operation interface remaining checked accepted
+    (fun bits reference => amplitude
+      (Layout.reindex (axisMap interface) h.forwardBound
+        (Layout.reindex (inverseAxes interface) h.backwardBound bits)) reference) = amplitude ∧
+    (fun bits reference => amplitude
+      (Layout.reindex (inverseAxes interface) h.backwardBound
+        (Layout.reindex (axisMap interface) h.forwardBound bits)) reference) = amplitude := by
+  dsimp
+  constructor
+  · funext bits reference
+    rw [Layout.reindex_round_trip (check_axes operation interface remaining checked accepted)]
+  · funext bits reference
+    rw [Layout.reindex_reverse_round_trip (check_axes operation interface remaining checked accepted)]
+
+end QleisliKernel.Hierarchical.Structural

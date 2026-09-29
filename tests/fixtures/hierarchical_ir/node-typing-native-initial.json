@@ -1,0 +1,251 @@
+{
+  "format": "qleisli.hierarchical-typing-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 62,
+  "typed": 26,
+  "semantic_evidence_issued": false,
+  "binary_sha256": "6fa69fa35c60fd81af9a071d85b5210fcef3bf5bae4bf95890c06eca1cb834a6",
+  "harness_sha256": "ce8cfbb497f6ae0ac71735dbed1cf1661c332925511a10d4f85c0d9330f9f3fe",
+  "results": {
+    "finite-leaf-remains-obligation": [
+      "typed",
+      "454"
+    ],
+    "empty-finite-rejected": [
+      "invalid_ir"
+    ],
+    "phase-0-0": [
+      "typed",
+      "454"
+    ],
+    "phase-1-1": [
+      "typed",
+      "454"
+    ],
+    "phase-1-3": [
+      "typed",
+      "454"
+    ],
+    "phase-31-5": [
+      "typed",
+      "454"
+    ],
+    "phase-255-8": [
+      "typed",
+      "454"
+    ],
+    "phase-needs-Bit-not-Bits1": [
+      "invalid_ir"
+    ],
+    "phase-owner-outside": [
+      "invalid_ir"
+    ],
+    "phase-invalid-angle": [
+      "invalid_ir"
+    ],
+    "phase-wrong-effect": [
+      "invalid_ir"
+    ],
+    "rewire": [
+      "typed",
+      "1593"
+    ],
+    "rewire-missing-owner": [
+      "invalid_ir"
+    ],
+    "repeat-0": [
+      "typed",
+      "890"
+    ],
+    "repeat-1": [
+      "typed",
+      "890"
+    ],
+    "repeat-4096": [
+      "typed",
+      "890"
+    ],
+    "repeat-excess": [
+      "invalid_ir"
+    ],
+    "repeat-missing-child": [
+      "invalid_ir"
+    ],
+    "repeat-wrong-effect": [
+      "invalid_ir"
+    ],
+    "repeat-nonunitary": [
+      "invalid_ir"
+    ],
+    "inverse": [
+      "typed",
+      "890"
+    ],
+    "inverse-nonunitary": [
+      "invalid_ir"
+    ],
+    "sequence-pure": [
+      "typed",
+      "1360"
+    ],
+    "sequence-empty": [
+      "invalid_ir"
+    ],
+    "sequence-effect-join": [
+      "typed",
+      "845"
+    ],
+    "sequence-wrong-order": [
+      "invalid_ir"
+    ],
+    "sequence-underreported-effect": [
+      "invalid_ir"
+    ],
+    "tensor-disjoint": [
+      "typed",
+      "1970"
+    ],
+    "tensor-owner-alias": [
+      "invalid_ir"
+    ],
+    "tensor-axis-alias": [
+      "invalid_ir"
+    ],
+    "call-consistent": [
+      "typed",
+      "3168"
+    ],
+    "call-owner-changes-between-maps": [
+      "invalid_ir"
+    ],
+    "call-axis-changes-between-maps": [
+      "invalid_ir"
+    ],
+    "call-new-owner-fresh": [
+      "typed",
+      "3168"
+    ],
+    "call-new-owner-captures-input": [
+      "invalid_ir"
+    ],
+    "controlled": [
+      "typed",
+      "1534"
+    ],
+    "control-owner-alias": [
+      "invalid_ir"
+    ],
+    "control-axis-alias": [
+      "invalid_ir"
+    ],
+    "control-needs-Bit": [
+      "invalid_ir"
+    ],
+    "init": [
+      "typed",
+      "260"
+    ],
+    "observe": [
+      "typed",
+      "390"
+    ],
+    "measure-preserves-zero-and-classical-frame": [
+      "typed",
+      "1678"
+    ],
+    "measure-drops-zero-frame": [
+      "invalid_ir"
+    ],
+    "measure-overwrites-classical": [
+      "invalid_ir"
+    ],
+    "measure-wrong-owner": [
+      "invalid_ir"
+    ],
+    "init-preserves-zero-and-classical-frame": [
+      "typed",
+      "1292"
+    ],
+    "init-wrong-effect": [
+      "invalid_ir"
+    ],
+    "init-reuses-owner": [
+      "invalid_ir"
+    ],
+    "init-mutates-classical-frame": [
+      "invalid_ir"
+    ],
+    "computed-equation-remains-obligation": [
+      "typed",
+      "3803"
+    ],
+    "computed-wrong-compute-reference": [
+      "invalid_ir"
+    ],
+    "computed-wrong-encoding-kind": [
+      "invalid_ir"
+    ],
+    "budget-zero": [
+      "limit"
+    ],
+    "budget-profile-overflow": [
+      "limit"
+    ],
+    "oversized-node": [
+      "limit"
+    ],
+    "oversized-children": [
+      "limit"
+    ],
+    "zero-repeat-parent-alone-insufficient": [
+      "typed",
+      "890"
+    ],
+    "whole-base": [
+      "typed",
+      "1890"
+    ],
+    "whole-zero-repeat": [
+      "typed",
+      "2829"
+    ],
+    "whole-zero-repeat-invalid-body": [
+      "invalid_ir"
+    ],
+    "whole-cycle": [
+      "invalid_ir"
+    ],
+    "whole-phase-fault-still-needs-semantics": [
+      "typed",
+      "748"
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [13/15] Built Main (473ms)\n\u2714 [14/15] Built Main:c.o (249ms)\n\u2714 [15/15] Built \u00abartifact-test\u00bb:exe (272ms)\nBuild completed successfully (15 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-cnl4o5wa/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "finite-leaf-remains-obligation|typed|454\nempty-finite-rejected|invalid_ir\nphase-0-0|typed|454\nphase-1-1|typed|454\nphase-1-3|typed|454\nphase-31-5|typed|454\nphase-255-8|typed|454\nphase-needs-Bit-not-Bits1|invalid_ir\nphase-owner-outside|invalid_ir\nphase-invalid-angle|invalid_ir\nphase-wrong-effect|invalid_ir\nrewire|typed|1593\nrewire-missing-owner|invalid_ir\nrepeat-0|typed|890\nrepeat-1|typed|890\nrepeat-4096|typed|890\nrepeat-excess|invalid_ir\nrepeat-missing-child|invalid_ir\nrepeat-wrong-effect|invalid_ir\nrepeat-nonunitary|invalid_ir\ninverse|typed|890\ninverse-nonunitary|invalid_ir\nsequence-pure|typed|1360\nsequence-empty|invalid_ir\nsequence-effect-join|typed|845\nsequence-wrong-order|invalid_ir\nsequence-underreported-effect|invalid_ir\ntensor-disjoint|typed|1970\ntensor-owner-alias|invalid_ir\ntensor-axis-alias|invalid_ir\ncall-consistent|typed|3168\ncall-owner-changes-between-maps|invalid_ir\ncall-axis-changes-between-maps|invalid_ir\ncall-new-owner-fresh|typed|3168\ncall-new-owner-captures-input|invalid_ir\ncontrolled|typed|1534\ncontrol-owner-alias|invalid_ir\ncontrol-axis-alias|invalid_ir\ncontrol-needs-Bit|invalid_ir\ninit|typed|260\nobserve|typed|390\nmeasure-preserves-zero-and-classical-frame|typed|1678\nmeasure-drops-zero-frame|invalid_ir\nmeasure-overwrites-classical|invalid_ir\nmeasure-wrong-owner|invalid_ir\ninit-preserves-zero-and-classical-frame|typed|1292\ninit-wrong-effect|invalid_ir\ninit-reuses-owner|invalid_ir\ninit-mutates-classical-frame|invalid_ir\ncomputed-equation-remains-obligation|typed|3803\ncomputed-wrong-compute-reference|invalid_ir\ncomputed-wrong-encoding-kind|invalid_ir\nbudget-zero|limit\nbudget-profile-overflow|limit\noversized-node|limit\noversized-children|limit\nzero-repeat-parent-alone-insufficient|typed|890\nwhole-base|typed|1890\nwhole-zero-repeat|typed|2829\nwhole-zero-repeat-invalid-body|invalid_ir\nwhole-cycle|invalid_ir\nwhole-phase-fault-still-needs-semantics|typed|748\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "861294be90e27e093b3e9864eaf6c7c66c9630762e2ec5d5d5fae8bea6f8ad61",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "7f465a70790de94105995efb6b6c0294a5feec1e4c25d1513d83f03ce0fadafe",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+    "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e",
+    "scripts/test_hierarchical_typing.py": "aae9386d1fe4bd6d25abe3bde535ab7c48e95c3e62d6e094cd2cf4f2b15a6709"
+  }
+}

@@ -1,0 +1,233 @@
+import QleisliKernel.Hierarchical.Ports
+
+/-! Local typing of actual hierarchical definition bodies.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Finite leaves and compute/uncompute equations remain explicit obligations of
+the semantic pass. This module issues no semantic evidence. -/
+
+namespace QleisliKernel.Hierarchical.NodeTyping
+open Artifact
+
+/-- Effects are inferred from actual children, never weakened by a declaration. -/
+def join (first second : Effect) : Effect := match first, second with
+  | .observe, _ | _, .observe => .observe
+  | .iso, _ | _, .iso => .iso
+  | _, _ => .unitary
+
+def quantumOnly (interface : Interface) : Bool :=
+  interface.inputs.classical.isEmpty && interface.outputs.classical.isEmpty
+
+def closed (definition : Definition) : Bool :=
+  definition.effect == .unitary && quantumOnly definition.interface &&
+    definition.interface.inputs == definition.interface.outputs
+
+def append (first second : Side) : Side :=
+  ⟨first.quantum ++ second.quantum, first.classical ++ second.classical⟩
+
+def ownerNames (side : Side) : Array Nat := side.quantum.map QuantumPort.owner
+
+def valueNames (side : Side) : Array Nat := side.classical.map ClassicalPort.value
+
+def disjoint (first second : Array Nat) : Bool := first.all (fun n => !second.contains n)
+
+def disjointFrames (first second : Interface) : Bool :=
+  disjoint (ownerNames first.inputs ++ ownerNames first.outputs)
+    (ownerNames second.inputs ++ ownerNames second.outputs) &&
+  disjoint (wires first.inputs ++ wires first.outputs) (wires second.inputs ++ wires second.outputs) &&
+  disjoint (valueNames first.inputs ++ valueNames first.outputs)
+    (valueNames second.inputs ++ valueNames second.outputs)
+
+/-- Each pair is (callee identity, caller identity); domains stay separate. -/
+def Consistent (pairs : Array (Nat × Nat)) : Prop :=
+  ∀ i j : Fin pairs.size, pairs[i].1 = pairs[j].1 ↔ pairs[i].2 = pairs[j].2
+
+instance (pairs : Array (Nat × Nat)) : Decidable (Consistent pairs) := by
+  unfold Consistent
+  infer_instance
+
+def pairs (source destination map : Array Nat) : Option (Array (Nat × Nat)) :=
+  (Array.range destination.size).mapM fun i => do
+    let dst ← destination[i]?
+    let position ← map[i]?
+    let src ← source[position]?
+    return (dst, src)
+
+def renamed (caller callee : Interface) (input output : PortMap) : Bool :=
+  (do
+    let qi ← pairs (ownerNames caller.inputs) (ownerNames callee.inputs) input.owners
+    let qo ← pairs (ownerNames callee.outputs) (ownerNames caller.outputs) output.owners
+    let wi ← pairs (wires caller.inputs) (wires callee.inputs) input.axes
+    let wo ← pairs (wires callee.outputs) (wires caller.outputs) output.axes
+    let ci ← pairs (valueNames caller.inputs) (valueNames callee.inputs) input.classical
+    let co ← pairs (valueNames callee.outputs) (valueNames caller.outputs) output.classical
+    return decide (Consistent (qi ++ qo.map Prod.swap) ∧
+      Consistent (wi ++ wo.map Prod.swap) ∧ Consistent (ci ++ co.map Prod.swap))).getD false
+
+def sequence (artifact : Artifact) (children : Array Nat) : Option (Interface × Effect) := do
+  let firstIndex ← children[0]?
+  let first ← artifact.definitions[firstIndex]?
+  let result ← children.toList.drop 1 |>.foldlM (fun state index => do
+    let child ← artifact.definitions[index]?
+    if state.1 != child.interface.inputs then none else
+      some (child.interface.outputs, join state.2 child.effect))
+    (first.interface.outputs, first.effect)
+  return (⟨first.interface.inputs, result.1⟩, result.2)
+
+def controlled (parent child : Definition) : Bool :=
+  (do
+    let control ← parent.interface.inputs.quantum[0]?
+    return parent.effect == .unitary && child.effect == .unitary && quantumOnly child.interface &&
+      control.basis == #[.bit] && control.axes.size == 1 &&
+      parent.interface.inputs == append ⟨#[control],#[]⟩ child.interface.inputs &&
+      parent.interface.outputs == append ⟨#[control],#[]⟩ child.interface.outputs &&
+      !(ownerNames child.interface.inputs ++ ownerNames child.interface.outputs).contains control.owner &&
+      disjoint control.axes (wires child.interface.inputs ++ wires child.interface.outputs)).getD false
+
+def phase (definition : Definition) (target : Nat) : Bool :=
+  definition.effect == .unitary && definition.interface.inputs == definition.interface.outputs &&
+    definition.interface.inputs.quantum.any (fun p => p.owner == target && p.basis == #[.bit])
+
+def observe (definition : Definition) (input output : Nat) : Bool :=
+  let before := definition.interface.inputs
+  let after := definition.interface.outputs
+  definition.effect == .observe &&
+    before.quantum.any (fun p => p.owner == input && p.basis == #[.bit]) &&
+    after.classical.any (fun p => p.value == output && p.basis == #[.bit]) &&
+    !(valueNames before).contains output &&
+    after.quantum == before.quantum.filter (fun p => p.owner != input) &&
+    before.classical == after.classical.filter (fun p => p.value != output)
+
+def initialize (definition : Definition) (output : Nat) : Bool :=
+  let before := definition.interface.inputs
+  let after := definition.interface.outputs
+  definition.effect == .iso && !(ownerNames before).contains output &&
+    after.quantum.any (fun p => p.owner == output && p.basis == #[.bit] &&
+      disjoint p.axes (wires before)) &&
+    before.quantum == after.quantum.filter (fun p => p.owner != output) &&
+    before.classical == after.classical
+
+def computed (artifact : Artifact) (definition : Definition) (compute useOp logical encoding : Nat) : Bool :=
+  (do
+    let c ← artifact.definitions[compute]?
+    let w ← artifact.definitions[useOp]?
+    let u ← artifact.meanings[logical]?
+    let e ← artifact.encodings[encoding]?
+    let .zeroScratch _ actualCompute := e.body | none
+    return definition.effect == .unitary && closed c && closed w && actualCompute == compute &&
+      quantumOnly definition.interface && definition.interface.inputs == definition.interface.outputs &&
+      definition.interface == u.interface && definition.interface.inputs == e.logical &&
+      c.interface.outputs == e.physical && w.interface.inputs == e.physical).getD false
+
+/-- Local structural conditions only. A leaf is deferred to the independently
+reconstructed finite verifier; `computed` still needs its semantic premise. -/
+def conditions (artifact : Artifact) (definition : Definition) : Bool :=
+  definition.interface.valid && definition.body.bounded && match definition.body with
+  | .leaf _ => true
+  | .sequence children =>
+    sequence artifact children == some (definition.interface, definition.effect)
+  | .tensor left right =>
+    (do
+      let a ← artifact.definitions[left]?
+      let b ← artifact.definitions[right]?
+      return disjointFrames a.interface b.interface && definition.effect == join a.effect b.effect &&
+        definition.interface == ⟨append a.interface.inputs b.interface.inputs,
+          append a.interface.outputs b.interface.outputs⟩).getD false
+  | .call child input output =>
+    (do
+      let callee ← artifact.definitions[child]?
+      return definition.effect == callee.effect &&
+        Ports.shapeValid definition.interface.inputs callee.interface.inputs input &&
+        Ports.shapeValid callee.interface.outputs definition.interface.outputs output &&
+        renamed definition.interface callee.interface input output).getD false
+  | .repeatOp _ child =>
+    (do
+      let body ← artifact.definitions[child]?
+      return closed body && definition.effect == .unitary && definition.interface == body.interface).getD false
+  | .inverse child =>
+    (do
+      let body ← artifact.definitions[child]?
+      return definition.effect == .unitary && body.effect == .unitary && quantumOnly body.interface &&
+        definition.interface == ⟨body.interface.outputs, body.interface.inputs⟩).getD false
+  | .control child _ => (artifact.definitions[child]?.map (controlled definition)).getD false
+  | .rewire map => definition.effect == .unitary &&
+    Ports.shapeValid definition.interface.inputs definition.interface.outputs map
+  | .dyadicPhase target _ _ => phase definition target
+  | .computed c w u e => computed artifact definition c w u e
+  | .observeZ input output => observe definition input output
+  | .init0 output => initialize definition output
+
+/-- Header cost includes every actual referenced definition/meaning/encoding,
+including shared endpoints. Proof references cannot occur in a body. -/
+def refCost (cost : Side → Nat) (artifact : Artifact) (ref : Ref) : Nat :=
+  match ref.table with
+  | .definition => (artifact.definitions[ref.index]?.map
+      (fun d => cost d.interface.inputs + cost d.interface.outputs)).getD 0
+  | .meaning => (artifact.meanings[ref.index]?.map
+      (fun m => cost m.interface.inputs + cost m.interface.outputs)).getD 0
+  | .encoding => (artifact.encodings[ref.index]?.map
+      (fun e => cost e.logical + cost e.physical)).getD 0
+  | .proof => 0
+
+def headerCost (cost : Side → Nat) (artifact : Artifact) (definition : Definition) : Nat :=
+  cost definition.interface.inputs + cost definition.interface.outputs +
+    definition.body.references.foldl (fun sum ref => sum + 1 + refCost cost artifact ref) 0
+
+def mapsCost (artifact : Artifact) (definition : Definition) : Nat :=
+  match definition.body with
+  | .call child input output =>
+    (artifact.definitions[child]?.map (fun callee =>
+      Ports.workCharge definition.interface.inputs callee.interface.inputs input +
+      Ports.workCharge callee.interface.outputs definition.interface.outputs output)).getD 0
+  | .rewire map => Ports.workCharge definition.interface.inputs definition.interface.outputs map
+  | _ => 0
+
+structure Checked where
+  visits : Nat
+  deriving Repr
+
+/-- The caller must also check every child body and all semantic obligations.
+No cache, body count or finite payload is trusted by this local check. -/
+def check (artifact : Artifact) (index remaining : Nat) : Except Error Checked := do
+  if remaining > 2000000 then throw .limit
+  let some definition := artifact.definitions[index]? | throw .invalidIr
+  let initial := 1 + definition.body.referenceCount + definition.body.charge + definition.interface.scan
+  if initial > remaining then throw .limit
+  let scan := initial + headerCost sideScan artifact definition
+  if scan > remaining then throw .limit
+  let charge := scan + 16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
+    mapsCost artifact definition
+  if charge > remaining then throw .limit
+  if !conditions artifact definition then throw .invalidIr
+  return ⟨charge⟩
+
+/-- Acceptance is about the actual indexed node, with a shared remaining budget. -/
+theorem check_conditions (artifact : Artifact) (index remaining : Nat) (checked : Checked)
+    (accepted : check artifact index remaining = .ok checked) :
+    checked.visits ≤ remaining ∧ remaining ≤ 2000000 ∧
+    ∃ definition, artifact.definitions[index]? = some definition ∧ conditions artifact definition = true := by
+  unfold check at accepted
+  simp only [bind, pure, Except.bind] at accepted
+  split at accepted
+  next invalid => contradiction
+  next limit =>
+    cases hd : artifact.definitions[index]? with
+    | none => simp [hd] at accepted
+    | some definition =>
+      simp only [hd] at accepted
+      split at accepted
+      next invalid => contradiction
+      next initial =>
+        split at accepted
+        next invalid => contradiction
+        next scanned =>
+          split at accepted
+          next invalid => contradiction
+          next charged =>
+            split at accepted
+            next invalid => contradiction
+            next valid =>
+              cases Except.ok.inj accepted
+              exact ⟨Nat.le_of_not_gt charged, Nat.le_of_not_gt limit, definition, hd,
+                by simpa using valid⟩
+
+end QleisliKernel.Hierarchical.NodeTyping

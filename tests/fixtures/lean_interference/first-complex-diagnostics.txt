@@ -1,0 +1,12 @@
+Qleisli/Interference.lean:23:4: error: linarith failed to find a contradiction
+square : ↑√2 * ↑√2 = 2
+nonzero : ↑√2 ≠ 0
+⊢ False
+failed
+Qleisli/Interference.lean:27:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  256 * (2 * ↑Real.pi * Complex.I / 256)
+in the target expression
+  Complex.exp (↑256 * (2 * ↑Real.pi * Complex.I / 256)) = 1
+
+angle : 256 * (2 * ↑Real.pi * Complex.I / 256) = 2 * ↑Real.pi * Complex.I
+⊢ Complex.exp (↑256 * (2 * ↑Real.pi * Complex.I / 256)) = 1

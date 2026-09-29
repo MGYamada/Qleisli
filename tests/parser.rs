@@ -98,7 +98,7 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     };
     assert!(matches!(&binder.kind, PatternKind::Name(name) if name.text == "x"));
     assert!(matches!(input.kind, ExprKind::Name(_)));
-    assert!(matches!(basis.kind, BasisExprKind::Tuple(_, _)));
+    assert!(matches!(basis.kind, BasisExprKind::Tuple(_)));
 
     let main = r#"
 use bell::entangle;
@@ -131,7 +131,7 @@ observe fn main() -> (CBit, CBit) {
     };
     assert_eq!(body.statements.len(), 4);
     assert!(matches!(body.statements[1].kind, StmtKind::Let { .. }));
-    assert!(matches!(body.result.kind, ExprKind::Tuple(_, _)));
+    assert!(matches!(body.result.kind, ExprKind::Tuple(_)));
 }
 
 #[test]
@@ -377,9 +377,14 @@ fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
         }
         let trailing_comment = format!("{declaration} // note{format_character}");
         assert_eq!(parse_module(&trailing_comment).unwrap().decls.len(), 1);
-        // Rust-style line comments end at LF/EOF; bare CR remains comment text.
+        // Bare CR can hide displayed code, so the 0.2.0 source profile rejects it.
         let bare_cr = format!("// note{format_character}\r{declaration}");
-        assert!(parse_module(&bare_cr).unwrap().decls.is_empty());
+        assert!(
+            parse_module(&bare_cr)
+                .unwrap_err()
+                .message
+                .contains("bare carriage return")
+        );
 
         // In particular, a leading U+FEFF is not stripped as a BOM.
         let source = format!("{format_character}{declaration}");
@@ -403,16 +408,22 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
         panic!("expected coherent lift")
     };
     assert_eq!(&source[binder.span.start..binder.span.end], "((a,_),b)");
-    let PatternKind::Tuple(left, right) = &binder.kind else {
+    let PatternKind::Tuple(outer) = &binder.kind else {
         panic!("expected outer tuple pattern")
     };
-    let PatternKind::Tuple(a, ignored) = &left.kind else {
+    let [left, right] = outer.as_slice() else {
+        panic!("two fields")
+    };
+    let PatternKind::Tuple(inner) = &left.kind else {
         panic!("expected nested tuple pattern")
+    };
+    let [a, ignored] = inner.as_slice() else {
+        panic!("two nested fields")
     };
     assert!(matches!(&a.kind, PatternKind::Name(name) if name.text == "a"));
     assert!(matches!(ignored.kind, PatternKind::Wildcard));
     assert!(matches!(&right.kind, PatternKind::Name(name) if name.text == "b"));
-    assert!(matches!(basis.kind, BasisExprKind::Tuple(_, _)));
+    assert!(matches!(basis.kind, BasisExprKind::Tuple(_)));
 
     parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { do _ <- q; pure 0 }").unwrap();
     // Duplicate names are syntactically valid; the basis pattern checker must

@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented source, Qleisli 0.1.9.** Start here and copy a complete program
+**Implemented finite source, Qleisli 0.2.0.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite
@@ -9,15 +9,41 @@ page are complete programs compiled and executed by
 [`every_quick_reference_program_compiles_and_executes`](../tests/qli_corpus.rs)
 in the existing all-target Rust CI jobs. Other documents may contain proposals.
 
+## Fresh samples and portable verification
+
+From the repository root, these commands exercise the implemented finite APIs:
+
+```sh
+cargo run --bin qleisli -- sample examples/bell --shots=16 --seed=0 --format=json
+cargo run --bin qleisli -- emit-ir examples/bell --output=bell-ir.json
+cargo run --bin qleisli -- verify-ir bell-ir.json --format=json
+cargo run --example sampled_shor15
+```
+
+The output artifact path must not already exist. `verify-ir` reconstructs its
+finite evidence without reading the source. Independently expected unitary
+contracts use `--against=<request-file>` and retained exact root type trees;
+the closed Bell observation entry has no unary type metadata. See the
+[machine contract and host API mapping](machine-interface-spec.md).
+
+`run` still returns the exhaustive distribution. `sample` prepares anew for
+each shot, with an explicit seed; neither executes a physical device. The CLI
+now limits input to 1 MiB per file and 16 MiB per project. Explicit
+`--source-bytes=N --project-bytes=N` or `--legacy-source-limits` provide migration.
+The selected `Bits<n>`/`CBits<m>` sized extension is still pending; `CWord` is
+not a supported alias. The complete programs below use implemented finite types.
+
 ## Ownership and ordinary feedback
 
 Import each operation explicitly. `Q<Bit>` is one owned qubit; using it consumes
 that binding. An operation may return its successor under the same name.
 `measure_z` consumes its qubit and returns `CBit`. `if` branches on a classical
 bit and both arms must return compatible ownership. `false`/`true` are `CBit`;
-`0`/`1` are `Bit` in basis computations. N-ary tuples
-left-associate: `(a,b,c)` and `(CBit,CBit,CBit)` mean `((a,b),c)` and
-`((CBit,CBit),CBit)`. Explicit `(a,(b,c))` remains a different tree.
+`0`/`1` are `Bit` in basis computations. Tuples retain immediate arity:
+`(a,b,c)`, `((a,b),c)` and `(a,(b,c))` are different shapes, as are their types.
+Use matching patterns or an explicit conversion. The [type system](type-system.md)
+defines equality and ownership; the [migration guide](tuple-shapes.md) includes
+copyable conversion definitions.
 
 This teleportation sends `|->`. The first two results are independent uniform
 message bits; the last is always one. The body is the user-supplied Claude
@@ -120,7 +146,7 @@ meaning `m`, supplied using `bind_op(provider,m)`. See the
 
 A patterned basis parameter is one argument; names and `_` match the declared
 product tree. For phase meanings keep the exact `(Bit,(Bit,Bit))` exponent type:
-`(Bit,Bit,Bit)` left-associates differently. Ordinary function parameters still
+`(Bit,Bit,Bit)` is a flat three-field type and also differs. Ordinary function parameters still
 require names. There are no type/size parameters, runtime operation values,
 general loops or arbitrary angles in this profile. Finite operation contracts
 currently support at most six interface bits and the documented work limits.
@@ -129,7 +155,7 @@ type check. Algorithm correctness needs its own oracle or evidence.
 
 For a complete measurement-feedback algorithm, see
 [iterative QPE](../examples/iterative_phase_estimation/README.md). Type errors
-print expected/actual binary trees; check association before adding an adapter.
+print expected/actual arity and nesting; check both before adding an adapter.
 For unsupported `with_computed` bodies, the diagnostic names the explicit
 logical-contract form. Its exact cleanup check must still succeed.
 

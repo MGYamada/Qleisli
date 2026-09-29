@@ -1,0 +1,61 @@
+[
+  {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "lean-kernel",
+    "exit": 0,
+    "stdout": "\u2714 [26/27] Built QleisliKernel (3.7s)\nBuild completed successfully (27 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit": 0,
+    "stdout": "Audited 1851 kernel/transport declarations, 1045 pure import modules and 1043 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "lake",
+      "build"
+    ],
+    "cwd": "lean",
+    "exit": 0,
+    "stdout": "\u2714 [2974/2976] Built Qleisli.Qft (23s)\n\u2714 [2975/2976] Built Qleisli (4.1s)\nBuild completed successfully (2976 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "cwd": "lean",
+    "exit": 0,
+    "stdout": "Audited 640 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  }
+]

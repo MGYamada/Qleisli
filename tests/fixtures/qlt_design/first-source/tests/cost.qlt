@@ -1,0 +1,15 @@
+// Desired logical-IR cost tests; report field names await TQL-1 specification.
+// These are not physical decomposition or T-count claims.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qli::std::arithmetic::increment2;
+use qli::std::arithmetic::add2;
+
+#[test]
+fn increment_logical_gate_count() {
+    assert_eq!(cost(increment2).logical_gate_count, 2);
+}
+
+#[test]
+fn addition_logical_gate_count() {
+    assert_eq!(cost(add2).logical_gate_count, 3);
+}

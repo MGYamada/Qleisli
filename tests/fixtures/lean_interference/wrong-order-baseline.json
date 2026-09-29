@@ -1,0 +1,12 @@
+{
+  "source_sha256": "805f3f70e33ad6bb3d2804db43507b71959e15ff6dd7acd2f77ed2f018b2d80c",
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/lean_interference/wrong_order",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.8535533905932744},{\"bits\":[true],\"probability\":0.1464466094067263}]}}\n",
+  "stderr": ""
+}

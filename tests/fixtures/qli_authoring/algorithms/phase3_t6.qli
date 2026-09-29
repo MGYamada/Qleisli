@@ -4,7 +4,7 @@ use gates::eighth_phase;
 use std::quantum::init0;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (((CBit,CBit),CBit),CBit) {
+observe fn main() -> ((CBit,CBit,CBit),CBit) {
     let (phase_word,target) = phase3[repeat_op(6,eighth_phase)](x(init0()));
     (phase_word,measure_z(target))
 }

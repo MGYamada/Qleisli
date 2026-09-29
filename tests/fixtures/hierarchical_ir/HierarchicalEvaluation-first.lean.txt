@@ -1,0 +1,124 @@
+import Qleisli.HierarchicalOperators
+
+/-! Constructed partial denotations of actual hierarchical bodies.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+This mathematical evaluator is separate from resource-bounded verification.
+Unsupported bodies and missing children produce no denotation. -/
+
+namespace Qleisli.HierarchicalEvaluation
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalSemantics
+
+structure Node where
+  interface : Interface
+  tag : Tag
+  children : List Nat
+
+def definition (artifact : Artifact) (index : Nat) : Option Node := do
+  let d ← artifact.definitions[index]?
+  let (tag,children) ← physicalCode d
+  return ⟨d.interface,tag,children⟩
+
+def meaning (artifact : Artifact) (index : Nat) : Option Node := do
+  let m ← artifact.meanings[index]?
+  let (tag,children) ← logicalCode m
+  return ⟨m.interface,tag,children⟩
+
+/-- Fuel bounds dependency depth, never an operation's repetition count.
+Even count zero reads and evaluates its actual child. -/
+def evaluate {S : Type} (algebra : Algebra S) (read : Nat → Option Node) : Nat → Nat → Option S
+  | 0, _ => none
+  | fuel + 1, index => do
+    let node ← read index
+    let values ← node.children.mapM (evaluate algebra read fuel)
+    return algebra.apply node.interface node.tag values
+
+def physical {S : Type} (algebra : Algebra S) (artifact : Artifact) : Nat → Nat → Option S :=
+  evaluate algebra (definition artifact)
+
+def logical {S : Type} (algebra : Algebra S) (artifact : Artifact) : Nat → Nat → Option S :=
+  evaluate algebra (meaning artifact)
+
+theorem mapM_success {A B : Type} (xs : List A) (f : A → Option B)
+    (success : ∀ x ∈ xs, (f x).isSome = true) : ∃ ys, xs.mapM f = some ys := by
+  induction xs with
+  | nil => exact ⟨[],rfl⟩
+  | cons x xs ih =>
+    cases hx : f x with
+    | none => simpa [hx] using success x (by simp)
+    | some y =>
+      obtain ⟨ys,hy⟩ := ih (fun z member => success z (by simp [member]))
+      exact ⟨y::ys,by simp [hx,hy]⟩
+
+theorem mapM_congr_success {A B : Type} (xs : List A) (f g : A → Option B) (ys : List B)
+    (accepted : xs.mapM f = some ys)
+    (extend : ∀ x ∈ xs, ∀ value, f x = some value → g x = some value) :
+    xs.mapM g = some ys := by
+  induction xs generalizing ys with
+  | nil => simpa using accepted
+  | cons x xs ih =>
+    cases hx : f x with
+    | none => simp [hx] at accepted
+    | some y =>
+      cases hs : xs.mapM f with
+      | none => simp [hx,hs] at accepted
+      | some rest =>
+        have same : y :: rest = ys := by simpa [hx,hs] using accepted
+        subst ys
+        have head := extend x (by simp) y hx
+        have tail := ih rest hs (fun z member value hz => extend z (by simp [member]) value hz)
+        simp [head,tail]
+
+theorem evaluate_more {S : Type} (algebra : Algebra S) (read : Nat → Option Node)
+    (fuel index : Nat) (value : S) (accepted : evaluate algebra read fuel index = some value) :
+    ∀ more, fuel ≤ more → evaluate algebra read more index = some value := by
+  induction fuel generalizing index value with
+  | zero => simp [evaluate] at accepted
+  | succ fuel ih =>
+    cases hn : read index with
+    | none => simp [evaluate,hn] at accepted
+    | some node =>
+      cases hc : node.children.mapM (evaluate algebra read fuel) with
+      | none => simp [evaluate,hn,hc] at accepted
+      | some values =>
+        have equal : algebra.apply node.interface node.tag values = value := by
+          simpa [evaluate,hn,hc] using accepted
+        intro more bound
+        cases more with
+        | zero => omega
+        | succ more =>
+          have children := mapM_congr_success node.children (evaluate algebra read fuel)
+            (evaluate algebra read more) values hc (fun child _ result checked => ih child result checked more (by omega))
+          simp [evaluate,hn,children,equal]
+
+theorem evaluate_unique {S : Type} (algebra : Algebra S) (read : Nat → Option Node)
+    (fuel more index : Nat) (first second : S)
+    (hf : evaluate algebra read fuel index = some first)
+    (hs : evaluate algebra read more index = some second) : first = second := by
+  have a := evaluate_more algebra read fuel index first hf (max fuel more) (Nat.le_max_left _ _)
+  have b := evaluate_more algebra read more index second hs (max fuel more) (Nat.le_max_right _ _)
+  exact Option.some.inj (a.symm.trans b)
+
+theorem mapM_getD {A B : Type} (xs : List A) (f : A → Option B) (fallback : B)
+    (success : ∀ x ∈ xs, (f x).isSome = true) :
+    xs.mapM f = some (xs.map (fun x => (f x).getD fallback)) := by
+  induction xs with
+  | nil => rfl
+  | cons x xs ih =>
+    cases hx : f x with
+    | none => simpa [hx] using success x (by simp)
+    | some value =>
+      have rest := ih (fun z member => success z (by simp [member]))
+      simp [hx,rest]
+
+/-- A fallback is used only to state a total lookup environment; success of
+every actual child is proved before this equation can apply. -/
+theorem evaluate_node {S : Type} (algebra : Algebra S) (read : Nat → Option Node)
+    (fuel index : Nat) (node : Node) (fallback : S) (found : read index = some node)
+    (children : ∀ child ∈ node.children, (evaluate algebra read fuel child).isSome = true) :
+    evaluate algebra read (fuel+1) index =
+      some (algebra.apply node.interface node.tag
+        (node.children.map (fun child => (evaluate algebra read fuel child).getD fallback))) := by
+  simp [evaluate,found,mapM_getD node.children (evaluate algebra read fuel) fallback children]
+
+end Qleisli.HierarchicalEvaluation

@@ -232,6 +232,27 @@ release primitive.
 
 ## 4. Theorem status and proof work
 
+The **Qleisli Soundness Theorem** is the adopted **v0.5.0** proof milestone.
+Its [statement and S05-C1–C5 gates](release-milestones.md#qleisli-soundness-theorem-v050)
+cover the actual production IR checker, exact semantics and all enabled rules,
+with no outstanding Rust-checker correctness premise. It remains open; the
+local executable phase-word theorem below is a precursor. Source translation
+validation and native execution assumptions remain explicitly separate.
+
+The [Physical Realizability Theorem](release-milestones.md#physical-realizability-theorem-v1)
+is a further adopted target by v1. Derive CPTP semantics for the complete
+instrument as a soundness corollary, then construct and synthesize its isometric
+dilation over a declared gate set. K4 must prove the correspondence of the
+actual Lean backend through emission; semantic validity alone is insufficient.
+Both this backend theorem and the general soundness theorem remain open.
+
+The [QLT design](qlt-design.md#results-and-future-proofs) adds a separate future
+test-evaluator adequacy obligation: successful exact evaluation must agree with
+this IR denotation, and cost evaluation with its declared structural model.
+The first experiment will use Rust; later actual-definition Lean proofs and
+instance certificates are independent goals, not new S05 or PR release gates.
+No QLT evaluator or such theorem is implemented by the design record.
+
 | Result | Current status | What it does not establish |
 | --- | --- | --- |
 | Source resource accounting, R1 | Paper proof for the explicit [resource calculus](source-resource-rules.md#7-resource-preservation-theorem-and-proof), plus a declaration-boundary corollary. | General equivalence with Rust execution or the whole source specification. |
@@ -243,6 +264,7 @@ release primitive.
 | Finite static transformations, F1–F5 | [Conditional exact-operator paper proofs](static-semantics.md) for axis transport, flattening/output order, restricted computed phases, inverse, repetition, and coherent control; exact finite matrix regressions. | General source-to-IR adequacy, acceptance of all unitary raw IR, or verified Rust algorithms. |
 | Mathematical translation, C1–C5 | [Explicit source-to-IR schemas and conditional preservation](source-ir-correspondence.md), including basis encoding, concrete leaves, auxiliary chain extraction, and complete phi construction. | Every Rust path constructs that translation, verifier implementation correctness, or exact numerical execution. |
 | Restricted auxiliary zero return | Exact local factorization above and in the resource calculus. | A general release primitive or arbitrary auxiliary-body acceptance. |
+| Executable Lean phase-word acceptance | [`normalize_correct` and `verify_sound`](../lean-kernel/QleisliKernel/PhaseWord.lean) prove the actual normalizer/checker against direct cyclic phase execution for every bit and initial phase. | Complex interpretation, wire decoding, full IR/ownership/instrument acceptance, source adequacy or native compilation correctness. |
 | Finite IR ideal soundness | [Conditional paper argument](finite-core-proof.md) for its constructors and verification premises. | Verified Rust implementation, source translation, or numerical exactness. |
 | Source rule-system pure-operation and instrument soundness | [Paper Q1–Q3](source-soundness.md): pure determinacy/isometry/unitarity, finite adaptive instruments, CP and total trace preservation with arbitrary references. | Full Rust acceptance/translation correspondence, numerical exactness, protocol, algorithm, or hardware correctness. |
 | Local Kraus completeness algebra | [Lean KA-1–KA-5](lean-resource-proof.md#6-local-kraus-completeness-algebra): exact matrix identities for isometries, output transport, and adaptive composition. | Positivity/trace, source derivations, arbitrary-reference extension, or the whole Q1–Q3 proof. |
@@ -265,7 +287,8 @@ arbitrary reference identity, without excluding entanglement. The relation
 between this meaning, actual Rust IR generation, and numerical execution is
 not proved by the instrument equations.
 
-**Remaining obligations, in priority order (revised for the 0.1.5 review):**
+**Remaining obligations, in priority order (updated for the 2026-09-28–29
+Lean kernel migration decision):**
 
 1. Define the finite raw IR's denotation and complete ownership interfaces in
    Lean, using the [IR paper proof and verifier obligations](finite-core-proof.md).
@@ -273,16 +296,59 @@ not proved by the instrument equations.
    The first planned Physlib use is a bridge from finite IR Kraus branches to
    a classical–quantum CPTP map. Physlib is a [future dependency](physlib-environment.md):
    introduce it with that concrete bridge; the preserved external audit does not provide it.
-2. Mechanize that modeled verifier acceptance implies resource safety and ideal
-   quantum soundness. Relate each premise to the actual Rust verifier. A Lean
-   reference checker with adversarial differential testing can be an intermediate
-   artifact; finite agreement does not prove Rust equivalence.
+2. Implement the acceptance core in the [Mathlib-free Lean package](../lean-kernel/README.md)
+   and prove resource safety and ideal quantum soundness of the actual executable
+   verification function. Follow the [staged authority transfer](lean-kernel-migration.md):
+   Rust/Lean differential checks are intermediate evidence, not a Rust equivalence
+   proof or automatic permission to replace production verification. The initial
+   `verify_sound` covers one-bit cyclic phase words only.
 3. Prove selected semantic-kernel rules and their checker/model correspondence
    under the [bounded M2 scope](decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles).
    Preserve fixed requested meanings, entry evidence, output axes, exact phase,
    zero return and binding to hierarchical IR. Existing local matrix theorems
-   prove equations, not acceptance soundness of the Rust implementation.
-4. Establish source typing/name/effect and resource-rule adequacy, including
+   prove equations, not acceptance soundness of the Rust implementation. New M2
+   checker rules must be implemented and proved in Lean over the same definitions;
+   the initial phase-word slice supplies no QFT/QPE schema theorem.
+   Subsequent [QFT circuit](lean-qft-proof-packet.md) and
+   [typed shared graph](lean-qft-graph-packet.md) theorems now establish the
+   positive normalized Fourier coefficient and arbitrary reference extension
+   for actual accepted internal projections. The [QPE instrument component](lean-qpe-instrument-packet.md)
+   now connects actual preparation, controlled powers and the inverse graph to
+   full residual reference maps. Its completeness and total trace theorem
+   explicitly require a whole-space isometric provider. The controlled-power component now proves the actual coherent amplitude
+   action equals its complex block operator, with conditional unitary laws and
+   arbitrary-reference maps. Full external IR/provider binding remains an obligation. The component registry now
+   [pins rebuilt types and source revisions](lean-qpe-instrument-packet.md#shipped-type-and-source-manifest);
+   external schema enablement remains gated. The full-profile dependency
+   scheduler additionally proves actual-checker acyclicity. Typed artifact
+   preparation now proves this for the graph extracted from the actual four
+   tables and establishes exact logical/physical proof endpoint binding under
+   a shared work budget. These are structural results; the later passes check
+   node typing, while derivations and quantum equations remain obligations.
+   The side-map checker now proves complete owner/axis permutations, exact
+   structural type matching and coefficient round trips with arbitrary
+   references. The actual definition-node pass now checks both call maps and
+   fresh names, all child interface/effect conditions and zero-repeat bodies;
+   its whole-table theorem covers every definition under the shared budget.
+   The meaning/encoding pass now proves the same coverage and shared budget
+   for their actual structural checks, including QPE provider shapes and
+   explicit zero-scratch boundaries. These typing results do not prove
+   finite-leaf semantics, unitary/entry premises or semantic derivations.
+   Explicit Bits/Bit, immediate tuple and empty-owner conversions are now
+   checked by both typing passes. Their actual basis routing and its reversed
+   endpoints satisfy finite inverse laws and coefficient round trips for
+   arbitrary phases/references. Source lowering and external derivation
+   binding are still required; this does not enable an implicit conversion.
+   The supported whole-space derivation pass now also has
+   [constructed actual-body denotations](../lean/Qleisli/HierarchicalEvaluation.lean):
+   accepted equations give equal unique complex operators and reference maps
+   without an assumed interpretation environment. Whole-space unitarity,
+   finite reconstruction and remaining full-profile rules are still open.
+4. Develop translation validation for Rust source lowering and implement the
+   backend's lowering, optimization, synthesis and emission in Lean with proofs
+   of its actual definitions. Complete PR-C1–C4 by v1, binding each output to
+   its checked input and requested meaning. Establish source typing/name/effect
+   and resource-rule adequacy, including
    snapshots, tombstones, pending/caller frames and the open trace premises of
    the [scope lookup theorem](lowering-state-refinement.md). Establish that Rust
    realizes [C1–C5](source-ir-correspondence.md), then transfer S1–S4, F1–F5 and
@@ -301,3 +367,23 @@ tracks operation rights; quantum validity needs whole-system semantics and
 checked cleanup evidence. Even completing these source theorems would not
 prove a protocol's state-preservation property, an algorithm's success
 probability, a hardware realization, or the physical no-cloning theorem.
+
+### Temporary proof markers
+
+Mark proofs intended for eventual removal with `temporary (TP-...)` in their
+Lean documentation comment. Record the replacement and concrete removal
+condition. The marker does not weaken their statement, build or axiom-audit
+requirements. Keep reusable mathematical lemmas, actual-body definitions and
+proofs used by the final checker unmarked; being conditional or originating
+in an experiment is not by itself a reason to discard a result.
+
+| ID | Temporary declarations | Replacement and removal condition |
+| --- | --- | --- |
+| TP-001 | `HierarchicalSemantics.Interprets` and `ordinary_sound`, `power_sound`, `derives_sound`, `checkAll_sound`, `checkAll_entry_sound`; `HierarchicalOperators.checkAll_operator`, `checkAll_matrix`, `checkAll_reference`, `powerEntry_operators` | Use the [constructed evaluator and denotation theorems](../lean/Qleisli/HierarchicalEvaluation.lean). Migrate remaining wrappers, including the independent coherent-power request conclusion, before removal. Keep `bodies_sound`, interface/entry binding, operator definitions and matrix laws: the constructed proofs use them. |
+| TP-002 | `HierarchicalPower.inspectEntry_equation`, `inspectEntry_reference` | Replace projection-only entry wrappers with the constructed derivation entry, retaining its independent power request. Keep the local `inspect_operators`/`inspect_unitary` component lemmas where used. |
+| TP-003 | `Schema.power_sound` | The shipped registry already selects `Schema.power_coherent_sound`. Retire the old basis-conditioned wrapper; retain lower-level action lemmas still used by QPE. |
+
+Removal must respect the [public Lean API compatibility policy](versioning.md).
+These markers identify known retirement paths; they do not promise that all
+remaining proofs will be permanent. Review the list as migration changes the
+dependency graph. Historical validation records and first attempts remain intact.

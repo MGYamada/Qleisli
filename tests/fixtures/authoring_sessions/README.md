@@ -11,6 +11,8 @@ model identifier and sampling settings were unavailable.
 | [Product layout](type-layout-repair/session.json) | Curated replay of an existing rejected program. The same source rejects before/after, but now names the expected and actual trees. A previously known adapter checks/runs and returns `101`. One source revision, not blind model repair. |
 | [Cleanup](cleanup-repair/session.json) | Curated replay of H H in restricted `with_computed`. The same source rejects before/after; the new hint identifies the three-argument contract form. A known explicit identity contract checks/runs and returns `0`. One source revision, not evidence that hints alone improve model success. |
 
+The 0.2.0 continuation adds [shared QPE](shared-qpe-v020/session.json), whose original `CWord` spelling and parse failure are immutable history, and [sampled Grover](grover-trial-v020/session.json), whose missing-kernel repair precedes the implementation of sampling. Current design uses `CBits`; the appended Grover observation uses the unchanged repaired source with the new sampler.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and

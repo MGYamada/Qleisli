@@ -1,0 +1,9 @@
+{
+  "lean-kernel/QleisliKernel/ControlledPowers.lean": "84ac1c624977d604b933c5a57503921a70b9b8e9b28e495ab60c7f4cde85f09e",
+  "lean-kernel/QleisliKernel/Schema.lean": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
+  "lean-kernel/QleisliKernel.lean": "95240f018ea49b4f11417d65aea1e271bae2444c6a50fc75a2e46e3f656cb780",
+  "lean-kernel/Tests.lean": "db582de89a1d5e77dd97071b771c08d7bd76f85df656fe2bc8c49d7bfff34a68",
+  "lean/Qleisli/Schema.lean": "2341d1d2faebb97e7685e938d8aeff6793cf31d93bf3f9ee1fb474c03746abda",
+  "lean/Qleisli.lean": "aa8caf2f8bb86de4c26c27e226d78df34b774bf1b65643147b640674a7d8d321",
+  "scripts/test_lean_qpe.py": "ba98152e0038d28f3c54e2caa38ebfc80ab85a250f5b7d5304fd56a43ef0a71f"
+}

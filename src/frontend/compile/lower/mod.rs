@@ -11,6 +11,7 @@ mod operations;
 pub(super) use operations::check_generic;
 mod primitives;
 mod scope;
+mod transforms;
 mod value;
 
 use value::{Env, Register, Slot, Value, env_size};
@@ -35,12 +36,22 @@ fn verification_error(
     module: &str,
     span: Span,
     failure: crate::ValidationError,
+    limit: bool,
 ) -> CompileError {
     let (module, span) = (1..=failure.path.len())
         .rev()
         .find_map(|length| sources.get(&failure.path[..length]))
         .map_or((module, span), |(module, span)| (module.as_str(), *span));
-    compiler.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+    compiler.error(
+        module,
+        span,
+        if limit {
+            ErrorCode::Limit
+        } else {
+            ErrorCode::InvalidIr
+        },
+        failure.to_string(),
+    )
 }
 
 // The register store includes quantum values held by pending arguments and
@@ -152,6 +163,12 @@ impl Lowerer<'_, '_> {
                 let b = self.input(b, quantum, classical);
                 Value::pair(a, b)
             }
+            Ty::Tuple(fields) => Value::Tuple(
+                fields
+                    .iter()
+                    .map(|field| self.input(field, quantum, classical))
+                    .collect(),
+            ),
             Ty::Bit => unreachable!("ordinary signature"),
         }
     }
@@ -395,17 +412,21 @@ impl Lowerer<'_, '_> {
                 }
                 env.insert(name.text.clone(), Some(value));
             }
-            PatternKind::Tuple(a, b) => {
-                let Value::Pair(left, right) = value else {
+            PatternKind::Tuple(patterns) => {
+                let Some(fields) = value
+                    .into_fields()
+                    .filter(|fields| fields.len() == patterns.len())
+                else {
                     return Err(self.error(
                         module,
                         pattern.span,
                         ErrorCode::TypeMismatch,
-                        "tuple pattern requires a tuple value",
+                        "tuple pattern requires a tuple value with the same immediate arity",
                     ));
                 };
-                self.bind(module, a, *left, env, names)?;
-                self.bind(module, b, *right, env, names)?;
+                for (pattern, field) in patterns.iter().zip(fields) {
+                    self.bind(module, pattern, field, env, names)?;
+                }
             }
         }
         Ok(())
@@ -482,12 +503,17 @@ impl Lowerer<'_, '_> {
                     None => self.static_steps(module, function, &basis, env)?,
                 };
                 let cost = total_size(steps.iter().map(super::circuit::size));
+                let mut expected = self.target_meaning(module, function, &basis)?;
                 match &expr.kind {
                     ExprKind::Adjoint { .. } => {
                         self.compiler.charge(module, expr.span, cost)?;
                         if !is_operation {
                             super::circuit::invert(&mut steps);
                         }
+                        expected = expected
+                            .map(|m| m.adjoint(&mut self.compiler.exact_work))
+                            .transpose()
+                            .map_err(|e| self.compiler.op_error(module, expr.span, e.into()))?;
                     }
                     ExprKind::RepeatStatic { count, .. } => {
                         self.compiler.charge(
@@ -507,9 +533,20 @@ impl Lowerer<'_, '_> {
                             ));
                         }
                         steps = (0..*count).flat_map(|_| steps.iter().cloned()).collect();
+                        expected = expected
+                            .map(|m| {
+                                super::operations::matrix_power(
+                                    &m,
+                                    *count,
+                                    &mut self.compiler.exact_work,
+                                )
+                            })
+                            .transpose()
+                            .map_err(|e| self.compiler.op_error(module, expr.span, e))?;
                     }
                     _ => unreachable!(),
                 }
+                self.check_transformed(module, expr.span, &basis, &steps, expected.as_ref())?;
                 self.apply_circuit(slot, steps);
                 Ok(value)
             }
@@ -527,6 +564,7 @@ impl Lowerer<'_, '_> {
                 let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
                 let mut steps = Vec::new();
                 let mut operation_arm = false;
+                let mut expectations = Vec::new();
                 for (name, when_one) in [(zero, false), (one, true)] {
                     let operation =
                         self.operation_steps(module, name, &basis, env, Access::Controlled)?;
@@ -536,6 +574,13 @@ impl Lowerer<'_, '_> {
                         Some(steps) => steps,
                         None => self.static_steps(module, name, &basis, env)?,
                     };
+                    expectations.push(
+                        if basis.basis_bits().expect("basis") < crate::contract::MAX_CONTRACT_BITS {
+                            self.target_meaning(module, name, &basis)?
+                        } else {
+                            None
+                        },
+                    );
                     self.compiler.charge(
                         module,
                         expr.span,
@@ -565,6 +610,16 @@ impl Lowerer<'_, '_> {
                         "controlled operation circuit exceeds 1024 steps",
                     ));
                 }
+                let one_meaning = expectations.pop().expect("one arm");
+                let zero_meaning = expectations.pop().expect("zero arm");
+                let expected = self.qif_meaning(module, expr.span, zero_meaning, one_meaning)?;
+                self.check_transformed(
+                    module,
+                    expr.span,
+                    &Ty::pair(Ty::Bit, basis),
+                    &steps,
+                    expected.as_ref(),
+                )?;
                 let joined = self.sealed(module, expr.span, "std::quantum", "join", vec![c, q])?;
                 let slot = self.quantum(module, expr.span, &joined, false)?;
                 self.apply_circuit(slot, steps);
@@ -668,11 +723,12 @@ impl Lowerer<'_, '_> {
                     value.clone()
                 })
             }
-            ExprKind::Tuple(a, b) => {
-                let a = self.expr(module, a, env)?;
-                let b = self.expr(module, b, env)?;
-                Ok(Value::pair(a, b))
-            }
+            ExprKind::Tuple(fields) => Ok(Value::tuple(
+                fields
+                    .iter()
+                    .map(|field| self.expr(module, field, env))
+                    .collect::<Result<_, _>>()?,
+            )),
             ExprKind::Call {
                 callee,
                 static_args,
@@ -921,15 +977,18 @@ impl Lowerer<'_, '_> {
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
-        let checked = crate::verify(raw).map_err(|err| {
-            verification_error(
-                inner.compiler,
-                &inner.operation_sources,
-                module,
-                name.span,
-                err,
-            )
-        })?;
+        let checked =
+            crate::verify::verify_with_budget_classified(raw, &mut inner.compiler.exact_work)
+                .map_err(|(err, limit)| {
+                    verification_error(
+                        inner.compiler,
+                        &inner.operation_sources,
+                        module,
+                        name.span,
+                        err,
+                        limit,
+                    )
+                })?;
         super::circuit::flatten(inner.compiler, module, name.span, &checked)
     }
 
@@ -1210,6 +1269,11 @@ fn lower_function_inner(
                 outputs(a, registers, quantum, classical);
                 outputs(b, registers, quantum, classical);
             }
+            Value::Tuple(fields) => {
+                for field in fields {
+                    outputs(field, registers, quantum, classical);
+                }
+            }
             Value::Unit => {}
         }
     }
@@ -1230,13 +1294,16 @@ fn lower_function_inner(
     if abstract_check {
         return Ok(None);
     }
-    crate::verify(raw).map(Some).map_err(|failure| {
-        verification_error(
-            lower.compiler,
-            &lower.operation_sources,
-            &key.0,
-            decl.span,
-            failure,
-        )
-    })
+    crate::verify::verify_with_budget_classified(raw, &mut lower.compiler.exact_work)
+        .map(Some)
+        .map_err(|(failure, limit)| {
+            verification_error(
+                lower.compiler,
+                &lower.operation_sources,
+                &key.0,
+                decl.span,
+                failure,
+                limit,
+            )
+        })
 }

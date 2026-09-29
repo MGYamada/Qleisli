@@ -1,3 +1,13 @@
 # Keep frozen sources byte-identical, including upstream whitespace.
 corpus/** text eol=lf
 corpus/upstream/** -text -whitespace
+
+# Preserve the copied upstream notice and original authoring/proof evidence.
+# These are frozen records, not maintained source or regenerated diagnostics.
+tests/fixtures/authoring_sessions/grover-trial-v020/NOTICE-QuantumKatas.txt -text -whitespace
+tests/fixtures/hierarchical_ir/power-first-diagnostics.txt -text -whitespace
+tests/fixtures/lean_layout_dag/first-reduction-diagnostics.txt -text -whitespace
+tests/fixtures/lean_qft/first-path-diagnostics.txt -text -whitespace
+tests/fixtures/lean_qpe_instrument/CoherentSchema-first.lean.txt -text -whitespace
+tests/fixtures/lean_qpe_instrument/coherent-proof-first-diagnostics.txt -text -whitespace
+tests/fixtures/lean_qpe_instrument/first-qft-unitary-diagnostics.txt -text -whitespace

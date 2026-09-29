@@ -1,0 +1,28 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "sample",
+    "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-01",
+    "--shots=1",
+    "--seed=0",
+    "--format=json"
+  ],
+  "exit_code": 2,
+  "recorded_utc": "2026-09-28T12:06:37.939691+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "sample",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "usage",
+        "severity": "error",
+        "message": "usage: qleisli <check|run> <source-root> [--format=json]",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

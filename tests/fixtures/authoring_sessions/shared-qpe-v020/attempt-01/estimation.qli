@@ -1,0 +1,20 @@
+//! Desired sized QPE; unsupported by the recorded 0.1.9 baseline.
+use std::registers::init_zero;
+use std::registers::hadamard_bits;
+use std::registers::controlled_on_bit;
+use std::registers::measure_bits;
+use std::transforms::qft;
+
+/// Return increasing-weight phase bits and the conditional target owner.
+pub observe fn qpe[static n: Nat, static m: Nat, static U: Op<Bits<n>>](
+    target: Q<Bits<n>>
+) -> (CWord<m>, Q<Bits<n>>)
+requires Controlled(U) {
+    let phase = hadamard_bits[m](init_zero[m]());
+    let (phase, target) = for static k in 0..m carry pair = (phase, target) {
+        let (phase, target) = pair;
+        yield controlled_on_bit[n,m,k,repeat_op(2^k,U)](phase, target);
+    };
+    let phase = adjoint(qft[m], phase);
+    (measure_bits[m](phase), target)
+}

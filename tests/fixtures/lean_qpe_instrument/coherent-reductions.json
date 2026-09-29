@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Tests.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "source_sha256": {
+    "lean-kernel/Tests.lean": "1e21a992c9a8e8648e6ab8d9cdcd6f6b15058e25edaa1743b01681e4898a3807",
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "177f68975a739c93cbd096d9d7b677627b57286225a61513dcac38dc94516515"
+  }
+}

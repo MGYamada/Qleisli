@@ -1,0 +1,29 @@
+// Deliberately failing future tests, evaluated against ../first-source.
+// Each subject is well-typed QLI; the mathematical assertions are false.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qli::subjects::inverse_qft2;
+use qli::subjects::unreversed_qft2;
+use qli::subjects::minus_identity;
+use qli::subjects::controlled_minus;
+use qlt::math::dft;
+use qlt::math::identity;
+
+#[test]
+fn inverse_is_not_positive_dft() {
+    assert_eq!(denote(inverse_qft2), dft(4));
+}
+
+#[test]
+fn final_reversal_matters() {
+    assert_eq!(denote(unreversed_qft2), dft(4));
+}
+
+#[test]
+fn scalar_phase_matters() {
+    assert_eq!(denote(minus_identity), identity(2));
+}
+
+#[test]
+fn control_makes_scalar_phase_relative() {
+    assert_eq!(denote(controlled_minus), identity(4));
+}

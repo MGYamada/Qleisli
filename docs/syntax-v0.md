@@ -35,14 +35,16 @@ accept eligible static parameter names with the corresponding declared access.
 
 ## Authoring forms added in product 0.1.8
 
-Tuple types, values and patterns with two or more fields elaborate by a **left
-fold**: `(a,b,c)` means `((a,b),c)`, and `(a,b,c,d)` means `(((a,b),c),d)`.
-The same rule applies to ordinary and basis expressions, types including `Q<A>`,
-`let` patterns, coherent-lift patterns and basis parameter patterns. Explicit
-parentheses keep their existing tree: `(a,(b,c))` is not implicitly reassociated.
-A folded child span covers its source fields; the outer span includes parentheses.
-Evaluation visits leaves once from left to right, preserving effects, ownership,
-phase and result/axis order. No tuple IR variant, coercion or new gate is added.
+Product 0.1.8 introduced n-ary spelling by left-folding it into binary pairs.
+**Product 0.2.0 supersedes that equality:** tuple types, values and patterns
+retain 2..64 immediate fields. `(a,b,c)`, `((a,b),c)` and `(a,(b,c))` have
+different shapes. This applies to ordinary/basis expressions, types including
+`Q<A>`, `let`, coherent-lift and basis-parameter patterns. See the normative
+[type system](type-system.md) and [tuple migration](tuple-shapes.md).
+The AST stores each immediate field separately with its own span; the outer
+span includes parentheses. Evaluation visits fields once from left to right,
+preserving effects, ownership, phase and result/axis order. Raw wire operations
+are unchanged; evidence type metadata retains n-ary shape.
 
 `basis fn f((a,b): (Bit,Bit)) -> Bit { a xor b }` has **one** parameter.
 Names, `_` and nested product patterns use the existing finite basis-binding
@@ -51,8 +53,8 @@ judgment, with distinct names across all parameters. Names can bind subtrees;
 reject even in unused functions. Calls do not implicitly pack/unpack parameters.
 Ordinary `iso`/`unitary`/`observe` parameter declarations still require names.
 There are no unit/singleton patterns or trailing commas; expression grouping
-and the Unit expression `()` retain their old meanings. Flat folds and mixed
-nesting share the existing 64-level AST limit, rather than bypassing it.
+and the Unit expression `()` retain their old meanings. Flat arity is bounded
+by 64 fields; nested products share the existing 64-level AST limit.
 
 For example, accept `basis fn swap((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}`;
 reject `basis fn bad((a,a):(Bit,Bit))->Bit{a}` (duplicate name), a pair pattern
@@ -95,12 +97,15 @@ form is not part of v0.
 A `.qli` file is UTF-8. Identifiers are ASCII
 `[A-Za-z_][A-Za-z0-9_]*`, excluding the reserved words below; `_` alone is
 reserved for wildcard patterns. Token-separating whitespace is limited to
-ASCII space, tab, LF, and CR. A `//` comment ends at LF or end of file; block
+ASCII space, tab, LF, and the CRLF sequence. A `//` comment ends at LF or end of file; block
 comments nest. `//!`/`/*! ... */` document the containing module/function and
 `///`/`/** ... */` the following supported item, under the
 [attachment rules](documentation-comments.md#lexical-forms-and-attachment).
-Doc text normalizes CRLF to LF and rejects bare CR; ordinary line comments no
-longer end at bare CR. Diagnostic spans retain original UTF-8 byte offsets.
+Doc text normalizes CRLF to LF. Since product 0.2.0, a CR not immediately
+followed by LF is rejected everywhere, including ordinary comments, at that
+original byte. Convert bare-CR files to LF or CRLF. This changes the accepted
+input set from 0.1.9; it does not silently turn previously commented text into
+executable code. Diagnostic spans retain original UTF-8 byte offsets.
 The grammar below describes executable tokens after comment extraction;
 documentation attachment is checked separately before parsing succeeds.
 
@@ -110,8 +115,10 @@ The following characters are forbidden both inside and outside comments:
   U+2066–U+2069.
 - Unsupported line separators U+000B (VT), U+000C (FF), U+0085, U+2028, and
   U+2029.
-- Other Unicode whitespace, except the four ASCII separators listed above.
-- Other control characters in Unicode's `Cc` category, except tab, LF, and CR.
+- CR not immediately followed by LF.
+- Other Unicode whitespace, except the ASCII separators listed above.
+- Other control characters in Unicode's `Cc` category, except tab, LF, and CR
+  within CRLF.
 
 Other Unicode characters are permitted in comments. This includes ordinary
 non-ASCII text and format characters such as U+200B and U+FEFF; v0 does not ban
@@ -245,7 +252,7 @@ parameters is their product type; `with_computed(q, and2)` requires
 rejected because that map is not injective.
 
 Basis expressions can construct and pass tuples. A coherent lift can
-access their components by binding a name/wildcard/binary-tuple `Pattern` after
+access their components by binding a name/wildcard/tuple `Pattern` after
 `do`. Pattern shape must match the input basis tree exactly; all names in one
 pattern must be distinct. `_` ignores a basis label, not quantum ownership.
 The lift still consumes one whole quantum input and checks totality and
@@ -278,7 +285,7 @@ and results cannot contain a bare `Bit`. `Bit` occurs in basis signatures,
 inside `Q<...>`, and as a coherent index in `do/pure`. There is no implicit
 conversion from `Bit` to `CBit`. A comma-separated parameter or argument list
 has its own arity; one tuple-valued argument is not multiple arguments.
-Multiple result values use explicit binary tuples. Binding quantum ownership
+Multiple result values use tuples retaining their arity and nesting. Binding quantum ownership
 to `_`, or discarding a quantum-valued expression with `Expr;`, is syntactically
 expressible but rejected by resource checking.
 

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-01",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-09-28T12:06:37.934102+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "missing module `kernel`",
+        "primary": {
+          "path": "main.qli",
+          "start": 551,
+          "end": 570,
+          "line": 12,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

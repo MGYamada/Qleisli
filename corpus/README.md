@@ -12,6 +12,14 @@ then grow a language with AI that can express and check them. These executable
 translations expose the gap between current QLI and that goal. They do not adopt
 new syntax, prove scalable algorithms, or replace the ideal-source drafts.
 
+The 2026-09-29 [tuple migration](../docs/tuple-shapes.md) spells former binary
+trees explicitly in `qualtran/less_than2`, `pennylane_demos/vqe_excitation` and
+`pennylane_demos/phase_lock`. [Attempt 04](authoring/session.json) preserves the
+new source snapshot and real before/after checks; the
+[exhaustive after-state](authoring/tuple-shapes-semantic.json) passes all 9,412
+semantic probes. Earlier attempts, upstream pins, numerical contracts and
+source-specific attribution remain intact.
+
 ## Use and layout
 
 Each case is an independent source project. `kernel.qli` is the reusable

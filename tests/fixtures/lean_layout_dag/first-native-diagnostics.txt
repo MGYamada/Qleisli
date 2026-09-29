@@ -1,0 +1,21 @@
+Native typed-layout DAG decisions: 144
+..F.....
+======================================================================
+FAIL: test_graph_binding_and_reachability (__main__.LayoutDagTests.test_graph_binding_and_reachability)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_lean_layout_dag.py", line 238, in test_graph_binding_and_reachability
+    self.invoke([], value, False, "limit")
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/masa/git/Qleisli/scripts/test_lean_layout_dag.py", line 143, in invoke
+    self.assertEqual(data["code"], code or ("accepted" if accepted else "invalid_ir"))
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'syntax' != 'limit'
+- syntax
++ limit
+
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.119s
+
+FAILED (failures=1)

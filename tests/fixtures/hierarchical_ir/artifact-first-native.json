@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 1,
+      "stdout": "\u2716 [7/11] Building Main (452ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/Main.lean -o /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/.lake/build/lib/lean/Main.olean -i /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/.lake/build/lib/lean/Main.ilean -c /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/.lake/build/ir/Main.c --setup /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_k99rinz/.lake/build/ir/Main.setup.json --json\nerror: Main.lean:35:76: unexpected identifier; expected '}'\nerror: Lean exited with code 1\n\u2714 [9/11] Built QleisliKernel.Hierarchical.Graph:c.o (430ms)\n\u2714 [10/11] Built QleisliKernel.Hierarchical.Artifact:c.o (923ms)\nSome required targets logged failures:\n- Main\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n"
+    }
+  ]
+}

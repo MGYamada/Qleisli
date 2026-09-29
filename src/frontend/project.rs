@@ -6,12 +6,15 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::fs;
+use std::io::Read;
 use std::path::{Path, PathBuf};
 
 use super::ast::{self, FnKind, Span, UseDecl};
 use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
 use super::lexer::keyword_kind;
 use super::parser::parse_module;
+
+mod source_file;
 
 const BUNDLED_SOURCES: &[(&str, &str)] = &[
     (
@@ -25,6 +28,132 @@ const BUNDLED_SOURCES: &[(&str, &str)] = &[
         include_str!("../../stdlib/src/transforms.qli"),
     ),
 ];
+
+/// Byte policy before UTF-8 decoding or tokenization. The legacy adapter is
+/// explicit; parser, evidence and lowering budgets are independent of this.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SourcePolicy {
+    Legacy,
+    Bounded {
+        source_bytes: u64,
+        project_bytes: u64,
+    },
+}
+
+impl Default for SourcePolicy {
+    fn default() -> Self {
+        Self::Bounded {
+            source_bytes: 1 << 20,
+            project_bytes: 16 << 20,
+        }
+    }
+}
+
+struct SourceBudget {
+    policy: SourcePolicy,
+    used: u64,
+}
+
+impl SourceBudget {
+    fn limit(path: &Path, message: impl Into<String>) -> LoadFailure {
+        let mut failure = error(
+            path,
+            Span::default(),
+            format!("{}: {}", path.display(), message.into()),
+        );
+        failure.code = "limit";
+        failure
+    }
+
+    fn allowance(&self, path: &Path) -> Result<Option<u64>, LoadFailure> {
+        match self.policy {
+            SourcePolicy::Legacy => Ok(None),
+            SourcePolicy::Bounded {
+                source_bytes,
+                project_bytes,
+            } => {
+                if source_bytes == 0 || project_bytes == 0 {
+                    return Err(Self::limit(path, "source byte limits must be positive"));
+                }
+                let remaining = project_bytes
+                    .checked_sub(self.used)
+                    .ok_or_else(|| Self::limit(path, "aggregate source byte limit exceeded"))?;
+                Ok(Some(source_bytes.min(remaining)))
+            }
+        }
+    }
+
+    fn charge(&mut self, path: &Path, bytes: u64) -> Result<(), LoadFailure> {
+        if let SourcePolicy::Bounded {
+            source_bytes,
+            project_bytes,
+        } = self.policy
+        {
+            self.allowance(path)?;
+            if bytes > source_bytes {
+                return Err(Self::limit(
+                    path,
+                    format!("source exceeds {source_bytes}-byte file limit"),
+                ));
+            }
+            let total = self
+                .used
+                .checked_add(bytes)
+                .ok_or_else(|| Self::limit(path, "source byte accounting overflow"))?;
+            if total > project_bytes {
+                return Err(Self::limit(
+                    path,
+                    format!("project exceeds {project_bytes}-byte aggregate limit"),
+                ));
+            }
+            self.used = total;
+        }
+        Ok(())
+    }
+
+    fn read(&mut self, path: &Path) -> Result<String, LoadFailure> {
+        let allowance = self.allowance(path)?;
+        let file = source_file::open(path).map_err(|failure| io_error(path, failure))?;
+        let mut bytes = Vec::new();
+        match allowance {
+            Some(limit) => {
+                let sentinel = limit
+                    .checked_add(1)
+                    .ok_or_else(|| Self::limit(path, "source read limit overflow"))?;
+                file.take(sentinel)
+                    .read_to_end(&mut bytes)
+                    .map_err(|failure| io_error(path, failure))?;
+            }
+            None => {
+                let mut file = file;
+                file.read_to_end(&mut bytes)
+                    .map_err(|failure| io_error(path, failure))?;
+            }
+        }
+        self.charge(path, bytes.len() as u64)?;
+        String::from_utf8(bytes)
+            .map_err(|_| error(path, Span::default(), "source file is not valid UTF-8"))
+    }
+}
+
+/// Read a single documentation source with explicit byte limits. Unlike project
+/// loading this does not include bundled modules, because none are loaded.
+pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Diagnostic> {
+    // The single-file command accepts ordinary parent aliases such as /tmp on
+    // macOS. Resolve them before opening; never resolve the final source link.
+    let parent = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let resolved = fs::canonicalize(parent)
+        .map_err(|failure| io_error(path, failure).into_diagnostic())?
+        .join(path.file_name().ok_or_else(|| {
+            error(path, Span::default(), "source path has no file name").into_diagnostic()
+        })?);
+    SourceBudget { policy, used: 0 }
+        .read(&resolved)
+        .map_err(LoadFailure::into_diagnostic)
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ModuleOrigin {
@@ -94,13 +223,13 @@ impl std::error::Error for ProjectError {}
 pub(crate) struct LoadFailure {
     pub error: ProjectError,
     pub coordinates: Option<(usize, usize)>,
-    parse: bool,
+    code: &'static str,
 }
 
 impl LoadFailure {
     pub(crate) fn into_diagnostic(self) -> Diagnostic {
         Diagnostic {
-            code: if self.parse { "parse" } else { "project" },
+            code: self.code,
             message: self.error.message,
             primary: self.coordinates.map(|(line, column)| SourceLocation {
                 path: self.error.path,
@@ -125,7 +254,7 @@ fn located_error(
 ) -> LoadFailure {
     let mut failure = error(path, span, message);
     let (line, column) = coordinates(source, span);
-    failure.parse = code == "parse";
+    failure.code = code;
     failure.coordinates = Some((line, column));
     failure
 }
@@ -139,7 +268,7 @@ fn error(path: &Path, span: Span, message: impl Into<String>) -> LoadFailure {
             message,
         },
         coordinates: None,
-        parse: false,
+        code: "project",
     }
 }
 
@@ -148,11 +277,25 @@ fn io_error(path: &Path, failure: std::io::Error) -> LoadFailure {
 }
 
 impl Project {
+    /// Compatibility adapter retaining the pre-0.2 unbounded byte loader.
     pub fn load(root: &Path) -> Result<Self, ProjectError> {
         Self::load_detailed(root).map_err(|failure| failure.error)
     }
 
     pub(crate) fn load_detailed(root: &Path) -> Result<Self, LoadFailure> {
+        Self::load_detailed_with_policy(root, SourcePolicy::Legacy)
+    }
+
+    pub fn load_with_policy(root: &Path, policy: SourcePolicy) -> Result<Self, Diagnostic> {
+        Self::load_detailed_with_policy(root, policy).map_err(LoadFailure::into_diagnostic)
+    }
+
+    pub(crate) fn load_detailed_with_policy(
+        root: &Path,
+        policy: SourcePolicy,
+    ) -> Result<Self, LoadFailure> {
+        let mut budget = SourceBudget { policy, used: 0 };
+        budget.allowance(root)?;
         let root = fs::canonicalize(root).map_err(|failure| io_error(root, failure))?;
         if !root.is_dir() {
             return Err(error(
@@ -168,7 +311,8 @@ impl Project {
         let mut modules = BTreeMap::new();
         for path in files {
             let name = local_module_name(&root, &path)?;
-            let module = parse_source(name.clone(), path, ModuleOrigin::Local)?;
+            let source = budget.read(&path)?;
+            let module = parse_source(name.clone(), path, ModuleOrigin::Local, source)?;
             if modules.insert(name.clone(), module).is_some() {
                 return Err(error(
                     &root,
@@ -180,6 +324,7 @@ impl Project {
 
         for &(name, source) in BUNDLED_SOURCES {
             let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
+            budget.charge(&path, source.len() as u64)?;
             let ast = parse_module(source).map_err(|failure| {
                 located_error(
                     &path,
@@ -452,8 +597,8 @@ fn parse_source(
     name: String,
     path: PathBuf,
     origin: ModuleOrigin,
+    source: String,
 ) -> Result<SourceModule, LoadFailure> {
-    let source = fs::read_to_string(&path).map_err(|failure| io_error(&path, failure))?;
     let ast = parse_module(&source).map_err(|failure| {
         located_error(
             &path,

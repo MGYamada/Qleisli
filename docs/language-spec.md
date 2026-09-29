@@ -2,7 +2,7 @@
 
 # Qleisli finite core language specification v0
 
-Status: **Normative finite core specification, extended with basis parameter patterns and n-ary tuple sugar** (2026-09-28). This base specification covers finite types and static operations; the [M1 supplement](next-minor-spec.md) adds fixed-width operation parameters in product 0.1.8. Sized types remain outside this profile. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
+Status: **Normative finite core specification, extended with basis parameter patterns and arity-preserving tuples** (2026-09-29). This base specification covers finite types and static operations; the [M1 supplement](next-minor-spec.md) adds fixed-width operation parameters in product 0.1.8. Sized types remain outside this profile. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
 
 <a id="1-範囲と規範の扱い"></a>
 
@@ -46,14 +46,15 @@ pattern parameter in a `basis fn` declaration.
 ## 2. Types and contexts
 
 ```text
-Basis types A,B   ::= Unit | Bit | (A,B)
-Ordinary types T  ::= Unit | CBit | Q<A> | (T,T)
-Classical types C ::= Unit | CBit | (C,C)
+Basis types A,B   ::= Unit | Bit | (A1,...,Ak)
+Ordinary types T  ::= Unit | CBit | Q<A> | (T1,...,Tk)
+Classical types C ::= Unit | CBit | (C1,...,Ck)
+k = 2..64 immediate fields, with explicit nesting
 ```
 
 - `Bit` is a coherent basis label and cannot appear as a bare parameter or return type of an ordinary function. `CBit` is a copyable classical value. There is no implicit conversion between them.
-- Type equality is equality of syntax trees. Product associativity, `(Unit,T)=T`, and `Q<(A,B)>=(Q<A>,Q<B>)` are not applied implicitly.
-- `bits(Unit)=0`, `bits(Bit)=1`, and `bits((A,B))=bits(A)+bits(B)`. `Q<Unit>` still carries linear ownership. Zero wire count does not permit copying or implicit discard.
+- Type equality is equality of arity-preserving syntax trees. Since 0.2.0, `(A,B,C)` differs from `((A,B),C)` as well as `(A,(B,C))`. Product associativity, `(Unit,T)=T`, and `Q<(A,B)>=(Q<A>,Q<B>)` are not applied implicitly. The [type-system specification](type-system.md) consolidates formation, equality, ownership and planned/implemented boundaries.
+- `bits(Unit)=0`, `bits(Bit)=1`, and `bits((A1,...,Ak))=sum_i bits(Ai)`. `Q<Unit>` still carries linear ownership. Zero wire count does not permit copying or implicit discard.
 - An ordinary value containing any `Q<A>` is linear. Referring to a mixed tuple `(CBit,Q<A>)` by name **moves the entire value**. To copy only its classical part, destructure it with a pattern first.
 - Types do not assert a state, eigenstate, product state, absence of entanglement, or algorithmic success. Separately owned resources may be entangled.
 
@@ -83,7 +84,7 @@ for all Rust checking and inlining paths remains an explicit proof obligation.
 | Name | Copy a classical value; take a linear value from the environment once. A consumed name cannot be reused. | `Unitary` |
 | `true`, `false` | Construct a copyable `CBit`; no quantum ownership is created or consumed. | `Unitary`; emit `ClassicalConst`. |
 | `not e`, `e1 and e2`, `e1 xor e2` | Require `CBit` operands and return `CBit`. | Evaluate operands once, left to right, without short circuit; join their effects. Emit `ClassicalNot`, `ClassicalAnd`, or `ClassicalXor`. |
-| `()`, `(e1,e2,…)` | `Unit` and a strict product left-folded into binary pairs. Check `e2` in the environment left by `e1`. | Left to right; join the effects. |
+| `()`, `(e1,e2,…)` | `Unit` and an arity-preserving strict product. Check each field in the environment left by its predecessors. | Left to right; join the effects; retain every earlier field's ownership. |
 | `let p=e; body` | Rebind the result of `e` using pattern `p`. Names cannot repeat within one pattern. `_` discards only classical values. A live linear binding cannot be shadowed. | Evaluate the right-hand side before binding. `let q=h(q);` is permitted. |
 | `e; body` | The discarded expression `e` must have a classical type. | Sequential composition; join the effects. |
 | Block | A final expression is required. Return local quantum ownership in the final result or consume it explicitly. | Statements in source order, followed by the result expression. |
@@ -130,20 +131,20 @@ Interpret a local operation by extending it with the identity on the remaining s
 
 ## 5. Basis computation and injective lifting
 
-Basis expressions consist of `Unit`, bit literals, variables, binary products, `not/xor/and`, and calls to total basis functions. `not : Bit→Bit` and `xor/and : (Bit,Bit)→Bit` follow the usual truth tables. Precedence is `not > and > xor`; binary operators associate to the left. Basis variables may be copied or discarded. Basis expressions exclude observations, ordinary functions, capture of runtime classical values, and recursion.
+Basis expressions consist of `Unit`, bit literals, variables, ordered tuples, `not/xor/and`, and calls to total basis functions. `not : Bit→Bit` and `xor/and : (Bit,Bit)→Bit` follow the usual truth tables. Precedence is `not > and > xor`; binary operators associate to the left. Basis variables may be copied or discarded. Basis expressions exclude observations, ordinary functions, capture of runtime classical values, and recursion.
 
 A basis parameter may be a name, wildcard or product pattern, matched against
-its declared basis type by the same `BP-NAME`/`BP-WILD`/`BP-PAIR` judgment as a
+its declared basis type by the same `BP-NAME`/`BP-WILD`/`BP-PAIR`/`BP-TUPLE` judgment as a
 coherent lift. Patterns have no quantum effects or ownership; names across all
 parameters are distinct, and every component remains in the function's domain
 whether named or ignored. One product pattern is one source argument. N-ary
-types, expressions and patterns left-fold into the existing ordered binary
-products; explicit trees are preserved. The [grammar](syntax-v0.md#authoring-forms-added-in-product-018)
+types, expressions and patterns retain their immediate arity; conversions to
+nested binary products are explicit. The [grammar](syntax-v0.md#authoring-forms-added-in-product-018)
 gives acceptance/rejection cases, translation and depth limits.
 
 The body of `basis fn f(p1:A1,…,pn:An)->B` must be type-checkable and evaluable on every input. Its semantic domain is `Unit` for zero parameters, `A1` for one, and the left-associated product `((A1,A2),…)` for two or more. Label order is `label(a,b)=label(a)+2^bits(A)label(b)`.
 
-`do p <- q; pure e` is a **language form**. First evaluate and consume `q:Q<A>`, then bind the basis pattern `p` against `A` and check `e:B` using only the resulting context `Ξ`. A name binds the whole basis value, `_` binds nothing, and `(p1,p2)` requires a product type and recursively binds its exact components. All bound names must be distinct. Rules `BP-NAME`, `BP-WILD`, `BP-PAIR`, and `LIFT` define this context and its label valuation. If the total function `f:A→B` defined by `e` is injective, return `Q<B>`. Its meaning is `V_f=Σ_a |f(a)⟩⟨a|`. Equal width gives `Unitary`; greater output width gives `Iso`. Equal-width lifts between different type trees are permitted. The IR is `LiftBasis` with a finite table whose injectivity is independently rechecked. Every table output has phase 1.
+`do p <- q; pure e` is a **language form**. First evaluate and consume `q:Q<A>`, then bind the basis pattern `p` against `A` and check `e:B` using only the resulting context `Ξ`. A name binds the whole basis value, `_` binds nothing, and `(p1,...,pk)` requires the same immediate arity and recursively binds its exact components. All bound names must be distinct. Rules `BP-NAME`, `BP-WILD`, `BP-PAIR`, `BP-TUPLE`, and `LIFT` define this context and its label valuation. If the total function `f:A→B` defined by `e` is injective, return `Q<B>`. Its meaning is `V_f=Σ_a |f(a)⟩⟨a|`. Equal width gives `Unitary`; greater output width gives `Iso`. Equal-width lifts between different type trees are permitted. The IR is `LiftBasis` with a finite table whose injectivity is independently rechecked. Every table output has phase 1.
 
 | Input and continuation | Decision | Meaning |
 | --- | --- | --- |
@@ -217,7 +218,7 @@ Using `h(q)` after `measure_z(q)`, `cnot(q,q)`, and `join(q,q)` is rejected. `le
 
 `if c { e0 } else { e1 }` is a language form. Evaluate the condition first and require `CBit`; select the then arm if true and the else arm if false. Both arms receive the same environment after condition evaluation **exclusively**. Statically check both arms and require all of the following:
 
-1. Both results have the same ordinary type `T`, including the binary-product tree.
+1. Both results have the same ordinary type `T`, including tuple arity and the entire nested type tree.
 2. Both arms consume the same set of outer linear bindings. A `let` inside an arm does not update an outer binding.
 3. No local quantum ownership remains in either arm. Explicitly consume temporary resources that are not returned in its result.
 4. Match quantum result leaves by tuple position and basis type. Match surviving outer resources (the frame) by their original positions. The frame also includes caller resources absent from the function's local environment.

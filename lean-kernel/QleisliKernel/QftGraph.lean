@@ -1,0 +1,289 @@
+import QleisliKernel.Qft
+
+/-! Typed shared circuit projection for the bounded QFT theorem.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+This is not an external hierarchy decoder or an enabled schema registry. -/
+
+namespace QleisliKernel.QftGraph
+open Interference PathSum
+
+inductive Effect where
+  | unitary | iso | observe
+  deriving BEq, DecidableEq, Repr
+
+structure Boundary where
+  inputs : Layout.Interface
+  outputs : Layout.Interface
+  classicalInputs : List Nat := []
+  classicalOutputs : List Nat := []
+  effect : Effect := .unitary
+  deriving BEq, DecidableEq, Repr
+
+def interface (width : Nat) : Layout.Interface := [⟨[.bits width], List.range width⟩]
+
+def boundary (width : Nat) : Boundary := ⟨interface width, interface width, [], [], .unitary⟩
+
+inductive Body where
+  | identity
+  | gate (instruction : Interference.Gate)
+  | sequence (first second : Nat)
+  | call (child : Nat) (input output : Layout.Interface)
+  /-- Actual data permutation, not a change of owner/axis metadata. -/
+  | permute (axes : List Nat)
+  deriving Repr
+
+structure Definition where
+  signature : Boundary
+  body : Body
+  deriving Repr
+
+def Body.references : Body → List Nat
+  | .identity | .gate _ | .permute _ => []
+  | .sequence first second => [first, second]
+  | .call child _ _ => [child]
+
+def validBody (width : Nat) : Body → Bool
+  | .identity => true
+  | .gate (.hadamard axis) => axis < width
+  | .gate (.diagonal terms) => PhasePolynomial.valid width terms
+  | .sequence _ _ => true
+  | .call _ input output => decide (input = interface width ∧ output = interface width)
+  | .permute axes => axes.length = width && decide axes.Nodup && axes.all (· < width)
+
+def validDefinition (width : Nat) (definition : Definition) : Bool :=
+  decide (definition.signature = boundary width) && validBody width definition.body
+
+structure Summary where
+  gates : List Interference.Gate
+  axes : Option (List Nat)
+  deriving BEq, DecidableEq, Repr
+
+def permute (axes : List Nat) (state : PathState) : PathState :=
+  ⟨state.bits ∘ LayoutDag.lookup axes, state.phase, state.hadamards⟩
+
+abbrev Action := Bits → PathState → PathState
+
+def action (summary : Summary) : Action := fun choices state =>
+  let next := runFrom summary.gates choices state
+  match summary.axes with
+  | none => next
+  | some axes => permute axes next
+
+def compose (first second : Summary) : Option Summary :=
+  if first.axes.isSome || first.gates.length + second.gates.length > 36 then none
+  else some ⟨first.gates ++ second.gates, second.axes⟩
+
+theorem compose_sound (first second result : Summary)
+    (composed : compose first second = some result) :
+    action result = fun choices state => action second choices (action first choices state) := by
+  unfold compose at composed
+  split at composed
+  next impossible => contradiction
+  next bounded =>
+    have noPermutation : first.axes = none := by
+      cases h : first.axes <;> simp_all
+    cases Option.some.inj composed
+    funext choices state
+    simp [action, noPermutation, runFrom, List.foldl_append]
+
+def evalNode (env : Array Summary) : Body → Option Summary
+  | .identity => some ⟨[], none⟩
+  | .gate gate => some ⟨[gate], none⟩
+  | .permute axes => some ⟨[], some axes⟩
+  | .call child _ _ => env[child]?
+  | .sequence first second => do compose (← env[first]?) (← env[second]?)
+
+/-- Direct graph interpretation reads neither a summary nor a QFT witness. -/
+def denoteNode (env : Array Action) : Body → Option Action
+  | .identity => some (fun _ state => state)
+  | .gate gate => some (fun choices state => PathSum.step choices state gate)
+  | .permute axes => some (fun _ state => permute axes state)
+  | .call child _ _ => env[child]?
+  | .sequence first second => do
+    let a ← env[first]?
+    let b ← env[second]?
+    return fun choices state => b choices (a choices state)
+
+theorem evalNode_sound (env : Array Summary) (body : Body) (result : Summary)
+    (computed : evalNode env body = some result) :
+    denoteNode (env.map action) body = some (action result) := by
+  cases body with
+  | identity =>
+    cases Option.some.inj computed
+    rfl
+  | gate gate =>
+    cases Option.some.inj computed
+    rfl
+  | permute axes =>
+    cases Option.some.inj computed
+    rfl
+  | call child input output =>
+    simpa [evalNode, denoteNode, Array.getElem?_map] using congrArg (Option.map action) computed
+  | sequence first second =>
+    cases ha : env[first]? with
+    | none => simp [evalNode, ha] at computed
+    | some a =>
+      cases hb : env[second]? with
+      | none => simp [evalNode, ha, hb] at computed
+      | some b =>
+        have hc : compose a b = some result := by simpa [evalNode, ha, hb] using computed
+        rw [compose_sound a b result hc]
+        simp [denoteNode, Array.getElem?_map, ha, hb]
+
+def evaluateFrom (definitions : List Definition) (env : Array Summary) : Option (Array Summary) :=
+  definitions.foldlM (fun env d => (evalNode env d.body).map env.push) env
+
+def denoteFrom (definitions : List Definition) (env : Array Action) : Option (Array Action) :=
+  definitions.foldlM (fun env d => (denoteNode env d.body).map env.push) env
+
+theorem evaluateFrom_sound (definitions : List Definition) (env result : Array Summary)
+    (computed : evaluateFrom definitions env = some result) :
+    denoteFrom definitions (env.map action) = some (result.map action) := by
+  induction definitions generalizing env with
+  | nil => simpa [evaluateFrom, denoteFrom] using congrArg (Option.map (Array.map action)) computed
+  | cons d rest ih =>
+    cases hn : evalNode env d.body with
+    | none => simp [evaluateFrom, hn] at computed
+    | some node =>
+      have tail : evaluateFrom rest (env.push node) = some result := by
+        simpa [evaluateFrom, hn] using computed
+      simpa [denoteFrom, evalNode_sound env d.body node hn, Array.map_push] using
+        ih (env.push node) tail
+
+def denote (definitions : List Definition) (entry : Nat) : Option Action := do
+  (← denoteFrom definitions #[])[entry]?
+
+structure NodeInfo where
+  depth : Nat
+  gates : Nat
+  expandedActions : Nat
+
+structure Stats where
+  nodes : Nat
+  references : Nat
+  copiedGates : Nat
+  depth : Nat
+  expandedActions : Nat
+  deriving BEq, DecidableEq, Repr
+
+structure Scan where
+  nodes : Array NodeInfo := #[]
+  references : Nat := 0
+  copiedGates : Nat := 0
+
+private def scanNode (scan : Scan) (definition : Definition) : Option Scan := do
+  let refs := definition.body.references
+  let references := scan.references + refs.length
+  if references > 4096 then none else do
+    let children ← refs.mapM (fun ref => scan.nodes[ref]?)
+    let depth := 1 + (children.map NodeInfo.depth).foldl max 0
+    let gates := match definition.body with
+      | .gate _ => 1
+      | .identity | .permute _ => 0
+      | _ => (children.map NodeInfo.gates).foldl (· + ·) 0
+    if depth > 64 || gates > 36 then none else do
+      let copies := match definition.body with | .call _ _ _ => 0 | _ => gates
+      let expanded := match definition.body with
+        | .identity | .gate _ | .permute _ => 1
+        | _ => (children.map NodeInfo.expandedActions).foldl (· + ·) 0
+      return ⟨scan.nodes.push ⟨depth, gates, expanded⟩, references, scan.copiedGates + copies⟩
+
+private def reachable (definitions : List Definition) (entry : Nat) : Bool := Id.run do
+  let mut seen := (Array.replicate definitions.length false).set! entry true
+  for (definition, index) in definitions.zipIdx |>.reverse do
+    if seen[index]?.getD false then
+      for ref in definition.body.references do
+        seen := seen.set! ref true
+  return seen.all id
+
+def preflight (definitions : List Definition) (entry : Nat) : Option Stats := do
+  if definitions.isEmpty || definitions.length > 256 then none else do
+    let scan ← definitions.foldlM scanNode {}
+    let root ← scan.nodes[entry]?
+    if !reachable definitions entry then none else
+      some ⟨definitions.length, scan.references, scan.copiedGates, root.depth, root.expandedActions⟩
+
+structure Receipt where
+  summary : Summary
+  stats : Stats
+  deriving Repr
+
+/-- Width and hence the complete required interface come from the consumer. -/
+def check (definitions : List Definition) (entry width : Nat) : Option Receipt := do
+  if !(1 ≤ width && width ≤ 8) then none else do
+    let stats ← preflight definitions entry
+    if !(definitions.all (validDefinition width)) then none else do
+      let summaries ← evaluateFrom definitions #[]
+      let root ← summaries[entry]?
+      if Qft.matchCircuit width root.gates (root.axes.getD []) then some ⟨root, stats⟩ else none
+
+theorem check_sound (definitions : List Definition) (entry width : Nat) (receipt : Receipt)
+    (accepted : check definitions entry width = some receipt) :
+    definitions.all (validDefinition width) = true ∧
+    denote definitions entry = some (action receipt.summary) ∧
+    Qft.matchCircuit width receipt.summary.gates (receipt.summary.axes.getD []) = true := by
+  unfold check at accepted
+  split at accepted
+  next impossible => contradiction
+  next bounded =>
+    cases hs : preflight definitions entry with
+    | none => simp [hs] at accepted
+    | some stats =>
+      simp only [hs, bind, Option.bind] at accepted
+      split at accepted
+      next invalid => contradiction
+      next valid =>
+        cases he : evaluateFrom definitions #[] with
+        | none => simp [he] at accepted
+        | some summaries =>
+          cases hr : summaries[entry]? with
+          | none => simp [he, hr] at accepted
+          | some root =>
+            simp only [he, hr] at accepted
+            split at accepted
+            next matched =>
+              cases Option.some.inj accepted
+              refine ⟨by simpa using valid, ?_, matched⟩
+              have semantics := evaluateFrom_sound definitions #[] summaries he
+              simp only [Array.map_empty] at semantics
+              simp [denote, semantics, Array.getElem?_map, hr]
+            next invalid => contradiction
+
+theorem check_signature (definitions : List Definition) (entry width : Nat) (receipt : Receipt)
+    (accepted : check definitions entry width = some receipt)
+    (definition : Definition) (member : definition ∈ definitions) :
+    definition.signature = boundary width := by
+  have valid := (List.all_eq_true.mp (check_sound definitions entry width receipt accepted).1)
+    definition member
+  simp only [validDefinition, Bool.and_eq_true, decide_eq_true_eq] at valid
+  exact valid.1
+
+/-- A checked final data permutation is the literal reversal, not owner relabeling. -/
+theorem matched_action (width : Nat) (summary : Summary)
+    (matched : Qft.matchCircuit width summary.gates (summary.axes.getD []) = true) :
+    action summary = fun choices state =>
+      permute (Qft.finalAxes width) (runFrom summary.gates choices state) := by
+  obtain ⟨positive, _, _, axes⟩ :=
+    Qft.matchCircuit_conditions width summary.gates (summary.axes.getD []) matched
+  cases ha : summary.axes with
+  | none =>
+    have lengths := congrArg List.length axes
+    simp [ha, Qft.finalAxes] at lengths
+    omega
+  | some actual =>
+    have same : actual = Qft.finalAxes width := by simpa [ha] using axes
+    unfold action
+    rw [ha, same]
+
+theorem check_action (definitions : List Definition) (entry width : Nat) (receipt : Receipt)
+    (accepted : check definitions entry width = some receipt) :
+    denote definitions entry = some (fun choices state =>
+      permute (Qft.finalAxes width) (runFrom receipt.summary.gates choices state)) := by
+  obtain ⟨_, actual, matched⟩ := check_sound definitions entry width receipt accepted
+  rw [actual, matched_action width receipt.summary matched]
+
+theorem reversal_index (width axis : Nat) (inside : axis < width) :
+    LayoutDag.lookup (Qft.finalAxes width) axis = width - 1 - axis := by
+  simp [LayoutDag.lookup, Qft.finalAxes, inside]
+
+end QleisliKernel.QftGraph

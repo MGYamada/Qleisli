@@ -1,0 +1,208 @@
+#!/usr/bin/env python3
+"""Native coherent powers against exact independent Gaussian-integer matrices.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Internal component checking; external hierarchical evidence binding is separate.
+"""
+import argparse
+import hashlib
+import json
+import subprocess
+from pathlib import Path
+from test_hierarchical_artifact import ROOT, build_and_run
+
+PRELUDE = r'''
+import QleisliKernel.Schema
+open QleisliKernel
+abbrev G := Int × Int
+structure ProbeState where
+  amplitudes : Array G
+  uses : Nat := 0
+
+def rotate (z : G) : G := (-z.2,z.1)
+def negative (z : G) : G := (-z.1,-z.2)
+def oracle (provider : Nat) (state : ProbeState) : ProbeState :=
+  let vector := state.amplitudes
+  let result := vector.mapIdx fun index _ =>
+    let target := index / 2
+    let reference := index % 2
+    let source := if provider == 1 || provider == 2 then target ^^^ 1
+      else if provider == 5 && target % 2 == 1 then target ^^^ 2 else target
+    let z := vector[source * 2 + reference]?.getD (0,0)
+    if provider == 2 || (provider == 3 && target % 2 == 1) then rotate z
+    else if provider == 4 && target % 2 == 1 then negative z else z
+  ⟨result,state.uses + 1⟩
+def prepared (dimension mode control : Nat) : ProbeState :=
+  ⟨(Array.range (dimension*2)).map (fun index =>
+    if mode == 0 then (Int.ofNat (1+3*control+index/2),Int.ofNat (index%2)-Int.ofNat control)
+    else if control % 2 == index % 2 && index / 2 == control % dimension then (1,0) else (0,0)),0⟩
+def bits (value axis : Nat) : Bool := (value / 2^axis) % 2 == 1
+
+def emitState (name : String) (control : Nat) (state : ProbeState) : IO Unit :=
+  let cells := state.amplitudes.toList.map (fun z => s!"[{z.1},{z.2}]")
+  IO.println (name ++ "|row|" ++ toString control ++ "|" ++ toString state.uses ++ "|[" ++
+    String.intercalate "," cells ++ "]")
+def single (name : String) (exponent provider dimension mode : Nat)
+    (proposal : Schema.Proposal) : IO Unit := do
+  match Schema.check (.power exponent provider) proposal, proposal.witness with
+  | some _, .power stage =>
+    IO.println (name ++ "|accepted")
+    let actual := ControlledPowers.coherentStage oracle bits (prepared dimension mode) stage
+    for control in [0:2] do emitState name control (actual control)
+  | _, _ => IO.println (name ++ "|rejected")
+def schedule (name : String) (width provider dimension mode : Nat)
+    (stages : List ControlledPowers.Stage) : IO Unit := do
+  if !ControlledPowers.check width provider stages then IO.println (name ++ "|rejected") else
+    IO.println (name ++ "|accepted")
+    let actual := ControlledPowers.coherentRun oracle bits stages (prepared dimension mode)
+    for control in [0:2^width] do emitState name control (actual control)
+'''
+
+
+def cases():
+    rows=[]
+    for provider in range(6):
+        d=4 if provider==5 else 2
+        for exponent in range(13):
+            for mode in range(2):
+                name=f'single-{provider}-{exponent}-{mode}'
+                proposal=f'⟨"controlled-power/1",1,[{exponent},{provider}],.power ⟨0,{provider},{2**exponent},true⟩⟩'
+                rows.append((name,f'single "{name}" {exponent} {provider} {d} {mode} {proposal}',True,provider,d,mode,exponent,False))
+        for width in [1,3,4,8]:
+            name=f'schedule-{provider}-{width}'
+            rows.append((name,f'schedule "{name}" {width} {provider} {d} 1 (ControlledPowers.template {width} {provider})',True,provider,d,1,width,True))
+    mutations=[
+        ('wrong-control','⟨1,2,2,true⟩',1,2),('wrong-provider','⟨0,3,2,true⟩',1,2),
+        ('wrong-count','⟨0,2,3,true⟩',1,2),('zero-count','⟨0,2,0,true⟩',1,2),
+        ('wrong-polarity','⟨0,2,2,false⟩',1,2),('exponent-overflow','⟨0,2,8192,true⟩',13,2),
+    ]
+    for name,stage,exponent,provider in mutations:
+        proposal=f'⟨"controlled-power/1",1,[{exponent},{provider}],.power {stage}⟩'
+        rows.append((name,f'single "{name}" {exponent} {provider} 2 0 {proposal}',False,provider,2,0,exponent,False))
+    rows.append(('wrong-schema', 'single "wrong-schema" 1 2 2 0 ⟨"controlled-power/2",1,[1,2],.power ⟨0,2,2,true⟩⟩',False,2,2,0,1,False))
+    rows.append(('wrong-order', 'schedule "wrong-order" 3 2 2 0 (ControlledPowers.template 3 2).reverse',False,2,2,0,3,True))
+    return rows
+
+
+def add(a,b): return (a[0]+b[0],a[1]+b[1])
+def mul(a,b): return (a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0])
+def conj(a): return (a[0],-a[1])
+def identity(d): return [[(int(i==j),0) for j in range(d)] for i in range(d)]
+def mm(a,b):
+    return [[sum_g(mul(a[i][k],b[k][j]) for k in range(len(b))) for j in range(len(b))] for i in range(len(a))]
+def sum_g(values):
+    answer=(0,0)
+    for v in values: answer=add(answer,v)
+    return answer
+
+def provider_matrix(kind):
+    # Literal independent matrix specifications, with little-endian target bits.
+    zero=(0,0);one=(1,0);ii=(0,1);neg=(-1,0)
+    return [identity(2),[[zero,one],[one,zero]],[[zero,ii],[ii,zero]],
+            [[one,zero],[zero,ii]],[[one,zero],[zero,neg]],
+            [[one,zero,zero,zero],[zero,zero,zero,one],[zero,zero,one,zero],[zero,one,zero,zero]]][kind]
+
+def power(u,count):
+    answer=identity(len(u))
+    while count:
+        if count&1: answer=mm(answer,u)
+        u=mm(u,u);count//=2
+    return answer
+
+def prepare(d,mode,c):
+    return [(1+3*c+t,r-c) if mode==0 else (int(c%2==r and t==c%d),0) for t in range(d) for r in range(2)]
+
+def expected_vector(u,initial):
+    d=len(u)
+    return [sum_g(mul(u[t][j],initial[j*2+r]) for j in range(d)) for t in range(d) for r in range(2)]
+
+
+def source_check(binary,record):
+    folder=ROOT/'tests/fixtures/lean_qpe_instrument/coherent_phase'
+    baseline=json.loads((folder.parent/'coherent-phase-baseline.json').read_text())
+    for path,digest in baseline['source_sha256'].items():
+        assert hashlib.sha256((folder/path).read_bytes()).hexdigest()==digest
+    commands=[]
+    for name,expected in baseline['first_outcomes'].items():
+        argv=[str(binary.resolve()),'run','--format=json',str(folder/name)]
+        run=subprocess.run(argv,text=True,capture_output=True,timeout=30)
+        commands.append(dict(argv=argv,exit_code=run.returncode,stdout=run.stdout,stderr=run.stderr))
+        assert run.returncode==0,(name,run.stderr)
+        distribution=json.loads(run.stdout)['result']['distribution']
+        # Existing Rust simulator returns floating probabilities. The exact
+        # Gaussian-integer oracle and Lean theorem are separate validations.
+        assert all(abs(row['probability']-int(row['bits']==expected))<2e-12 for row in distribution)
+        assert any(row['bits']==expected and abs(row['probability']-1)<2e-12 for row in distribution)
+    report=dict(format='qleisli.coherent-power-source-validation',version=1,status='passed',
+        source_cases=2,control_reference_phase_counterexample=True,commands=commands,
+        binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),source_sha256=baseline['source_sha256'])
+    if record: record.write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps({k:v for k,v in report.items() if k!='commands'}))
+
+
+def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--record',type=Path)
+    parser.add_argument('--source-only',type=Path)
+    args=parser.parse_args()
+    if args.source_only:
+        source_check(args.source_only,args.record)
+        return
+    rows=cases()
+    source=PRELUDE+'\n'+'\n'.join(f'def case{i} : IO Unit := {call}' for i,(_,call,*_) in enumerate(rows))+'\n'
+    for first in range(0,len(rows),16):
+        source+=f'def group{first} : IO Unit := do\n'+'\n'.join(f'  case{i}' for i in range(first,min(first+16,len(rows))))+'\n'
+    source+='def main : IO Unit := do\n'+'\n'.join(f'  group{i}' for i in range(0,len(rows),16))+'\n'
+    commands,binary=build_and_run(source,args.record)
+    report=dict(status='observed-not-yet-compared',commands=commands)
+    if args.record: args.record.write_text(json.dumps(report,indent=2)+'\n')
+    results={}
+    for line in commands[-1]['stdout'].splitlines():
+        name,status,*values=line.split('|')
+        if status!='row':
+            assert name not in results
+            results[name]=dict(status=status,rows={})
+        else:
+            c,uses,amplitude=values;c=int(c)
+            assert c not in results[name]['rows']
+            results[name]['rows'][c]=(int(uses),[tuple(x) for x in json.loads(amplitude)])
+    assert len(results)==len(rows)
+    coefficients=0;actual_uses=0;coherences=0
+    for name,_,accepted,provider,d,mode,parameter,schedule_mode in rows:
+        actual=results[name]
+        assert actual['status']==('accepted' if accepted else 'rejected'),(name,actual)
+        if not accepted: continue
+        controls=range(2**parameter) if schedule_mode else range(2)
+        assert len(actual['rows'])==len(controls)
+        vectors=[];expected=[]
+        for c in controls:
+            count=c if schedule_mode else (2**parameter if c else 0)
+            uses,vector=actual['rows'][c]
+            reference=expected_vector(power(provider_matrix(provider),count),prepare(d,mode,c))
+            assert vector==reference,(name,c,vector,reference)
+            assert uses==count,(name,c,uses,count)
+            coefficients+=len(vector);actual_uses+=uses
+            vectors.append(vector);expected.append(reference)
+        # Selected off-diagonal control/reference entries of the full pure
+        # joint density, never merely probabilities or Kraus-array equality.
+        for c in [0,len(vectors)-1]:
+            for other in [0,len(vectors)-1]:
+                for i in range(d*2):
+                    for j in range(d*2):
+                        assert mul(vectors[c][i],conj(vectors[other][j]))==mul(expected[c][i],conj(expected[other][j]))
+                        coherences+=1
+    # Type-correct phase counterexample: X^2=I, (iX)^2=-I. Equal basis
+    # probabilities do not erase the different off-diagonal control coherence.
+    a=results['single-1-1-1']['rows'];b=results['single-2-1-1']['rows']
+    av=[z for c in (0,1) for z in a[c][1]];bv=[z for c in (0,1) for z in b[c][1]]
+    assert [mul(z,conj(z)) for z in av]==[mul(z,conj(z)) for z in bv]
+    assert any(mul(x,conj(y))!=mul(u,conj(v)) for x,u in zip(av,bv) for y,v in zip(av,bv))
+    report.update(format='qleisli.coherent-power-validation',version=1,status='passed',cases=len(rows),
+      accepted=sum(r[2] for r in rows),exact_coefficients=coefficients,joint_density_entries=coherences,
+      counted_native_oracle_uses=actual_uses,phase_counterexamples=1,checker_dense_dimension=0,
+      largest_oracle_matrix_dimension=4,external_schema_enabled=False,results=results,binary_sha256=binary,
+      harness_sha256=hashlib.sha256(source.encode()).hexdigest(),source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest()
+        for p in [ROOT/'lean-kernel/QleisliKernel/ControlledPowers.lean',ROOT/'lean-kernel/QleisliKernel/Schema.lean',Path(__file__).resolve()]})
+    if args.record: args.record.write_text(json.dumps(report,indent=2)+'\n')
+    print(json.dumps({k:v for k,v in report.items() if k not in {'commands','results'}}))
+
+if __name__=='__main__': main()

@@ -1,0 +1,11 @@
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+// Type-correct semantic fault: move the last T through the outer H.
+unitary fn interference(q: Q<Bit>) -> Q<Bit> {
+    t(h(h(h(t(h(q))))))
+}
+
+observe fn main() -> CBit { measure_z(interference(init0())) }

@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 1,
+      "stdout": "\u2714 [13/17] Built QleisliKernel.Hierarchical.ContractTyping:c.o (209ms)\n\u2714 [14/17] Built QleisliKernel.Hierarchical.NodeTyping:c.o (322ms)\n\u2716 [15/17] Building Main (596ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/Main.lean -o /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/.lake/build/lib/lean/Main.olean -i /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/.lake/build/lib/lean/Main.ilean -c /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/.lake/build/ir/Main.c --setup /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-hqqhqrvy/.lake/build/ir/Main.setup.json --json\nerror: Main.lean:197:90: unexpected identifier; expected '}'\nerror: Main.lean:330:124: failed to synthesize instance of type class\n  Inhabited Meaning\n\nHint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.Meaning` may allow Lean to derive the missing instance.\nerror: Lean exited with code 1\nSome required targets logged failures:\n- Main\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n"
+    }
+  ]
+}

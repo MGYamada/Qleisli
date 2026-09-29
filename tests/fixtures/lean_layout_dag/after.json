@@ -1,0 +1,101 @@
+{
+  "recorded_utc": "2026-09-28T17:24:01.691542+00:00",
+  "kind": "informed implementation observation; not a controlled model study",
+  "source_sha256": {
+    "tests/fixtures/lean_layout_dag/sixteen_axes.qhd": "8538ab78a098884b98228c55d3a7f7223f8d87ec21d443c643e06867df99b5ee",
+    "tests/fixtures/lean_layout_dag/wrong_callee.qhd": "7715b0c29427d498bfa17eaefa09ceacf14aa1d95d3eed220e3773a333e020bb",
+    "tests/fixtures/lean_layout_dag/callee_expected.qhr": "58a39e6be435b3d17d4e0be49bc761836506cfdbfa36108636bd0a3c3a47588f",
+    "tests/fixtures/lean_layout_dag/sixteen_axes.qhr": "0a2a068f3f6820db17adaf221563511ea3128ac9753441fe3db3db99e47eac5f",
+    "tests/fixtures/lean_layout_dag/bit_identity.qhr": "60656b227e8a3dff95a31782a147fd82b61a63bb0d5b246d988c13b50618d476",
+    "tests/fixtures/lean_layout_dag/shared.qhd": "fb1b3275fc079b39e05b2180f09f0e36b2ff234dbd049eb26208ed043bc16911",
+    "tests/fixtures/lean_layout_dag/depth64.qhd": "228d0c4263e5db3d49a8f6a17ef3d25412655fac18512780361272ebe419e2a7",
+    "tests/fixtures/lean_layout_dag/identity.qhr": "a1a0bb7b4fec3576cc1e33aa3ef930db240f3c734433b3833ad603ffa66b7b96",
+    "tests/fixtures/lean_layout_dag/callee_actual.qhr": "2c4502ff86452808c4b35048fddcb6c04ddb26c7ff5a9df781b22006af653ed1",
+    "tests/fixtures/lean_layout_dag/first_source/main.qli": "9d1f8840f51be06a7583446d4f7dc813e146c0a9d0dc58e10391b6afab3ec81f",
+    "lean-kernel/QleisliKernel/LayoutDag.lean": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+    "lean-kernel/Protocol.lean": "acd9d50f5535feede73fc17705bceca53c2693377421227608135a5c54404132",
+    "lean-kernel/Main.lean": "ece957f02ae6859925fa7eb958671a0fb9c8811fabe139d0058e3b080842c5a5",
+    "lean-kernel/Tests.lean": "0dde720561df523bbd9c06940ddc59e7fa66f8693b96259a58c7e2c0d3639e97",
+    "scripts/test_lean_layout_dag.py": "aba3f1bce34a89eed8f28163b6f61bafb48a89f36766089265954c49f7522834"
+  },
+  "executable_sha256": "8fb7c08c0728ff5fb70645ebd94313d0b34424d24224c19f883470d628626f62",
+  "observations": [
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/shared.qhd",
+        "tests/fixtures/lean_layout_dag/identity.qhr"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":3,\"references\":3,\"work_units\":6927,\"depth\":3,\"expanded_layouts\":6,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/depth64.qhd",
+        "tests/fixtures/lean_layout_dag/bit_identity.qhr"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":64,\"references\":126,\"work_units\":13568,\"depth\":64,\"expanded_layouts\":9223372036854775808,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/sixteen_axes.qhd",
+        "tests/fixtures/lean_layout_dag/sixteen_axes.qhr"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":2,\"references\":1,\"work_units\":27046,\"depth\":2,\"expanded_layouts\":3,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/wrong_callee.qhd",
+        "tests/fixtures/lean_layout_dag/callee_expected.qhr"
+      ],
+      "returncode": 1,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-dag-v1\",\"accepted\":false,\"code\":\"contract\",\"stage\":\"verification\",\"node\":4,\"stats\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/wrong_callee.qhd",
+        "tests/fixtures/lean_layout_dag/callee_actual.qhr"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":5,\"references\":5,\"work_units\":10841,\"depth\":3,\"expanded_layouts\":5,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout_dag/first_source",
+        "--format=json"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/v020-msrv/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout_dag/first_source",
+        "--format=json"
+      ],
+      "returncode": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

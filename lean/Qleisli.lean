@@ -5,3 +5,15 @@ import Qleisli.Phi
 import Qleisli.Examples
 import Qleisli.Kraus
 import Qleisli.SemanticContract
+import Qleisli.Interference
+import Qleisli.Qft
+import Qleisli.QftGraph
+import Qleisli.Qpe
+import Qleisli.QpeComplete
+import Qleisli.ControlledPowers
+import Qleisli.HierarchicalPower
+import Qleisli.HierarchicalSemantics
+import Qleisli.HierarchicalOperators
+import Qleisli.HierarchicalEvaluation
+import Qleisli.QftUnitary
+import Qleisli.Schema

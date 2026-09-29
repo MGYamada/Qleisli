@@ -1,0 +1,25 @@
+[
+  {
+    "cwd": "lean",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "\u2714 [3367/3370] Built Qleisli.QpeComplete (11s)\n\u2714 [3368/3370] Built Qleisli.QftUnitary (2.9s)\n\u2714 [3369/3370] Built Qleisli (2.7s)\nBuild completed successfully (3370 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "exit": 0,
+    "stdout": "Audited 728 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  }
+]

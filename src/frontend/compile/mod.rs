@@ -12,7 +12,7 @@ use std::sync::Arc;
 
 use super::ast::*;
 use super::diagnostic::{Diagnostic, coordinates};
-use super::project::{ImportOrigin, Project};
+use super::project::{ImportOrigin, Project, SourcePolicy};
 use crate::{VerifiedProgram, ir::Effect};
 
 const MAX_BITS: usize = 12;
@@ -74,11 +74,12 @@ enum Ty {
     CBit,
     Q(Box<Ty>),
     Pair(Box<Ty>, Box<Ty>),
+    Tuple(Vec<Ty>),
 }
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Preserve the exact binary tree, including Unit. Iterative rendering
+        // Preserve exact arity and nesting, including Unit. Iterative rendering
         // also keeps error reporting independent of the Rust call-stack depth.
         enum Part<'a> {
             Type(&'a Ty),
@@ -105,6 +106,16 @@ impl fmt::Display for Ty {
                             Part::Type(a),
                         ]);
                     }
+                    Ty::Tuple(fields) => {
+                        f.write_str("(")?;
+                        pending.push(Part::Text(")"));
+                        for (index, field) in fields.iter().enumerate().rev() {
+                            pending.push(Part::Type(field));
+                            if index > 0 {
+                                pending.push(Part::Text(","));
+                            }
+                        }
+                    }
                 },
             }
         }
@@ -122,6 +133,9 @@ impl Ty {
             match ty {
                 Self::Q(inner) => pending.push((inner, depth + 1)),
                 Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
+                Self::Tuple(fields) => {
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
+                }
                 _ => {}
             }
         }
@@ -133,6 +147,9 @@ impl Ty {
             Self::Unit => Some(0),
             Self::Bit => Some(1),
             Self::Pair(a, b) => Some(a.basis_bits()? + b.basis_bits()?),
+            Self::Tuple(fields) => fields
+                .iter()
+                .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
             _ => None,
         }
     }
@@ -141,12 +158,30 @@ impl Ty {
         match self {
             Self::Unit | Self::CBit => true,
             Self::Pair(a, b) => a.classical() && b.classical(),
+            Self::Tuple(fields) => fields.iter().all(Self::classical),
             _ => false,
         }
     }
 
     fn pair(a: Self, b: Self) -> Self {
         Self::Pair(Box::new(a), Box::new(b))
+    }
+
+    fn tuple(mut fields: Vec<Self>) -> Self {
+        if fields.len() == 2 {
+            let b = fields.pop().expect("second field");
+            Self::pair(fields.pop().expect("first field"), b)
+        } else {
+            Self::Tuple(fields)
+        }
+    }
+
+    fn fields(&self) -> Option<Vec<&Self>> {
+        match self {
+            Self::Pair(a, b) => Some(vec![a, b]),
+            Self::Tuple(fields) => Some(fields.iter().collect()),
+            _ => None,
+        }
     }
 }
 
@@ -202,6 +237,8 @@ struct Compiler<'a> {
     providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
     instances: Vec<(Key, Vec<operations::Operation>)>,
     work: usize,
+    exact_work: crate::contract::exact::Budget,
+    closed_meanings: BTreeMap<Key, crate::contract::exact::Matrix>,
 }
 
 impl Compiler<'_> {
@@ -343,9 +380,11 @@ impl Compiler<'_> {
             TypeKind::Bit if basis_only => Ty::Bit,
             TypeKind::CBit if !basis_only => Ty::CBit,
             TypeKind::Q(inner) if !basis_only => Ty::Q(Box::new(self.ty(module, inner, true)?)),
-            TypeKind::Tuple(a, b) => Ty::pair(
-                self.ty(module, a, basis_only)?,
-                self.ty(module, b, basis_only)?,
+            TypeKind::Tuple(fields) => Ty::tuple(
+                fields
+                    .iter()
+                    .map(|field| self.ty(module, field, basis_only))
+                    .collect::<Result<_, _>>()?,
             ),
             _ => {
                 return Err(self.error(
@@ -396,7 +435,7 @@ impl Compiler<'_> {
                             ));
                         }
                     }
-                    PatternKind::Tuple(a, b) => pending.extend([b.as_ref(), a.as_ref()]),
+                    PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
                     PatternKind::Wildcard => {}
                 }
             }
@@ -528,7 +567,8 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                 }
                 ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
                 ExprKind::Not(input) => stack.push(Node::Expr(input)),
-                ExprKind::Tuple(a, b) | ExprKind::And(a, b) | ExprKind::Xor(a, b) => {
+                ExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Expr)),
+                ExprKind::And(a, b) | ExprKind::Xor(a, b) => {
                     stack.push(Node::Expr(a));
                     stack.push(Node::Expr(b));
                 }
@@ -582,9 +622,8 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     names.push(callee);
                     stack.extend(args.iter().map(Node::Basis));
                 }
-                BasisExprKind::Tuple(a, b)
-                | BasisExprKind::Xor(a, b)
-                | BasisExprKind::And(a, b) => {
+                BasisExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Basis)),
+                BasisExprKind::Xor(a, b) | BasisExprKind::And(a, b) => {
                     stack.extend([Node::Basis(a), Node::Basis(b)]);
                 }
                 BasisExprKind::Not(a) => stack.push(Node::Basis(a)),
@@ -642,7 +681,29 @@ fn process_project_diagnostic(
     root: &Path,
     require_entry: bool,
 ) -> Result<Option<VerifiedProgram>, Diagnostic> {
-    let project = Project::load_detailed(root).map_err(|failure| failure.into_diagnostic())?;
+    process_project_with_policy(root, require_entry, SourcePolicy::Legacy)
+}
+
+/// Check all declarations using an explicit pre-tokenization byte policy.
+pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic> {
+    process_project_with_policy(root, false, policy).map(|_| ())
+}
+
+/// Compile and independently verify using an explicit source-loading policy.
+pub fn compile_project_with_policy(
+    root: &Path,
+    policy: SourcePolicy,
+) -> Result<VerifiedProgram, Diagnostic> {
+    Ok(process_project_with_policy(root, true, policy)?.expect("required entry was compiled"))
+}
+
+fn process_project_with_policy(
+    root: &Path,
+    require_entry: bool,
+    policy: SourcePolicy,
+) -> Result<Option<VerifiedProgram>, Diagnostic> {
+    let project = Project::load_detailed_with_policy(root, policy)
+        .map_err(|failure| failure.into_diagnostic())?;
     process_loaded_project(root, &project, require_entry).map_err(Diagnostic::from_compile)
 }
 
@@ -673,6 +734,8 @@ fn process_loaded_project(
         providers: BTreeMap::new(),
         instances: vec![],
         work: 0,
+        exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+        closed_meanings: BTreeMap::new(),
     };
     let order = compiler.order()?;
     let entry = ("main".to_owned(), "main".to_owned());
@@ -775,6 +838,8 @@ mod snapshot_tests {
             providers: BTreeMap::new(),
             instances: vec![],
             work: 0,
+            exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+            closed_meanings: BTreeMap::new(),
         }
     }
 

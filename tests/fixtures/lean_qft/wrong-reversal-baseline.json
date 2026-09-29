@@ -1,0 +1,12 @@
+{
+  "source_sha256": "29a50ff3209a33c9d9ebd323450211c07e6aefbe128477b95e5a7bf5b8c90c64",
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/lean_qft/wrong_reversal",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.4267766952966373},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.21338834764831865},{\"bits\":[true,false,false],\"probability\":0.02144660940672625},{\"bits\":[true,false,true],\"probability\":0.12500000000000006}]}}\n",
+  "stderr": ""
+}

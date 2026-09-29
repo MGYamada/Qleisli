@@ -1,0 +1,100 @@
+QleisliKernel/Layout.lean:77:3: error: unexpected token 'at'; expected identifier
+QleisliKernel/Layout.lean:81:57: error: unexpected token 'at'; expected term
+QleisliKernel/Layout.lean:85:0: warning: declaration uses `sorry`
+QleisliKernel/Layout.lean:94:29: error: unexpected token 'at'; expected ':' or term
+QleisliKernel/Layout.lean:97:0: warning: declaration uses `sorry`
+QleisliKernel/Layout.lean:170:27: error: unexpected token 'at'; expected term
+QleisliKernel/Layout.lean:174:16: error: unexpected token 'at'; expected term
+QleisliKernel/Layout.lean:177:16: error: unexpected token 'at'; expected term
+QleisliKernel/Layout.lean:183:17: error: unexpected token 'at'; expected '⟩'
+QleisliKernel/Layout.lean:181:4: error: Function expected at
+  reindex
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  f
+
+Hint: The identifier `reindex` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+QleisliKernel/Layout.lean:183:16: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Fin.mk` has 2 explicit field, but none were provided
+QleisliKernel/Layout.lean:192:17: error: unexpected token 'at'; expected '⟩'
+QleisliKernel/Layout.lean:190:4: error: Function expected at
+  reindex
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  g
+
+Hint: The identifier `reindex` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+QleisliKernel/Layout.lean:192:16: error: Insufficient number of fields for `⟨...⟩` constructor: Constructor `Fin.mk` has 2 explicit field, but none were provided
+QleisliKernel/Layout.lean:204:7: error: Function expected at
+  reindex
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  layout.axes
+
+Hint: The identifier `reindex` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+QleisliKernel/Layout.lean:205:86: error: unsolved goals
+case h.h.h
+x✝ : Sort u_1
+reindex : x✝
+layout required : Rewire
+witness : Witness
+stats : Stats
+accepted : check layout witness required = Except.ok stats
+R C : Type
+amplitude : (Fin (wires layout.inputs).length → Bool) → R → C
+bits : Fin (wires layout.inputs).length → Bool
+reference : R
+⊢ Permutation (wires layout.inputs).length ?m.37 ?m.38
+
+x✝ : Sort u_1
+reindex : x✝
+layout required : Rewire
+witness : Witness
+stats : Stats
+accepted : check layout witness required = Except.ok stats
+R C : Type
+amplitude : (Fin (wires layout.inputs).length → Bool) → R → C
+bits : Fin (wires layout.inputs).length → Bool
+reference : R
+⊢ Sort ?u.16010.105
+
+x✝ : Sort u_1
+reindex : x✝
+layout required : Rewire
+witness : Witness
+stats : Stats
+accepted : check layout witness required = Except.ok stats
+R C : Type
+amplitude : (Fin (wires layout.inputs).length → Bool) → R → C
+bits : Fin (wires layout.inputs).length → Bool
+reference : R
+⊢ ?m.33
+
+x✝ : Sort u_1
+reindex : x✝
+layout required : Rewire
+witness : Witness
+stats : Stats
+accepted : check layout witness required = Except.ok stats
+R C : Type
+amplitude : (Fin (wires layout.inputs).length → Bool) → R → C
+bits : Fin (wires layout.inputs).length → Bool
+reference : R
+⊢ List Nat
+
+x✝ : Sort u_1
+reindex : x✝
+layout required : Rewire
+witness : Witness
+stats : Stats
+accepted : check layout witness required = Except.ok stats
+R C : Type
+amplitude : (Fin (wires layout.inputs).length → Bool) → R → C
+bits : Fin (wires layout.inputs).length → Bool
+reference : R
+⊢ List Nat

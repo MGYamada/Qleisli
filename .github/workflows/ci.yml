@@ -17,6 +17,14 @@ jobs:
         run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
       - run: cargo +1.98.1 fmt --check
       - run: cargo +1.98.1 test --all-targets
+      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
+      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
       - run: python3 scripts/test_cli_json.py target/debug/qleisli
       - run: python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
       - run: cargo +1.98.1 clippy --all-targets -- -D warnings
@@ -31,6 +39,14 @@ jobs:
       - name: Install the minimum supported Rust toolchain
         run: rustup toolchain install 1.85.0 --profile minimal --component clippy
       - run: cargo +1.85.0 test --all-targets
+      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
+      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
       - run: python3 scripts/test_cli_json.py target/debug/qleisli
       - run: cargo +1.85.0 clippy --all-targets -- -D warnings
       - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
@@ -63,6 +79,68 @@ jobs:
       - name: Audit every project declaration for forbidden axioms
         working-directory: lean
         run: lake env lean -DwarningAsError=true Audit.lean
+      - name: Bind shipped schema types to rebuilt declarations and audited executable sources
+        run: python3 scripts/check_schema_registry.py
+  lean-kernel:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check executable source and dependency policy
+        run: python3 scripts/check_lean_kernel.py
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit executable declarations and check reduction regressions
+        working-directory: lean-kernel
+        run: |
+          lake env lean -DwarningAsError=true Audit.lean
+          lake env lean -DwarningAsError=true Tests.lean
+      - name: Replay the compiled project definitions through Lean's kernel
+        working-directory: lean-kernel
+        run: |
+          lake env leanchecker --fresh QleisliKernel
+          lake env leanchecker --fresh Main
+      - name: Reject compiled audit counterexamples
+        run: python3 scripts/test_check_lean_kernel.py --compiled
+      - name: Shared DAG semantics, binding, limits and zero-width owners
+        run: python3 scripts/test_lean_hierarchy.py
+      - name: Typed owner and axis permutations with independent requests
+        run: python3 scripts/test_lean_layout.py
+      - name: Shared typed calls, ordered composition and independent graph oracle
+        run: python3 scripts/test_lean_layout_dag.py
+      - name: Typed dyadic phases, controlled conditions and layout composition
+        run: python3 scripts/test_lean_phase_layout.py
+      - name: Native interference normalization and independent joint amplitudes
+        run: python3 scripts/test_lean_interference.py
+      - name: Symbolic QFT paths and independent Fourier coefficients
+        run: python3 scripts/test_lean_qft.py
+      - name: Typed QFT graph binding and independent paths
+        run: python3 scripts/test_lean_qft_graph.py
+      - name: QPE plans and independent residual instruments
+        run: python3 scripts/test_lean_qpe.py
+      - name: Coherent controlled powers and exact joint-reference matrices
+        run: python3 scripts/test_lean_controlled_power.py
+      - name: Full-profile graph schedules, cycles and aggregate capacities
+        run: python3 scripts/test_hierarchical_graph.py
+      - name: Typed artifact dependencies, endpoints and shared work budget
+        run: python3 scripts/test_hierarchical_artifact.py
+      - name: Actual node ownership, effects, call names and zero-repeat bodies
+        run: python3 scripts/test_hierarchical_typing.py
+      - name: Meaning and encoding types, QPE providers and zero-scratch shapes
+        run: python3 scripts/test_hierarchical_contract_typing.py
+      - name: Check explicit structural conversions
+        run: python3 scripts/test_hierarchical_structural.py
+      - name: Bind controlled powers to actual bodies and provider obligations
+        run: python3 scripts/test_hierarchical_power.py
+      - name: Check actual provider derivations from an empty proof cache
+        run: python3 scripts/test_hierarchical_derivation.py
+      - name: Install the tested Rust toolchain
+        run: rustup toolchain install 1.98.1 --profile minimal
+      - name: Differential and process-boundary checks
+        run: cargo +1.98.1 run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test
   distribution:
     runs-on: ubuntu-latest
     steps:
@@ -89,6 +167,9 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - run: python3 scripts/test_check_docs.py
+      - run: python3 scripts/test_check_lean_kernel.py
+      - run: python3 scripts/test_check_schema_registry.py
+      - run: python3 scripts/check_schema_registry.py --source-only
       - run: python3 scripts/check_docs.py
       - run: python3 scripts/test_check_authoring_sessions.py
       - run: python3 scripts/check_authoring_sessions.py

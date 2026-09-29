@@ -1,0 +1,71 @@
+[
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "Build completed successfully (28 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "exit": 0,
+    "stdout": "Audited 2166 kernel/transport declarations, 1046 pure import modules and 1043 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "\u2714 [2976/2978] Built Qleisli.QftGraph (16s)\n\u2714 [2977/2978] Built Qleisli (2.6s)\nBuild completed successfully (2978 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "exit": 0,
+    "stdout": "Audited 646 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n",
+    "stderr": ""
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/check_lean_kernel.py"
+    ],
+    "exit": 0,
+    "stdout": "Checked 15 executable kernel/transport source modules; no external Lake dependencies.\n",
+    "stderr": ""
+  }
+]

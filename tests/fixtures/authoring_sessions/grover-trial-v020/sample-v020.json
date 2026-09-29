@@ -1,0 +1,55 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "sample",
+    "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02",
+    "--shots=4",
+    "--seed=0",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-09-28T12:46:01.392190+00:00",
+  "project_version": "0.2.0",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "sample",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "rng": "splitmix64-v1",
+      "seed": "0",
+      "shots": [
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 22
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 22
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 22
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "execution_steps": 22
+        }
+      ],
+      "execution_steps": 88
+    }
+  }
+}

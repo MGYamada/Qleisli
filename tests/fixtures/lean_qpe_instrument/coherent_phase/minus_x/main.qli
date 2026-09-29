@@ -1,0 +1,17 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::observe::measure_z;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn oracle(q: Q<Bit>) -> Q<Bit> { x(z(x(z(x(q))))) }
+
+// Preserve a control/reference Bell correlation through the controlled oracle.
+// Interference after uncomputing the correlation exposes the oracle's phase.
+observe fn main() -> (CBit, CBit, CBit) {
+    let (control, reference) = qif(h(init0()), init0()) { 0 => identity, 1 => x };
+    let (control, target) = qif(control, h(init0())) { 0 => identity, 1 => oracle };
+    let (control, reference) = qif(control, reference) { 0 => identity, 1 => x };
+    (measure_z(h(control)), measure_z(h(target)), measure_z(reference))
+}

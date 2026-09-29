@@ -1,0 +1,134 @@
+{
+  "width": 3,
+  "entry": 18,
+  "nodes": [
+    {
+      "kind": "gate",
+      "gate": [
+        "h",
+        2
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 0
+    },
+    {
+      "kind": "gate",
+      "gate": [
+        "p",
+        [
+          [
+            64,
+            [
+              1,
+              2
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 2
+    },
+    {
+      "kind": "sequence",
+      "first": 1,
+      "second": 3
+    },
+    {
+      "kind": "gate",
+      "gate": [
+        "p",
+        [
+          [
+            32,
+            [
+              0,
+              2
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 5
+    },
+    {
+      "kind": "sequence",
+      "first": 4,
+      "second": 6
+    },
+    {
+      "kind": "gate",
+      "gate": [
+        "h",
+        1
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 8
+    },
+    {
+      "kind": "sequence",
+      "first": 7,
+      "second": 9
+    },
+    {
+      "kind": "gate",
+      "gate": [
+        "p",
+        [
+          [
+            64,
+            [
+              0,
+              1
+            ]
+          ]
+        ]
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 11
+    },
+    {
+      "kind": "sequence",
+      "first": 10,
+      "second": 12
+    },
+    {
+      "kind": "gate",
+      "gate": [
+        "h",
+        0
+      ]
+    },
+    {
+      "kind": "call",
+      "child": 14
+    },
+    {
+      "kind": "sequence",
+      "first": 13,
+      "second": 15
+    },
+    {
+      "kind": "permute",
+      "axes": [
+        2,
+        1,
+        0
+      ]
+    },
+    {
+      "kind": "sequence",
+      "first": 16,
+      "second": 17
+    }
+  ]
+}

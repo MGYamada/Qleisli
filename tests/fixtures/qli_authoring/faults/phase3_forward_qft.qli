@@ -24,13 +24,13 @@ requires Controlled(U) {
     ((measure_z(a), measure_z(b)), q)
 }
 
-/// Three-bit QPE: (((weight-1 bit, weight-2 bit), weight-4 bit), target).
-pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> (((CBit, CBit), CBit), Q<Bit>)
+/// Three-bit QPE: ((weight-1 bit, weight-2 bit, weight-4 bit), target).
+pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> ((CBit, CBit, CBit), Q<Bit>)
 requires Controlled(U) {
     let (a, q) = controlled[U](h(init0()), q);
     let (b, q) = controlled[repeat_op(2,U)](h(init0()), q);
     let (c, q) = controlled[repeat_op(4,U)](h(init0()), q);
     let (ab, c) = split(qft3(join(join(a, b), c)));
     let (a, b) = split(ab);
-    (((measure_z(a), measure_z(b)), measure_z(c)), q)
+    ((measure_z(a), measure_z(b), measure_z(c)), q)
 }

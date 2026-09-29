@@ -1,0 +1,12 @@
+{
+  "source_sha256": "cb39433c1aa11c6b1591e1bbcafd9c0c6d2b1171bb0621d38bac513e799170df",
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/lean_interference/reference_client",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000003},{\"bits\":[false,true],\"probability\":0.25000000000000017},{\"bits\":[true,false],\"probability\":0.25000000000000017},{\"bits\":[true,true],\"probability\":0.2500000000000003}]}}\n",
+  "stderr": ""
+}

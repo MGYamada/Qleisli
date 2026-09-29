@@ -1,0 +1,80 @@
+{
+  "recorded_utc": "2026-09-28T17:25:03.703305+00:00",
+  "package_directory": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-typed-call-clean-0ecse5ta/lean-kernel",
+  "external_packages": [],
+  "sources": {
+    "Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    "Main.lean": "ece957f02ae6859925fa7eb958671a0fb9c8811fabe139d0058e3b080842c5a5",
+    "Protocol.lean": "acd9d50f5535feede73fc17705bceca53c2693377421227608135a5c54404132",
+    "QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "QleisliKernel/Layout.lean": "482658d4c0059174ed63e889b7d05389830051723f4120df1463257c75aa27a2",
+    "QleisliKernel/LayoutDag.lean": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+    "QleisliKernel/PhaseWord.lean": "909fbf903f4ed7ffd7ce0fd50b5c92095bcba6e1aac1ae4cbfabde83906e760c",
+    "QleisliKernel.lean": "14bf0c9a04a31aa1a10a64ea9f9998cb6a5650ad79bc81faeea603e263798dea",
+    "README.md": "a5045c9cacf214c1c37070167f5115c18341d008d73b4362b908f7d26505ffbc",
+    "Tests.lean": "0dde720561df523bbd9c06940ddc59e7fa66f8693b96259a58c7e2c0d3639e97",
+    "lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
+    "lakefile.toml": "ac56021b7ca47f07acd15a64d8d54972ebd35e1d59503b50640a47f7f934ec8a",
+    "lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+  },
+  "observations": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [2/20] Built QleisliKernel.PhaseWord (1.2s)\n\u2714 [3/20] Built QleisliKernel.Layout (1.3s)\n\u2714 [4/20] Built QleisliKernel.PhaseWord:c.o (291ms)\n\u2714 [5/20] Built QleisliKernel.Composition (423ms)\n\u2714 [6/20] Built QleisliKernel.Layout:c.o (300ms)\n\u2714 [7/20] Built QleisliKernel.Composition:c.o (67ms)\n\u2714 [8/20] Built QleisliKernel.LayoutDag (581ms)\n\u2714 [9/20] Built QleisliKernel.Dag (417ms)\n\u2714 [10/20] Built QleisliKernel.LayoutDag:c.o (286ms)\n\u2714 [11/20] Built QleisliKernel.Dag:c.o (142ms)\n\u2714 [12/20] Built QleisliKernel.Hierarchy (486ms)\n\u2714 [13/20] Built QleisliKernel.Hierarchy:c.o (247ms)\n\u2714 [14/20] Built QleisliKernel (328ms)\n\u2714 [15/20] Built Protocol (549ms)\n\u2714 [17/20] Built Main (449ms)\n\u2714 [18/20] Built Protocol:c.o (408ms)\n\u2714 [19/20] Built Main:c.o (199ms)\n\u2714 [20/20] Built \u00abqleisli-kernel\u00bb:exe (259ms)\nBuild completed successfully (20 jobs).\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "Audited 1241 kernel/transport declarations, 1040 pure import modules and 1041 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/masa/git/Qleisli/scripts/test_lean_layout_dag.py",
+        "--binary",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-typed-call-clean-0ecse5ta/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "Native typed-layout DAG decisions: 147\n",
+      "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.446s\n\nOK\n"
+    }
+  ]
+}

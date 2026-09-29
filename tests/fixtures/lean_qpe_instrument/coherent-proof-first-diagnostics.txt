@@ -1,0 +1,113 @@
+✔ [3360/3362] Built Qleisli.Qpe (15s)
+✔ [3361/3362] Built Qleisli.QpeComplete (4.2s)
+✖ [3362/3362] Building Qleisli.ControlledPowers (2.8s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean/Qleisli/ControlledPowers.lean -o /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/ControlledPowers.olean -i /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/ControlledPowers.ilean -c /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/ControlledPowers.c --setup /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/ControlledPowers.setup.json --json
+error: Qleisli/ControlledPowers.lean:8:20: Unknown constant `QleisliKernel.ControlledPowers`
+error: Qleisli/ControlledPowers.lean:17:0: automatically included section variable(s) unused in theorem `Qleisli.ControlledPowers.block_mul`:
+  [DecidableEq T]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq T] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: Qleisli/ControlledPowers.lean:25:0: automatically included section variable(s) unused in theorem `Qleisli.ControlledPowers.block_conj`:
+  [Fintype B]
+  [Fintype T]
+  [DecidableEq T]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype B] [Fintype T] [DecidableEq T] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: Qleisli/ControlledPowers.lean:32:0: automatically included section variable(s) unused in theorem `Qleisli.ControlledPowers.block_one`:
+  [Fintype B]
+  [Fintype T]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [Fintype B] [Fintype T] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: Qleisli/ControlledPowers.lean:36:0: automatically included section variable(s) unused in theorem `Qleisli.ControlledPowers.block_mulVec`:
+  [DecidableEq T]
+consider restructuring your `variable` declarations so that the variables are not in scope or explicitly omit them:
+  omit [DecidableEq T] in theorem ...
+
+Note: This linter can be disabled with `set_option linter.unusedSectionVars false`
+error: Qleisli/ControlledPowers.lean:48:4: Unknown identifier `ControlledPowers.iterate`
+error: Qleisli/ControlledPowers.lean:50:18: Unknown identifier `ControlledPowers.iterate`
+error: Qleisli/ControlledPowers.lean:50:9: unsolved goals
+case zero
+T : Type
+inst✝¹ : Fintype T
+inst✝ : DecidableEq T
+U : Matrix T T ℂ
+amplitude : T → ℂ
+⊢ sorry () = amplitude
+error: Qleisli/ControlledPowers.lean:52:16: Unknown identifier `ControlledPowers.iterate`
+error: Qleisli/ControlledPowers.lean:57:13: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:58:17: Unknown identifier `ControlledPowers.applyStage`
+error: Qleisli/ControlledPowers.lean:65:13: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:66:16: Unknown identifier `ControlledPowers.checkSingle`
+error: Qleisli/ControlledPowers.lean:71:6: Unknown identifier `ControlledPowers.checkSingle_action`
+error: Qleisli/ControlledPowers.lean:67:89: unsolved goals
+case e_operators.h
+T : Type
+inst✝¹ : Fintype T
+inst✝ : DecidableEq T
+operations : ℕ → Matrix T T ℂ
+exponent provider : ℕ
+stage : sorry
+accepted : sorry = true
+b : Bool
+⊢ sorry = if b = true then operations provider ^ 2 ^ exponent else 1
+error: Qleisli/ControlledPowers.lean:76:13: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:77:16: Unknown identifier `ControlledPowers.checkSingle`
+error: Qleisli/ControlledPowers.lean:79:4: Unknown identifier `ControlledPowers.coherentStage`
+error: Qleisli/ControlledPowers.lean:84:9: Unknown identifier `ControlledPowers.coherentStage`
+error: Qleisli/ControlledPowers.lean:89:13: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:90:16: Unknown identifier `ControlledPowers.checkSingle`
+error: Qleisli/ControlledPowers.lean:102:68: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:104:17: Unknown identifier `ControlledPowers.run`
+error: Qleisli/ControlledPowers.lean:108:19: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:109:16: Unknown identifier `ControlledPowers.check`
+error: Qleisli/ControlledPowers.lean:111:45: Unknown identifier `ControlledPowers.value`
+error: Qleisli/ControlledPowers.lean:115:6: Unknown identifier `ControlledPowers.check_action`
+error: Qleisli/ControlledPowers.lean:111:92: unsolved goals
+case e_operators.h
+B T : Type
+inst✝³ : Fintype B
+inst✝² : DecidableEq B
+inst✝¹ : Fintype T
+inst✝ : DecidableEq T
+operations : ℕ → Matrix T T ℂ
+controls : B → QleisliKernel.Interference.Bits
+width provider : ℕ
+stages : List sorry
+accepted : sorry = true
+b : B
+⊢ sorry = operations provider ^ sorry
+error: Qleisli/ControlledPowers.lean:120:19: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:121:16: Unknown identifier `ControlledPowers.check`
+error: Qleisli/ControlledPowers.lean:123:4: Unknown identifier `ControlledPowers.coherentRun`
+error: Qleisli/ControlledPowers.lean:127:4: Unknown identifier `ControlledPowers.coherentRun_apply`
+error: Qleisli/ControlledPowers.lean:125:74: unsolved goals
+B T : Type
+inst✝³ : Fintype B
+inst✝² : DecidableEq B
+inst✝¹ : Fintype T
+inst✝ : DecidableEq T
+operations : ℕ → Matrix T T ℂ
+controls : B → QleisliKernel.Interference.Bits
+width provider : ℕ
+stages : List sorry
+accepted : sorry = true
+amplitude : B × T → ℂ
+b : B
+i : T
+⊢ sorry = (operations provider ^ sorry *ᵥ fun j => amplitude (b, j)) i
+error: Qleisli/ControlledPowers.lean:132:19: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:133:16: Unknown identifier `ControlledPowers.check`
+error: Qleisli/ControlledPowers.lean:144:13: Unknown identifier `ControlledPowers.Stage`
+error: Qleisli/ControlledPowers.lean:145:16: Unknown identifier `ControlledPowers.checkSingle`
+error: Lean exited with code 1
+Some required targets logged failures:
+- Qleisli.ControlledPowers
+error: build failed
+

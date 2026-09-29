@@ -1,0 +1,31 @@
+info: qleisli_kernel: no previous manifest, creating one from scratch
+info: toolchain not updated; already up-to-date
+QleisliKernel/PhaseWord.lean:92:16: error: unsolved goals
+case phase.false.true
+summary : Summary
+initialPhase ticks : Nat
+h : summary.flip = true
+⊢ (initialPhase % modulus % modulus +
+        (summary.phase0 % modulus % modulus + ticks % modulus % modulus) % modulus % modulus) %
+      modulus =
+    ((initialPhase % modulus % modulus + summary.phase0 % modulus % modulus) % modulus % modulus +
+        ticks % modulus % modulus) %
+      modulus
+
+case phase.true.false
+summary : Summary
+initialPhase ticks : Nat
+h : summary.flip = false
+⊢ (initialPhase % modulus % modulus +
+        (summary.phase1 % modulus % modulus + ticks % modulus % modulus) % modulus % modulus) %
+      modulus =
+    ((initialPhase % modulus % modulus + summary.phase1 % modulus % modulus) % modulus % modulus +
+        ticks % modulus % modulus) %
+      modulus
+QleisliKernel/PhaseWord.lean:94:62: warning: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  simp [accumulate, Summary.action, step, h, Nat.add_mod,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵a̵s̵s̵o̵c̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

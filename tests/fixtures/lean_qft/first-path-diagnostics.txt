@@ -1,0 +1,161 @@
+QleisliKernel/PathSum.lean:21:53: error: unexpected token 'variable'; expected '_' or identifier
+QleisliKernel/PathSum.lean:21:61: error: unexpected token ':'; expected '(', '[', '{' or '⦃'
+QleisliKernel/PathSum.lean:22:13: error: unexpected token '<'; expected '(', '[', '{' or '⦃'
+QleisliKernel/PathSum.lean:22:41: error: unexpected token 'else'; expected '(', '[', '{' or '⦃'
+QleisliKernel/PathSum.lean:22:64: error: unexpected token '-'; expected '(', '[', '{' or '⦃'
+QleisliKernel/PathSum.lean:25:4: error: Function expected at
+  assignment
+but this term has type
+  ?m.1
+
+Note: Expected a function because this term is being applied to the argument
+  width
+
+Hint: The identifier `assignment` is unknown, and Lean's `autoImplicit` option causes an unknown identifier to be treated as an implicitly bound variable with an unknown type. However, the unknown type cannot be a function, and a function is what Lean expects here. This is often the result of a typo or a missing `import` or `open` statement.
+QleisliKernel/PathSum.lean:26:8: error: Invalid argument: Variable `assignment` is not a proposition or let-declaration
+QleisliKernel/PathSum.lean:25:70: error: unsolved goals
+x✝ : Sort u_1
+assignment : x✝
+width count : Nat
+input choices : Bits
+⊢ sorry () = choices count
+QleisliKernel/PathSum.lean:29:16: error(lean.unknownIdentifier): Unknown identifier `assignment`
+QleisliKernel/PathSum.lean:64:2: error: unsolved goals
+case neg
+wires : List Nat
+axis fresh : Nat
+values : Bits
+inside : axis < wires.length
+i : Nat
+same : ¬i = axis
+⊢ values ((wires.set axis fresh)[i]?.getD i) = values (wires[i]?.getD i)
+QleisliKernel/PathSum.lean:64:42: error: This simp argument is unused:
+  List.getElem?_set_ne
+
+Hint: Omit it from the simp argument list.
+  simp [LayoutDag.lookup, setBit, same,̵ ̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵s̵e̵t̵_̵n̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PathSum.lean:74:28: error: Application type mismatch: The argument
+  compiled
+has type
+  (if axis✝ < symbolic.wires.length then
+      have fresh := width + symbolic.hadamards;
+      have term := { axes := [LayoutDag.lookup symbolic.wires axis✝, fresh], ticks := 128 };
+      some
+        { wires := symbolic.wires.set axis✝ fresh, phases := PhasePolynomial.normalize (symbolic.phases ++ [term]),
+          hadamards := symbolic.hadamards + 1 }
+    else none) =
+    some result
+but is expected to have type
+  some ?m.70 = some ?m.71
+in the application
+  Option.some.inj compiled
+QleisliKernel/PathSum.lean:75:32: error: Ambiguous term
+  normalize_sound
+Possible interpretations:
+  PhasePolynomial.normalize_sound : ∀ (terms : Polynomial) (bits : Nat → Bool),
+    evaluate (PhasePolynomial.normalize terms) bits = evaluate terms bits
+  
+  Interference.normalize_sound : ∀ (model : Model ?m.103) (gates : List Interference.Gate) (amplitude : Bits → ?m.103),
+    Interference.run model (Interference.normalize gates) amplitude = Interference.run model gates amplitude
+QleisliKernel/PathSum.lean:76:72: error: Application type mismatch: The argument
+  inside
+has type
+  Gate.hadamard axis = Gate.hadamard axis✝
+but is expected to have type
+  axis < symbolic.wires.length
+in the application
+  lookup_set symbolic.wires axis (width + symbolic.hadamards) ?m.108 inside
+QleisliKernel/PathSum.lean:83:28: error: Application type mismatch: The argument
+  compiled
+has type
+  (if axis✝ < symbolic.wires.length then
+      have fresh := width + symbolic.hadamards;
+      have term := { axes := [LayoutDag.lookup symbolic.wires axis✝, fresh], ticks := 128 };
+      some
+        { wires := symbolic.wires.set axis✝ fresh, phases := PhasePolynomial.normalize (symbolic.phases ++ [term]),
+          hadamards := symbolic.hadamards + 1 }
+    else none) =
+    some result
+but is expected to have type
+  some ?m.166 = some ?m.167
+in the application
+  Option.some.inj compiled
+QleisliKernel/PathSum.lean:82:20: error: unsolved goals
+case refl
+width : Nat
+symbolic result : Symbolic
+input choices : Bits
+terms : Polynomial
+x✝ : Interference.Gate
+axis✝ : Nat
+wellFormed : Gate.diagonal terms = Gate.hadamard axis✝
+compiled :
+  (if axis✝ < symbolic.wires.length then
+      have fresh := width + symbolic.hadamards;
+      have term := { axes := [LayoutDag.lookup symbolic.wires axis✝, fresh], ticks := 128 };
+      some
+        { wires := symbolic.wires.set axis✝ fresh, phases := PhasePolynomial.normalize (symbolic.phases ++ [term]),
+          hadamards := symbolic.hadamards + 1 }
+    else none) =
+    some result
+⊢ sorry () ∘ LayoutDag.lookup result.wires = sorry () ∘ LayoutDag.lookup symbolic.wires ∧
+    evaluate result.phases (sorry ()) =
+        (evaluate symbolic.phases (sorry ()) + evaluate terms (sorry () ∘ LayoutDag.lookup symbolic.wires)) % modulus ∧
+      result.hadamards = symbolic.hadamards
+QleisliKernel/PathSum.lean:85:20: error: Tactic `contradiction` failed
+
+width : Nat
+symbolic result : Symbolic
+input choices : Bits
+terms : Polynomial
+x✝ : Interference.Gate
+terms✝ : Polynomial
+invalid : Gate.diagonal terms = Gate.diagonal terms✝
+compiled :
+  (if valid symbolic.wires.length terms✝ = true then
+      some
+        { wires := symbolic.wires,
+          phases := PhasePolynomial.normalize (symbolic.phases ++ remap (LayoutDag.lookup symbolic.wires) terms✝),
+          hadamards := symbolic.hadamards }
+    else none) =
+    some result
+⊢ realize width result input choices = step choices (realize width symbolic input choices) (Gate.diagonal terms)
+QleisliKernel/PathSum.lean:75:17: error: declaration uses `sorry`
+QleisliKernel/PathSum.lean:75:49: error: This simp argument is unused:
+  evaluate_append
+
+Hint: Omit it from the simp argument list.
+  simp only [realize, step, normalize_sound,̵ ̵e̵v̵a̵l̵u̵a̵t̵e̵_̵a̵p̵p̵e̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PathSum.lean:84:27: error: This simp argument is unused:
+  PhasePolynomial.normalize_sound
+
+Hint: Omit it from the simp argument list.
+  simp [realize, step, P̵h̵a̵s̵e̵P̵o̵l̵y̵n̵o̵m̵i̵a̵l̵.̵n̵o̵r̵m̵a̵l̵i̵z̵e̵_̵s̵o̵u̵n̵d̵,̵ ̵evaluate_append, remap_sound]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PathSum.lean:84:60: error: This simp argument is unused:
+  evaluate_append
+
+Hint: Omit it from the simp argument list.
+  simp [realize, step, PhasePolynomial.normalize_sound, e̵v̵a̵l̵u̵a̵t̵e̵_̵a̵p̵p̵e̵n̵d̵,̵ ̵remap_sound]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PathSum.lean:84:77: error: This simp argument is unused:
+  remap_sound
+
+Hint: Omit it from the simp argument list.
+  simp [realize, step, PhasePolynomial.normalize_sound, evaluate_append,̵ ̵r̵e̵m̵a̵p̵_̵s̵o̵u̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PathSum.lean:99:11: error: Type mismatch: After simplification, term
+  congrArg fun s => realize width s input choices
+ has type
+  ?m.20 = ?m.21 → realize width ?m.20 input choices = realize width ?m.21 input choices
+but is expected to have type
+  realize width result input choices = realize width initial input choices
+QleisliKernel/PathSum.lean:98:2: error: Alternative `cons` has not been provided
+QleisliKernel/PathSum.lean:100:6: error: unexpected token '('; expected command

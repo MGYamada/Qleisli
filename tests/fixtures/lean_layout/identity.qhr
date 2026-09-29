@@ -1,0 +1,9 @@
+qleisli.layout-request 1 typed-layout-v1
+inputs 2
+port 1 Bit 1 0
+port 1 Bit 1 1
+outputs 2
+port 1 Bit 1 0
+port 1 Bit 1 1
+owners 2 0 1
+axes 2 0 1

@@ -1,0 +1,38 @@
+Try this:
+  [apply] ring_nf
+  
+  The `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+    
+  Note that `ring` works primarily in *commutative* rings. If you have a noncommutative ring, abelian group or module, consider using `noncomm_ring`, `abel` or `module` instead.
+Qleisli/QftUnitary.lean:21:69: error: unsolved goals
+N : ℕ
+inst✝ : NeZero N
+square : ↑√↑N ^ 2 = ↑N
+j k y : ZMod N
+a✝ : y ∈ Finset.univ
+⊢ weight y j * star ↑√↑N * ↑√↑N * star (weight y k) = weight y j * ↑√↑N ^ 2 * star (weight y k)
+Qleisli/QftUnitary.lean:29:46: error: Application type mismatch: The argument
+  h
+has type
+  j = k
+but is expected to have type
+  ?m.171 ≠ ?m.172
+in the application
+  Ne.symm h
+Qleisli/QftUnitary.lean:25:38: error: This simp argument is unused:
+  Complex.conj_ofReal
+
+Hint: Omit it from the simp argument list.
+  simp only [star_mul, star_star,̵ ̵C̵o̵m̵p̵l̵e̵x̵.̵c̵o̵n̵j̵_̵o̵f̵R̵e̵a̵l̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/QftUnitary.lean:50:52: error: This simp argument is unused:
+  map_pow
+
+Hint: Omit it from the simp argument list.
+  simp only [map_div₀, ← Complex.exp_conj, map_mul, m̵a̵p̵_̵p̵o̵w̵,̵
+  ̵ ̵ ̵ ̵ ̵Complex.conj_ofReal, Complex.conj_natCast,
+  ̲  ̲ ̲ ̲Complex.conj_I, map_ofNat, map_neg]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/QftUnitary.lean:61:4: error(lean.dependsOnNoncomputable): failed to compile definition, consider marking it as 'noncomputable' because it depends on 'bitEquiv', which is 'noncomputable'

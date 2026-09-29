@@ -1,0 +1,63 @@
+✖ [29/31] Building QleisliKernel.Qpe (963ms)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Qpe.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Qpe.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Qpe.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Qpe.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Qpe.setup.json --json
+error: QleisliKernel/Qpe.lean:89:20: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  bounded
+has type
+  (!(decide (1 ≤ targetWidth) && decide (targetWidth ≤ 8) && decide (1 ≤ precision) && decide (precision ≤ 8) &&
+        decide (targetWidth + precision ≤ 16))) =
+    false
+which has no fields.
+error: QleisliKernel/Qpe.lean:89:37: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  bounded
+has type
+  (!(decide (1 ≤ targetWidth) && decide (targetWidth ≤ 8) && decide (1 ≤ precision) && decide (precision ≤ 8) &&
+        decide (targetWidth + precision ≤ 16))) =
+    false
+which has no fields.
+error: QleisliKernel/Qpe.lean:89:54: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  bounded
+has type
+  (!(decide (1 ≤ targetWidth) && decide (targetWidth ≤ 8) && decide (1 ≤ precision) && decide (precision ≤ 8) &&
+        decide (targetWidth + precision ≤ 16))) =
+    false
+which has no fields.
+error: QleisliKernel/Qpe.lean:89:69: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  bounded
+has type
+  (!(decide (1 ≤ targetWidth) && decide (targetWidth ≤ 8) && decide (1 ≤ precision) && decide (precision ≤ 8) &&
+        decide (targetWidth + precision ≤ 16))) =
+    false
+which has no fields.
+error: QleisliKernel/Qpe.lean:89:82: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  bounded
+has type
+  (!(decide (1 ≤ targetWidth) && decide (targetWidth ≤ 8) && decide (1 ≤ precision) && decide (precision ≤ 8) &&
+        decide (targetWidth + precision ≤ 16))) =
+    false
+which has no fields.
+error: QleisliKernel/Qpe.lean:91:14: Application type mismatch: The argument
+  powers
+has type
+  (!ControlledPowers.check precision provider plan.powers) = false
+but is expected to have type
+  ControlledPowers.check precision provider plan.powers = true
+in the application
+  And.intro powers
+error: QleisliKernel/Qpe.lean:88:41: This simp argument is unused:
+  Bool.and_eq_true
+
+Hint: Omit it from the simp argument list.
+  simp only [Bool.not_eq_true, B̵o̵o̵l̵.̵a̵n̵d̵_̵e̵q̵_̵t̵r̵u̵e̵,̵ ̵decide_eq_true_eq] at bounded powers
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: QleisliKernel/Qpe.lean:88:59: This simp argument is unused:
+  decide_eq_true_eq
+
+Hint: Omit it from the simp argument list.
+  simp only [Bool.not_eq_true, Bool.and_eq_true,̵ ̵d̵e̵c̵i̵d̵e̵_̵e̵q̵_̵t̵r̵u̵e̵_̵e̵q̵] at bounded powers
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Qpe
+error: build failed

@@ -3,7 +3,7 @@
 Status: **project direction adopted by the user on 2026-09-27; v0.1's declared
 finite acceptance profile is implemented and checked; v1 remains unmet**.
 This English document is the authoritative record
-of the project north star and v0.1/v1 release conditions. The English summaries in the
+of the project north star and v0.1/v0.5.0/v1 release conditions. The English summaries in the
 [roadmap](../ROADMAP.md) and [algorithm goal](algorithm-structure-goal.md)
 follow it. It adopts the direction evaluated in the
 [semantic-contract review](semantic-contract-proposal-review.md). The first
@@ -13,7 +13,7 @@ bounded path. The [conformance ledger](specification-status.md) records its
 acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
-these **release milestones v0.1/v1** are different labels. The existing Rust
+these **release milestones v0.1/v0.5.0/v1** are different labels. The existing Rust
 package version and the standard-library ledger's “format v1” do not
 establish completion of either release milestone. Release claims require the
 evidence below, not a manifest version or successful fixed-size example.
@@ -54,6 +54,119 @@ past release conditions or implement production kernel features. Fixed-width M1
 retains finite checking; size generalization requires R14 and hierarchical IR, and
 general predicate/arithmetic construction additionally requires circuit
 synthesis without whole-space truth tables.
+
+## 0.2.0 foundation and 0.2.1 shared-QPE continuation
+
+**User scope revision, 2026-09-29.** The [0.2.0 plan](v0.2.0-plan.md) now
+ships implemented tuple/type and resource-policy changes, finite X2–X6, and
+experimental Lean components with their actual proof limits. Its remaining
+gate is migration/contract/status alignment and final primary/MSRV Rust,
+corpus/docs/examples, pinned Lean build/audit and clean distribution validation.
+Tagging, push and publication remain separately recorded operations.
+
+The [0.2.1 target](v0.2.1-plan.md) carries the four remaining areas: full
+hierarchical semantics/evidence, independently bound production verification,
+sized source/shared QPE/QFT, and reference execution with integrated H1–H5.
+The previous multi-size, instrument/reference, phase, mutation, capacity,
+cost and reuse criteria move unchanged. They are deferred, not satisfied;
+0.2.0 must not claim a production hierarchical checker or reusable sized QPE.
+Existing experimental components remain built and audited, with external
+schema acceptance disabled until the required proof/binding gates pass.
+
+0.2.1 requires a compatible public extension. If implementation needs a
+breaking AST/API/format or capacity change, select 0.3.0 under the existing
+version policy. M0–M5, R14, S05-C1–C5, PR-C1–C4 and the independent QLT plan
+retain their obligations. No manifest bump or release completion follows from
+this scheduling revision.
+
+## Qleisli Soundness Theorem (v0.5.0)
+
+<a id="qleisli-soundness-theorem-v050"></a>
+
+**Adopted target, 2026-09-29; not yet proved.** Proving the **Qleisli Soundness
+Theorem** is the central v0.5.0 milestone, alongside the K3 transfer of production
+verification to Lean and readiness for broader open-source development.
+
+For the published v0.5.0 verification profile, let `p : RawIR₀.₅`,
+`C : Contract₀.₅` and `π : Evidence₀.₅`. The target is a Lean theorem about
+the actual executable checking definition:
+
+\[
+\forall p,C,\pi,\quad
+\operatorname{verify}_{0.5}(p,C,\pi)=\mathrm{true}
+\;\Longrightarrow\;
+\operatorname{ResourceSafe}(p)\;\land\;
+\operatorname{EffectSound}(p,C)\;\land\;
+\llbracket p\rrbracket\models C.
+\]
+
+These are specification names for the planned definitions, not existing Lean
+declarations. `C` is independently fixed by the caller; any entry premises are
+explicit. Satisfaction covers every admissible input and arbitrary finite
+reference system, including entangled inputs. Pure contracts compare complex
+linear operators with exact phase and explicit type/axis encodings. Observing
+contracts describe the complete classical–quantum instrument and its branch
+probabilities and residual states. Auxiliary release requires exact zero
+return and separation from the remaining system and reference. An isometry
+contract alone does not grant inverse or controlled access.
+
+| Gate | Required v0.5.0 evidence |
+| --- | --- |
+| **S05-C1: complete declared scope** | Publish the profile, capacities, entry premises and inventory of every enabled IR/evidence rule and production acceptance path. Preserve the required positive corpus and algorithm gates; a rejecting checker or a phase-word-only theorem cannot satisfy this milestone. Unsupported paths must reject explicitly, with versioned migration for any removed support. |
+| **S05-C2: actual checker soundness** | Compose resource/effect, exact-arithmetic interpretation, semantic-contract, hierarchy and instrument proofs into the theorem above. Cover every enabled rule. No remaining assumption that a Rust checker or an unproved evidence producer accepts correctly may substitute for a required proof. |
+| **S05-C3: reproducible proof and audit** | Bind the theorem and reviewed statement to the released executable definitions; reproducible builds, declaration/axiom audits and proof replay pass. Keep the runtime Mathlib-free and mathematical interpretation proofs separate. Record native compiler/runtime and transport assumptions explicitly. |
+| **S05-C4: production binding** | Complete K3: reconstruct serialized evidence against the independent request, bind the accepted IR to the executed/emitted artifact, pass differential/adversarial/platform checks and fail closed on kernel/transport failure. No silent Rust fallback. |
+| **S05-C5: public review and contribution readiness** | Publish the theorem explanation, coverage/assumption ledger and reproduction commands; record independent review and resolve blocking findings. Prepare contributor setup, bounded issues, proof/code review rules, maintainer responsibilities and release/security reporting procedures for the v0.5 community expansion. |
+
+This is the **verification-kernel soundness theorem**. General source-lowering,
+optimizer and backend meaning preservation remain K4 translation-validation
+work. Native compilation, approximate numerical execution, algorithm success
+and physical hardware correctness are separate claims. The existing cyclic
+phase-word `verify_sound` is a proved precursor, not this completed theorem.
+If a gate remains open, report v0.5.0 as pending rather than weakening the
+theorem or relabeling local tests as its proof. No release date is selected.
+Later releases must extend this coverage for newly enabled acceptance rules
+and continue to publish the theorem profile and its remaining trust assumptions.
+
+## Physical Realizability Theorem (v1)
+
+<a id="physical-realizability-theorem-v1"></a>
+
+Adopted target, 2026-09-29; not yet proved. By v1, prove the Physical
+Realizability Theorem alongside a substantive Lean 4 backend. This is a
+required continuation of soundness: valid quantum semantics must be connected
+to the circuit actually produced for a declared target gate set.
+
+For the finite, terminating supported profile and each admissible classical
+input, derive CPTP semantics as a corollary of the Qleisli Soundness Theorem.
+Retaining every outcome gives a classical–quantum CPTP map; summing the outcome
+maps also gives a CPTP map. An individual measurement branch is generally only
+completely positive and trace-nonincreasing, not trace preserving.
+
+The realizability target constructs an isometric dilation of that complete
+map, then synthesizes the isometry over the declared gate set, with specified
+initialization, readout and environmental discard. Prove that the actual Lean
+backend's output realizes the checked instrument, including outcome labels,
+residual states and arbitrary reference systems. For pure operations, retain
+operator phase and the stronger isometry/unitarity contracts; channel equality
+alone does not justify coherent control. Environmental discard is not pure
+auxiliary release: workspace promised clean must still return exactly to zero.
+
+| Gate | Required evidence by v1 |
+| --- | --- |
+| PR-C1: semantic bridge | Prove the CPTP corollary and constructive dilation for the complete supported profile, with explicit entry/encoding premises, outcomes and references. |
+| PR-C2: gate synthesis | Specify the target gates and preparation/readout capabilities, then prove synthesis of the dilation. State which operations are exact; any approximation needs a declared error metric and certified bound that accounts for arbitrary references and composition. A finite gate set's universality alone is not an exact-synthesis proof. |
+| PR-C3: actual backend correspondence | Implement the relevant backend transformations in Lean and prove their connection from the accepted IR to the actual emitted target program, covering lowering, optimization, layout and emission. Bind every stage to its checked input/output; source-to-IR translation validation remains a separate prerequisite for source-level claims. |
+| PR-C4: release evidence and trust | Publish the supported profile, proof/coverage and assumption ledger, reproducible audits and independent review. Include the three v1 algorithm families; unsupported target capabilities reject explicitly. Record remaining native compiler/runtime, transport and physical-device assumptions. |
+
+These are adopted proof and implementation gates, not existing Lean declarations
+or a hardware-noise guarantee. The executable backend follows the Mathlib-free
+runtime boundary; separate proof libraries may provide its mathematical bridge.
+The longer-term migration aims to cover the implementation beyond the frontend.
+Under this project direction, a Lean backend with actual-transformation proofs
+is necessary for the goal “LLMs write `.qli`; Lean guarantees it all the way
+down”; merely moving code to Lean is insufficient. V1 requires PR-C1–C4 in
+addition to the existing algorithm gates V1-C1–C5.
 
 ## Project north star
 
@@ -130,10 +243,11 @@ this release gate does not retrospectively mark all of SPEC-4 complete.
 
 ## v0.1.9 maintenance acceptance boundary
 
-The product [0.1.9 review update](releases/v0.1.9.md) does not itself complete
-this broader legacy checkpoint; its unresolved audit items remain explicit.
+The broader legacy checkpoint was completed for the recorded 0.1.9
+candidate; see the [six-condition completion evidence](reviews/b019-completion.md).
+The conditions below remain unchanged, and are distinct from the new 0.2.0 gates.
 
-**Legacy checkpoint, revised by the 0.1.5 review; not completed.** The
+**Legacy checkpoint, revised by the 0.1.5 review; subsequently completed in 0.1.9.** The
 [B019-1–B019-6 conditions](v0x-roadmap.md#v019-acceptance-boundary) require
 compatibility, finite assurance, audit dispositions, an honest proof ledger,
 a selected next scope with a complete extension specification, and reproducible
@@ -146,8 +260,9 @@ reconsideration. [M0](decisions/2026-09-27-v1-path.md) selects fixed-width M1 an
 a bounded M2 kernel path, with a 2026-10-04 JST implementation-readiness checkpoint.
 The [M1 rules](next-minor-spec.md), [external contracts](machine-interface-spec.md)
 and [M2 checker profile](hierarchical-ir-spec.md) complete the selected design
-handoff. X1 check/run is implemented; other M1 slices and M2 sized source rules remain pending;
-this does not complete all B019 conditions.
+handoff. The completion record supplies the remaining audit and reproducibility
+evidence. Pending M1/M2 features are separately tracked in the
+[0.2.0 development record](releases/v0.2.0.md).
 
 New public APIs, syntax, size generalization and kernel integration require
 specification and validation. Use PATCH for compatible changes in 0.y.z (y > 0)
@@ -207,6 +322,10 @@ execution, or completion of every algorithm in the corpus. It requires a
 usable, checked abstraction for these three algorithm families. Any
 approximation used to support larger QFTs or other components has an explicit
 error contract; it does not weaken exact auxiliary-cleanup requirements.
+
+The [Physical Realizability Theorem and PR-C1–C4](#physical-realizability-theorem-v1)
+are additional v1 requirements under the 2026-09-29 backend migration decision.
+V1-C1–C5 retain their algorithm-specific meanings.
 
 <a id="pre-v020-imaginary-v1-code"></a>
 

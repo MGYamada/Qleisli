@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-09-28T15:29:22.610083+00:00",
+  "context": "CD-3 first immutable source/artifacts before hierarchy implementation; informed development, not a controlled authoring study",
+  "sources": {
+    "first_source/main.qli": "93a992d9124b3b89ca431bf72d64e27672f078de5082e87182053e3daf792719",
+    "shared.qhd": "0b7b1bb0806601dee1927308aa30f7d337340e15dc15578cb0009a4306f96fbe",
+    "identity.qhr": "e191fbd1454ad04ffe0913ae3652ff44bf14226b86ee1ca60adc24fdfc021f10"
+  },
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_hierarchy/first_source",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"limit\",\"severity\":\"error\",\"message\":\"function evidence exceeds its finite IR profile\",\"primary\":{\"path\":\"main.qli\",\"start\":217,\"end\":218,\"line\":7,\"column\":57},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-dag",
+        "tests/fixtures/lean_hierarchy/shared.qhd",
+        "tests/fixtures/lean_hierarchy/identity.qhr"
+      ],
+      "exit_code": 2,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":false,\"code\":\"usage\",\"stage\":\"usage\"}\n",
+      "stderr": ""
+    }
+  ]
+}

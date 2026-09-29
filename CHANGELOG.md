@@ -6,7 +6,151 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No changes recorded yet.
+## 0.2.0 — 2026-09-29
+
+Finite machine interfaces, sampling and trials, arity-preserving tuples,
+resource-policy review fixes and the experimental Lean kernel/proof foundation.
+See the [migration and validation record](docs/releases/v0.2.0.md) and
+[GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.0).
+Production finite verification remains Rust-authoritative; common sized QPE
+and the remaining production hierarchy/H1–H5 work target 0.2.1.
+
+- Record a future 0.x.0 Lean-assisted mathematical debugger: bounded obligation
+  reports, independently checked mismatch witnesses and IR/source/backend
+  tracing, distinct from missing evidence or undecided checks. No debugger is
+  implemented and no current release or theorem gate is added.
+
+- Split the release scope: retain implemented finite interfaces, tuple/resource
+  policy changes and the experimental Lean foundation in 0.2.0, with migration and
+  release validation recorded separately. Move remaining production hierarchy,
+  sized source/shared QPE and execution/H1–H5 to the 0.2.1 target without
+  weakening their gates or permitting incompatible PATCH changes.
+
+- Construct successful, unique complex denotations from actual supported
+  hierarchical derivations, removing the assumed interpretation environment
+  for their entry operator/reference equations. Keep whole-space unitarity,
+  finite reconstruction and full source/schema integration as separate gates.
+  Mark known migration-only proofs `temporary` with replacements and removal
+  conditions; maintain their normal build, audit and API compatibility checks.
+
+- Bind the three closed component schemas to rebuilt Lean theorem types,
+  parameter domains and a content revision of their source/audit dependencies.
+  Add CI and source-archive manifest checks; external schema entries remain
+  disabled until full IR/provider binding is implemented. Add bounded scheduling
+  for the full hierarchy's dependency graph, prove actual-checker acyclicity,
+  and test shared graphs and aggregate capacities without semantic expansion.
+
+- Record the fixed architectural trust partition in [TRUST_BOUNDARY.md](TRUST_BOUNDARY.md):
+  trusted foundations/specifications, soundness/realizability proof obligations,
+  and independent validation of untrusted frontend output.
+
+- Record the future QLT mathematical test-language design, first source drafts
+  and semantic counterexamples. Plan a Rust exact/cost/doctest experiment in
+  0.3–0.4, followed by instrument evaluation, Lean migration and later interval
+  certificates. No QLT runtime is implemented and no 0.2.0/S05/PR gate is added.
+
+- Adopt the Physical Realizability Theorem and a proved Lean backend as v1
+  requirements: derive CPTP semantics from soundness, then construct and
+  synthesize its isometric dilation over a declared gate set. Clarify the
+  longer-term Lean migration beyond the frontend and the remaining boundaries
+  of an end-to-end guarantee. This records a plan, not a completed proof.
+
+- Prove the actual QPE controlled-power schedule and residual target/reference
+  instrument, with fresh-zero, measurement-order and retained-owner checks.
+  Prove all-outcome completeness and joint trace preservation under an explicit
+  provider-isometry premise. Derive both inverse laws for the accepted QFT
+  graph and denotation existence from QPE acceptance. Add native width/mutation tests and independent
+  off-grid coherence, normalization and missing-outcome counterexamples.
+  Fixed component dispatch now binds theorem IDs, versions, independent
+  parameters and actual witnesses, with semantic acceptance theorems. Full
+  external IR/provider/registry binding remains pending.
+
+- Bind the QFT theorem to an internal typed shared-circuit graph: exact
+  `Bits(m)` interfaces, effects, call boundaries, actual dependencies and final
+  data permutation. Prove cached checking agrees with literal graph execution
+  and extend the Fourier/reference theorem to that graph's coefficients. Add
+  native semantic mutations, graph limits and sharing-cost checks; external
+  hierarchy projection and schema registry remain pending.
+
+- Prove symbolic H/phase path compilation and the actual width-1–8 QFT
+  circuit matcher's positive normalized Fourier coefficients, including final
+  reversal and arbitrary reference amplitudes. Add native symbolic and independent
+  Fourier comparisons, a type-correct wrong-reversal source, CI and retained
+  proof attempts. External schema/typed hierarchy binding remains pending.
+
+- Prove local Hadamard cancellation and phase normalization for arbitrary joint
+  amplitudes in the Mathlib-free runtime. Add a one-way complex interpretation
+  bridge in the separate proof package, including local probability identities
+  and the existing phase/layout checker's weighted basis transitions. Validate
+  the actual native normalizer with independent complex oracles and two retained
+  source clients. This adds no external acceptance profile or QFT/QPE schema.
+
+- Connect sparse dyadic phases to typed shared layouts in the experimental Lean
+  kernel, including controlled conditions and retained scalar phase. Prove actual
+  normalization/remapping/composition and request binding, charge claim validation
+  and preserve expanded phase counts after cancellation. Add independent native
+  and finite-source interference tests, pure API limits, CI and retained records.
+  Non-diagonal gates, general transforms and QFT/QPE schemas remain pending.
+
+- Connect typed layouts to shared calls and ordered composition in the experimental
+  Lean kernel. Compute actual dependency/adapter maps once per definition, bind
+  every receipt and the separate request, and prove acceptance against direct
+  graph semantics. Add native mutation/scaling oracles, pure-API limits and CI
+  coverage; retain first source, proof/audit diagnostics and validation records.
+  Production QPE hierarchy and source integration remain pending.
+
+- Continue CD-3 with a Mathlib-free typed layout checker: exact n-ary type trees,
+  complete owner/axis permutations including zero-width owners, independent
+  requests and proved inverse/reference reindexing. Add native rejection and
+  16-bit capacity tests. General hierarchy integration and QPE remain pending.
+
+- Preserve tuple arity and nesting across source AST, type checking, ownership
+  and finite evidence: `(Bit,Bit,Bit)` differs from `((Bit,Bit),Bit)`.
+  Add the consolidated [type contract](docs/type-system.md), explicit conversion
+  and [migration rules](docs/tuple-shapes.md), and source/external-evidence
+  regressions. Existing binary interfaces retain their shapes. This supersedes
+  the earlier plan to preserve the 0.1.8 left-folding rule.
+- Adopt Rust as the default when type or ownership design is uncertain;
+  document quantum-specific differences and their checking obligations.
+
+- Begin CD-3 with a Mathlib-free shared phase DAG checker: explicit owner ports,
+  exact shape tags, independently bound summaries and requests, closed powers
+  without body expansion, and actual cyclic-action soundness proofs. Add native
+  mutation/scaling CI and preserved first-source diagnostics. Full hierarchical
+  QPE, complex interpretation and sized source remain pending.
+
+- Make proof of the **Qleisli Soundness Theorem** the central v0.5.0 milestone,
+  with explicit production-kernel scope and S05-C1–C5 gates. Plan broader
+  community open-source development from v0.5 onward, with preparation in
+  0.4.x and translation validation from 0.6.0. These are future targets, not
+  completed proofs, a license change or a current-version bump.
+
+- Adopt the [staged Lean kernel migration](docs/lean-kernel-migration.md). Add a
+  Mathlib-free Lean 4.30.0 executable phase-word checker with an actual
+  acceptance soundness theorem, independent requirement protocol, Rust launcher,
+  compiled-declaration audit and native differential CI. Production Rust
+  verification and the pending common-QPE/H1–H5 gates remain in place.
+  Development Python checks now require Python 3.11 for standard-library TOML.
+
+- Retain shared sized QPE/QFT as the 0.2.1 continuation target and R14/H1–H5;
+  name copyable measured sequences `CBits<m>`.
+- Add trajectory sampling, the seeded `sample` command and typed fresh-trial
+  host APIs, including bounded validated period/factor postprocessing.
+- Apply bounded CLI source loading with explicit capacity/legacy overrides;
+  preserve legacy Rust loader/compiler entry points. This default is breaking.
+- Implement bounded QIRF1/QIRF2 transport and independent contract requests,
+  exclusive atomic `emit-ir` and fresh-process `verify-ir`. Reconstruct finite
+  evidence through the existing exact checker and retain complete root types.
+- Preserve first QPE/Grover attempts and real baseline diagnostics. Hierarchy,
+  external schema binding and sized source are still pending; component proofs
+  are included in the experimental Lean foundation.
+- Address the [v0.1.9 follow-up review](docs/reviews/v0.1.9-followup.md): share
+  exact work across compilation, use repeated squaring, compare finite closed
+  transforms independently, and reject bare CR throughout source. Aggregate
+  checking capacities and the CR restriction are breaking 0.2.0 changes.
+  Extend corpus link checking, consolidate helpers, harden source opening on
+  macOS/listed Linux targets and hash-pin the external validation wheels.
+
 
 ## 0.1.9 — 2026-09-28
 

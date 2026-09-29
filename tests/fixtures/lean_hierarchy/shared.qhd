@@ -1,0 +1,6 @@
+qleisli.phase-dag 1 phase256-dag-v1
+entry 2
+nodes 3
+Bit 0 0 32 leaf 1 p32
+Bit 0 0 0 repeat 4096 0
+Bit 0 0 0 repeat 4096 1

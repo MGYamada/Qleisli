@@ -1,0 +1,12 @@
+First proof-package build of PowerBridge-first.lean.txt: lake build, exit 1.
+The output below retains the relevant actual diagnostics (not the full build log).
+
+error: Qleisli/HierarchicalPower.lean:55:69: Unknown constant `Option.pure`
+error: Qleisli/HierarchicalPower.lean:56:61: Unknown constant `Option.pure`
+error: Qleisli/HierarchicalPower.lean:78:79: Unknown constant `Option.pure`
+
+The three associated goals still contained a do-bind over `some pending.actual`
+or `some pending.logical`. Lean also reported unused Option.bind_some and later
+simp arguments. Repair: use the standard simplifier's actual Option monad
+reductions, with the extracted bodies and conditional matrix definition.
+No checker condition, theorem premise, linter or audit policy was weakened.

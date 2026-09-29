@@ -115,7 +115,7 @@ fn corpus_dropped_owner_now_points_to_b_not_the_body() {
 }
 
 #[test]
-fn nary_patterns_types_and_basis_values_have_one_binary_normal_form() {
+fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
     let source = "basis fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }";
     let ast = parse_module(source).unwrap();
     let param = &ast.decls[0].params[0];
@@ -123,16 +123,21 @@ fn nary_patterns_types_and_basis_values_have_one_binary_normal_form() {
         &source[param.pattern.span.start..param.pattern.span.end],
         "(a,b,c)"
     );
-    let PatternKind::Tuple(ab, c) = &param.pattern.kind else {
-        panic!("binary pattern")
+    let PatternKind::Tuple(fields) = &param.pattern.kind else {
+        panic!("tuple pattern")
     };
-    assert!(matches!(&ab.kind, PatternKind::Tuple(_, _)));
-    assert!(matches!(&c.kind,PatternKind::Name(name) if name.text == "c"));
-    let TypeKind::Tuple(ab, c) = &param.ty.kind else {
-        panic!("binary type")
+    assert_eq!(fields.len(), 3);
+    assert!(matches!(&fields[0].kind, PatternKind::Name(name) if name.text == "a"));
+    assert!(matches!(&fields[2].kind, PatternKind::Name(name) if name.text == "c"));
+    let TypeKind::Tuple(fields) = &param.ty.kind else {
+        panic!("tuple type")
     };
-    assert!(matches!(&ab.kind, TypeKind::Tuple(_, _)));
-    assert!(matches!(&c.kind, TypeKind::Bit));
+    assert_eq!(fields.len(), 3);
+    assert!(
+        fields
+            .iter()
+            .all(|field| matches!(field.kind, TypeKind::Bit))
+    );
     let FnBody::Basis(body) = &ast.decls[0].body else {
         panic!("basis body")
     };

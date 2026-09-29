@@ -1,0 +1,24 @@
+QleisliKernel/Schema.lean:96:44: error: Application type mismatch: The argument
+  h
+has type
+  proposal.witness = Witness.qft definitions entry
+but is expected to have type
+  Witness.qft definitions entry = Witness.qft definitions entry
+in the application
+  And.intro h
+QleisliKernel/Schema.lean:112:23: error: Application type mismatch: The argument
+  h
+has type
+  proposal.witness = Witness.powers stages
+but is expected to have type
+  Witness.powers stages = Witness.powers stages
+in the application
+  And.intro h
+QleisliKernel/Schema.lean:131:30: error: Application type mismatch: The argument
+  h
+has type
+  proposal.witness = Witness.qpe plan
+but is expected to have type
+  Witness.qpe plan = Witness.qpe plan
+in the application
+  And.intro h

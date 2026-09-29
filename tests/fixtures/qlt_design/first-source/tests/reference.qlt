@@ -1,0 +1,12 @@
+// Desired bounded parameterization of a reference-library sanity check.
+// This is not an executed or generalized source-QFT test.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qlt::math::dft;
+use qlt::math::adjoint;
+use qlt::math::identity;
+
+#[test(n in 1..=3)]
+fn small_dft_is_unitary(n: usize) {
+    let f = dft(1 << n);
+    assert_eq!(adjoint(&f) * &f, identity(1 << n));
+}

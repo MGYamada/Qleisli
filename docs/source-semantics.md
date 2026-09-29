@@ -36,7 +36,7 @@ remains open.
 
 ## 1. Mixed values and ordered quantum interfaces
 
-Use the exact ordinary type trees `T ::= Unit | CBit | Q<A> | (T,T)` and the
+Use the exact ordinary type trees `T ::= Unit | CBit | Q<A> | (T1,...,Tk)` and the
 basis types of v0. Define a finite classical result set `C(T)` and an ordered
 list of quantum basis leaves `Q(T)`:
 
@@ -46,6 +46,7 @@ list of quantum basis leaves `Q(T)`:
 | `CBit` | `{0,1}` | empty list |
 | `Q<A>` | singleton | `[A]` |
 | `(T,U)` | `C(T) × C(U)` | `Q(T)` followed by `Q(U)` |
+| `(T1,...,Tk)`, k≥3 | ordered product of all `C(Ti)` | concatenation of the `Q(Ti)` in field order |
 
 These are semantic projections, not source type coercions. In particular,
 `Q<Unit>` has one logical quantum leaf although its Hilbert space is
@@ -55,6 +56,14 @@ an empty product is the scalar space. The basis label convention is
 `label(a,b)=label(a)+2^bits(A)*label(b)` for `a:A` and `b:B`.
 Tensor identifications send `|a⟩ tensor |b⟩` to `|label(a,b)⟩`; no default
 array-library or Kronecker ordering is assumed.
+
+The [0.2.0 type specification](type-system.md) distinguishes flat and nested
+tuple constructors even when these projections have canonically isomorphic
+spaces. For k fields, use cumulative preceding widths in the label encoding;
+value/layout interpretations recurse on each field without changing its type.
+The local pair/call/frame arguments below extend by induction over the ordered
+field list. This extension is a paper argument, not an updated Lean model or
+general source-to-IR adequacy proof.
 
 Let `R(s)=(A,t,w)` be the slot store of the resource rules, and let `gamma`
 assign bits to visible classical SSA IDs. A symbolic value `v:T` determines:
@@ -138,6 +147,7 @@ their semantic structure. They do not provide a new source checker.
 | `true` / `false` | Add a fresh classical record entry for 1 / 0; the quantum operator is identity. |
 | Ordinary `not`, `and`, `xor` | Evaluate each strictly `CBit` operand once, eagerly from left to right, then update the classical record by the truth table. Retain operand effects and the complete frame. |
 | Pair | Evaluate the left expression; retain its entire result in `F`; evaluate the right expression; pair the resulting value trees. |
+| N-ary tuple | Evaluate fields once in order, retaining all earlier results in `F` during each later field. Return the original immediate arity and nested value trees. |
 | `let` / pattern binding | Evaluate the right-hand expression once, destructure its resulting value, introduce fresh binder identities, then continue. A wildcard can forget only a classical footprint. |
 | Block exit | Hide block-local names and unused classical records, restore surviving outer bindings, and propagate spent outer linear bindings. Do not trace out a live quantum resource on scope exit. |
 | Normal call | Evaluate actuals once from left to right, bind those **values** to fresh formals in the callee module, and evaluate its body with suspended caller holders in `F`. |

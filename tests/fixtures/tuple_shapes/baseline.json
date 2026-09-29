@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-09-28T16:09:23.352168+00:00",
+  "kind": "informed semantic regression; not a model benchmark",
+  "sources": {
+    "first_source/main.qli": "ca5d6436c41b1993bfcbc1d571f56a584510d5884b202584e222ee222953bd78"
+  },
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/tuple_shapes/first_source",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": ""
+}

@@ -1,0 +1,26 @@
+Initial Structural.lean build: passed, 38 jobs. The first native harness also
+compiled and ran, but multiline reprStr arrays broke the line-based result
+parser, producing this observed diagnostic:
+
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_hierarchical_structural.py", line 165, in <module>
+    if __name__=='__main__': main()
+  File "/Users/masa/git/Qleisli/scripts/test_hierarchical_structural.py", line 126, in main
+    assert name not in results
+AssertionError
+
+The helper did not save command output on this parsing failure. No complete
+first-native record is claimed. Compact one-line arrays fixed the framing.
+Before rerunning, the independent budget calculation was corrected from
+25/33 to 13/29 header charges; the final boundary is 888/887. Native probing
+was also changed to use the actual Layout.reindex definition instead of a
+second arithmetic implementation in the harness. Python supplies the separate
+weighted-bit oracle. No native coefficient test is claimed: arbitrary
+phase/reference preservation is the Lean theorem's statement.
+
+During orchestration, relative paths were twice used from lean-kernel with an
+extra lean-kernel prefix (one rg and one append failed); the append was rerun
+from the repository root. One lake build was run from the repository root and
+failed with "no configuration file with a supported extension". The subsequent
+build uses the pinned lean-kernel package. These were command-directory errors,
+not Lean proof failures or toolchain changes.

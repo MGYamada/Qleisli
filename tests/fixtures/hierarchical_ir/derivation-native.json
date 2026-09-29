@@ -1,0 +1,1129 @@
+{
+  "format": "qleisli.hierarchical-derivation-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 235,
+  "derived": 184,
+  "recursive_oracle_cases": 69,
+  "local_matches": 1,
+  "rejected": 50,
+  "exact_coefficients": 132,
+  "semantic_counterexamples": 21,
+  "maximum_oracle_dimension": 4,
+  "maximum_checker_dense_dimension": 0,
+  "repeated_bodies_expanded": 0,
+  "external_semantic_evidence": false,
+  "binary_sha256": "45db8d0a4eb9b428f136624ca92303c9b0efe0e910d7438ac164b9f015ec5b37",
+  "harness_sha256": "04465dbbc0064b8afcbdb8a4f7bfa65119c30b4b79376c9bf4d85267185e92b6",
+  "results": {
+    "power-1-0": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-1": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-2": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-3": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-4": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-5": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-6": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-7": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-8": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-9": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-10": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-11": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-1-12": [
+      "derived",
+      "64502",
+      "2"
+    ],
+    "power-2-0": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-1": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-2": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-3": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-4": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-5": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-6": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-7": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-8": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-9": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-10": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-11": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-2-12": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "power-3-0": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-1": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-2": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-3": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-4": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-5": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-6": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-7": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-8": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-9": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-10": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-11": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-3-12": [
+      "derived",
+      "90908",
+      "2"
+    ],
+    "power-4-0": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-1": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-2": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-3": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-4": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-5": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-6": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-7": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-8": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-9": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-10": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-11": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-4-12": [
+      "derived",
+      "104351",
+      "2"
+    ],
+    "power-5-0": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-1": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-2": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-3": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-4": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-5": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-6": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-7": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-8": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-9": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-10": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-11": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-5-12": [
+      "derived",
+      "117954",
+      "2"
+    ],
+    "power-6-0": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-1": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-2": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-3": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-4": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-5": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-6": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-7": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-8": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-9": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-10": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-11": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-6-12": [
+      "derived",
+      "131717",
+      "2"
+    ],
+    "power-7-0": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-1": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-2": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-3": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-4": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-5": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-6": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-7": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-8": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-9": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-10": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-11": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-7-12": [
+      "derived",
+      "145640",
+      "2"
+    ],
+    "power-8-0": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-1": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-2": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-3": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-4": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-5": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-6": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-7": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-8": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-9": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-10": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-11": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "power-8-12": [
+      "derived",
+      "159723",
+      "2"
+    ],
+    "permuted-0": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "permuted-3": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "permuted-12": [
+      "derived",
+      "77625",
+      "2"
+    ],
+    "phase-power-3-0": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-1": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-2": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-3": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-4": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-5": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-6": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-7": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-8": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-9": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-10": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-11": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-3-12": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-0": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-1": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-2": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-3": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-4": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-5": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-6": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-7": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-8": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-9": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-10": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-11": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-4-12": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-0": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-1": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-2": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-3": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-4": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-5": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-6": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-7": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-8": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-9": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-10": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-11": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-8-12": [
+      "derived",
+      "63261",
+      "2"
+    ],
+    "phase-power-false-provider": [
+      "contract"
+    ],
+    "opaque-provider": [
+      "contract"
+    ],
+    "false-provider": [
+      "contract"
+    ],
+    "forged-finite-rule": [
+      "contract"
+    ],
+    "wrong-request": [
+      "contract"
+    ],
+    "wrong-provider-request": [
+      "contract"
+    ],
+    "zero-invalid-body": [
+      "invalid_ir"
+    ],
+    "cycle": [
+      "invalid_ir"
+    ],
+    "duplicate-order": [
+      "invalid_ir"
+    ],
+    "zero-owner": [
+      "derived",
+      "123781",
+      "2"
+    ],
+    "empty-owner": [
+      "derived",
+      "51539",
+      "2"
+    ],
+    "nested-owner": [
+      "derived",
+      "143132",
+      "2"
+    ],
+    "flat-owner": [
+      "derived",
+      "129980",
+      "2"
+    ],
+    "explicit-conversion": [
+      "derived",
+      "8662",
+      "1"
+    ],
+    "wrong-conversion-rule": [
+      "contract"
+    ],
+    "exact-local-budget": [
+      "matched",
+      "5398"
+    ],
+    "under-local-budget": [
+      "limit"
+    ],
+    "zero-local-budget": [
+      "limit"
+    ],
+    "outside-local-budget": [
+      "limit"
+    ],
+    "unbound-huge-child": [
+      "limit"
+    ],
+    "dag-0-valid": [
+      "derived",
+      "187378",
+      "10"
+    ],
+    "dag-0-false-leaf": [
+      "contract"
+    ],
+    "dag-1-valid": [
+      "derived",
+      "206990",
+      "11"
+    ],
+    "dag-1-false-leaf": [
+      "contract"
+    ],
+    "dag-2-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-2-false-leaf": [
+      "contract"
+    ],
+    "dag-3-valid": [
+      "derived",
+      "200581",
+      "11"
+    ],
+    "dag-3-false-leaf": [
+      "contract"
+    ],
+    "dag-4-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-4-false-leaf": [
+      "contract"
+    ],
+    "dag-5-valid": [
+      "derived",
+      "200581",
+      "11"
+    ],
+    "dag-5-false-leaf": [
+      "contract"
+    ],
+    "dag-6-valid": [
+      "derived",
+      "206605",
+      "10"
+    ],
+    "dag-6-false-leaf": [
+      "contract"
+    ],
+    "dag-7-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-7-false-leaf": [
+      "contract"
+    ],
+    "dag-8-valid": [
+      "derived",
+      "206605",
+      "10"
+    ],
+    "dag-8-false-leaf": [
+      "contract"
+    ],
+    "dag-9-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-9-false-leaf": [
+      "contract"
+    ],
+    "dag-10-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-10-false-leaf": [
+      "contract"
+    ],
+    "dag-11-valid": [
+      "derived",
+      "206990",
+      "11"
+    ],
+    "dag-11-false-leaf": [
+      "contract"
+    ],
+    "dag-12-valid": [
+      "derived",
+      "187378",
+      "10"
+    ],
+    "dag-12-false-leaf": [
+      "contract"
+    ],
+    "dag-13-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-13-false-leaf": [
+      "contract"
+    ],
+    "dag-14-valid": [
+      "derived",
+      "187378",
+      "10"
+    ],
+    "dag-14-false-leaf": [
+      "contract"
+    ],
+    "dag-15-valid": [
+      "derived",
+      "219808",
+      "11"
+    ],
+    "dag-15-false-leaf": [
+      "contract"
+    ],
+    "dag-16-valid": [
+      "derived",
+      "193787",
+      "10"
+    ],
+    "dag-16-false-leaf": [
+      "contract"
+    ],
+    "dag-17-valid": [
+      "derived",
+      "200581",
+      "11"
+    ],
+    "dag-17-false-leaf": [
+      "contract"
+    ],
+    "dag-18-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-18-false-leaf": [
+      "contract"
+    ],
+    "dag-19-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-19-false-leaf": [
+      "contract"
+    ],
+    "dag-20-valid": [
+      "derived",
+      "193787",
+      "10"
+    ],
+    "dag-20-false-leaf": [
+      "contract"
+    ],
+    "dag-21-valid": [
+      "derived",
+      "200581",
+      "11"
+    ],
+    "dag-21-false-leaf": [
+      "contract"
+    ],
+    "dag-22-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-22-false-leaf": [
+      "contract"
+    ],
+    "dag-23-valid": [
+      "derived",
+      "206990",
+      "11"
+    ],
+    "dag-23-false-leaf": [
+      "contract"
+    ],
+    "dag-24-valid": [
+      "derived",
+      "206605",
+      "10"
+    ],
+    "dag-24-false-leaf": [
+      "contract"
+    ],
+    "dag-25-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-25-false-leaf": [
+      "contract"
+    ],
+    "dag-26-valid": [
+      "derived",
+      "200196",
+      "10"
+    ],
+    "dag-26-false-leaf": [
+      "contract"
+    ],
+    "dag-27-valid": [
+      "derived",
+      "206990",
+      "11"
+    ],
+    "dag-27-false-leaf": [
+      "contract"
+    ],
+    "dag-28-valid": [
+      "derived",
+      "193787",
+      "10"
+    ],
+    "dag-28-false-leaf": [
+      "contract"
+    ],
+    "dag-29-valid": [
+      "derived",
+      "206990",
+      "11"
+    ],
+    "dag-29-false-leaf": [
+      "contract"
+    ],
+    "dag-30-valid": [
+      "derived",
+      "187378",
+      "10"
+    ],
+    "dag-30-false-leaf": [
+      "contract"
+    ],
+    "dag-31-valid": [
+      "derived",
+      "213399",
+      "11"
+    ],
+    "dag-31-false-leaf": [
+      "contract"
+    ],
+    "ordered": [
+      "derived",
+      "114954",
+      "5"
+    ],
+    "meaning-order": [
+      "contract"
+    ],
+    "premise-order": [
+      "contract"
+    ],
+    "missing-premise": [
+      "invalid_ir"
+    ],
+    "zero-false-leaf": [
+      "contract"
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [47/49] Built Main (6.8s)\n\u2714 [48/49] Built Main:c.o (710ms)\n\u2714 [49/49] Built \u00abartifact-test\u00bb:exe (142ms)\nBuild completed successfully (49 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-6y0xbkl3/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "power-1-0|derived|64502|2\npower-1-1|derived|64502|2\npower-1-2|derived|64502|2\npower-1-3|derived|64502|2\npower-1-4|derived|64502|2\npower-1-5|derived|64502|2\npower-1-6|derived|64502|2\npower-1-7|derived|64502|2\npower-1-8|derived|64502|2\npower-1-9|derived|64502|2\npower-1-10|derived|64502|2\npower-1-11|derived|64502|2\npower-1-12|derived|64502|2\npower-2-0|derived|77625|2\npower-2-1|derived|77625|2\npower-2-2|derived|77625|2\npower-2-3|derived|77625|2\npower-2-4|derived|77625|2\npower-2-5|derived|77625|2\npower-2-6|derived|77625|2\npower-2-7|derived|77625|2\npower-2-8|derived|77625|2\npower-2-9|derived|77625|2\npower-2-10|derived|77625|2\npower-2-11|derived|77625|2\npower-2-12|derived|77625|2\npower-3-0|derived|90908|2\npower-3-1|derived|90908|2\npower-3-2|derived|90908|2\npower-3-3|derived|90908|2\npower-3-4|derived|90908|2\npower-3-5|derived|90908|2\npower-3-6|derived|90908|2\npower-3-7|derived|90908|2\npower-3-8|derived|90908|2\npower-3-9|derived|90908|2\npower-3-10|derived|90908|2\npower-3-11|derived|90908|2\npower-3-12|derived|90908|2\npower-4-0|derived|104351|2\npower-4-1|derived|104351|2\npower-4-2|derived|104351|2\npower-4-3|derived|104351|2\npower-4-4|derived|104351|2\npower-4-5|derived|104351|2\npower-4-6|derived|104351|2\npower-4-7|derived|104351|2\npower-4-8|derived|104351|2\npower-4-9|derived|104351|2\npower-4-10|derived|104351|2\npower-4-11|derived|104351|2\npower-4-12|derived|104351|2\npower-5-0|derived|117954|2\npower-5-1|derived|117954|2\npower-5-2|derived|117954|2\npower-5-3|derived|117954|2\npower-5-4|derived|117954|2\npower-5-5|derived|117954|2\npower-5-6|derived|117954|2\npower-5-7|derived|117954|2\npower-5-8|derived|117954|2\npower-5-9|derived|117954|2\npower-5-10|derived|117954|2\npower-5-11|derived|117954|2\npower-5-12|derived|117954|2\npower-6-0|derived|131717|2\npower-6-1|derived|131717|2\npower-6-2|derived|131717|2\npower-6-3|derived|131717|2\npower-6-4|derived|131717|2\npower-6-5|derived|131717|2\npower-6-6|derived|131717|2\npower-6-7|derived|131717|2\npower-6-8|derived|131717|2\npower-6-9|derived|131717|2\npower-6-10|derived|131717|2\npower-6-11|derived|131717|2\npower-6-12|derived|131717|2\npower-7-0|derived|145640|2\npower-7-1|derived|145640|2\npower-7-2|derived|145640|2\npower-7-3|derived|145640|2\npower-7-4|derived|145640|2\npower-7-5|derived|145640|2\npower-7-6|derived|145640|2\npower-7-7|derived|145640|2\npower-7-8|derived|145640|2\npower-7-9|derived|145640|2\npower-7-10|derived|145640|2\npower-7-11|derived|145640|2\npower-7-12|derived|145640|2\npower-8-0|derived|159723|2\npower-8-1|derived|159723|2\npower-8-2|derived|159723|2\npower-8-3|derived|159723|2\npower-8-4|derived|159723|2\npower-8-5|derived|159723|2\npower-8-6|derived|159723|2\npower-8-7|derived|159723|2\npower-8-8|derived|159723|2\npower-8-9|derived|159723|2\npower-8-10|derived|159723|2\npower-8-11|derived|159723|2\npower-8-12|derived|159723|2\npermuted-0|derived|77625|2\npermuted-3|derived|77625|2\npermuted-12|derived|77625|2\nphase-power-3-0|derived|63261|2\nphase-power-3-1|derived|63261|2\nphase-power-3-2|derived|63261|2\nphase-power-3-3|derived|63261|2\nphase-power-3-4|derived|63261|2\nphase-power-3-5|derived|63261|2\nphase-power-3-6|derived|63261|2\nphase-power-3-7|derived|63261|2\nphase-power-3-8|derived|63261|2\nphase-power-3-9|derived|63261|2\nphase-power-3-10|derived|63261|2\nphase-power-3-11|derived|63261|2\nphase-power-3-12|derived|63261|2\nphase-power-4-0|derived|63261|2\nphase-power-4-1|derived|63261|2\nphase-power-4-2|derived|63261|2\nphase-power-4-3|derived|63261|2\nphase-power-4-4|derived|63261|2\nphase-power-4-5|derived|63261|2\nphase-power-4-6|derived|63261|2\nphase-power-4-7|derived|63261|2\nphase-power-4-8|derived|63261|2\nphase-power-4-9|derived|63261|2\nphase-power-4-10|derived|63261|2\nphase-power-4-11|derived|63261|2\nphase-power-4-12|derived|63261|2\nphase-power-8-0|derived|63261|2\nphase-power-8-1|derived|63261|2\nphase-power-8-2|derived|63261|2\nphase-power-8-3|derived|63261|2\nphase-power-8-4|derived|63261|2\nphase-power-8-5|derived|63261|2\nphase-power-8-6|derived|63261|2\nphase-power-8-7|derived|63261|2\nphase-power-8-8|derived|63261|2\nphase-power-8-9|derived|63261|2\nphase-power-8-10|derived|63261|2\nphase-power-8-11|derived|63261|2\nphase-power-8-12|derived|63261|2\nphase-power-false-provider|contract\nopaque-provider|contract\nfalse-provider|contract\nforged-finite-rule|contract\nwrong-request|contract\nwrong-provider-request|contract\nzero-invalid-body|invalid_ir\ncycle|invalid_ir\nduplicate-order|invalid_ir\nzero-owner|derived|123781|2\nempty-owner|derived|51539|2\nnested-owner|derived|143132|2\nflat-owner|derived|129980|2\nexplicit-conversion|derived|8662|1\nwrong-conversion-rule|contract\nexact-local-budget|matched|5398\nunder-local-budget|limit\nzero-local-budget|limit\noutside-local-budget|limit\nunbound-huge-child|limit\ndag-0-valid|derived|187378|10\ndag-0-false-leaf|contract\ndag-1-valid|derived|206990|11\ndag-1-false-leaf|contract\ndag-2-valid|derived|200196|10\ndag-2-false-leaf|contract\ndag-3-valid|derived|200581|11\ndag-3-false-leaf|contract\ndag-4-valid|derived|200196|10\ndag-4-false-leaf|contract\ndag-5-valid|derived|200581|11\ndag-5-false-leaf|contract\ndag-6-valid|derived|206605|10\ndag-6-false-leaf|contract\ndag-7-valid|derived|213399|11\ndag-7-false-leaf|contract\ndag-8-valid|derived|206605|10\ndag-8-false-leaf|contract\ndag-9-valid|derived|213399|11\ndag-9-false-leaf|contract\ndag-10-valid|derived|200196|10\ndag-10-false-leaf|contract\ndag-11-valid|derived|206990|11\ndag-11-false-leaf|contract\ndag-12-valid|derived|187378|10\ndag-12-false-leaf|contract\ndag-13-valid|derived|213399|11\ndag-13-false-leaf|contract\ndag-14-valid|derived|187378|10\ndag-14-false-leaf|contract\ndag-15-valid|derived|219808|11\ndag-15-false-leaf|contract\ndag-16-valid|derived|193787|10\ndag-16-false-leaf|contract\ndag-17-valid|derived|200581|11\ndag-17-false-leaf|contract\ndag-18-valid|derived|200196|10\ndag-18-false-leaf|contract\ndag-19-valid|derived|213399|11\ndag-19-false-leaf|contract\ndag-20-valid|derived|193787|10\ndag-20-false-leaf|contract\ndag-21-valid|derived|200581|11\ndag-21-false-leaf|contract\ndag-22-valid|derived|200196|10\ndag-22-false-leaf|contract\ndag-23-valid|derived|206990|11\ndag-23-false-leaf|contract\ndag-24-valid|derived|206605|10\ndag-24-false-leaf|contract\ndag-25-valid|derived|213399|11\ndag-25-false-leaf|contract\ndag-26-valid|derived|200196|10\ndag-26-false-leaf|contract\ndag-27-valid|derived|206990|11\ndag-27-false-leaf|contract\ndag-28-valid|derived|193787|10\ndag-28-false-leaf|contract\ndag-29-valid|derived|206990|11\ndag-29-false-leaf|contract\ndag-30-valid|derived|187378|10\ndag-30-false-leaf|contract\ndag-31-valid|derived|213399|11\ndag-31-false-leaf|contract\nordered|derived|114954|5\nmeaning-order|contract\npremise-order|contract\nmissing-premise|invalid_ir\nzero-false-leaf|contract\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "639cfbd448fec0c496f105168faf7fefa0463951e5574770d147e72c59227046",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "fcf982b384fcad04e078764c431a827ad3309ae5510fbd86f52db16de79df177",
+    "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "4f189e4b14568da1e3f7c2362afa3dff774c5fd1ccbbb66d5c54588f862a1fe9",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "df66a1c9b76a835091ad2fa57c976ac54aec77505e2e6f8104b85581e5dca7e4",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+    "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "ae3e22c8c0c81021da690f3ddc0e06bf24d1281cb5d84b13cf2a566d49603838",
+    "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "879463bd57d6d3a940aec16e06224f393e6b7f5680c92a21f643ae37c0e55a34",
+    "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+    "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e",
+    "scripts/test_hierarchical_typing.py": "469cf88986327c4c2a92567c66427c0a632f123c64d7ca55ac6b094ad883daf0",
+    "scripts/test_hierarchical_contract_typing.py": "e83b87c39afc9e5e7749cd32a8420e61da4d6b5721a0fdf1586e6c99c8cfee2e",
+    "scripts/test_hierarchical_power.py": "17c0b5a610bc86f1cab2ddb104fe571f2f4f6abcfc4db55e099477dd1e62ee72",
+    "scripts/test_hierarchical_derivation.py": "dec190dffec28b205b866456c12c2eb4c11e4d2ccaaa39b4efc488427f118ee2"
+  }
+}

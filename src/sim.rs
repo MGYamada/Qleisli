@@ -16,6 +16,9 @@ use crate::ir::{
     UnitaryStep, WireId,
 };
 
+mod sampling;
+pub use sampling::{RandomSource, Sample, SampleError, SampleLimits, SplitMix64, sample_closed};
+
 /// A practical cap on the number of live state-vector axes in this initial
 /// interpreter. Limits chosen by the caller may be smaller.
 pub const MAX_SIMULATED_QUBITS: usize = 20;

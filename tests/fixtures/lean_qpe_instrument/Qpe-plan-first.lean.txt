@@ -1,0 +1,93 @@
+import QleisliKernel.QftGraph
+import QleisliKernel.ControlledPowers
+import QleisliKernel.Uniform
+
+/-! Internal complete QPE plan binding. No external registry is enabled here.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace QleisliKernel.Qpe
+
+inductive ClassicalType where
+  | bit | bits (width : Nat)
+  deriving BEq, DecidableEq, Repr
+
+inductive Orientation where
+  | forward | inverse
+  deriving BEq, DecidableEq, Repr
+
+inductive TargetExit where
+  | retain | measure | discard
+  deriving BEq, DecidableEq, Repr
+
+structure Header where
+  inputs : Layout.Interface
+  outputs : Layout.Interface
+  classicalInputs : List ClassicalType
+  classicalOutputs : List ClassicalType
+  effect : QftGraph.Effect
+  targetOwner : Nat
+  precisionOwner : Nat
+  targetAxes : List Nat
+  precisionAxes : List Nat
+  orientation : Orientation
+  measurementAxes : List Nat
+  targetExit : TargetExit
+  deriving BEq, DecidableEq, Repr
+
+def header (targetWidth precision : Nat) : Header :=
+  let precisionAxes := (List.range precision).map (targetWidth + ·)
+  ⟨QftGraph.interface targetWidth, QftGraph.interface targetWidth, [], [.bits precision],
+    .observe, 0, 1, List.range targetWidth, precisionAxes, .inverse, precisionAxes, .retain⟩
+
+structure Plan where
+  boundary : Header
+  precisionInitial : List Bool
+  preparation : List Interference.Gate
+  powers : List ControlledPowers.Stage
+  fourier : List QftGraph.Definition
+  fourierEntry : Nat
+  deriving Repr
+
+/-- Independently requested dimensions/provider; no unitary/access flag is trusted.
+The full external importer must supply checked provider evidence separately. -/
+def check (targetWidth precision provider : Nat) (plan : Plan) : Option QftGraph.Receipt :=
+  if !(1 ≤ targetWidth && targetWidth ≤ 8 && 1 ≤ precision && precision ≤ 8 &&
+      targetWidth + precision ≤ 16) then none
+  else if plan.boundary ≠ header targetWidth precision then none
+  else if plan.precisionInitial ≠ List.replicate precision false then none
+  else if plan.preparation ≠ Uniform.word precision then none
+  else if !ControlledPowers.check precision provider plan.powers then none
+  else QftGraph.check plan.fourier plan.fourierEntry precision
+
+theorem check_conditions (targetWidth precision provider : Nat) (plan : Plan)
+    (receipt : QftGraph.Receipt)
+    (accepted : check targetWidth precision provider plan = some receipt) :
+    (1 ≤ targetWidth ∧ targetWidth ≤ 8 ∧ 1 ≤ precision ∧ precision ≤ 8 ∧
+      targetWidth + precision ≤ 16) ∧
+    plan.boundary = header targetWidth precision ∧
+    plan.precisionInitial = List.replicate precision false ∧
+    plan.preparation = Uniform.word precision ∧
+    ControlledPowers.check precision provider plan.powers = true ∧
+    QftGraph.check plan.fourier plan.fourierEntry precision = some receipt := by
+  unfold check at accepted
+  split at accepted
+  next impossible => contradiction
+  next bounded =>
+    split at accepted
+    next invalid => contradiction
+    next signature =>
+      split at accepted
+      next invalid => contradiction
+      next zero =>
+        split at accepted
+        next invalid => contradiction
+        next uniform =>
+          split at accepted
+          next invalid => contradiction
+          next powers =>
+            simp only [Bool.not_eq_true, Bool.and_eq_true, decide_eq_true_eq] at bounded powers
+            exact ⟨⟨bounded.1.1.1.1, bounded.1.1.1.2, bounded.1.1.2, bounded.1.2, bounded.2⟩,
+              by simpa using signature, by simpa using zero, by simpa using uniform,
+              powers, accepted⟩
+
+end QleisliKernel.Qpe

@@ -1,0 +1,38 @@
+{
+  "recorded_utc": "2026-09-28T15:06:33.428396+00:00",
+  "context": "After native kernel implementation; initial source artifacts unchanged; informed development, not a controlled model study",
+  "observations": [
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "tests/fixtures/lean_kernel/phase_pair.qpk",
+        "tests/fixtures/lean_kernel/t_expected.qpr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "tests/fixtures/lean_kernel/global_phase.qpk",
+        "tests/fixtures/lean_kernel/identity.qpr"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":false,\"code\":\"rejected\",\"stage\":\"verification\"}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_kernel/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ],
+  "source_hashes_match_baseline": true
+}

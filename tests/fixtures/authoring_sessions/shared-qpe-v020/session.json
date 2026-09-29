@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "task": "Shared sized QPE",
+  "baseline_commit": "3c19c7669b5b14b738bceaa5f3eff18f92e2190e",
+  "project_version": "0.1.9",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Untouched desired source before first check",
+      "sha256": {
+        "estimation.qli": "a4c34f13f1659db3d773b18d5573ec15a7198769a2bfce807cfa160f7f2d3cad",
+        "main.qli": "67144ef9f8831a66c21e536baf105831540e99d7464cec87c86f02efc51c17d0"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    }
+  ]
+}

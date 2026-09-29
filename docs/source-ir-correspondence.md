@@ -18,6 +18,16 @@ action through final static transformations, with the conditional schema below.
 General correctness of its independent extraction, source snapshots/cache,
 and compiler implementation remains an obligation; no Lean theorem is added.
 
+The [0.2.0 tuple extension](type-system.md) retains immediate arity in source
+types and evidence. The basis encoding below generalizes to a sum at cumulative
+field widths, and ordered tuple evaluation to induction over a field list.
+Wire ports may flatten those values for execution, but such flattening is not
+source type equality. Full arity/type metadata must survive wherever an exact
+interface or evidence request is compared. Explicit basis lifts may reshape
+types after injectivity checking; no implicit reassociation is introduced.
+These are new translation obligations, not a retrospective claim that the old
+binary Lean models or Rust implementation were proved adequate for n-ary types.
+
 The distinction is between a **mathematical translation satisfying the schemas
 below**, its ideal raw-IR meaning, and the actual Rust algorithms. For the
 first two, the semantic leaf obligations can be discharged and the structural

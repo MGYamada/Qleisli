@@ -1,0 +1,92 @@
+qleisli.layout-dag 1 typed-layout-dag-v1
+entry 4
+definitions 5
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 1 0 2
+axes 3 1 0 2
+inverse_owners 3 1 0 2
+inverse_axes 3 1 0 2
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 0 2 1
+axes 3 0 2 1
+inverse_owners 3 0 2 1
+inverse_axes 3 0 2 1
+then 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 1 2 0
+axes 3 1 2 0
+inverse_owners 3 2 0 1
+inverse_axes 3 2 0 1
+call 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 0 1 2
+axes 3 0 1 2
+inverse_owners 3 0 1 2
+inverse_axes 3 0 1 2
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 0 1 2
+axes 3 0 1 2
+inverse_owners 3 0 1 2
+inverse_axes 3 0 1 2
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 0 2 1
+axes 3 0 2 1
+inverse_owners 3 0 2 1
+inverse_axes 3 0 2 1
+then 2 3
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Bit 1 2
+owners 3 1 0 2
+axes 3 1 0 2
+inverse_owners 3 1 0 2
+inverse_axes 3 1 0 2

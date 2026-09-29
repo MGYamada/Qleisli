@@ -1,0 +1,253 @@
+✖ [32/34] Building QleisliKernel.Hierarchical.Artifact (1.6s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/Artifact.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Artifact.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Artifact.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Artifact.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Artifact.setup.json --json
+error: QleisliKernel/Hierarchical/Artifact.lean:61:11: failed to synthesize instance of type class
+  Repr ByteArray
+
+Hint: Adding the command `deriving instance Repr for ByteArray` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:81:11: failed to synthesize instance of type class
+  Repr ByteArray
+
+Hint: Adding the command `deriving instance Repr for ByteArray` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:342:22: failed to synthesize instance of type class
+  Inhabited Definition
+
+Hint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.Definition` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:348:19: failed to synthesize instance of type class
+  Inhabited Meaning
+
+Hint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.Meaning` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:354:20: failed to synthesize instance of type class
+  Inhabited Encoding
+
+Hint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.Encoding` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:359:17: failed to synthesize instance of type class
+  Inhabited Proof
+
+Hint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.Proof` may allow Lean to derive the missing instance.
+error: QleisliKernel/Hierarchical/Artifact.lean:343:23: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:343:23: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:343:46: Invalid dotted identifier notation: The expected type of `.leaf` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Lean.RArray.leaf`
+  [apply] `Body.leaf`
+  [apply] `Std.DTreeMap.Internal.Impl.leaf`
+  [apply] `Std.DTreeMap.Internal.Impl.Balanced.leaf`
+  [apply] `Std.DTreeMap.Internal.Impl.SameKeys.leaf`
+  [apply] `Std.DTreeMap.Internal.Impl.Balanced.below.leaf`
+  [apply] `Std.DTreeMap.Internal.Impl.SameKeys.below.leaf`
+error: QleisliKernel/Hierarchical/Artifact.lean:344:48: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:345:7: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `interface`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Definition.interface`
+  • `Meaning.interface`
+error: QleisliKernel/Hierarchical/Artifact.lean:345:37: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:346:16: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `interface`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Definition.interface`
+  • `Meaning.interface`
+error: QleisliKernel/Hierarchical/Artifact.lean:346:46: Invalid field notation: Type of
+  definition
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:349:23: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:349:23: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:349:43: Invalid dotted identifier notation: The expected type of `.finite` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Std.Rxc.IsAlwaysFinite.finite`
+  [apply] `Std.Rxi.IsAlwaysFinite.finite`
+  [apply] `Std.Rxo.IsAlwaysFinite.finite`
+  [apply] `MeaningBody.finite`
+  [apply] `Rule.finite`
+  [apply] `Std.Iterators.Types.Take.finite`
+error: QleisliKernel/Hierarchical/Artifact.lean:350:45: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:351:7: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `interface`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Definition.interface`
+  • `Meaning.interface`
+error: QleisliKernel/Hierarchical/Artifact.lean:351:34: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:352:16: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `interface`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Definition.interface`
+  • `Meaning.interface`
+error: QleisliKernel/Hierarchical/Artifact.lean:352:43: Invalid field notation: Type of
+  meaning
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:355:46: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:356:18: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `logical`
+
+Hint: Consider replacing the field projection `.logical` with a call to the function `Encoding.logical`.
+error: QleisliKernel/Hierarchical/Artifact.lean:356:48: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `physical`
+
+Hint: Consider replacing the field projection `.physical` with a call to the function `Encoding.physical`.
+error: QleisliKernel/Hierarchical/Artifact.lean:356:68: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: QleisliKernel/Hierarchical/Artifact.lean:357:26: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `logical`
+
+Hint: Consider replacing the field projection `.logical` with a call to the function `Encoding.logical`.
+error: QleisliKernel/Hierarchical/Artifact.lean:357:56: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `physical`
+
+Hint: Consider replacing the field projection `.physical` with a call to the function `Encoding.physical`.
+error: QleisliKernel/Hierarchical/Artifact.lean:357:77: Invalid field notation: Type of
+  encoding
+is not known; cannot resolve field `body`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Std.Http.Request.body`
+  • `Std.Http.Response.body`
+  • `Definition.body`
+  • `Encoding.body`
+  • `Meaning.body`
+  • `Std.Http.Request.Builder.body`
+  • `Std.Http.Response.Builder.body`
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Hierarchical.Artifact
+error: build failed

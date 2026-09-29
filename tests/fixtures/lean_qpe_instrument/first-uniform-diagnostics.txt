@@ -1,0 +1,32 @@
+QleisliKernel/Uniform.lean:24:102: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑width
+ b := ↑i
+QleisliKernel/Uniform.lean:24:102: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  b ≥ 0
+  a ≥ 0
+  a - b ≥ 1
+where
+ a := ↑i
+ b := ↑width
+QleisliKernel/Uniform.lean:24:2: error: unsolved goals
+case pos
+width : Nat
+choices : Bits
+i : Nat
+same : ¬i = width
+inside : i < width
+⊢ choices i = true → i < width + 1
+
+case neg
+width : Nat
+choices : Bits
+i : Nat
+same : ¬i = width
+inside : ¬i < width
+⊢ i < width + 1 → choices i = false

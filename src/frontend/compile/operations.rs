@@ -2,8 +2,7 @@
 //! finite contract receipts can authorize an executable operation.
 use super::*;
 use crate::contract::{
-    BasisType, Circuit, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, MAX_CONTRACT_BITS,
-    MAX_CONTRACT_STEPS,
+    BasisType, Circuit, ContractError, FunctionEvidence, MAX_CONTRACT_BITS, MAX_CONTRACT_STEPS,
     exact::{Budget, Exact, Matrix},
     function::RetainedIdentity,
     meaning::{FiniteMeaning, MeaningEvidence},
@@ -50,6 +49,7 @@ pub(super) fn contract_basis(ty: &Ty) -> BasisType {
         Ty::Unit => BasisType::Unit,
         Ty::Bit => BasisType::Bit,
         Ty::Pair(a, b) => BasisType::pair(contract_basis(a), contract_basis(b)),
+        Ty::Tuple(fields) => BasisType::Tuple(fields.iter().map(contract_basis).collect()),
         _ => unreachable!("checked basis"),
     }
 }
@@ -57,6 +57,7 @@ fn inverse(mut steps: Vec<CircuitStep>) -> Vec<CircuitStep> {
     circuit::invert(&mut steps);
     steps
 }
+
 fn remapped(mut steps: Vec<CircuitStep>, axes: &[usize]) -> Vec<CircuitStep> {
     for s in &mut steps {
         circuit::remap(s, axes);
@@ -73,8 +74,9 @@ fn controlled(steps: Vec<CircuitStep>, bits: usize) -> Vec<CircuitStep> {
     }
     steps
 }
-fn control_matrix(m: &Matrix) -> Result<Matrix, ContractError> {
+pub(super) fn control_matrix(m: &Matrix, budget: &mut Budget) -> Result<Matrix, ContractError> {
     let d = m.rows();
+    budget.charge(4 * d * d)?;
     let mut entries = vec![Exact::zero(); 4 * d * d];
     for x in 0..d {
         entries[(2 * x) * 2 * d + 2 * x] = Exact::one();
@@ -144,7 +146,7 @@ impl Compiler<'_> {
         }
         .map_err(|e| self.op_error(&key.0, decl.span, e))?;
         let matrix = target
-            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .matrix(&mut self.exact_work)
             .map_err(|e| self.op_error(&key.0, decl.span, e))?;
         self.meanings.insert(
             key.clone(),
@@ -323,13 +325,13 @@ impl Compiler<'_> {
             ),
             sources,
         );
-        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let budget = &mut self.exact_work;
         let evidence = if let Some(mkey) = &mkey {
             MeaningEvidence::check_retained(
                 implementation,
                 self.meanings[mkey].target.clone(),
                 identity,
-                &mut budget,
+                budget,
             )
             .map(|e| e.receipt())
         } else {
@@ -338,7 +340,7 @@ impl Compiler<'_> {
                 implementation.clone(),
                 implementation,
                 identity,
-                &mut budget,
+                budget,
             )
             .map(Arc::new)
             .map_err(|diagnostic| diagnostic.error)
@@ -419,7 +421,7 @@ impl Compiler<'_> {
             .bits()
             .map_err(|e| self.op_error(module, span, e))?;
         let meaning = node
-            .meaning(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .meaning(&mut self.exact_work)
             .map_err(|e| self.op_error(module, span, e))?;
         Ok(Operation {
             basis,
@@ -432,6 +434,54 @@ impl Compiler<'_> {
         })
     }
 }
+pub(super) fn matrix_power(
+    m: &Matrix,
+    mut n: u16,
+    budget: &mut Budget,
+) -> Result<Matrix, ContractError> {
+    budget.charge(2 * m.entries().len())?;
+    let mut result = Matrix::identity(m.rows())?;
+    let mut power = m.clone();
+    while n != 0 {
+        if n & 1 != 0 {
+            result = power.compose(&result, budget)?;
+        }
+        n >>= 1;
+        if n != 0 {
+            power = power.compose(&power, budget)?;
+        }
+    }
+    Ok(result)
+}
+
+/// Check the emitted circuit against an independently obtained expectation.
+/// Chunking preserves the existing finite per-circuit bound without requiring
+/// a dense matrix beyond six bits or limiting a flat repeat to 1024 steps.
+pub(super) fn check_steps_meaning(
+    signature: &BasisType,
+    steps: &[CircuitStep],
+    expected: &Matrix,
+    budget: &mut Budget,
+) -> Result<(), ContractError> {
+    let dimension = 1 << signature.bits()?;
+    let mut chunks = steps.chunks(MAX_CONTRACT_STEPS);
+    let mut actual = match chunks.next() {
+        Some(first) => Circuit::new(signature.clone(), first.to_vec())?.matrix(budget)?,
+        None => {
+            budget.charge(dimension * dimension)?;
+            Matrix::identity(dimension)?
+        }
+    };
+    for chunk in chunks {
+        let matrix = Circuit::new(signature.clone(), chunk.to_vec())?.matrix(budget)?;
+        actual = matrix.compose(&actual, budget)?;
+    }
+    if actual != *expected {
+        return Err(ContractError::EquationMismatch);
+    }
+    Ok(())
+}
+
 impl Node {
     fn meaning(&self, budget: &mut Budget) -> Result<Option<Matrix>, ContractError> {
         fn binary<'a>(a: &'a Operation, b: &'a Operation) -> Option<(&'a Matrix, &'a Matrix)> {
@@ -441,7 +491,11 @@ impl Node {
             Self::Abstract(_) => None,
             Self::Provider(e) => Some(e.meaning().clone()),
             Self::Inverse(a) => a.meaning.as_ref().map(|m| m.adjoint(budget)).transpose()?,
-            Self::Controlled(a) => a.meaning.as_ref().map(control_matrix).transpose()?,
+            Self::Controlled(a) => a
+                .meaning
+                .as_ref()
+                .map(|m| control_matrix(m, budget))
+                .transpose()?,
             Self::Then(a, b) => binary(a, b)
                 .map(|(a, b)| b.compose(a, budget))
                 .transpose()?,
@@ -455,13 +509,11 @@ impl Node {
             }
             Self::Repeat(n, a) => {
                 if *n == 0 {
-                    Some(Matrix::identity(1 << a.basis.basis_bits().expect("basis"))?)
+                    let dimension = 1 << a.basis.basis_bits().expect("basis");
+                    budget.charge(dimension * dimension)?;
+                    Some(Matrix::identity(dimension)?)
                 } else if let Some(m) = &a.meaning {
-                    let mut r = Matrix::identity(m.rows())?;
-                    for _ in 0..*n {
-                        r = m.compose(&r, budget)?;
-                    }
-                    Some(r)
+                    Some(matrix_power(m, *n, budget)?)
                 } else {
                     None
                 }
@@ -523,15 +575,17 @@ impl Operation {
         } else {
             self.basis.clone()
         };
-        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let budget = &mut compiler.exact_work;
         let actual = Circuit::new(contract_basis(&basis), steps.clone())
-            .and_then(|c| c.matrix(&mut budget))
+            .and_then(|c| c.matrix(budget))
             .map_err(|e| compiler.op_error(module, span, e))?;
         let m = self.meaning.as_ref().expect("concrete meaning");
         let expected = match access {
             Access::Apply => Ok(m.clone()),
-            Access::Adjoint => m.adjoint(&mut budget).map_err(ContractError::from),
-            Access::Controlled => control_matrix(m),
+            Access::Adjoint => m
+                .adjoint(&mut compiler.exact_work)
+                .map_err(ContractError::from),
+            Access::Controlled => control_matrix(m, &mut compiler.exact_work),
         }
         .map_err(|e| compiler.op_error(module, span, e))?;
         if actual != expected {
@@ -643,6 +697,94 @@ pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Iden
         StaticOpKind::Then(a, b) | StaticOpKind::Tensor(a, b) | StaticOpKind::Conjugate(a, b) => {
             called_static_names(a, names);
             called_static_names(b, names);
+        }
+    }
+}
+
+#[cfg(test)]
+mod review_tests {
+    use super::*;
+
+    #[test]
+    fn powers_preserve_exact_phase_with_logarithmic_matrix_work() {
+        let t = Matrix::new(
+            2,
+            2,
+            vec![Exact::one(), Exact::zero(), Exact::zero(), Exact::phase(1)],
+        )
+        .unwrap();
+        for n in [0, 1, 2, 7, 8, 150, 4095, 4096] {
+            // Independent root-of-unity expectation, not repeated multiplication.
+            let expected = Matrix::new(
+                2,
+                2,
+                vec![
+                    Exact::one(),
+                    Exact::zero(),
+                    Exact::zero(),
+                    Exact::phase(i32::from(n)),
+                ],
+            )
+            .unwrap();
+            let mut budget = Budget::new(8 + 24 * 16);
+            assert_eq!(matrix_power(&t, n, &mut budget).unwrap(), expected);
+        }
+    }
+
+    #[test]
+    fn transformed_circuit_check_rejects_phase_control_and_axis_mutations() {
+        let signature = BasisType::pair(BasisType::Bit, BasisType::Bit);
+        let correct = CircuitStep {
+            controls: vec![BitControl {
+                index: 0,
+                when_one: true,
+            }],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![0, 1],
+                phases: vec![0, 7],
+            },
+        };
+        // Adjoint(T) on the high bit controlled by the low bit: diag(1,1,1,zeta8^-1).
+        let mut entries = vec![Exact::zero(); 16];
+        for i in 0..4 {
+            entries[5 * i] = Exact::one();
+        }
+        entries[15] = Exact::phase(-1);
+        let expected = Matrix::new(4, 4, entries).unwrap();
+        check_steps_meaning(
+            &signature,
+            std::slice::from_ref(&correct),
+            &expected,
+            &mut Budget::new(10_000),
+        )
+        .unwrap();
+        let mut wrong_phase = correct.clone();
+        let CircuitAction::Monomial { phases, .. } = &mut wrong_phase.action else {
+            unreachable!()
+        };
+        phases[1] = 1;
+        let mut wrong_control = correct.clone();
+        wrong_control.controls[0].when_one = false;
+        let mut wrong_axis = correct.clone();
+        // A valid unconditional phase on the other axis is still the wrong operation.
+        wrong_axis.controls.clear();
+        let CircuitAction::Monomial { indices, .. } = &mut wrong_axis.action else {
+            unreachable!()
+        };
+        indices[0] = 0;
+        for candidate in [wrong_phase, wrong_control, wrong_axis] {
+            // These are structurally admissible circuits, not malformed evidence.
+            Circuit::new(signature.clone(), vec![candidate.clone()]).unwrap();
+            assert_eq!(
+                check_steps_meaning(
+                    &signature,
+                    &[candidate],
+                    &expected,
+                    &mut Budget::new(10_000)
+                ),
+                Err(ContractError::EquationMismatch)
+            );
         }
     }
 }

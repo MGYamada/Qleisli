@@ -8,6 +8,16 @@ This repository is design-first. Before working, read [README](README.md),
 [ROADMAP](ROADMAP.md), and [quantum-language requirements](docs/quantum-language-requirements.md).
 Consult the relevant drafts. The user's latest instructions take precedence.
 
+**When uncertain about type or ownership discipline, follow Rust.** This is
+the user's adopted default for design decisions, including structural type
+equality, tuple shape, moves, bindings and scopes. Follow the
+[Rust alignment policy](docs/design-philosophy.md#follow-rust-for-type-and-ownership-discipline)
+and the [current type contract](docs/type-system.md). Any intentional difference
+must state its quantum-semantic or evidence obligation and its checking rule;
+in particular, retain quantum linearity, explicit discard and proven clean
+release. Record differences explicitly instead of inventing an implicit rule.
+Rust features become Qleisli APIs only through specified and tested extensions.
+
 When adding algorithm components, read the [corpus](docs/algorithm-corpus.md)
 and [routine contracts](docs/algorithm-routines.md). For standard-library work,
 read the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
@@ -48,9 +58,14 @@ Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
 with stable IDs, concrete source/design evidence, the obligation to remove,
 and a checking/acceptance experiment. Update it when current work exposes a
 new issue; retain resolution links. Backlog entries do not select a release or
-adopt syntax. The current product version is 0.1.9; its compatible review fixes,
-finite B019 closure and publication procedure are recorded in the
-[release record](docs/releases/v0.1.9.md).
+adopt syntax. The current product version is 0.2.0. Follow the
+[revised foundation release plan](docs/v0.2.0-plan.md) and
+[development record](docs/releases/v0.2.0.md). The finite B019 closure and
+0.1.9 publication history remain in its [record](docs/releases/v0.1.9.md).
+The user moved remaining production hierarchy, sized source/shared QPE and
+execution/H1–H5 work to [0.2.1](docs/v0.2.1-plan.md); 0.2.0 retains migration
+and release validation. Keep those feature gates pending, existing component
+proofs audited and external schemas disabled until their binding gates pass.
 
 For the user-selected code-driven continuation from 0.2.0 onward, follow the
 [preparation and work packets](docs/code-driven-development.md). Start from
@@ -78,6 +93,11 @@ inverse or controlled implementation. A `Clean` name or lifetime is not evidence
 of zero return. Preserve existing special-form semantics and compatibility.
 
 ## Keep the trusted core small
+
+Follow the fixed architectural partition in [TRUST_BOUNDARY.md](TRUST_BOUNDARY.md).
+Do not change that partition during feature work. Keep `std` specifications'
+intended mathematical meanings under continuing review; proving implementation
+conformance does not establish that the chosen specification is the intended one.
 
 Follow the authoritative [trusted-core principle](docs/design-philosophy.md#keep-the-trusted-core-small):
 convenience belongs in untrusted desugaring/adapters, with independent checking
@@ -115,9 +135,35 @@ and revise drafts when counterexamples require it.
 
 ## Proofs and records
 
+Mark proofs intended for later removal with `temporary (TP-...)` in their Lean
+documentation comments, giving the replacement and removal condition. Maintain
+the [temporary-proof inventory](docs/formal-core.md#temporary-proof-markers).
+Keep them built and audited until removal; retain reusable lemmas and respect
+public Lean API compatibility rather than treating the marker as permission
+to delete declarations or bypass checking.
+
 Follow the [proof priorities](docs/formal-core.md#4-theorem-status-and-proof-work):
 independent IR verification and the evidence kernel precede general frontend
 adequacy. Keep Lean/Mathlib at 4.30.0 and run `Audit.lean` for proof work.
+The user adopted the [staged Lean kernel migration](docs/lean-kernel-migration.md)
+from 0.2.0 onward. New production M2 acceptance logic belongs in `lean-kernel/`,
+which must remain free of Mathlib and external Lake packages. Keep Rust parsing,
+diagnostics, transport, evidence generation and simulation outside that pure
+acceptance core. Prove acceptance soundness of the actual executable definitions;
+writing code in Lean alone is insufficient. The existing `lean/` Mathlib models
+remain separate. Run the runtime source policy, compiled-declaration audit and
+independent native differential checks for kernel changes; reject project
+axioms, partial/unsafe code and implementation overrides, including generated
+helpers. Do not claim production authority or H1–H5 from the initial phase-word
+slice. Production Rust verification remains authoritative until explicit gates
+transfer it. The user selected proof of the **Qleisli Soundness Theorem** as
+v0.5.0's central milestone; follow [S05-C1–C5](docs/release-milestones.md#qleisli-soundness-theorem-v050).
+It concerns the actual production IR checker and its complete declared profile,
+not just the phase-word seed or tests. Prepare wider community participation in
+0.4.x and expand from individual development into a full-scale open-source
+project from v0.5 onward, following the [community roadmap](docs/v0x-roadmap.md#community-development-from-v05).
+Keep adopted targets distinct from completed proofs and existing maintainers.
+Development Python scripts require 3.11 or later.
 Physlib remains a [future dependency](docs/physlib-environment.md); recheck its
 compatibility and external axioms when adding a concrete semantic bridge that
 uses it. Library availability is not a proof of Qleisli semantics.
@@ -157,10 +203,18 @@ features need no exception. The user selected development version 0.1.9 on
 2026-09-28 for compatible review fixes; follow its [record](docs/releases/v0.1.9.md).
 Preserve the historical 0.1.8 authoring decision and public Rust AST migration
 in the [0.1.8 record](docs/releases/v0.1.8.md). Type/size
-parameters and cross-interface QPE reuse remain future work at the user's request.
+parameters and cross-interface QPE reuse were initially deferred. The user
+subsequently adopted shared QPE over `Bits<n>`, then moved its remaining work
+from 0.2.0 to the 0.2.1 target on 2026-09-29. Preserve compatibility for that
+PATCH; a necessary public break selects 0.3.0. Use `CBits<m>` for
+copyable measured bit sequences. The 2026-09-29 user decision adopts
+[arity-preserving tuples](docs/tuple-shapes.md): flat and nested products are
+distinct and conversions are explicit. Follow the consolidated
+[type system](docs/type-system.md). Arbitrary basis-type parameters remain
+deferred. Sizes still require R14 and H1–H5.
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
-  `lean/lakefile.toml`. Compiler, bundled library and proofs currently share a
+  `lean/lakefile.toml` and `lean-kernel/lakefile.toml`. Compiler, bundled library and proofs currently share a
   release. Do not synchronize dependency versions with the project version.
 - Use `MAJOR.MINOR.PATCH` and annotated Git tags `vMAJOR.MINOR.PATCH`.
   Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task

@@ -1,0 +1,10 @@
+Qleisli/Qpe.lean:23:4: error: Type mismatch: After simplification, term
+  congrArg (fun n => n + if bits width = true then 2 ^ width else 0) ih
+ has type
+  ((List.map (fun k => if bits k = true then 2 ^ k else 0) (List.range width)).sum +
+      if bits width = true then 2 ^ width else 0) =
+    (∑ k ∈ Finset.range width, if bits k = true then 2 ^ k else 0) + if bits width = true then 2 ^ width else 0
+but is expected to have type
+  (List.map (fun k => if bits k = true then 2 ^ k else 0) (List.range width)).sum =
+    ∑ k ∈ Finset.range width, if bits k = true then 2 ^ k else 0
+Qleisli/Qpe.lean:91:9: error(lean.unknownIdentifier): Unknown constant `Complex.conj`

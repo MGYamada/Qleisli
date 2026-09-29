@@ -7,17 +7,21 @@ The existing fixed-width [QPE and static-operation contracts](../static-operatio
 remain the implemented regression baseline. General source and IR rules, their
 implementation, and implementation soundness proofs remain separate work.
 
+The user selected the spelling `CBits<m>` on 2026-09-28; the earlier
+`CWord<m>` spelling remains only in preserved first-attempt records. This
+is still design notation until its source extension is implemented.
+
 ## Interface and conventions
 
 The proposed ordinary algorithm has this interface:
 
 ```text
 observe fn qpe<n,m>(static U: UnitaryOp<Bits<n>>,
-                    target: Q<Bits<n>>) -> (CWord<m>, Q<Bits<n>>)
+                    target: Q<Bits<n>>) -> (CBits<m>, Q<Bits<n>>)
 ```
 
 Here `n >= 1` and `m >= 1` are finite static integers, `M = 2^m`, and bit `k`
-has integer weight `2^k`. `CWord<m>` is a proposed copyable classical vector of
+has integer weight `2^k`. `CBits<m>` is a proposed copyable classical vector of
 exactly `m` measured bits; `decode_word(y) = sum_k 2^k y[k]`. This classical
 vector is not a live register. Its serialization must preserve that ordering.
 `U` is a reusable static description, captures no live quantum owners, fixes
@@ -57,7 +61,7 @@ requires k < m, Controlled(U) {
 }
 
 observe fn qpe<n,m>(static U: UnitaryOp<Bits<n>>,
-                    target: Q<Bits<n>>) -> (CWord<m>, Q<Bits<n>>)
+                    target: Q<Bits<n>>) -> (CBits<m>, Q<Bits<n>>)
 requires n >= 1, m >= 1, ControlledBinaryPowers(U,m) {
     let phase = init_zero<m>();
     let phase = for static k in 0..m carry phase = phase {
@@ -179,12 +183,12 @@ capability or a separately specified approximation result.
 
 | Local requirement | Classification and intended interface | Acceptance / rejection and proposed IR route |
 | --- | --- | --- |
-| QPE-SIZE | `Bits<n>`, `CWord<m>`, static naturals/folds: proposed language forms; quantum values remain linear, classical words copyable. | Accept finite checked dimensions and complete carried ownership; reject unknown static bounds or silently truncated dimensions. Elaborate to explicit ordered interfaces, with checked expansion/sharing limits. |
+| QPE-SIZE | `Bits<n>`, `CBits<m>`, static naturals/folds: proposed language forms; quantum values remain linear, classical words copyable. | Accept finite checked dimensions and complete carried ownership; reject unknown static bounds or silently truncated dimensions. Elaborate to explicit ordered interfaces, with checked expansion/sharing limits. |
 | QPE-ACCESS | `UnitaryOp<A>`, `ControlledBinaryPowers(U,m)`, `power`, `adjoint`, `controlled`: classification unresolved between language forms and static evidence builders. | Accept evidence tied to phase-fixed actual implementations; reject a bare black-box `U` without controlled access or a descriptor capturing a live owner. Retain implementation bindings and transformation evidence through final IR. |
 | QPE-AXIS | `take_bit/put_bit`, `on_bit`, `swap_axes`: proposed language forms for ownership routing; `controlled_on_bit` is an ordinary definition. | Accept distinct axes and return the complete remainder; reject aliases, out-of-range indices, or changed order. Lower to explicit axis permutations and controlled actions, rechecked independently. |
 | QPE-FOURIER | `qft` and `controlled_phase_pair`: proposed ordinary definitions over a phase-rotation capability whose primitive/synthesis classification is unresolved. | Accept the positive Fourier matrix with explicit reversal; reject dropping reversal or using a negative transform under the same contract. Exact or approximate evidence must name its ring/metric and actual circuit. |
 | QPE-OBSERVE | `init_zero` and `measure_bits`: proposed ordinary folds of initialization and consuming Z measurement; `qpe` is an ordinary `Observe` definition. | Accept general correlated inputs and return the residual owner; reject use in a unitary caller or target loss. Lower to fresh initialization, coherent actions, measurements, and the complete instrument interface. |
-| QPE-DECODE | `decode_word: CWord<m> -> UInt`: proposed ordinary classical definition, exact and total by the weighted-bit sum. | Accept every word; reject a mismatched width/serialization convention. Preserve the word-to-integer layout at the host boundary. |
+| QPE-DECODE | `decode_word: CBits<m> -> UInt`: proposed ordinary classical definition, exact and total by the weighted-bit sum. | Accept every word; reject a mismatched width/serialization convention. Preserve the word-to-integer layout at the host boundary. |
 
 These are requirements, not implemented acceptance/rejection tests. Every
 proposed interface needs explicit current-to-future specification work before

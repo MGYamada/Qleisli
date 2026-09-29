@@ -24,7 +24,7 @@ use imaginary::qpe::qpe;
 observe fn amplitude_phase_sample<n,m>(
     static A: UnitaryOp<Bits<n>>,
     static good: BasisFn<Bits<n>, Bit>
-) -> CWord<m> {
+) -> CBits<m> {
     let G = grover_iterate<n>(A, good);
     let target = A(init_zero<n>());
     let (phase_word, residual) = qpe<n,m>(G, target);
@@ -177,10 +177,10 @@ the shared Grover and QPE records rather than adopt new standard definitions.
 
 | ID / facility | Classification and intended type/effect | Acceptance / rejection and proposed IR responsibility |
 | --- | --- | --- |
-| AE-1 `amplitude_phase_sample` | Ordinary-definition candidate, `() -> CWord<m>` with `Observe`, parameterized by A/good/n/m. | Accept shared G with exact signs and justified control; reject a separately redefined −G with the unchanged decoder. Inline or retain checked calls, keep QPE's instrument and all final ownership. |
+| AE-1 `amplitude_phase_sample` | Ordinary-definition candidate, `() -> CBits<m>` with `Observe`, parameterized by A/good/n/m. | Accept shared G with exact signs and justified control; reject a separately redefined −G with the unchanged decoder. Inline or retain checked calls, keep QPE's instrument and all final ownership. |
 | AE-2 shared `qpe`, `grover_iterate`, controlled powers | Ordinary definitions with proposed static operation language support; `qpe` consumes and returns the target plus a classical word. | Accept reusable same-meaning implementations; reject discarded evidence, phase-equivalent-only substitution, mismatched axes, or unavailable control. Retain contracts through actual final IR. |
 | AE-3 `discard(residual)` | Existing sealed observation principle, generalized through proposed sized types; `Q<Bits<n>> -> Unit`, `Observe`. | Accept any residual state, including reference correlations; reject silent pure release or omission of returned target ownership. Lower to a verified partial-trace operation. |
-| AE-4 classical interpretation | Host-only proposal: `CWord<m> -> UInt`, then `(y,M,eta) -> Result<Real,EvaluationFailure>` and a record. | Accept valid bit order, M=2^m and certified absolute evaluation error; reject complement/endianness mistakes, failure suppression, or a claimed confidence interval from an unverified approximation. Host ABI, arithmetic and result representation are unresolved. |
+| AE-4 classical interpretation | Host-only proposal: `CBits<m> -> UInt`, then `(y,M,eta) -> Result<Real,EvaluationFailure>` and a record. | Accept valid bit order, M=2^m and certified absolute evaluation error; reject complement/endianness mistakes, failure suppression, or a claimed confidence interval from an unverified approximation. Host ABI, arithmetic and result representation are unresolved. |
 | AE-5 error and statistical evidence | Unresolved contract representation for instrument accuracy and probability bounds; distinct from exact pure-operator evidence. | Accept explicitly proved premises and bounds; reject treating small leakage as cleanup evidence or a statistical theorem as a check on each shot. Future IR must bind implemented operation errors to the claimed instrument. |
 
 Planned review cases include p=0 and p=1, p=1/2 on the exact grid, a non-grid

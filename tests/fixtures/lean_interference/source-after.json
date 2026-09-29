@@ -1,0 +1,44 @@
+{
+  "source_outcomes": 6,
+  "type_correct_wrong_source_outcomes": 2,
+  "commands": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_interference/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_interference/reference_client",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000003},{\"bits\":[false,true],\"probability\":0.25000000000000017},{\"bits\":[true,false],\"probability\":0.25000000000000017},{\"bits\":[true,true],\"probability\":0.2500000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_interference/wrong_order",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.8535533905932744},{\"bits\":[true],\"probability\":0.1464466094067263}]}}\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Interference.lean": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+    "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6",
+    "scripts/test_lean_interference.py": "54c8663ae34b093c00dd96258168a1bd53a4510772c952ffb642f794c5cdc891"
+  }
+}

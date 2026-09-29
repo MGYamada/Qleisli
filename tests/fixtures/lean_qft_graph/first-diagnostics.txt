@@ -1,0 +1,61 @@
+QleisliKernel/QftGraph.lean:231:12: error: Tactic `split` failed: Could not split an `if` or `match` expression in the type
+  (do
+      let stats ← some stats
+      let summaries ← some summaries
+      let root ← summaries[entry]?
+      if Qft.matchCircuit width root.gates (root.axes.getD []) = true then some { summary := root, stats := stats }
+        else none) =
+    some receipt
+of `accepted`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case some.some
+definitions : List Definition
+entry width : Nat
+receipt : Receipt
+bounded : ¬(!(decide (1 ≤ width) && decide (width ≤ 8))) = true
+stats : Stats
+hs : preflight definitions entry = some stats
+valid : ¬(!definitions.all (validDefinition width)) = true
+summaries : Array Summary
+he : evaluateFrom definitions #[] = some summaries
+root : Summary
+hr : summaries[entry]? = some root
+accepted :
+  (do
+      let stats ← some stats
+      let summaries ← some summaries
+      let root ← summaries[entry]?
+      if Qft.matchCircuit width root.gates (root.axes.getD []) = true then some { summary := root, stats := stats }
+        else none) =
+    some receipt
+⊢ definitions.all (validDefinition width) = true ∧
+    denote definitions entry = some (action receipt.summary) ∧
+      Qft.matchCircuit width receipt.summary.gates (receipt.summary.axes.getD []) = true
+QleisliKernel/QftGraph.lean:220:21: error: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  simp only [hs,̵ ̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵_̵s̵o̵m̵e̵] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/QftGraph.lean:230:27: error: This simp argument is unused:
+  hr
+
+Hint: Omit it from the simp argument list.
+  simp only [he, h̵r̵,̵ ̵Option.bind_some] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/QftGraph.lean:230:31: error: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  simp only [he, hr,̵ ̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵_̵s̵o̵m̵e̵] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/QftGraph.lean:246:74: error: Invalid projection: Projections extract constructor fields for one-constructor inductive types. The expression
+  valid
+has type
+  validDefinition width definition = true
+which has no fields.

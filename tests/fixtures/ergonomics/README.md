@@ -5,7 +5,8 @@ one source into a temporary project; this directory intentionally includes
 rejected programs and is not itself an executable project.
 
 - `permutation`, `multi_parameter`, `tuple_evaluation` and `nary_lift` execute
-  patterned basis functions and left-associated tuple sugar. SWAP is bound to
+  patterned basis functions and arity-preserving tuples. `nary_lift` uses explicit
+  conversions at binary split/join boundaries. SWAP is bound to
   an independent mathematical permutation; the multi-parameter case retains
   Unit nodes and whole-subtree bindings.
 - Duplicate/shape/arity/capture cases reject during ordinary source checking.

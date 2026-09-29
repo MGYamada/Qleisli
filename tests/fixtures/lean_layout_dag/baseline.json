@@ -1,0 +1,31 @@
+{
+  "kind": "informed implementation baseline, not a controlled model study",
+  "commands": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout_dag/first_source"
+      ],
+      "returncode": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/lean_layout_dag/first_source\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout-dag",
+        "tests/fixtures/lean_layout_dag/shared.qhd",
+        "tests/fixtures/lean_layout_dag/identity.qhr"
+      ],
+      "returncode": 2,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-word-v1\",\"accepted\":false,\"code\":\"usage\",\"stage\":\"usage\"}\n",
+      "stderr": ""
+    }
+  ],
+  "sha256": {
+    "tests/fixtures/lean_layout_dag/first_source/main.qli": "9d1f8840f51be06a7583446d4f7dc813e146c0a9d0dc58e10391b6afab3ec81f",
+    "tests/fixtures/lean_layout_dag/identity.qhr": "a1a0bb7b4fec3576cc1e33aa3ef930db240f3c734433b3833ad603ffa66b7b96",
+    "tests/fixtures/lean_layout_dag/shared.qhd": "fb1b3275fc079b39e05b2180f09f0e36b2ff234dbd049eb26208ed043bc16911"
+  }
+}

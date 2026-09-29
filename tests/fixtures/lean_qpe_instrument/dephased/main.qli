@@ -1,0 +1,16 @@
+//! Type-correct semantic fault: destroy the retained target's coherence.
+use estimation::phase2;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
+    let (reference,target) = cnot(h(init0()),init0());
+    let (word,target) = phase2[eighth_phase](target);
+    let bit = measure_z(target);
+    let target = if bit { x(init0()) } else { init0() };
+    (word,(measure_z(h(reference)),measure_z(h(target))))
+}

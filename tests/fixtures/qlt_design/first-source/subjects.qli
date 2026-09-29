@@ -1,0 +1,50 @@
+//! Current-language subjects for the future QLT semantic-fault tests.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::transforms::qft2;
+use std::quantum::split;
+use std::quantum::join;
+use std::quantum::x;
+use std::quantum::z;
+
+/// The inverse Fourier transform is unitary but is not the positive DFT.
+pub unitary fn inverse_qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    adjoint(qft2, q)
+}
+
+/// Undo the standard transform's final reversal; this changes its meaning.
+pub unitary fn unreversed_qft2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(qft2(q));
+    join(b, a)
+}
+
+/// Return the identity, including its exact positive phase.
+pub unitary fn identity_bit(q: Q<Bit>) -> Q<Bit> { q }
+
+/// X;Z;X;Z is -I, not the phase-exact identity.
+pub unitary fn minus_identity(q: Q<Bit>) -> Q<Bit> {
+    let q = x(q);
+    let q = z(q);
+    let q = x(q);
+    z(q)
+}
+
+/// Control exposes the scalar phase as a relative phase on the first bit.
+pub unitary fn controlled_minus(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (control, target) = split(q);
+    let (control, target) = qif(control, target) {
+        0 => identity_bit,
+        1 => minus_identity
+    };
+    join(control, target)
+}
+
+/// Future QLT doctest. Current tooling only extracts the comment as text.
+/// ```qlt
+/// use qli::subjects::documented_identity;
+/// use qlt::math::identity;
+/// #[test]
+/// fn identity_example() {
+///     assert_eq!(denote(documented_identity), identity(2));
+/// }
+/// ```
+pub unitary fn documented_identity(q: Q<Bit>) -> Q<Bit> { q }

@@ -1,0 +1,12 @@
+// Shared ordinary definitions retain a zero-width quantum owner on every call.
+unitary fn swap(a: Q<Bit>, b: Q<Bit>, empty: Q<Unit>)
+    -> (Q<Bit>, Q<Bit>, Q<Unit>) {
+    (b, a, empty)
+}
+unitary fn shared_round_trip(a: Q<Bit>, b: Q<Bit>, empty: Q<Unit>)
+    -> (Q<Bit>, Q<Bit>, Q<Unit>) {
+    let (a, b, empty) = swap(a, b, empty);
+    let (a, b, empty) = swap(a, b, empty);
+    (a, b, empty)
+}
+observe fn main() -> Unit { () }

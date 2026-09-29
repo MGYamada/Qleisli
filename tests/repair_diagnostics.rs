@@ -192,7 +192,7 @@ fn snapshot_limit_errors_explain_the_retained_sources() {
 fn concrete_mismatches_show_expected_and_actual_exact_types() {
     for (name, expected, actual) in [
         ("ordinary_return", "(Q<Bit>,Unit)", "Q<Bit>"),
-        ("basis_return", "(Bit,(Bit,Bit))", "((Bit,Bit),Bit)"),
+        ("basis_return", "(Bit,(Bit,Bit))", "(Bit,Bit,Bit)"),
         ("basis_argument", "(Unit,Bit)", "Bit"),
         ("static_argument", "Op<Bit>", "Op<(Bit,Bit)>"),
         ("static_composition", "Op<Bit>", "Op<(Bit,Bit)>"),

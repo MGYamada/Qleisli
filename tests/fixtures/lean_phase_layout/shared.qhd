@@ -1,0 +1,112 @@
+qleisli.phase-layout 1 typed-phase256-dag-v1
+entry 4
+definitions 5
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 1 0 2
+axes 2 1 0
+inverse_owners 3 1 0 2
+inverse_axes 2 1 0
+source_phases 1
+term 32 1 0
+claim_phases 1
+term 32 1 0
+call 0
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 1 0 2
+axes 2 1 0
+inverse_owners 3 1 0 2
+inverse_axes 2 1 0
+source_phases 0
+claim_phases 1
+term 32 1 0
+then 1 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+source_phases 0
+claim_phases 2
+term 32 1 0
+term 32 1 1
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+source_phases 1
+term 32 2 0 1
+claim_phases 1
+term 32 2 0 1
+then 2 3
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+source_phases 0
+claim_phases 3
+term 32 1 0
+term 32 1 1
+term 32 2 0 1

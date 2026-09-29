@@ -1,0 +1,19 @@
+QleisliKernel/ControlledPowers.lean:31:3: error: unexpected token 'repeat'; expected identifier
+QleisliKernel/ControlledPowers.lean:34:84: error: unexpected token 'repeat'; expected term
+QleisliKernel/ControlledPowers.lean:44:44: error: unexpected token 'repeat'; expected term
+QleisliKernel/ControlledPowers.lean:59:44: error: unexpected token 'repeat'; expected term
+QleisliKernel/ControlledPowers.lean:65:38: error: unexpected token 'repeat'; expected term
+QleisliKernel/ControlledPowers.lean:76:68: error: unsolved goals
+width target : Nat
+bits : Bits
+⊢ (List.map (selected bits ∘ fun k => { control := k, targetDefinition := target, count := 2 ^ k, whenOne := true })
+        (List.range width)).sum =
+    (List.map (fun k => if bits k = true then 2 ^ k else 0) (List.range width)).sum
+QleisliKernel/ControlledPowers.lean:77:32: error: This simp argument is unused:
+  selected
+
+Hint: Omit it from the simp argument list.
+  simp [selectedUses, template, s̵e̵l̵e̵c̵t̵e̵d̵,̵ ̵value, List.map_map]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/ControlledPowers.lean:81:38: error: unexpected token 'repeat'; expected term

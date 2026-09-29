@@ -226,6 +226,16 @@ impl Lowerer<'_, '_> {
                     self.merge_results(module, span, *a2, *b2, a_regs, b_regs, quantum, classical)?;
                 Ok(Value::pair(a, b))
             }
+            (Value::Tuple(a), Value::Tuple(b)) if a.len() == b.len() => {
+                let fields = a
+                    .into_iter()
+                    .zip(b)
+                    .map(|(a, b)| {
+                        self.merge_results(module, span, a, b, a_regs, b_regs, quantum, classical)
+                    })
+                    .collect::<Result<_, _>>()?;
+                Ok(Value::Tuple(fields))
+            }
             _ => Err(self.error(
                 module,
                 span,

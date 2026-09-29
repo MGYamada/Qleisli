@@ -1,0 +1,304 @@
+import Protocol
+import Init.System.IO
+
+/-
+Copyright 2026 Masahiko G. Yamada.
+Licensed under the Apache License, Version 2.0; see the repository LICENSE.
+
+Unproved file/transport adapter for the experimental kernel profiles.
+It does not issue production Qleisli VerifiedProgram or evidence handles.
+-/
+
+namespace QleisliKernel.Cli
+
+inductive Stage where
+  | artifact
+  | requirement
+  | verification
+  | usage
+
+private def stageName : Stage → String
+  | .artifact => "artifact"
+  | .requirement => "requirement"
+  | .verification => "verification"
+  | .usage => "usage"
+
+inductive Code where
+  | accepted
+  | rejected
+  | syntax
+  | limit
+  | io
+  | usage
+
+private def codeName : Code → String
+  | .accepted => "accepted"
+  | .rejected => "rejected"
+  | .syntax => "syntax"
+  | .limit => "limit"
+  | .io => "io"
+  | .usage => "usage"
+
+private def emit (accepted : Bool) (code : Code) (stage : Stage) : IO Unit := do
+  let truth := if accepted then "true" else "false"
+  -- All strings are closed enum values, never unescaped external text.
+  IO.println ("{\"format\":\"qleisli.kernel-result\",\"version\":1," ++
+    "\"profile\":\"phase256-word-v1\",\"accepted\":" ++ truth ++
+    ",\"code\":\"" ++ codeName code ++ "\",\"stage\":\"" ++ stageName stage ++ "\"}")
+
+private def readBytes (handle : IO.FS.Handle) (fuel : Nat)
+    (initial : ByteArray) : IO (Except Code String) :=
+  -- An explicit structural recursor keeps the compiled project declaration
+  -- total as well as its logical definition; no generated partial recursion
+  -- replacement is needed for this IO loop.
+  Nat.rec (motive := fun _ => ByteArray → IO (Except Code String))
+    (fun _ => pure (.error .limit))
+    (fun _ next bytes => do
+      if bytes.size > Protocol.maxInputBytes then return .error .limit
+      -- At most limit+1 bytes are ever retained, even for a growing file or
+      -- short reads. Each nonempty read consumes one unit of explicit fuel.
+      let remaining := Protocol.maxInputBytes + 1 - bytes.size
+      let chunk ← handle.read (USize.ofNat (min 4096 remaining))
+      if chunk.isEmpty then
+        match String.fromUTF8? bytes with
+        | some text => return .ok text
+        | none => return .error .syntax
+      else
+        next (bytes ++ chunk))
+    fuel initial
+
+private def readInput (path : System.FilePath) : IO (Except Code String) := do
+  try
+    IO.FS.withFile path .read fun handle =>
+      readBytes handle (Protocol.maxInputBytes + 2) ByteArray.empty
+  catch _ =>
+    return .error .io
+
+private def parseCode : Protocol.Error → Code
+  | .syntax => .syntax
+  | .limit => .limit
+
+def run (artifactPath requirementPath : String) : IO UInt32 := do
+  let artifactText ← readInput artifactPath
+  let artifact ← match artifactText with
+    | .error code => emit false code .artifact *> pure none
+    | .ok text =>
+      match Protocol.parseArtifact text with
+      | .error code => emit false (parseCode code) .artifact *> pure none
+      | .ok artifact => pure (some artifact)
+  let some artifact := artifact | return 1
+  let requirementText ← readInput requirementPath
+  let requirement ← match requirementText with
+    | .error code => emit false code .requirement *> pure none
+    | .ok text =>
+      match Protocol.parseRequirement text with
+      | .error code => emit false (parseCode code) .requirement *> pure none
+      | .ok requirement => pure (some requirement)
+  let some requirement := requirement | return 1
+  let accepted := verify artifact.word artifact.claimed requirement
+  emit accepted (if accepted then .accepted else .rejected) .verification
+  return if accepted then 0 else 1
+
+private def emitDag (accepted : Bool) (code : String) (stage : Stage)
+    (failureNode : Option Nat := none) (stats : Option Hierarchy.Stats := none) : IO Unit := do
+  let truth := if accepted then "true" else "false"
+  let node := match failureNode with
+    | none => "null"
+    | some value => toString value
+  let metrics := match stats with
+    | none => "null"
+    | some value =>
+      "{\"nodes\":" ++ toString value.nodes ++
+      ",\"references\":" ++ toString value.references ++
+      ",\"work_units\":" ++ toString value.workUnits ++
+      ",\"depth\":" ++ toString value.depth ++
+      ",\"expanded_gates\":" ++ toString value.expandedGates ++
+      ",\"dense_dimension\":0}"
+  IO.println ("{\"format\":\"qleisli.kernel-result\",\"version\":1," ++
+    "\"profile\":\"phase256-dag-v1\",\"accepted\":" ++ truth ++
+    ",\"code\":\"" ++ code ++ "\",\"stage\":\"" ++ stageName stage ++
+    "\",\"node\":" ++ node ++ ",\"stats\":" ++ metrics ++ "}")
+
+def runDag (artifactPath requirementPath : String) : IO UInt32 := do
+  let artifactText ← readInput artifactPath
+  let artifact ← match artifactText with
+    | .error code => emitDag false (codeName code) .artifact *> pure none
+    | .ok text =>
+      match Protocol.Dag.parseArtifact text with
+      | .error code => emitDag false (codeName (parseCode code)) .artifact *> pure none
+      | .ok artifact => pure (some artifact)
+  let some artifact := artifact | return 1
+  let requirementText ← readInput requirementPath
+  let requirement ← match requirementText with
+    | .error code => emitDag false (codeName code) .requirement *> pure none
+    | .ok text =>
+      match Protocol.Dag.parseRequirement text with
+      | .error code => emitDag false (codeName (parseCode code)) .requirement *> pure none
+      | .ok requirement => pure (some requirement)
+  let some requirement := requirement | return 1
+  match Hierarchy.check artifact.definitions artifact.entry requirement with
+  | .ok stats =>
+    emitDag true "accepted" .verification none (some stats)
+    return 0
+  | .error failure =>
+    let code := match failure.kind with
+      | .invalidIr => "invalid_ir"
+      | .contract => "contract"
+      | .limit => "limit"
+    emitDag false code .verification (some failure.node)
+    return 1
+
+private def emitLayout (accepted : Bool) (code : String) (stage : Stage)
+    (stats : Option Layout.Stats := none) : IO Unit := do
+  let truth := if accepted then "true" else "false"
+  let metrics := match stats with
+    | none => "null"
+    | some value =>
+      "{\"owners\":" ++ toString value.owners ++
+      ",\"axes\":" ++ toString value.axes ++
+      ",\"type_atoms\":" ++ toString value.typeAtoms ++
+      ",\"work_units\":" ++ toString value.workUnits ++ ",\"dense_dimension\":0}"
+  IO.println ("{\"format\":\"qleisli.kernel-result\",\"version\":1," ++
+    "\"profile\":\"typed-layout-v1\",\"accepted\":" ++ truth ++
+    ",\"code\":\"" ++ code ++ "\",\"stage\":\"" ++ stageName stage ++
+    "\",\"stats\":" ++ metrics ++ "}")
+
+def runLayout (artifactPath requirementPath : String) : IO UInt32 := do
+  let artifactText ← readInput artifactPath
+  let artifact ← match artifactText with
+    | .error code => emitLayout false (codeName code) .artifact *> pure none
+    | .ok text =>
+      match Protocol.Layout.parseArtifact text with
+      | .error code => emitLayout false (codeName (parseCode code)) .artifact *> pure none
+      | .ok artifact => pure (some artifact)
+  let some artifact := artifact | return 1
+  let requirementText ← readInput requirementPath
+  let requirement ← match requirementText with
+    | .error code => emitLayout false (codeName code) .requirement *> pure none
+    | .ok text =>
+      match Protocol.Layout.parseRequirement text with
+      | .error code => emitLayout false (codeName (parseCode code)) .requirement *> pure none
+      | .ok requirement => pure (some requirement)
+  let some requirement := requirement | return 1
+  match Layout.check artifact.layout artifact.witness requirement with
+  | .ok stats =>
+    emitLayout true "accepted" .verification (some stats)
+    return 0
+  | .error failure =>
+    let code := match failure with
+      | .invalidIr => "invalid_ir"
+      | .contract => "contract"
+      | .limit => "limit"
+    emitLayout false code .verification
+    return 1
+
+private def emitLayoutDag (accepted : Bool) (code : String) (stage : Stage)
+    (node : Option Nat := none) (stats : Option LayoutDag.Stats := none) : IO Unit := do
+  let truth := if accepted then "true" else "false"
+  let node := match node with | none => "null" | some value => toString value
+  let metrics := match stats with
+    | none => "null"
+    | some value =>
+      "{\"nodes\":" ++ toString value.nodes ++
+      ",\"references\":" ++ toString value.references ++
+      ",\"work_units\":" ++ toString value.workUnits ++
+      ",\"depth\":" ++ toString value.depth ++
+      ",\"expanded_layouts\":" ++ toString value.expandedLayouts ++
+      ",\"dense_dimension\":0}"
+  IO.println ("{\"format\":\"qleisli.kernel-result\",\"version\":1," ++
+    "\"profile\":\"typed-layout-dag-v1\",\"accepted\":" ++ truth ++
+    ",\"code\":\"" ++ code ++ "\",\"stage\":\"" ++ stageName stage ++
+    "\",\"node\":" ++ node ++ ",\"stats\":" ++ metrics ++ "}")
+
+def runLayoutDag (artifactPath requirementPath : String) : IO UInt32 := do
+  let artifactText ← readInput artifactPath
+  let artifact ← match artifactText with
+    | .error code => emitLayoutDag false (codeName code) .artifact *> pure none
+    | .ok text =>
+      match Protocol.LayoutDag.parseArtifact text with
+      | .error code => emitLayoutDag false (codeName (parseCode code)) .artifact *> pure none
+      | .ok artifact => pure (some artifact)
+  let some artifact := artifact | return 1
+  let requirementText ← readInput requirementPath
+  let requirement ← match requirementText with
+    | .error code => emitLayoutDag false (codeName code) .requirement *> pure none
+    | .ok text =>
+      match Protocol.Layout.parseRequirement text with
+      | .error code => emitLayoutDag false (codeName (parseCode code)) .requirement *> pure none
+      | .ok requirement => pure (some requirement)
+  let some requirement := requirement | return 1
+  match LayoutDag.check artifact.definitions artifact.entry requirement with
+  | .ok stats =>
+    emitLayoutDag true "accepted" .verification none (some stats)
+    return 0
+  | .error failure =>
+    let code := match failure.kind with
+      | .invalidIr => "invalid_ir"
+      | .contract => "contract"
+      | .limit => "limit"
+    emitLayoutDag false code .verification (some failure.node)
+    return 1
+
+def usage : IO UInt32 := do
+  emit false .usage .usage
+  return 2
+
+private def emitPhaseLayout (accepted : Bool) (code : String) (stage : Stage)
+    (node : Option Nat := none) (stats : Option PhaseLayout.Stats := none) : IO Unit := do
+  let truth := if accepted then "true" else "false"
+  let node := match node with | none => "null" | some value => toString value
+  let metrics := match stats with
+    | none => "null"
+    | some value =>
+      "{\"nodes\":" ++ toString value.layout.nodes ++
+      ",\"references\":" ++ toString value.layout.references ++
+      ",\"work_units\":" ++ toString (value.layout.workUnits + value.phaseWork) ++
+      ",\"phase_work_units\":" ++ toString value.phaseWork ++
+      ",\"depth\":" ++ toString value.layout.depth ++
+      ",\"expanded_layouts\":" ++ toString value.layout.expandedLayouts ++
+      ",\"expanded_phase_terms\":" ++ toString value.expandedPhaseTerms ++
+      ",\"terms\":" ++ toString value.terms ++ ",\"dense_dimension\":0}"
+  IO.println ("{\"format\":\"qleisli.kernel-result\",\"version\":1," ++
+    "\"profile\":\"typed-phase256-dag-v1\",\"accepted\":" ++ truth ++
+    ",\"code\":\"" ++ code ++ "\",\"stage\":\"" ++ stageName stage ++
+    "\",\"node\":" ++ node ++ ",\"stats\":" ++ metrics ++ "}")
+
+def runPhaseLayout (artifactPath requirementPath : String) : IO UInt32 := do
+  let artifactText ← readInput artifactPath
+  let artifact ← match artifactText with
+    | .error code => emitPhaseLayout false (codeName code) .artifact *> pure none
+    | .ok text =>
+      match Protocol.PhaseLayout.parseArtifact text with
+      | .error code => emitPhaseLayout false (codeName (parseCode code)) .artifact *> pure none
+      | .ok artifact => pure (some artifact)
+  let some artifact := artifact | return 1
+  let requirementText ← readInput requirementPath
+  let requirement ← match requirementText with
+    | .error code => emitPhaseLayout false (codeName code) .requirement *> pure none
+    | .ok text =>
+      match Protocol.PhaseLayout.parseRequirement text with
+      | .error code => emitPhaseLayout false (codeName (parseCode code)) .requirement *> pure none
+      | .ok requirement => pure (some requirement)
+  let some requirement := requirement | return 1
+  match PhaseLayout.check artifact.definitions artifact.entry requirement with
+  | .ok stats =>
+    emitPhaseLayout true "accepted" .verification none (some stats)
+    return 0
+  | .error failure =>
+    let code := match failure.kind with
+      | .invalidIr => "invalid_ir"
+      | .contract => "contract"
+      | .limit => "limit"
+    emitPhaseLayout false code .verification (some failure.node)
+    return 1
+
+end QleisliKernel.Cli
+
+def main (args : List String) : IO UInt32 :=
+  match args with
+  | ["--phase-layout", artifact, requirement] => QleisliKernel.Cli.runPhaseLayout artifact requirement
+  | ["--layout-dag", artifact, requirement] => QleisliKernel.Cli.runLayoutDag artifact requirement
+  | ["--layout", artifact, requirement] => QleisliKernel.Cli.runLayout artifact requirement
+  | ["--phase-dag", artifact, requirement] => QleisliKernel.Cli.runDag artifact requirement
+  | [artifact, requirement] => QleisliKernel.Cli.run artifact requirement
+  | _ => QleisliKernel.Cli.usage

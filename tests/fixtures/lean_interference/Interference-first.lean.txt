@@ -1,0 +1,147 @@
+import QleisliKernel.PhaseLayout
+
+/-! Exact interference laws used by subsequent hierarchical rules.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace QleisliKernel.Interference
+
+abbrev Bits := Nat → Bool
+
+def setBit (bits : Bits) (axis : Nat) (value : Bool) : Bits :=
+  fun i => if i = axis then value else bits i
+
+@[simp] theorem setBit_same (bits : Bits) (axis : Nat) (a b : Bool) :
+    setBit (setBit bits axis a) axis b = setBit bits axis b := by
+  funext i
+  simp [setBit]
+
+@[simp] theorem setBit_read (bits : Bits) (axis : Nat) (value : Bool) :
+    setBit bits axis value axis = value := by simp [setBit]
+
+@[simp] theorem setBit_original (bits : Bits) (axis : Nat) :
+    setBit bits axis (bits axis) = bits := by
+  funext i
+  simp [setBit]
+  intro h
+  subst i
+  rfl
+
+/-- Semantic premises, not runtime evidence that an artifact can supply. -/
+structure Model (C : Type) [Lean.Grind.CommRing C] where
+  halfRoot : C
+  root : C
+  halfRoot_square : 2 * halfRoot * halfRoot = 1
+  root_period : root ^ 256 = 1
+
+variable {C : Type} [Lean.Grind.CommRing C]
+
+def hadamard (h : C) (axis : Nat) (amplitude : Bits → C) : Bits → C :=
+  fun bits => h * (amplitude (setBit bits axis false) +
+    if bits axis then -amplitude (setBit bits axis true) else amplitude (setBit bits axis true))
+
+theorem hadamard_involution (model : Model C) (axis : Nat) (amplitude : Bits → C) :
+    hadamard model.halfRoot axis (hadamard model.halfRoot axis amplitude) = amplitude := by
+  funext bits
+  have square := model.halfRoot_square
+  cases hb : bits axis with
+  | false =>
+    have original : setBit bits axis false = bits := by rw [← hb]; exact setBit_original bits axis
+    simp only [hadamard, setBit_same, setBit_read, Bool.false_eq_true, ↓reduceIte,
+      Bool.true_eq_true, hb, original]
+    grind
+  | true =>
+    have original : setBit bits axis true = bits := by rw [← hb]; exact setBit_original bits axis
+    simp only [hadamard, setBit_same, setBit_read, Bool.false_eq_true, ↓reduceIte,
+      Bool.true_eq_true, hb, original]
+    grind
+
+def diagonal (model : Model C) (terms : PhasePolynomial.Polynomial)
+    (amplitude : Bits → C) : Bits → C :=
+  fun bits => model.root ^ PhasePolynomial.evaluate terms bits * amplitude bits
+
+theorem diagonal_normalize (model : Model C) (terms : PhasePolynomial.Polynomial)
+    (amplitude : Bits → C) :
+    diagonal model (PhasePolynomial.normalize terms) amplitude = diagonal model terms amplitude := by
+  funext bits
+  simp [diagonal, PhasePolynomial.normalize_sound]
+
+inductive Gate where
+  | hadamard (axis : Nat)
+  | diagonal (terms : PhasePolynomial.Polynomial)
+  deriving BEq, DecidableEq, Repr
+
+def applyGate (model : Model C) : Gate → (Bits → C) → (Bits → C)
+  | .hadamard axis => hadamard model.halfRoot axis
+  | .diagonal terms => diagonal model terms
+
+/-- Reverse chronological stack: the head acts last. -/
+def stackAction (model : Model C) (stack : List Gate) (amplitude : Bits → C) : Bits → C :=
+  stack.foldr (applyGate model) amplitude
+
+def push (stack : List Gate) (gate : Gate) : List Gate :=
+  match gate, stack with
+  | .hadamard axis, .hadamard previous :: rest =>
+    if axis = previous then rest else gate :: stack
+  | .diagonal terms, _ => .diagonal (PhasePolynomial.normalize terms) :: stack
+  | _, _ => gate :: stack
+
+theorem push_sound (model : Model C) (stack : List Gate) (gate : Gate)
+    (amplitude : Bits → C) :
+    stackAction model (push stack gate) amplitude =
+      applyGate model gate (stackAction model stack amplitude) := by
+  cases gate with
+  | diagonal terms => simp [push, stackAction, applyGate, diagonal_normalize]
+  | hadamard axis =>
+    cases stack with
+    | nil => rfl
+    | cons previous rest =>
+      cases previous with
+      | diagonal terms => rfl
+      | hadamard previous =>
+        by_cases same : axis = previous
+        · subst previous
+          simp [push, stackAction, applyGate, hadamard_involution]
+        · simp [push, same, stackAction]
+
+def run (model : Model C) (gates : List Gate) (amplitude : Bits → C) : Bits → C :=
+  gates.foldl (fun state gate => applyGate model gate state) amplitude
+
+private theorem fold_sound (model : Model C) (gates stack : List Gate) (amplitude : Bits → C) :
+    stackAction model (gates.foldl push stack) amplitude =
+      run model gates (stackAction model stack amplitude) := by
+  induction gates generalizing stack with
+  | nil => rfl
+  | cons gate rest ih => simpa [run, push_sound] using ih (push stack gate)
+
+def normalize (gates : List Gate) : List Gate := (gates.foldl push []).reverse
+
+theorem normalize_sound (model : Model C) (gates : List Gate) (amplitude : Bits → C) :
+    run model (normalize gates) amplitude = run model gates amplitude := by
+  have h := fold_sound model gates [] amplitude
+  simpa [run, normalize, stackAction, List.foldl_reverse] using h
+
+/-- Arbitrary joint amplitudes: no product-state or separability premise. -/
+theorem normalize_reference (model : Model C) (gates : List Gate) {R : Type}
+    (joint : Bits → R → C) (reference : R) :
+    run model (normalize gates) (fun bits => joint bits reference) =
+      run model gates (fun bits => joint bits reference) :=
+  normalize_sound model gates (fun bits => joint bits reference)
+
+/-- Equality from the phase/layout checker may be interpreted as weighted
+basis transitions, retaining global phase and arbitrary output coordinates. -/
+def liftAction (model : Model C) (action : PhaseLayout.Action)
+    (continuation : Bits → C) (bits : Bits) : C :=
+  let result := action ⟨bits, 0⟩
+  model.root ^ result.phase * continuation result.bits
+
+theorem checked_phase_layout (model : Model C) (definitions : List PhaseLayout.Definition)
+    (entry : Nat) (required : PhaseLayout.Summary) (stats : PhaseLayout.Stats)
+    (accepted : PhaseLayout.check definitions entry required = .ok stats)
+    (actual : PhaseLayout.Action) (meaning : PhaseLayout.denote definitions entry = some actual) :
+    liftAction model actual = liftAction model required.action := by
+  have same := (PhaseLayout.check_sound definitions entry required stats accepted).1
+  rw [meaning] at same
+  cases Option.some.inj same
+  rfl
+
+end QleisliKernel.Interference

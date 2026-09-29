@@ -1,0 +1,59 @@
+{
+  "recorded_utc": "2026-09-28T15:53:29.592299+00:00",
+  "scope": "CD-3 phase DAG; measured local native process time, not a benchmark or complete QPE gate",
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_hierarchy/first_source",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"limit\",\"severity\":\"error\",\"message\":\"function evidence exceeds its finite IR profile\",\"primary\":{\"path\":\"main.qli\",\"start\":217,\"end\":218,\"line\":7,\"column\":57},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.051188374985940754
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-dag",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_hierarchy/shared.qhd",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_hierarchy/identity.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":3,\"references\":2,\"work_units\":47,\"depth\":3,\"expanded_gates\":16777216,\"dense_dimension\":0}}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.007789541967213154
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-dag",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchy-record-npj0qf5i/depth64.qhd",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_hierarchy/identity.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":64,\"references\":63,\"work_units\":1328,\"depth\":64,\"expanded_gates\":379032737378102767370356320425415662904513187772631008578870126471203845870697482014374611530431269030880793627229265919475483409207718357286202948008100864063587640630090308972232735749901964068667724412528434753635948938919936,\"dense_dimension\":0}}\n",
+      "stderr": "",
+      "elapsed_seconds": 0.007641208008863032
+    }
+  ],
+  "depth64_artifact": {
+    "generator": "scripts/test_lean_hierarchy.py:test_large_shared_work_and_depth_boundary",
+    "text": "qleisli.phase-dag 1 phase256-dag-v1\nentry 63\nnodes 64\nBit 0 0 1 leaf 1 p1\nBit 0 0 0 repeat 4096 0\nBit 0 0 0 repeat 4096 1\nBit 0 0 0 repeat 4096 2\nBit 0 0 0 repeat 4096 3\nBit 0 0 0 repeat 4096 4\nBit 0 0 0 repeat 4096 5\nBit 0 0 0 repeat 4096 6\nBit 0 0 0 repeat 4096 7\nBit 0 0 0 repeat 4096 8\nBit 0 0 0 repeat 4096 9\nBit 0 0 0 repeat 4096 10\nBit 0 0 0 repeat 4096 11\nBit 0 0 0 repeat 4096 12\nBit 0 0 0 repeat 4096 13\nBit 0 0 0 repeat 4096 14\nBit 0 0 0 repeat 4096 15\nBit 0 0 0 repeat 4096 16\nBit 0 0 0 repeat 4096 17\nBit 0 0 0 repeat 4096 18\nBit 0 0 0 repeat 4096 19\nBit 0 0 0 repeat 4096 20\nBit 0 0 0 repeat 4096 21\nBit 0 0 0 repeat 4096 22\nBit 0 0 0 repeat 4096 23\nBit 0 0 0 repeat 4096 24\nBit 0 0 0 repeat 4096 25\nBit 0 0 0 repeat 4096 26\nBit 0 0 0 repeat 4096 27\nBit 0 0 0 repeat 4096 28\nBit 0 0 0 repeat 4096 29\nBit 0 0 0 repeat 4096 30\nBit 0 0 0 repeat 4096 31\nBit 0 0 0 repeat 4096 32\nBit 0 0 0 repeat 4096 33\nBit 0 0 0 repeat 4096 34\nBit 0 0 0 repeat 4096 35\nBit 0 0 0 repeat 4096 36\nBit 0 0 0 repeat 4096 37\nBit 0 0 0 repeat 4096 38\nBit 0 0 0 repeat 4096 39\nBit 0 0 0 repeat 4096 40\nBit 0 0 0 repeat 4096 41\nBit 0 0 0 repeat 4096 42\nBit 0 0 0 repeat 4096 43\nBit 0 0 0 repeat 4096 44\nBit 0 0 0 repeat 4096 45\nBit 0 0 0 repeat 4096 46\nBit 0 0 0 repeat 4096 47\nBit 0 0 0 repeat 4096 48\nBit 0 0 0 repeat 4096 49\nBit 0 0 0 repeat 4096 50\nBit 0 0 0 repeat 4096 51\nBit 0 0 0 repeat 4096 52\nBit 0 0 0 repeat 4096 53\nBit 0 0 0 repeat 4096 54\nBit 0 0 0 repeat 4096 55\nBit 0 0 0 repeat 4096 56\nBit 0 0 0 repeat 4096 57\nBit 0 0 0 repeat 4096 58\nBit 0 0 0 repeat 4096 59\nBit 0 0 0 repeat 4096 60\nBit 0 0 0 repeat 4096 61\nBit 0 0 0 repeat 4096 62\n",
+    "bytes": 1639,
+    "sha256": "932ac1cd5ca832ec83796c25397a2ff406b001d349037185238b58091231084c"
+  },
+  "input_bytes": {
+    "first_source/main.qli": 283,
+    "shared.qhd": 122,
+    "identity.qhr": 53
+  },
+  "proof_repair_record": {
+    "first_source": "first_dag_proof.lean.txt",
+    "diagnostics": "first_dag_diagnostics.txt",
+    "complete_repair_count": null,
+    "note": "First failed DAG proof preserved; not a complete edit-by-edit transcript or measured model evaluation."
+  }
+}

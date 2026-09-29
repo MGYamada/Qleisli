@@ -58,7 +58,7 @@ requires 1 <= b < N <= 2^n, gcd(b,N) == 1 {
     )
 }
 
-observe fn order_sample<n,m>(static a: UInt, static N: UInt) -> CWord<m>
+observe fn order_sample<n,m>(static a: UInt, static N: UInt) -> CBits<m>
 requires n >= 1, m >= 1, gcd(a,N) == 1, 1 < a < N, N <= 2^n {
     let static U = with_binary_powers<m>(
         modmul<n>(a,N),

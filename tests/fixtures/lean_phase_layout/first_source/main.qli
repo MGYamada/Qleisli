@@ -1,0 +1,21 @@
+use std::quantum::t;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+
+// The phase acts before the returned owners are exchanged.
+unitary fn phase_swap(a: Q<Bit>, b: Q<Bit>, empty: Q<Unit>)
+    -> (Q<Bit>, Q<Bit>, Q<Unit>) {
+    let a = t(a);
+    (b, a, empty)
+}
+
+// Reuse the same body with an explicit nontrivial input/output layout.
+unitary fn shared_phase(a: Q<Bit>, b: Q<Bit>, empty: Q<Unit>)
+    -> (Q<Bit>, Q<Bit>, Q<Unit>) {
+    let (a, b, empty) = phase_swap(a, b, empty);
+    let (a, b, empty) = phase_swap(a, b, empty);
+    let (a, b) = qif(a, b) { 0 => identity, 1 => t };
+    (a, b, empty)
+}
+
+observe fn main() -> Unit { () }

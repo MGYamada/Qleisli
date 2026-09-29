@@ -60,27 +60,7 @@ pub(super) fn remap(step: &mut CircuitStep, axes: &[usize]) {
 }
 
 pub(super) fn invert(steps: &mut [CircuitStep]) {
-    steps.reverse();
-    for step in steps {
-        if let CircuitAction::Contract { adjoint, .. } = &mut step.action {
-            *adjoint = !*adjoint;
-        }
-        if let CircuitAction::Monomial {
-            permutation,
-            phases,
-            ..
-        } = &mut step.action
-        {
-            let mut inverse = vec![0; permutation.len()];
-            let mut inverse_phases = vec![0; phases.len()];
-            for (x, y) in permutation.iter().enumerate() {
-                inverse[usize::from(*y)] = x as u16;
-                inverse_phases[usize::from(*y)] = (8 - phases[x]) % 8;
-            }
-            *permutation = inverse;
-            *phases = inverse_phases;
-        }
-    }
+    crate::contract::invert_steps(steps);
 }
 
 pub(super) fn flatten(

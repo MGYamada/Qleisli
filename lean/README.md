@@ -1,5 +1,22 @@
 # Lean ownership, scope, and Kraus algebra proofs
 
+The executable **Mathlib-free** kernel is in [lean-kernel](../lean-kernel/README.md).
+This directory remains the separate Mathlib proof/model package. The
+[staged migration](../docs/lean-kernel-migration.md) now includes an
+[interference bridge](Qleisli/Interference.lean) importing the actual executable
+definitions through a local Lake dependency. It instantiates H/diagonal
+amplitude laws over complex numbers and interprets accepted phase/layout graphs
+as weighted basis transitions. The [QFT proof](Qleisli/Qft.lean) derives the actual
+matched gate circuit's Fourier coefficients, including output reversal and
+arbitrary reference amplitudes. The [typed graph theorem](Qleisli/QftGraph.lean)
+transfers this result to the actual accepted graph's operational coefficients.
+[QFT unitarity](Qleisli/QftUnitary.lean) proves both inverse laws for those entries.
+The [QPE theorem](Qleisli/Qpe.lean) derives full residual target/reference maps
+from actual checked components. [Completeness](Qleisli/QpeComplete.lean) proves
+all-outcome completeness and joint trace preservation, conditional on a
+whole-space isometric provider. External hierarchical/provider/registry binding
+remains open. Runtime definitions must never import this proof package.
+
 This directory contains the **ownership-accounting projection** of the finite
 core resource rules, a **lexical scope-exit lookup model**, and a small
 exact-matrix development for **Kraus completeness under composition**.
@@ -7,7 +24,7 @@ The later semantic-contract module proves local symbolic composition rules,
 with separate isometry and unitary premises; it does not enumerate large
 operators or verify the experimental Rust kernel.
 It does not formalize the complete source
-language, the Rust compiler, positivity/trace, or the full quantum soundness
+language, the Rust compiler, general positivity, or the full quantum soundness
 theorem. The English
 [theorem ledger and scope](../docs/lean-resource-proof.md) is the status record.
 
@@ -36,6 +53,14 @@ the installed toolchain and cached dependencies. Julia is not a dependency.
 | [Examples.lean](Qleisli/Examples.lean) | Exact accepted boundaries and rejection theorems, including zero-width ownership |
 | [Kraus.lean](Qleisli/Kraus.lean) | Five matrix lemmas for singleton/isometry completeness, output transport, and adaptive composition |
 | [SemanticContract.lean](Qleisli/SemanticContract.lean) | Exact encoded relations, composition/reference/qualified-transform and zero-return lemmas; separate from implementation adequacy |
+| [QftUnitary.lean](Qleisli/QftUnitary.lean) | Both inverse laws for the actual accepted QFT graph matrix |
+| [Qpe.lean](Qleisli/Qpe.lean) | Actual accepted plan, controlled powers, Fourier branches and arbitrary reference maps |
+| [QpeComplete.lean](Qleisli/QpeComplete.lean) | Fourier orthogonality, conditional Kraus completeness and joint trace preservation |
+| [ControlledPowers.lean](Qleisli/ControlledPowers.lean) | Actual coherent iteration as a complex block operator, conditional unitary laws and arbitrary reference maps |
+| [HierarchicalSemantics.lean](Qleisli/HierarchicalSemantics.lean) | Actual rule preservation and accepted derivation/entry equations, conditional on interpretation of actual table bodies |
+| [HierarchicalOperators.lean](Qleisli/HierarchicalOperators.lean) | Complex operator, matrix and reference-map instantiation; literal repetition as matrix power; provider equations obtained from actual derivations |
+| [HierarchicalEvaluation.lean](Qleisli/HierarchicalEvaluation.lean) | Constructed successful, unique actual-body denotations; accepted entry operator/matrix/reference equations without an assumed interpretation environment |
+| [Schema.lean](Qleisli/Schema.lean) | Actual component dispatch implies the QFT, single-power and QPE conclusions; external binding remains open |
 | [Audit.lean](Audit.lean) | Transitive axiom audit of all declarations in imported project modules |
 | [Preserved external probe](../research/quantum-libraries/PhyslibAudit.lean) | Optional historical Qleisli/QuantumInfo integration audit; requires explicitly reintroducing Physlib in a separate experiment, excluded from the current build/CI |
 

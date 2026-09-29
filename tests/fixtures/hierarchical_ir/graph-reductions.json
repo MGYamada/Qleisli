@@ -1,0 +1,12 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "Tests.lean"
+  ],
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": ""
+}

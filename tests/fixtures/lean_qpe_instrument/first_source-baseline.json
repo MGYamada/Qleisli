@@ -1,0 +1,16 @@
+{
+  "source_sha256": {
+    "estimation.qli": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+    "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+    "main.qli": "a66905f0c5f9d6887080ec183a6b119c8d349bb51a6c4b887fc8d681fe29f01e"
+  },
+  "command": [
+    "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/lean_qpe_instrument/first_source",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.2408470869120798},{\"bits\":[false,false,false,true],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,false],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,true],\"probability\":0.2408470869120798},{\"bits\":[false,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,true],\"probability\":0.009152913087920394},{\"bits\":[true,false,false,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,false,true],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,true],\"probability\":0.053347086912079664},{\"bits\":[true,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,true],\"probability\":0.009152913087920394}]}}\n",
+  "stderr": ""
+}

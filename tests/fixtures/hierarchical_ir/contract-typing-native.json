@@ -1,0 +1,651 @@
+{
+  "format": "qleisli.hierarchical-contract-typing-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 164,
+  "typed": 115,
+  "qpe_header_cases": 64,
+  "dense_dimension": 0,
+  "semantic_evidence_issued": false,
+  "binary_sha256": "e3be1e87545197c7185bae5af24e2519a02017ffabd6af836c06fb36846b8e71",
+  "harness_sha256": "a12f739fb57ac3b9361e059019816569f4a11bcc528f544e79e42e2959041e23",
+  "results": {
+    "identity-0": [
+      "typed",
+      "326"
+    ],
+    "finite-0": [
+      "typed",
+      "326"
+    ],
+    "qft-0": [
+      "invalid_ir"
+    ],
+    "identity-1": [
+      "typed",
+      "454"
+    ],
+    "finite-1": [
+      "typed",
+      "454"
+    ],
+    "qft-1": [
+      "typed",
+      "454"
+    ],
+    "identity-2": [
+      "typed",
+      "582"
+    ],
+    "finite-2": [
+      "typed",
+      "582"
+    ],
+    "qft-2": [
+      "typed",
+      "582"
+    ],
+    "identity-3": [
+      "typed",
+      "710"
+    ],
+    "finite-3": [
+      "typed",
+      "710"
+    ],
+    "qft-3": [
+      "typed",
+      "710"
+    ],
+    "identity-4": [
+      "typed",
+      "838"
+    ],
+    "finite-4": [
+      "typed",
+      "838"
+    ],
+    "qft-4": [
+      "typed",
+      "838"
+    ],
+    "identity-5": [
+      "typed",
+      "966"
+    ],
+    "finite-5": [
+      "typed",
+      "966"
+    ],
+    "qft-5": [
+      "typed",
+      "966"
+    ],
+    "identity-6": [
+      "typed",
+      "1094"
+    ],
+    "finite-6": [
+      "typed",
+      "1094"
+    ],
+    "qft-6": [
+      "typed",
+      "1094"
+    ],
+    "identity-7": [
+      "typed",
+      "1222"
+    ],
+    "finite-7": [
+      "limit"
+    ],
+    "qft-7": [
+      "typed",
+      "1222"
+    ],
+    "identity-8": [
+      "typed",
+      "1350"
+    ],
+    "finite-8": [
+      "limit"
+    ],
+    "qft-8": [
+      "typed",
+      "1350"
+    ],
+    "finite-empty": [
+      "invalid_ir"
+    ],
+    "pure-no-classical": [
+      "invalid_ir"
+    ],
+    "identity-exact-owners": [
+      "invalid_ir"
+    ],
+    "qft-no-product-substitution": [
+      "invalid_ir"
+    ],
+    "qft-no-Bit-substitution": [
+      "invalid_ir"
+    ],
+    "qft-axis-order": [
+      "invalid_ir"
+    ],
+    "phase-Bit": [
+      "typed",
+      "454"
+    ],
+    "phase-not-Bits1": [
+      "invalid_ir"
+    ],
+    "phase-not-multiple-owners": [
+      "invalid_ir"
+    ],
+    "phase-outside-domain": [
+      "invalid_ir"
+    ],
+    "sequence": [
+      "typed",
+      "1360"
+    ],
+    "sequence-empty": [
+      "invalid_ir"
+    ],
+    "sequence-dangling": [
+      "invalid_ir"
+    ],
+    "tensor": [
+      "typed",
+      "1970"
+    ],
+    "tensor-owner-alias": [
+      "invalid_ir"
+    ],
+    "tensor-axis-alias": [
+      "invalid_ir"
+    ],
+    "inverse": [
+      "typed",
+      "890"
+    ],
+    "inverse-rectangular": [
+      "invalid_ir"
+    ],
+    "control-renamed-same-type": [
+      "typed",
+      "1534"
+    ],
+    "control-forbids-implicit-conversion": [
+      "invalid_ir"
+    ],
+    "power-0": [
+      "typed",
+      "890"
+    ],
+    "power-1": [
+      "typed",
+      "890"
+    ],
+    "power-4096": [
+      "typed",
+      "890"
+    ],
+    "power-outside-domain": [
+      "invalid_ir"
+    ],
+    "power-not-closed": [
+      "invalid_ir"
+    ],
+    "rewire": [
+      "typed",
+      "4575"
+    ],
+    "rewire-missing-owner": [
+      "invalid_ir"
+    ],
+    "qpe-header-1-1": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-2": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-3": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-4": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-5": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-6": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-7": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-1-8": [
+      "typed",
+      "1148"
+    ],
+    "qpe-header-2-1": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-2": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-3": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-4": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-5": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-6": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-7": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-2-8": [
+      "typed",
+      "1404"
+    ],
+    "qpe-header-3-1": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-2": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-3": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-4": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-5": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-6": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-7": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-3-8": [
+      "typed",
+      "1660"
+    ],
+    "qpe-header-4-1": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-2": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-3": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-4": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-5": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-6": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-7": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-4-8": [
+      "typed",
+      "1916"
+    ],
+    "qpe-header-5-1": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-2": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-3": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-4": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-5": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-6": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-7": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-5-8": [
+      "typed",
+      "2172"
+    ],
+    "qpe-header-6-1": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-2": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-3": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-4": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-5": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-6": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-7": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-6-8": [
+      "typed",
+      "2428"
+    ],
+    "qpe-header-7-1": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-2": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-3": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-4": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-5": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-6": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-7": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-7-8": [
+      "typed",
+      "2684"
+    ],
+    "qpe-header-8-1": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-2": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-3": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-4": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-5": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-6": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-7": [
+      "typed",
+      "2940"
+    ],
+    "qpe-header-8-8": [
+      "typed",
+      "2940"
+    ],
+    "qpe-target-zero": [
+      "invalid_ir"
+    ],
+    "qpe-precision-zero": [
+      "invalid_ir"
+    ],
+    "qpe-wrong-provider-type": [
+      "invalid_ir"
+    ],
+    "qpe-wrong-precision-type": [
+      "invalid_ir"
+    ],
+    "qpe-cannot-drop-target": [
+      "invalid_ir"
+    ],
+    "qpe-cannot-measure-target": [
+      "invalid_ir"
+    ],
+    "instrument-not-pure-inverse": [
+      "invalid_ir"
+    ],
+    "instrument-not-pure-power": [
+      "invalid_ir"
+    ],
+    "instrument-not-pure-sequence": [
+      "invalid_ir"
+    ],
+    "encoding-identity-0": [
+      "typed",
+      "326"
+    ],
+    "encoding-identity-1": [
+      "typed",
+      "454"
+    ],
+    "encoding-identity-2": [
+      "typed",
+      "582"
+    ],
+    "encoding-identity-3": [
+      "typed",
+      "710"
+    ],
+    "encoding-identity-4": [
+      "typed",
+      "838"
+    ],
+    "encoding-identity-5": [
+      "typed",
+      "966"
+    ],
+    "encoding-identity-6": [
+      "typed",
+      "1094"
+    ],
+    "encoding-identity-7": [
+      "typed",
+      "1222"
+    ],
+    "encoding-identity-8": [
+      "typed",
+      "1350"
+    ],
+    "encoding-classical-identity": [
+      "typed",
+      "842"
+    ],
+    "encoding-identity-wrong-name": [
+      "invalid_ir"
+    ],
+    "encoding-identity-wrong-type": [
+      "invalid_ir"
+    ],
+    "encoding-tensor": [
+      "typed",
+      "1970"
+    ],
+    "encoding-tensor-alias": [
+      "invalid_ir"
+    ],
+    "encoding-rewire": [
+      "typed",
+      "5653"
+    ],
+    "encoding-rewire-changes-logical": [
+      "invalid_ir"
+    ],
+    "scratch-one": [
+      "typed",
+      "1854"
+    ],
+    "scratch-zero-owner": [
+      "typed",
+      "1662"
+    ],
+    "scratch-unit-owner": [
+      "typed",
+      "1662"
+    ],
+    "scratch-count-understated": [
+      "invalid_ir"
+    ],
+    "scratch-count-overstated": [
+      "invalid_ir"
+    ],
+    "scratch-axis-capture": [
+      "invalid_ir"
+    ],
+    "scratch-compute-not-unitary": [
+      "invalid_ir"
+    ],
+    "scratch-prefix-not-dimension": [
+      "invalid_ir"
+    ],
+    "scratch-logical-type-change": [
+      "invalid_ir"
+    ],
+    "wrong-reference-table": [
+      "invalid_ir"
+    ],
+    "missing-reference": [
+      "invalid_ir"
+    ],
+    "zero-budget": [
+      "limit"
+    ],
+    "too-large-budget": [
+      "limit"
+    ],
+    "oversized-meaning": [
+      "limit"
+    ],
+    "control-definition-conversion": [
+      "invalid_ir"
+    ],
+    "whole-base": [
+      "typed",
+      "13971"
+    ],
+    "whole-zero": [
+      "typed",
+      "3755"
+    ],
+    "whole-hidden-meaning": [
+      "invalid_ir"
+    ],
+    "whole-false-scratch": [
+      "invalid_ir"
+    ],
+    "whole-budget": [
+      "limit"
+    ],
+    "whole-phase-still-needs-proof": [
+      "typed",
+      "1671"
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [17/19] Built Main (703ms)\n\u2714 [18/19] Built Main:c.o (556ms)\n\u2714 [19/19] Built \u00abartifact-test\u00bb:exe (167ms)\nBuild completed successfully (19 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-fjj8n3ya/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "identity-0|typed|326\nfinite-0|typed|326\nqft-0|invalid_ir\nidentity-1|typed|454\nfinite-1|typed|454\nqft-1|typed|454\nidentity-2|typed|582\nfinite-2|typed|582\nqft-2|typed|582\nidentity-3|typed|710\nfinite-3|typed|710\nqft-3|typed|710\nidentity-4|typed|838\nfinite-4|typed|838\nqft-4|typed|838\nidentity-5|typed|966\nfinite-5|typed|966\nqft-5|typed|966\nidentity-6|typed|1094\nfinite-6|typed|1094\nqft-6|typed|1094\nidentity-7|typed|1222\nfinite-7|limit\nqft-7|typed|1222\nidentity-8|typed|1350\nfinite-8|limit\nqft-8|typed|1350\nfinite-empty|invalid_ir\npure-no-classical|invalid_ir\nidentity-exact-owners|invalid_ir\nqft-no-product-substitution|invalid_ir\nqft-no-Bit-substitution|invalid_ir\nqft-axis-order|invalid_ir\nphase-Bit|typed|454\nphase-not-Bits1|invalid_ir\nphase-not-multiple-owners|invalid_ir\nphase-outside-domain|invalid_ir\nsequence|typed|1360\nsequence-empty|invalid_ir\nsequence-dangling|invalid_ir\ntensor|typed|1970\ntensor-owner-alias|invalid_ir\ntensor-axis-alias|invalid_ir\ninverse|typed|890\ninverse-rectangular|invalid_ir\ncontrol-renamed-same-type|typed|1534\ncontrol-forbids-implicit-conversion|invalid_ir\npower-0|typed|890\npower-1|typed|890\npower-4096|typed|890\npower-outside-domain|invalid_ir\npower-not-closed|invalid_ir\nrewire|typed|4575\nrewire-missing-owner|invalid_ir\nqpe-header-1-1|typed|1148\nqpe-header-1-2|typed|1148\nqpe-header-1-3|typed|1148\nqpe-header-1-4|typed|1148\nqpe-header-1-5|typed|1148\nqpe-header-1-6|typed|1148\nqpe-header-1-7|typed|1148\nqpe-header-1-8|typed|1148\nqpe-header-2-1|typed|1404\nqpe-header-2-2|typed|1404\nqpe-header-2-3|typed|1404\nqpe-header-2-4|typed|1404\nqpe-header-2-5|typed|1404\nqpe-header-2-6|typed|1404\nqpe-header-2-7|typed|1404\nqpe-header-2-8|typed|1404\nqpe-header-3-1|typed|1660\nqpe-header-3-2|typed|1660\nqpe-header-3-3|typed|1660\nqpe-header-3-4|typed|1660\nqpe-header-3-5|typed|1660\nqpe-header-3-6|typed|1660\nqpe-header-3-7|typed|1660\nqpe-header-3-8|typed|1660\nqpe-header-4-1|typed|1916\nqpe-header-4-2|typed|1916\nqpe-header-4-3|typed|1916\nqpe-header-4-4|typed|1916\nqpe-header-4-5|typed|1916\nqpe-header-4-6|typed|1916\nqpe-header-4-7|typed|1916\nqpe-header-4-8|typed|1916\nqpe-header-5-1|typed|2172\nqpe-header-5-2|typed|2172\nqpe-header-5-3|typed|2172\nqpe-header-5-4|typed|2172\nqpe-header-5-5|typed|2172\nqpe-header-5-6|typed|2172\nqpe-header-5-7|typed|2172\nqpe-header-5-8|typed|2172\nqpe-header-6-1|typed|2428\nqpe-header-6-2|typed|2428\nqpe-header-6-3|typed|2428\nqpe-header-6-4|typed|2428\nqpe-header-6-5|typed|2428\nqpe-header-6-6|typed|2428\nqpe-header-6-7|typed|2428\nqpe-header-6-8|typed|2428\nqpe-header-7-1|typed|2684\nqpe-header-7-2|typed|2684\nqpe-header-7-3|typed|2684\nqpe-header-7-4|typed|2684\nqpe-header-7-5|typed|2684\nqpe-header-7-6|typed|2684\nqpe-header-7-7|typed|2684\nqpe-header-7-8|typed|2684\nqpe-header-8-1|typed|2940\nqpe-header-8-2|typed|2940\nqpe-header-8-3|typed|2940\nqpe-header-8-4|typed|2940\nqpe-header-8-5|typed|2940\nqpe-header-8-6|typed|2940\nqpe-header-8-7|typed|2940\nqpe-header-8-8|typed|2940\nqpe-target-zero|invalid_ir\nqpe-precision-zero|invalid_ir\nqpe-wrong-provider-type|invalid_ir\nqpe-wrong-precision-type|invalid_ir\nqpe-cannot-drop-target|invalid_ir\nqpe-cannot-measure-target|invalid_ir\ninstrument-not-pure-inverse|invalid_ir\ninstrument-not-pure-power|invalid_ir\ninstrument-not-pure-sequence|invalid_ir\nencoding-identity-0|typed|326\nencoding-identity-1|typed|454\nencoding-identity-2|typed|582\nencoding-identity-3|typed|710\nencoding-identity-4|typed|838\nencoding-identity-5|typed|966\nencoding-identity-6|typed|1094\nencoding-identity-7|typed|1222\nencoding-identity-8|typed|1350\nencoding-classical-identity|typed|842\nencoding-identity-wrong-name|invalid_ir\nencoding-identity-wrong-type|invalid_ir\nencoding-tensor|typed|1970\nencoding-tensor-alias|invalid_ir\nencoding-rewire|typed|5653\nencoding-rewire-changes-logical|invalid_ir\nscratch-one|typed|1854\nscratch-zero-owner|typed|1662\nscratch-unit-owner|typed|1662\nscratch-count-understated|invalid_ir\nscratch-count-overstated|invalid_ir\nscratch-axis-capture|invalid_ir\nscratch-compute-not-unitary|invalid_ir\nscratch-prefix-not-dimension|invalid_ir\nscratch-logical-type-change|invalid_ir\nwrong-reference-table|invalid_ir\nmissing-reference|invalid_ir\nzero-budget|limit\ntoo-large-budget|limit\noversized-meaning|limit\ncontrol-definition-conversion|invalid_ir\nwhole-base|typed|13971\nwhole-zero|typed|3755\nwhole-hidden-meaning|invalid_ir\nwhole-false-scratch|invalid_ir\nwhole-budget|limit\nwhole-phase-still-needs-proof|typed|1671\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "5866399c10931cb328bb7c25f749bac3004131ccb71ead58301f39c105963ded",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "fcf982b384fcad04e078764c431a827ad3309ae5510fbd86f52db16de79df177",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "df66a1c9b76a835091ad2fa57c976ac54aec77505e2e6f8104b85581e5dca7e4",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+    "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+    "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e",
+    "scripts/test_hierarchical_typing.py": "469cf88986327c4c2a92567c66427c0a632f123c64d7ca55ac6b094ad883daf0",
+    "scripts/test_hierarchical_contract_typing.py": "e83b87c39afc9e5e7749cd32a8420e61da4d6b5721a0fdf1586e6c99c8cfee2e"
+  }
+}

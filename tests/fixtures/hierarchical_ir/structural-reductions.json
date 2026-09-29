@@ -1,0 +1,20 @@
+{
+  "status": "passed",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Tests.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "source_sha256": {
+    "lean-kernel/Tests.lean": "7a1b28645e837a7f57938be7e8805efcf90227f7dd23638ee5a8038d60568c15",
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "5866399c10931cb328bb7c25f749bac3004131ccb71ead58301f39c105963ded",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "fcf982b384fcad04e078764c431a827ad3309ae5510fbd86f52db16de79df177",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "df66a1c9b76a835091ad2fa57c976ac54aec77505e2e6f8104b85581e5dca7e4",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+    "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2"
+  }
+}

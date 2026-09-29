@@ -1,0 +1,446 @@
+{
+  "native_decisions": 101,
+  "accepted": 64,
+  "controlled_path_comparisons": 4080,
+  "preparation_paths": 4080,
+  "largest_target_calls": 255,
+  "kernel_dense_dimension": 0,
+  "decisions": [
+    {
+      "name": "n1-m1",
+      "accepted": true
+    },
+    {
+      "name": "n1-m2",
+      "accepted": true
+    },
+    {
+      "name": "n1-m3",
+      "accepted": true
+    },
+    {
+      "name": "n1-m4",
+      "accepted": true
+    },
+    {
+      "name": "n1-m5",
+      "accepted": true
+    },
+    {
+      "name": "n1-m6",
+      "accepted": true
+    },
+    {
+      "name": "n1-m7",
+      "accepted": true
+    },
+    {
+      "name": "n1-m8",
+      "accepted": true
+    },
+    {
+      "name": "n2-m1",
+      "accepted": true
+    },
+    {
+      "name": "n2-m2",
+      "accepted": true
+    },
+    {
+      "name": "n2-m3",
+      "accepted": true
+    },
+    {
+      "name": "n2-m4",
+      "accepted": true
+    },
+    {
+      "name": "n2-m5",
+      "accepted": true
+    },
+    {
+      "name": "n2-m6",
+      "accepted": true
+    },
+    {
+      "name": "n2-m7",
+      "accepted": true
+    },
+    {
+      "name": "n2-m8",
+      "accepted": true
+    },
+    {
+      "name": "n3-m1",
+      "accepted": true
+    },
+    {
+      "name": "n3-m2",
+      "accepted": true
+    },
+    {
+      "name": "n3-m3",
+      "accepted": true
+    },
+    {
+      "name": "n3-m4",
+      "accepted": true
+    },
+    {
+      "name": "n3-m5",
+      "accepted": true
+    },
+    {
+      "name": "n3-m6",
+      "accepted": true
+    },
+    {
+      "name": "n3-m7",
+      "accepted": true
+    },
+    {
+      "name": "n3-m8",
+      "accepted": true
+    },
+    {
+      "name": "n4-m1",
+      "accepted": true
+    },
+    {
+      "name": "n4-m2",
+      "accepted": true
+    },
+    {
+      "name": "n4-m3",
+      "accepted": true
+    },
+    {
+      "name": "n4-m4",
+      "accepted": true
+    },
+    {
+      "name": "n4-m5",
+      "accepted": true
+    },
+    {
+      "name": "n4-m6",
+      "accepted": true
+    },
+    {
+      "name": "n4-m7",
+      "accepted": true
+    },
+    {
+      "name": "n4-m8",
+      "accepted": true
+    },
+    {
+      "name": "n5-m1",
+      "accepted": true
+    },
+    {
+      "name": "n5-m2",
+      "accepted": true
+    },
+    {
+      "name": "n5-m3",
+      "accepted": true
+    },
+    {
+      "name": "n5-m4",
+      "accepted": true
+    },
+    {
+      "name": "n5-m5",
+      "accepted": true
+    },
+    {
+      "name": "n5-m6",
+      "accepted": true
+    },
+    {
+      "name": "n5-m7",
+      "accepted": true
+    },
+    {
+      "name": "n5-m8",
+      "accepted": true
+    },
+    {
+      "name": "n6-m1",
+      "accepted": true
+    },
+    {
+      "name": "n6-m2",
+      "accepted": true
+    },
+    {
+      "name": "n6-m3",
+      "accepted": true
+    },
+    {
+      "name": "n6-m4",
+      "accepted": true
+    },
+    {
+      "name": "n6-m5",
+      "accepted": true
+    },
+    {
+      "name": "n6-m6",
+      "accepted": true
+    },
+    {
+      "name": "n6-m7",
+      "accepted": true
+    },
+    {
+      "name": "n6-m8",
+      "accepted": true
+    },
+    {
+      "name": "n7-m1",
+      "accepted": true
+    },
+    {
+      "name": "n7-m2",
+      "accepted": true
+    },
+    {
+      "name": "n7-m3",
+      "accepted": true
+    },
+    {
+      "name": "n7-m4",
+      "accepted": true
+    },
+    {
+      "name": "n7-m5",
+      "accepted": true
+    },
+    {
+      "name": "n7-m6",
+      "accepted": true
+    },
+    {
+      "name": "n7-m7",
+      "accepted": true
+    },
+    {
+      "name": "n7-m8",
+      "accepted": true
+    },
+    {
+      "name": "n8-m1",
+      "accepted": true
+    },
+    {
+      "name": "n8-m2",
+      "accepted": true
+    },
+    {
+      "name": "n8-m3",
+      "accepted": true
+    },
+    {
+      "name": "n8-m4",
+      "accepted": true
+    },
+    {
+      "name": "n8-m5",
+      "accepted": true
+    },
+    {
+      "name": "n8-m6",
+      "accepted": true
+    },
+    {
+      "name": "n8-m7",
+      "accepted": true
+    },
+    {
+      "name": "n8-m8",
+      "accepted": true
+    },
+    {
+      "name": "n-0",
+      "accepted": false
+    },
+    {
+      "name": "n-9",
+      "accepted": false
+    },
+    {
+      "name": "n-1000000",
+      "accepted": false
+    },
+    {
+      "name": "m-0",
+      "accepted": false
+    },
+    {
+      "name": "m-9",
+      "accepted": false
+    },
+    {
+      "name": "m-1000000",
+      "accepted": false
+    },
+    {
+      "name": "wrong-provider",
+      "accepted": false
+    },
+    {
+      "name": "dirty-precision",
+      "accepted": false
+    },
+    {
+      "name": "missing-zero",
+      "accepted": false
+    },
+    {
+      "name": "missing-h",
+      "accepted": false
+    },
+    {
+      "name": "wrong-h-axis",
+      "accepted": false
+    },
+    {
+      "name": "extra-scalar-phase",
+      "accepted": false
+    },
+    {
+      "name": "reversed-power-order",
+      "accepted": false
+    },
+    {
+      "name": "power-field-0-0",
+      "accepted": false
+    },
+    {
+      "name": "power-field-1-8",
+      "accepted": false
+    },
+    {
+      "name": "power-field-2-0",
+      "accepted": false
+    },
+    {
+      "name": "power-field-2-3",
+      "accepted": false
+    },
+    {
+      "name": "power-field-3-False",
+      "accepted": false
+    },
+    {
+      "name": "missing-power",
+      "accepted": false
+    },
+    {
+      "name": "forward-qft",
+      "accepted": false
+    },
+    {
+      "name": "reverse-measurement",
+      "accepted": false
+    },
+    {
+      "name": "aliased-precision-axis",
+      "accepted": false
+    },
+    {
+      "name": "wrong-target-axis",
+      "accepted": false
+    },
+    {
+      "name": "aliased-owner",
+      "accepted": false
+    },
+    {
+      "name": "wrong-target-owner",
+      "accepted": false
+    },
+    {
+      "name": "measure-target",
+      "accepted": false
+    },
+    {
+      "name": "discard-target",
+      "accepted": false
+    },
+    {
+      "name": "unitary-effect",
+      "accepted": false
+    },
+    {
+      "name": "classical-input",
+      "accepted": false
+    },
+    {
+      "name": "wrong-classical-width",
+      "accepted": false
+    },
+    {
+      "name": "cbit-not-cbits",
+      "accepted": false
+    },
+    {
+      "name": "drop-target-output",
+      "accepted": false
+    },
+    {
+      "name": "extra-bits0-owner",
+      "accepted": false
+    },
+    {
+      "name": "tuple-not-bits",
+      "accepted": false
+    },
+    {
+      "name": "wrong-qft-phase",
+      "accepted": false
+    },
+    {
+      "name": "dangling-qft-entry",
+      "accepted": false
+    },
+    {
+      "name": "wrong-qft-type",
+      "accepted": false
+    }
+  ],
+  "kraus_entries": 1080,
+  "joint_density_branches": 180,
+  "largest_oracle_vector": 64,
+  "maximum_error": 3.9968028886505635e-15,
+  "unitary_completeness_cases": 24,
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "temporary native QPE harness",
+      "exit": 0,
+      "stdout": "\u2714 [27/29] Built Main (1.8s)\n\u2714 [28/29] Built Main:c.o (609ms)\n\u2714 [29/29] Built \u00abqpe-test\u00bb:exe (142ms)\nBuild completed successfully (29 jobs).\n",
+      "stderr": "info: qpe_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "qpe-test"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "executable_sha256": "6579bb75b50c82dd988c0fc705e2bc2c633579b0784dcc0e199fa6bf8b202773"
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "738014b4b255cd76764d98866b3e9251f7e577f2b065c72e15f8dcbbd52a831a",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean/Qleisli/Qpe.lean": "1a23271e65af99dbcc16f6386ff94a6e6c3cefcf18247dd21aa83de402e24d18",
+    "scripts/test_lean_qpe.py": "d1dc1c6fa9da7f270676af39aa5dcdedf55de69478e43e25e440caa84e2f5db8"
+  }
+}

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_lean, check_links, check_status, markdown_anchors, render_status
+from check_docs import check_lean, check_links, check_status, markdown_anchors, markdown_paths, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -25,9 +25,17 @@ class DocumentationReferences(unittest.TestCase):
     def check(self, markdown):
         return check_links(self.root, [self.write("docs/rules.md", markdown)])
 
+    def test_corpus_links_are_part_of_normal_document_discovery(self):
+        self.write("corpus/source/case/README.md", "[missing](deleted.qli)\n")
+        errors, counts = check_links(self.root, markdown_paths(self.root))
+        self.assertEqual(counts["links"], 1)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("corpus/source/case/README.md:1: missing target deleted.qli", errors[0])
+
     def status_fixture(self):
         self.write("Cargo.toml", '[package]\nversion = "0.1.5"\n')
         self.write("lean/lakefile.toml", 'version = "0.1.5"\n')
+        self.write("lean-kernel/lakefile.toml", 'version = "0.1.5"\n')
         data = {
             "format": 1,
             "release_state": "selected",
@@ -49,6 +57,12 @@ class DocumentationReferences(unittest.TestCase):
     def test_status_requires_synchronized_versions(self):
         self.status_fixture()
         self.write("lean/lakefile.toml", 'version = "0.1.4"\n')
+        self.assertIn("versions differ", check_status(self.root, write=True)[0])
+        self.assertFalse((self.root / "docs/current-status.md").exists())
+
+    def test_status_requires_synchronized_executable_kernel_version(self):
+        self.status_fixture()
+        self.write("lean-kernel/lakefile.toml", 'version = "0.1.4"\n')
         self.assertIn("versions differ", check_status(self.root, write=True)[0])
         self.assertFalse((self.root / "docs/current-status.md").exists())
 
