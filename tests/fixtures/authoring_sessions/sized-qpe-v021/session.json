@@ -1,0 +1,39 @@
+{
+  "format": 1,
+  "task": "Shared coherent QPE source and static operation access",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Shared coherent QPE and dependencies saved before first compilation",
+      "sha256": {
+        "estimation.qli": "1a33df5e24e6c51b312d708017038d526edb3392f95c3f367e7c873d5367bcfd",
+        "preparation.qli": "44f588448e6428ed124dd891cf8a63168151b80ec0f90f5e8c439a30979138fc",
+        "evolution.qli": "348664fbf5a4d30e6318bfdaeee46724ca61b87c32593c0ee2bd50be9f899df1",
+        "fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+      },
+      "observations": [
+        "first-check.json",
+        "first-native.json",
+        "coherent-first-validation.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct Qualtran TextbookQPE attribution year to the retained upstream 2024 notice; executable bodies unchanged",
+      "sha256": {
+        "evolution.qli": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation.qli": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation.qli": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+      },
+      "observations": [
+        "validated-source.json"
+      ]
+    }
+  ]
+}

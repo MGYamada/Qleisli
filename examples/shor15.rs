@@ -2,9 +2,9 @@
 use std::error::Error;
 use std::path::Path;
 
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::host::factor_from_phase;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::host::factor_from_phase;
+use qleisli::sim::{SimulationLimits, run_closed};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("examples/order_finding");

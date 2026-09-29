@@ -1,0 +1,28 @@
+Qleisli/HierarchicalUnitary.lean:92:52: error: unsolved goals
+case a
+I : Type
+inst✝¹ : Fintype I
+inst✝ : DecidableEq I
+route : I ≃ I
+a b : I
+⊢ (if b = a then 1 else 0) = if a = b then 1 else 0
+Qleisli/HierarchicalUnitary.lean:99:6: error(lean.unknownIdentifier): Unknown constant `Matrix.conjTranspose_diagonal`
+Qleisli/HierarchicalUnitary.lean:98:62: error: unsolved goals
+I : Type
+inst✝¹ : Fintype I
+inst✝ : DecidableEq I
+values : I → ℂ
+normalized : ∀ (i : I), star (values i) * values i = 1
+⊢ (Matrix.diagonal values)ᴴ * Matrix.diagonal values = 1
+Qleisli/HierarchicalUnitary.lean:104:40: error(lean.unknownIdentifier): Unknown constant `Complex.pow_re`
+Qleisli/HierarchicalUnitary.lean:103:77: error: unsolved goals
+j k : ℕ
+⊢ j = 0 ∨ (2 ^ k).im = 0
+Qleisli/HierarchicalUnitary.lean:105:23: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (starRingEnd ℂ) (Complex.exp ?x)
+in the target expression
+  (starRingEnd ℂ) (phase j k) * phase j k = 1
+
+j k : ℕ
+imaginary : (2 * ↑Real.pi * Complex.I * ↑j / 2 ^ k).re = 0
+⊢ (starRingEnd ℂ) (phase j k) * phase j k = 1

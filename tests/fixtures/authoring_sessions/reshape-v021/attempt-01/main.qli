@@ -1,0 +1,11 @@
+//! Desired source only: explicitly regroup one quantum owner without a table.
+use std::quantum::init0;
+use std::quantum::join;
+
+unitary fn flatten(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,Bit,Bit)> {
+    reshape::<(Bit,Bit,Bit)>(q)
+}
+
+iso fn main() -> Q<(Bit,Bit,Bit)> {
+    flatten(join(join(init0(),init0()),init0()))
+}

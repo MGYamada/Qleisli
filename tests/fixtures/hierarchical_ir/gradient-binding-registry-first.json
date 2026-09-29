@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.schema-registry-validation",
+  "version": 1,
+  "mode": "rebuilt-types-and-audits",
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 0.2,
+      "stdout_sha256": "5dd35936efc9f302e419512ff7eac81c66757cac218689bf053534608f0c7336",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 36 executable kernel/transport source modules; no external Lake dependencies.\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 0.572,
+      "stdout_sha256": "2112c92e12b29eada899f4ee372bb69ae57b7dcf59598c96c169a7e5308a1bff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "\u2714 [69/70] Built QleisliKernel (425ms)\nBuild completed successfully (70 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 1,
+      "seconds": 1.191,
+      "stdout_sha256": "415d14cb9f06b51c68a4acf97a6616ad214953eaac792dce98a9052b54f36f74",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audit.lean:81:0: error: QleisliKernel.Hierarchical.Gradient.inspectAux._unsafe_rec: partial project declaration\n"
+    }
+  ],
+  "error": "command failed: ['lake', 'env', 'lean', '-DwarningAsError=true', 'Audit.lean']\nAudit.lean:81:0: error: QleisliKernel.Hierarchical.Gradient.inspectAux._unsafe_rec: partial project declaration\n"
+}

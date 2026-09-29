@@ -111,7 +111,13 @@ theorem kraus_complete (width : Nat) (U : Matrix T T ℂ) (isometry : Uᴴ * U =
   rw [kraus_modular]
   rfl
 
-/-- Completeness for the actual accepted circuit components, in bit order. -/
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: actual
+hierarchical instrument acceptance with the same exact branches, all-outcome
+completeness, trace and reference preservation, including verified provider
+evidence. Retire after caller/registry migration and public API compatibility
+review. Keep generic Kraus completeness, character and reference/trace laws.
+
+Completeness for the actual accepted circuit components, in bit order. -/
 theorem checked_complete (operations : Nat → Matrix T T ℂ) (width target : Nat)
     (stages : List QleisliKernel.ControlledPowers.Stage)
     (powers : QleisliKernel.ControlledPowers.check width target stages = true)
@@ -184,6 +190,11 @@ theorem complete_trace {Y : Type} [Fintype Y] (A : Y → Matrix T T ℂ)
     _ = _ := by
       rw [← Matrix.trace_sum, ← Matrix.sum_mul, joint, Matrix.one_mul]
 
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: actual
+hierarchical instrument acceptance with the same exact branches, all-outcome
+completeness, trace and reference preservation, including verified provider
+evidence. Retire after caller/registry migration and public API compatibility
+review. Keep generic Kraus completeness, character and reference/trace laws. -/
 theorem checked_plan_complete (targetWidth precision provider : Nat)
     (operations : Nat → Matrix (Fin (2^targetWidth)) (Fin (2^targetWidth)) ℂ)
     (plan : QleisliKernel.Qpe.Plan) (receipt : QleisliKernel.QftGraph.Receipt)
@@ -198,7 +209,13 @@ theorem checked_plan_complete (targetWidth precision provider : Nat)
   exact checked_complete operations precision provider plan.powers powers plan.fourier
     plan.fourierEntry receipt qft actual meaning isometry
 
-/-- Acceptance itself establishes an actual denotation; callers do not need to
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: actual
+hierarchical instrument acceptance with the same exact branches, all-outcome
+completeness, trace and reference preservation, including verified provider
+evidence. Retire after caller/registry migration and public API compatibility
+review. Keep generic Kraus completeness, character and reference/trace laws.
+
+Acceptance itself establishes an actual denotation; callers do not need to
 assume that graph interpretation succeeds. The remaining provider premise is
 explicit and must come from its independent evidence, not from a plan flag. -/
 theorem accepted_plan (targetWidth precision provider : Nat)

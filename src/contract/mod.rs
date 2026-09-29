@@ -692,7 +692,7 @@ fn remapped(steps: &[CircuitStep], offset: usize) -> Vec<CircuitStep> {
 
 /// Recheck the evidence carried by a raw certified compute/use/uncompute scope.
 /// This IR-level boundary knows widths; the source checker additionally checks
-/// exact source type trees and the two body ownerships, including Q<Unit>.
+/// exact source type trees and the two body ownerships, including `Q<Unit>`.
 pub fn check_computed(
     source_bits: usize,
     function: &[u16],

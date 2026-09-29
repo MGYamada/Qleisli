@@ -2,12 +2,12 @@
 
 use std::sync::Arc;
 
-use qleisli_core::contract::exact::{Budget, Exact, ExactError, Matrix};
-use qleisli_core::contract::function::{MAX_FUNCTION_DEPTH, MAX_FUNCTION_SOURCE_BYTES};
-use qleisli_core::contract::{
+use qleisli::contract::exact::{Budget, Exact, ExactError, Matrix};
+use qleisli::contract::function::{MAX_FUNCTION_DEPTH, MAX_FUNCTION_SOURCE_BYTES};
+use qleisli::contract::{
     BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
 };
-use qleisli_core::ir::*;
+use qleisli::ir::*;
 
 fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)

@@ -1,0 +1,6 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+unitary fn ht(q: Q<Bit>) -> Q<Bit> { t(h(q)) }
+observe fn main() -> CBit { measure_z(repeat_static(300,ht,init0())) }

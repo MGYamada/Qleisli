@@ -1,0 +1,50 @@
+{
+  "format": "qleisli.qft-hierarchy-authoring",
+  "version": 1,
+  "status": "observed",
+  "results": [
+    [
+      "1",
+      "accepted",
+      "159723",
+      "67",
+      "1"
+    ],
+    [
+      "2",
+      "invalid_ir",
+      "Lean hierarchy inspection rejected the artifact"
+    ],
+    [
+      "3",
+      "invalid_ir",
+      "Lean hierarchy inspection rejected the artifact"
+    ],
+    [
+      "4",
+      "invalid_ir",
+      "Lean hierarchy inspection rejected the artifact"
+    ],
+    [
+      "8",
+      "limit",
+      "Lean hierarchy inspection rejected the artifact"
+    ]
+  ],
+  "artifact_sha256": {
+    "1": "5ee8cf9f219dfd9dbfce4dceadd315664ac87cc0e8c38715a56ce91ade47ce1f",
+    "2": "40f68bcde925b3b9f97534e3d6d8b8c795753edad37f6030398092465984b708",
+    "3": "5cb9c85897038aa7aa726470c9a7ca762cd79a686145892d9884c0b1dd33420b",
+    "4": "521314d3ba69aaf87e8f48daebfaaed8b81ba712647c826906ae6e1e529b0f60",
+    "8": "e46b0c12cf29bcbc61f7b627b94144a2b962ca5b1b1ffd3677eb99f4d3e1468f"
+  },
+  "definition_counts": {
+    "1": 10,
+    "2": 31,
+    "3": 64,
+    "4": 109,
+    "8": 409
+  },
+  "stdout": "\nrunning 1 test\nQFT|1|accepted|159723|67|1\nQFT|2|invalid_ir|Lean hierarchy inspection rejected the artifact\nQFT|3|invalid_ir|Lean hierarchy inspection rejected the artifact\nQFT|4|invalid_ir|Lean hierarchy inspection rejected the artifact\nQFT|8|limit|Lean hierarchy inspection rejected the artifact\ntest inspect_authored_qft_hierarchies ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s\n\n",
+  "stderr": "   Compiling qleisli-core v0.2.1 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.35s\n     Running tests/qft_hierarchy.rs (target/debug/deps/qft_hierarchy-5d75744bf3a93d2c)\n"
+}

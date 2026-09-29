@@ -1,0 +1,169 @@
+import QleisliKernel.Hierarchical.Artifact
+
+/-! Checked metadata for a canonical, single-owner reshape adapter.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+This helper does not add a hierarchy acceptance rule or issue evidence. Source
+production must emit the existing independently checked structural operations.
+-/
+
+namespace QleisliKernel.Reshape
+open Layout Hierarchical.Artifact
+
+/-- Erase grouping and Unit only. In particular, Bits(0) is a retained atom. -/
+def leaves (basis : List TypeAtom) : List TypeAtom :=
+  basis.filter fun atom => match atom with
+    | .unit | .tuple _ => false
+    | .bit | .bits _ => true
+
+/-- Width contribution of a prefix atom; tuple fields occur after its header. -/
+def width (basis : List TypeAtom) : Nat :=
+  basis.foldr (fun atom total => match atom with
+    | .unit | .tuple _ => total
+    | .bit => 1 + total
+    | .bits n => n + total) 0
+
+/-- Low-field-first mixed-radix encoding, reading one label per retained leaf.
+Well-formed trees and in-range leaf labels are the basis-value interpretation;
+the algebraic preservation theorem holds even without those restrictions. -/
+def encode (basis : List TypeAtom) : List Nat → Nat :=
+  basis.foldr (fun atom rest values => match atom with
+    | .unit | .tuple _ => rest values
+    | .bit => values.headD 0 + 2 * rest values.tail
+    | .bits n => values.headD 0 + 2^n * rest values.tail) (fun _ => 0)
+
+theorem width_leaves (basis : List TypeAtom) : width (leaves basis) = width basis := by
+  induction basis with
+  | nil => rfl
+  | cons atom rest ih => cases atom <;> simp_all [leaves, width]
+
+theorem encode_leaves (basis : List TypeAtom) (values : List Nat) :
+    encode (leaves basis) values = encode basis values := by
+  induction basis generalizing values with
+  | nil => rfl
+  | cons atom rest ih => cases atom <;> simp_all [leaves, encode]
+
+/-- No finite enumeration: the equation holds for every prefix and label list. -/
+theorem compatible_encoding (source target : List TypeAtom)
+    (same : leaves source = leaves target) (values : List Nat) :
+    encode source values = encode target values := by
+  rw [← encode_leaves source, ← encode_leaves target, same]
+
+theorem compatible_width (source target : List TypeAtom)
+    (same : leaves source = leaves target) : width source = width target := by
+  rw [← width_leaves source, ← width_leaves target, same]
+
+/-- The canonical map on the entire finite basis. Its inverse exchanges the
+two types; the integer coordinate is unchanged, including the zero-width case. -/
+def relabel (source target : List TypeAtom) (same : leaves source = leaves target)
+    (index : Fin (2 ^ width source)) : Fin (2 ^ width target) :=
+  ⟨index.val, by rw [← compatible_width source target same]; exact index.isLt⟩
+
+theorem relabel_round_trip (source target : List TypeAtom)
+    (same : leaves source = leaves target) (index : Fin (2 ^ width source)) :
+    relabel target source same.symm (relabel source target same index) = index := by
+  apply Fin.ext
+  rfl
+
+theorem relabel_compose (a b c : List TypeAtom)
+    (ab : leaves a = leaves b) (bc : leaves b = leaves c) (index : Fin (2 ^ width a)) :
+    relabel b c bc (relabel a b ab index) = relabel a c (ab.trans bc) index := by
+  apply Fin.ext
+  rfl
+
+/-- The two fields denote exactly one consumed and one produced owner. There
+is no absent port, arbitrary body, phase, frame or classical value in this API. -/
+structure Request where
+  source : QuantumPort
+  target : QuantumPort
+  deriving BEq, DecidableEq, Repr
+
+def valid (request : Request) : Bool :=
+  u32 request.source.owner && u32 request.target.owner &&
+  request.source.axes.all u32 && request.target.axes.all u32 &&
+  basisWidth request.source.basis.toList == some request.source.axes.size &&
+  basisWidth request.target.basis.toList == some request.target.axes.size &&
+  request.source.axes.size ≤ 16 && request.target.axes.size ≤ 16 &&
+  decide request.source.axes.toList.Nodup &&
+  decide (request.source.owner ≠ request.target.owner) &&
+  decide (request.source.axes = request.target.axes) &&
+  decide (leaves request.source.basis.toList = leaves request.target.basis.toList)
+
+/-- Constant-time array sizes precede allocation/traversal. Conservative charge
+also covers prefix well-formedness and axis uniqueness; leaf comparison alone
+is linear. Existing bounded profile and arithmetic-cost convention are retained. -/
+def workCharge (request : Request) : Nat :=
+  8 * (1 + request.source.basis.size + request.target.basis.size +
+    request.source.axes.size + request.target.axes.size)^2
+
+structure Checked where
+  visits : Nat
+  deriving Repr
+
+/-- Bind independently required complete endpoints, never just dimensions.
+The returned metadata cannot validate an arbitrary implementation of these types. -/
+def check (request required : Request) (remaining : Nat) : Except Hierarchical.Artifact.Error Checked :=
+  if remaining > 2000000 || workCharge request + workCharge required > remaining then .error .limit
+  else if !valid request then .error .invalidIr
+  else if request ≠ required then .error .contract
+  else .ok ⟨workCharge request + workCharge required⟩
+
+theorem check_conditions (request required : Request) (remaining : Nat) (checked : Checked)
+    (accepted : check request required remaining = .ok checked) :
+    request = required ∧ valid request = true ∧
+    checked.visits = workCharge request + workCharge required ∧
+    checked.visits ≤ remaining ∧ remaining ≤ 2000000 := by
+  unfold check at accepted
+  split at accepted
+  next bad => contradiction
+  next bounded =>
+    split at accepted
+    next bad => contradiction
+    next valid =>
+      split at accepted
+      next different => contradiction
+      next same =>
+        cases Except.ok.inj accepted
+        have limits : remaining ≤ 2000000 ∧ workCharge request + workCharge required ≤ remaining := by
+          simpa only [Bool.or_eq_true, decide_eq_true_eq, not_or, Nat.not_lt] using bounded
+        exact ⟨by simpa using same, by simpa using valid, rfl, limits.2, limits.1⟩
+
+theorem check_leaves (request required : Request) (remaining : Nat) (checked : Checked)
+    (accepted : check request required remaining = .ok checked) :
+    leaves request.source.basis.toList = leaves request.target.basis.toList := by
+  have h := (check_conditions request required remaining checked accepted).2.1
+  simp only [valid, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact h.2
+
+/-- Same-typed leaves cannot hide a wire swap, including in entangled inputs. -/
+theorem check_axes_owners (request required : Request) (remaining : Nat) (checked : Checked)
+    (accepted : check request required remaining = .ok checked) :
+    request.source.axes = request.target.axes ∧
+    request.source.owner ≠ request.target.owner ∧ request.source.axes.toList.Nodup := by
+  have h := (check_conditions request required remaining checked accepted).2.1
+  simp only [valid, Bool.and_eq_true, decide_eq_true_eq] at h
+  exact ⟨h.1.2, h.1.1.2, h.1.1.1.2⟩
+
+theorem check_encoding (request required : Request) (remaining : Nat) (checked : Checked)
+    (accepted : check request required remaining = .ok checked) (values : List Nat) :
+    encode request.source.basis.toList values = encode request.target.basis.toList values :=
+  compatible_encoding _ _ (check_leaves request required remaining checked accepted) values
+
+theorem check_round_trip (request required : Request) (remaining : Nat) (checked : Checked)
+    (accepted : check request required remaining = .ok checked)
+    (index : Fin (2 ^ width request.source.basis.toList)) :
+    let h := check_leaves request required remaining checked accepted
+    relabel _ _ h.symm (relabel _ _ h index) = index :=
+  relabel_round_trip _ _ (check_leaves request required remaining checked accepted) index
+
+/-- Arbitrary coefficient and reference types: equality is literal, preserving
+phases and correlations. This is the canonical adapter equation, not adequacy
+of a future source producer or permission to accept an arbitrary circuit. -/
+theorem check_reference_coefficients (request required : Request) (remaining : Nat)
+    (checked : Checked) (accepted : check request required remaining = .ok checked)
+    {R C : Type} (amplitude : Nat → R → C) :
+    (fun values reference => amplitude (encode request.target.basis.toList values) reference) =
+    (fun values reference => amplitude (encode request.source.basis.toList values) reference) := by
+  funext values reference
+  rw [check_encoding request required remaining checked accepted values]
+
+end QleisliKernel.Reshape

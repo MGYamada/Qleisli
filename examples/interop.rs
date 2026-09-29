@@ -1,9 +1,7 @@
 //! Host adapter exercise; output is text on stdout, with no backend submission.
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::interop::{
-    MAX_OPENQASM_BYTES, export_openqasm3, export_qir_base, import_openqasm3,
-};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::interop::{MAX_OPENQASM_BYTES, export_openqasm3, export_qir_base, import_openqasm3};
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::fmt::Write as _;
 use std::io::{Read, Write};
 use std::path::Path;

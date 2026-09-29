@@ -1,0 +1,19 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Adapted from retained Qualtran AddK/Equals; see README.md.
+use bitwise::xor_into;
+use controls::all_ones;
+use negation::invert_bits;
+
+/// |x,y,t> -> |x,y,t xor [x=y]> with phase +1 on the entire space.
+/// Compute differences into y, compare coherently, then restore y exactly.
+pub unitary fn equals[static n: Nat](left: Q<Bits<n>>, y: Q<Bits<n>>, target: Q<Bit>)
+    -> (Q<Bits<n>>, Q<Bits<n>>, Q<Bit>) {
+    let (left,y) = xor_into[n](left,y);
+    let y = invert_bits[n](y);
+    let (y,target) = all_ones[n](y,target);
+    let y = invert_bits[n](y);
+    let (left,y) = xor_into[n](left,y);
+    (left,y,target)
+}

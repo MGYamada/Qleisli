@@ -1,0 +1,25 @@
+{
+  "format": 1,
+  "task": "Corpus-first sized Xor and GHZ source implementation",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Actual sources saved before first experimental compilation; no production grammar claim",
+      "sha256": {
+        "bitwise.qli": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce",
+        "prepare.qli": "67b958139f21cc2a35a5f3d18d2c8685d604e504cf82ffaf5acd77a95ad74af6"
+      },
+      "observations": [
+        "first-compile.json",
+        "observation-first-native.json",
+        "observation-compact-native-first.json",
+        "validated-source.json"
+      ]
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 //! Diagnostic text and locations assist repair; schemas and rejection stay intact.
 mod common;
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{check_project, check_project_diagnostic, compile_project};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{check_project, check_project_diagnostic, compile_project};
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path, process::Command};
 
 fn fixture(name: &str) -> String {

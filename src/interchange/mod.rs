@@ -1,6 +1,9 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
+pub mod finite_leaf;
+pub mod finite_matrix;
+pub mod hierarchical;
 mod json;
 
 use codec::Codec;
@@ -10,6 +13,7 @@ use std::sync::Arc;
 
 use crate::VerifiedProgram;
 use crate::contract::exact::Budget;
+use crate::contract::function::RetainedIdentity;
 use crate::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use crate::contract::{
     BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
@@ -48,11 +52,15 @@ impl Error {
 }
 impl std::fmt::Display for Error {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "{} at {}: {}",
-            self.code, self.json_pointer, self.message
-        )
+        if self.json_pointer.is_empty() {
+            write!(f, "{}: {}", self.code, self.message)
+        } else {
+            write!(
+                f,
+                "{} at {}: {}",
+                self.code, self.json_pointer, self.message
+            )
+        }
     }
 }
 impl std::error::Error for Error {}
@@ -165,23 +173,23 @@ impl Encoder {
         } else {
             None
         };
-        let identity = receipt.identity();
+        let (implementation_name, specification_name, snapshot) = receipt.identity_parts();
         self.identity_remaining = self
             .identity_remaining
-            .checked_sub(identity.implementation.len() + identity.specification.len())
+            .checked_sub(implementation_name.len() + specification_name.len())
             .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
         let mut sources = Vec::new();
-        for (path, text) in &identity.sources {
-            self.identity_remaining = self
-                .identity_remaining
-                .checked_sub(path.len() + text.len())
-                .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+        for (path, text) in snapshot {
             let index = if let Some(&index) = self.source_ids.get(path) {
                 if self.sources[index].1 != *text {
                     return Err(Error::format("conflicting source snapshots for one label"));
                 }
                 index
             } else {
+                self.identity_remaining = self
+                    .identity_remaining
+                    .checked_sub(path.len() + text.len())
+                    .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
                 if self.sources.len() >= 128 {
                     return Err(Error::limit("more than 128 sources"));
                 }
@@ -202,14 +210,8 @@ impl Encoder {
             (
                 "identity",
                 Value::object([
-                    (
-                        "implementation",
-                        Value::String(identity.implementation.clone()),
-                    ),
-                    (
-                        "specification",
-                        Value::String(identity.specification.clone()),
-                    ),
+                    ("implementation", Value::String(implementation_name.into())),
+                    ("specification", Value::String(specification_name.into())),
                     ("sources", Value::Array(sources)),
                 ]),
             ),
@@ -387,12 +389,17 @@ fn sources(value: &Value) -> Result<Vec<(String, String)>> {
     Ok(out)
 }
 
+// Ordered snapshots are interned only within this import. The ordinary exact
+// checker still validates every receipt and charges each distinct allocation.
+type Snapshots = BTreeMap<Vec<usize>, Arc<Vec<(String, String)>>>;
+
 fn identity(
     value: &Value,
     sources: &[(String, String)],
     used: &mut BTreeSet<usize>,
     remaining: &mut usize,
-) -> Result<FunctionIdentity> {
+    snapshots: &mut Snapshots,
+) -> Result<RetainedIdentity> {
     value.fields(&["implementation", "specification", "sources"])?;
     let implementation = value.field("implementation")?.text()?;
     let specification = value.field("specification")?.text()?;
@@ -412,18 +419,22 @@ fn identity(
         if !local.insert(i) {
             return Err(Error::format("duplicate identity source reference"));
         }
-        used.insert(i);
-        let (path, text) = &sources[i];
-        *remaining = remaining
-            .checked_sub(path.len() + text.len())
-            .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
-        snapshot.push((path.clone(), text.clone()));
+        if used.insert(i) {
+            let (path, text) = &sources[i];
+            *remaining = remaining
+                .checked_sub(path.len() + text.len())
+                .ok_or_else(|| Error::limit("aggregate identity bytes exceed 1 MiB"))?;
+        }
+        snapshot.push(i);
     }
-    Ok(FunctionIdentity {
-        implementation: implementation.into(),
-        specification: specification.into(),
-        sources: snapshot,
-    })
+    let shared = snapshots.entry(snapshot).or_insert_with_key(|indices| {
+        Arc::new(indices.iter().map(|&i| sources[i].clone()).collect())
+    });
+    Ok(RetainedIdentity::shared(
+        implementation.into(),
+        specification.into(),
+        Arc::clone(shared),
+    ))
 }
 
 fn entry_tag(value: &Value, version: Version) -> Result<&str> {
@@ -613,9 +624,20 @@ fn meaning(value: &Value, signature: BasisType) -> Result<FiniteMeaning> {
 /// optionally check the caller's separate mathematical request. No frontend is
 /// called, and source labels never cause filesystem or network access.
 pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
-    let value = json::parse(bytes)?;
     let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-    let (program, root_interface, snapshot) = import_value(&value, &mut budget)?;
+    import_with_budget(bytes, request, &mut budget)
+}
+
+/// Internal shared-budget entry for the finite-leaf host. Structural and JSON
+/// bounds are unchanged; exact receipt and request work uses the same budget.
+fn import_with_budget(
+    bytes: &[u8],
+    request: Option<&[u8]>,
+    budget: &mut Budget,
+) -> Result<Imported> {
+    let before = budget.remaining();
+    let value = json::parse(bytes)?;
+    let (program, root_interface, snapshot) = import_value(&value, budget)?;
     if let Some(bytes) = request {
         let req = json::parse(bytes).map_err(|e| e.at("/request"))?;
         req.fields(&[
@@ -658,7 +680,7 @@ pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
                 specification: "independent-request".into(),
                 sources: vec![],
             },
-            &mut budget,
+            budget,
         )
         .map_err(|e| contract_error(e).at("/request/meaning"))?;
     }
@@ -666,7 +688,7 @@ pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
         program,
         root_interface,
         request_checked: request.is_some(),
-        exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
+        exact_work: before - budget.remaining(),
     })
 }
 
@@ -706,6 +728,7 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
     let mut receipts = vec![None; entries.len()];
     let mut used = BTreeSet::new();
     let mut identity_bytes = MAX_SOURCE_BYTES;
+    let mut snapshots = Snapshots::new();
     for node in order {
         let decoder = Decoder {
             evidence: &receipts,
@@ -738,6 +761,7 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                     &snapshot,
                     &mut used,
                     &mut identity_bytes,
+                    &mut snapshots,
                 )?;
                 if entry_tag(entry, version)? == "circuit" {
                     let specification = checked
@@ -747,17 +771,17 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                     .raw()
                     .clone();
                     Ok(Arc::new(
-                        FunctionEvidence::check(
+                        FunctionEvidence::check_retained_diagnostic(
                             signature,
                             implementation,
                             specification,
                             identity,
                             budget,
                         )
-                        .map_err(contract_error)?,
+                        .map_err(|diagnostic| contract_error(diagnostic.error))?,
                     ))
                 } else {
-                    Ok(MeaningEvidence::check(
+                    Ok(MeaningEvidence::check_retained(
                         implementation,
                         meaning(entry.field("meaning")?, signature)?,
                         identity,
@@ -952,9 +976,16 @@ mod tests {
         ]);
         let mut remaining = MAX_SOURCE_BYTES;
         assert_eq!(
-            identity(&id, &source, &mut BTreeSet::new(), &mut remaining)
-                .unwrap_err()
-                .code,
+            identity(
+                &id,
+                &source,
+                &mut BTreeSet::new(),
+                &mut remaining,
+                &mut Snapshots::new()
+            )
+            .err()
+            .unwrap()
+            .code,
             "limit"
         );
         let values = source_values(&[
@@ -970,5 +1001,110 @@ mod tests {
             .is_err()
         );
         assert!(sources(&source_values(&[("\0".into(), "".into())])).is_err());
+    }
+
+    #[test]
+    fn shared_snapshots_charge_once_and_preserve_order_and_duplicate_checks() {
+        let source = vec![
+            ("a".into(), "x".repeat(600_000)),
+            ("b".into(), "y".repeat(100_000)),
+        ];
+        let id = |indices: &[u64]| {
+            Value::object([
+                ("implementation", Value::String("f".into())),
+                ("specification", Value::String("s".into())),
+                (
+                    "sources",
+                    Value::Array(indices.iter().copied().map(Value::Number).collect()),
+                ),
+            ])
+        };
+        let mut used = BTreeSet::new();
+        let mut remaining = MAX_SOURCE_BYTES;
+        let mut snapshots = Snapshots::new();
+        let first = identity(
+            &id(&[0, 1]),
+            &source,
+            &mut used,
+            &mut remaining,
+            &mut snapshots,
+        )
+        .unwrap();
+        let second = identity(
+            &id(&[0, 1]),
+            &source,
+            &mut used,
+            &mut remaining,
+            &mut snapshots,
+        )
+        .unwrap();
+        let (
+            RetainedIdentity::Shared { sources: a, .. },
+            RetainedIdentity::Shared { sources: b, .. },
+        ) = (first, second)
+        else {
+            panic!("shared snapshots required")
+        };
+        assert!(Arc::ptr_eq(&a, &b));
+        assert_eq!(remaining, MAX_SOURCE_BYTES - 700_002 - 4);
+        let reverse = identity(
+            &id(&[1, 0]),
+            &source,
+            &mut used,
+            &mut remaining,
+            &mut snapshots,
+        )
+        .unwrap();
+        let RetainedIdentity::Shared {
+            sources: reverse, ..
+        } = reverse
+        else {
+            unreachable!()
+        };
+        assert_eq!(reverse[0], source[1]);
+        assert!(!Arc::ptr_eq(&a, &reverse));
+        assert!(
+            identity(
+                &id(&[0, 0]),
+                &source,
+                &mut used,
+                &mut remaining,
+                &mut snapshots
+            )
+            .is_err()
+        );
+        assert!(
+            identity(
+                &id(&[2]),
+                &source,
+                &mut used,
+                &mut remaining,
+                &mut snapshots
+            )
+            .is_err()
+        );
+        // Repeated names still consume the artifact's aggregate identity budget.
+        let mut tiny = 1;
+        assert_eq!(
+            identity(&id(&[0, 1]), &source, &mut used, &mut tiny, &mut snapshots)
+                .err()
+                .unwrap()
+                .code,
+            "limit"
+        );
+    }
+
+    #[test]
+    fn display_omits_only_the_absent_pointer() {
+        assert_eq!(
+            Error::limit("budget exhausted").to_string(),
+            "limit: budget exhausted"
+        );
+        assert_eq!(
+            Error::limit("budget exhausted")
+                .at("/evidence/0")
+                .to_string(),
+            "limit at /evidence/0: budget exhausted"
+        );
     }
 }

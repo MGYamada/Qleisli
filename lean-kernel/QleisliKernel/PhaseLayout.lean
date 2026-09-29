@@ -260,8 +260,10 @@ theorem check_sound (definitions : List Definition) (entry : Nat) (required : Su
       obtain ⟨semantics, witness, checked⟩ := checkMeanings_sound definitions entry required layoutStats hm
       exact ⟨semantics, witness, layoutStats, checked⟩
 
-/-- A frame/reference value is retained exactly, without a separability premise. -/
-theorem check_reference (definitions : List Definition) (entry : Nat) (required : Summary)
+/-- Product-value corollary of `check_sound`: the cyclic basis action is equal
+when paired with an unchanged ordinary value. This theorem does not construct a
+complex linear/tensor extension or establish preservation of entanglement. -/
+theorem check_reference_value (definitions : List Definition) (entry : Nat) (required : Summary)
     (stats : Stats) (accepted : check definitions entry required = .ok stats)
     (actual : Action) (meaning : denote definitions entry = some actual) {R : Type}
     (state : State) (reference : R) :
@@ -270,5 +272,18 @@ theorem check_reference (definitions : List Definition) (entry : Nat) (required 
   rw [meaning] at same
   cases Option.some.inj same
   rfl
+
+/-- temporary (TP-004), importance P2: Legacy product-value alias. Replacement: `check_reference_value`.
+Retire after callers migrate and public Lean API compatibility review.
+
+Compatibility name for `check_reference_value`. The reference is an ordinary
+product value, not an entangled quantum reference system. See the separate
+interference/operator bridge for complex linear-extension obligations. -/
+theorem check_reference (definitions : List Definition) (entry : Nat) (required : Summary)
+    (stats : Stats) (accepted : check definitions entry required = .ok stats)
+    (actual : Action) (meaning : denote definitions entry = some actual) {R : Type}
+    (state : State) (reference : R) :
+    (actual state, reference) = (required.action state, reference) :=
+  check_reference_value definitions entry required stats accepted actual meaning state reference
 
 end QleisliKernel.PhaseLayout

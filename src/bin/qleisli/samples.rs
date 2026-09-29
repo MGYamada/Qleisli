@@ -1,6 +1,6 @@
-use qleisli_core::VerifiedProgram;
-use qleisli_core::frontend::diagnostic::Diagnostic;
-use qleisli_core::sim::{Sample, SampleError, SampleLimits, SplitMix64, sample_closed};
+use qleisli::VerifiedProgram;
+use qleisli::frontend::diagnostic::Diagnostic;
+use qleisli::sim::{Sample, SampleError, SampleLimits, SplitMix64, sample_closed};
 
 pub(super) fn collect(
     program: &VerifiedProgram,
@@ -43,7 +43,7 @@ fn collect_with_budget(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use qleisli_core::{ir::*, verify};
+    use qleisli::{ir::*, verify};
     #[test]
     fn aggregate_failure_does_not_return_earlier_shots() {
         let p = verify(RawProgram {

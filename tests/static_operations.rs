@@ -3,11 +3,11 @@ use std::fs;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::frontend::parser::parse_module;
-use qleisli_core::ir::*;
-use qleisli_core::sim::{SimulationLimits, run_closed};
-use qleisli_core::verify;
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::parser::parse_module;
+use qleisli::ir::*;
+use qleisli::sim::{SimulationLimits, run_closed};
+use qleisli::verify;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Root(PathBuf);

@@ -1,0 +1,130 @@
+{
+  "format": "qleisli.gradient-binding-runtime-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "seconds": 58.122,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 8.509,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "exit_code": 0,
+      "seconds": 23.242,
+      "stdout": "",
+      "stderr": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 23.164s\n\nOK\n"
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_gradient.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/gradient-binding-native.json"
+      ],
+      "exit_code": 0,
+      "seconds": 10.712,
+      "stdout": "{\"binary_sha256\":\"70c0474ae059c6cfd9e8682e66c09367dfc76dfb8daecae9641e9981f981da0c\",\"format\":\"qleisli.hierarchical-gradient-binding\",\"native_cases\":175,\"phase_only_fault\":true,\"scope\":\"Actual producer graphs and shared budget after Conditional.checkAll. Renaming tests the component, not finite payload reissuance. Full Fourier schema and external production authority remain disabled.\",\"source_sha256\":\"faf98ecfe9e771577b7716fec9aa6c8b047ba3660c70b088a54f4bdcf35a93db\",\"status\":\"passed\",\"version\":1}\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "cargo",
+        "run",
+        "--example",
+        "lean_kernel",
+        "--",
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--self-test"
+      ],
+      "exit_code": 0,
+      "seconds": 9.264,
+      "stdout": "Passed 1307 native Lean decisions; 341 Rust exact-matrix oracles; all 256 dyadic scalar phases.\n",
+      "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running `target/debug/examples/lean_kernel lean-kernel/.lake/build/bin/qleisli-kernel --self-test`\n"
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_host.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/gradient-binding-host-native.json"
+      ],
+      "exit_code": 0,
+      "seconds": 11.142,
+      "stdout": "{\"format\": \"qleisli.hierarchy-host-validation\", \"version\": 1, \"status\": \"passed\", \"binary_sha256\": \"cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830\", \"binary_cases\": 362, \"seconds\": 11.095, \"host_command\": [\"cargo\", \"test\", \"--test\", \"hierarchical_host\", \"--\", \"--ignored\", \"--nocapture\"], \"exit_code\": 0}\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_request.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/gradient-binding-root-native.json"
+      ],
+      "exit_code": 0,
+      "seconds": 24.254,
+      "stdout": "{\"format\": \"qleisli.hierarchy-root-request-validation\", \"version\": 1, \"status\": \"passed\", \"cases\": 813, \"seconds\": 24.203, \"binary_sha256\": \"cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830\"}\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_conditional.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/gradient-binding-conditional-native.json"
+      ],
+      "exit_code": 0,
+      "seconds": 4.519,
+      "stdout": "{\"binary_sha256\": \"ab0475af0ad76a11f47f44aaf149f743658adb94b6da108c8fc33f614b7f2751\", \"cases\": 47, \"expanded_repetitions\": 0, \"finite_requests\": 38, \"format\": \"qleisli.conditional-derivation-validation\", \"pending\": 30, \"repeat_cost\": 29903, \"schema_cost\": 60116, \"source_sha256\": \"34a1ce8ab33ee58f74c5f0bf3ea6bd19b8c5ec316224d0a4a35f7b568b401c6d\", \"status\": \"passed\", \"version\": 1}\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "/Users/masa/git/Qleisli",
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_qft.py",
+        "--construction",
+        "shared-gradient",
+        "--record",
+        "tests/fixtures/hierarchical_ir/gradient-binding-qft-native.json"
+      ],
+      "exit_code": 0,
+      "seconds": 6.658,
+      "stdout": "{\"format\": \"qleisli.qft-hierarchy-authoring\", \"version\": 1, \"construction\": \"shared-gradient\", \"kernel_sha256\": \"cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830\", \"status\": \"checked-structure\", \"results\": [[\"1\", \"accepted\", \"71718\", \"67\", \"1\"], [\"2\", \"accepted\", \"255471\", \"134\", \"2\"], [\"3\", \"accepted\", \"373896\", \"201\", \"3\"], [\"4\", \"accepted\", \"620825\", \"268\", \"4\"], [\"5\", \"accepted\", \"778980\", \"335\", \"5\"], [\"6\", \"accepted\", \"1095539\", \"402\", \"6\"], [\"7\", \"accepted\", \"1299056\", \"469\", \"7\"], [\"8\", \"accepted\", \"1694205\", \"536\", \"8\"]], \"semantic_probes\": [{\"width\": 1, \"vectors\": 4, \"maximum_error\": 8.659560562354933e-17, \"detected_faults\": [\"wrong-h\"]}, {\"width\": 2, \"vectors\": 6, \"maximum_error\": 2.5114115397022025e-16, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\"]}, {\"width\": 3, \"vectors\": 10, \"maximum_error\": 1.3743915342634358e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}, {\"width\": 4, \"vectors\": 18, \"maximum_error\": 3.798401069772352e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}, {\"width\": 5, \"vectors\": 8, \"maximum_error\": 3.365299161289335e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}, {\"width\": 6, \"vectors\": 8, \"maximum_error\": 4.2099133379706924e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}, {\"width\": 7, \"vectors\": 8, \"maximum_error\": 5.673270513883451e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}, {\"width\": 8, \"vectors\": 8, \"maximum_error\": 9.505822624549878e-15, \"detected_faults\": [\"wrong-h\", \"wrong-phase\", \"missing-reversal\", \"wrong-polarity\", \"wrong-repeat\"]}], \"native_faults\": [[\"layout\", \"invalid_ir\"], [\"empty-owner\", \"invalid_ir\"], [\"h\", \"contract\"], [\"phase\", \"contract\"], [\"repeat\", \"contract\"]], \"artifact_sha256\": {\"1\": \"290e4d97de08d8c87c9d95b2c868bb263df6fd0e070ebf4e1973b4c45e237c8b\", \"2\": \"33b489f935b7ecd856a3fc7c1276db8ee63f4d7c2ddf14ac680c9d050288f412\", \"3\": \"aaf0e1c744d9492177a4b274a544dea3e2b6f3278d2eb5f0098cefcb87a92764\", \"4\": \"2b15f8b4a723eeb21a1800bf8fc764c07daddb36561eb64e8ea7d24c580396a5\", \"5\": \"7b3b882c470324144adb2f801e3c6a17d8ac0bcb31c42ff8dad24591c757604f\", \"6\": \"033a33236b815f7f9011950013f8ec6e0576b4877bc63032da976eaaae16b4c4\", \"7\": \"74dd6ab709f3a1f7a884e82cac1ae289e305f45902a295a3028f7866792fc327\", \"8\": \"6a59a65a1cad6fba0a7181a40974e7fc4936642e4b7022e0979fbb2498b4981b\"}, \"definition_counts\": {\"1\": 13, \"2\": 37, \"3\": 52, \"4\": 77, \"5\": 92, \"6\": 117, \"7\": 132, \"8\": 157}}\n",
+      "stderr": ""
+    }
+  ]
+}

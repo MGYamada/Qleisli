@@ -34,6 +34,13 @@ collects those components into a standard vocabulary with semantic contracts.
 The three layers—verification foundations, structure extraction, and the
 standard library—share one trust boundary.
 
+The 2026-09-30 [Resource Safety adoption](resource-semantics.md) adds a third
+theorem pillar alongside Soundness and Physical Realizability: finite static
+resource bounds preserved through compilation for the supported profile.
+This is a future **to prove** obligation, not a present consequence of typing
+or ownership checking. Resource accounts should compose with meanings/effects;
+AI-generated cost annotations receive no authority without checking.
+
 AI can propose code and proofs. Acceptance rests on derivations checked by
 the compiler and on IR constructors and evidence, not on a proposal's origin
 or accompanying explanation. Operations that cannot be checked receive no

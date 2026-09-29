@@ -1,0 +1,13 @@
+Command: cargo test --test finite_matrix --test finite_leaf
+Exit status: 101
+
+   Compiling qleisli-core v0.2.1 (/Users/masa/git/Qleisli)
+error[E0599]: no method named `unwrap` found for struct `Exact` in the current scope
+  --> tests/finite_matrix.rs:62:50
+   |
+62 |     let entries = (0..8).map(|k| Exact::phase(k).unwrap()).collect();
+   |                                                  ^^^^^^ method not found in `Exact`
+
+For more information about this error, try `rustc --explain E0599`.
+error: could not compile `qleisli-core` (test "finite_matrix") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

@@ -13,6 +13,22 @@ model identifier and sampling settings were unavailable.
 
 The 0.2.0 continuation adds [shared QPE](shared-qpe-v020/session.json), whose original `CWord` spelling and parse failure are immutable history, and [sampled Grover](grover-trial-v020/session.json), whose missing-kernel repair precedes the implementation of sampling. Current design uses `CBits`; the appended Grover observation uses the unchanged repaired source with the new sampler.
 
+The [0.2.1 reshape draft](reshape-v021/session.json) preserves an explicitly
+typed conversion before checking and its real parse failure. It is informed
+desired source, with no claim that the draft spelling is implemented. The
+separate Lean metadata experiment does not repair that source yet.
+
+The [sized-Xor first attempt](sized-xor-v021/session.json) starts the authorized
+0.2.1 corpus-completion work. One desired size-parametric definition retains
+both owners, including the empty-fold boundary. The first check rejects the
+reserved name `xor`; a saved rename reaches the unsupported static-fold range token `..`.
+Hierarchy and G020-1 prerequisites remain pending.
+
+The [linear-size reshape first attempt](sized-reshape-v021/session.json) retains
+split/merge, `n+1` low-bit peeling and doubled-size source before checking.
+The actual parser rejects `+` in `Bits<n+m>`. This records the adopted next
+design obligation, not an executable adapter or algorithm proof.
+
 Each `session.json` names the task, kind, baseline commit/version, context,
 ordered attempts and observations. Each attempt contains a complete project,
 source hashes and a reason; observations retain argument lists, exit codes and
@@ -31,7 +47,9 @@ For the next session:
    counterexamples outside the repair sequence and label curated replays.
 4. Link semantic oracles, not just compilation. State context differences when
    comparing attempts; no model success-rate claim follows from these records.
-5. Add newly exposed friction to the [backlog](../../../docs/v0.2.0-backlog.md).
+5. Track newly exposed friction in a GitHub Issue or the
+   [backlog](../../../docs/v0.2.0-backlog.md). A GitHub Issue needs no duplicate
+   backlog entry, update or A020 ID.
 
 `python3 scripts/check_authoring_sessions.py` checks hashes, source inventories,
 context/observation presence and consistent recorded exits. It does not replay
@@ -39,3 +57,52 @@ commands, authenticate provenance or certify program meaning. Five checker
 tests protect against lost/edited snapshots and contradictory records. Both
 commands run in the docs CI job; Rust tests replay the QPE snapshot and repair
 regressions. Existing records are retained even when diagnostics evolve.
+
+The [corpus-first Xor/GHZ continuation](sized-corpus-v021/session.json) preserves
+both actual sources before experimental compilation. Initial direct lowering
+hit the checker budget at Xor width four; an intermediate normalized producer
+still failed at eight. Register-tail factoring and explicit one-bit conversions
+now admit all selected widths without changing any checker limit or rule.
+Complete basis/reference diagnostics and deliberate valid-circuit faults are
+in the [execution record](../../../corpus/sized/validation.json). Production
+CLI support and general source preservation are separate outstanding work.
+
+The [shared QFT and inverse client](sized-qft-v021/session.json) retains the
+first static-comparison lexer rejection and the later missing-module rejection.
+The repaired development compiler executes the unchanged forward source and
+its imported `adjoint` client. [Validation](../../../corpus/sized/qft-validation.json)
+includes independently requested forward Fourier meaning, all inverse columns,
+shared repeated calls, an entangled frame and valid-but-wrong source mutations.
+The original sources were not rewritten after checking; no controlled-model
+success rate or general source-preservation theorem is claimed.
+
+The [shared coherent QPE session](sized-qpe-v021/session.json) saves source with
+transparent operation access and controlled repetitions before the first
+missing-phase-adapter rejection. It retains the subsequent (8,8) capacity
+failure and corrects the upstream attribution year in a separate snapshot.
+Small-system checks now cover phase/reference-sensitive providers and the
+same imported inverse QFT. The user's 2026-09-30 instruction defers further
+maximum-size checks; prior failures remain historical. Measured `CBits`,
+production integration and named QPE binding remain open.
+
+The [shared AddK/Equals session](sized-arithmetic-v021/session.json) preserves
+recursive source before its first missing-operation rejection and a later
+small width-three equality budget failure. A second snapshot extracts shared
+complement; complete-content imported-graph sharing admits the same small case.
+The final record covers widths 0–3, inverse/controlled clients, 557 basis and
+96 reference columns, seven algorithm faults and twenty source rejections.
+No maximum-size check or universal source/algorithm proof is claimed.
+
+The [shared QPE client session](sized-qpe-clients-v021/session.json) preserves
+local order/amplitude sources and their common QPE inputs before the first
+static-argument parser rejection. Operation forwarding now keeps explicit
+capabilities, exact types and nested-provider identity. Small tests include
+N=15, non-dyadic order phases, p=0/1, off-grid amplitude estimation and full
+residual target/reference behavior. These are local integration fixtures, not
+new upstream translations or a measured `CBits` implementation.
+
+The [measured QPE first attempt](measured-qpe-v021/session.json) preserves the
+desired initialization/readout wrapper and its actual missing-import failure.
+The register helpers and classical word assembly are not implemented. The
+[checkpoint](measured-qpe-v021/checkpoint.md) records the source/IR gap and the
+user-requested stopping point before new checker or proof implementation.

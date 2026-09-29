@@ -1,0 +1,50 @@
+{
+  "format": "qleisli.fourier-root-runtime-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 9.093,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 22.786,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "00ff914f1b02634f74208f25957330c6491ae41416611bf3141008f3733a0741",
+      "diagnostics": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 22.698s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 59.698,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    }
+  ]
+}

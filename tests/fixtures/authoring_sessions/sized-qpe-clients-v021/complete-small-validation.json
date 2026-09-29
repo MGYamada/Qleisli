@@ -1,0 +1,11 @@
+{
+  "recorded_utc": "2026-09-29T16:18:00.320121+00:00",
+  "command": [
+    "python3",
+    "scripts/test_sized_qpe_clients.py",
+    "--record",
+    "tests/fixtures/sized_clients/validation.json"
+  ],
+  "exit_code": 0,
+  "transcript": "{\"status\": \"passed-small-coherent-clients\", \"totals\": {\"basis_columns\": 432, \"reference_columns\": 31}, \"provider_cache\": {\"maximum_error\": 2.220446049250313e-16, \"basis_columns\": 8, \"reference_columns\": 1}}\nNative outcomes: 23; source rejections: 18; semantic faults: 6\n"
+}

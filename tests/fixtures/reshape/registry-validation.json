@@ -1,0 +1,108 @@
+{
+  "format": "qleisli.schema-registry-validation",
+  "version": 1,
+  "mode": "rebuilt-types-and-audits",
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 0.162,
+      "stdout_sha256": "4ac28161fd74e487b5601de6d54404fb3cdcda0799a889fefe4fa37d390329c3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 29 executable kernel/transport source modules; no external Lake dependencies.\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 0.15,
+      "stdout_sha256": "c31e94e9c8c6c794755def03a847255e3c3c272660e374f92420e10d9ee891e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Build completed successfully (42 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 1.644,
+      "stdout_sha256": "710037e502fff298c5a10882065fc4fa1c00486200aff14bb18b7325d8dba4ff",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audited 4327 kernel/transport declarations, 1060 pure import modules and 1043 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 3.292,
+      "stdout_sha256": "d9e49042cc0f8ef0ddbbdec921bb0afee2bfff4487beb17070dbf060c9610269",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Build completed successfully (3386 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 38.067,
+      "stdout_sha256": "9eb5f16a7c299abe74286fc427467ddad030e46fa3c9f1fc1abc83826e175ef2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audited 1305 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 59.309,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "SchemaExport.lean"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 15.884,
+      "stdout_sha256": "f42bab5070273d64611934e6d55246047343df5254342bc602195b629da8f269",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "{\"checker\":{\"declaration\":\"QleisliKernel.Schema.check\",\"module\":\"QleisliKernel.Schema\",\"readable_type\":\"QleisliKernel.Schema.Request \u2192 QleisliKernel.Schema.Proposal \u2192 Option.{0} QleisliKernel.Schema.Receipt\",\"type\":[\"forall\",\"request\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Request\",[]],[\"forall\",\"proposal\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Proposal\",[]],[\"apply\",[\"constant\",\"Option\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Schema.Receipt\",[]]]]],\"universe_parameters\":[]},\"entries\":[{\"id\":\"qft-dyadic8/1\",\"theorem\":{\"declaration\":\"Qleisli.Schema.qft_sound\",\"module\":\"Qleisli.Schema\",\"readable_type\":\"\u2200 (width : Nat) (proposal : QleisliKernel.Schema.Proposal) (receipt : QleisliKernel.Schema.Receipt),\\n  @Eq.{1} (Option.{0} QleisliKernel.Schema.Receipt)\\n      (QleisliKernel.Schema.check (QleisliKernel.Schema.Request.qft width) proposal)\\n      (@Option.some.{0} QleisliKernel.Schema.Receipt receipt) \u2192\\n    \u2200 (definitions : List.{0} QleisliKernel.QftGraph.Definition) (entry : Nat),\\n      @Eq.{1} QleisliKernel.Schema.Witness proposal.witness (QleisliKernel.Schema.Witness.qft definitions entry) \u2192\\n        \u2203 actual,\\n          And\\n            (@Eq.{1} (Option.{0} QleisliKernel.QftGraph.Action) (QleisliKernel.QftGraph.denote definitions entry)\\n              (@Option.some.{0} QleisliKernel.QftGraph.Action actual))\\n            (And\\n              (@Eq.{1} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                (@HMul.hMul.{0, 0, 0} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (@Matrix.instHMulOfFintypeOfMulOfAddCommMonoid.{0, 0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool)\\n                    (Fin width \u2192 Bool) Complex\\n                    (@Pi.instFintype.{0, 0} (Fin width) (fun a => Bool) (instDecidableEqFin width) (Fin.fintype width)\\n                      fun a => Bool.fintype)\\n                    Complex.instMul\\n                    (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                            (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                              (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                  (@Matrix.conjTranspose.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex\\n                    (@InvolutiveStar.toStar.{0} Complex\\n                      (@StarAddMonoid.toInvolutiveStar.{0} Complex\\n                        (@AddCommMonoid.toAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                            (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                              (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                                (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                                  (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                                    (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                      (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                        (@StarRing.toStarAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                            (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                              (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\"
+    }
+  ],
+  "source_revision": "8ba4cf0b72976bcd57c7b606dca15bd6a2d6e52cd87fa78a9eba3d3c9e9efaaa",
+  "manifest_sha256": "b3abac4ca3867d88c2b8dd23de1acb9587a71190473dee1c377766780b5c82b2",
+  "entries": 3,
+  "externally_enabled": 0
+}

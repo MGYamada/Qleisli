@@ -6,9 +6,9 @@ use std::fs;
 
 use common::SourceRoot;
 
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::ir::{Effect, ProtectedUse, RawOp, SingleGate};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::ir::{Effect, ProtectedUse, RawOp, SingleGate};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 fn accepted(source: &str) {
     let root = SourceRoot::new(source);

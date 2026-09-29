@@ -14,12 +14,137 @@ diagnostic improvements and local validation from publication; the historical
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [development record](releases/v0.2.0.md) and
+The current [development record](releases/v0.2.1.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.2.1 authorized corpus continuation (2026-09-29)
+
+The [fresh host checkpoint](releases/v0.2.1.md#fresh-hierarchy-reconstruction-host-2026-09-29)
+connects strict hierarchy JSON, a fresh native Lean conditional check and
+reconstruction of every actual finite obligation on the same immutable data.
+362 binary cases, six native host tests and 433 ordinary Rust tests pass.
+Both Lean packages build and audit with the existing axiom allowlist. Shared
+powers retain constant checking work and reject invalid leaves even at zero.
+The report is an inspection result; independent production root contracts,
+remaining semantics and the complete sized corpus remain mandatory.
+
+The [finite unitarity and transport checkpoint](releases/v0.2.1.md#finite-unitarity-and-exact-matrix-transport-2026-09-29)
+derives a common unitary entry and both inverse/reference laws from actual
+returned finite obligations. Exact matrix descriptions now preserve independent
+dyadic exponents and undergo fresh Rust reconstruction against the bound QIRF.
+Both Lean builds/audits, fresh replay and 47 native regressions pass; Rust and
+documentation validation are recorded in the checkpoint. Production host/reader
+correspondence and the remaining complete profile still gate corpus completion.
+
+The [conditional finite checkpoint](releases/v0.2.1.md#conditional-finite-derivation-and-interpretation-2026-09-29)
+now composes actual finite obligations through the existing checked hierarchy.
+Its theorem constructs equal operators/reference maps from explicit equations
+for the actual leaf bytes, without an assumed whole-graph environment. The
+47-case native suite, both Lean builds/audits and fresh kernel replay pass.
+Decoder/host correspondence and production
+acceptance remain pending; the complete corpus goal is unchanged.
+
+The [finite unitary-leaf checkpoint](releases/v0.2.1.md#reconstructed-finite-unitary-leaves-2026-09-29)
+adds fresh QIRF reconstruction against independent exact matrices and complete
+type/owner/axis boundaries, with a shared finite budget. Formatting, 419 Rust
+tests and Clippy pass, including fresh-process phase mutation. The subsequent
+[pure request-binding checkpoint](releases/v0.2.1.md#actual-finite-request-binding-2026-09-29)
+retains actual indexed bytes and identity-encoded boundaries with proved
+binding and 67 native cases. Both Lean builds/audits and fresh kernel replay
+pass; the pending requests still need host/semantic integration and the rest
+of the finite profile.
+
+The [resumed call-expansion checkpoint](releases/v0.2.1.md#resumed-implementation-shared-call-expansion-2026-09-29)
+adds an untrusted existing-node producer and coordinate/unitary/reference
+proofs. Its 95-case native suite submits generated artifacts to the unchanged
+derivation checker and retains the fragmented-header capacity failure. Both
+builds/audits and fresh kernel replay pass; full external call translation
+validation and executable sized source remain pending.
+
+The subsequent [linear-size decision](size-expressions.md) adds bit-segment
+reshape and proof/normalization obligations to G020-1 without changing the
+existing intact-atom helper. Two actual reshape theorem axiom guards pass in
+kernel tests, alongside all 17 source/compiled-policy tests. The retained
+size-expression source rejects `+`; this remains an implementation obligation.
+
+The user authorized the remaining plan and selected corpus completion as the
+active goal. The [operator-law checkpoint](releases/v0.2.1.md#authorized-corpus-implementation-operator-law-checkpoint-2026-09-29)
+proves unitary closure for actual hierarchical complex operators and binds
+phase/rewire/structural leaves to actual typing predicates. Both packages build
+and pass audits, fresh kernel replay and the 235-case native derivation suite.
+The [first sized-Xor source](../tests/fixtures/authoring_sessions/sized-xor-v021/session.json)
+and two real parse failures are retained. The subsequent
+[recursive acceptance checkpoint](releases/v0.2.1.md#recursive-unitarity-from-actual-acceptance-2026-09-29)
+derives entry unitarity from actual supported checker success, including both
+inverse laws and arbitrary finite reference extension. Both builds/audits and
+the 235-case native suite pass. Finite reconstruction, the remaining profile
+and executable sized corpus are still open; no production schema is enabled. Current design uses `CBits<n>`;
+old source snapshots retain their original spelling as historical evidence.
+
+## v0.2.0 review response in 0.2.1 (2026-09-29)
+
+The [review response](reviews/v0.2.0.md) and [first-source/before-after record](../tests/fixtures/review_v020/README.md)
+cover two functional defects, four minor issues and three design observations.
+Sampling normalization and QIRF shared-source accounting are repaired without
+changing exact acceptance rules. Usage, error formatting and Lean source policy
+are corrected; numerical residuals and reference-value theorem scope are explicit.
+Finite source expansion and arithmetic capacities remain, with clearer diagnostics
+and A020-03 follow-up gates. The release record lists actual validation; the
+external review's reported checks are not counted as local runs.
+
+## v0.2.1 canonical reshape experiment (2026-09-29)
+
+The user-supplied review led to a bounded
+[single-owner metadata and proof experiment](reshape-plan.md). The executable
+Lean helper proves ordered label preservation by induction, inverse/composition
+and reference coefficients; it checks independently required endpoints, actual
+axis order, owners and limits. Native execution agrees with a recursive-tree
+oracle on 118 cases (89 accepted, 29 rejected), 1,050 basis probes and 3,150
+reference coefficients. A compiled-audit failure was repaired and retained in
+the [fixture record](../tests/fixtures/reshape/README.md).
+
+The actual `.qli` first attempt still rejects. Draft syntax, source lowering,
+production integration, arbitrary-body adequacy and H1–H5 are not completed.
+Existing public forms, type equality and external schema enablement remain
+unchanged. The [release checkpoint](releases/v0.2.1.md#canonical-reshape-review-checkpoint-2026-09-29)
+records validation scope; finite native checks are not the general proof.
+
+## v0.2.1 corpus expansion (2026-09-29)
+
+The user prioritized corpus augmentation. Six new finite translations extend
+the same three approved sources from 24 to 30 cases, with original commits
+retained, two additional pinned PennyLane demos/metadata and unchanged license
+allocation. [First attempts](../corpus/authoring/v021-expansion/session.json)
+passed 6/6 with zero source repairs; prior authoring history is unchanged.
+
+The [recorded run](../corpus/validation-v0.2.1.json) passed **11,849 probes**, all
+30 shipped mains and four source rejection cases, and detected **six type-correct
+semantic faults**. The two Rust corpus tests, formatting, Clippy, 16 corpus
+checker tests, 21 document checker tests and documentation checks also passed.
+Full complex-entry interference and Bell branch/reference tomography supplement
+ordinary output checks. No upstream framework was executed. These finite
+numerical checks add no production rule, complete proof or H1–H5 claim.
+See the [checkpoint](releases/v0.2.1.md#corpus-expansion-checkpoint-2026-09-29)
+for scope and checks not rerun.
+
+## v0.2.1 development selection and README repair (2026-09-29)
+
+At the user's request, first repair the README's GitHub math notation, then
+select development version 0.2.1 in Cargo and both Lean packages. Align the
+current summaries and generated status, retaining the published 0.2.0 history
+and all pending shared-QPE/H1–H5 gates. The formula uses basic TeX in a `math`
+block; its theorem statement and planned status are unchanged.
+
+The [checkpoint record](releases/v0.2.1.md#validation-and-publication) records
+400 passing Rust tests, formatting/Clippy/document checks, both Lean builds/axiom
+audits, fresh kernel replay and regenerated component metadata. Registry
+refresh was required because package-manifest hashes participate in its source
+identity; theorem types are unchanged and external schemas remain disabled.
+This is development version selection, not feature completion or publication.
 
 ## v0.2.0 release validation (2026-09-29)
 

@@ -22,6 +22,12 @@ When adding algorithm components, read the [corpus](docs/algorithm-corpus.md)
 and [routine contracts](docs/algorithm-routines.md). For standard-library work,
 read the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
 record each public API's contract, verification state and adoption criteria.
+Follow the [adopted library goal](docs/stdlib-roadmap.md#adopted-library-goal):
+a BLAS/LAPACK-like foundation for quantum computing integrating reusable
+components, a quantum-information textbook and formal specifications. Readers
+should be able to learn quantum information by reading the library. Connect
+concepts, derivations, readable source, examples and explicit proof status;
+this fixes the goal, not the comprehensive module hierarchy or generalized APIs.
 Use the [static-operation contract](docs/static-operations.md) to determine the
 implemented inverse/control/repetition scope. Planned notation is not an API.
 
@@ -54,17 +60,24 @@ An authoring exercise is not a measured model benchmark or an algorithm proof.
 For new authoring/repair studies, follow the [session record procedure](tests/fixtures/authoring_sessions/README.md):
 save the first source before checking, append real diagnostics and revisions,
 and distinguish informed/curated work from controlled model evaluation.
-Accumulate unresolved friction in the [v0.2.0 backlog](docs/v0.2.0-backlog.md)
-with stable IDs, concrete source/design evidence, the obligation to remove,
-and a checking/acceptance experiment. Update it when current work exposes a
-new issue; retain resolution links. Backlog entries do not select a release or
-adopt syntax. The current product version is 0.2.0. Follow the
-[revised foundation release plan](docs/v0.2.0-plan.md) and
-[development record](docs/releases/v0.2.0.md). The finite B019 closure and
+Track unresolved friction in a GitHub Issue or the
+[v0.2.0 backlog](docs/v0.2.0-backlog.md), with concrete source/design evidence,
+the obligation to remove, and a checking/acceptance experiment. **When a GitHub
+Issue is created or already tracks the work, no backlog entry, backlog update
+or backlog ID is required.** Use the Issue as the tracking record; do not require
+duplicate records. For work tracked only in the backlog, reuse stable IDs and
+retain resolution links. Preserve existing backlog history. Neither tracking
+method selects a release or adopts syntax. The current development version is
+0.2.1. Follow the
+[continuation plan](docs/v0.2.1-plan.md) and
+[development record](docs/releases/v0.2.1.md). The published foundation and its
+validation remain in the [0.2.0 record](docs/releases/v0.2.0.md). The finite B019 closure and
 0.1.9 publication history remain in its [record](docs/releases/v0.1.9.md).
-The user moved remaining production hierarchy, sized source/shared QPE and
-execution/H1–H5 work to [0.2.1](docs/v0.2.1-plan.md); 0.2.0 retains migration
-and release validation. Keep those feature gates pending, existing component
+The 2026-09-30 user decision keeps completed corpus experiments/review fixes
+and bounded Rust/Python/OpenQASM/QIR connections in [0.2.1](docs/v0.2.1-plan.md).
+Remaining production hierarchy, sized source/shared measured QPE and
+execution/proof/H1–H5 integration move to [0.2.2](docs/v0.2.2-plan.md).
+The original corpus goal is deferred, not completed. Keep those feature gates pending, existing component
 proofs audited and external schemas disabled until their binding gates pass.
 
 For the user-selected code-driven continuation from 0.2.0 onward, follow the
@@ -75,6 +88,19 @@ experiment before changing acceptance. Complete the finite B019 foundation in
 0.1.x; do not mislabel later M1/M2 scaling or sampling work as already complete.
 The external translation corpus remains exactly the three sources in
 [its policy](corpus/POLICY.md). Local negative fixtures are not a fourth source.
+
+The user's latest v0.2.1 ordering prioritizes corpus implementation: start from
+shared executable source and resolve the concrete language/lowering/checking
+gaps it exposes. Do not defer corpus source experiments until all general proof
+infrastructure is finished. Follow the [sized corpus record](corpus/sized/README.md)
+and retain all production authority, preservation and release gates; an
+experimental source path is not production CLI integration or a completed goal.
+On 2026-09-30 the user limited **remaining validation to small qubit systems**:
+do not newly generate or check maximum-size corpus cases. Maximum-size success
+is no longer a completion prerequisite for this continuation. Preserve earlier
+results and failures as history; do not claim untested capacity. Exact evidence,
+phase/reference checks, ownership, compatibility and production integration
+remain required. Follow the [revised scope](docs/v0.2.1-plan.md#remaining-validation-scope-small-qubit-systems-2026-09-30).
 
 Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
 [version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,
@@ -136,7 +162,14 @@ and revise drafts when counterexamples require it.
 ## Proofs and records
 
 Mark proofs intended for later removal with `temporary (TP-...)` in their Lean
-documentation comments, giving the replacement and removal condition. Maintain
+documentation comments, giving the importance (`P0`, `P1` or `P2`), replacement
+and removal condition. Importance and lifetime are separate: P0 protects actual
+acceptance/binding obligations, P1 preserves reusable mathematics and currently
+required components, and P2 covers superseded or projection-only wrappers.
+Do not mark a result temporary merely because it is long, conditional, bounded
+or low priority. A temporary P1 component can still be required by the current
+registry. Prefer the constructed checker path for new work; extend temporary
+wrappers only for a concrete compatibility or replacement obligation. Maintain
 the [temporary-proof inventory](docs/formal-core.md#temporary-proof-markers).
 Keep them built and audited until removal; retain reusable lemmas and respect
 public Lean API compatibility rather than treating the marker as permission
@@ -151,7 +184,28 @@ which must remain free of Mathlib and external Lake packages. Keep Rust parsing,
 diagnostics, transport, evidence generation and simulation outside that pure
 acceptance core. Prove acceptance soundness of the actual executable definitions;
 writing code in Lean alone is insufficient. The existing `lean/` Mathlib models
-remain separate. Run the runtime source policy, compiled-declaration audit and
+remain separate. Follow the [pipeline migration policy](docs/lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary):
+move passes in sequence from the backend or frontend while retaining independent
+IR checking at every Rust/Lean boundary. Extend the verified downstream segment
+only with actual-transform correctness proofs or independent translation
+validation. Remaining Rust transformations still produce untrusted IR. Record
+the boundary IR, direction, proof coverage and transitional assumptions; moving
+code alone never changes the fixed trust partition. Apply the
+[de Bruijn criterion per pass](docs/lean-kernel-migration.md#external-search-and-the-leafrealizer-checker):
+move correctness-critical transformations/checkers to Lean, while candidate and
+proof search may remain external. In particular, rotation-synthesis norm-equation
+search can remain an untrusted oracle; the planned `LeafRealizer` checker belongs
+in Lean and must bind the actual circuit/witness to the independent exact or
+certified-approximate request. This is a future checking role, not a current API.
+No blanket migration of all Rust or proof of the search procedure is required.
+A substantive proved Lean backend remains required by v1. Enforce the
+[backend execution policy](docs/lean-kernel-migration.md#backend-execution-must-match-kernel-definitions):
+forbid `unsafe def`, `@[implemented_by]`, `@[extern]` and `partial def` in
+project executable kernel/backend code. CI must check source and compiled
+declaration metadata, including private/generated helpers by origin module;
+an axiom allowlist alone cannot detect runtime replacement. Any future separate
+backend package must inherit these gates before executable integration.
+Run the runtime source policy, compiled-declaration audit and
 independent native differential checks for kernel changes; reject project
 axioms, partial/unsafe code and implementation overrides, including generated
 helpers. Do not claim production authority or H1–H5 from the initial phase-word
@@ -163,6 +217,15 @@ not just the phase-word seed or tests. Prepare wider community participation in
 0.4.x and expand from individual development into a full-scale open-source
 project from v0.5 onward, following the [community roadmap](docs/v0x-roadmap.md#community-development-from-v05).
 Keep adopted targets distinct from completed proofs and existing maintainers.
+The user added the **Resource Safety Theorem** as the third v1 pillar on
+2026-09-30, explicitly **to prove** in the
+[dated trust-boundary amendment](TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30).
+Follow [RS-C1–C5](docs/release-milestones.md#resource-safety-theorem-v1) and the
+[resource-semantics direction](docs/resource-semantics.md): finite static bounds
+must cover actual execution and survive lowering/optimization under declared
+cost models. Do not confuse quantitative bounds with ownership/R1 safety,
+checker budgets or measured diagnostics. Estimators/certificates remain untrusted;
+this future target adds no implementation/proof gate to 0.2.1 or 0.2.2.
 Development Python scripts require 3.11 or later.
 Physlib remains a [future dependency](docs/physlib-environment.md); recheck its
 compatibility and external axioms when adding a concrete semantic bridge that
@@ -198,6 +261,16 @@ dossier and executed results in conformance/release records.
 
 [Versioning](docs/versioning.md) is authoritative.
 
+The 2026-09-30 user decision names both the first crates.io package and Rust
+import `qleisli`, replacing `qleisli-core` / `qleisli_core` at 0.2.1. This is an
+explicit, narrow pre-registry identity exception; document the
+[migration and Cargo alias](docs/crates-io-release.md#name-migration-from-github-releases-through-020),
+preserve historical names in validation records, and retain all other PATCH
+compatibility rules. `qargo` / `qlidoc` are possible separate future tool names,
+not implemented or reserved packages. The later 2026-09-30 user request lifts
+the registry hold and authorizes `cargo publish` outside the sandbox after
+rechecking. Keep validation, upload success, tagging and hosted releases distinct.
+
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. The user selected development version 0.1.9 on
 2026-09-28 for compatible review fixes; follow its [record](docs/releases/v0.1.9.md).
@@ -213,8 +286,25 @@ distinct and conversions are explicit. Follow the consolidated
 [type system](docs/type-system.md). Arbitrary basis-type parameters remain
 deferred. Sizes still require R14 and H1–H5.
 
+The user explicitly plans **Qleisli type-system specification in the v0.3.0
+breaking-change release** (2026-09-29); follow the
+[release plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
+Concrete rules and public migrations remain to be specified. Current finite
+type rules and compatible 0.2.1 scope stay in force. **QLT implementation is
+deferred to v0.4.0 or later**, after that type-system work; preserve its existing
+design/source records without treating them as implemented APIs.
+
+Follow the adopted [linear-size and explicit register-reshape design](docs/size-expressions.md):
+constant multiplication and guarded subtraction stay within the specified
+linear fragment; use `n+1` recursive interfaces and deterministic size
+normalization. Arithmetic equality does not erase type trees, reorder axes or
+drop owners. Preserve the intact-atom reshape helper's existing contract.
+Solver failure is not inequality or evidence; retain full compiled axiom audits
+and focused theorem guards. Array notation remains a separately specified future API.
+
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
-  `lean/lakefile.toml` and `lean-kernel/lakefile.toml`. Compiler, bundled library and proofs currently share a
+  `lean/lakefile.toml`, `lean-kernel/lakefile.toml`, `python/pyproject.toml` and
+  Python's `__version__`. Compiler, Python host, bundled library and proofs currently share a
   release. Do not synchronize dependency versions with the project version.
 - Use `MAJOR.MINOR.PATCH` and annotated Git tags `vMAJOR.MINOR.PATCH`.
   Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task

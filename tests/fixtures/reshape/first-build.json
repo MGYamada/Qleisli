@@ -1,0 +1,14 @@
+{
+  "recorded_utc": "2026-09-29T03:25:05.145948+00:00",
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "QleisliKernel/Reshape.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "transcript": "",
+  "initial_source_sha256": "ee88377ac0018093000d35650bbe75e96aa4e74832940bd943ec8db5acf705e0",
+  "note": "Initial Lean source compiled unchanged on the first attempt. The preceding snapshot copy used an incorrect relative path and failed; the unchanged source was copied immediately afterward. No proof repair preceded this snapshot."
+}

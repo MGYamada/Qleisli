@@ -6,11 +6,11 @@ use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use common::SourceRoot;
-use qleisli_core::contract::FunctionEvidence;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::frontend::parser::parse_module;
-use qleisli_core::ir::{CircuitAction, RawOp};
-use qleisli_core::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::contract::FunctionEvidence;
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::parser::parse_module;
+use qleisli::ir::{CircuitAction, RawOp};
+use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;

@@ -1,0 +1,78 @@
+{
+  "format": "qleisli.fourier-host-runtime-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 8.822,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 63.57,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 25.175,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "694c26044aa47a8d57c236f7afa0d86ca6271878448b982ec9b920bd14e97692",
+      "diagnostics": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 24.931s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_hierarchical_request.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/fourier-host-root-regression.json"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 25.391,
+      "stdout_sha256": "70cdaf15bfffceadd507313bfb27d4fb7fd61ab0d453a673c808efdd5a240610",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "{\"format\": \"qleisli.hierarchy-root-request-validation\", \"version\": 1, \"status\": \"passed\", \"cases\": 813, \"seconds\": 25.334, \"binary_sha256\": \"3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a\"}\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_hierarchical_host.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/fourier-host-general-regression.json"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 12.186,
+      "stdout_sha256": "5c5d21ea4daa8fba6efbe78a4dc35c4920aef5e4733ded279139247cd7badbd4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "{\"format\": \"qleisli.hierarchy-host-validation\", \"version\": 1, \"status\": \"passed\", \"binary_sha256\": \"3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a\", \"binary_cases\": 362, \"seconds\": 12.135, \"host_command\": [\"cargo\", \"test\", \"--test\", \"hierarchical_host\", \"--\", \"--ignored\", \"--nocapture\"], \"exit_code\": 0}\n"
+    }
+  ]
+}

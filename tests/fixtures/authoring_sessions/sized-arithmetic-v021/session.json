@@ -1,0 +1,42 @@
+{
+  "format": 1,
+  "task": "Shared AddK and Equals with recursive coherent controls",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired recursive shared arithmetic source saved before first compilation",
+      "sha256": {
+        "controls.qli": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d",
+        "increment.qli": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f",
+        "addition.qli": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6",
+        "comparison.qli": "dec1b18d722f0e8f0507742ae3e0a286ad06e04684333fa4b4e4238cf9386439",
+        "bitwise.qli": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+      },
+      "observations": [
+        "first-check.json",
+        "first-native.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Extract repeated bitwise complement into one shared ordinary definition after small Equals width-three exceeded the inspection budget",
+      "sha256": {
+        "comparison.qli": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729",
+        "negation.qli": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3",
+        "controls.qli": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d",
+        "increment.qli": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f",
+        "addition.qli": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6",
+        "bitwise.qli": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+      },
+      "observations": [
+        "shared-native.json",
+        "complete-small-validation.json"
+      ]
+    }
+  ]
+}

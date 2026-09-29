@@ -1,0 +1,14 @@
+{
+  "recorded_utc": "2026-09-29T03:11:03.952858+00:00",
+  "command": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "target/debug/qleisli",
+    "--exhaustive",
+    "--report",
+    "corpus/validation-v0.2.1.json"
+  ],
+  "exit_code": 0,
+  "transcript": "Passed 30 cases, 11849 semantic probes, all shipped mains and 4 rejection cases; detected 6 type-correct semantic faults; upstream frameworks not executed.\n",
+  "report_sha256": "bca27e8554e70e7e30b97d80676760a02c50f66d760a4bfaee1e9628ccecb045"
+}

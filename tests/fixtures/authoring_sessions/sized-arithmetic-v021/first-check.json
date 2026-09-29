@@ -1,0 +1,18 @@
+{
+  "recorded_utc": "2026-09-29T15:40:27.280753+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/addition.qli",
+    "--entry",
+    "add_k",
+    "--size",
+    "n=3",
+    "--size",
+    "K=3",
+    "--output",
+    "/tmp/qleisli-source-add-first.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: unknown static operation parameter all_ones\n"
+}

@@ -1,0 +1,10 @@
+# Optional QIR reader, kept outside the Rust core. PyQIR: MIT; its wheel retains
+# LLVM and other transitive notices. Upstream PyPI 0.12.5 binary wheel hashes.
+--require-hashes
+--only-binary=:all:
+pyqir==0.12.5 \
+    --hash=sha256:7f568054dbb42b7fd33e0d5b58e7ac60ad6af496e9e1376fcb4a45290e9f510d \
+    --hash=sha256:9bc8232f028f40e026cb72c7f654cf63f4c464ff4695874b70a45e8c34969665 \
+    --hash=sha256:4304984337a26cb01f8f0b0b0b436737e90379fbd0adfb48f142cfd942234384 \
+    --hash=sha256:ced0baf85371393bae59c3c93a97d3de68217f43fde21b7be8c6ed31b1e00128 \
+    --hash=sha256:c70381e8e1e2db8e2a9d5aec484f51328b66f7ac9cc72989ba05a61d7689f950

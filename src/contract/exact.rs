@@ -224,6 +224,21 @@ impl Exact {
         })
     }
 
+    /// Preserve independent coefficient exponents across exact transport.
+    pub(crate) fn dyadics(self) -> [(i128, u32); 4] {
+        self.coefficients.map(|d| (d.numerator, d.denominator_bits))
+    }
+
+    pub(crate) fn from_dyadics(coefficients: [(i128, u32); 4]) -> Result<Self, ExactError> {
+        let mut canonical = [Dyadic::integer(0); 4];
+        for (output, (numerator, denominator_bits)) in canonical.iter_mut().zip(coefficients) {
+            *output = Dyadic::new(numerator, denominator_bits)?;
+        }
+        Ok(Self {
+            coefficients: canonical,
+        })
+    }
+
     pub const fn inv_sqrt2() -> Self {
         Self {
             coefficients: [

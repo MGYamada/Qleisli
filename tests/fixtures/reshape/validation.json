@@ -1,0 +1,80 @@
+{
+  "recorded_utc": "2026-09-29T03:35:00.331151+00:00",
+  "kind": "local-development-checkpoint",
+  "project_version": "0.2.1",
+  "kernel_declarations_audited": 4327,
+  "mathlib_model_declarations_audited": 1305,
+  "runtime_source_modules": 29,
+  "reshape": {
+    "cases": 118,
+    "accepted": 89,
+    "basis_probes": 1050,
+    "reference_coefficients": 3150,
+    "source_sha256": {
+      "lean-kernel/QleisliKernel/Reshape.lean": "9497443e33e1b3d00b309a7599c77a24f90b0828956ec38b58afb39234bad793",
+      "lean-kernel/QleisliKernel/Layout.lean": "482658d4c0059174ed63e889b7d05389830051723f4120df1463257c75aa27a2",
+      "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "639cfbd448fec0c496f105168faf7fefa0463951e5574770d147e72c59227046",
+      "scripts/test_lean_reshape.py": "5d226556805640cafeec6d3f5c46d3eda3bc8751bbe3dccd9d5689ac922fab81",
+      "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e"
+    }
+  },
+  "structural_regression": {
+    "status": "passed",
+    "cases": 123,
+    "typed": 88,
+    "basis_checks": 7216,
+    "source_sha256": {
+      "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "639cfbd448fec0c496f105168faf7fefa0463951e5574770d147e72c59227046",
+      "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "fcf982b384fcad04e078764c431a827ad3309ae5510fbd86f52db16de79df177",
+      "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "4f189e4b14568da1e3f7c2362afa3dff774c5fd1ccbbb66d5c54588f862a1fe9",
+      "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+      "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "df66a1c9b76a835091ad2fa57c976ac54aec77505e2e6f8104b85581e5dca7e4",
+      "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+      "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "ae3e22c8c0c81021da690f3ddc0e06bf24d1281cb5d84b13cf2a566d49603838",
+      "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "879463bd57d6d3a940aec16e06224f393e6b7f5680c92a21f643ae37c0e55a34",
+      "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+      "scripts/test_hierarchical_structural.py": "44176afc3ea6f6fb926250e5ce0db309f9d6803073cb64fab925e72631ef9961"
+    },
+    "binary_sha256": "a0ce72c852cf89baa5625cd9b860bc822d6db2bdebe0836292a4259b78c8ee1a",
+    "harness_sha256": "b01e2865f75499f83e30b62c21e6c69ec82310c98c44001a081756c1a3a3c34d"
+  },
+  "compiled_policy_tests": {
+    "command": [
+      "python3",
+      "scripts/test_check_lean_kernel.py",
+      "--compiled"
+    ],
+    "exit_code": 0,
+    "transcript": "................\n----------------------------------------------------------------------\nRan 16 tests in 14.781s\n\nOK\n"
+  },
+  "reductions": {
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "transcript": ""
+  },
+  "registry_source_revision": "8ba4cf0b72976bcd57c7b606dca15bd6a2d6e52cd87fa78a9eba3d3c9e9efaaa",
+  "registry_manifest_sha256": "b3abac4ca3867d88c2b8dd23de1acb9587a71190473dee1c377766780b5c82b2",
+  "external_schema_entries_enabled": 0,
+  "notes": [
+    "Source syntax is a rejected draft; no production integration or evidence issuer was added.",
+    "The registry unit suite was initially run while regeneration was still in progress and saw the stale fingerprint; all 11 tests passed after regeneration completed."
+  ],
+  "not_rerun": [
+    "Rust all-target/MSRV/Linux suites for this proof-only checkpoint",
+    "full interoperability and independent research suites",
+    "clean distribution release suite"
+  ],
+  "publication": {
+    "commit": false,
+    "tag": false,
+    "push": false,
+    "release": false
+  }
+}

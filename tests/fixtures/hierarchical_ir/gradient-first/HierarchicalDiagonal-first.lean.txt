@@ -1,0 +1,129 @@
+import Qleisli.HierarchicalFiniteUnitary
+import Qleisli.Interference
+
+/-! Exact diagonal laws for the hierarchy's actual complex operators.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+These proof-only matrix equalities justify sharing controlled phase gradients.
+They neither execute dense matrices nor authorize a named Fourier schema. -/
+
+namespace Qleisli.HierarchicalDiagonal
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalOperators HierarchicalSemantics HierarchicalUnitary
+open scoped BigOperators Matrix
+
+/-- Dimensions and every complex coefficient, including global phase. -/
+def At (n : Nat) (operator : Operator) (values : (Fin n → Bool) → ℂ) : Prop :=
+  operator.inputWidth = n ∧ operator.outputWidth = n ∧
+    matrixAt n n operator = Matrix.diagonal values
+
+theorem identity_at (n : Nat) : At n (identity n) (fun _ => 1) := by
+  exact ⟨rfl,rfl,by simp [matrix_identity]⟩
+
+theorem compose_at {n : Nat} {first second : Operator} {a b : (Fin n → Bool) → ℂ}
+    (ha : At n first a) (hb : At n second b) :
+    At n (compose second first) (fun bits => b bits * a bits) := by
+  refine ⟨ha.1,hb.2.1,?_⟩
+  have h := matrix_compose second first
+  rw [ha.1,hb.1,hb.2.1,ha.2.2,hb.2.2,Matrix.diagonal_mul_diagonal] at h
+  exact h
+
+theorem power_at {n : Nat} {child : Operator} {values : (Fin n → Bool) → ℂ}
+    (h : At n child values) (count : Nat) :
+    At n (power child count) (fun bits => values bits ^ count) := by
+  refine ⟨by simpa [h.1] using power_input child count,
+    by simpa [h.1] using power_output child count (h.2.1.trans h.1.symm),?_⟩
+  rw [matrix_power child n count h.1 h.2.1,h.2.2,Matrix.diagonal_pow]
+
+theorem apply_power_at (interface : Interface) (n count : Nat) (child : Operator)
+    (values : (Fin n → Bool) → ℂ)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (ready : At n child values) :
+    At n (apply interface (.power count) [child]) (fun bits => values bits ^ count) := by
+  refine ⟨hi,ho,?_⟩
+  have same : matrixAt n n (apply interface (.power count) [child]) =
+      matrixAt n n (power child count) := by
+    ext output input
+    simp [matrixAt,apply,bounded,raw,hi,ho]
+  rw [same]
+  exact (power_at ready count).2.2
+
+theorem phase_at (interface : Interface) (n owner j k : Nat)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n) :
+    At n (apply interface (.phase owner j k) []) (fun input =>
+      if (List.ofFn input)[ownerAxis interface owner]?.getD false then phase j k else 1) := by
+  refine ⟨hi,ho,?_⟩
+  ext output input
+  simp [matrixAt,apply,bounded,raw,hi,ho,Matrix.diagonal_apply,List.ofFn_inj]
+  split <;> simp_all
+
+theorem tensor_at (interface : Interface) (m n : Nat) (first second : Operator)
+    (a : (Fin m → Bool) → ℂ) (b : (Fin n → Bool) → ℂ)
+    (hi : width interface.inputs = m+n) (ho : width interface.outputs = m+n)
+    (ha : At m first a) (hb : At n second b) :
+    At (m+n) (apply interface .tensor [first,second])
+      (fun bits => a (splitEquiv m n bits).1 * b (splitEquiv m n bits).2) := by
+  refine ⟨hi,ho,?_⟩
+  have matrix : matrixAt (m+n) (m+n) (apply interface .tensor [first,second]) =
+      (Matrix.kronecker (matrixAt m m first) (matrixAt n n second)).submatrix
+        (splitEquiv m n) (splitEquiv m n) := by
+    ext output input
+    simp only [matrixAt,apply,bounded,raw,hi,ho,List.length_ofFn,and_self,ite_true,
+      ha.1,ha.2.1]
+    rw [split_list m n output,split_list m n input]
+    simp [Matrix.submatrix,Matrix.kronecker,Matrix.kroneckerMap,matrixAt]
+  rw [matrix,ha.2.2,hb.2.2]
+  ext output input
+  by_cases same : output = input
+  · subst output
+    simp [Matrix.submatrix,Matrix.kronecker,Matrix.kroneckerMap]
+  · have pair : splitEquiv m n output ≠ splitEquiv m n input :=
+      fun equal => same ((splitEquiv m n).injective equal)
+    simp only [Prod.mk.injEq,ne_eq] at pair
+    simp only [Matrix.submatrix,Matrix.kronecker,Matrix.kroneckerMap,Matrix.diagonal_apply]
+    split <;> split <;> simp_all
+
+theorem control_at (interface : Interface) (n : Nat) (polarity : Bool) (child : Operator)
+    (values : (Fin n → Bool) → ℂ)
+    (hi : width interface.inputs = n+1) (ho : width interface.outputs = n+1)
+    (ready : At n child values) :
+    At (n+1) (apply interface (.control polarity) [child])
+      (fun bits => if bits 0 = polarity then values (fun i => bits i.succ) else 1) := by
+  refine ⟨hi,ho,?_⟩
+  ext output input
+  have childMatrix := congrFun (congrFun ready.2.2 (fun i => output i.succ)) (fun i => input i.succ)
+  simp only [matrixAt] at childMatrix
+  simp only [matrixAt,apply,bounded,raw,hi,ho,List.length_ofFn,and_self,ite_true,
+    List.ofFn_succ,List.head?_cons,List.tail_cons,Option.some.injEq,childMatrix,
+    Matrix.diagonal_apply,List.ofFn_inj]
+  by_cases same : output = input
+  · subst output
+    simp
+  · have differing : output 0 ≠ input 0 ∨
+        (fun i : Fin n => output i.succ) ≠ (fun i : Fin n => input i.succ) := by
+      by_contra h
+      simp only [not_or,not_not] at h
+      apply same
+      funext i
+      refine Fin.cases h.1 (fun j => congrFun h.2 j) i
+    rcases differing with head | tail <;> simp_all
+
+variable {I : Type} [Fintype I] [DecidableEq I]
+
+/-- Consume the actual forward data permutation and its actual inverse.
+The phase is pulled back along the route; it is never discarded. -/
+theorem conjugate_diagonal (route : I ≃ I) (values : I → ℂ) :
+    permutation route.symm * Matrix.diagonal values * permutation route =
+      Matrix.diagonal (fun input => values (route input)) := by
+  ext output input
+  simp [Matrix.mul_apply,permutation,Matrix.diagonal_apply,eq_comm]
+
+/-- Arbitrary reference columns, with no separability assumption. -/
+theorem joint_amplitude {n : Nat} {operator : Operator} {values : (Fin n → Bool) → ℂ}
+    (h : At n operator values) {R : Type}
+    (joint : (Fin n → Bool) → R → ℂ) (output : Fin n → Bool) (reference : R) :
+    (∑ input, (matrixAt n n operator) output input * joint input reference) =
+      values output * joint output reference := by
+  rw [h.2.2]
+  simp [Matrix.diagonal_apply]
+
+end Qleisli.HierarchicalDiagonal

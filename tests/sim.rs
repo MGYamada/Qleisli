@@ -1,10 +1,10 @@
-use qleisli_core::ir::{
+use qleisli::ir::{
     BasisShape, ClassicalId, Control, Effect, ProtectedBit, ProtectedRegion, ProtectedUse,
     QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate, TokenId, UnitaryStep,
     WireId,
 };
-use qleisli_core::sim::{SimulationError, SimulationLimits, run_closed};
-use qleisli_core::verify;
+use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::verify;
 
 fn t(id: u32) -> TokenId {
     TokenId(id)
@@ -18,10 +18,7 @@ fn c(id: u32) -> ClassicalId {
     ClassicalId(id)
 }
 
-fn closed(
-    operations: Vec<RawOp>,
-    classical_outputs: Vec<ClassicalId>,
-) -> qleisli_core::VerifiedProgram {
+fn closed(operations: Vec<RawOp>, classical_outputs: Vec<ClassicalId>) -> qleisli::VerifiedProgram {
     verify(RawProgram {
         quantum_inputs: vec![],
         classical_inputs: vec![],
@@ -33,7 +30,7 @@ fn closed(
     .expect("test program should verify")
 }
 
-fn run(program: &qleisli_core::VerifiedProgram) -> std::collections::BTreeMap<Vec<bool>, f64> {
+fn run(program: &qleisli::VerifiedProgram) -> std::collections::BTreeMap<Vec<bool>, f64> {
     let distribution = run_closed(program, SimulationLimits::default()).unwrap();
     close(distribution.values().sum(), 1.0);
     distribution
@@ -344,7 +341,7 @@ fn computed_predicate_controls_target_without_measuring_source() {
             RawOp::ComputeUseUncompute {
                 source: t(1),
                 source_out: t(3),
-                targets: vec![qleisli_core::ir::TargetTransition {
+                targets: vec![qleisli::ir::TargetTransition {
                     input: t(2),
                     output: t(4),
                 }],

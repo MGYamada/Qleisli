@@ -1,0 +1,15 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Desired ordinary measured wrapper; source/IR integration is still required.
+use registers::init_zero;
+use registers::measure_bits;
+use estimation::estimate;
+
+pub observe fn qpe[static n: Nat, static m: Nat, static U: Op<Bits<n>>](
+    target: Q<Bits<n>>
+) -> (CBits<m>, Q<Bits<n>>)
+requires n >= 1, m >= 1, Controlled(U) {
+    let phase = init_zero[m]();
+    let (phase,target) = estimate[n,m,U](phase,target);
+    (measure_bits[m](phase),target)
+}

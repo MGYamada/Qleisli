@@ -1,0 +1,168 @@
+QleisliKernel/Hierarchical/FourierRoot.lean:21:10: error: unexpected identifier; expected prec
+QleisliKernel/Hierarchical/FourierRoot.lean:24:10: error: unexpected identifier; expected 'instance'
+QleisliKernel/Hierarchical/FourierRoot.lean:28:5: error: unexpected token 'prefix'; expected term
+QleisliKernel/Hierarchical/FourierRoot.lean:28:12: error: unexpected token '::'; expected ':'
+QleisliKernel/Hierarchical/FourierRoot.lean:28:42: error: unexpected token ','; expected ':'
+QleisliKernel/Hierarchical/FourierRoot.lean:50:5: error: unexpected token 'prefix'; expected '(', ':=', 'rec', '|', identifier or term
+QleisliKernel/Hierarchical/FourierRoot.lean:50:12: error: unexpected token '←'; expected ':'
+QleisliKernel/Hierarchical/FourierRoot.lean:53:11: error: unexpected token '=='; expected ':'
+QleisliKernel/Hierarchical/FourierRoot.lean:78:75: error(lean.invalidField): Invalid field `body`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.body`, so it is not possible to project the field `body` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:100:8: error: unexpected token 'prefix'; expected '=>'
+QleisliKernel/Hierarchical/FourierRoot.lean:96:30: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.prefix`, so it is not possible to project the field `prefix` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:96:44: error(lean.invalidField): Invalid field `body`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.body`, so it is not possible to project the field `body` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:96:56: error(lean.invalidField): Invalid field `suffix`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.suffix`, so it is not possible to project the field `suffix` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:100:4: error: Unexpected syntax
+  failed to pretty print term (use 'set_option pp.rawOnError true' for raw representation)
+QleisliKernel/Hierarchical/FourierRoot.lean:96:75: error: unsolved goals
+case sequence
+d : Definition
+shell : Shell
+children✝ : Array Nat
+body : d.body = Body.sequence children✝
+found : (nomatch children✝.toList) = some shell
+⊢ Body.sequence children✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case tensor
+d : Definition
+shell : Shell
+left✝ right✝ : Nat
+body : d.body = Body.tensor left✝ right✝
+found :
+  (match Body.tensor left✝ right✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.tensor left✝ right✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case call
+d : Definition
+shell : Shell
+definition✝ : Nat
+inputMap✝ outputMap✝ : PortMap
+body : d.body = Body.call definition✝ inputMap✝ outputMap✝
+found :
+  (match Body.call definition✝ inputMap✝ outputMap✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.call definition✝ inputMap✝ outputMap✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case repeatOp
+d : Definition
+shell : Shell
+count✝ definition✝ : Nat
+body : d.body = Body.repeatOp count✝ definition✝
+found :
+  (match Body.repeatOp count✝ definition✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.repeatOp count✝ definition✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case inverse
+d : Definition
+shell : Shell
+definition✝ : Nat
+body : d.body = Body.inverse definition✝
+found :
+  (match Body.inverse definition✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.inverse definition✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case control
+d : Definition
+shell : Shell
+definition✝ : Nat
+polarity✝ : Bool
+body : d.body = Body.control definition✝ polarity✝
+found :
+  (match Body.control definition✝ polarity✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.control definition✝ polarity✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case rewire
+d : Definition
+shell : Shell
+permutation✝ : PortMap
+body : d.body = Body.rewire permutation✝
+found :
+  (match Body.rewire permutation✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.rewire permutation✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case structural
+d : Definition
+shell : Shell
+operation✝ : StructuralOp
+body : d.body = Body.structural operation✝
+found :
+  (match Body.structural operation✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.structural operation✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case dyadicPhase
+d : Definition
+shell : Shell
+target✝ j✝ k✝ : Nat
+body : d.body = Body.dyadicPhase target✝ j✝ k✝
+found :
+  (match Body.dyadicPhase target✝ j✝ k✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.dyadicPhase target✝ j✝ k✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case computed
+d : Definition
+shell : Shell
+compute✝ useOp✝ logical✝ encoding✝ : Nat
+body : d.body = Body.computed compute✝ useOp✝ logical✝ encoding✝
+found :
+  (match Body.computed compute✝ useOp✝ logical✝ encoding✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.computed compute✝ useOp✝ logical✝ encoding✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case observeZ
+d : Definition
+shell : Shell
+input✝ output✝ : Nat
+body : d.body = Body.observeZ input✝ output✝
+found :
+  (match Body.observeZ input✝ output✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.observeZ input✝ output✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+
+case init0
+d : Definition
+shell : Shell
+output✝ : Nat
+body : d.body = Body.init0 output✝
+found :
+  (match Body.init0 output✝ with
+    | Body.sequence children => nomatch children.toList) =
+    some shell
+⊢ Body.init0 output✝ = Body.sequence (sorry :: sorry :: sorry).toArray
+QleisliKernel/Hierarchical/FourierRoot.lean:100:15: error: unexpected identifier; expected ':'
+QleisliKernel/Hierarchical/FourierRoot.lean:107:17: error(lean.invalidField): Invalid field `prefix`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.prefix`, so it is not possible to project the field `prefix` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:108:12: error(lean.invalidField): Invalid field `suffix`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.suffix`, so it is not possible to project the field `suffix` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:111:2: error: `simp` made no progress
+QleisliKernel/Hierarchical/FourierRoot.lean:124:69: error(lean.invalidField): Invalid field `body`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.body`, so it is not possible to project the field `body` from an expression
+  shell
+of type `Shell`
+QleisliKernel/Hierarchical/FourierRoot.lean:160:101: error(lean.invalidField): Invalid field `body`: The environment does not contain `QleisliKernel.Hierarchical.FourierRoot.Shell.body`, so it is not possible to project the field `body` from an expression
+  shell
+of type `Shell`

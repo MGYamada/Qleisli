@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-09-29T05:30:22.628854+00:00",
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/sized-reshape-v021/attempt-01",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: unexpected character `+`",
+        "primary": {
+          "path": "layout.qli",
+          "start": 295,
+          "end": 296,
+          "line": 5,
+          "column": 72
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

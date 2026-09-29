@@ -3,8 +3,8 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project};
-use qleisli_core::frontend::compile::{check_project_diagnostic, compile_project_diagnostic};
+use qleisli::frontend::compile::{ErrorCode, check_project};
+use qleisli::frontend::compile::{check_project_diagnostic, compile_project_diagnostic};
 
 const IMPORTS: &str = "use std::quantum::x;
 use std::quantum::z;

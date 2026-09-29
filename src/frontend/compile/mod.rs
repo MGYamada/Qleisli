@@ -237,6 +237,7 @@ struct Compiler<'a> {
     providers: BTreeMap<(Key, Option<Key>), operations::Operation>,
     instances: Vec<(Key, Vec<operations::Operation>)>,
     work: usize,
+    checking: Option<Key>,
     exact_work: crate::contract::exact::Budget,
     closed_meanings: BTreeMap<Key, crate::contract::exact::Matrix>,
 }
@@ -267,11 +268,25 @@ impl Compiler<'_> {
 
     fn charge(&mut self, module: &str, span: Span, amount: usize) -> Result<(), CompileError> {
         if amount > MAX_WORK.saturating_sub(self.work) {
+            let (line, column) = coordinates(&self.project.modules[module].source, span);
+            let (owner, location, context) = match &self.checking {
+                Some(key) => (
+                    key.0.as_str(),
+                    self.declarations[key].span,
+                    format!(" while checking {}::{}", key.0, key.1),
+                ),
+                None => (module, span, String::new()),
+            };
             return Err(self.error(
-                module,
-                span,
+                owner,
+                location,
                 ErrorCode::Limit,
-                "source expansion exceeds the initial work limit",
+                format!(
+                    "source expansion exceeds the project-wide work limit of {MAX_WORK}{context}; \
+                    {} units used, {amount} requested at {module}:{line}:{column}; \
+                    each declaration is checked and each call is expanded separately",
+                    self.work
+                ),
             ));
         }
         self.work += amount;
@@ -734,6 +749,7 @@ fn process_loaded_project(
         providers: BTreeMap::new(),
         instances: vec![],
         work: 0,
+        checking: None,
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
         closed_meanings: BTreeMap::new(),
     };
@@ -766,18 +782,21 @@ fn process_loaded_project(
     // All basis functions precede their callers; ordinary functions may only
     // invoke them through a coherent lift or with_computed predicate.
     for key in &order {
+        compiler.checking = Some(key.clone());
         if compiler.declarations[key].kind == FnKind::Basis {
             let function = compiler.compile_basis(key)?;
             compiler.basis.insert(key.clone(), function);
         }
     }
     for key in &order {
+        compiler.checking = Some(key.clone());
         if compiler.declarations[key].kind == FnKind::Meaning {
             compiler.compile_meaning(key)?;
         }
     }
     let mut main = None;
     for key in &order {
+        compiler.checking = Some(key.clone());
         if !compiler.declarations[key].static_params.is_empty() {
             let bindings = compiler.abstract_bindings(key)?;
             lower::check_generic(&mut compiler, key, bindings)?;
@@ -838,6 +857,7 @@ mod snapshot_tests {
             providers: BTreeMap::new(),
             instances: vec![],
             work: 0,
+            checking: None,
             exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
             closed_meanings: BTreeMap::new(),
         }

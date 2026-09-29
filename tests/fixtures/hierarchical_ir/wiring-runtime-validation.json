@@ -1,0 +1,50 @@
+{
+  "format": "qleisli.wiring-runtime-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 8.738,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 57.365,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 23.003,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "7b54b33979d50b4b956c078979b718bd624ef3f687c07f686e4b56e8a64af70f",
+      "diagnostics": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 22.923s\n\nOK\n"
+    }
+  ]
+}

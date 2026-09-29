@@ -65,6 +65,10 @@ noncomputable def matrix (width : Nat) (actual : QleisliKernel.QftGraph.Action) 
 noncomputable def indexEquiv (width : Nat) : (Fin width → Bool) ≃ ZMod (2^width) :=
   (bitEquiv width).trans (ZMod.finEquiv (2^width)).toEquiv
 
+/-- temporary (TP-005), importance P1: Current QFT projection interface. Replacement: full-artifact
+Fourier acceptance with both inverse laws. Retire after actual reversal and H
+binding, QPE/registry migration and public API compatibility review. Keep the
+generic Fourier, normalization and index lemmas in this module. -/
 theorem checked_matrix (definitions : List QleisliKernel.QftGraph.Definition)
     (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
     (accepted : QleisliKernel.QftGraph.check definitions entry width = some receipt)
@@ -78,7 +82,12 @@ theorem checked_matrix (definitions : List QleisliKernel.QftGraph.Definition)
   rw [fourier_entry, bitEquiv_value, bitEquiv_value]
   simp only [Nat.cast_pow, Nat.cast_ofNat]
 
-/-- Both inverse laws, without a matrix computation in the executable checker. -/
+/-- temporary (TP-005), importance P1: Current QFT projection interface. Replacement: full-artifact
+Fourier acceptance with both inverse laws. Retire after actual reversal and H
+binding, QPE/registry migration and public API compatibility review. Keep the
+generic Fourier, normalization and index lemmas in this module.
+
+Both inverse laws, without a matrix computation in the executable checker. -/
 theorem check_unitary (definitions : List QleisliKernel.QftGraph.Definition)
     (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
     (accepted : QleisliKernel.QftGraph.check definitions entry width = some receipt)

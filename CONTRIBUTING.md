@@ -32,6 +32,14 @@ verification requirements. An explanation, author identity, or generation
 method is not a certificate of quantum correctness or permission to reuse
 third-party material.
 
+## Tracking issues
+
+When creating a GitHub Issue, a local backlog entry is unnecessary. An existing
+GitHub Issue also suffices: no duplicate entry, backlog update or A020 ID is
+required. Use the Issue to track the problem, relevant evidence, acceptance
+criteria and resolution. The [local backlog](docs/v0.2.0-backlog.md) remains an
+option for work without a GitHub Issue; preserve its existing history.
+
 ## Recording changes
 
 Record user-visible changes under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
@@ -44,6 +52,10 @@ Run the checks appropriate to the affected files and record actual results.
 For release preparation, use the complete checklist in
 [Versioning](docs/versioning.md#release-records-and-validation). Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
+The [crates.io procedure](docs/crates-io-release.md) covers the registry README,
+API doctests, installed quickstart and archive inventories. Local release
+preparation alone does not authorize an upload; the 0.2.1 upload was separately
+authorized by the user on 2026-09-30, subject to rechecking.
 
 ## Executable verification kernel
 

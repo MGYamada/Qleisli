@@ -1,0 +1,111 @@
+import Qleisli.HierarchicalEvaluation
+
+/-! Whole-space unitary laws for the hierarchy's actual complex operators.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+These are mathematical matrix laws, never a matrix-based runtime checker.
+The connection to accepted full-profile derivations is a separate theorem. -/
+
+namespace Qleisli.HierarchicalUnitary
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalSemantics HierarchicalOperators
+open scoped BigOperators Matrix
+
+/-- Complete fixed-width interface and the first inverse law. For the finite
+square basis, `unitary_laws` derives the second law without an extra premise. -/
+def UnitaryAt (n : Nat) (operator : Operator) : Prop :=
+  operator.inputWidth = n ∧ operator.outputWidth = n ∧
+    (matrixAt n n operator)ᴴ * matrixAt n n operator = 1
+
+theorem unitary_laws {n : Nat} {operator : Operator} (h : UnitaryAt n operator) :
+    (matrixAt n n operator)ᴴ * matrixAt n n operator = 1 ∧
+      matrixAt n n operator * (matrixAt n n operator)ᴴ = 1 :=
+  ⟨h.2.2,mul_eq_one_comm.mp h.2.2⟩
+
+theorem identity_unitary (n : Nat) : UnitaryAt n (identity n) := by
+  refine ⟨rfl,rfl,?_⟩
+  simp [matrix_identity]
+
+theorem compose_unitary {n : Nat} {before after : Operator}
+    (hb : UnitaryAt n before) (ha : UnitaryAt n after) :
+    UnitaryAt n (compose after before) := by
+  refine ⟨hb.1,ha.2.1,?_⟩
+  have matrix := matrix_compose after before
+  rw [hb.1,ha.1,ha.2.1] at matrix
+  rw [matrix,Matrix.conjTranspose_mul]
+  calc
+    _ = (matrixAt n n before)ᴴ *
+        ((matrixAt n n after)ᴴ * matrixAt n n after) * matrixAt n n before := by
+      simp only [Matrix.mul_assoc]
+    _ = 1 := by rw [ha.2.2,Matrix.mul_one,hb.2.2]
+
+theorem power_output (child : Operator) (count : Nat)
+    (same : child.outputWidth = child.inputWidth) :
+    (power child count).outputWidth = child.inputWidth := by
+  cases count with
+  | zero => rfl
+  | succ count => exact same
+
+theorem power_unitary {n : Nat} {child : Operator}
+    (h : UnitaryAt n child) (count : Nat) : UnitaryAt n (power child count) := by
+  induction count with
+  | zero => simpa only [power,h.1] using identity_unitary n
+  | succ count ih => exact compose_unitary ih h
+
+theorem sequence_unitary {n : Nat} (children : List Operator)
+    (ready : ∀ child ∈ children, UnitaryAt n child) :
+    UnitaryAt n (sequence n children) := by
+  have fold : ∀ start, UnitaryAt n start →
+      UnitaryAt n (children.foldl (fun current next => compose next current) start) := by
+    induction children with
+    | nil => intro start h; exact h
+    | cons child rest ih =>
+      intro start h
+      apply ih (fun x hx => ready x (by simp [hx]))
+      exact compose_unitary h (ready child (by simp))
+  exact fold (identity n) (identity_unitary n)
+
+theorem matrix_bounded (n : Nat) (f : Bits → Bits → ℂ) :
+    matrixAt n n (bounded n n f) = fun output input => f (List.ofFn output) (List.ofFn input) := by
+  ext output input
+  simp [matrixAt,bounded]
+
+theorem matrix_inverse (interface : Interface) (child : Operator) (n : Nat)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n) :
+    matrixAt n n (apply interface .inverse [child]) = (matrixAt n n child)ᴴ := by
+  ext output input
+  simp [matrixAt,apply,bounded,raw,hi,ho,Matrix.conjTranspose_apply]
+
+theorem inverse_unitary (interface : Interface) {n : Nat} {child : Operator}
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (h : UnitaryAt n child) : UnitaryAt n (apply interface .inverse [child]) := by
+  refine ⟨hi,ho,?_⟩
+  rw [matrix_inverse interface child n hi ho,Matrix.conjTranspose_conjTranspose]
+  exact (unitary_laws h).2
+
+variable {I : Type} [Fintype I] [DecidableEq I]
+
+/-- A basis permutation carries scalar +1; no phases are forgotten. -/
+noncomputable def permutation (route : I ≃ I) : Matrix I I ℂ :=
+  fun output input => if output = route input then 1 else 0
+
+theorem permutation_isometry (route : I ≃ I) :
+    (permutation route)ᴴ * permutation route = 1 := by
+  ext a b
+  simp [permutation,Matrix.mul_apply,Matrix.conjTranspose_apply,Matrix.one_apply]
+
+theorem diagonal_isometry (values : I → ℂ)
+    (normalized : ∀ i, star (values i) * values i = 1) :
+    (Matrix.diagonal values)ᴴ * Matrix.diagonal values = 1 := by
+  rw [Matrix.conjTranspose_diagonal,Matrix.diagonal_mul_diagonal]
+  simp [normalized]
+
+theorem phase_unit_norm (j k : Nat) : star (phase j k) * phase j k = 1 := by
+  have imaginary : (2 * Real.pi * Complex.I * (j : ℂ) / (2 : ℂ)^k).re = 0 := by
+    simp [Complex.mul_re,Complex.div_re,Complex.pow_re]
+  rw [Complex.star_def,← Complex.exp_conj,← Complex.exp_add]
+  have zero : star (2 * Real.pi * Complex.I * (j : ℂ) / (2 : ℂ)^k) +
+      (2 * Real.pi * Complex.I * (j : ℂ) / (2 : ℂ)^k) = 0 := by
+    apply Complex.ext <;> simp [imaginary]
+  simpa only [phase] using congrArg Complex.exp zero
+
+end Qleisli.HierarchicalUnitary

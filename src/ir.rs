@@ -103,8 +103,8 @@ pub struct BitControl {
     pub when_one: bool,
 }
 
-/// Flat, exact finite unitary description. The monomial matrix maps |x> to
-/// exp(i*pi*phases[x]/4)|permutation[x]>. Empty indices retain scalar phase.
+/// Flat, exact finite unitary description. The monomial matrix maps `|x>` to
+/// `exp(i*pi*phases[x]/4)|permutation[x]>`. Empty indices retain scalar phase.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum CircuitAction {
     /// A known finite implementation carrying immutable independently checked

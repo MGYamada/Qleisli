@@ -92,7 +92,17 @@ impl Compiler<'_> {
             ContractError::Limit(_) | ContractError::Arithmetic(_) => ErrorCode::Limit,
             _ => ErrorCode::Contract,
         };
-        self.error(module, span, code, error.to_string())
+        let mut message = error.to_string();
+        if matches!(
+            error,
+            ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)
+        ) {
+            message.push_str(
+                " (bounded i128 coefficients or dyadic denominator exponent above 126); \
+                reduce exact composition/repetition; no approximate fallback is used",
+            );
+        }
+        self.error(module, span, code, message)
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
         let decl = self.declarations[key];

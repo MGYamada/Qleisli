@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_hierarchical_wiring.py", line 167, in <module>
+    main()
+    ~~~~^^
+  File "/Users/masa/git/Qleisli/scripts/test_hierarchical_wiring.py", line 150, in main
+    assert rows[name] == ['contract'], (name, rows[name])
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ('missing-dependency', ['ok:108325'])

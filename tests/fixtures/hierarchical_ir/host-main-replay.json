@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "leanchecker",
+    "--fresh",
+    "Main"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "seconds": 60.821,
+  "stdout": "",
+  "stderr": ""
+}

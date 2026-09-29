@@ -1,0 +1,296 @@
+{
+  "status": "observed-not-yet-compared",
+  "results": {
+    "baseline-1": [
+      "ok:599"
+    ],
+    "renamed-1": [
+      "ok:599"
+    ],
+    "exact-1": [
+      "ok:599"
+    ],
+    "short-1": [
+      "limit"
+    ],
+    "budget-1": [
+      "75944",
+      "76543"
+    ],
+    "route-1-0": [
+      "[0]"
+    ],
+    "route-1-11": [
+      "[0]"
+    ],
+    "baseline-2": [
+      "ok:5728"
+    ],
+    "renamed-2": [
+      "ok:5728"
+    ],
+    "exact-2": [
+      "ok:5728"
+    ],
+    "short-2": [
+      "limit"
+    ],
+    "budget-2": [
+      "266709",
+      "272437"
+    ],
+    "route-2-0": [
+      "[0, 1]"
+    ],
+    "route-2-25": [
+      "[0, 1]"
+    ],
+    "route-2-35": [
+      "[1, 0]"
+    ],
+    "baseline-3": [
+      "ok:8434"
+    ],
+    "renamed-3": [
+      "ok:8434"
+    ],
+    "exact-3": [
+      "ok:8434"
+    ],
+    "short-3": [
+      "limit"
+    ],
+    "budget-3": [
+      "394354",
+      "402788"
+    ],
+    "route-3-0": [
+      "[0, 1, 2]"
+    ],
+    "route-3-40": [
+      "[0, 1, 2]"
+    ],
+    "route-3-50": [
+      "[2, 1, 0]"
+    ],
+    "baseline-4": [
+      "ok:21311"
+    ],
+    "renamed-4": [
+      "ok:21311"
+    ],
+    "exact-4": [
+      "ok:21311"
+    ],
+    "short-4": [
+      "limit"
+    ],
+    "budget-4": [
+      "653303",
+      "674614"
+    ],
+    "route-4-0": [
+      "[0, 1, 2, 3]"
+    ],
+    "route-4-55": [
+      "[0, 1, 2, 3]"
+    ],
+    "route-4-65": [
+      "[3, 1, 2, 0]"
+    ],
+    "route-4-75": [
+      "[0, 2, 1, 3]"
+    ],
+    "baseline-5": [
+      "ok:28882"
+    ],
+    "renamed-5": [
+      "ok:28882"
+    ],
+    "exact-5": [
+      "ok:28882"
+    ],
+    "short-5": [
+      "limit"
+    ],
+    "budget-5": [
+      "826998",
+      "855880"
+    ],
+    "route-5-0": [
+      "[0, 1, 2, 3, 4]"
+    ],
+    "route-5-70": [
+      "[0, 1, 2, 3, 4]"
+    ],
+    "route-5-80": [
+      "[4, 1, 2, 3, 0]"
+    ],
+    "route-5-90": [
+      "[0, 3, 2, 1, 4]"
+    ],
+    "baseline-6": [
+      "ok:54370"
+    ],
+    "renamed-6": [
+      "ok:54370"
+    ],
+    "exact-6": [
+      "ok:54370"
+    ],
+    "short-6": [
+      "limit"
+    ],
+    "budget-6": [
+      "1163465",
+      "1217835"
+    ],
+    "route-6-0": [
+      "[0, 1, 2, 3, 4, 5]"
+    ],
+    "route-6-85": [
+      "[0, 1, 2, 3, 4, 5]"
+    ],
+    "route-6-95": [
+      "[5, 1, 2, 3, 4, 0]"
+    ],
+    "route-6-105": [
+      "[0, 4, 2, 3, 1, 5]"
+    ],
+    "route-6-115": [
+      "[0, 1, 3, 2, 4, 5]"
+    ],
+    "baseline-7": [
+      "ok:69238"
+    ],
+    "renamed-7": [
+      "ok:69238"
+    ],
+    "exact-7": [
+      "ok:69238"
+    ],
+    "short-7": [
+      "limit"
+    ],
+    "budget-7": [
+      "1392234",
+      "1461472"
+    ],
+    "route-7-0": [
+      "[0, 1, 2, 3, 4, 5, 6]"
+    ],
+    "route-7-100": [
+      "[0, 1, 2, 3, 4, 5, 6]"
+    ],
+    "route-7-110": [
+      "[6, 1, 2, 3, 4, 5, 0]"
+    ],
+    "route-7-120": [
+      "[0, 5, 2, 3, 4, 1, 6]"
+    ],
+    "route-7-130": [
+      "[0, 1, 4, 3, 2, 5, 6]"
+    ],
+    "baseline-8": [
+      "ok:112201"
+    ],
+    "renamed-8": [
+      "ok:112201"
+    ],
+    "exact-8": [
+      "ok:112201"
+    ],
+    "short-8": [
+      "limit"
+    ],
+    "budget-8": [
+      "1819083",
+      "1931284"
+    ],
+    "route-8-0": [
+      "[0, 1, 2, 3, 4, 5, 6, 7]"
+    ],
+    "route-8-115": [
+      "[0, 1, 2, 3, 4, 5, 6, 7]"
+    ],
+    "route-8-125": [
+      "[7, 1, 2, 3, 4, 5, 6, 0]"
+    ],
+    "route-8-135": [
+      "[0, 6, 2, 3, 4, 5, 1, 7]"
+    ],
+    "route-8-145": [
+      "[0, 1, 5, 3, 4, 2, 6, 7]"
+    ],
+    "route-8-155": [
+      "[0, 1, 2, 4, 3, 5, 6, 7]"
+    ],
+    "hidden-phase": [
+      "contract"
+    ],
+    "hidden-leaf": [
+      "contract"
+    ],
+    "hidden-repeat": [
+      "contract"
+    ],
+    "axis-outside": [
+      "contract"
+    ],
+    "axis-missing": [
+      "contract"
+    ],
+    "wrong-effect": [
+      "contract"
+    ],
+    "mismatched-width": [
+      "contract"
+    ],
+    "self-cycle": [
+      "contract"
+    ],
+    "missing-dependency": [
+      "ok:108325"
+    ],
+    "reversed-order": [
+      "contract"
+    ],
+    "duplicate-node": [
+      "invalid_ir"
+    ],
+    "missing-definition": [
+      "invalid_ir"
+    ],
+    "unsupported-body": [
+      "contract"
+    ],
+    "empty-owner": [
+      "ok:173"
+    ],
+    "zero-budget": [
+      "limit"
+    ],
+    "reset-budget": [
+      "limit"
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [67/69] Built Main (9.1s)\n\u2714 [68/69] Built Main:c.o (1.1s)\n\u2714 [69/69] Built \u00abartifact-test\u00bb:exe (275ms)\nBuild completed successfully (69 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-zcb0c_xk/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "baseline-1|ok:599\nrenamed-1|ok:599\nexact-1|ok:599\nshort-1|limit\nbudget-1|75944|76543\nroute-1-0|[0]\nroute-1-11|[0]\nbaseline-2|ok:5728\nrenamed-2|ok:5728\nexact-2|ok:5728\nshort-2|limit\nbudget-2|266709|272437\nroute-2-0|[0, 1]\nroute-2-25|[0, 1]\nroute-2-35|[1, 0]\nbaseline-3|ok:8434\nrenamed-3|ok:8434\nexact-3|ok:8434\nshort-3|limit\nbudget-3|394354|402788\nroute-3-0|[0, 1, 2]\nroute-3-40|[0, 1, 2]\nroute-3-50|[2, 1, 0]\nbaseline-4|ok:21311\nrenamed-4|ok:21311\nexact-4|ok:21311\nshort-4|limit\nbudget-4|653303|674614\nroute-4-0|[0, 1, 2, 3]\nroute-4-55|[0, 1, 2, 3]\nroute-4-65|[3, 1, 2, 0]\nroute-4-75|[0, 2, 1, 3]\nbaseline-5|ok:28882\nrenamed-5|ok:28882\nexact-5|ok:28882\nshort-5|limit\nbudget-5|826998|855880\nroute-5-0|[0, 1, 2, 3, 4]\nroute-5-70|[0, 1, 2, 3, 4]\nroute-5-80|[4, 1, 2, 3, 0]\nroute-5-90|[0, 3, 2, 1, 4]\nbaseline-6|ok:54370\nrenamed-6|ok:54370\nexact-6|ok:54370\nshort-6|limit\nbudget-6|1163465|1217835\nroute-6-0|[0, 1, 2, 3, 4, 5]\nroute-6-85|[0, 1, 2, 3, 4, 5]\nroute-6-95|[5, 1, 2, 3, 4, 0]\nroute-6-105|[0, 4, 2, 3, 1, 5]\nroute-6-115|[0, 1, 3, 2, 4, 5]\nbaseline-7|ok:69238\nrenamed-7|ok:69238\nexact-7|ok:69238\nshort-7|limit\nbudget-7|1392234|1461472\nroute-7-0|[0, 1, 2, 3, 4, 5, 6]\nroute-7-100|[0, 1, 2, 3, 4, 5, 6]\nroute-7-110|[6, 1, 2, 3, 4, 5, 0]\nroute-7-120|[0, 5, 2, 3, 4, 1, 6]\nroute-7-130|[0, 1, 4, 3, 2, 5, 6]\nbaseline-8|ok:112201\nrenamed-8|ok:112201\nexact-8|ok:112201\nshort-8|limit\nbudget-8|1819083|1931284\nroute-8-0|[0, 1, 2, 3, 4, 5, 6, 7]\nroute-8-115|[0, 1, 2, 3, 4, 5, 6, 7]\nroute-8-125|[7, 1, 2, 3, 4, 5, 6, 0]\nroute-8-135|[0, 6, 2, 3, 4, 5, 1, 7]\nroute-8-145|[0, 1, 5, 3, 4, 2, 6, 7]\nroute-8-155|[0, 1, 2, 4, 3, 5, 6, 7]\nhidden-phase|contract\nhidden-leaf|contract\nhidden-repeat|contract\naxis-outside|contract\naxis-missing|contract\nwrong-effect|contract\nmismatched-width|contract\nself-cycle|contract\nmissing-dependency|ok:108325\nreversed-order|contract\nduplicate-node|invalid_ir\nmissing-definition|invalid_ir\nunsupported-body|contract\nempty-owner|ok:173\nzero-budget|limit\nreset-budget|limit\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -17,6 +17,12 @@ jobs:
         run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
       - run: cargo +1.98.1 fmt --check
       - run: cargo +1.98.1 test --all-targets
+      - name: Build public API documentation without warnings
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo +1.98.1 doc --no-deps
+      - name: Execute public API documentation examples
+        run: cargo +1.98.1 test --doc
       - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
       - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
       - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
@@ -63,9 +69,17 @@ jobs:
           sudo apt-get install -y llvm-18 python3-venv
           python3 -m venv /tmp/qleisli-interop-validation
           /tmp/qleisli-interop-validation/bin/pip install -r scripts/interop-validation-requirements.txt
-      - run: cargo +1.98.1 build --example interop
+          /tmp/qleisli-interop-validation/bin/pip install -r scripts/qir-reader-requirements.txt
+          /tmp/qleisli-interop-validation/bin/pip install setuptools==80.9.0
+          /tmp/qleisli-interop-validation/bin/pip install --no-build-isolation --no-deps ./python
+      - run: cargo +1.98.1 build --example interop --bin qleisli
       - name: Independently parse OpenQASM and verify QIR with LLVM
         run: /tmp/qleisli-interop-validation/bin/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as-18 --opt opt-18
+      - name: Installed Python API and independently authored QIR input
+        run: |
+          /tmp/qleisli-interop-validation/bin/python scripts/test_connections.py
+          llvm-as-18 tests/fixtures/interop/independent.ll -o /tmp/qleisli-independent.bc
+          opt-18 -passes=verify -disable-output /tmp/qleisli-independent.bc
 
   lean:
     runs-on: ubuntu-latest
@@ -85,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - name: Check executable source and dependency policy
+      - name: Reject kernel/backend source escape hatches and unaudited imports
         run: python3 scripts/check_lean_kernel.py
       - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
         with:
@@ -93,7 +107,7 @@ jobs:
           auto-config: 'false'
           build: 'true'
           use-mathlib-cache: 'false'
-      - name: Audit executable declarations and check reduction regressions
+      - name: Audit axioms, unsafe/partial declarations and runtime replacements
         working-directory: lean-kernel
         run: |
           lake env lean -DwarningAsError=true Audit.lean
@@ -103,7 +117,7 @@ jobs:
         run: |
           lake env leanchecker --fresh QleisliKernel
           lake env leanchecker --fresh Main
-      - name: Reject compiled audit counterexamples
+      - name: Reject backend unsafe, implemented_by, extern and partial counterexamples
         run: python3 scripts/test_check_lean_kernel.py --compiled
       - name: Shared DAG semantics, binding, limits and zero-width owners
         run: python3 scripts/test_lean_hierarchy.py
@@ -113,6 +127,12 @@ jobs:
         run: python3 scripts/test_lean_layout_dag.py
       - name: Typed dyadic phases, controlled conditions and layout composition
         run: python3 scripts/test_lean_phase_layout.py
+      - name: Sparse phase powers and coherent controls match independent integer oracles
+        run: python3 scripts/test_lean_phase_operations.py
+      - name: Actual shared-gradient binding, phase semantics and remaining budgets
+        run: python3 scripts/test_hierarchical_gradient.py
+      - name: Actual Fourier-stage geometry, complex coefficients and shared budgets
+        run: python3 scripts/test_hierarchical_fourier_stage.py
       - name: Native interference normalization and independent joint amplitudes
         run: python3 scripts/test_lean_interference.py
       - name: Symbolic QFT paths and independent Fourier coefficients
@@ -133,12 +153,72 @@ jobs:
         run: python3 scripts/test_hierarchical_contract_typing.py
       - name: Check explicit structural conversions
         run: python3 scripts/test_hierarchical_structural.py
+      - name: Canonical reshape metadata and independent tree encoding
+        run: python3 scripts/test_lean_reshape.py
       - name: Bind controlled powers to actual bodies and provider obligations
         run: python3 scripts/test_hierarchical_power.py
       - name: Check actual provider derivations from an empty proof cache
         run: python3 scripts/test_hierarchical_derivation.py
+      - name: Shared call expansion, typed adapters and independent phase oracle
+        run: python3 scripts/test_hierarchical_calls.py
+      - name: Finite requests retain actual bytes, types, ports and endpoint indices
+        run: python3 scripts/test_hierarchical_finite.py
+      - name: Conditional derivations retain every shared finite obligation
+        run: python3 scripts/test_hierarchical_conditional.py
+      - name: Independently requested hierarchy roots and untrusted pair proposals
+        run: python3 scripts/test_hierarchical_request.py
       - name: Install the tested Rust toolchain
         run: rustup toolchain install 1.98.1 --profile minimal
+      - name: Fresh hierarchy transport and finite reconstruction
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_host.py
+      - name: One-bit Fourier bases and fresh phase-fixed H reconstruction
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_fourier_base.py
+      - name: Complete recursive Fourier bodies and bound H obligations
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_fourier_body.py
+      - name: Actual shared wiring, outer QFT permutations and aggregate budgets
+        run: python3 scripts/test_hierarchical_wiring.py
+      - name: Actual outer Fourier requests and bound phase-fixed H obligations
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_fourier_root.py
+      - name: Complete Fourier requests through fresh native and exact host checks
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_fourier_host.py
+      - name: Sized Xor and GHZ source corpus with independent native and semantic checks
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_sized_corpus.py --small
+      - name: Shared QFT source, named Fourier contracts, inverse and shared calls
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_sized_qft.py --small
+      - name: Small-system coherent QPE source and phase/reference diagnostics
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_sized_qpe.py
+      - name: Small-system shared AddK and Equals sources, restoration and phase checks
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_sized_arithmetic.py
+      - name: Shared QPE order and amplitude clients with operation forwarding
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_sized_qpe_clients.py
+      - name: QFT hierarchy widths one through four and retained width-eight capacity case
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_qft.py
+      - name: Shared-gradient QFT hierarchies at every supported width
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_hierarchical_qft.py --construction shared-gradient
       - name: Differential and process-boundary checks
         run: cargo +1.98.1 run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test
   distribution:

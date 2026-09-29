@@ -1,0 +1,605 @@
+use qleisli::contract::BasisType;
+use qleisli::contract::exact::{Exact, Matrix};
+use qleisli::interchange::hierarchical::Kernel;
+use qleisli::interchange::{self, RootInterface, Version, finite_matrix};
+use qleisli::ir::*;
+use qleisli::verify;
+
+fn quoted(text: &str) -> String {
+    // Test payloads are ASCII JSON. Escape the outer string independently.
+    format!(
+        "\"{}\"",
+        text.replace('\\', "\\\\")
+            .replace('"', "\\\"")
+            .replace('\n', "\\n")
+    )
+}
+
+fn h_matrix(negative: bool) -> Matrix {
+    let h = Exact::inv_sqrt2();
+    let entries = vec![h, h, h, h.neg().unwrap()];
+    Matrix::new(
+        2,
+        2,
+        entries
+            .into_iter()
+            .map(|x| if negative { x.neg().unwrap() } else { x })
+            .collect(),
+    )
+    .unwrap()
+}
+
+fn finite_program() -> Vec<u8> {
+    finite_program_at(0, 7)
+}
+
+fn finite_program_at(owner: u32, wire: u32) -> Vec<u8> {
+    let raw = RawProgram {
+        quantum_inputs: vec![QuantumPort {
+            token: TokenId(owner),
+            wires: vec![WireId(wire)],
+            shape: BasisShape { bits: 1 },
+        }],
+        classical_inputs: vec![],
+        operations: vec![RawOp::Gate {
+            gate: SingleGate::H,
+            input: TokenId(owner),
+            output: TokenId(owner + 1),
+        }],
+        quantum_outputs: vec![TokenId(owner + 1)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    interchange::export(
+        &verify(raw).unwrap(),
+        Some(&RootInterface {
+            input: BasisType::Bit,
+            output: BasisType::Bit,
+        }),
+        Version::V2,
+    )
+    .unwrap()
+}
+
+fn side(owner: u32, controlled: bool) -> String {
+    let target = format!(r#"{{"owner":{owner},"basis":[{{"tag":"bit"}}],"axes":[7]}}"#);
+    let ports = if controlled {
+        format!(r#"{{"owner":99,"basis":[{{"tag":"bit"}}],"axes":[11]}},{target}"#)
+    } else {
+        target
+    };
+    format!(r#"{{"quantum":[{ports}],"classical":[]}}"#)
+}
+
+fn family(count: u32, logical_count: u32, negative: bool, controlled: bool) -> Vec<u8> {
+    let program = quoted(std::str::from_utf8(&finite_program()).unwrap());
+    let matrix =
+        quoted(std::str::from_utf8(&finite_matrix::encode(&h_matrix(negative)).unwrap()).unwrap());
+    let n = if controlled { 5 } else { 4 };
+    let rev = |i| n - 1 - i;
+    let permutation = r#"{"owners":[0],"axes":[0],"classical":[]}"#;
+    let mut d = vec![
+        format!(r#"{{"tag":"leaf","program":{program}}}"#),
+        format!(r#"{{"tag":"rewire","permutation":{permutation}}}"#),
+        r#"{"tag":"sequence","children":[0,1]}"#.to_string(),
+        format!(r#"{{"tag":"repeat","count":{count},"definition":2}}"#),
+    ];
+    let mut m = vec![
+        format!(r#"{{"tag":"finite","description":{matrix}}}"#),
+        format!(r#"{{"tag":"rewire","permutation":{permutation}}}"#),
+        format!(r#"{{"tag":"sequence","children":[{},{}]}}"#, rev(0), rev(1)),
+        format!(
+            r#"{{"tag":"power","child":{},"count":{logical_count}}}"#,
+            rev(2)
+        ),
+    ];
+    if controlled {
+        d.push(r#"{"tag":"control","definition":3,"polarity":true}"#.into());
+        m.push(format!(
+            r#"{{"tag":"control","child":{},"polarity":true}}"#,
+            rev(3)
+        ));
+    }
+    let rules = ["finite", "rewire", "sequence", "repeat", "control"];
+    let premises = ["[]", "[]", "[0,1]", "[2]", "[3]"];
+    let mut definitions = vec![];
+    let mut meanings = vec![];
+    let mut encodings = vec![];
+    let mut proofs = vec![];
+    for i in 0..n {
+        let a = side(if i == 1 { 1 } else { 0 }, i == 4);
+        let b = side(if i == 0 { 1 } else { 0 }, i == 4);
+        let header = format!(r#"{{"inputs":{a},"outputs":{b}}}"#);
+        definitions.push(format!(
+            r#"{{"interface":{header},"effect":"unitary","body":{}}}"#,
+            d[i]
+        ));
+        meanings.push(format!(r#"{{"interface":{header},"body":{}}}"#, m[i]));
+        for s in [&a, &b] {
+            encodings.push(format!(
+                r#"{{"logical":{s},"physical":{s},"body":{{"tag":"identity"}}}}"#
+            ));
+        }
+        proofs.push(format!(r#"{{"kind":"equation","rule":{{"tag":"{}"}},"premises":{},"implementation":{i},"meaning":{},"input_encoding":{},"output_encoding":{},"witness":{{"template_version":1,"parameters":[],"references":[]}}}}"#,rules[i],premises[i],rev(i),2*i,2*i+1));
+    }
+    meanings.reverse();
+    format!(r#"{{"format":"qleisli.hierarchical-ir","version":1,"profile":"qpe-dyadic8-v1","definitions":[{}],"meanings":[{}],"encodings":[{}],"proofs":[{}],"entry":{{"implementation":{},"proof":{}}}}}"#,definitions.join(","),meanings.join(","),encodings.join(","),proofs.join(","),n-1,n-1).into_bytes()
+}
+
+fn native() -> Kernel {
+    let path = std::env::var_os("QLEISLI_HIERARCHY_KERNEL")
+        .expect("set QLEISLI_HIERARCHY_KERNEL to the built audited executable");
+    assert!(std::path::Path::new(&path).is_file());
+    Kernel::new(path)
+}
+
+#[test]
+fn strict_json_rejects_before_starting_an_executable() {
+    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let good = String::from_utf8(family(3, 3, false, false)).unwrap();
+    let malformed = [
+        good.replacen("\"version\":1", "\"version\":1,\"version\":1", 1),
+        good.replacen("\"version\":1", "\"version\":2", 1),
+        good.replacen("\"effect\":\"unitary\"", "\"effect\":\"unknown\"", 1),
+        good.replacen("\"owner\":0", "\"owner\":0,\"checked\":true", 1),
+        good.replacen("\"polarity\":true", "\"polarity\":1", 1) + "null",
+        good.replacen("\"tag\":\"repeat\"", "\"tag\":\"eval\"", 1),
+    ];
+    for bad in malformed {
+        assert_eq!(k.inspect(bad.as_bytes()).unwrap_err().code, "format");
+    }
+    let big = good.replacen("\"owner\":0", "\"owner\":4294967296", 1);
+    assert_eq!(k.inspect(big.as_bytes()).unwrap_err().code, "limit");
+}
+
+#[test]
+fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
+    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let good = String::from_utf8(family(3, 3, false, false)).unwrap();
+    for bad in [
+        good.replacen("\"children\":[0,1]", "\"children\":[0,2]", 1),
+        good.replacen("\"definition\":2", "\"definition\":4", 1),
+        good.replacen("\"input_encoding\":0", "\"input_encoding\":8", 1),
+    ] {
+        assert_eq!(k.inspect(bad.as_bytes()).unwrap_err().code, "invalid_ir");
+    }
+}
+
+#[test]
+fn external_schema_ids_cannot_enable_registry_entries() {
+    let good = String::from_utf8(family(3, 3, false, false)).unwrap();
+    let bad = good.replacen(
+        "\"rule\":{\"tag\":\"finite\"}",
+        "\"rule\":{\"tag\":\"schema\",\"id\":\"controlled-power/1\"}",
+        1,
+    );
+    assert_eq!(
+        Kernel::new("/nonexistent/qleisli-kernel")
+            .inspect(bad.as_bytes())
+            .unwrap_err()
+            .code,
+        "contract"
+    );
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_shared_powers_reconstruct_one_bound_leaf_without_expansion() {
+    let k = native();
+    let mut costs = vec![];
+    for count in [0, 1, 3, 4096] {
+        let bytes = family(count, count, false, true);
+        let result = k.inspect(&bytes).unwrap();
+        assert_eq!(result.payload(), bytes);
+        assert_eq!(result.leaves().len(), 1);
+        assert_eq!(result.leaves()[0].0, 0);
+        assert_eq!(result.leaves()[0].1.leaf().meaning(), &h_matrix(false));
+        assert_eq!(result.leaves()[0].1.leaf().payload(), finite_program());
+        costs.push((result.structural_work(), result.exact_work()));
+    }
+    assert!(costs.windows(2).all(|w| w[0] == w[1]));
+    println!("shared power costs: {costs:?}");
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_phase_fault_remains_an_obligation_under_zero_repeat() {
+    let k = native();
+    for count in [0, 3, 4096] {
+        let error = k.inspect(&family(count, count, true, true)).unwrap_err();
+        assert_eq!(error.code, "contract");
+        assert!(error.message.contains("does not hold"));
+    }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_actual_counts_premises_and_encodings_are_checked() {
+    let k = native();
+    assert_eq!(
+        k.inspect(&family(3, 4, false, true)).unwrap_err().code,
+        "contract"
+    );
+    let good = String::from_utf8(family(3, 3, false, true)).unwrap();
+    for bad in [
+        good.replacen("\"premises\":[2]", "\"premises\":[]", 1),
+        good.replacen("\"input_encoding\":6", "\"input_encoding\":1", 1),
+        good.replacen("\"polarity\":true", "\"polarity\":false", 1),
+    ] {
+        assert!(matches!(
+            k.inspect(bad.as_bytes()).unwrap_err().code,
+            "contract" | "invalid_ir"
+        ));
+    }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_leaf_type_and_owner_are_bound_to_the_embedded_program() {
+    let k = native();
+    let good = String::from_utf8(family(3, 3, false, false)).unwrap();
+    let wrong_owner = good.replace("\"owner\":0", "\"owner\":8");
+    assert_eq!(
+        k.inspect(wrong_owner.as_bytes()).unwrap_err().code,
+        "contract"
+    );
+    let wrong_type = good.replace(
+        "\"basis\":[{\"tag\":\"bit\"}]",
+        "\"basis\":[{\"tag\":\"bits\",\"width\":1}]",
+    );
+    assert!(matches!(
+        k.inspect(wrong_type.as_bytes()).unwrap_err().code,
+        "contract" | "invalid_ir"
+    ));
+}
+
+// This fixture lists tables directly in the same order. The shared-power
+// fixture above independently reverses the meaning table.
+fn assemble(nodes: Vec<(String, String, String, String, &str, &str)>) -> Vec<u8> {
+    let mut ds = vec![];
+    let mut ms = vec![];
+    let mut es = vec![];
+    let mut ps = vec![];
+    for (i, (a, b, d, m, rule, premises)) in nodes.iter().enumerate() {
+        let header = format!(r#"{{"inputs":{a},"outputs":{b}}}"#);
+        ds.push(format!(
+            r#"{{"interface":{header},"effect":"unitary","body":{d}}}"#
+        ));
+        ms.push(format!(r#"{{"interface":{header},"body":{m}}}"#));
+        for s in [a, b] {
+            es.push(format!(
+                r#"{{"logical":{s},"physical":{s},"body":{{"tag":"identity"}}}}"#
+            ));
+        }
+        ps.push(format!(r#"{{"kind":"equation","rule":{{"tag":"{rule}"}},"premises":{premises},"implementation":{i},"meaning":{i},"input_encoding":{},"output_encoding":{},"witness":{{"template_version":1,"parameters":[],"references":[]}}}}"#,2*i,2*i+1));
+    }
+    let root = nodes.len() - 1;
+    format!(r#"{{"format":"qleisli.hierarchical-ir","version":1,"profile":"qpe-dyadic8-v1","definitions":[{}],"meanings":[{}],"encodings":[{}],"proofs":[{}],"entry":{{"implementation":{root},"proof":{root}}}}}"#,ds.join(","),ms.join(","),es.join(","),ps.join(",")).into_bytes()
+}
+
+fn combined_side(left: u32, right: u32) -> String {
+    format!(
+        r#"{{"quantum":[{{"owner":{left},"basis":[{{"tag":"bit"}}],"axes":[7]}},{{"owner":{right},"basis":[{{"tag":"bit"}}],"axes":[17]}}],"classical":[]}}"#
+    )
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_disjoint_tensor_reconstructs_both_leaves_in_one_budget() {
+    let k = native();
+    for negative in [false, true] {
+        let mut nodes = vec![];
+        for i in 0..2 {
+            let (owner, wire) = if i == 0 { (0, 7) } else { (10, 17) };
+            let a = side(owner, false).replace("[7]", &format!("[{wire}]"));
+            let b = side(owner + 1, false).replace("[7]", &format!("[{wire}]"));
+            let program = quoted(std::str::from_utf8(&finite_program_at(owner, wire)).unwrap());
+            let matrix = quoted(
+                std::str::from_utf8(&finite_matrix::encode(&h_matrix(negative && i == 1)).unwrap())
+                    .unwrap(),
+            );
+            nodes.push((
+                a,
+                b,
+                format!(r#"{{"tag":"leaf","program":{program}}}"#),
+                format!(r#"{{"tag":"finite","description":{matrix}}}"#),
+                "finite",
+                "[]",
+            ));
+        }
+        let body = r#"{"tag":"tensor","left":0,"right":1}"#.to_string();
+        nodes.push((
+            combined_side(0, 10),
+            combined_side(1, 11),
+            body.clone(),
+            body,
+            "tensor",
+            "[0,1]",
+        ));
+        let result = k.inspect(&assemble(nodes));
+        if negative {
+            assert_eq!(result.unwrap_err().code, "contract");
+        } else {
+            let result = result.unwrap();
+            assert_eq!(result.leaves().len(), 2);
+            assert_eq!(
+                result.exact_work(),
+                result.leaves().iter().map(|(_, l)| l.exact_work()).sum()
+            );
+            assert_eq!(result.exact_work(), 134);
+        }
+    }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_phase_and_structural_inverse_need_no_dense_matrix_leaf() {
+    let k = native();
+    let a = side(0, false);
+    let phase = assemble(vec![(
+        a.clone(),
+        a,
+        r#"{"tag":"dyadic_phase","target":0,"j":1,"k":8}"#.into(),
+        r#"{"tag":"phase","j":1,"k":8}"#.into(),
+        "phase",
+        "[]",
+    )]);
+    let result = k.inspect(&phase).unwrap();
+    assert!(result.leaves().is_empty());
+    assert_eq!(result.exact_work(), 0);
+    let pair=r#"{"quantum":[{"owner":0,"basis":[{"tag":"tuple","arity":2},{"tag":"bit"},{"tag":"bit"}],"axes":[7,17]}],"classical":[]}"#.to_string();
+    let split = combined_side(1, 2);
+    let body = r#"{"tag":"structural","operation":{"tag":"split_tuple"}}"#.to_string();
+    let artifact = assemble(vec![
+        (
+            pair.clone(),
+            split.clone(),
+            body.clone(),
+            body,
+            "structural",
+            "[]",
+        ),
+        (
+            split,
+            pair,
+            r#"{"tag":"inverse","definition":0}"#.into(),
+            r#"{"tag":"inverse","child":0}"#.into(),
+            "inverse",
+            "[0]",
+        ),
+    ]);
+    let result = k.inspect(&artifact).unwrap();
+    assert!(result.leaves().is_empty());
+    assert_eq!(result.exact_work(), 0);
+}
+
+// Independent request construction: no field is copied from the artifact.
+fn request_from_meanings(meanings: Vec<(String, String, String)>, entry: usize) -> Vec<u8> {
+    let (a, b, _) = &meanings[entry];
+    let header = format!(r#"{{"inputs":{a},"outputs":{b}}}"#);
+    let nodes = meanings
+        .iter()
+        .map(|(a, b, body)| {
+            format!(r#"{{"interface":{{"inputs":{a},"outputs":{b}}},"body":{body}}}"#)
+        })
+        .collect::<Vec<_>>();
+    format!(r#"{{"format":"qleisli.hierarchy-request","version":1,"profile":"qpe-dyadic8-v1","kind":"equation","effect":"unitary","interface":{header},"meanings":[{}],"entry":{entry}}}"#,nodes.join(",")).into_bytes()
+}
+
+fn power_request(count: u32, negative: bool, controlled: bool, pretty: bool) -> Vec<u8> {
+    let mut matrix =
+        String::from_utf8(finite_matrix::encode(&h_matrix(negative)).unwrap()).unwrap();
+    if pretty {
+        matrix = matrix.replace(',', ",\n ");
+    }
+    let matrix = quoted(&matrix);
+    let a = side(0, false);
+    let b = side(1, false);
+    let mut nodes = vec![
+        (
+            a.clone(),
+            b.clone(),
+            format!(r#"{{"tag":"finite","description":{matrix}}}"#),
+        ),
+        (
+            b,
+            a.clone(),
+            r#"{"tag":"rewire","permutation":{"owners":[0],"axes":[0],"classical":[]}}"#.into(),
+        ),
+        (
+            a.clone(),
+            a.clone(),
+            r#"{"tag":"sequence","children":[0,1]}"#.into(),
+        ),
+        (
+            a.clone(),
+            a,
+            format!(r#"{{"tag":"power","child":2,"count":{count}}}"#),
+        ),
+    ];
+    if controlled {
+        nodes.push((
+            side(0, true),
+            side(0, true),
+            r#"{"tag":"control","child":3,"polarity":true}"#.into(),
+        ));
+    }
+    let entry = nodes.len() - 1;
+    request_from_meanings(nodes, entry)
+}
+
+#[test]
+fn independent_request_transport_rejects_flags_and_invalid_references() {
+    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let a = family(3, 3, false, true);
+    let request = String::from_utf8(power_request(3, false, true, false)).unwrap();
+    for bad in [
+        request.replacen("\"version\":1", "\"version\":1,\"checked\":true", 1),
+        request.replacen("\"kind\":\"equation\"", "\"kind\":\"unchecked\"", 1),
+        request.replacen("\"entry\":4", "\"entry\":4,\"entry\":4", 1),
+    ] {
+        assert_eq!(
+            k.check_against(&a, bad.as_bytes()).unwrap_err().code,
+            "format"
+        );
+    }
+    for bad in [
+        request.replacen("\"entry\":4", "\"entry\":5", 1),
+        request.replacen("\"child\":2", "\"child\":99", 1),
+        request.replacen("\"child\":3", "\"child\":4", 1),
+    ] {
+        assert_eq!(
+            k.check_against(&a, bad.as_bytes()).unwrap_err().code,
+            "invalid_ir"
+        );
+    }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
+    let k = native();
+    let mut costs = vec![];
+    for count in [0, 1, 3, 4096] {
+        let a = family(count, count, false, true);
+        let r = power_request(count, false, true, true);
+        let result = k.check_against(&a, &r).unwrap();
+        assert_eq!(result.request(), r);
+        assert_eq!(result.reconstruction().payload(), a);
+        assert_eq!(result.reconstruction().leaves().len(), 1);
+        costs.push((
+            result.reconstruction().structural_work(),
+            result.reconstruction().exact_work(),
+        ));
+        assert_eq!(
+            k.check_against(&a, &power_request(count, true, true, false))
+                .unwrap_err()
+                .code,
+            "contract"
+        );
+        assert_eq!(
+            k.check_against(&family(count, count, true, true), &r)
+                .unwrap_err()
+                .code,
+            "contract"
+        );
+    }
+    assert!(costs.windows(2).all(|w| w[0] == w[1]));
+    assert_eq!(costs[0].1, 103);
+    println!("independent request shared-power costs: {costs:?}");
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_request_detects_coordinated_body_changes_and_wrong_headers() {
+    let k = native();
+    let a = family(3, 3, false, true);
+    let r = power_request(3, false, true, false);
+    let changed = family(4, 4, false, true);
+    k.inspect(&changed).unwrap();
+    assert_eq!(k.check_against(&changed, &r).unwrap_err().code, "contract");
+    let text = String::from_utf8(r).unwrap();
+    for bad in [
+        text.replacen("\"kind\":\"equation\"", "\"kind\":\"instrument\"", 1),
+        text.replacen("\"effect\":\"unitary\"", "\"effect\":\"iso\"", 1),
+        text.replacen("\"owner\":99", "\"owner\":98", 1),
+        text.replacen("\"axes\":[11]", "\"axes\":[12]", 1),
+        text.replacen("\"tag\":\"bit\"", "\"tag\":\"bits\",\"width\":1", 1),
+        text.replacen("\"polarity\":true", "\"polarity\":false", 1),
+    ] {
+        assert_eq!(
+            k.check_against(&a, bad.as_bytes()).unwrap_err().code,
+            "contract"
+        );
+    }
+    let s = side(0, false);
+    let req = request_from_meanings(
+        vec![(
+            s.clone(),
+            s.clone(),
+            r#"{"tag":"phase","j":1,"k":8}"#.into(),
+        )],
+        0,
+    );
+    let phase = assemble(vec![(
+        s.clone(),
+        s,
+        r#"{"tag":"dyadic_phase","target":0,"j":2,"k":8}"#.into(),
+        r#"{"tag":"phase","j":2,"k":8}"#.into(),
+        "phase",
+        "[]",
+    )]);
+    k.inspect(&phase).unwrap();
+    assert_eq!(k.check_against(&phase, &req).unwrap_err().code, "contract");
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_request_permits_different_sharing_in_both_directions() {
+    let k = native();
+    let s = side(0, false);
+    let d = r#"{"tag":"dyadic_phase","target":0,"j":1,"k":8}"#;
+    let m = r#"{"tag":"phase","j":1,"k":8}"#;
+    let shared = assemble(vec![
+        (s.clone(), s.clone(), d.into(), m.into(), "phase", "[]"),
+        (
+            s.clone(),
+            s.clone(),
+            r#"{"tag":"sequence","children":[0,0]}"#.into(),
+            r#"{"tag":"sequence","children":[0,0]}"#.into(),
+            "sequence",
+            "[0,0]",
+        ),
+    ]);
+    let duplicated = assemble(vec![
+        (s.clone(), s.clone(), d.into(), m.into(), "phase", "[]"),
+        (s.clone(), s.clone(), d.into(), m.into(), "phase", "[]"),
+        (
+            s.clone(),
+            s.clone(),
+            r#"{"tag":"sequence","children":[0,1]}"#.into(),
+            r#"{"tag":"sequence","children":[0,1]}"#.into(),
+            "sequence",
+            "[0,1]",
+        ),
+    ]);
+    let req_shared = request_from_meanings(
+        vec![
+            (s.clone(), s.clone(), m.into()),
+            (
+                s.clone(),
+                s.clone(),
+                r#"{"tag":"sequence","children":[0,0]}"#.into(),
+            ),
+        ],
+        1,
+    );
+    let req_duplicated = request_from_meanings(
+        vec![
+            (s.clone(), s.clone(), m.into()),
+            (s.clone(), s.clone(), m.into()),
+            (
+                s.clone(),
+                s.clone(),
+                r#"{"tag":"sequence","children":[0,1]}"#.into(),
+            ),
+        ],
+        2,
+    );
+    for (a, r) in [(&shared, &req_duplicated), (&duplicated, &req_shared)] {
+        let result = k.check_against(a, r).unwrap();
+        assert_eq!(result.reconstruction().exact_work(), 0);
+    }
+    let unused = request_from_meanings(
+        vec![
+            (s.clone(), s.clone(), m.into()),
+            (s.clone(), s.clone(), m.into()),
+        ],
+        0,
+    );
+    let leaf = assemble(vec![(s.clone(), s, d.into(), m.into(), "phase", "[]")]);
+    assert_eq!(
+        k.check_against(&leaf, &unused).unwrap_err().code,
+        "contract"
+    );
+}

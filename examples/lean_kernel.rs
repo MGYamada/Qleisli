@@ -9,9 +9,9 @@ use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{Duration, Instant};
 
-use qleisli_core::contract::exact::{Budget, Exact, Matrix};
-use qleisli_core::contract::{BasisType, Circuit};
-use qleisli_core::ir::{CircuitAction, CircuitStep};
+use qleisli::contract::exact::{Budget, Exact, Matrix};
+use qleisli::contract::{BasisType, Circuit};
+use qleisli::ir::{CircuitAction, CircuitStep};
 
 const HEADER: &str = "qleisli.phase-word 1 phase256-word-v1\nBit->Bit\n";
 const OUTPUT_LIMIT: u64 = 65_536;

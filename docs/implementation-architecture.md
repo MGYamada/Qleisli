@@ -17,6 +17,20 @@ Python bindings and QIR/OpenQASM import/export around this independent boundary.
 Those adapters and their extension specifications remain pending; the current
 component and execution map below describes implemented code only.
 
+The adopted [pipeline migration policy](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary)
+moves passes in sequence from either end while preserving an independent IR
+check at the Rust/Lean boundary. A proved pass can extend the verified segment;
+remaining Rust transformations still require validation before their output
+enters that segment. This is a migration direction, not a change to the current
+finite execution map or a claim that the backend is already verified.
+[Candidate search remains external where appropriate](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker):
+rotation synthesis can propose circuits and norm-equation witnesses to a
+proved Lean `LeafRealizer` checker. That planned role does not yet expose an
+API, and the oracle's implementation need not migrate to Lean. A substantive
+Lean backend remains required; its [execution policy](lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
+forbids unsafe/partial definitions and implemented-by/extern runtime replacement
+through source and compiled-declaration CI, including generated helpers.
+
 ## Responsibilities and dependency direction
 
 | Component | Responsibility | Dependency boundary |

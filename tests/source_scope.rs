@@ -5,8 +5,8 @@ mod common;
 use std::collections::BTreeMap;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 const IMPORTS: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;

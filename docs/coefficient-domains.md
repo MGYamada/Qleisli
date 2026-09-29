@@ -99,6 +99,17 @@ contract; otherwise retain the scratch or explicitly observe/discard it under
 a separately specified instrument contract. Actual hardware noise stays in the
 device claim; it is not hidden by an exact ideal cleanup theorem.
 
+## External rotation search and checked realization
+
+Under the [2026-09-29 LeafRealizer policy](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker),
+rotation-synthesis norm-equation search may remain an untrusted external
+producer. A proved Lean checker must connect its actual circuit and witnesses
+to the requested operation, coefficient/gate profile and exact equality or
+certified approximation bound. This separates search from checking at each
+pass; it does not trust the search algorithm, expand the current coefficient
+domain or relax exact auxiliary cleanup. `LeafRealizer` is a future checking
+role whose concrete interface and profile still need specification.
+
 ## Desugaring and adoption gates
 
 The [desugaring layer](terminology.md#desugaring-layer) translates convenience

@@ -1,0 +1,65 @@
+Qleisli/HierarchicalGradient.lean:53:2: error: unsolved goals
+case neg.inl
+interface : Interface
+n : ℕ
+first second : Operator
+a : Bool → ℂ
+b : (Fin n → Bool) → ℂ
+hi : width interface.inputs = n + 1
+ho : width interface.outputs = n + 1
+ha : At 1 first fun bits => a (bits 0)
+hb : At n second b
+output input : Fin (n + 1) → Bool
+right :
+  second.coefficient (List.ofFn fun i => output i.succ) (List.ofFn fun i => input i.succ) =
+    Matrix.diagonal b (fun i => output i.succ) fun i => input i.succ
+left :
+  first.coefficient [output 0] [input 0] = Matrix.diagonal (fun bits => a (bits 0)) (fun x => output 0) fun x => input 0
+same : ¬output = input
+head : ¬output 0 = input 0
+⊢ ((fun i => output i.succ) = fun i => input i.succ) →
+    ((fun x => output 0) = fun x => input 0) → a (output 0) = 0 ∨ (b fun i => input i.succ) = 0
+Qleisli/HierarchicalGradient.lean:47:46: warning: This simp argument is unused:
+  List.length_ofFn
+
+Hint: Omit it from the simp argument list.
+  simp only [̵m̵a̵t̵r̵i̵x̵A̵t̵,̵a̵p̵p̵l̵y̵,̵b̵o̵u̵n̵d̵e̵d̵,̵r̵a̵w̵,̵h̵i̵,̵h̵o̵,̵L̵i̵s̵t̵.̵l̵e̵n̵g̵t̵h̵_̵o̵f̵F̵n̵,̵a̵n̵d̵_̵s̵e̵l̵f̵,̵i̵t̵e̵_̵t̵r̵u̵e̵,̵
+  ̵ ̵ ̵ ̵ ̵h̵a̵.̵1̵,̵h̵a̵.̵2̵.̵1̵,̵L̵i̵s̵t̵.̵o̵f̵F̵n̵_̵s̵u̵c̵c̵,̵L̵i̵s̵t̵.̵t̵a̵k̵e̵_̵s̵u̵c̵c̵_̵c̵o̵n̵s̵,̵L̵i̵s̵t̵.̵t̵a̵k̵e̵_̵z̵e̵r̵o̵,̵L̵i̵s̵t̵.̵d̵r̵o̵p̵_̵s̵u̵c̵c̵_̵c̵o̵n̵s̵,̵
+  ̵ ̵ ̵ ̵ ̵L̵i̵s̵t̵.̵d̵r̵o̵p̵_̵z̵e̵r̵o̵,̵l̵e̵f̵t̵,̵r̵i̵g̵h̵t̵,̵M̵a̵t̵r̵i̵x̵.̵d̵i̵a̵g̵o̵n̵a̵l̵_̵a̵p̵p̵l̵y̵]̵[̲m̲a̲t̲r̲i̲x̲A̲t̲,̲ ̲a̲p̲p̲l̲y̲,̲ ̲b̲o̲u̲n̲d̲e̲d̲,̲ ̲r̲a̲w̲,̲ ̲h̲i̲,̲ ̲h̲o̲,̲ ̲a̲n̲d̲_̲s̲e̲l̲f̲,̲ ̲i̲t̲e̲_̲t̲r̲u̲e̲,̲ ̲h̲a̲.̲1̲,̲ ̲h̲a̲.̲2̲.̲1̲,̲
+  ̲ ̲ ̲ ̲ ̲L̲i̲s̲t̲.̲o̲f̲F̲n̲_̲s̲u̲c̲c̲,̲ ̲L̲i̲s̲t̲.̲t̲a̲k̲e̲_̲s̲u̲c̲c̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲t̲a̲k̲e̲_̲z̲e̲r̲o̲,̲ ̲L̲i̲s̲t̲.̲d̲r̲o̲p̲_̲s̲u̲c̲c̲_̲c̲o̲n̲s̲,̲ ̲L̲i̲s̲t̲.̲d̲r̲o̲p̲_̲z̲e̲r̲o̲,̲ ̲l̲e̲f̲t̲,̲
+  ̲ ̲ ̲ ̲ ̲r̲i̲g̲h̲t̲,̲ ̲M̲a̲t̲r̲i̲x̲.̲d̲i̲a̲g̲o̲n̲a̲l̲_̲a̲p̲p̲l̲y̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalGradient.lean:47:63: warning: This simp argument is unused:
+  and_self
+
+Hint: Omit it from the simp argument list.
+  simp only [matrixAt, ̲apply, ̲bounded, ̲raw, ̲hi, ̲ho, ̲List.length_ofFn,a̵n̵d̵_̵s̵e̵l̵f̵,̵ ̲ite_true,
+  ̵  ̵ ̵ ̵ha.1, ̲ha.2.1,
+  ̲ ̲ ̲ ̲ ̲List.ofFn_succ, ̲List.take_succ_cons, ̲List.take_zero, ̲List.drop_succ_cons,
+  ̵  ̵ ̵ ̵List.drop_zero, ̲left,
+  ̲ ̲ ̲ ̲ ̲right, ̲Matrix.diagonal_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalGradient.lean:47:72: warning: This simp argument is unused:
+  ite_true
+
+Hint: Omit it from the simp argument list.
+  simp only [matrixAt, ̲apply, ̲bounded, ̲raw, ̲hi, ̲ho, ̲List.length_ofFn, ̲and_self,i̵t̵e̵_̵t̵r̵u̵e̵,̵
+  ̵  ̵ ̵ ̵ha.1, ̲ha.2.1,
+  ̲ ̲ ̲ ̲ ̲List.ofFn_succ, ̲List.take_succ_cons, ̲List.take_zero, ̲List.drop_succ_cons,
+  ̵  ̵ ̵ ̵List.drop_zero, ̲left,
+  ̲ ̲ ̲ ̲ ̲right, ̲Matrix.diagonal_apply]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalGradient.lean:63:65: error: unsolved goals
+n : ℕ
+bits : Fin (n + 1) → Bool
+⊢ bits ⟨n, ⋯⟩ = bits (Fin.last n)
+Qleisli/HierarchicalGradient.lean:68:36: error: unsolved goals
+case h
+n : ℕ
+bits : Fin (n + 1) → Bool
+i : Fin n
+⊢ bits ⟨↑i, ⋯⟩ = bits i.castSucc
+Qleisli/HierarchicalGradient.lean:83:40: error(lean.unknownIdentifier): Unknown constant `Option.pure`

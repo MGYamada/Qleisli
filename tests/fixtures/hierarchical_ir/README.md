@@ -2,6 +2,84 @@
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
+## Fresh hierarchy reconstruction host
+
+The [host packet](host-packet.md) connects strict external decoding, full native
+Lean conditional inspection and fresh finite reconstruction on the same
+immutable data. [First source and repairs](host-first/README.md) retain the
+initial namespace/cursor compiler failures and the original test source.
+[Native validation](host-native.json) includes 362 independent binary framing,
+truncation and schedule cases plus six Rust tests that invoke fresh Lean
+processes. Shared controlled powers 0/1/3/4096 each use 75,539 structural units
+and 67 exact units, retaining one finite obligation. A phase fault still rejects
+under power zero. Disjoint tensors reconstruct both leaves with one budget;
+symbolic phases and explicit structural inverses need no dense finite leaf.
+Independent requested root contracts, the rest of the profile and native/
+decoder correspondence remain open. This report is not a production seal.
+
+## Reconstructed finite unitary leaves
+
+The [packet](finite-leaf-packet.md) specifies the first transitional Rust
+connection before implementation. [First source and actual repair](finite-leaf-first/README.md)
+retain the missing-import diagnostic. The [Rust regressions](../../finite_leaf.rs)
+check independent H/CNOT/identity matrices, exact retained type trees and
+owner/axis boundaries, output phi wires, phase on zero-width Unit, forged
+embedded evidence, independent buffers and shared budget exhaustion. A new
+process reconstructs an H packet and rejects its phase-mutated replacement.
+The [validation record](finite-leaf-validation.json) records formatting,
+419 all-target tests and warning-free Clippy. This is a unary finite Rust
+result, not a Lean artifact premise or full-profile hierarchy seal.
+
+The subsequent [actual request-binding packet](finite-binding-packet.md)
+adds a pure Lean projection from actual proof/definition/meaning indices and
+identity encodings. Its [first source and diagnostics](finite-binding-first/README.md)
+retain the initial compilation repairs; its [native check](finite-binding-native.json)
+passes 67 cases with 29 pending requests and 1,727 field/byte probes. No opaque
+payload receives semantic acceptance. The projection's theorems establish
+actual data binding and checked predicates; the Rust host connection and
+conditional semantic derivation remain pending.
+
+## Conditional finite derivations
+
+The [conditional packet](conditional-packet.md) now checks the complete artifact
+and composes actual finite requests with the existing ordinary and controlled-
+power rules. Its result remains pending; every request needs independent
+discharge. The state and request-origin invariants are proved from the actual
+empty-cache entry. The separate mathematical evaluator constructs a common
+successful denotation from explicit equations for the actual leaf readers,
+with uniqueness and complete complex matrix/reference equality.
+
+The [first sources and repairs](conditional-first/README.md) retain actual
+compilation and diagnostic-expectation failures. The [native validation](conditional-native.json)
+passes 47 cases: 30 pending graphs retain 38 finite obligations across the
+suite. The controlled-repeat fixture uses 75,539 structural units for counts
+0, 1, 3 and 4,096; direct-schema exponents 0, 3 and 12 use 79,368 units each.
+No repeated body is expanded. Byte faults remain in pending requests; the old
+semantic entry rejects every graph with such obligations. Host/decoder
+correspondence and production acceptance remain
+required. This is not a completed sized-source corpus or an external schema.
+
+## Finite unitarity and exact matrix transport
+
+The [unitarity packet](finite-unitarity-packet.md) extends the conditional
+interpretation with actual leaf unitarity. Induction over the real derivation
+constructs a common unitary entry and proves both inverse laws with arbitrary
+finite references. [First source and repairs](finite-unitarity-first/README.md)
+retain compiler feedback. The [registry report](finite-unitarity-registry.json)
+records both builds/audits and fresh kernel replay; the unchanged runtime's
+[47 native cases](finite-unitarity-native.json) pass again. No global unitary
+environment, producer flag or additional axiom is assumed.
+
+The [matrix packet](finite-matrix-packet.md) specifies a strict mathematical
+description for the actual meaning bytes. [Rust regressions](../../finite_matrix.rs)
+cover handwritten coefficient/row order, independent exponents including full
+i128/126-bit capacity, malformed descriptions and shared budgets. The expanded
+[leaf tests](../../finite_leaf.rs) check fresh-process phase mutation and full
+byte binding on both sides. [First source and diagnostics](finite-matrix-first/README.md)
+and [executed validation](finite-matrix-validation.json) remain separate from
+the mathematical proof. Production request transport and Rust/reader
+correspondence remain open; no external schema is enabled.
+
 ## Constructed denotations
 
 The [evaluation packet](evaluation-packet.md) removes the assumed interpretation
@@ -372,3 +450,280 @@ rebuild. The three permitted logical axioms are unchanged; external enablement
 remains false for every schema. `structural-reductions.json` binds the kernel
 examples to their exact sources. Final native source hashes match the checked
 files. Clean distribution and the remaining full release gates are still open.
+
+## Whole-space operator laws (0.2.1)
+
+The [bounded packet](unitarity-packet.md) starts the now-authorized sized-corpus
+continuation. [First source](unitarity-first/HierarchicalUnitary.lean.txt) was
+saved before compiling; [actual errors](unitarity-first/compile.txt) concern
+equation orientation, a wrong matrix lemma name and complex conjugation.
+The repaired proofs use the existing coefficient definitions directly.
+
+`HierarchicalUnitary` proves identity, phase and permutation unitarity and
+closure under sequence, tensor, inverse, coherent control and literal powers.
+Both inverse laws follow, including extension by an arbitrary finite reference
+identity. Width zero, zero powers, either control polarity and all dyadic phase
+indices are covered by the mathematical laws. These general local laws do not
+extend the executable profile's accepted widths or angle bounds.
+
+`HierarchicalTyping` proves the actual coordinate builder has the same width
+as the declared axes and connects `Ports.shapeValid`, `Structural.valid` and
+`NodeTyping.phase` directly to leaf unitarity. Recursive integration with the
+constructed evaluator and complete accepted derivations remains open, along
+with finite reconstruction and the remaining profile. No new runtime rule,
+schema enablement, source syntax or semantic seal is introduced.
+
+[Registry validation](unitarity-registry.json) records both builds and audits:
+4,328 kernel/transport and 1,354 mathematical declarations, with only the three
+allowed logical axioms. Runtime source policy and fresh kernel replay pass;
+all three external schemas remain disabled. [Native regressions](unitarity-derivation-native.json)
+pass 235 cases, 69 recursive-oracle graphs, 132 exact monomial coefficients and
+21 semantic counterexamples. The executable checker allocates no dense matrix
+and expands no repeated body in this suite. No full Rust/distribution rerun is
+claimed for this proof-only checkpoint.
+
+## Recursive unitary acceptance (0.2.1)
+
+[`HierarchicalAcceptance`](../../../lean/Qleisli/HierarchicalAcceptance.lean)
+connects the local laws to successful evaluation and actual checker success.
+`evaluate_unitary` uses induction on successful evaluation depth, including
+mandatory zero-power children; `checkAll_typed` obtains every node premise from
+the accepted artifact. `checkAll_unitary` constructs the common physical and
+logical entry denotation and its whole-space unitary laws. The inverse and
+arbitrary finite reference corollaries require no assumed child isometry or
+semantic environment. A π/8 controlled-power example passes by kernel reduction.
+
+The [initial proof source and diagnostic](acceptance-unitary-first/README.md)
+are retained with the actual snapshot timing. The
+[rebuilt registry](acceptance-unitary-registry.json) passes both builds/audits
+(4,328 kernel/transport and 1,389 mathematical declarations), source policy
+and fresh kernel replay. All three external schema entries remain disabled.
+The [independent native suite](acceptance-unitary-native.json) passes all 235
+cases. This leaves finite reconstruction, calls, computed/encoded rules,
+full-profile semantics, production binding and sized-source execution pending.
+
+## Shared call expansion (0.2.1 resumed continuation)
+
+The [packet](call-packet.md) implements an untrusted producer of two rewires
+and a three-child sequence. The actual callee remains shared. `plan_binding`
+binds the generated endpoints/maps, and `install_other` proves existing child
+definitions and indices remain unchanged. Original call typing checks one
+consistent renaming across both endpoints; it is not implied merely by two
+individually valid permutations.
+
+The separate [coordinate proofs](../../../lean/Qleisli/CallLowering.lean)
+show the exact matrix is `P_out U P_in`, equivalently
+`U(output_map⁻¹(y), input_map(x))`. They preserve a unitary child's whole-space
+laws and arbitrary reference transformations. These are local preservation
+theorems; full external normalization adequacy and source integration remain
+open. The independent checker and all public enum variants are unchanged.
+
+The [native report](call-native.json) passes 95 cases: 81 generated artifacts
+accepted by the existing checker and 14 expected rejections. It covers widths
+0–8, an explicit empty owner, counts 0/3/4,096, 4,599 exact basis/phase probes
+and four semantic counterexamples. Zero repeats still require provider proof.
+Every accepted artifact has seven definitions and seven checked proofs,
+independent of the repeat count; only two adapter definitions were added.
+The retained nine-owner artifact hits the existing aggregate limit, recorded
+in A020-03 rather than represented as universal 16-wire support.
+
+The [registry run](call-registry.json) passes both builds/audits (4,366
+kernel/transport and 1,404 mathematical declarations), the 30-module runtime
+source policy and fresh kernel replay. All three external entries stay
+disabled. The [first sources and repair record](call-first/README.md) are
+preserved. CI now runs the independent call suite.
+
+## Independently requested root contracts (0.2.1 resumed continuation)
+
+The [packet](root-request-packet.md) now connects a separate complete requested
+meaning graph to the actual conditional artifact. `Root.checkAll` checks the
+untrusted node-pair graph, complete headers, ordered children and all structural
+parameters within the artifact's remaining budget. The mathematical extension
+proves equal denotations, a common unitary and arbitrary finite reference laws
+conditional on the actual finite implementation and meaning-pair obligations.
+The additive Rust `check_against` host reconstructs both under one exact budget.
+
+The [native request report](root-request-native.json) passes 813 independent
+handwritten binary/mutation cases, including malformed pair schedules, phase
+changes, missing coverage and aggregate work exhaustion. The
+[host report](root-request-host.json) passes the 362 legacy binary cases and
+nine native Rust tests, including independently authored requests, coordinated
+implementation/meaning changes and differing sharing in both directions.
+Counts 0/1/3/4,096 use 82,876 structural and 103 exact work units each; every
+count retains its finite implementation and requested-matrix obligations.
+
+[Rust checks](root-request-rust-validation.json) pass 434 ordinary tests, fmt
+and Clippy. [Both builds/audits and fresh kernel replay](root-request-registry.json)
+pass with 4,935 kernel/transport and 1,649 mathematical declarations, using only
+the three admitted axioms. [Fresh Main replay](root-request-main-replay.json)
+also passes. The [first sources/repair record](root-request-first/README.md)
+distinguishes observed failures from final validation. Remaining profile,
+reader/native correspondence, sized source and corpus integration stay open;
+the result has no production seal and all external schemas stay disabled.
+
+## Actual QFT circuits and reuse of checked typing
+
+The [QFT binding packet](qft-binding-packet.md) constructs concrete ordinary
+hierarchical circuits with explicit owners, including the width-one empty
+remainder. [First sources and failures](qft-binding-first/README.md) retain the
+rejected within-register rewire and the corrected explicit data-swap circuit.
+The [initial native record](qft-authoring-native.json) accepts widths one and
+two but exhausts the shared budget at widths three, four and eight.
+
+The actual conditional pass now uses a context proved from the preceding full
+type check to avoid repeating node/meaning typing and layout predicates.
+`TypedRule.ordinary_sound`/`check_conditions` recover the original predicates;
+the existing conditional/root theorem conclusions, finite reconstruction,
+schema checks and budget ceiling remain intact. No serialized context or flag
+is accepted. The [current native report](qft-typed-rule-native.json) accepts
+widths one through four, rejects four actual artifact faults, and retains the
+width-eight capacity failure and disabled named Fourier-root request.
+
+The independent implementation interpreter compares 46 complex amplitude
+vectors, including reference-state columns, with the Fourier formula. It
+detects 17 circuit mutations; these tests do not provide semantic evidence to
+the checker. [Cost diagnostics](qft-typed-rule-cost.json) separate preparation,
+definition typing, contract typing and local rules without issuing acceptance
+from separately budgeted checks. Width-eight type/layout sharing and complete
+Fourier schema binding remain open.
+
+The [shared-gradient follow-up](qft-shared-gradient-native.json) keeps recursive
+register boundaries and shares actual phase subgraphs across controlled
+repetitions. Every width 1–8 passes with unchanged rules and limits; width eight
+has 157 definitions and costs 1,694,205 structural / 536 exact units. The
+[directly lifted regression](qft-lifted-regression-native.json) still reports
+its width-eight capacity limit. These are distinct circuit representations.
+The follow-up compares 70 complex amplitude vectors with the DFT, detects 35
+coherent circuit mutations, and rejects five native artifact faults. All
+eight named Fourier requests still reject. [Cost diagnostics](qft-shared-gradient-cost.json)
+retain separately measured stages; [validation](qft-shared-gradient-validation.json)
+records both constructions, Rust tests, formatting and Clippy. No Lean code,
+budget or acceptance predicate changed in this producer packet. Source-level
+sharing and Fourier-schema binding remain open.
+
+## Exact shared-gradient operations
+
+[First sources and repairs](gradient-first/README.md) retain the next proof
+packet. `PhasePolynomial.Operations` proves scaling and positive-control
+evaluation with unchanged term counts. `HierarchicalDiagonal` proves exact
+complex diagonal laws for actual hierarchy composition, powers, controls,
+tensor products and inverse routing, with arbitrary joint reference amplitudes.
+Its actual controlled/repeated-body bridge retains the gradient child's
+diagonal characterization as a premise; it does not assume a whole-graph
+interpretation environment. The [native oracle](gradient-native.json) covers
+6,142 cases, including every shared-QFT gradient at precisions 1–8, zero
+repetitions, global phases and 16-axis sparse terms. The pure helpers add no
+schema/acceptance endpoint. [Build/audit evidence](gradient-registry.json) and
+[runtime regression evidence](gradient-runtime-validation.json) retain the
+trust checks. Deriving the child characterization from actual gradient graphs
+and completing Fourier-schema binding remain open.
+
+## Actual gradient binding
+
+The [bounded packet](gradient-binding-packet.md) and
+[first sources and diagnostics](gradient-binding-first/README.md) continue the
+shared producer with an inspector for actual recursive definitions. Its
+body-binding and shared-budget proofs are accompanied by a constructed actual
+complex evaluation, independent little-endian integer phase, evaluation
+uniqueness, arbitrary reference columns and direct/repeated-control bridges.
+The child diagonal is derived, not assumed.
+
+[Native results](gradient-binding-native.json) record 175 outcomes: 36 gradient
+roots, their renamed and exact-budget copies, one-unit-short rejection, eight
+cumulative budgets, and 23 malformed/boundary cases. The whole width-eight
+artifact plus all selected gradient inspections costs 1,754,765 units.
+The 574 independent numerical vectors include 502 basis vectors and 72 joint
+reference columns; a phase-only fault is visible despite equal probabilities.
+Renaming tests this component, not renewed finite-payload evidence.
+[Build/audit evidence](gradient-binding-registry.json) and
+[runtime regressions](gradient-binding-runtime-validation.json) record the
+completed checks. Complete Fourier-root/source/corpus gates remain pending.
+
+## Actual Fourier-stage coefficients
+
+The [Fourier packet](fourier-binding-packet.md) now has universal recursive
+coefficient and explicit-reversal proofs. The pure five-node stage inspector
+binds actual ordered child indices, complete interfaces and structural routing;
+the physical-evaluation bridge keeps exact H, controlled-gradient and recursive
+child equations as explicit obligations and derives actual idle rewires.
+
+[Native checks](fourier-stage-native.json) pass 144 outcomes and 168 independent
+complex/reference vectors. All 28 stages at widths 2–8 fit the remaining budget
+after actual complete-artifact checking and all selected gradient inspections;
+width eight totals 1,800,097 units. A wrong H is detected by the independent
+Fourier oracle. Explicit pending cases confirm that structural inspection does
+not issue evidence for unchecked H or controlled-gradient bodies.
+[First sources and failures](fourier-binding-first/README.md),
+[build/audit evidence](fourier-stage-registry.json), and
+[runtime regressions](fourier-stage-runtime-validation.json) retain the scope
+and performed checks. The one-bit base, actual final reversal, finite H and
+complete root binding remain open; no external schema has been enabled.
+
+## Complete recursive Fourier body
+
+The [recursion packet](fourier-recursion-packet.md) connects actual one-bit bases,
+finite H requests, controlled/repeated gradients and all recursive children.
+The constructed physical denotation has the reversed-output Fourier matrix;
+only actual full-byte-bound exact H reader equations remain as leaf premises.
+No assumed recursive/gradient matrix or whole-graph environment remains.
+
+[Base/H validation](fourier-base-native.json) has 206 native outcomes and
+[integrated body validation](fourier-body-native.json) has 172. Both freshly
+reconstruct 36 positive and four negative exact H requests, rejecting X, global
+-H and stale owner bindings. The complete width-eight recursive body after
+whole-artifact checking costs 1,819,083 structural units. Independent complex
+oracles cover 200 basis/reference vectors. [First attempts](fourier-recursion-first/README.md),
+[audits](fourier-recursion-registry.json) and
+[runtime checks](fourier-recursion-runtime-validation.json) preserve actual results.
+The final outer reversal, independently requested root and source/corpus gates
+remain open; all external schemas stay disabled.
+
+## Actual shared wiring
+
+The [wiring packet](wiring-packet.md) inspects actual rewire, structural, tensor
+and sequence nodes from an empty cache. Its proof constructs the actual physical
+denotation and exact route coefficients, with arbitrary reference amplitudes.
+Full artifact typing remains mandatory: routes do not certify owner coverage
+or valid permutations. The [native record](wiring-native.json) passes 93 outcomes
+and 2,736 basis/complex vectors, including explicit typing-only faults.
+Width-eight whole-artifact/body/wiring work totals 1,931,284 units.
+[First sources and diagnostics](wiring-first/README.md) preserve the initial
+Lean repairs and a corrected fixture that had removed an independent root
+instead of a required dependency. Full outer Fourier/root composition and
+source/corpus acceptance remain open.
+
+## Actual outer Fourier request
+
+The [outer-root packet](fourier-root-packet.md) connects the actual complete entry
+to an independently requested Fourier width and interface. Its fresh body/wiring
+inspection derives identity input routing, complete recursive coefficients and
+explicit output bit reversal, with only bound finite H equations remaining. The
+physical-evaluation theorem preserves arbitrary complex reference amplitudes.
+
+The [native record](fourier-root-native.json) passes 74 outcomes, 40 fresh H
+checks and 70 complex vectors. Width-eight aggregate work is 1,933,823. Changed
+width/interface, omitted swaps/cache roots, phase/polarity and short budgets
+reject; disjoint SWAPs may commute. X, global -H, malformed finite bytes and stale
+owner bindings fail fresh exact reconstruction. [First sources/diagnostics](fourier-root-first/README.md),
+[rebuilt audits](fourier-root-registry.json) and [runtime checks](fourier-root-runtime-validation.json)
+record the scope. Production transport/seals, correspondence and the later
+source/corpus gates remain open; external schemas stay disabled.
+
+## Fourier request host
+
+The [host packet](fourier-host-packet.md) connects the actual Fourier entry
+checker and conditional unitary/reference proofs to the existing fresh
+`check_against` API. The [native record](fourier-host-native.json) passes 187
+independent framing cases and 39 host scenarios, including coordinated
+implementation/meaning faults, explicit Bit/open-boundary counterexamples,
+independent definition numbering and malformed subprocess responses. All
+widths 1–8 pass; width-eight structural/exact work is 1,933,823/944.
+
+[First attempts](fourier-host-first/README.md) retain the initial boundary
+omission and fixture repairs. [Rebuilt audits](fourier-host-registry.json),
+[Rust fmt/all-target tests/Clippy](fourier-host-rust-validation.json) and
+[runtime checks](fourier-host-runtime-validation.json) record validation.
+[General host](fourier-host-general-regression.json),
+[root request](fourier-host-root-regression.json) and
+[lifted construction](fourier-host-lifted-native.json) retain regressions.
+This does not issue production hierarchy values or enable external schema IDs.

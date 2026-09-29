@@ -2,16 +2,24 @@
 
 Status: **staged migration adopted; experimental phase-word, phase-DAG, typed-layout, typed-call and combined phase/layout
 slices implemented; production verification remains in Rust**. The user selected this
-direction during 2026-09-28–29 JST. The product version is 0.2.0; publication evidence
-is recorded separately in the [release record](releases/v0.2.0.md). The [0.2.0 foundation scope](v0.2.0-plan.md) retains
-the implemented components; the [0.2.1 continuation](v0.2.1-plan.md) carries the
-remaining production hierarchy and common-QPE work, with M0–M5 and H1–H5 intact.
+direction during 2026-09-28–29 JST. The development version is 0.2.1, currently
+unreleased; see its [record](releases/v0.2.1.md). Foundation publication evidence
+remains in the [0.2.0 record](releases/v0.2.0.md). The [0.2.0 foundation scope](v0.2.0-plan.md) retains
+the implemented components. The 2026-09-30 [0.2.1 boundary](v0.2.1-plan.md)
+retains completed experiments and bounded connections; heavy production
+hierarchy/common-QPE integration and proofs move to [0.2.2](v0.2.2-plan.md),
+with M0–M5 and H1–H5 intact.
 The 2026-09-29 refinement makes proof of the
 [Qleisli Soundness Theorem](release-milestones.md#qleisli-soundness-theorem-v050)
 the central v0.5.0 milestone, with broader community development from v0.5 onward.
 The subsequent 2026-09-29 decision adds the
 [Physical Realizability Theorem](release-milestones.md#physical-realizability-theorem-v1)
 and substantive Lean backend implementation/proofs as requirements by v1.
+The explicit 2026-09-30 [trust-boundary amendment](../TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30)
+adds the [Resource Safety Theorem](release-milestones.md#resource-safety-theorem-v1)
+as a third pillar, to prove. Actual static resource analysis and pass-bound
+preservation must meet RS-C1–C5 by v1; resource proposals remain untrusted and
+present acceptance/production authority is unchanged.
 
 ## Architecture and authority
 
@@ -23,7 +31,10 @@ the Rust [research kernel](../research/semantic-kernel/README.md) remains an
 experiment and an independent differential oracle.
 
 The longer-term direction is to migrate the implementation beyond the frontend
-to Lean, beginning with the backend transformations needed for realizability.
+to Lean, beginning with the correctness-critical backend transformations and
+checkers needed for realizability. This is not a goal of rewriting all code
+in Lean: candidate and proof search may remain external, as specified by the
+[LeafRealizer policy](#external-search-and-the-leafrealizer-checker).
 Rust frontend output remains untrusted and needs source-to-IR translation
 validation for source-level guarantees. Migrating the backend is a project
 prerequisite for the intended end-to-end Lean guarantee, not a claim that
@@ -32,7 +43,8 @@ can continue beyond v1; the v1 gate is the actual supported synthesis and
 emission path with its correspondence proofs.
 
 The separate [QLT plan](qlt-design.md) deliberately starts its experimental
-mathematical test evaluator in Rust during 0.3–0.4, then migrates evaluation and
+mathematical test evaluator in Rust from v0.4.0 onward, after the
+[0.3.0 type-system work](v0x-roadmap.md#v030-qleisli-type-system-specification), then migrates evaluation and
 cost definitions to Lean from 0.5 onward. It issues no production acceptance
 evidence and does not authorize new Rust M2 checker rules. Its adequacy and
 certificate work is independent of the S05/PR release gates; the later runtime
@@ -79,6 +91,144 @@ repair layer remains untrusted. Its witness-checking correctness is a separate
 obligation; rejection by the acceptance checker does not itself refute the
 requested mathematical claim. This tooling adds no K0–K4 release gate.
 
+## Pipeline migration with a stable IR verification boundary
+
+**User-adopted migration policy, 2026-09-29:** move pipeline passes from one
+end in a deliberate sequence, either backend to frontend or frontend to
+backend. At every stage, preserve independent IR checking at the Rust/Lean
+boundary. Record the chosen direction and the IR contract at that boundary
+for each migration packet.
+
+For backend-to-frontend migration, moving and proving one adjacent pass at
+a time extends the verified downstream segment upstream and shrinks the Rust
+producer. The target arrangement evolves as follows:
+
+```text
+Rust upstream + pass P -> IR check -> verified Lean downstream
+Rust upstream -> earlier IR check -> proved Lean P -> verified Lean downstream
+```
+
+These are migration targets, not a diagram of today's proof coverage. The
+invariant is **independent checking of the boundary IR, followed by the
+verified downstream segment**. Its position and IR level may move; the
+[fixed trust partition](../TRUST_BOUNDARY.md) does not change. In particular,
+Lean implementation code does not become a new trusted assumption merely
+because it has moved across the language boundary.
+
+Each pass migration must preserve the following obligations:
+
+- Reconstruct the actual immutable IR and evidence at the boundary and check
+  them against an independently supplied contract. Types, ownership, effects,
+  phase, reference behavior and auxiliary return retain their specified checks.
+  Producer flags, cached success or a Rust handle cannot bypass that check.
+- Prove meaning preservation for the actual migrated transformation under its
+  declared input/output profiles, or independently validate its translation
+  before claiming its output is covered. Compose that result with downstream
+  correctness. A well-formed output alone does not prove preservation of the
+  input meaning; exact and certified-approximate contracts remain distinct.
+- Keep execution/emission bound to the checked artifact and proved or validated
+  transformations. Preserve audits, differential/mutation checks, explicit
+  native/transport assumptions and public compatibility obligations. Retire the
+  corresponding Rust path only after its replacement meets the applicable gates.
+
+Frontend-to-backend migration follows the same invariant: any remaining Rust
+transformation still produces untrusted IR, which must cross an independent
+check before entering the verified downstream segment. An isolated Lean
+frontend pass does not make the remaining Rust backend verified. Record any
+unproved segment or transitional Rust premise explicitly rather than letting
+a language boundary imply a guarantee.
+
+This fixes the migration method, not a new trusted component or immediate
+production-authority transfer. Current Rust acceptance, the transitional
+finite-leaf premises and the K0–K4/S05/PR gates remain as recorded below;
+source adequacy and backend preservation remain separate proof obligations.
+
+## External search and the LeafRealizer checker
+
+**User-adopted refinement, 2026-09-29:** apply the de Bruijn criterion at the
+level of each pipeline pass. Separate finding a result from checking its
+correctness. Move correctness-critical transformations and their checkers to
+Lean with proofs; keep expensive candidate/proof search outside the trusted
+boundary when its results admit independent checking. There is no requirement
+to migrate every Rust component or search algorithm to Lean.
+
+For rotation synthesis, norm-equation search may remain an **untrusted external
+oracle** that proposes a circuit and witnesses. Put the **`LeafRealizer`
+checker in Lean**, and prove soundness of its actual executable acceptance
+function. Here `LeafRealizer` names the adopted future checking role, not an
+implemented type, command, serialized schema or enabled synthesis profile.
+The external oracle is a classical search service, not an assumed quantum
+operation capability.
+
+The checker must bind the independently requested ideal operation, target
+gate profile, interfaces and any error budget to the actual proposed circuit
+and certificate. Check the norm-equation witness and its connection to the
+circuit realization; a solved auxiliary equation alone does not establish the
+requested synthesis contract. Exact realization retains phase, ownership and
+clean return. Approximate realization requires the declared metric and a
+certified bound, including the specified reference and composition behavior;
+[approximation never substitutes for exact cleanup](coefficient-domains.md#exact-approximate-and-device-contracts).
+
+Only a successful check authorizes use of the candidate in the verified
+pipeline. The search strategy, language, heuristic and success flag carry no
+authority. Search failure or budget exhaustion remains an explicit failure
+to obtain a realization, not a proof that none exists. The checker and its
+composition into the backend require proofs and the usual bounded transport,
+artifact-binding, audit and mutation checks; the search procedure itself need
+not be proved correct or rewritten in Lean.
+
+This refinement preserves the IR-boundary invariant: external search can feed
+proposals into any migrated pass, but only its checked result enters the
+verified downstream segment. It changes where computation lives, not PR-C2's
+realizability/synthesis obligation or the declared success/failure contract.
+It adds no current approximation API or new 0.2.1 scope.
+
+## Backend execution must match kernel definitions
+
+**User-adopted requirement, 2026-09-29:** a substantive proved Lean backend
+remains necessary by v1. Keeping synthesis search external does not replace
+that requirement with an external backend plus a certificate wrapper. The
+backend's correctness-critical transformations, realization checking and
+emission must meet PR-C1–C4 over their actual definitions.
+
+For project-owned executable kernel and backend code, forbid all four escape
+hatches in both source policy and compiled-declaration CI:
+
+| Forbidden construct | Why the backend policy rejects it | Compiled audit check |
+| --- | --- | --- |
+| `unsafe def` | Bypasses Lean's safe-definition discipline. | `ConstantInfo.isUnsafe` |
+| `@[implemented_by]` | Substitutes a runtime implementation for the definition seen by the logical kernel. | `Compiler.getImplementedBy?` |
+| `@[extern]` | Supplies an external implementation outside the checked Lean definition. | `getExternAttrData?` |
+| `partial def` | Does not expose its recursive implementation as a total definition whose execution is covered by the intended theorem. | `ConstantInfo.isPartial` |
+
+An axiom allowlist alone is insufficient: an axiom-free theorem about a
+logical definition can coexist with an `implemented_by` or `extern` runtime
+replacement. Keep declaration-metadata checks alongside transitive axiom
+checks, the existing `native_decide` prohibition and fresh kernel replay.
+Inspect declarations by **origin module**, including private, unreachable and
+compiler-generated helpers, even if their declaration names use a different
+namespace. A generated partial helper is a violation even when the author
+wrote an ordinary `def`.
+
+The existing [source checker](../scripts/check_lean_kernel.py),
+[compiled audit](../lean-kernel/Audit.lean) and
+[CI regression suite](../scripts/test_check_lean_kernel.py) already enforce the
+four bans for `lean-kernel/`. The suite now explicitly covers nested backend
+modules, private declarations outside the module's namespace, axiom-free
+replacement examples and generated partial helpers. Source modules omitted
+from the root import/audit fail; build-time audit and reduction-test harnesses
+cannot enter the executable import graph. The current package has no separately
+implemented backend or `LeafRealizer` API. Any future separate backend package
+must establish the same source, complete import/declaration audit and negative
+CI gates before entering the executable pipeline; moving files is no exemption.
+
+The audit harness itself runs only during development and is not shipped as
+kernel/backend code. Lean's allowed standard-library primitives, native compiler,
+runtime and transport assumptions remain explicit in the trust ledger. These
+checks forbid project escape hatches; they do not prove native compilation or
+hardware correctness. This policy strengthens implementation discipline without
+claiming the planned backend or its preservation proofs are already complete.
+
 ## Staged migration
 
 These are intended integration boundaries, not deadlines. Compatible work can
@@ -88,14 +238,14 @@ explicit compatibility and migration review.
 
 | Stage and intended boundary | Implementation | Gate before advancing |
 | --- | --- | --- |
-| **K0 / 0.2.x: establish the executable boundary** | 0.2.0 ships the separate Mathlib-free package, actual checker component theorems, bounded experimental protocols, Rust launcher, compiled audits and independent tests. Complete the production M2 hierarchy/schema checker in the 0.2.1 continuation. | The shipped components are reproducible without Mathlib. Every later M2 rule remains disabled until its theorem, binding tests and H1–H5 obligations are satisfied. Common QPE/QFT and sized source move to 0.2.1; their public API must remain compatible or select the next MINOR. Shipping 0.2.0 alone does not close full K0/M2. |
+| **K0 / 0.2.x: establish the executable boundary** | 0.2.0 ships the separate Mathlib-free package, actual checker component theorems, bounded experimental protocols, Rust launcher, compiled audits and independent tests. Complete the production M2 hierarchy/schema checker in the 0.2.2 continuation. | The shipped components are reproducible without Mathlib. Every later M2 rule remains disabled until its theorem, binding tests and H1–H5 obligations are satisfied. Remaining common QPE/QFT and production sized source move to 0.2.2; their public API must remain compatible or select the next MINOR. Shipping 0.2.0 alone does not close full K0/M2. |
 | **K1 / 0.3.0: exact meanings and contracts** | Canonical exact scalars, bounded matrices/leaves, contract equations and evidence reconstruction; separate complex interpretation proofs over the same definitions. | Canonical equality and operations agree with the mathematical interpretation; phase and type/axis/source mutations reject. Differential agreement with Rust includes overflow/capacity boundaries. Arbitrary-precision integers still have explicit bit/work limits. |
 | **K2 / 0.4.0: complete raw IR checking** | Ownership, effects, SSA, complete phi/frame coverage, zero-width owners, cleanup and portable finite/hierarchical evidence. Use the existing Resource/Phi models as specifications. | Resource/effect and individual-rule proofs cover all implemented variants; keep an explicit ledger of remaining composition/interpretation obligations for the v0.5.0 theorem. Two checkers run on the same immutable artifact and request; disagreement or either failure rejects. Native cost and adversarial corpus gates pass. |
 | **K3 / 0.5.0: Qleisli Soundness Theorem and production authority** | Prove the named theorem for the complete declared production IR profile, integrating K1/K2 results. Transfer acceptance to Lean after fresh serialized reconstruction; Rust becomes a producer/oracle. Prepare the community development foundation. | Complete [S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050), including independent review, proof reproduction, full coverage and artifact binding. Package the audited kernel on supported platforms; validate failures, parity and capacity migration. No unproved Rust-checker premise or silent fallback. |
-| **K4 / 0.6.0 onward, through v1: translations and physical realizability** | Validate Rust source lowering; implement backend lowering, optimization, gate synthesis and emission in Lean with proofs about those actual definitions. Derive CPTP semantics from soundness, construct its isometric dilation and synthesize it for the target profile. Retire duplicated Rust acceptance code through versioned migration, with broader contributors and reviewers. | Preserve S05-C1–C5 and complete [PR-C1–C4](release-milestones.md#physical-realizability-theorem-v1) by v1 alongside V1-C1–C5. Bind emitted artifacts to the checked meaning; distinguish exact synthesis, certified approximation and device assumptions. Retain reproducible audits, native compiler/runtime assumptions, diagnostics and migrations. |
+| **K4 / 0.6.0 onward, through v1: translations, realizability and resource preservation** | Validate Rust source lowering; implement correctness-critical backend lowering, optimization, gate-realization checking and emission in Lean with proofs about those actual definitions; retain external synthesis search behind the proved `LeafRealizer` checker. Derive CPTP semantics from soundness, construct its isometric dilation and synthesize it for the target profile. Retire duplicated Rust acceptance code through versioned migration, with broader contributors and reviewers. | Preserve S05-C1–C5 and complete [PR-C1–C4](release-milestones.md#physical-realizability-theorem-v1) and [RS-C1–C5](release-milestones.md#resource-safety-theorem-v1) by v1 alongside V1-C1–C5. Bind emitted artifacts to checked meanings and resource contracts under explicit cost models; distinguish exact synthesis, certified approximation and device assumptions. Retain reproducible audits, native compiler/runtime assumptions, diagnostics and migrations. |
 
 K1 and K2 migrate the remaining existing finite acceptance surface; they do
-not postpone proofs required by an M2 rule enabled in the 0.2.1 continuation.
+not postpone proofs required by an M2 rule enabled in the 0.2.2 continuation.
 K0's full M2 work must already provide the executable checking and semantic interpretation
 needed for its selected QFT/QPE schemas. A Rust-checked finite leaf must be
 reconstructed from the same bound data by the explicit transitional boundary;
@@ -112,7 +262,7 @@ implementation a kernel satisfies neither theorem. The existing
 2026-10-04 JST checkpoint evaluates readiness, not publication. The
 [community transition](v0x-roadmap.md#community-development-from-v05) starts from
 the v0.5 proof milestone; preparation begins during 0.4.x. It does not change
-the existing Apache-2.0 license, algorithm gates or current 0.2.0 version.
+the existing Apache-2.0 license, algorithm gates or then-current 0.2.0 version.
 
 The subsequent [typed layout component](lean-layout-slice.md) checks multi-owner
 interfaces, structural types and exact axis maps, with proved finite permutation

@@ -1,0 +1,106 @@
+QleisliKernel/Hierarchical/Wiring.lean:49:56: error(lean.invalidField): Invalid field `flatten`: The environment does not contain `Option.flatten`, so it is not possible to project the field `flatten` from an expression
+  cache[i]?
+of type `Option ?m.21`
+QleisliKernel/Hierarchical/Wiring.lean:62:38: error(lean.invalidField): Invalid field `flatten`: The environment does not contain `Option.flatten`, so it is not possible to project the field `flatten` from an expression
+  cache[i]?
+of type `Option ?m.12`
+QleisliKernel/Hierarchical/Wiring.lean:66:22: error(lean.invalidField): Invalid field `flatten`: The environment does not contain `Option.flatten`, so it is not possible to project the field `flatten` from an expression
+  cache[i]?
+of type `Option ?m.5`
+QleisliKernel/Hierarchical/Wiring.lean:119:61: error: unknown tactic
+QleisliKernel/Hierarchical/Wiring.lean:108:45: error(lean.invalidField): Invalid field `flatten`: The environment does not contain `Option.flatten`, so it is not possible to project the field `flatten` from an expression
+  cache[i]?
+of type `Option ?m.16`
+QleisliKernel/Hierarchical/Wiring.lean:119:57: error: unsolved goals
+cache : Cache
+d : Definition
+axes : Code
+x✝⁵ : Option Node
+x✝⁴ : Node → Option Code
+a✝¹ : Node
+heq✝² : project d = some a✝¹
+x✝³ : Option (List Code)
+x✝² : List Code → Option Code
+a✝ : List Code
+heq✝¹ : List.mapM (fun i => sorry) a✝¹.children = some a✝
+x✝¹ : Option Code
+x✝ : Code → Option Code
+heq✝ : eval (wires d.interface.inputs).size a✝¹.operation a✝ = some axes
+h✝ :
+  (((d.effect == Effect.unitary) = true ∧ NodeTyping.quantumOnly d.interface = true) ∧
+      (wires d.interface.outputs).size = (wires d.interface.inputs).size) ∧
+    valid (wires d.interface.inputs).size axes = true
+computed : True
+⊢ d.effect = Effect.unitary ∧
+    NodeTyping.quantumOnly d.interface = true ∧
+      (wires d.interface.outputs).size = (wires d.interface.inputs).size ∧
+        valid (wires d.interface.inputs).size axes = true
+QleisliKernel/Hierarchical/Wiring.lean:143:18: error(lean.unknownIdentifier): Unknown constant `Array.getElem?_set!`
+QleisliKernel/Hierarchical/Wiring.lean:144:12: error: Tactic `subst` failed: did not find equation for eliminating 'code'
+
+case pos
+artifact : Artifact
+remaining : Nat
+state : State
+index : Nat
+sound : Sound artifact state.cache
+x✝² : Option Definition
+x✝¹ : Option (Option Code)
+d : Definition
+found : artifact.definitions[index]? = some d
+empty : state.cache[index]? = some none
+scanned : ¬state.visits + scan d > remaining
+bounded : ¬state.visits + charge d > remaining
+x✝ : Option Code
+axes : Code
+computed : summarize state.cache d = some axes
+accepted :
+  Except.ok { cache := Array.set! state.cache index (some axes), visits := state.visits + charge d } =
+    Except.ok { cache := Array.set! state.cache index (some axes), visits := state.visits + charge d }
+code : Code
+present : sorry () = some code
+inside : index < Array.size state.cache
+⊢ Derives artifact index code
+QleisliKernel/Hierarchical/Wiring.lean:146:39: error(lean.invalidField): Invalid field `flatten`: The environment does not contain `Option.flatten`, so it is not possible to project the field `flatten` from an expression
+  state.cache[i]?
+of type `Option (Option Code)`
+QleisliKernel/Hierarchical/Wiring.lean:147:21: error(lean.unknownIdentifier): Unknown constant `Array.getElem?_set!`
+QleisliKernel/Hierarchical/Wiring.lean:143:38: warning: This simp argument is unused:
+  inside
+
+Hint: Omit it from the simp argument list.
+  simp [Array.getElem?_set!,̵i̵n̵s̵i̵d̵e̵] at present
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/Hierarchical/Wiring.lean:159:14: error: unsolved goals
+case cons.error
+artifact : Artifact
+remaining : Nat
+result : State
+index : Nat
+rest : List Nat
+ih :
+  ∀ (state : State),
+    Sound artifact state.cache →
+      state.visits ≤ remaining →
+        List.foldlM (step artifact remaining) state rest = Except.ok result →
+          Sound artifact result.cache ∧ result.visits ≤ remaining
+state : State
+sound : Sound artifact state.cache
+budget : state.visits ≤ remaining
+e : Error
+checked : step artifact remaining state index = Except.error e
+accepted :
+  (do
+      let s' ← Except.error e
+      List.foldlM (step artifact remaining) s' rest) =
+    Except.ok result
+⊢ Sound artifact result.cache ∧ result.visits ≤ remaining
+QleisliKernel/Hierarchical/Wiring.lean:166:8: warning: declaration uses `sorry`
+QleisliKernel/Hierarchical/Wiring.lean:177:12: warning: This simp argument is unused:
+  Array.getElem?_replicate
+
+Hint: Omit it from the simp argument list.
+  s̵i̵m̵p̵ ̵[̵A̵r̵r̵a̵y̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵r̵e̵p̵l̵i̵c̵a̵t̵e̵]̵ ̵a̵t̵ ̵f̵o̵u̵n̵d̵s̲i̲m̲p̲ ̲a̲t̲ ̲f̲o̲u̲n̲d̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

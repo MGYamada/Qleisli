@@ -1,5 +1,91 @@
 # Feedback from writing QLI programs
 
+The user subsequently prioritized corpus implementation. The
+[shared Xor/GHZ experiment](../corpus/sized/README.md) now starts from actual
+`.qli` definitions, using one body at every selected size. Direct framing hit
+the checker budget at Xor width four; flattening all bits still failed at eight.
+Keeping register tails and explicit one-bit adapters admitted all selected
+widths under the unchanged budget. This is a development source path, with
+native checking and complete basis/reference diagnostics; production CLI
+integration and general source preservation remain open. The
+[first sources and actual failures](../tests/fixtures/authoring_sessions/sized-corpus-v021/session.json)
+are retained. The subsequent [QFT/inverse source continuation](../corpus/sized/qualtran_qft/README.md)
+now connects guarded affine sizes, controlled dyadic phases, ordinary source
+modules and adjoint. The first lexer and missing-module diagnostics are
+preserved; all selected widths pass native checks and independent forward/
+inverse formulas. The [coherent QPE continuation](../corpus/sized/qualtran_qpe/README.md)
+now connects `Op<Bits<n>>`, controlled repetitions and the same QFT source at
+small selected sizes. Full phase/reference tests include off-grid phases,
+non-basis eigenvectors and phase-sensitive provider changes; initialization,
+measurement and `CBits` remain open. Remaining validation uses small qubit
+systems by the 2026-09-30 user decision; the prior (8,8) capacity failure stays
+historical, without further maximum-size checks. The measured
+width-eight execution cost is 255 H/phase applications after gradient sharing,
+versus 36 in the source staircase; two shared calls execute 510. Sharing removes
+verification/storage duplication, not execution multiplicity. Track this actual
+cost separately while completing H1–H5 and production integration.
+
+The [shared AddK/Equals continuation](../corpus/sized/qualtran_arithmetic/README.md)
+starts from preserved recursive source. Its first concrete failure was
+`unknown static operation parameter all_ones`: recursive control needed a
+transparent ordinary definition, not an abstract entry parameter. Explicit
+multi-owner call groups and control/adjoint lowering now support that source.
+No new arithmetic acceptance rule is needed. The first small width-three
+Equals then exceeded the checker budget; extracting the repeated complement
+and sharing identical imported graph/evidence entries admits it at 1,604,715
+structural units, below the unchanged two-million limit. Both attempts remain
+in the [session](../tests/fixtures/authoring_sessions/sized-arithmetic-v021/session.json).
+
+All widths 0–3 pass complete basis/reference checks, with local empty ownership,
+wraparound constants, inverse and controlled clients. Wrong carry order and
+missing restoration remain type-correct circuit faults detected by independent
+arithmetic oracles. Lexical operation hiding is checked even after a binding
+has moved; the older Xor phase-fault generator now renames its `x` owner before
+importing the gate `x`, so it remains a valid semantic counterexample. AddK's
+nK execution cost is recorded. This is an informed development experiment,
+with production source integration, named arithmetic contracts and universal
+source preservation still open, and no new maximum-size checks.
+
+The [local order/amplitude clients](../tests/fixtures/sized_clients/README.md)
+now reuse that same coherent QPE. Their desired source first failed while
+parsing a transparent operation in the callee's bracket arguments. The
+producer now distinguishes natural and operation arguments in declaration
+order and checks access at every forwarding boundary. Instantiation identity
+includes nested providers, not just function and sizes; a phase-sensitive
+two-provider case checks that distinction. Both clients pass small full-input
+and reference diagnostics, including the N=15 baseline and p=0/1 amplitude
+boundaries. Removing preparation or reversing a modular cycle can leave an
+expected histogram unchanged while altering the residual target, which is why
+the full complex operator remains the regression contract. The
+[first source record](../tests/fixtures/authoring_sessions/sized-qpe-clients-v021/session.json)
+is retained. Initialization/measurement, `CBits` and production integration are
+still required; no new external corpus intake occurred.
+
+The [measured QPE first attempt](../tests/fixtures/authoring_sessions/measured-qpe-v021/session.json)
+now makes the next gap concrete: the desired wrapper imports initialization
+and readout helpers, and the first check stops at missing `registers::init_zero`.
+Inspection also finds no explicit assembly of measured `CBit` slots into
+`CBits<m>` in the current hierarchy. Existing node typing for initialization
+and one-bit measurement does not establish the complete instrument. The
+[checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md)
+retains this unfinished source experiment; work pauses at the user's request
+before new checker or proof implementation.
+
+The 0.2.1 [actual QFT hierarchy experiment](../tests/fixtures/hierarchical_ir/qft-binding-first/README.md)
+now refines the preserved desired shared-QPE source before frontend integration.
+The first circuit incorrectly attempted a within-register rewire for reversal;
+explicit extraction, data swapping and reinsertion repairs it. Valid width-three
+and width-four graphs initially hit repeated type/layout-checking work. Reusing
+the proved actual type context now admits them under the same budget. A
+[shared-gradient follow-up](../tests/fixtures/hierarchical_ir/qft-shared-gradient-native.json)
+retains recursive register boundaries and shares phase subgraphs through
+existing controlled/repeat rules. Every width 1–8 passes under the same budget;
+the directly lifted width-eight failure remains a regression. This identifies
+actual hierarchical reuse as a source requirement, rather than expanding every
+gate around a whole register. These are informed IR-authoring and
+independent Fourier-oracle results, not executable generic `.qli`, a model
+benchmark or completed QFT-schema binding.
+
 **2026-09-28; observed in the 0.1.8 development tree.** The user requested
 source/examples/tests first, with language requirements discovered from actually
 writing algorithms. The [protocols](../examples/protocols/README.md),
@@ -20,6 +106,23 @@ comparison of models or estimate of general LLM success rate.
 
 ## Code-driven continuation, 0.2.0
 
+The [0.2.0 review reproductions](../tests/fixtures/review_v020/README.md) preserve
+six informed source fixtures before checking. The first CLI invocation mistakenly
+passed a file where a directory is required; that diagnostic is retained, followed
+by the corrected invocations on unchanged source. Long sampling and 40-receipt
+IR export now succeed with no source repair. Doubling expansion and exact
+`repeat_static` capacity still reject, with clearer locations and explanations;
+A020-03 retains the underlying scalability burden. These are maintenance
+regressions, not controlled authoring or model-performance measurements.
+
+The later [0.2.1 reshape attempt](../tests/fixtures/authoring_sessions/reshape-v021/session.json)
+preserves desired `reshape::<(Bit,Bit,Bit)>(q)` source and its real parse failure
+at `::`. This informed draft has no repaired executable successor yet. The
+[Lean experiment](reshape-plan.md) removes enumeration from the canonical
+adapter's encoding argument, but does not yet remove handwritten adapters from
+user `.qli` programs. A020-01 retains source production and ergonomic validation
+as open work; this is not a measured authoring-success result.
+
 The [QLT first-source packet](../tests/fixtures/qlt_design/README.md), recorded
 on 2026-09-29, captures a future mathematical test language. It retains QFT/DFT,
 modular-increment, cost and doctest drafts, plus deliberate sign/reversal/phase
@@ -31,7 +134,15 @@ references. Before/after authoring and evaluation costs remain unmeasured;
 [A020-21](v0.2.0-backlog.md#a020-21--mathematical-quantum-tests-require-separate-host-harnesses)
 tracks the future experiment without adding a 0.2.0 release requirement.
 
-The [shared-QPE first source](../tests/fixtures/authoring_sessions/shared-qpe-v020/session.json) was saved before its actual 0.1.9 parse failure. Current design adopts `CBits<m>`; the old `CWord<m>` snapshot remains unchanged. No sized QPE source is executable yet, so no reduction in QPE body duplication, manual axis wiring or source repairs is claimed. Generation/checking growth for (1,3), (2,4), (8,8) remains unmeasured until the hierarchical implementation exists.
+The [shared-QPE first source](../tests/fixtures/authoring_sessions/shared-qpe-v020/session.json)
+was saved before its actual 0.1.9 parse failure. Current design adopts `CBits<m>`;
+the old `CWord<m>` snapshot remains unchanged. The later
+[coherent source experiment](../tests/fixtures/authoring_sessions/sized-qpe-v021/session.json)
+now uses one body across (1,3) and (2,4) with actual controlled provider graphs.
+It measures structural work and numerical semantics separately, without
+claiming a production measured API. The initially measured (8,8) budget failure
+is retained, and the user's 2026-09-30 scope change defers further maximum-size
+validation. This is informed development, not a controlled authoring benchmark.
 
 The [Grover session](../tests/fixtures/authoring_sessions/grover-trial-v020/session.json) records one real repair: adding the original missing local kernel. After that, the exact same source moves from an unsupported sample command to four fresh `11` samples at seed 0, with 22 execution steps each. Sampling required **zero subsequent source revisions**; body duplication and layout conversions are unchanged. The author no longer writes a random trajectory executor or retry-state/error bookkeeping. The [sampled Shor15 host](../examples/sampled_shor15.rs) is the second use: seed 0 accepts on attempt 3 after two invalid candidates, with validated period 4 and factors 3 and 5. These are informed development observations.
 
@@ -77,6 +188,29 @@ both classical arms, conditions, coherent lifts and stronger declared effects.
 Snapshot-limit messages now expose retained sources. A020-11–13 retain multi-error
 collection, boilerplate and optional numerical presentation as open candidates.
 This is regression work informed by feedback, not a new controlled repair study.
+
+## Corpus expansion, 0.2.1
+
+The [six new translations](../corpus/authoring/v021-expansion/session.json)
+cover majority-oracle Deutsch–Jozsa, Bell measurement, modular constant addition,
+equality, LCU projector embedding and quantum-kernel overlap. All six original
+sources were saved before checking, and all six first checks passed. No source
+repair was needed. Existing tuple routing and phase-preserving rotation
+workarounds were known; this is informed authoring, not a controlled benchmark.
+
+The additions make two obligations concrete. The overlap author still writes
+exact scalar phases and host-side probability aggregation (A020-15/16). The
+LCU author must choose a full unitary PREP completion, retain selector ownership
+and distinguish its projected block from a deterministic operation or clean
+return. [A020-23](v0.2.0-backlog.md#a020-23--state-preparation-and-projected-blocks-need-distinct-contracts)
+records that new friction and its checking experiment. No language abstraction
+or production evidence rule is added by these translations.
+
+Six separately labelled [semantic faults](../corpus/semantic_faults/README.md)
+were deliberately authored after the successful first checks. They are not
+repair attempts. Their independent oracles check full complex entries or Bell
+measurement's branch/reference Choi state; observing a plausible output from
+the shipped example alone is insufficient.
 
 ## Three-source translation exercise, 0.1.9
 
@@ -146,6 +280,14 @@ instead of 1/8. Reference-sensitive tests and signed T/T† overlap tests exerci
 more than a plausible-looking final bit string. They remain finite regressions.
 
 ## Reproduced friction, delivered fixes and next candidates
+
+The authorized 0.2.1 continuation preserves a [sized-Xor session](../tests/fixtures/authoring_sessions/sized-xor-v021/session.json)
+and a [linear-size reshape session](../tests/fixtures/authoring_sessions/sized-reshape-v021/session.json).
+Xor's reserved-name repair reaches the unsupported range token `..`; the
+reshape draft rejects `+` in `Bits<n+m>`. These are informed first-source
+observations under the [adopted size design](size-expressions.md), not measured
+model trials or working APIs. No reduction in authoring obligations is claimed
+until the shared source checks, lowers and executes with bound evidence.
 
 Fixture paths below are relative to
 [the corpus](../tests/fixtures/qli_authoring/README.md). The user selected the

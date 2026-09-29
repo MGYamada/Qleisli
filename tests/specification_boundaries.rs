@@ -3,8 +3,8 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 fn accepted(source: &str) {
     let root = SourceRoot::new(source);
@@ -325,7 +325,7 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
         }",
     );
     let program = compile_project(&root.0).unwrap();
-    use qleisli_core::ir::RawOp;
+    use qleisli::ir::RawOp;
     assert!(matches!(
         program.program().operations.as_slice(),
         [

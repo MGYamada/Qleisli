@@ -7,6 +7,13 @@ generalized types or functions is a current public API. This initial variant
 uses phase estimation; iterative and maximum-likelihood variants would need
 different observation and statistical contracts.
 
+A later 0.2.1 [local finite experiment](../../tests/fixtures/sized_clients/README.md)
+now implements a coherent low-bit amplitude client calling the shared QPE
+source. It checks exact reflection signs, p=0/1 and full target/reference
+vectors at small sizes. Generic A/predicates, initialization, measured `CBits`,
+certified classical evaluation and the complete API below remain unimplemented;
+the bounded experiment does not adopt this imaginary syntax.
+
 ## Algorithm body
 
 The task is to estimate the success probability

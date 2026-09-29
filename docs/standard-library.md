@@ -18,6 +18,13 @@ criteria. The [contract ledger](stdlib-contracts.md) records the 12 bundled
 public definitions. Proposed metatypes are distinct from current APIs, and
 host-side trials and statistical processing remain outside `.qli` operations.
 
+The [library goal adopted on 2026-09-29](stdlib-roadmap.md#adopted-library-goal)
+is a quantum-computing foundation integrating **BLAS/LAPACK, textbook and formal
+specification**, so readers can learn quantum information from the library
+itself. This goal governs further design. The minimum organization specified
+here already exists; the comprehensive future module hierarchy and generalized
+APIs remain undecided. The goal does not change any current declaration below.
+
 The [0.2.0 type contract](type-system.md) preserves tuple arity and nesting.
 Every binary signature below, including `split`, `join` and `toffoli`, retains
 its explicit shape. N-ary callers use [checked explicit conversions](tuple-shapes.md);

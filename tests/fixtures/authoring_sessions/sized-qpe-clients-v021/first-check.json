@@ -1,0 +1,26 @@
+{
+  "recorded_utc": "2026-09-29T16:04:51.602908+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "tests/fixtures/sized_clients/order.qli",
+    "--entry",
+    "order_phase",
+    "--size",
+    "n=2",
+    "--size",
+    "m=3",
+    "--operation",
+    "U=modular::mul_two:2",
+    "--module",
+    "estimation=corpus/sized/qualtran_qpe/estimation.qli",
+    "--module",
+    "preparation=corpus/sized/qualtran_qpe/preparation.qli",
+    "--module",
+    "fourier=corpus/sized/qualtran_qft/fourier.qli",
+    "--output",
+    "/tmp/qleisli-first-order-client.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: expected ']', found '[' at token 110\n"
+}

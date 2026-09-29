@@ -1,0 +1,32 @@
+{
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/reshape-v021/attempt-01",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-09-29T03:23:17.283343+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `}`, found `::`",
+        "primary": {
+          "path": "main.qli",
+          "start": 204,
+          "end": 206,
+          "line": 6,
+          "column": 12
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

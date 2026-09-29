@@ -5,12 +5,16 @@ submilestone of M1, not a product version or completion of interoperability.
 The user requested this additional slice during 0.1.7 feature development.
 Future additions use the [compatibility-based version policy](versioning.md).
 Implementation and validation are recorded separately in the
-[0.1.7 record](releases/v0.1.7.md). Python bindings, QIR import and adaptive
-programs retain separate gates. The compiler and evidence kernel stay unchanged.
+[0.1.7 record](releases/v0.1.7.md). The additive 0.2.1
+[connection contract](connections-v021.md) now covers Python orchestration,
+structured CLI commands and a pinned PyQIR terminal-input subset. The historical
+future-reader discussion below is superseded for that subset only. Adaptive
+programs and broader import/distribution gates remain open; the compiler and
+evidence kernel stay unchanged.
 
 ## Host interface and trust boundary
 
-The additive Rust module `qleisli_core::interop` provides:
+The additive Rust module `qleisli::interop` provides:
 
 ```text
 import_openqasm3(source: &str) -> Result<VerifiedProgram, InteropError>

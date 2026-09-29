@@ -1,0 +1,28 @@
+// Deliberate local semantic fault: Compare only the low bits; equal low bits with distinct high bits must be rejected by the oracle.
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/comparison.py
+// Selected symbol(s): Equals
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::toffoli;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<((((Bit, Bit), Bit), Bit), Bit)>) -> Q<((((Bit, Bit), Bit), Bit), Bit)> {
+    let (xy, target) = split(q);
+    let (xcy, d) = split(xy);
+    let (ab, c) = split(xcy);
+    let (a, b) = split(ab);
+    let (a, c) = cnot(a, c);
+    let (b, d) = cnot(b, d);
+    let c = x(c);
+    let d = x(d);
+    let (c, target) = cnot(c, target);
+    let (a, c) = cnot(a, x(c));
+    let (b, d) = cnot(b, x(d));
+    join(join(join(join(a, b), c), d), target)
+}

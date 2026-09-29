@@ -1,6 +1,6 @@
 use super::*;
 use crate::kernel::Contract;
-use qleisli_core::ir::{BasisShape, BitControl, QuantumPort};
+use qleisli::ir::{BasisShape, BitControl, QuantumPort};
 
 fn port(token: u32, wires: &[u32]) -> QuantumPort {
     QuantumPort {
@@ -431,7 +431,7 @@ fn unsupported_valid_pure_raw_operations_are_rejected_explicitly() {
         }],
         &[1],
     );
-    qleisli_core::verify(basis_lift.clone()).unwrap();
+    qleisli::verify(basis_lift.clone()).unwrap();
     assert!(matches!(
         import_raw(basis_lift),
         Err(AdapterError::Unsupported(_))

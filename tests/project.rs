@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use qleisli_core::frontend::project::{ImportOrigin, ModuleOrigin, Project, ProjectError};
+use qleisli::frontend::project::{ImportOrigin, ModuleOrigin, Project, ProjectError};
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 

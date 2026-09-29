@@ -1,9 +1,9 @@
 //! The target adapter reuses existing sealed evidence and verifier rules.
-use qleisli_core::contract::exact::{Budget, Exact, Matrix};
-use qleisli_core::contract::meaning::{FiniteMeaning, MeaningEvidence};
-use qleisli_core::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionIdentity};
-use qleisli_core::ir::{CircuitAction, CircuitStep, RawOp};
-use qleisli_core::verify;
+use qleisli::contract::exact::{Budget, Exact, Matrix};
+use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
+use qleisli::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionIdentity};
+use qleisli::ir::{CircuitAction, CircuitStep, RawOp};
+use qleisli::verify;
 
 fn budget() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)

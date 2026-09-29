@@ -11,6 +11,13 @@ earlier Japanese edition without changing the implemented APIs. The public
 arithmetic definitions remain experimental; the [ledger](stdlib-contracts.md)
 records their contracts and adoption status.
 
+The later 0.2.1 [shared-source experiment](../tests/fixtures/sized_clients/README.md)
+now calls the same coherent QPE definition for modular doubling on `Bits<n>`
+at small widths, including the N=15 baseline below. This is a separate
+development path with full-input/reference diagnostics; its initialization,
+measurement into `CBits` and production/host integration remain open. It does
+not replace these existing finite APIs or their verification record.
+
 <a id="通常定義の算術契約"></a>
 
 ## Arithmetic contracts for ordinary definitions

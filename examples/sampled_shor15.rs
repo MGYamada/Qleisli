@@ -1,7 +1,7 @@
 //! Fresh finite QPE trials, distinct from the exhaustive shor15 example.
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::host::{factor_trial_from_phase, run_trials};
-use qleisli_core::sim::{SampleLimits, SplitMix64, sample_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::host::{factor_trial_from_phase, run_trials};
+use qleisli::sim::{SampleLimits, SplitMix64, sample_closed};
 use std::path::Path;
 
 fn main() -> Result<(), String> {

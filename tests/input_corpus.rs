@@ -1,11 +1,11 @@
 //! Smoke checks for the frozen external input corpus. Independent exhaustive
 //! complex-entry/instrument oracles live in scripts/check_input_corpus.py.
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path};
 
 #[test]
-fn all_twenty_four_corpus_projects_compile_verify_and_execute() {
+fn all_thirty_corpus_projects_compile_verify_and_execute() {
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("corpus");
     for source in ["quantum_katas", "qualtran", "pennylane_demos"] {
         let mut count = 0;
@@ -21,7 +21,7 @@ fn all_twenty_four_corpus_projects_compile_verify_and_execute() {
             assert!(distribution.values().all(|p| p.is_finite() && *p >= 0.0));
             count += 1;
         }
-        assert_eq!(count, 8, "pilot inventory for {source}");
+        assert_eq!(count, 10, "reviewed inventory for {source}");
     }
 }
 

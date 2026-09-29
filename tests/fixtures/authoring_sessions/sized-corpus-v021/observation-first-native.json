@@ -1,0 +1,14 @@
+{
+  "recorded_utc": "2026-09-29T14:26:41.519102+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "transcript": "{\n  \"command\": [\n    \"cargo\",\n    \"test\",\n    \"--test\",\n    \"sized_corpus\",\n    \"--\",\n    \"--ignored\",\n    \"--nocapture\"\n  ],\n  \"exit_code\": 101,\n  \"stdout\": \"\\nrunning 1 test\\nCORPUS|xor-0|ok|7356|0|0\\nCORPUS|xor-1|ok|308447|67|1\\nCORPUS|xor-2|ok|746816|134|2\\nCORPUS|xor-4|limit|Lean hierarchy inspection rejected the artifact\\ntest inspect_source_produced_corpus ... FAILED\\n\\nfailures:\\n\\nfailures:\\n    inspect_source_produced_corpus\\n\\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.17s\\n\\n\",\n  \"stderr\": \"   Compiling qleisli-core v0.2.1 (/Users/masa/git/Qleisli)\\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.72s\\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-bc96fffc2cad5da1)\\n\\nthread 'inspect_source_produced_corpus' (878079) panicked at tests/sized_corpus.rs:30:17:\\nassertion `left == right` failed: xor-4: limit: Lean hierarchy inspection rejected the artifact\\n  left: \\\"limit\\\"\\n right: \\\"ok\\\"\\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\\nerror: test failed, to rerun pass `--test sized_corpus`\\n\"\n}"
+}

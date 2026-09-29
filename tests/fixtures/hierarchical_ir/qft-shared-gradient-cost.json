@@ -1,0 +1,101 @@
+{
+  "format": "qleisli.hierarchy-qft-cost-probe",
+  "version": 1,
+  "status": "diagnostic",
+  "construction": "shared-gradient",
+  "columns": [
+    "width",
+    "preparation",
+    "definition_typing",
+    "contract_typing",
+    "legacy_local_rules",
+    "typed_local_rules"
+  ],
+  "rows": [
+    [
+      1,
+      4457,
+      21387,
+      24499,
+      171496,
+      20770
+    ],
+    [
+      2,
+      15437,
+      81488,
+      92162,
+      674053,
+      64671
+    ],
+    [
+      3,
+      22271,
+      120265,
+      134423,
+      1002723,
+      94549
+    ],
+    [
+      4,
+      35872,
+      205869,
+      229637,
+      1666838,
+      145910
+    ],
+    [
+      5,
+      44168,
+      261193,
+      289469,
+      2094010,
+      179938
+    ],
+    [
+      6,
+      60163,
+      376146,
+      416080,
+      2912055,
+      237789
+    ],
+    [
+      7,
+      69921,
+      450833,
+      496299,
+      3437729,
+      275967
+    ],
+    [
+      8,
+      88310,
+      599615,
+      658787,
+      4409704,
+      340308
+    ]
+  ],
+  "binary_sha256": "d726f1fc75324abc2d748dcf761ff2cd917973bf5c028beb555db25057d269ed",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [53/55] Built Main (8.7s)\n\u2714 [54/55] Built Main:c.o (838ms)\n\u2714 [55/55] Built \u00abartifact-test\u00bb:exe (145ms)\nBuild completed successfully (55 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qgosdvs5/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "1|4457|21387|24499|171496|20770\n2|15437|81488|92162|674053|64671\n3|22271|120265|134423|1002723|94549\n4|35872|205869|229637|1666838|145910\n5|44168|261193|289469|2094010|179938\n6|60163|376146|416080|2912055|237789\n7|69921|450833|496299|3437729|275967\n8|88310|599615|658787|4409704|340308\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Local checks each use the unchanged 2000000 ceiling. Their separate totals are diagnostics, not acceptance of the complete artifact."
+}

@@ -1,14 +1,16 @@
 use std::io::Write;
 use std::process::ExitCode;
 
-use qleisli_core::frontend::compile::{check_project_with_policy, compile_project_with_policy};
-use qleisli_core::frontend::diagnostic::Diagnostic;
-use qleisli_core::frontend::documentation::render_markdown;
-use qleisli_core::frontend::project::read_source_file;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
+use qleisli::frontend::diagnostic::Diagnostic;
+use qleisli::frontend::documentation::render_markdown;
+use qleisli::frontend::project::read_source_file;
+use qleisli::sim::{SimulationLimits, run_closed};
 
 #[path = "qleisli/artifacts.rs"]
 mod artifacts;
+#[path = "qleisli/interop.rs"]
+mod interop;
 #[path = "qleisli/json.rs"]
 mod json;
 #[path = "qleisli/options.rs"]
@@ -33,11 +35,14 @@ fn report(root: &std::path::Path, error: Diagnostic) {
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if args.first().is_some_and(|arg| arg == "interop") {
+        return interop::run(&args[1..]);
+    }
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);
     }
     let Some(options) = options::Options::parse(&args, false) else {
-        eprintln!("usage: qleisli <check|run> <source-root>\n       qleisli doc <source-file>");
+        eprintln!("{}", options::USAGE);
         return ExitCode::from(2);
     };
     let source_root = &options.path;

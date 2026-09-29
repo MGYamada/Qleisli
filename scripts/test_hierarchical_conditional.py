@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""Actual conditional DAG checks and independent finite-obligation inventory.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Pending composition is not semantic acceptance of opaque finite payloads.
+"""
+import argparse
+import copy
+import hashlib
+import json
+from pathlib import Path
+import random
+
+from test_hierarchical_artifact import ROOT, build_and_run
+
+PRELUDE = r'''import QleisliKernel.Hierarchical.Conditional
+open QleisliKernel.Hierarchical
+open Artifact
+def code (e : Error) : String := match e with
+  | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir"
+def report (name : String) (a : Artifact) (order : Array Nat) : IO Unit := do
+  match Conditional.checkAll a order with
+  | .error e => IO.println s!"{name}|{code e.kind}"
+  | .ok pending =>
+    let old := match Derivation.checkAll a order with
+      | .error e => code e.kind | .ok _ => "derived"
+    IO.println s!"{name}|pending|{pending.state.visits}|{pending.state.proofs}|{pending.state.requests.size}|{old}"
+    for r in pending.state.requests do
+      IO.println s!"{name}:request:{r.index}|{r.proof.implementation}|{r.proof.meaning}|{r.proof.inputEncoding}|{r.proof.outputEncoding}|{r.program.data.toList}|{r.description.data.toList}"
+'''
+
+
+def array(items):
+    return '#[' + ','.join(map(str, items)) + ']'
+
+
+def port(owner, wire=None):
+    return dict(owner=owner, basis='#[.unit]' if wire is None else '#[.bit]', axes=[] if wire is None else [wire])
+
+
+def side(ports):
+    return '⟨' + array(f'⟨{p["owner"]},{p["basis"]},{array(p["axes"])}⟩' for p in ports) + ',#[]⟩'
+
+
+def refs(body):
+    tag, *args = body
+    if tag in ('finite', 'phase', 'rewire', 'structural'):
+        return []
+    if tag in ('repeat', 'control', 'inverse'):
+        return [args[0]]
+    if tag in ('sequence', 'tensor'):
+        return list(args)
+    raise AssertionError(body)
+
+
+def body_text(body, logical, remap):
+    tag, *args = body
+    if tag == 'finite':
+        return ('.finite ' if logical else '.leaf ') + '(' + json.dumps(args[0]) + ').toUTF8'
+    if tag == 'rewire':
+        return f'.rewire ⟨{array(args[0])},{array(args[1])},#[]⟩'
+    if tag == 'phase':
+        owner, j, k = args
+        return f'.phase {j} {k}' if logical else f'.dyadicPhase {owner} {j} {k}'
+    if tag == 'repeat':
+        child, count = args
+        return f'.power {remap(child)} {count}' if logical else f'.repeatOp {count} {child}'
+    if tag == 'control':
+        return f'.control {remap(args[0])} {str(bool(args[1])).lower()}'
+    if tag == 'inverse':
+        return f'.inverse {remap(args[0])}'
+    if tag == 'sequence':
+        return f'.sequence {array(remap(i) for i in args)}'
+    if tag == 'tensor':
+        return f'.tensor {remap(args[0])} {remap(args[1])}'
+    raise AssertionError(body)
+
+
+def add(nodes, inputs, outputs, body, logical=None, premises=None):
+    index = len(nodes)
+    nodes.append(dict(inputs=inputs, outputs=outputs, d=body, m=body if logical is None else logical,
+                      rule=body[0], premises=refs(body) if premises is None else premises))
+    return index
+
+
+def provider(nodes, owner=0, wire=7, payload='opaque-H-implementation', description='independent-H-matrix'):
+    before, after = [port(owner, wire)], [port(owner+1, wire)]
+    first = add(nodes, before, after, ('finite', payload), ('finite', description))
+    back = add(nodes, after, before, ('rewire', [0], [] if wire is None else [0]))
+    return add(nodes, before, before, ('sequence', first, back))
+
+
+def render(nodes, reverse=True):
+    total = len(nodes)
+    remap = lambda i: total-1-i if reverse and 0 <= i < total else i
+    definitions, meanings, encodings, proofs = [], [], [], []
+    for i, n in enumerate(nodes):
+        a, b = side(n['inputs']), side(n['outputs'])
+        interface = f'⟨{a},{b}⟩'
+        definitions.append(f'⟨{interface},.unitary,{body_text(n["d"], False, lambda i: i)}⟩')
+        meanings.append(f'⟨{interface},{body_text(n["m"], True, remap)}⟩')
+        encodings.extend([f'⟨{a},{a},.identity⟩', f'⟨{b},{b},.identity⟩'])
+        rule = 'repeatOp' if n['rule'] == 'repeat' else n['rule']
+        proofs.append(f'⟨.equation,.{rule},{array(n["premises"])},{i},{remap(i)},{2*i},{2*i+1},⟨1,#[],#[]⟩⟩')
+    if reverse:
+        meanings.reverse()
+    artifact = '⟨' + ','.join(array(items) for items in (definitions, meanings, encodings, proofs)) + f',⟨{total-1},{total-1}⟩⟩'
+    order = list(range(total)) + [total+remap(i) for i in range(total)] + list(range(2*total, 5*total))
+    return artifact, array(order)
+
+
+def independent_requests(nodes):
+    """Follow actual dependencies rather than the submitted order or mutable cache."""
+    active, visited, requests = set(), set(), {}
+    def visit(i):
+        assert 0 <= i < len(nodes) and i not in active
+        if i in visited:
+            return
+        n = nodes[i]
+        active.add(i)
+        assert n['rule'] == n['d'][0] == n['m'][0]
+        assert refs(n['d']) == n['premises'] == refs(n['m'])
+        for child in n['premises']:
+            visit(child)
+        if n['rule'] == 'finite':
+            # This is an inventory of obligations, never an assertion of equality.
+            assert n['d'][1] and n['m'][1]
+            requests[i] = (n['d'][1], n['m'][1])
+        else:
+            assert n['d'] == n['m']
+        active.remove(i)
+        visited.add(i)
+    visit(len(nodes)-1)
+    assert len(visited) == len(nodes)
+    return requests
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--record', type=Path)
+    args = parser.parse_args()
+    cases = []
+    def put(name, nodes, expected='pending', order=None):
+        artifact, schedule = render(nodes)
+        cases.append(dict(name=name, nodes=nodes, expected=expected, artifact=artifact,
+                          order=schedule if order is None else order))
+    for count in (0, 1, 3, 4096):
+        nodes = []
+        root = provider(nodes)
+        root = add(nodes, nodes[root]['inputs'], nodes[root]['outputs'], ('repeat', root, count))
+        s = [port(10, 9)] + nodes[root]['inputs']
+        add(nodes, s, s, ('control', root, True))
+        put(f'controlled-repeat-{count}', nodes)
+    # The direct schema has no standalone proof for the intermediate repeat;
+    # its actual closed provider has the reconstructed finite premise below it.
+    for exponent in (0, 3, 12):
+        nodes = copy.deepcopy(cases[0]['nodes'])
+        nodes[3]['d'] = nodes[3]['m'] = ('repeat', 2, 2**exponent)
+        artifact, _ = render(nodes)
+        root = f'⟨.equation,.schema "controlled-power/1",#[2],4,0,6,7,⟨1,#[{exponent},2],#[]⟩⟩'
+        expression = f'(let a : Artifact := {artifact}; {{a with encodings := '
+        expression += 'a.encodings.extract 0 6 ++ a.encodings.extract 8 10, proofs := '
+        expression += f'(a.proofs.extract 0 3).push {root}, entry := ⟨4,3⟩}})'
+        schedule = array(list(range(5)) + list(range(9, 4, -1)) + list(range(10, 22)))
+        cases.append(dict(name=f'direct-schema-{exponent}', nodes=nodes, artifact=expression,
+                          order=schedule, expected='pending', proof_count=4))
+        if exponent == 3:
+            for label, parameters in [('wrong-exponent', '#[4,2]'), ('wrong-provider', '#[3,0]')]:
+                changed = f'(let a : Artifact := {expression}; {{a with proofs := '
+                changed += f'a.proofs.modify 3 (fun p => {{p with witness := ⟨1,{parameters},#[]⟩}})}})'
+                cases.append(dict(name=f'schema-{label}', nodes=nodes, artifact=changed,
+                                  order=schedule, expected='contract'))
+    for seed in range(18):
+        rng = random.Random(seed)
+        nodes = []
+        root = provider(nodes, payload=f'opaque-provider-{seed}', description=f'independent-matrix-{seed}')
+        for _ in range(4):
+            kind = rng.choice(('sequence', 'inverse', 'repeat'))
+            body = (kind, root, 2) if kind == 'sequence' else ((kind, root, rng.choice((0, 2, 4096))) if kind == 'repeat' else (kind, root))
+            root = add(nodes, nodes[root]['inputs'], nodes[root]['outputs'], body)
+        if seed % 2:
+            second = provider(nodes, owner=20, wire=None, payload='opaque-unit-phase', description='exact-minus-one')
+            s = nodes[root]['inputs'] + nodes[second]['inputs']
+            add(nodes, s, s, ('tensor', root, second))
+        else:
+            s = [port(10, 9)] + nodes[root]['inputs']
+            add(nodes, s, s, ('control', root, seed % 4 == 0))
+        put(f'shared-{seed}', nodes)
+    for units in (False, True):
+        nodes = []
+        root = provider(nodes, wire=None if units else 7)
+        add(nodes, nodes[root]['inputs'], nodes[root]['outputs'], ('sequence', root, root))
+        put(f'reused-{units}', nodes)
+    nodes = []
+    s = [port(0, 7)]
+    phase = add(nodes, s, s, ('phase', 0, 1, 4))
+    add(nodes, s, s, ('repeat', phase, 4096))
+    put('no-finite-obligations', nodes)
+    base = copy.deepcopy(cases[0]['nodes'])
+    for field, text in [('d', 'phase-mutated-body'), ('m', 'false-independent-matrix')]:
+        nodes = copy.deepcopy(base)
+        nodes[0][field] = ('finite', text)
+        put(f'zero-retains-{field}-mutation', nodes)
+    mutations = {
+        'wrong-repeat-count': (3, 'm', ('repeat', 2, 1)),
+        'wrong-control-polarity': (4, 'm', ('control', 3, False)),
+        'wrong-sequence-order': (2, 'm', ('sequence', 1, 0)),
+        'missing-body': (3, 'd', ('repeat', 99, 0)),
+        'body-cycle': (3, 'd', ('repeat', 3, 0)),
+        'empty-body': (0, 'd', ('finite', '')),
+        'empty-meaning': (0, 'm', ('finite', '')),
+    }
+    for name, (i, field, value) in mutations.items():
+        nodes = copy.deepcopy(base)
+        nodes[i][field] = value
+        # Reversing the two non-closed stages already violates their exact
+        # starting owner interface, before the equation matcher is reached.
+        put(name, nodes, 'invalid_ir' if name in ('wrong-sequence-order', 'missing-body', 'body-cycle', 'empty-body', 'empty-meaning') else 'contract')
+    for name, index, field, value in [
+        ('wrong-premise-order', 2, 'premises', [1, 0]),
+        ('finite-self-premise', 0, 'premises', [0]),
+        ('unreachable-proof', 2, 'premises', [0]),
+        ('wrong-finite-rule', 0, 'rule', 'rewire'),
+    ]:
+        nodes = copy.deepcopy(base)
+        nodes[index][field] = value
+        put(name, nodes, 'invalid_ir' if name in ('finite-self-premise', 'unreachable-proof') else 'contract')
+    artifact, order = render(base)
+    bad = copy.deepcopy(cases[0])
+    bad.update(name='duplicate-schedule', expected='invalid_ir', order='Array.replicate 25 0')
+    cases.append(bad)
+    for name, transform in [
+        ('wrong-encoding-owner', 'encodings := a.encodings.map (fun e => {e with physical := {e.physical with quantum := e.physical.quantum.map (fun p => {p with owner := p.owner+100})}})'),
+        ('wrong-finite-output-type', 'definitions := a.definitions.modify 0 (fun d => {d with interface := {d.interface with outputs := {d.interface.outputs with quantum := d.interface.outputs.quantum.map (fun p => {p with basis := #[.bits 1]})}}})'),
+        ('nonidentity-encoding', 'encodings := a.encodings.modify 0 (fun e => {e with body := .zeroScratch 0 2})'),
+    ]:
+        expression = f'(let a : Artifact := {artifact}; {{a with {transform}}})'
+        cases.append(dict(name=name, nodes=base, artifact=expression, order=order, expected='contract'))
+    source = PRELUDE + '\n'.join(f'def case{i} : IO Unit := report {json.dumps(c["name"])} ({c["artifact"]}) ({c["order"]})' for i, c in enumerate(cases)) + '\n'
+    groups = range(0, len(cases), 8)
+    for first in groups:
+        source += f'def group{first} : IO Unit := do\n' + '\n'.join(f'  case{i}' for i in range(first, min(first+8, len(cases)))) + '\n'
+    source += 'def main : IO Unit := do\n' + '\n'.join(f'  group{i}' for i in groups) + '\n'
+    commands, binary_hash = build_and_run(source, args.record)
+    results = {}
+    for line in commands[-1]['stdout'].splitlines():
+        name, *fields = line.split('|')
+        assert name not in results
+        results[name] = fields
+    if args.record:
+        args.record.write_text(json.dumps(dict(status='observed-not-yet-compared', results=results, commands=commands), indent=2)+'\n')
+    total_requests = 0
+    for c in cases:
+        result = results[c['name']]
+        assert result[0] == c['expected'], (c['name'], result, c['expected'])
+        if result[0] != 'pending':
+            continue
+        expected = independent_requests(c['nodes'])
+        assert int(result[1]) <= 2000000
+        assert int(result[2]) == c.get('proof_count', len(c['nodes']))
+        assert int(result[3]) == len(expected)
+        assert result[4] == ('contract' if expected else 'derived')
+        for index, (program, description) in expected.items():
+            fields = results[f'{c["name"]}:request:{index}']
+            assert list(map(int, fields[:4])) == [index, len(c['nodes'])-1-index, 2*index, 2*index+1]
+            assert [json.loads(x) for x in fields[4:]] == [list(program.encode()), list(description.encode())]
+        total_requests += len(expected)
+    assert len(results) == len(cases)+total_requests
+    costs = [int(results[f'controlled-repeat-{count}'][1]) for count in (0, 1, 3, 4096)]
+    assert len(set(costs)) == 1, costs
+    schema_costs = [int(results[f'direct-schema-{exponent}'][1]) for exponent in (0, 3, 12)]
+    assert len(set(schema_costs)) == 1, schema_costs
+    report = dict(format='qleisli.conditional-derivation-validation', version=1, status='passed',
+                  cases=len(cases), pending=sum(results[c['name']][0] == 'pending' for c in cases),
+                  finite_requests=total_requests, expanded_repetitions=0,
+                  repeat_cost=costs[0], schema_cost=schema_costs[0],
+                  source_sha256=hashlib.sha256(source.encode()).hexdigest(),
+                  binary_sha256=binary_hash, results=results, commands=commands)
+    if args.record:
+        args.record.write_text(json.dumps(report, indent=2)+'\n')
+    print(json.dumps({k: v for k, v in report.items() if k not in ('results', 'commands')}, sort_keys=True))
+
+
+if __name__ == '__main__':
+    main()

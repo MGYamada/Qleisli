@@ -8,7 +8,7 @@ publish = false
 description = "Experimental symbolic semantic-contract checking for Qleisli"
 
 [dependencies]
-qleisli-core = { path = "../.." }
+qleisli = { path = "../.." }
 
 [lints.rust]
 unsafe_code = "forbid"

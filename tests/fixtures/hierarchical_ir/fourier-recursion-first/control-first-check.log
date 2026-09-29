@@ -1,0 +1,8 @@
+QleisliKernel/Hierarchical/FourierControl.lean:51:69: error: Application type mismatch: The argument
+  rfl
+has type
+  ?m.416 = ?m.416
+but is expected to have type
+  True
+in the application
+  And.intro rfl

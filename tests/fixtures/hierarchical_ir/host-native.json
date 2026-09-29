@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.hierarchy-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_sha256": "59b00eab1ef6e75b05e81d8c0ed9593844d47472baecac95e9f5dc299d968222",
+  "binary_cases": 362,
+  "seconds": 11.723,
+  "host_command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 6 tests\ntest native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ok\ntest native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ok\ntest native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ok\ntest native_phase_fault_remains_an_obligation_under_zero_repeat ... ok\ntest native_actual_counts_premises_and_encodings_are_checked ... ok\nshared power costs: [(75539, 67), (75539, 67), (75539, 67), (75539, 67)]\ntest native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ok\n\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.19s\n\n",
+  "stderr": "   Compiling qleisli-core v0.2.1 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.44s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-d195a413add0f6d5)\n"
+}

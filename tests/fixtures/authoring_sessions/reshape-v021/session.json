@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "task": "Explicit canonical tuple reshape before sized source",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired typed reshape source preserved before checking; draft syntax is not an API",
+      "sha256": {
+        "main.qli": "ff7d1d40c608d55184b0a05d4dbb0e39e1e241dc85d7c043d40e87d591e96a87"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    }
+  ]
+}

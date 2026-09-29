@@ -782,8 +782,8 @@ fn appended_definitions_cannot_fill_holes_in_a_frozen_requirement() {
 
 #[test]
 fn adapter_matches_independent_exact_semantics_in_5425_control_and_phase_cases() {
-    use qleisli_core::contract::{BasisType, Circuit};
-    use qleisli_core::ir::*;
+    use qleisli::contract::{BasisType, Circuit};
+    use qleisli::ir::*;
 
     fn compare(step: CircuitStep, cases: &mut usize) {
         let raw = RawProgram {

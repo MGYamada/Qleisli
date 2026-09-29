@@ -1,0 +1,15 @@
+{
+  "recorded_utc": "2026-09-29T04:11:24.157606+00:00",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "kind": "informed review reproductions, not a model benchmark",
+  "context": "User supplied v0.2.0 review; existing 0.2.1 documentation/corpus/reshape work preserved. Complete sources saved before first local checks. No external model or corpus source added.",
+  "sha256": {
+    "expansion_limit/main.qli": "01a2fa46a790c128466a715932c4fc8126e37f6165127ab7490197095f3d7144",
+    "long_trajectory/main.qli": "8caddea98b90ad71d7e15e1b50bf81923608fb9bb03304cc35929632c403b3cc",
+    "repeat_1000/main.qli": "e2437d990d6ada542b7ef8f02ebe56a082b9b15d90498421fadb9fce0c0c29aa",
+    "repeat_300/main.qli": "9024268280677eaf9ceb8c5909c7eb9637cc81e059e8de53d8694ed28f360369",
+    "roundoff_outcome/main.qli": "f10291621ee0c53020ff68d19bc3383a9c24ee20b7c07976cbc5280f0fb29844",
+    "shared_identities/main.qli": "49b0c0fd463802affb8a5f2ddc95c71615e2801d748ff0837561038fbc89d4fb"
+  }
+}

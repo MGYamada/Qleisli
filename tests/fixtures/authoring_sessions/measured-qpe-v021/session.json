@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "task": "Measured shared QPE with explicit CBits assembly",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired measured wrapper preserved before checking",
+      "sha256": {
+        "readout.qli": "e300fd07cd06e17a74467e111fcb7fc76e94007246af7301a49d38c29ffbe688"
+      },
+      "observations": [
+        "first-check.json"
+      ]
+    }
+  ]
+}

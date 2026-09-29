@@ -6,6 +6,12 @@ language, adopt imaginary syntax, or prove implementation correctness.
 
 ## How to read the documents
 
+For first use, start with the [repository quickstart](../README.md#try-it) or
+the concise [registry README](../README.crates.md). They describe the current
+Rust CLI/library and distinguish optional Python/Lean work. The
+[crates.io procedure](crates-io-release.md) records preparation, distribution
+contents and the explicit publication hold; it does not change language rules.
+
 English is the authoritative language for production language specifications
 and public standard-library names, contracts, references, source comments,
 and example explanations. Authority is tied to a document's subject and status:
@@ -42,6 +48,24 @@ implementation or diagnostic theorem is supplied by this plan. It preserves
 the fixed trust boundary and the existing release/theorem gates.
 
 ## Current state and historical records
+
+The 2026-09-30 [Resource Safety adoption](resource-semantics.md) is a future
+third v1 theorem pillar, with [RS-C1–C5](release-milestones.md#resource-safety-theorem-v1)
+and an explicitly dated **to prove** amendment to the trust boundary. It
+specifies intended resource semantics and proof duties, not a current language
+form, checked bound API or completed ownership/quantitative theorem.
+
+The 2026-09-30 [0.2.1 boundary](v0.2.1-plan.md) retains completed experiments,
+review fixes and [bounded connections](connections-v021.md). Remaining heavy
+implementation/integration/proofs move to [0.2.2](v0.2.2-plan.md), superseding
+the earlier release assignment while retaining its history and unmet gates.
+
+The [linear-size and explicit register-reshape design](size-expressions.md)
+is an adopted 0.2.1 direction for the still-pending G020-1 source extension.
+It selects arithmetic/equality, ordered segment conversion, proof and CI
+obligations without claiming a production solver, array API or executable
+sized source. The [earlier reshape helper](reshape-plan.md) retains its
+intact-atom contract and separately recorded implementation status.
 
 [project-status.json](project-status.json) is the single editable record for
 active milestone states and the initial rule/implementation/test/proof
@@ -93,7 +117,7 @@ existing links, including links in historical records, continue to resolve.
 | [Algorithm corpus](algorithm-corpus.md) | Twenty entries C01–C20, primary-source links, input models, promises, evidence needs, and unsupported parts | Research/design inventory, not twenty implemented algorithms. |
 | [Input corpus](../corpus/README.md) and [source/license policy](../corpus/POLICY.md) | 24 finite QLI translations, original files, pinned commits, notices, authoring records and independent semantic tests | Closed three-source intake adopted by the user; finite validation, not whole upstream algorithm ports or general proofs. |
 | [Quantum-language requirements](quantum-language-requirements.md) | Resource/effect/phase/reference conditions and specification obligations | Adopted requirements with implementation/proof scope stated separately. |
-| [Standard-library roadmap](stdlib-roadmap.md) | Seven areas, contract fields, four proposed skeletons, adoption criteria, AI feedback, L0–L5 | Authoritative library design plan; proposed generalized APIs remain unimplemented. |
+| [Standard-library roadmap](stdlib-roadmap.md) | Adopted BLAS/LAPACK + textbook + formal-specification goal; seven concept areas, contracts, proposed skeletons, adoption criteria and L0–L5 | Authoritative library goal and design plan; comprehensive organization remains open and proposed generalized APIs remain unimplemented. |
 | [Quantum bookkeeping](quantum-bookkeeping.md) | Language responsibility, semantic composition, phase-sensitive QPE, and proposed evaluation order | Supporting design argument and proposal, subordinate to release acceptance criteria. |
 | [Finite-IR paper proof](finite-core-proof.md) | Constructor equations, theorem premises, reference extension, resource invariants, and implementation obligations | English edition of a conditional mathematical argument for the stated finite IR; neither whole-compiler verification nor a new Lean result. |
 
@@ -143,7 +167,9 @@ fixed-width operations/meanings. Finite X2–X6 implementation is now recorded i
 [0.2.0](releases/v0.2.0.md). The [revised foundation plan](v0.2.0-plan.md)
 retains migration and release checks; the [0.2.1 plan](v0.2.1-plan.md) carries
 remaining production hierarchy, sized QPE and execution/H1–H5 work without
-weakening its gates. Full M2 and Lean migration remain pending. The
+weakening its gates. The current [0.2.1 development record](releases/v0.2.1.md)
+separates version selection from validation and publication. Full M2 and Lean
+migration remain pending. The
 [requirements index](imaginary-v1/requirements.md) records candidate facilities
 and open questions; translation is not their adoption. General source-to-IR
 adequacy, verifier correctness, and compiler soundness remain open.

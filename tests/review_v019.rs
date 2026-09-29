@@ -1,9 +1,9 @@
 //! Review regressions: hidden code and exact work on unused static arguments.
 mod common;
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::frontend::parser::parse_module;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::parser::parse_module;
+use qleisli::sim::{SimulationLimits, run_closed};
 
 #[test]
 fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {

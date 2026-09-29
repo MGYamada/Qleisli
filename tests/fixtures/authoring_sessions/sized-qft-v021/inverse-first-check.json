@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-09-29T14:55:19.686169+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "corpus/sized/qualtran_qft/inverse.qli",
+    "--entry",
+    "inverse_fourier",
+    "--size",
+    "n=3",
+    "--output",
+    "/tmp/qleisli-source-inverse-first.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: unsupported or duplicate import fourier::fourier\n"
+}

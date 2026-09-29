@@ -2,10 +2,10 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::contract::{ContractError, FunctionEvidence, FunctionIdentity};
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::ir::{CircuitAction, RawOp};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::contract::{ContractError, FunctionEvidence, FunctionIdentity};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::ir::{CircuitAction, RawOp};
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::sync::Arc;
 
 fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {

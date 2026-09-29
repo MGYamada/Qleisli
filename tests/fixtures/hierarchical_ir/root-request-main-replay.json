@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.hierarchy-root-main-replay",
+  "version": 1,
+  "command": [
+    "lake",
+    "env",
+    "leanchecker",
+    "--fresh",
+    "Main"
+  ],
+  "status": "passed",
+  "exit_code": 0,
+  "seconds": 56.788,
+  "stdout": "",
+  "stderr": "",
+  "source_revision": "73d85d4b769015764f45ce83883d5ea24644737c01db0e78c5a4c53b5bc6712a"
+}

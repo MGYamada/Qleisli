@@ -1,0 +1,47 @@
+✖ [3383/3383] Building Qleisli.HierarchicalFiniteUnitary (19s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean/Qleisli/HierarchicalFiniteUnitary.lean -o /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalFiniteUnitary.olean -i /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalFiniteUnitary.ilean -c /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalFiniteUnitary.c --setup /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalFiniteUnitary.setup.json --json
+error: Qleisli/HierarchicalFiniteUnitary.lean:41:18: Ambiguous term
+  physical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.physical : HierarchicalSemantics.Algebra ?m.43 →
+    Leaves ?m.43 → Artifact → ℕ → ℕ → Option ?m.43
+  
+  HierarchicalSemantics.physical : HierarchicalSemantics.Algebra ?m.43 → (ℕ → ?m.43) → Definition → Option ?m.43
+error: Qleisli/HierarchicalFiniteUnitary.lean:41:12: `simp` made no progress
+error: Qleisli/HierarchicalFiniteUnitary.lean:121:42: invalid `▸` notation, argument
+  member
+has type
+  i ∈ [pending.actual.targetDefinition]
+equality expected
+error: Qleisli/HierarchicalFiniteUnitary.lean:124:40: invalid `▸` notation, argument
+  member
+has type
+  i ∈ [child]
+equality expected
+error: Qleisli/HierarchicalFiniteUnitary.lean:138:20: Ambiguous term
+  physical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.physical : HierarchicalSemantics.Algebra ?m.118 →
+    Leaves ?m.118 → Artifact → ℕ → ℕ → Option ?m.118
+  
+  HierarchicalSemantics.physical : HierarchicalSemantics.Algebra ?m.118 → (ℕ → ?m.118) → Definition → Option ?m.118
+error: Qleisli/HierarchicalFiniteUnitary.lean:138:14: `simp` made no progress
+error: Qleisli/HierarchicalFiniteUnitary.lean:141:15: Ambiguous term
+  physical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.physical : HierarchicalSemantics.Algebra ?m.134 →
+    Leaves ?m.134 → Artifact → ℕ → ℕ → Option ?m.134
+  
+  HierarchicalSemantics.physical : HierarchicalSemantics.Algebra ?m.134 → (ℕ → ?m.134) → Definition → Option ?m.134
+error: Qleisli/HierarchicalFiniteUnitary.lean:141:8: Type mismatch: After simplification, term
+  evaluated
+ has type
+  HierarchicalFiniteEvaluation.physical algebra leaves artifact (fuel + 1) pending.request.proof.implementation =
+    some actual
+but is expected to have type
+  value = actual
+error: Lean exited with code 1
+Some required targets logged failures:
+- Qleisli.HierarchicalFiniteUnitary
+error: build failed
+

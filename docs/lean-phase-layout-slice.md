@@ -78,7 +78,7 @@ The [combined checker](../lean-kernel/QleisliKernel/PhaseLayout.lean) proves:
 | `compose_sound` | Computed layout/polynomial composition equals ordered execution on all bit assignments and input cyclic phases. |
 | `evalNode_sound`, `checkedNode_sound`, `evaluateFrom_sound` | Cached leaf/call/sequence evaluation agrees with the separate operational interpretation, which does not read proposed results. Each result is compared to its claim before insertion. |
 | `checkMeanings_sound`, `check_sound` | Actual acceptance implies the independently requested bit/phase action and successful entry `Layout.check`, supplying the resource/permutation certificate. |
-| `check_reference` | The accepted action agrees with the requested action when extended by any unchanged reference coordinate. |
+| `check_reference_value` (`check_reference` compatibility alias) | Equality of the cyclic basis action paired with an unchanged ordinary value. This product-value corollary does not establish a quantum tensor extension or preservation of entanglement. |
 
 These are cyclic basis-action theorems. Complex linear extension, norm
 preservation and arbitrary quantum instrument soundness are not proved here.

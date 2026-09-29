@@ -1,0 +1,75 @@
+{
+  "format": "qleisli.backend-execution-policy-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 0.181,
+      "stdout": "Checked 33 executable kernel/transport source modules; no external Lake dependencies.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 21.981,
+      "stdout": "",
+      "stderr": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 21.912s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 0.472,
+      "stdout": "\u2714 [64/65] Built QleisliKernel (396ms)\nBuild completed successfully (65 jobs).\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 1.686,
+      "stdout": "Audited 4906 kernel/transport declarations, 1064 pure import modules and 1062 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 8.737,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "scripts/check_lean_kernel.py": "c6a8bf7d0a9ef0b62a98150fcac905bfd50194490c8b96deef93c9e01c425016",
+    "scripts/test_check_lean_kernel.py": "2b406d19e507d67147b1362c826791c4712eddf73ef2feb5a55072c07156bb79",
+    "lean-kernel/Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    ".github/workflows/ci.yml": "19261cd52a71f4aa65b8c66dc6171698fba04c0bb99bb47795d568828214b0ce"
+  }
+}

@@ -51,4 +51,24 @@ produced these wire artifacts; that translation-validation link is future work.
 | Checking cost | No native checker to measure | At most 4096 gates; constant-size summary, no dense matrix construction |
 | Broader claims | Common sized QPE and complex semantics unavailable | Still pending; this experiment does not satisfy H1–H5 |
 
+## Backend execution policy regression checkpoint
+
+The [2026-09-29 validation record](backend-policy-validation.json) captures the
+expanded [source/compiled audit suite](../../../scripts/test_check_lean_kernel.py)
+and the actual runtime-package build, reduction tests and declaration audit.
+Temporary nested backend modules test all four forbidden execution constructs,
+private names, omitted imports and generated partial helpers. Axiom-free
+logical theorems do not authorize `implemented_by` or `extern` replacement.
+These are policy fixtures, not an implemented backend or `LeafRealizer` API.
+
+## Proof importance and temporary-label checkpoint
+
+The [2026-09-29 label validation](proof-labels-validation.json) rebuilds both
+Lean packages, audits every imported project declaration, independently replays
+the kernel and exports the unchanged component theorem types after documentation
+comment changes. The [inventory](../../../docs/formal-core.md#temporary-proof-markers)
+classifies 27 declarations in six retirement groups, with importance and explicit
+replacement/removal conditions. No proof body or executable definition changed;
+this record is not a new semantic regression run or feature completion.
+
 Copyright 2026 Masahiko G. Yamada. Apache-2.0.

@@ -1,0 +1,153 @@
+{
+  "recorded_at": "2026-09-29T04:25:02.832622+00:00",
+  "results": [
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/long_trajectory"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/long_trajectory\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/long_trajectory"
+      ],
+      "exit": 0,
+      "stdout": "0: 9.364286341696e-1\n1: 6.357136583154e-2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "sample",
+        "tests/fixtures/review_v020/long_trajectory",
+        "--shots=3",
+        "--seed=0"
+      ],
+      "exit": 0,
+      "stdout": "0\n0\n0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/shared_identities"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/shared_identities\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/shared_identities"
+      ],
+      "exit": 0,
+      "stdout": "0: 1.000000000000e0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "emit-ir",
+        "tests/fixtures/review_v020/shared_identities",
+        "--output=/private/tmp/qleisli-review-v020-after.json"
+      ],
+      "exit": 0,
+      "stdout": "emitted independently verified IR: /private/tmp/qleisli-review-v020-after.json\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/expansion_limit"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "/Users/masa/git/Qleisli/tests/fixtures/review_v020/expansion_limit/main.qli:19:1: limit: source expansion exceeds the project-wide work limit of 1000000 while checking main::main; 1000000 units used, 2 requested at main:6:41; each declaration is checked and each call is expanded separately\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_300"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/repeat_300\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_1000"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "/Users/masa/git/Qleisli/tests/fixtures/review_v020/repeat_1000/main.qli:6:39: limit: exact arithmetic capacity exhausted (bounded i128 coefficients or dyadic denominator exponent above 126); reduce exact composition/repetition; no approximate fallback is used\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/roundoff_outcome"
+      ],
+      "exit": 0,
+      "stdout": "0: 1.000000000000e0\n1: 6.162975822039e-33\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\n  qleisli doc <source-file> [source-options]\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "--format=json"
+      ],
+      "exit": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "verify-ir",
+        "/private/tmp/qleisli-review-v020-after.json"
+      ],
+      "exit": 0,
+      "stdout": "verified IR; request_checked: false\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/roundoff_outcome",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1},{\"bits\":[true],\"probability\":0.000000000000000000000000000000006162975822039156}]}}\n",
+      "stderr": ""
+    },
+    {
+      "probe": "source_errors only; no Lean code evaluated",
+      "source": "#eval (IO.FS.writeFile \"x\" \"x\")",
+      "errors": [
+        "line 1: forbidden executable-source command #eval"
+      ]
+    }
+  ]
+}

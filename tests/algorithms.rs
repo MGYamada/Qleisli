@@ -6,8 +6,8 @@ use std::path::Path;
 
 use common::SourceRoot;
 
-use qleisli_core::frontend::compile::{ErrorCode, compile_project};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, compile_project};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 impl SourceRoot {
     fn example(name: &str) -> Self {

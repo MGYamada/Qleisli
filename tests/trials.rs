@@ -1,4 +1,4 @@
-use qleisli_core::host::{
+use qleisli::host::{
     MAX_TRIAL_ATTEMPTS, TrialDecision, TrialFailure, TrialRetry, TrialRun, run_trials,
 };
 
@@ -98,7 +98,7 @@ fn execution_error_is_never_a_retry() {
 
 #[test]
 fn phase_trials_validate_periods_factors_and_distinct_retry_reasons() {
-    use qleisli_core::host::{
+    use qleisli::host::{
         FactorPrecheck, FactorRetry, PeriodFactors, factor_precheck, factor_trial_from_phase,
     };
     assert_eq!(

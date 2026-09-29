@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qleisli"
+version = "0.2.1"
+description = "Python host connections to the independently checked Qleisli finite core"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{name = "Masahiko G. Yamada"}]
+readme = "README.md"
+
+[project.optional-dependencies]
+qir = ["pyqir==0.12.5"]
+
+[project.urls]
+Repository = "https://github.com/MGYamada/Qleisli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["qleisli*"]

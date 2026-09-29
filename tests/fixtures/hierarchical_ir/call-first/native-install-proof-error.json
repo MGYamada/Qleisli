@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 1,
+      "stdout": "\u2716 [47/51] Building QleisliKernel.Hierarchical.CallLowering (556ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-nh7vj7p1/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/CallLowering.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/CallLowering.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/CallLowering.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/CallLowering.setup.json --json\nerror: QleisliKernel/Hierarchical/CallLowering.lean:73:93: unsolved goals\nartifact : Artifact\nindex other : Nat\nexpansion : Plan\ninside : other < artifact.definitions.size\ndifferent : index \u2260 other\n\u22a2 (if other = artifact.definitions.size + 1 then some expansion.after\n    else some (artifact.definitions.setIfInBounds index expansion.replacement)[other]) =\n    some artifact.definitions[other]\nerror: QleisliKernel/Hierarchical/CallLowering.lean:75:4: This simp argument is unused:\n  Array.getElem?_setIfInBounds_ne different\n\nHint: Omit it from the simp argument list.\n  simp [\u0335i\u0335n\u0335s\u0335t\u0335a\u0335l\u0335l\u0335,\u0335A\u0335r\u0335r\u0335a\u0335y\u0335.\u0335g\u0335e\u0335t\u0335E\u0335l\u0335e\u0335m\u0335?\u0335_\u0335p\u0335u\u0335s\u0335h\u0335,\u0335i\u0335n\u0335s\u0335i\u0335d\u0335e\u0335,\u0335N\u0335a\u0335t\u0335.\u0335n\u0335e\u0335_\u0335o\u0335f\u0335_\u0335l\u0335t\u0335[\u0332i\u0332n\u0332s\u0332t\u0332a\u0332l\u0332l\u0332,\u0332 \u0332A\u0332r\u0332r\u0332a\u0332y\u0332.\u0332g\u0332e\u0332t\u0332E\u0332l\u0332e\u0332m\u0332?\u0332_\u0332p\u0332u\u0332s\u0332h\u0332,\u0332 inside, A\u0335r\u0335r\u0335a\u0335y\u0335.\u0335g\u0335e\u0335t\u0335E\u0335l\u0335e\u0335m\u0335?\u0335_\u0335s\u0335e\u0335t\u0335I\u0335f\u0335I\u0335n\u0335B\u0335o\u0335u\u0335n\u0335d\u0335s\u0335_\u0335n\u0335e\u0335 \u0335d\u0335i\u0335f\u0335f\u0335e\u0335r\u0335e\u0335n\u0335t\u0335]\u0335N\u0332a\u0332t\u0332.\u0332n\u0332e\u0332_\u0332o\u0332f\u0332_\u0332l\u0332t\u0332 \u0332i\u0332n\u0332s\u0332i\u0332d\u0332e\u0332]\u0332\n\nNote: This linter can be disabled with `set_option linter.unusedSimpArgs false`\nerror: Lean exited with code 1\nSome required targets logged failures:\n- QleisliKernel.Hierarchical.CallLowering\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n"
+    }
+  ]
+}

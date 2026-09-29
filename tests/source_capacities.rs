@@ -1,8 +1,8 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{compile_project, compile_project_with_policy};
-use qleisli_core::frontend::project::{ModuleOrigin, Project, SourcePolicy, read_source_file};
+use qleisli::frontend::compile::{compile_project, compile_project_with_policy};
+use qleisli::frontend::project::{ModuleOrigin, Project, SourcePolicy, read_source_file};
 
 #[test]
 fn source_boundaries_count_utf8_bytes_before_decoding() {

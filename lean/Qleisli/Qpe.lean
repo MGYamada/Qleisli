@@ -76,6 +76,11 @@ noncomputable def inverseCoefficient (width : Nat) (actual : QleisliKernel.QftGr
     (input output : Fin width → Bool) : ℂ :=
   star (QftGraph.coefficient width actual output input)
 
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: an actual
+hierarchical instrument theorem binding preparation, verified provider/control
+access, inverse QFT and measurement with the same exact branches and reference
+state. Retire after caller/registry migration and public API compatibility
+review; preserve reusable Kraus, bit-index, preparation and power laws. -/
 theorem inverse_coefficient (definitions : List QleisliKernel.QftGraph.Definition)
     (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
     (accepted : QleisliKernel.QftGraph.check definitions entry width = some receipt)
@@ -118,7 +123,13 @@ noncomputable def kraus (width : Nat) (U : Matrix T T ℂ) (outcome : Nat) : Mat
   ∑ j : Fin (2^width), (Complex.exp (-2 * Real.pi * Complex.I * j.val * outcome /
     (2 : ℂ)^width) / (2 : ℂ)^width) • U^j.val
 
-/-- No eigenstate or exact-phase premise: equality of full target operators. -/
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: an actual
+hierarchical instrument theorem binding preparation, verified provider/control
+access, inverse QFT and measurement with the same exact branches and reference
+state. Retire after caller/registry migration and public API compatibility
+review; preserve reusable Kraus, bit-index, preparation and power laws.
+
+No eigenstate or exact-phase premise: equality of full target operators. -/
 theorem checked_branch (operations : Nat → Matrix T T ℂ) (width target : Nat)
     (stages : List ControlledPowers.Stage)
     (powers : ControlledPowers.check width target stages = true)
@@ -146,6 +157,11 @@ noncomputable def outcomeMap [Fintype R] [DecidableEq R]
     (K : Matrix T T ℂ) (rho : Matrix (T × R) (T × R) ℂ) : Matrix (T × R) (T × R) ℂ :=
   withReference K * rho * (withReference K)ᴴ
 
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: an actual
+hierarchical instrument theorem binding preparation, verified provider/control
+access, inverse QFT and measurement with the same exact branches and reference
+state. Retire after caller/registry migration and public API compatibility
+review; preserve reusable Kraus, bit-index, preparation and power laws. -/
 theorem checked_instrument [Fintype R] [DecidableEq R]
     (operations : Nat → Matrix T T ℂ) (width target : Nat)
     (stages : List ControlledPowers.Stage)
@@ -160,7 +176,13 @@ theorem checked_instrument [Fintype R] [DecidableEq R]
       outcomeMap (kraus width (operations target) (value width (finiteBits outcome))) rho := by
   rw [checked_branch operations width target stages powers definitions entry receipt qft actual meaning]
 
-/-- Actual plan acceptance fixes fresh zero input, gate order, inverse direction,
+/-- temporary (TP-006), importance P1: Current QPE projection interface. Replacement: an actual
+hierarchical instrument theorem binding preparation, verified provider/control
+access, inverse QFT and measurement with the same exact branches and reference
+state. Retire after caller/registry migration and public API compatibility
+review; preserve reusable Kraus, bit-index, preparation and power laws.
+
+Actual plan acceptance fixes fresh zero input, gate order, inverse direction,
 measurement layout and target return before applying the component equation. -/
 theorem checked_plan [Fintype R] [DecidableEq R]
     (targetWidth precision provider : Nat)

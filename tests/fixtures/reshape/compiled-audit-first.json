@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.schema-registry-validation",
+  "version": 1,
+  "mode": "rebuilt-types-and-audits",
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 0.169,
+      "stdout_sha256": "4ac28161fd74e487b5601de6d54404fb3cdcda0799a889fefe4fa37d390329c3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 29 executable kernel/transport source modules; no external Lake dependencies.\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 0.168,
+      "stdout_sha256": "c31e94e9c8c6c794755def03a847255e3c3c272660e374f92420e10d9ee891e4",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Build completed successfully (42 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 1,
+      "seconds": 2.317,
+      "stdout_sha256": "49c4a2e3bbd3011cd254eb13ad230771689e76a789b4c617abc0d89229673b37",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audit.lean:81:0: error: QleisliKernel.Reshape.width._unsafe_rec: partial project declaration\n"
+    }
+  ],
+  "error": "command failed: ['lake', 'env', 'lean', '-DwarningAsError=true', 'Audit.lean']\nAudit.lean:81:0: error: QleisliKernel.Reshape.width._unsafe_rec: partial project declaration\n"
+}

@@ -6,7 +6,7 @@ from 0.2.0 onward, practice the
 through concrete quantum programs and their checked contracts. This document
 now governs the [0.2.0 foundation](v0.2.0-plan.md) and
 [0.2.1 shared-QPE continuation](v0.2.1-plan.md). The
-product version is 0.2.0; its [record](releases/v0.2.0.md)
+development version is 0.2.1; its [record](releases/v0.2.1.md)
 separates implemented packets from deferred M2 gates and final release checks.
 The selected classical sequence spelling is `CBits<m>`; desired source is
 not accepted syntax.
@@ -82,6 +82,10 @@ The [backlog](v0.2.0-backlog.md) retains stable IDs, individual reproducers and
 acceptance experiments. This table identifies which gaps actually block which
 claims. An entry is not a blanket prerequisite for starting another cycle.
 
+Work tracked in a GitHub Issue does not require a duplicate backlog entry,
+backlog update or A020 ID. Record its evidence and acceptance experiment in
+the Issue. Existing backlog entries and historical links remain available.
+
 | Obstacle and author burden | Required boundary and experiment | Dependency / compatibility decision |
 | --- | --- | --- |
 | A020-01/05: manually rebuild product trees and remember same-typed result roles | Preserve full trees, Unit ownership, ordered axes and reference correlations; compare the same QFT/teleportation clients and deliberate bit swaps. Role names alone cannot prove an algorithm. | The user selected the breaking arity-preserving correction for 0.2.0; see the [type contract](type-system.md), [migration](tuple-shapes.md) and [preserved source experiment](../tests/fixtures/tuple_shapes/README.md). Broader layout ergonomics remain open. |
@@ -141,8 +145,10 @@ and corpus manifest; do not start another competing evidence/status system.
    costs; a line-count reduction or passing compiler is insufficient.
 6. **Record the result and stop at the scoped claim.** Link implementation,
    tests, actual commands and remaining assumptions; retain the old failed
-   source with its historical result. Update the backlog, authoring report,
-   public contract ledger if relevant, and generated current status. Select a
+   source with its historical result. Update the GitHub Issue or, for work
+   without an Issue, the backlog; no duplicate backlog record is required.
+   Update the authoring report, public contract ledger if relevant, and
+   generated current status. Select a
    version by compatibility only when the concrete change is ready for release.
 
 A cycle is done when its declared acceptance and rejection experiments pass

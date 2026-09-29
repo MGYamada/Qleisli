@@ -104,7 +104,7 @@ impl<E> From<SimulationError> for SampleError<E> {
     }
 }
 
-fn normalize<E>(state: &mut Component) -> Result<(), SampleError<E>> {
+fn normalize<E>(state: &mut Component, executed_steps: usize) -> Result<(), SampleError<E>> {
     if state
         .amplitudes
         .iter()
@@ -113,7 +113,11 @@ fn normalize<E>(state: &mut Component) -> Result<(), SampleError<E>> {
         return Err(SampleError::Numerical("nonfinite amplitude"));
     }
     let norm = state.weight();
-    if !norm.is_finite() || norm <= 0.0 || (norm - 1.0).abs() > TOLERANCE {
+    // Account only for work since the previous normalization, including gates
+    // nested inside one IR operation. This is a numerical guard, not evidence
+    // or a certified forward-error bound. Configured unused work grants nothing.
+    let tolerance = TOLERANCE + 16.0 * f64::EPSILON * executed_steps as f64;
+    if !norm.is_finite() || norm <= 0.0 || (norm - 1.0).abs() > tolerance {
         return Err(SampleError::Numerical("trajectory norm differs from one"));
     }
     let scale = 1.0 / norm.sqrt();
@@ -128,7 +132,7 @@ fn observe<R: RandomSource>(
     wire: WireId,
     random: &mut R,
 ) -> Result<(Component, bool), SampleError<R::Error>> {
-    normalize(&mut state)?;
+    normalize(&mut state, 0)?;
     let axis = state.position(wire)?;
     let p0: f64 = state
         .amplitudes
@@ -154,7 +158,7 @@ fn observe<R: RandomSource>(
     for amplitude in &mut state.amplitudes {
         *amplitude = amplitude.scaled(1.0 / weight.sqrt());
     }
-    normalize(&mut state)?;
+    normalize(&mut state, 0)?;
     Ok((state, outcome))
 }
 
@@ -216,6 +220,7 @@ fn trajectory<R: RandomSource>(
             _ => {
                 // Share only deterministic numerical execution. Observations and
                 // branches above never construct an exhaustive ensemble.
+                let before = budget.remaining;
                 let mut next = execute_op(state, operation, limits, budget)?;
                 if next.len() != 1 {
                     return Err(SampleError::InconsistentVerifiedIr(
@@ -223,6 +228,7 @@ fn trajectory<R: RandomSource>(
                     ));
                 }
                 state = next.pop().expect("exactly one successor");
+                normalize(&mut state, before - budget.remaining)?;
             }
         }
     }
@@ -265,7 +271,7 @@ pub fn sample_closed<R: RandomSource>(
         limits,
         &mut budget,
     )?;
-    normalize(&mut state)?;
+    normalize(&mut state, 0)?;
     if !state.tokens.is_empty() || !state.axes.is_empty() {
         return Err(SampleError::InconsistentVerifiedIr(
             "live quantum output remains",
@@ -291,13 +297,26 @@ mod tests {
             let mut state = Component::vacuum();
             state.amplitudes[0].re = value;
             assert!(matches!(
-                normalize::<Infallible>(&mut state),
+                normalize::<Infallible>(&mut state, 0),
                 Err(SampleError::Numerical(_))
             ));
         }
         let mut state = Component::vacuum();
         state.amplitudes[0].re += f64::EPSILON;
-        normalize::<Infallible>(&mut state).unwrap();
+        normalize::<Infallible>(&mut state, 0).unwrap();
         assert_eq!(state.weight(), 1.0);
+    }
+
+    #[test]
+    fn norm_allowance_tracks_executed_work_and_remains_bounded() {
+        let mut state = Component::vacuum();
+        state.amplitudes[0].re += 2e-12;
+        assert!(normalize::<Infallible>(&mut state, 0).is_err());
+        normalize::<Infallible>(&mut state, 12_000).unwrap();
+        assert_eq!(state.weight(), 1.0);
+        for value in [0.0, f64::NAN, f64::INFINITY, 1.001] {
+            state.amplitudes[0].re = value;
+            assert!(normalize::<Infallible>(&mut state, 1_000_000).is_err());
+        }
     }
 }

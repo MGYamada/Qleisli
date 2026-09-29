@@ -1,0 +1,282 @@
+import Qleisli.HierarchicalFiniteEvaluation
+import QleisliKernel.Hierarchical.Wiring
+
+/-! Exact coefficients for computed, phase-free hierarchical wiring.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+P0 actual-body binding supported by P1 reusable routing algebra. The finite
+matrix sums here are proof-only; the executable inspector computes axis lists. -/
+
+namespace Qleisli.HierarchicalWiring
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalOperators HierarchicalSemantics
+open scoped BigOperators Matrix
+
+def select (axes : Wiring.Code) (input : Bits) : Bits :=
+  axes.map (fun i => input[i]?.getD false)
+
+def At (n : Nat) (axes : Wiring.Code) (op : Operator) : Prop :=
+  axes.length = n ∧ (∀ i ∈ axes, i < n) ∧ op.inputWidth = n ∧ op.outputWidth = n ∧
+    ∀ output input, output.length = n → input.length = n →
+      op.coefficient output input = if output = select axes input then 1 else 0
+
+theorem select_compose (first second : Wiring.Code) (input : Bits)
+    (inside : ∀ i ∈ second, i < first.length) :
+    select (second.map (QleisliKernel.Layout.indexAt first)) input = select second (select first input) := by
+  unfold select
+  rw [List.map_map]
+  apply List.map_congr_left
+  intro i member
+  simp [QleisliKernel.Layout.indexAt,List.getElem?_map,List.getElem?_eq_getElem (inside i member)]
+
+theorem select_tensor (m : Nat) (first second : Wiring.Code) (input : Bits)
+    (size : first.length = m) (inside : ∀ i ∈ first, i < m) :
+    select (Wiring.tensor first second) input =
+      select first (input.take m) ++ select second (input.drop m) := by
+  simp only [select,Wiring.tensor,List.map_append,List.map_map,size]
+  congr 1
+  · apply List.map_congr_left
+    intro i member
+    rw [List.getElem?_take_of_lt (inside i member)]
+  · apply List.map_congr_left
+    intro i member
+    simp [List.getElem?_drop]
+
+theorem ofFn_bits (n : Nat) (bits : Bits) (size : bits.length = n) :
+    List.ofFn (fun i : Fin n => bits[i.val]?.getD false) = bits := by
+  subst n
+  apply List.ext_getElem
+  · simp
+  · intro i left right
+    simp
+
+theorem identity_at (n : Nat) : At n (List.range n) (identity n) := by
+  refine ⟨by simp,by simp,rfl,rfl,?_⟩
+  intro output input ho hi
+  have selected : select (List.range n) input = input := by
+    simpa [select,hi] using range_select input
+  simp [identity,bounded,ho,hi,selected]
+
+theorem route_at (interface : Interface) (n : Nat) (axes : Wiring.Code)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (size : axes.length = n) (inside : ∀ i ∈ axes, i < n) :
+    At n axes (apply interface (.rewire axes) []) := by
+  refine ⟨size,inside,hi,ho,?_⟩
+  intro output input os ins
+  simp [apply,bounded,raw,select,hi,ho,os,ins]
+
+theorem compose_at (n : Nat) (a b : Wiring.Code) (first second : Operator)
+    (ha : At n a first) (hb : At n b second) :
+    At n (b.map (QleisliKernel.Layout.indexAt a)) (compose second first) := by
+  rcases first with ⟨fi,fo,fc⟩
+  rcases second with ⟨si,so,sc⟩
+  have fi_eq : fi = n := ha.2.2.1
+  have fo_eq : fo = n := ha.2.2.2.1
+  have si_eq : si = n := hb.2.2.1
+  have so_eq : so = n := hb.2.2.2.1
+  subst fi; subst fo; subst si; subst so
+  refine ⟨by simp [hb.1],?_,ha.2.2.1,hb.2.2.2.1,?_⟩
+  · intro i member
+    obtain ⟨j,hj,rfl⟩ := List.mem_map.mp member
+    have bound : j < a.length := by simpa [ha.1] using hb.2.1 j hj
+    simpa [QleisliKernel.Layout.indexAt,List.getElem?_eq_getElem bound] using
+      ha.2.1 a[j] (List.getElem_mem bound)
+  · intro output input ho hi
+    let chosen : Fin n → Bool := fun i => (select a input)[i.val]?.getD false
+    have chosen_eq : List.ofFn chosen = select a input :=
+      ofFn_bits n (select a input) (by simp [select,ha.1])
+    have input_eq (middle : Fin n → Bool) : List.ofFn middle = select a input ↔ middle = chosen := by
+      rw [← chosen_eq,List.ofFn_inj]
+    have first_coeff (middle : Fin n → Bool) :
+        fc (List.ofFn middle) input = if List.ofFn middle = select a input then 1 else 0 :=
+      ha.2.2.2.2 (List.ofFn middle) input (by simp) hi
+    simp only [compose,bounded,ho,hi,and_self,ite_true]
+    change (∑ middle : Fin n → Bool, sc output (List.ofFn middle) * fc (List.ofFn middle) input) = _
+    simp_rw [first_coeff,input_eq]
+    simp only [mul_ite,mul_one,mul_zero,Finset.sum_ite_eq',Finset.mem_univ,ite_true]
+    have last_coeff : sc output (List.ofFn chosen) =
+        if output = select b (List.ofFn chosen) then 1 else 0 :=
+      hb.2.2.2.2 output (List.ofFn chosen) ho (by simp)
+    rw [last_coeff,chosen_eq]
+    rw [select_compose a b input (by simpa [ha.1] using hb.2.1)]
+
+theorem tensor_at (interface : Interface) (m n : Nat) (a b : Wiring.Code) (first second : Operator)
+    (hi : width interface.inputs = m+n) (ho : width interface.outputs = m+n)
+    (ha : At m a first) (hb : At n b second) :
+    At (m+n) (Wiring.tensor a b) (apply interface .tensor [first,second]) := by
+  refine ⟨by simp [Wiring.tensor,ha.1,hb.1],?_,hi,ho,?_⟩
+  · intro i member
+    simp only [Wiring.tensor,List.mem_append,List.mem_map] at member
+    rcases member with left | ⟨j,hj,rfl⟩
+    · have := ha.2.1 i left; omega
+    · have := hb.2.1 j hj; rw [ha.1]; omega
+  · intro output input os ins
+    have ot : (output.take m).length = m := by simp [os]
+    have it : (input.take m).length = m := by simp [ins]
+    have od : (output.drop m).length = n := by simp [os]
+    have idrop : (input.drop m).length = n := by simp [ins]
+    have same : output = select a (input.take m) ++ select b (input.drop m) ↔
+        output.take m = select a (input.take m) ∧ output.drop m = select b (input.drop m) := by
+      constructor
+      · intro h
+        rw [h]
+        simp [select,ha.1]
+      · rintro ⟨ht,hd⟩
+        rw [← List.take_append_drop m output,ht,hd]
+    simp only [apply,bounded,raw,hi,ho,os,ins,and_self,ite_true,ha.2.2.1,ha.2.2.2.1]
+    rw [ha.2.2.2.2 _ _ ot it,hb.2.2.2.2 _ _ od idrop,
+      select_tensor m a b input ha.1 ha.2.1]
+    simp only [same]
+    split_ifs <;> simp_all
+
+def tag : Wiring.Operation → Tag
+  | .route axes => .rewire axes
+  | .sequence => .sequence
+  | .tensor => .tensor
+
+theorem project_code (d : Definition) (node : Wiring.Node)
+    (found : Wiring.project d = some node) :
+    physicalCode d = some (tag node.operation,node.children) := by
+  cases body : d.body <;> simp [Wiring.project,body] at found <;>
+    subst node <;> simp [physicalCode,body,tag]
+
+theorem fold_at (n : Nat) (codes : List Wiring.Code) (ops : List Operator)
+    (ready : List.Forall₂ (fun code op => At code.length code op) codes ops)
+    (start result : Wiring.Code) (initial : Operator) (initialAt : At n start initial)
+    (computed : codes.foldlM Wiring.compose start = some result) :
+    At n result (ops.foldl (fun before after => compose after before) initial) := by
+  induction ready generalizing start initial with
+  | nil => cases Option.some.inj computed; exact initialAt
+  | @cons code op codes ops head tail ih =>
+    cases hc : Wiring.compose start code with
+    | none => simp [List.foldlM,hc] at computed
+    | some next =>
+      have rest : codes.foldlM Wiring.compose next = some result := by
+        simpa [List.foldlM,hc] using computed
+      unfold Wiring.compose at hc
+      split at hc
+      next sizes =>
+        cases Option.some.inj hc
+        have child : At n code op := by simpa [← sizes,initialAt.1] using head
+        exact ih _ _ (compose_at n start code initial op initialAt child) rest
+      next impossible => contradiction
+
+theorem eval_at (interface : Interface) (n : Nat) (operation : Wiring.Operation)
+    (codes : List Wiring.Code) (ops : List Operator) (axes : Wiring.Code)
+    (ready : List.Forall₂ (fun code op => At code.length code op) codes ops)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (computed : Wiring.eval n operation codes = some axes)
+    (checked : Wiring.valid n axes = true) : At n axes (apply interface (tag operation) ops) := by
+  obtain ⟨_,size,inside⟩ := Wiring.valid_fields n axes checked
+  cases operation with
+  | route route =>
+    cases ready with
+    | nil =>
+      have same : route = axes := Option.some.inj computed
+      subst route
+      exact route_at interface n axes hi ho size inside
+    | cons => simp [Wiring.eval] at computed
+  | sequence =>
+    have folded := fold_at n codes ops ready (List.range n) axes (identity n) (identity_at n) computed
+    refine ⟨folded.1,folded.2.1,hi,ho,?_⟩
+    intro output input os ins
+    simpa [apply,bounded,raw,tag,hi,ho,os,ins,HierarchicalOperators.sequence] using folded.2.2.2.2 output input os ins
+  | tensor =>
+    cases ready with
+    | nil => simp [Wiring.eval] at computed
+    | @cons a first codes ops ha rest =>
+      cases rest with
+      | nil => simp [Wiring.eval] at computed
+      | @cons b second codes ops hb rest =>
+        cases rest with
+        | cons => simp [Wiring.eval] at computed
+        | nil =>
+          have same : Wiring.tensor a b = axes := Option.some.inj computed
+          subst axes
+          have dimension : n = a.length+b.length := by simpa [Wiring.tensor] using size.symm
+          rw [dimension] at hi ho ⊢
+          exact tensor_at interface a.length b.length a b first second hi ho ha hb
+
+open HierarchicalFiniteEvaluation
+
+theorem children_evaluate (leaves : Leaves Operator) (artifact : Artifact) (cache : Wiring.Cache)
+    (ready : ∀ index code, (cache[index]?).bind id = some code →
+      ∃ fuel op, physical algebra leaves artifact fuel index = some op ∧ At code.length code op)
+    (indices : List Nat) (codes : List Wiring.Code)
+    (computed : indices.mapM (fun i => (cache[i]?).bind id) = some codes) :
+    ∃ fuel ops, indices.mapM (physical algebra leaves artifact fuel) = some ops ∧
+      List.Forall₂ (fun code op => At code.length code op) codes ops := by
+  induction indices generalizing codes with
+  | nil =>
+    have same : codes = [] := by simpa using computed.symm
+    subst codes
+    exact ⟨0,[],rfl,.nil⟩
+  | cons index rest ih =>
+    rw [List.mapM_cons] at computed
+    change (((cache[index]?).bind id).bind (fun code =>
+      (rest.mapM (fun i => (cache[i]?).bind id)).bind (fun tail => some (code::tail)))) = some codes at computed
+    cases lookup : (cache[index]?).bind id with
+    | none => simp only [lookup,Option.bind_none] at computed; contradiction
+    | some code =>
+      rw [lookup] at computed
+      simp only [Option.bind_some] at computed
+      cases tail : rest.mapM (fun i => (cache[i]?).bind id) with
+      | none => simp only [tail,Option.bind_none] at computed; contradiction
+      | some following =>
+        have same : codes = code::following := by
+          simpa only [tail,Option.bind_some,Option.some.injEq] using computed.symm
+        subst codes
+        obtain ⟨firstFuel,op,first,firstAt⟩ := ready index code lookup
+        obtain ⟨tailFuel,ops,following,followingAt⟩ := ih _ tail
+        let fuel := firstFuel+tailFuel
+        have firstMore := evaluate_more algebra (definition leaves artifact) firstFuel index op first fuel (by dsimp [fuel]; omega)
+        change HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel index = some op at firstMore
+        have tailMore := HierarchicalEvaluation.mapM_congr_success rest
+          (physical algebra leaves artifact tailFuel) (physical algebra leaves artifact fuel) ops following
+          (fun child _ value evaluated =>
+            evaluate_more algebra (definition leaves artifact) tailFuel child value evaluated fuel (by dsimp [fuel]; omega))
+        exact ⟨fuel,op::ops,by simp only [List.mapM_cons,firstMore,tailMore,bind,Option.bind,pure],
+          .cons firstAt followingAt⟩
+
+theorem derives_evaluates (leaves : Leaves Operator) (artifact : Artifact) (index : Nat) (axes : Wiring.Code)
+    (derived : Wiring.Derives artifact index axes) :
+    ∃ fuel op, physical algebra leaves artifact fuel index = some op ∧ At axes.length axes op := by
+  induction derived with
+  | node index d cache axes found _ computed ih =>
+    obtain ⟨node,codes,projected,children,evaluated,_,_,widths,valid⟩ :=
+      Wiring.summarize_fields cache d axes computed
+    obtain ⟨fuel,ops,actual,ready⟩ := children_evaluate leaves artifact cache ih node.children codes children
+    have result := eval_at d.interface (width d.interface.inputs) node.operation codes ops axes ready rfl widths evaluated valid
+    refine ⟨fuel+1,apply d.interface (tag node.operation) ops,?_,?_⟩
+    · rw [physical_step algebra leaves artifact fuel index d (tag node.operation) node.children found
+        (project_code d node projected),actual]
+      rfl
+    · simpa [result.1] using result
+
+theorem inspect_evaluates (leaves : Leaves Operator) (artifact : Artifact) (order : Array Nat)
+    (remaining : Nat) (state : Wiring.State) (index : Nat) (axes : Wiring.Code)
+    (accepted : Wiring.inspect artifact order remaining = .ok state)
+    (found : (state.cache[index]?).bind id = some axes) :
+    ∃ fuel op, physical algebra leaves artifact fuel index = some op ∧ At axes.length axes op :=
+  derives_evaluates leaves artifact index axes ((Wiring.inspect_sound artifact order remaining state accepted).1 index axes found)
+
+/-- Full complex joint amplitudes, independent of the fuel witnessing actual
+physical evaluation. No product-state or probability-only premise is used. -/
+theorem inspect_joint_amplitude (leaves : Leaves Operator) (artifact : Artifact) (order : Array Nat)
+    (remaining : Nat) (state : Wiring.State) (index : Nat) (axes : Wiring.Code)
+    (accepted : Wiring.inspect artifact order remaining = .ok state)
+    (found : (state.cache[index]?).bind id = some axes)
+    (fuel : Nat) (actual : Operator)
+    (evaluated : physical algebra leaves artifact fuel index = some actual)
+    {R : Type} (joint : (Fin axes.length → Bool) → R → ℂ) (reference : R)
+    (output : Fin axes.length → Bool) :
+    (∑ input, matrixAt axes.length axes.length actual output input * joint input reference) =
+      ∑ input, (if List.ofFn output = select axes (List.ofFn input) then (1 : ℂ) else 0) *
+        joint input reference := by
+  obtain ⟨otherFuel,op,other,ready⟩ := inspect_evaluates leaves artifact order remaining state index axes accepted found
+  have same := evaluate_unique algebra (definition leaves artifact) otherFuel fuel index op actual other evaluated
+  subst actual
+  apply Finset.sum_congr rfl
+  intro input _
+  rw [matrixAt,ready.2.2.2.2 _ _ (by simp) (by simp)]
+
+end Qleisli.HierarchicalWiring

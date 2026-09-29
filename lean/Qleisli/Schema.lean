@@ -9,6 +9,11 @@ External IR projection, provider evidence and transport remain separate. -/
 namespace Qleisli.Schema
 open scoped BigOperators Matrix
 
+/-- temporary (TP-005), importance P1: Current pinned QFT component theorem. Replacement: full
+hierarchical Fourier acceptance including actual reversal, H binding, exact
+phase and both inverse laws. Retire only after QPE callers and the exported
+registry type migrate, with public API compatibility review. Keep this theorem
+built/audited and the external schema disabled until its binding gates pass. -/
 theorem qft_sound (width : Nat) (proposal : QleisliKernel.Schema.Proposal)
     (receipt : QleisliKernel.Schema.Receipt)
     (accepted : QleisliKernel.Schema.check (.qft width) proposal = some receipt)
@@ -34,7 +39,7 @@ theorem qft_sound (width : Nat) (proposal : QleisliKernel.Schema.Proposal)
   exact ⟨_, meaning, unitary.1, unitary.2,
     QftGraph.check_fourier definitions entry width circuit checked _ meaning⟩
 
-/-- temporary (TP-003): legacy basis-conditioned dispatcher conclusion.
+/-- temporary (TP-003), importance P2: legacy basis-conditioned dispatcher conclusion.
 The registry already uses `power_coherent_sound`; retire this wrapper after
 public-API compatibility review. Keep the underlying action lemmas used by QPE. -/
 theorem power_sound {S : Type} (operation : Nat → S → S)
@@ -86,6 +91,13 @@ theorem power_coherent_sound {T R : Type} [Fintype T] [DecidableEq T]
     ControlledPowers.checked_single_native operations exponent provider stage checked,
     ControlledPowers.checked_single_reference operations exponent provider stage checked⟩
 
+/-- temporary (TP-006), importance P1: Current pinned QPE component theorem. Replacement: full
+hierarchical instrument acceptance binding actual preparation, verified
+provider/control access, inverse QFT and measurement, with the same branches,
+complete trace/reference result and boundary/freshness obligations. Retire only
+after callers and the exported registry type migrate, with public API review.
+Keep this theorem built/audited and the external schema disabled until its
+binding gates pass. -/
 theorem qpe_sound {R : Type} [Fintype R] [DecidableEq R]
     (targetWidth precision provider : Nat)
     (operations : Nat → Matrix (Fin (2^targetWidth)) (Fin (2^targetWidth)) ℂ)

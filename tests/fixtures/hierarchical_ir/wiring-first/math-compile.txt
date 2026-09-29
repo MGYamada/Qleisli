@@ -1,0 +1,14 @@
+Qleisli/HierarchicalWiring.lean:47:2: error: Type mismatch: After simplification, term
+  List.ofFn_getElem
+ has type
+  (List.ofFn fun i => bits[↑i]) = bits
+but is expected to have type
+  (List.ofFn fun i => bits[↑i]?.getD false) = bits
+Qleisli/HierarchicalWiring.lean:80:33: error: Function expected at
+  List.length_ofFn
+but this term has type
+  (List.ofFn ?m.151).length = ?m.149
+
+Note: Expected a function because this term is being applied to the argument
+  _
+Qleisli/HierarchicalWiring.lean:80:13: error: `simp` made no progress

@@ -1,0 +1,22 @@
+//! Desired explicit bit-segment adapters; not yet executable source.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+//! The first output field occupies the low axes. No bit reversal is implied.
+
+pub unitary fn split_register[static n: Nat, static m: Nat](q: Q<Bits<n+m>>)
+    -> Q<(Bits<n>, Bits<m>)> {
+    reshape::<(Bits<n>, Bits<m>)>(q)
+}
+
+pub unitary fn merge_register[static n: Nat, static m: Nat](q: Q<(Bits<n>, Bits<m>)>)
+    -> Q<Bits<n+m>> {
+    reshape::<Bits<n+m>>(q)
+}
+
+pub unitary fn peel_low[static n: Nat](q: Q<Bits<n+1>>) -> Q<(Bit, Bits<n>)> {
+    reshape::<(Bit, Bits<n>)>(q)
+}
+
+pub unitary fn split_doubled[static n: Nat](q: Q<Bits<2*n>>)
+    -> Q<(Bits<n>, Bits<n>)> {
+    reshape::<(Bits<n>, Bits<n>)>(q)
+}

@@ -1,8 +1,8 @@
-use qleisli_core::frontend::ast::{
+use qleisli::frontend::ast::{
     BasisExprKind, ExprKind, FnBody, FnKind, PatternKind, StmtKind, TypeKind,
 };
-use qleisli_core::frontend::parser::parse_module;
-use qleisli_core::frontend::{ast::Span, lexer::lex};
+use qleisli::frontend::parser::parse_module;
+use qleisli::frontend::{ast::Span, lexer::lex};
 
 fn check_token_prefixes(source: &str, label: &str) {
     parse_module(source).unwrap_or_else(|error| panic!("{label}: {error}"));

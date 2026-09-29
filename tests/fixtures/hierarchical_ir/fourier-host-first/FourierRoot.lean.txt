@@ -1,0 +1,201 @@
+import QleisliKernel.Hierarchical.FourierBody
+import QleisliKernel.Hierarchical.Wiring
+import QleisliKernel.Hierarchical.Conditional
+
+/-! Bind the actual outer QFT circuit to an independently requested Fourier width
+and complete interface. Copyright 2026 Masahiko G. Yamada.
+SPDX-License-Identifier: Apache-2.0
+P0 acceptance component. Complete artifact typing and the returned full-byte H
+obligations remain mandatory; this inspector alone does not issue evidence. -/
+
+namespace QleisliKernel.Hierarchical.FourierRoot
+open Artifact
+
+/-- Positive-sign, little-endian Fourier transform, with explicit final reversal.
+The request is supplied independently of the proposed artifact. -/
+structure Request where
+  width : Nat
+  interface : Interface
+  deriving Repr
+
+structure Shell where
+  enter : Nat
+  body : Nat
+  suffix : List Nat
+  deriving Repr
+
+def project (d : Definition) : Option Shell := match d.body with
+  | .sequence children => match children.toList with
+    | enter::body::suffix => some ⟨enter,body,suffix⟩
+    | _ => none
+  | _ => none
+
+def arity (d : Definition) : Nat := match d.body with
+  | .sequence children => children.size
+  | _ => 0
+
+def aligned (request : Request) (d : Definition) : Bool :=
+  decide (d.effect = Effect.unitary) && d.interface == request.interface &&
+    NodeTyping.quantumOnly d.interface &&
+    (wires d.interface.inputs).size == request.width &&
+    (wires d.interface.outputs).size == request.width
+
+def scan (request : Request) (d : Definition) : Nat :=
+  64 + request.interface.scan + d.interface.scan + arity d
+
+def charge (request : Request) (d : Definition) : Nat :=
+  scan request d + 8 * (request.interface.charge + d.interface.charge) +
+    16 * (1 + arity d) * (1 + request.width)
+
+def routes (width : Nat) (shell : Shell) (cache : Wiring.Cache) : Option (List Wiring.Code) := do
+  let enter ← (cache[shell.enter]?).bind id
+  let codes ← shell.suffix.mapM (fun i => (cache[i]?).bind id)
+  let suffix ← codes.foldlM Wiring.compose (List.range width)
+  if enter == List.range width && suffix == (List.range width).reverse then some codes else none
+
+structure Pending where
+  body : FourierBody.Pending
+  wiring : Wiring.State
+  codes : List Wiring.Code
+  visits : Nat
+  deriving Repr
+
+/-- Inspect the actual entry. The untrusted order schedules only the phase-free
+enter/suffix; every required root must be present in the freshly computed cache.
+All scans, body inspection and wiring share one remaining structural budget. -/
+def inspect (artifact : Artifact) (request : Request) (order : Array Nat)
+    (remaining : Nat) : Except Error Pending :=
+  if remaining > 2000000 || request.width = 0 || request.width > 8 then .error .limit else
+  match artifact.definitions[artifact.entry.implementation]? with
+  | none => .error .invalidIr
+  | some d =>
+    if arity d < 3 || arity d > 16 || scan request d > remaining then .error .limit else
+    let cost := charge request d
+    if cost > remaining then .error .limit else
+    if !aligned request d then .error .contract else
+    match project d with
+    | none => .error .contract
+    | some shell =>
+      match FourierBody.inspect artifact request.width request.width shell.body (remaining-cost) with
+      | .error e => .error e
+      | .ok body =>
+        match Wiring.inspect artifact order (remaining-cost-body.visits) with
+        | .error e => .error e
+        | .ok wiring =>
+          match routes request.width shell wiring.cache with
+          | none => .error .contract
+          | some codes => .ok ⟨body,wiring,codes,cost+body.visits+wiring.visits⟩
+
+theorem aligned_fields (request : Request) (d : Definition) (checked : aligned request d = true) :
+    d.effect = Effect.unitary ∧ d.interface = request.interface ∧
+      NodeTyping.quantumOnly d.interface = true ∧
+      (wires d.interface.inputs).size = request.width ∧
+      (wires d.interface.outputs).size = request.width := by
+  simpa only [aligned,Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq,and_assoc] using checked
+
+theorem project_body (d : Definition) (shell : Shell) (found : project d = some shell) :
+    d.body = .sequence (shell.enter::shell.body::shell.suffix).toArray := by
+  cases body : d.body <;> simp [project,body] at found
+  next children =>
+    split at found
+    next enter middle suffix same =>
+      cases Option.some.inj found
+      simpa using congrArg (fun xs : List Nat => Body.sequence xs.toArray) same
+    next impossible => contradiction
+
+theorem routes_fields (width : Nat) (shell : Shell) (cache : Wiring.Cache) (codes : List Wiring.Code)
+    (checked : routes width shell cache = some codes) :
+    (cache[shell.enter]?).bind id = some (List.range width) ∧
+      shell.suffix.mapM (fun i => (cache[i]?).bind id) = some codes ∧
+      codes.foldlM Wiring.compose (List.range width) = some (List.range width).reverse := by
+  unfold routes at checked
+  simp only [bind,Option.bind] at checked
+  repeat (split at checked <;> (try dsimp only at checked) <;> (try contradiction))
+  all_goals
+    cases Option.some.inj checked
+    simp only [Bool.and_eq_true,beq_iff_eq] at *
+    exact ⟨by simp_all [Option.bind],by assumption,by simp_all⟩
+
+theorem inspect_conditions (artifact : Artifact) (request : Request) (order : Array Nat)
+    (remaining : Nat) (pending : Pending)
+    (accepted : inspect artifact request order remaining = .ok pending) :
+    pending.visits ≤ remaining ∧ remaining ≤ 2000000 ∧ 1 ≤ request.width ∧ request.width ≤ 8 ∧
+    ∃ d shell, artifact.definitions[artifact.entry.implementation]? = some d ∧
+      project d = some shell ∧ aligned request d = true ∧
+      FourierBody.inspect artifact request.width request.width shell.body
+        (remaining-charge request d) = .ok pending.body ∧
+      Wiring.inspect artifact order (remaining-charge request d-pending.body.visits) = .ok pending.wiring ∧
+      routes request.width shell pending.wiring.cache = some pending.codes := by
+  unfold inspect at accepted
+  split at accepted
+  next exceeded => contradiction
+  next bounded =>
+    simp only [Bool.or_eq_true,decide_eq_true_eq,not_or] at bounded
+    split at accepted
+    next absent => contradiction
+    next d found =>
+      split at accepted
+      next exceeded => contradiction
+      next scanned =>
+        dsimp only at accepted
+        split at accepted
+        next exceeded => contradiction
+        next costBound =>
+          split at accepted
+          next invalid => contradiction
+          next header =>
+            have header : aligned request d = true := by simpa using header
+            split at accepted
+            next absent => contradiction
+            next shell projected =>
+              split at accepted
+              next failed => contradiction
+              next body bodyChecked =>
+                split at accepted
+                next failed => contradiction
+                next wiring wiringChecked =>
+                  split at accepted
+                  next absent => contradiction
+                  next codes checked =>
+                    cases Except.ok.inj accepted
+                    have bb := (FourierBody.inspect_sound artifact request.width request.width shell.body
+                      (remaining-charge request d) body bodyChecked).1
+                    have wb := (Wiring.inspect_sound artifact order
+                      (remaining-charge request d-body.visits) wiring wiringChecked).2.1
+                    refine ⟨?_,by omega,by omega,by omega,d,shell,found,projected,header,
+                      bodyChecked,wiringChecked,checked⟩
+                    change charge request d + body.visits + wiring.visits ≤ remaining
+                    omega
+
+structure Checked where
+  artifact : Conditional.Pending
+  binding : Pending
+
+/-- A single entry point performs complete artifact checking before the named
+Fourier inspection. Neither caller-provided typed flags nor reset budgets occur. -/
+def checkAll (artifact : Artifact) (order : Array Nat) (request : Request)
+    (wiringOrder : Array Nat) : Except Derivation.Failure Checked := do
+  let checked ← Conditional.checkAll artifact order
+  let binding ← match inspect artifact request wiringOrder (2000000-checked.state.visits) with
+    | .error kind => .error ⟨kind,none⟩
+    | .ok pending => .ok pending
+  return ⟨checked,binding⟩
+
+theorem checkAll_conditions (artifact : Artifact) (order : Array Nat) (request : Request)
+    (wiringOrder : Array Nat) (checked : Checked)
+    (accepted : checkAll artifact order request wiringOrder = .ok checked) :
+    Conditional.checkAll artifact order = .ok checked.artifact ∧
+      inspect artifact request wiringOrder (2000000-checked.artifact.state.visits) = .ok checked.binding := by
+  unfold checkAll at accepted
+  cases ha : Conditional.checkAll artifact order with
+  | error e => simp [ha,bind,Except.bind] at accepted
+  | ok pending =>
+    simp only [ha,bind,Except.bind] at accepted
+    cases hb : inspect artifact request wiringOrder (2000000-pending.state.visits) with
+    | error e => simp [hb] at accepted
+    | ok binding =>
+      have same : (⟨pending,binding⟩ : Checked) = checked := by simpa [hb,pure,Except.pure] using accepted
+      subst checked
+      exact ⟨rfl,hb⟩
+
+end QleisliKernel.Hierarchical.FourierRoot

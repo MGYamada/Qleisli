@@ -249,13 +249,19 @@ def render_status(root: Path) -> str:
     if set(data) != {"format", "release_state", "milestones", "inventory"} or data["format"] != 1:
         raise ValueError("unsupported project-status format or fields")
     versions = []
-    for manifest in ["Cargo.toml", "lean/lakefile.toml", "lean-kernel/lakefile.toml"]:
+    for manifest in ["Cargo.toml", "lean/lakefile.toml", "lean-kernel/lakefile.toml", "python/pyproject.toml"]:
         match = re.search(r'^version = "([^"]+)"$', (root / manifest).read_text(), re.MULTILINE)
         if not match:
             raise ValueError(f"missing project version in {manifest}")
         versions.append(match[1])
     if len(set(versions)) != 1:
-        raise ValueError("Rust and Lean project versions differ")
+        raise ValueError("Rust, Lean and Python project versions differ")
+    python_version = re.search(r'^__version__ = "([^"]+)"$', (root / "python/qleisli/__init__.py").read_text(), re.MULTILINE)
+    if python_version is None or python_version[1] != versions[0]:
+        raise ValueError("Python runtime version differs from project manifests")
+    for notice in ["LICENSE", "NOTICE"]:
+        if (root / "python" / notice).read_bytes() != (root / notice).read_bytes():
+            raise ValueError(f"Python package {notice} differs from repository {notice}")
 
     def cell(value):
         if not isinstance(value, str) or not value.strip() or "\n" in value or "\r" in value:

@@ -1,10 +1,10 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{check_project, compile_project};
-use qleisli_core::frontend::documentation::{DocStyle, render_markdown};
-use qleisli_core::frontend::lexer::lex;
-use qleisli_core::frontend::parser::{parse_documented_module, parse_module};
+use qleisli::frontend::compile::{check_project, compile_project};
+use qleisli::frontend::documentation::{DocStyle, render_markdown};
+use qleisli::frontend::lexer::lex;
+use qleisli::frontend::parser::{parse_documented_module, parse_module};
 
 #[test]
 fn rust_style_docs_attach_to_modules_imports_and_functions_in_source_order() {

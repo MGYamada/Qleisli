@@ -203,7 +203,7 @@ theorem controlled_sign_visible :
 
 end Examples
 
-/-- temporary (TP-001): use `HierarchicalEvaluation.checkAll_operator` with
+/-- temporary (TP-001), importance P2: use `HierarchicalEvaluation.checkAll_operator` with
 constructed denotations. Retire after callers migrate and public-API review. -/
 theorem checkAll_operator (artifact : Artifact) (order : Array Nat)
     (checked : Derivation.Checked) (accepted : Derivation.checkAll artifact order = .ok checked)
@@ -212,7 +212,7 @@ theorem checkAll_operator (artifact : Artifact) (order : Array Nat)
     operations proof.implementation = meanings proof.meaning :=
   HierarchicalSemantics.checkAll_sound algebra artifact order checked accepted operations meanings environment proof found
 
-/-- temporary (TP-001): use `HierarchicalEvaluation.checkAll_matrix` with
+/-- temporary (TP-001), importance P2: use `HierarchicalEvaluation.checkAll_matrix` with
 constructed denotations. Retire after callers migrate and public-API review. -/
 theorem checkAll_matrix (artifact : Artifact) (order : Array Nat)
     (checked : Derivation.Checked) (accepted : Derivation.checkAll artifact order = .ok checked)
@@ -223,7 +223,7 @@ theorem checkAll_matrix (artifact : Artifact) (order : Array Nat)
       matrixAt inputWidth outputWidth (meanings proof.meaning) := by
   rw [checkAll_operator artifact order checked accepted operations meanings environment proof found]
 
-/-- temporary (TP-001): retire this environment-based entry bridge after
+/-- temporary (TP-001), importance P2: retire this environment-based entry bridge after
 its independently requested power conclusion uses constructed denotations and
 public-API compatibility is reviewed. The provider equation formerly assumed by the direct controlled-power
 bridge now follows from the actual accepted premise derivation. Interpretation
@@ -247,7 +247,7 @@ theorem powerEntry_operators (artifact : Artifact) (order : Array Nat) (exponent
     inspected (fun index => matrixAt n n (operations index)) (fun index => matrixAt n n (meanings index))
     (congrArg (matrixAt n n) equation)
 
-/-- temporary (TP-001): use `HierarchicalEvaluation.checkAll_reference`;
+/-- temporary (TP-001), importance P2: use `HierarchicalEvaluation.checkAll_reference`;
 retire after callers migrate and public-API review. The entire joint output agrees for every reference system and input matrix,
 including off-diagonal coherences. No separability premise is imposed. -/
 theorem checkAll_reference {R : Type} [Fintype R] [DecidableEq R]

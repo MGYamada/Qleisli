@@ -1,0 +1,89 @@
+import Qleisli.HierarchicalDiagonal
+import QleisliKernel.Hierarchical.Gradient
+
+/-! Actual recursive phase-gradient inspection implies exact complex semantics.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+No whole-graph interpretation or producer matrix is assumed. This component
+is not yet the complete named Fourier schema or a production authority gate. -/
+
+namespace Qleisli.HierarchicalGradient
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalSemantics HierarchicalOperators HierarchicalUnitary HierarchicalDiagonal
+open scoped BigOperators Matrix
+
+/-- Independent little-endian integer interpretation. Peel the highest axis;
+this is arithmetic on basis labels, not a circuit evaluator. -/
+def number : (n : Nat) → (Fin n → Bool) → Nat
+  | 0, _ => 0
+  | n+1, bits => number n (fun i => bits i.castSucc) +
+      if bits (Fin.last n) then 2^n else 0
+
+theorem phase_add (a b precision : Nat) :
+    phase (a+b) precision = phase a precision * phase b precision := by
+  unfold phase
+  rw [← Complex.exp_add]
+  congr 1
+  push_cast
+  ring
+
+theorem phase_axis (precision n : Nat) (enough : n ≤ precision) :
+    phase 1 (precision-n) = phase (2^n) precision := by
+  have h := phase_precision 1 precision (precision-n) (by omega)
+  rw [phase_power] at h
+  simpa [Nat.sub_sub_self enough] using h.symm
+
+theorem tensor_bit_at (interface : Interface) (n : Nat) (first second : Operator)
+    (a : Bool → ℂ) (b : (Fin n → Bool) → ℂ)
+    (hi : width interface.inputs = n+1) (ho : width interface.outputs = n+1)
+    (ha : At 1 first (fun bits => a (bits 0))) (hb : At n second b) :
+    At (n+1) (apply interface .tensor [first,second])
+      (fun bits => a (bits 0) * b (fun i => bits i.succ)) := by
+  refine ⟨hi,ho,?_⟩
+  ext output input
+  have left := congrFun (congrFun ha.2.2 (fun _ => output 0)) (fun _ => input 0)
+  have right := congrFun (congrFun hb.2.2 (fun i => output i.succ)) (fun i => input i.succ)
+  simp only [matrixAt, List.ofFn_succ, List.ofFn_zero] at left
+  simp only [matrixAt] at right
+  simp only [matrixAt,apply,bounded,raw,hi,ho,List.length_ofFn,and_self,ite_true,
+    ha.1,ha.2.1,List.ofFn_succ,List.take_succ_cons,List.take_zero,List.drop_succ_cons,
+    List.drop_zero,left,right,Matrix.diagonal_apply]
+  by_cases same : output = input
+  · subst output
+    simp
+  · have differing : output 0 ≠ input 0 ∨
+        (fun i : Fin n => output i.succ) ≠ (fun i : Fin n => input i.succ) := by
+      by_contra h
+      simp only [not_or,not_not] at h
+      apply same
+      funext i
+      exact Fin.cases h.1 (fun j => congrFun h.2 j) i
+    rcases differing with head | tail <;> simp_all
+
+theorem route_head (n : Nat) (bits : Fin (n+1) → Bool) :
+    axisEquiv (Gradient.routing n) bits 0 = bits (Fin.last n) := by
+  simp [axisEquiv,QleisliKernel.Layout.reindex,Gradient.high_zero]
+
+theorem route_tail (n : Nat) (bits : Fin (n+1) → Bool) :
+    (fun i : Fin n => axisEquiv (Gradient.routing n) bits i.succ) =
+      (fun i => bits i.castSucc) := by
+  funext i
+  simp [axisEquiv,QleisliKernel.Layout.reindex,Gradient.high_succ n i i.isLt]
+
+theorem register_widths (d : Definition) (n : Nat) (valid : Gradient.register d n = true) :
+    width d.interface.inputs = n ∧ width d.interface.outputs = n := by
+  simp only [Gradient.register,Bool.and_eq_true,beq_iff_eq] at valid
+  exact ⟨valid.2,by rw [← valid.1.1.2]; exact valid.2⟩
+
+theorem bit_widths (d : Definition) (owner : Nat) (valid : Gradient.bit d owner = true) :
+    width d.interface.inputs = 1 ∧ width d.interface.outputs = 1 ∧ ownerAxis d.interface owner = 0 := by
+  unfold Gradient.bit at valid
+  cases hp : d.interface.inputs.quantum[0]? with
+  | none => simp [hp] at valid
+  | some p =>
+    simp only [hp,bind,Option.bind,pure,Option.pure,Option.getD_some,
+      Bool.and_eq_true,beq_iff_eq] at valid
+    obtain ⟨⟨⟨_,_⟩,closed⟩,⟨⟨⟨ports,_⟩,ownerEq⟩,axes⟩⟩ := valid
+    have hi : width d.interface.inputs = 1 := by simp [width,wires,ports,axes]
+    exact ⟨hi,by rw [← closed]; exact hi,by simp [ownerAxis,ports,ownerEq]⟩
+
+end Qleisli.HierarchicalGradient

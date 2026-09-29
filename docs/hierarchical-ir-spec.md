@@ -97,6 +97,107 @@ not executable host expressions. The source compiler may share a parameterized
 family template but must emit checked instantiations in the artifact. This
 profile makes no claim of accepting unbounded type-level arithmetic.
 
+### External field encoding and reconstruction host
+
+An interface is exactly `{inputs,outputs}`; a side is `{quantum,classical}`.
+Quantum ports are `{owner,basis,axes}` and classical ports `{value,basis}`.
+`basis` is a prefix array of `{tag:"unit"}`, `{tag:"bit"}`,
+`{tag:"bits",width}` or `{tag:"tuple",arity}`. This retains complete tree
+shape and zero-width owners. Node and rule objects use a `tag` field plus
+exactly their listed operands; effects and table names are lowercase strings.
+Meaning records are `{interface,body}`; encodings are `{logical,physical,body}`.
+Port maps are `{owners,axes,classical}`. A structural operation is a tagged
+object; `take_bit`/`put_bit` carry `width,position` and the other forms have no
+operands. Proof witness fields are `{template_version,parameters,references}`,
+with references `{table,index}`. A schema rule additionally has `id`.
+The entry is `{implementation,proof}`. All numeric wire fields are u32.
+
+Finite `program` and `description` fields are JSON strings whose decoded UTF-8
+bytes contain the complete QIRF and exact finite matrix description. Their
+embedded whitespace is preserved. Parsing the outer string does not execute
+or validate its contents. Every object rejects unknown, missing or duplicate
+fields; no evidence flag, cache or replacement theorem is a valid field.
+
+The additive [Rust reconstruction host](../src/interchange/hierarchical.rs) first decodes this external data and
+proposes a dependency schedule. A fresh invocation of the selected audited
+Lean runtime receives the complete artifact over a private bounded binary
+bridge and runs the actual `Conditional.checkAll`. It returns pending finite
+proof indices, never a serialized evidence handle. The host projects each
+index from the same retained immutable artifact and freshly checks its complete
+finite program, meaning and required boundary with one shared exact budget.
+It retains both outer artifact bytes and reconstructed leaves.
+`Kernel::new(executable)` selects the trusted native dependency explicitly;
+`Kernel::inspect(payload)` invokes that executable afresh and accepts no
+caller-supplied runtime response. Process I/O is bounded, with a 60-second host
+deadline and at most 1,100,000 response bytes. Failures return no partial
+`Reconstructed` report. The public report exposes retained bytes, checked leaves
+and structural/exact work, without a `VerifiedProgram` conversion.
+
+This inspection result does not establish an independently requested root
+contract and is not a production `VerifiedProgram`. All external schema rules
+remain disabled. The remaining profile and production integration must be completed
+before production hierarchy acceptance. The private bridge uses length-prefixed
+little-endian u32 fields and byte strings, a 64 MiB framing bound and one million
+bounded reads. It adds no external capacity or checker rule. Its decoder and
+native compilation remain explicit correspondence obligations outside the pure
+kernel. The [host packet](../tests/fixtures/hierarchical_ir/host-packet.md)
+records the independent reconstruction and mutation experiment.
+
+### Independently requested roots
+
+A separate version-one request is exactly
+`{format:"qleisli.hierarchy-request",version:1,profile:"qpe-dyadic8-v1",
+kind,effect,interface,meanings,entry}`. It uses the same complete interface,
+meaning and scalar formats; `entry` indexes the request's own meaning table.
+The caller supplies this required contract independently. Artifact annotations
+must never populate missing request fields or replace them. The physical root
+interface/effect and actual proof kind must match the request exactly, including
+all owner/value IDs, axis order, type trees and empty owners.
+
+The root matcher compares a rooted graph of actual/requested node pairs.
+Table numbering and sharing may differ in either direction. Every pair checks
+complete interfaces, the constructor and all non-reference parameters, and
+corresponding ordered children. The proposed pair graph must be acyclic, rooted
+at pair zero and completely reachable, and cover the complete requested table.
+Pair zero must name the actual entry proof's meaning and requested entry.
+Checking consumes the same two-million-unit structural allowance as artifact
+checking. No arbitrary algebraic normalization, implicit type conversion or
+change in operation order is admitted by root matching.
+
+Finite meaning pairs retain both complete description byte strings. They
+create explicit obligations for equality of their independently decoded exact
+matrices, allowing different JSON whitespace without dropping scalar phase.
+The host discharges every obligation under the same ten-million-unit exact
+budget as finite implementation reconstruction. The mathematical theorem stays
+conditional on the existing finite-reader/Rust correspondence. A valid artifact
+whose implementation and declared meaning were changed together still fails a
+different independently requested contract. The [root-request packet](../tests/fixtures/hierarchical_ir/root-request-packet.md)
+records the checking and proof experiment.
+
+The additive `Kernel::check_against(payload, request)` now implements this path
+for the supported conditional profile. Rust proposes the node pairs; the pure
+[Root.checkAll](../lean-kernel/QleisliKernel/Hierarchical/Root.lean) independently
+checks their complete structure and the original artifact. The private `QLR1`
+message embeds the unchanged `QLH1` artifact and adds the complete request,
+pair table and schedule. `--hierarchy-request-pending` returns finite proof and
+meaning-pair indices. Rust freshly reconstructs every obligation, rejects
+missing/duplicate indices and retains both original inputs in a private
+`CheckedRequest`. Its 60-second process deadline and 64 MiB framing limit are
+unchanged; the two index lists permit at most 2,200,000 response bytes. Each
+artifact/request's embedded finite payload has the existing 16 MiB ceiling;
+the complete framed message must fit the shared transport ceiling.
+
+The [actual root theorem](../lean/Qleisli/HierarchicalRoot.lean)
+`checkAll_denotes` constructs equal implementation and independently requested
+denotations, conditional on the actual finite reconstruction and exact
+meaning-pair obligations. `checkAll_unitary` and `checkAll_reference_laws`
+preserve a common unitary and both inverse laws with arbitrary finite references.
+There is no assumed whole-graph semantic environment. Reader/native/transport
+correspondence, remaining full-profile rules and source adequacy stay open;
+this additive result has no production `VerifiedProgram` conversion and enables
+no external schema. The older `inspect` API continues to report artifact-only
+consistency without claiming independent request binding.
+
 | Node | Fields and meaning |
 | --- | --- |
 | `leaf` | `program`: complete bounded finite raw program; checked by the existing independent verifier and, when used as a semantic leaf, the exact checker |
@@ -277,7 +378,447 @@ subexpressions are checked once; caches use the complete node/premise/interface
 identity, not a supplied digest. Include negative tests for well-typed but
 incorrect binding, not merely malformed certificates.
 
+### Finite reconstruction requests
+
+The [finite unitary-leaf adapter](machine-interface-spec.md#reconstructed-finite-unitary-leaves)
+now reconstructs complete QIRF1/2 packets through the Rust finite verifier and
+exact checker. It binds an independently supplied exact matrix to actual final
+ports, retained legacy type trees and immutable bytes, sharing the finite exact
+budget across leaves. It exposes no serialized success flag.
+
+The pure [Finite.inspect](../lean-kernel/QleisliKernel/Hierarchical/Finite.lean)
+now extracts a pending reconstruction request from the actual indexed proof,
+definition and meaning. It retains full program/meaning bytes and interfaces,
+the proof index and all four endpoint indices. The version-one finite equation
+must have no premises or extra witnesses and actual identity encodings; both
+unary endpoints retain the same legacy type tree and at most six axes. Bits
+needs an explicit adapter, including at width zero. Header typing and endpoint
+binding are checked on these actual tables under the caller's remaining
+structural allowance. Local payloads are bounded by the existing 16 MiB cap;
+whole-artifact preparation additionally accounts aggregate payload storage.
+
+`project_binding`, `project_unique`, `inspect_conditions` and `inspect_identity`
+prove actual data binding, deterministic requests, checked predicates and work
+bounds. They prove no statement about opaque byte semantics. Native cases
+deliberately retain changed bytes as changed requests; the finite Rust adapter
+must still parse and check those bytes against the independently decoded
+matrix and boundary. There is no producer-supplied receipt argument.
+
+The conditional derivation below now composes these requests. The reconstruction
+host connects actual returned indices to complete immutable Rust leaf data.
+Independent root-contract acceptance, remaining finite effects and
+multi-owner boundaries still need production integration. The original
+`Derivation.checkAll` entry continues to reject finite rules. No schema or
+production semantic seal is enabled by request extraction.
+
+### Conditional finite derivations
+
+The additive [Conditional.checkAll](../lean-kernel/QleisliKernel/Hierarchical/Conditional.lean)
+entry runs the existing complete artifact/node/contract typing pass and then
+starts with an empty proof cache and finite-request array. It visits the actual
+proof schedule: finite rules call `Finite.inspect`, ordinary rules use
+`TypedRule.check` with the type context proved from that same actual completed
+typing pass, and schemas retain `Rule.check`. Every actual premise must already have a conditional
+derivation. Shared proofs are inspected once. A zero repetition still requires
+its complete body; no call or repetition is expanded. The same two-million-unit
+structural allowance and aggregate payload/reachability checks apply.
+
+The typed ordinary matcher retains exact endpoint, rule, phase and ordered
+premise comparisons. It avoids repeating node/meaning typing and quadratic
+layout predicates already established on the immutable artifact. Its
+`ordinary_sound` and `check_conditions` theorems recover the original
+`Rule.ordinary`/`Rule.Matches` conditions; `context_of_checkAll` constructs the
+needed context from actual checker success. No typed flag, context or cache is
+an external artifact field. Proof-state induction and the public
+`Conditional.checkAll_conditions` theorem retain their earlier conclusions.
+Finite reconstruction and schema checks are unchanged. Residual comparisons
+are charged by complete linear field scans, with precharges before traversal;
+the two-million-unit ceiling is unchanged. Legacy standalone local check/scan
+APIs retain their behavior.
+
+The [actual QFT authoring packet](../tests/fixtures/hierarchical_ir/qft-binding-packet.md)
+exposes this repeated work using finite H leaves, dyadic control, explicit bit
+extraction/reinsertion and data swaps. Widths 1–4 of the directly lifted
+construction fit the existing allowance; its width-eight form remains a
+capacity regression. An untrusted [shared-gradient construction](../tests/fixtures/hierarchical_ir/qft-shared-gradient-native.json)
+uses recursive register boundaries, shared phase subgraphs and existing
+controlled/repeat rules. Every width 1–8 fits, with width eight costing 1,694,205
+structural units and 536 exact units for eight one-bit H leaves. The checker
+performs no shared-body expansion, and no budget or rule was changed for this
+producer improvement. These artifact-consistency checks do not bind the named Fourier meaning or enable
+the external QFT schema. Independent numerical Fourier probes remain test
+oracles, never evidence supplied to the checker.
+
+The result is `Pending`. It contains every actual finite request and accepts
+no producer cache, request array or success flag as input. `step_requests` and
+`checkAll_conditions` prove that returned requests came from inspection on the
+same artifact and that all cached/root conclusions have actual derivations
+**conditional on satisfying every request**. The remaining leaf predicate is
+universally quantified in the theorem; it is not executable input and is never
+silently set to `True`. Repetitions 0–4096 retain the same request count and
+checking cost in the [native fixture](../scripts/test_hierarchical_conditional.py).
+
+The separate [finite-leaf interpretation](../lean/Qleisli/HierarchicalFiniteEvaluation.lean)
+reads actual implementation and meaning tables through independent partial
+leaf readers taking the complete interface and payload bytes. Proof tables do
+not enter these readers. `checkAll_denotes` constructs a common successful
+entry denotation, conditional on exact equality of the readers for each returned
+request. The same value is unique across sufficient dependency fuel; missing
+or unsupported leaf interpretations fail, including under zero powers.
+`checkAll_matrix` and `checkAll_reference` retain complete complex coefficients,
+global phase and arbitrary finite reference systems. No whole-graph semantic
+environment or producer-displayed conclusion is assumed.
+
+The [finite unitarity extension](../lean/Qleisli/HierarchicalFiniteUnitary.lean)
+strengthens each returned leaf premise to a common decoded operator satisfying
+its complete `UnitaryInterface`. `derives_unitary` propagates this property
+through the actual ordinary children and controlled-power provider/repeat/control
+nodes. `checkAll_unitary` constructs a common unitary entry denotation;
+`checked_denotation_unitary` applies it to any successful evaluation of that
+entry, and `checkAll_inverse_laws` gives both inverse equations after extension
+by an arbitrary finite reference system. No global unitary environment or
+assumption about unchecked nodes is introduced.
+
+This is a compositional theorem relative to the chosen leaf interpretations,
+not a proof that a Rust return value establishes those interpretations. Their
+decoder/transport correspondence, independent production root-request binding and the rest of the profile remain
+required before issuing a verified hierarchy or enabling a schema. The
+mathematical evaluator is not the reference execution backend.
+The [exact finite matrix transport](machine-interface-spec.md#exact-finite-matrix-descriptions)
+now lets the Rust adapter freshly read both byte strings and retain their full
+binding, including global phase and independent exact coefficient exponents.
+The reconstruction host now connects actual returned request indices to that
+same retained data. Mathematical correspondence of the readers and transport
+remains explicit; the host report does not establish a requested root contract.
+
+### Shared phase-gradient laws
+
+The [diagonal operator extension](../lean/Qleisli/HierarchicalDiagonal.lean)
+proves exact matrix laws for the actual `HierarchicalOperators` definitions:
+composition multiplies the diagonal values, repetition raises them to the
+actual count, tensor products retain the low-axis-first order, coherent control
+adds the separate low control bit, and a forward/inverse data permutation pulls
+the diagonal values back along its route. These statements retain complete
+complex phases; `joint_amplitude` covers arbitrary correlated reference columns.
+
+The Mathlib-free [sparse operations](../lean-kernel/QleisliKernel/PhasePolynomial/Operations.lean)
+scale coefficients modulo 256 and add a positive control condition. Their
+evaluation and unchanged-length theorems hold for arbitrary polynomials and
+counts. They are total helpers, not acceptance functions: axis scopes,
+ownership, canonical representation and work must still be checked by a caller.
+The complex bridge proves that these summaries describe the actual repeated
+and controlled operators, without body expansion or dense runtime matrices.
+
+`physical_controlled_gradient` reads the actual controlled/repeated bodies,
+their count and the actual child evaluation, then applies the dyadic-precision
+equation under its explicit size bound. That reusable theorem retains the
+child's diagonal as a premise. The subsequent inspection theorem below derives
+this premise from actual definitions. [First sources and native checks](../tests/fixtures/hierarchical_ir/gradient-first/README.md)
+retain the original component scope separately from the complete algorithm gate.
+
+### Actual shared-gradient inspection
+
+The Mathlib-free [gradient inspector](../lean-kernel/QleisliKernel/Hierarchical/Gradient.lean)
+reads actual definition indices and requires the recursive empty-identity or
+split-high-bit / tensor(phase, child) / rejoin pattern. It checks complete
+register and bit interfaces, ordered children, phase target/numerator/exponent,
+and both routing maps computed from actual wire labels. It retains the empty
+`Bits<0>` owner and accepts consistent owner/axis renaming. Fixed arities and
+header sizes are checked before traversals; all recursive costs use the same
+caller's remaining structural budget. Supported inspection parameters are
+1 ≤ precision ≤ 8 and 0 ≤ width ≤ precision. This is a component inspection,
+not whole-artifact ownership acceptance or a verified-hierarchy result; the
+caller must also retain the actual complete-artifact typing check.
+
+`project_bound` and `inspect_sound` bind successful inspection to every actual
+body and remaining-budget bound. The [complex proof](../lean/Qleisli/HierarchicalGradient.lean)
+then constructs the actual physical evaluation by induction. `inspect_evaluates`
+proves its complete diagonal is exp(2πi·x/2^precision), with x independently
+defined from the low-axis-first input bits. No child diagonal, matrix receipt,
+finite leaf equation or whole-graph environment is assumed. Evaluation
+uniqueness and `inspect_joint_amplitude` extend the result to any successful
+evaluation and arbitrary correlated reference columns. The direct-control and
+controlled-power bridges consume this result, including the top stage that
+omits a repetition of count one.
+
+[Native checks](../tests/fixtures/hierarchical_ir/gradient-binding-native.json)
+cover 175 outcomes on the actual shared-QFT producer, including renaming,
+mutations and exact/insufficient budgets. After whole-artifact conditional
+checking, inspecting every selected gradient still fits the original budget:
+width eight uses 1,754,765 of 2,000,000 units in total. Independent numerical
+phase probes cover 574 basis/reference vectors and detect a phase fault whose
+probabilities remain unchanged. These diagnostics are distinct from the Lean
+proofs. [First attempts](../tests/fixtures/hierarchical_ir/gradient-binding-first/README.md)
+retain real repairs. Binding finite H gates, all outer QFT stages and the final
+reversal to the complete requested Fourier coefficients remains necessary;
+external schemas and generic source/corpus acceptance remain disabled/pending.
+
+### Actual Fourier-stage coefficients
+
+The [coefficient proof](../lean/Qleisli/HierarchicalFourier.lean) defines the
+desired positive Fourier matrix independently from little-endian integers.
+For every natural width, the actual tensor(H, identity) / controlled-gradient /
+tensor(identity, recursive-child) matrix product has the expected recursive
+coefficient, including the negative H entry and all dyadic phases. Explicit
+enter/leave routing follows the actual low-axis-first convention. The recursive
+body produces reversed output bits; a separate data-reversal permutation
+converts it to exp(2πi xy/2^n)/sqrt(2^n). The result extends to arbitrary joint
+reference amplitudes. These matrix expressions occur only in the proofs.
+
+The Mathlib-free [stage inspector](../lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean)
+reads the actual five-node sequence and tensor children, checking full type
+trees, closed register/Bit interfaces, exact identity rewires, structural
+take/put coordinates, and both positional routing maps. For lower-register
+width 1–7 it returns a pending step and its charged work. This is not a new
+Fourier acceptance rule. The one-bit base uses a different four-node sequence.
+Whole-artifact typing and the caller's remaining two-million budget remain
+required; inspection does not accept a cache, supplied operator or proof flag.
+
+`project_bound`/`inspect_sound` prove actual indexed-body binding and the budget
+bound. The [evaluation bridge](../lean/Qleisli/HierarchicalFourierStage.lean)
+constructs the stage's physical evaluation, derives both identity children,
+and proves the coefficient law conditional on its three nontrivial actual
+children: exact H, the controlled gradient and the recursive Fourier body.
+These obligations are not discharged by unitarity, matching headers or a
+`Pending` result. Final reversal of the actual outer graph, the base case,
+finite H reconstruction and complete independently requested-root binding still
+have to be connected before any external schema is enabled; the subsequent
+recursive-body checkpoint below discharges the base/control/recursive premises
+and binds the finite H request.
+
+[Native checks](../tests/fixtures/hierarchical_ir/fourier-stage-native.json)
+cover 144 outcomes on all 28 five-node producer stages at widths 2–8, including
+renaming, exact/one-short budgets and malformed structure. A complete width-eight
+artifact, its selected gradients and all stage inspections consume 1,800,097
+structural units cumulatively. Independent numerical checks compare 168
+complex basis/reference vectors with the Fourier formula and detect replacing
+H by X. Explicit tests confirm that unresolved H/gradient bodies remain pending,
+rather than silently treating geometry inspection as semantic evidence.
+[First attempts](../tests/fixtures/hierarchical_ir/fourier-binding-first/README.md)
+retain the actual diagnostics. Generic source, shared QPE, corpus completion and
+R14/H1–H5 remain separate open gates.
+
+### Complete recursive Fourier body
+
+The [recursive-body packet](../tests/fixtures/hierarchical_ir/fourier-recursion-packet.md)
+now connects the four-node one-bit base, exact H request, positive coherent
+control, literal repeated gradient and all recursive children. Its
+[pure inspector](../lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean)
+composes the bounded component inspectors and passes the same remaining
+structural budget at every call. It uses the total natural-number recursor;
+no compiler implementation override or partial helper is admitted. Supported
+parameters are 1 ≤ width ≤ precision ≤ 8. Each returned H request retains the
+actual full leaf bytes, interface and definition index; the proved request
+count is exactly the width.
+
+The one-bit base retains the empty `Bits<0>` owner and derives its identity
+from the actual rewires. Its geometry reuses the stage record without adding
+a synthetic node to the artifact; its binding theorem records the actual four
+children. The H inspector binds the finite leaf and its explicit owner rename,
+without decoding or trusting the payload. The independent target is the exact
+phase-fixed H matrix, including its negative lower-right entry. The control
+inspector checks the actual polarity, shared gradient, full interfaces and
+count 2^(precision-width), including the top stage's omitted count-one repeat.
+
+The [complex theorem](../lean/Qleisli/HierarchicalFourierBody.lean)
+constructs the actual physical evaluation and derives its complete
+`reversedFourier width` matrix by induction. `inspect_evaluates` no longer
+assumes a recursive-child or gradient matrix; its only leaf premise is the
+actual partial reader's exact H equation for each returned request. Evaluation
+uniqueness and `inspect_joint_amplitude` retain arbitrary entangled reference
+columns and full phase. Fresh Rust reconstruction checks each native-returned
+request against an independently constructed exact H matrix, sharing the exact
+work remaining after ordinary finite reconstruction. Correspondence of Rust
+decoding, transport and native execution to the mathematical reader remains
+explicit; a test report or Rust handle is not a Lean theorem.
+
+[Base/H checks](../tests/fixtures/hierarchical_ir/fourier-base-native.json) pass
+206 native outcomes and 40 finite reconstructions, including X, global -H,
+malformed bytes and stale owner bindings. The
+[integrated body checks](../tests/fixtures/hierarchical_ir/fourier-body-native.json)
+pass 172 outcomes across all 36 precision/width pairs and directly export the
+36 positive bound requests for fresh H reconstruction. Phase/count/polarity and
+recursive-body mutations reject. The H payload itself remains a pending exact
+obligation until reconstructed. Independent numerical checks cover 200
+basis/reference vectors; global -H demonstrates why probability equality is
+insufficient. Whole-artifact checking plus the full width-eight body costs
+1,819,083 structural units. Each independently requested smaller body gets the
+remaining budget after its own whole-artifact check, not a reset inside its
+recursive inspection.
+
+This is the recursive body before output reversal. The universal reversal law
+is already proved, but the actual outer owner-renaming/SWAP graph and the
+independently requested named Fourier root are not yet connected. No external
+schema, production hierarchy seal, generic source, QPE or corpus gate is
+completed by this checkpoint. [First sources and failures](../tests/fixtures/hierarchical_ir/fourier-recursion-first/README.md)
+and [build/audit results](../tests/fixtures/hierarchical_ir/fourier-recursion-registry.json)
+retain the evidence and limits.
+
+### Actual shared wiring
+
+The [wiring packet](../tests/fixtures/hierarchical_ir/wiring-packet.md) computes
+axis routing directly from actual `rewire`, structural, tensor and sequence
+bodies. The [pure inspector](../lean-kernel/QleisliKernel/Hierarchical/Wiring.lean)
+starts with an empty cache and processes an untrusted selected dependency order.
+Every result has a fresh finite derivation over the same definitions and
+previously computed children. Missing dependencies, duplicate entries, cycles,
+unsupported bodies, unequal widths and out-of-range axes reject. It never
+accepts a producer route claim or expands a repeat. Returned square routes
+have at most 16 axes; an empty route retains its independently checked owners.
+
+Initial cache/order allocation, shallow scans, full fields, computed structural
+routes and compositions consume one remaining structural budget. Only selected
+wiring dependencies are summarized; H/phase children are not treated as identity.
+An omitted independent root has no cache result: its caller must require and
+bind the selected result. A route is not a typing, ownership or unitarity seal.
+The actual whole-artifact checks remain mandatory. In particular, duplicated
+axes or dropped zero-width owners can have a computable coordinate action but
+fail the independent node-typing predicate.
+
+[The complex interpretation](../lean/Qleisli/HierarchicalWiring.lean) proves
+composition and tensor laws, then constructs actual physical evaluation from
+the fresh-cache derivation. `inspect_evaluates` gives coefficient one exactly
+at the computed basis routing and zero elsewhere, with no leaf-reader equation
+or whole-graph interpretation premise. `inspect_joint_amplitude` applies to any
+successful witnessing fuel and arbitrary correlated reference columns. These
+are exact complex equalities, including scalar phase; the mathematical sums
+are not executed by the inspector.
+
+[Native checks](../tests/fixtures/hierarchical_ir/wiring-native.json) cover 93
+outcomes and 2,736 independent basis/complex vectors for the actual outer QFT
+renames and lifted SWAPs at widths 1–8, including shared dependencies, mutation
+and capacity cases. Renaming tests this wiring component, without claiming
+renewed finite-leaf evidence for the modified artifact. The whole width-eight artifact, recursive body and selected
+wiring use 1,931,284 of 2,000,000 structural units. Ownership/type faults test
+why coordinate checking alone is insufficient. This closes the actual-wiring
+component; composing the full outer graph with the recursive Fourier body and
+the independent named request remains open. No external schema or source/corpus
+gate is enabled. [First sources and diagnostics](../tests/fixtures/hierarchical_ir/wiring-first/README.md)
+retain proof and fixture repairs.
+
+### Actual outer Fourier request
+
+The [outer-root packet](../tests/fixtures/hierarchical_ir/fourier-root-packet.md)
+connects those body and wiring components to the actual complete entry. Its
+[pure inspector](../lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean)
+receives an independently selected width and full interface for the
+positive-sign, little-endian Fourier transform. The supported component profile
+is width 1–8 with an outer sequence of 3–16 children. This does not restrict the
+existing general IR: unsupported shapes are outside this additional inspector.
+
+The actual entry must have the requested interface and width and be quantum-only
+and unitary in its declared effect. Its first child must compute identity
+routing, its second must pass the recursive Fourier-body inspector, and all
+remaining actual children together must compute complete bit reversal. Every
+required route must exist in the fresh wiring cache. Missing independent roots
+therefore reject as well as missing dependencies. Equivalent orders of disjoint
+SWAPs pass; submitted route summaries or asserted whole-circuit matrices are
+never accepted as premises. Complete artifact typing remains mandatory.
+
+The root's metadata, full interface comparison and route composition are
+precharged. Recursive-body and wiring inspection then consume the same remaining
+structural budget. The returned obligations contain actual finite H interfaces
+and complete source bytes. Changing H to X or global -H may retain the inspected
+outer structure, but fresh exact reconstruction rejects its pending equation.
+A structural success alone is not a production evidence seal.
+
+[The coefficient proof](../lean/Qleisli/HierarchicalFourierRoot.lean) constructs
+the physical evaluation of that same actual entry. `inspect_evaluates` proves
+its full matrix equals the independently defined positive-sign Fourier matrix;
+`inspect_joint_amplitude` applies to arbitrary reference columns and any
+successful evaluation fuel. The identity and reversal actions are derived,
+and the only remaining semantic premises are the returned bound finite H
+equations. The proof's matrix sums are not an executable checking algorithm.
+
+[Native validation](../tests/fixtures/hierarchical_ir/fourier-root-native.json)
+passes 74 outcomes, 40 fresh finite-H checks and 70 independent complex vectors.
+It covers changed width/interface, missing or duplicated swaps, nonidentity
+input routing, wrong phase/polarity, missing cache roots/dependencies and exact
+or one-short budgets. Whole-artifact plus complete outer inspection costs
+1,933,823 structural units at width eight. Renamed artifacts use a freshly
+matched request for structural comparison; stale finite bytes still reject.
+
+This closes the actual outer coefficient/request component. Production request
+transport and sealing, native/finite-reader correspondence, remaining profile
+rules, generic source and integrated QPE/corpus gates remain open. All external
+schemas stay disabled; TP-005 projection APIs remain maintained until their
+callers and pinned registry can migrate compatibly. [First attempts](../tests/fixtures/hierarchical_ir/fourier-root-first/README.md)
+and [rebuilt audits](../tests/fixtures/hierarchical_ir/fourier-root-registry.json)
+record this component's validation scope.
+
+### Fourier request host
+
+The [host packet](../tests/fixtures/hierarchical_ir/fourier-host-packet.md)
+connects the complete-entry coefficient theorem to the existing
+`interchange::hierarchical::Kernel::check_against` API. The external request
+envelope stays `qleisli.hierarchy-request` version 1, profile
+`qpe-dyadic8-v1`. The supported named form has `kind: equation`,
+`effect: unitary`, entry zero and exactly one meaning with body `qft(width)`.
+That meaning's full interface must equal the request header. The named boundary
+is the published closed single `Bits<width>` register, including identical owner,
+axis order and type at both endpoints. Merely having the same dimension is
+insufficient; explicit adapters to `Bit` do not change the named meaning's type.
+
+The untrusted Rust codec proposes only the outer wiring schedule and transports
+the complete artifact and caller request. The private `QLF1` decoder checks the
+singleton form again. The pure `FourierRoot.checkAll` first invokes complete
+`Conditional.checkAll`, then the actual Fourier inspector with the remaining
+structural budget and enforces `namedBoundary`. Full endpoint comparisons are
+prepaid by the existing header charge. Its conditions theorem retains both
+actual checker successes and the named boundary predicate.
+
+The fresh native response contains ordinary finite proof indices and actual H
+definition indices. Rust reconstructs every ordinary finite equation, then
+checks every H against the independent exact matrix with the negative lower-right
+entry, using the same remaining exact budget and actual full leaf interfaces
+and bytes. The response must contain exactly the requested number of H indices;
+duplicates, invalid indices, non-leaves and omissions reject. Both raw inputs
+are retained by the private-field `CheckedRequest` report. No external API
+accepts a serialized pending response, checked flag or precomputed H result.
+
+`HierarchicalFourierRoot.checkAll_unitary` combines the actual coefficient and
+conditional unitary proofs: the same constructed entry has the requested
+unitary interface and Fourier matrix. `checkAll_reference_laws` proves both
+inverse laws for arbitrary finite reference extensions. Both sets of finite
+reader obligations remain explicit mathematical premises; host/native and
+decoder correspondence have not silently become axioms or proved claims.
+
+[Native host checks](../tests/fixtures/hierarchical_ir/fourier-host-native.json)
+cover 187 independent binary framing cases and 39 host scenarios. Coordinated
+changes to circuit and asserted meaning can pass artifact consistency while
+failing the unchanged Fourier request: wrong phase, control polarity, repeat
+count, missing reversal, X and global -H are tested. Renumbered definitions and
+commuting disjoint SWAPs pass. Correctly typed adapters to a `Bit` or open owner
+boundary reject the named request. Malformed subprocess responses cannot become
+reports. All supported widths pass with cumulative width-eight work 1,933,823
+and exact work 944; these limits were not raised.
+
+This is an additive named-request path, not a production `VerifiedProgram` or
+enabled external schema ID. The shared QFT fixture producer is connected;
+the ordinary sized-source producer, remaining hierarchy/instrument rules,
+native/reader correspondence and source/corpus release gates remain open.
+[First attempts](../tests/fixtures/hierarchical_ir/fourier-host-first/README.md)
+retain the actual boundary counterexample and repairs.
+
 ### Whole-space derivation implementation
+
+The compatible [call expansion producer](../lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean)
+now expresses a typed call as two existing rewire nodes and a three-child
+sequence. It appends the two adapters and retains the actual child index;
+no child body or repeat is expanded. Its `plan_binding` and `install_other`
+theorems bind generated metadata and preserve other actual definitions.
+`plan` and `install` are untrusted data constructors, not evidence APIs.
+
+The [coordinate interpretation](../lean/Qleisli/CallLowering.lean) proves that
+this composition has coefficients `U(output_map⁻¹(y), input_map(x))` and
+preserves a unitary child's whole-space laws and arbitrary reference maps.
+Original call typing, including one consistent fresh renaming across both
+endpoints, is an explicit premise; individually valid permutations are not
+enough. The current native fixtures check this premise separately and submit
+the generated nodes, independent meanings and evidence to the unchanged
+ordinary derivation checker. Full external call translation validation and
+source integration remain pending. No new acceptance rule or public enum
+variant is introduced by this producer.
 
 The [local rule matcher](../lean-kernel/QleisliKernel/Hierarchical/Rule.lean)
 currently implements identity-encoded unitary equations for actual rewires,

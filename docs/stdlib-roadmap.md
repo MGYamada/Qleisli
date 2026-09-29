@@ -4,7 +4,8 @@
 
 Status: **L0/L1 and the finite part of L3 are established; the v0.1 minimum and
 v1 target are adopted; generalized standard APIs remain unimplemented**
-(2026-09-27). The [contract ledger, format v1](stdlib-contracts.md), and
+(2026-09-27), with the library goal fixed by the user on 2026-09-29. The
+[contract ledger, format v1](stdlib-contracts.md), and
 [finite static-operation implementation](static-operations.md) provide the
 foundation. Higher-order types, algorithm-skeleton names, and generalized
 module organization in this document are design candidates. The
@@ -20,6 +21,61 @@ algorithms coincide with the language they use to write programs. Layer 3
 develops that language into a standard vocabulary with meanings, premises, and
 verification status. Real source in which Shor, QPE, and Grover retain their
 textbook structure is the concrete v1 acceptance target for this direction.
+
+## Adopted library goal
+
+**Fixed by the user on 2026-09-29:** Qleisli's standard library is to be a
+**BLAS/LAPACK-like foundation for quantum computing, integrating reusable
+computational components, a textbook of quantum information, and formal
+specifications. Readers should be able to learn quantum information by reading
+the standard library.** These are three connected responsibilities of the same
+library and guide future component design, documentation and adoption.
+
+The user's formulation, retained as a supporting Japanese statement of this
+authoritative English goal:
+
+> 量子計算における BLAS/LAPACK 的基盤
+>
+> 「stdlibを読むだけで量子情報が学べる」――BLAS/LAPACK + 教科書 + 形式仕様を一体化したもの。
+
+| Responsibility | What the library should provide |
+| --- | --- |
+| Computational foundation | Reusable, composable building blocks for quantum computation, with stable mathematical contracts, explicit resource/capability requirements and scope for efficient interchangeable implementations. The analogy concerns this foundational role; it does not select a classical BLAS ABI or an external dependency. |
+| Textbook | A connected reading experience explaining quantum-information concepts, their motivation, mathematical derivations, algorithm structure and worked examples alongside readable reference implementations. State prerequisites and explain why the components work; the library's own material should carry the explanation, with external references supporting it. |
+| Formal specification | Explicit types, ownership, effects, input promises, operators or complete instruments, phase and bit-order conventions, access requirements, error/cost models and implementation correspondence. Link each claim to its checked evidence, Lean theorem and premises where available, or mark the obligation open. |
+
+For each component, the intended reading path connects **concept and motivation
+→ mathematical meaning and premises → readable `.qli` implementation →
+examples and counterexamples → checking and proof status**. Source documentation
+and directly linked library material form this reading surface. Definitions
+should reveal reusable quantum structure; explanations should make clear how
+the code realizes it. A short API description or a link to an external textbook
+alone does not fulfill the educational goal.
+
+Readable reference implementations and optimized implementations may coexist
+under the same explicit logical contract. Substitution needs independently
+checked correspondence, retaining ownership, phase, encoding, access and error
+obligations; report implementation-specific resource costs separately. The
+library remains subject to the ordinary verification boundary. Continue to
+review whether the specified mathematics expresses the intended operation:
+proving that code conforms to a specification does not establish that intent.
+
+**What this fixes:** the library's purpose and the requirement to develop its
+computational, educational and specification roles together. **What remains
+open:** its comprehensive module hierarchy, reading/chapter order, final
+generalized API names and signatures, packaging, and individual implementation
+and proof choices. The current minimum modules and sealed-operation boundary
+already have a [Stage 0 specification](standard-library.md); preserve those
+contracts. The seven areas below remain a concept classification, not a frozen
+future module tree.
+
+This is an adopted target, not a claim that today's finite library already
+teaches the whole subject or has complete formal proofs. The goal adoption alone
+did not authorize corpus experiments; the user's later request now authorizes
+the [0.2.1 corpus continuation](v0.2.1-plan.md#active-completion-goal).
+Sized recursive library interfaces follow the [linear-size convention](size-expressions.md):
+use `n+1`, retain explicit segment reshape and bit reversal, and carry size
+proofs without changing phase, axis order or ownership.
 
 **Priority adopted on 2026-09-27:** make evidence-bearing semantic contracts
 `U E_in = E_out u` and independent certificate checking the
@@ -359,12 +415,16 @@ establish general QEC or fault tolerance.
    explain its relation to existing components.
 2. **Experimental implementation:** supply a contract ledger entry, ordinary
    definitions, IR correspondence, and acceptance/rejection cases. Publish
-   unchecked assumptions.
+   unchecked assumptions. Connect the implementation to an explanation of its
+   quantum-information concept, derivation and examples under the adopted
+   library goal.
 3. **Reuse evaluation:** assess at least two different uses and a problem not
    used to extract the abstraction. Check preservation of ownership, phase,
    error, and cost contracts.
 4. **Standard adoption:** review contract stability and validation evidence;
-   establish public names, compatibility, and migration. Do not register
+   review computational reuse, the concept-to-code reading path and the explicit
+   specification/evidence together. Establish public names, compatibility, and
+   migration. Do not register
    numerical example agreement as a general proof.
 5. **Continuing evaluation:** return frequent patterns found by humans or AI
    to the candidate stage. Frequency alone does not justify adoption; apply

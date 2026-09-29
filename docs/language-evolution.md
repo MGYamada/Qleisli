@@ -63,10 +63,14 @@ it with an explicit local definition; incompatible conventions must be resolved
 or recorded in their shared requirement index. Use fenced `text` blocks with
 an `IMAGINARY QLEISLI 1.0` label, not executable-example claims.
 
+The 2026-09-28 [naming decision](decisions/2026-09-27-v1-path.md#2026-09-28-adopt-the-020-shared-qpe-implementation)
+selects `CBits<n>` for measured bit sequences. Earlier first-attempt snapshots
+retain their original spelling as historical evidence; it is not an alias.
+
 | Notation | Intended interpretation; unresolved implementation choice |
 | --- | --- |
 | `Bits<n>`, `Q<Bits<n>>` | A basis of n bits and ownership of that entire register. n is a finite static natural; bit k has weight 2^k. Size inference and capacity policy are unselected. |
-| `CWord<n>` | A copyable classical word of n measured bits, with bit k weighted 2^k. It is distinct from a coherent basis label and from quantum ownership. |
+| `CBits<n>` | A copyable classical sequence of n measured bits, with bit k weighted 2^k when explicitly decoded as an integer. It is distinct from a coherent basis label and from quantum ownership. |
 | `UInt`, `Real`, `Result<T,E>` | Explicitly proposed classical data. Integer bounds, real-number representation, and host/source placement require separate decisions. |
 | `UnitaryOp<A>` | A static/elaboration-time, phase-fixed description of an operation on H(A), with no captured live quantum ownership. Descriptions may be reused; each application consumes its quantum argument. This does not commit to runtime first-class operations and is not a current source type. |
 | `U(q)`, `adjoint(U)(q)`, `power(U,k)(q)` | Application consumes q and returns its successor. Adjoint/power require recorded access and evidence; k is finite. A power call does not imply unit-cost access. |
