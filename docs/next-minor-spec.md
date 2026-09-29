@@ -11,12 +11,14 @@ This implementation completes neither M1 as a whole nor G020-3's release gates.
 The [0.1.8 authoring supplement](syntax-v0.md#authoring-forms-added-in-product-018)
 allows one basis parameter to decompose a product, so `perm_by`/`phase_by`
 targets can inspect its components without changing their unary interface.
-Flat tuples are left-associated; the phase exponent result remains the exact
-right-associated `(Bit,(Bit,Bit))` type specified below.
+Since 0.2.0, [tuples retain their immediate arity](tuple-shapes.md), superseding
+the initial left-folding rule. The phase exponent result remains the exact
+right-associated `(Bit,(Bit,Bit))` type specified below; a flat triple is different.
 
 ## Scope, vocabulary and limits
 
-M1 has fixed basis trees `Unit`, `Bit`, and ordered pairs only. A static operation
+M1 has fixed basis trees `Unit`, `Bit`, and ordered tuples, retaining their
+arity and nesting under the [type contract](type-system.md). A static operation
 description contains no quantum state or runtime classical value. Its semantic
 interface is a phase-fixed unitary on one `Q<A>`, including zero-width ownership.
 It carries a logical meaning and separately justified implementation access.
@@ -32,7 +34,12 @@ new effects and public capability wrapper types are excluded.
 
 The new operation/meaning profile permits 0–6 interface bits, at most 1,024
 steps per materialized contract circuit and the existing exact work budget of
-10,000,000. Control/tensor count their entire resulting interface against six
+10,000,000. Since 0.2.0, one exact budget is shared across the entire compilation,
+including meaning construction, provider/contract checks, transformed circuits
+and final IR verification. It is not reset per static argument, even when the
+callee has no access constraint and never applies that argument. Exhaustion
+rejects the compilation with `limit`. This aggregate policy is a breaking
+capacity change from 0.1.9. Control/tensor count their entire resulting interface against six
 bits. Static repetitions accept 0–4,096. Type/syntax depth remains 64 and type
 trees at most 4,096 nodes. New specialization is limited to 256 distinct
 instances per project, depth 64 and 1,000,000 aggregate lowering work units.
@@ -53,7 +60,13 @@ owned API through a bounded lazy compatibility view. The
 source/dependency binding and the 100 KB/256-provider experiment. These finite
 limits still apply together; 256 is a specialization cap, not an unconditional
 capacity promise for arbitrary programs.
-Existing non-generic programs retain their existing profile.
+Within the exact budget, immutable shared source storage is charged once per
+allocation, with a retained strong reference preventing address reuse. Every
+receipt still checks all metadata limits, name/path work and semantic equations.
+Public owned identity checking keeps its full per-identity byte charge. Powers
+use exact repeated squaring; they retain phase and never approximate equality.
+Non-generic static transforms also use the aggregate exact budget and the
+[finite independent comparison](static-operations.md#phase-preserving-finite-ir).
 Budget exhaustion diagnoses `limit`, never changes semantics or omits checks.
 
 ## Grammar and resolution

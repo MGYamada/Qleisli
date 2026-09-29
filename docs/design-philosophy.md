@@ -3,7 +3,8 @@
 # Qleisli design principles
 
 Status: **adopted design principles** (2026-09-26), with release-direction
-additions dated 2026-09-27 and a trusted-core boundary adopted on 2026-09-28.
+additions dated 2026-09-27, a trusted-core boundary adopted on 2026-09-28,
+and the Rust type/ownership default adopted on 2026-09-29.
 This English edition is authoritative for these
 principles and replaces the earlier Japanese text without changing them.
 Adopting the principles does not finalize syntax or establish a mathematical
@@ -20,6 +21,26 @@ uncomputation, and their composition and assumptions should be expressed in
 actual source. Checking the connection between these concepts' meanings and
 their implementations is part of this goal. The release-policy summaries
 below follow the authoritative [release milestones](release-milestones.md).
+
+## Follow Rust for type and ownership discipline
+
+**User decision, 2026-09-29: when uncertain about type or ownership discipline,
+follow Rust.** Rust is the default reference for type identity, tuple arity and
+nesting, moves, bindings and scopes. Do not introduce a different convention
+merely because a representation or compiler implementation makes it convenient.
+The [type contract](type-system.md) records current Qleisli rules and the
+intentional differences from Rust.
+
+A difference must identify the quantum-semantic or evidence obligation that
+requires it, specify acceptance/rejection rules and have corresponding checks.
+Quantum owners remain linear: no copying or implicit discard, and pure auxiliary
+release requires zero-return/separation evidence. Applying the Rust default
+does not weaken those obligations. Rust syntax or features not yet specified
+and implemented in Qleisli remain future extensions, not implicit APIs.
+
+The user's wording, as a supporting Japanese statement of the English policy:
+
+> type/ownershipの規律に迷ったらRustに従う。
 
 ## Start with the quantum programs we want to write
 

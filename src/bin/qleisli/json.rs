@@ -6,7 +6,7 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli_core::frontend::compile::{check_project_diagnostic, compile_project_diagnostic};
+use qleisli_core::frontend::compile::{check_project_with_policy, compile_project_with_policy};
 use qleisli_core::frontend::diagnostic::{Diagnostic, SourceLocation};
 use qleisli_core::sim::{SimulationError, SimulationLimits, run_closed};
 
@@ -128,15 +128,36 @@ fn distribution_json(
     Ok(output)
 }
 
-fn execute(command: &str, root: &Path) -> Result<String, Diagnostic> {
+fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
     if root.to_str().is_none() {
         return Err(failure("project", "source root is not valid UTF-8"));
     }
-    if command == "check" {
-        check_project_diagnostic(root)?;
+    if options.command == "check" {
+        check_project_with_policy(root, options.policy)?;
         Ok("{\"verified\":true}".into())
     } else {
-        let program = compile_project_diagnostic(root)?;
+        let program = compile_project_with_policy(root, options.policy)?;
+        if options.command == "sample" {
+            let seed = options.seed.expect("parsed sample seed");
+            let (samples, total) =
+                super::samples::collect(&program, options.shots.expect("parsed shots"), seed)?;
+            let mut result = format!("{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[");
+            for (index, sample) in samples.iter().enumerate() {
+                if index > 0 {
+                    result.push(',');
+                }
+                result.push_str("{\"bits\":[");
+                for (i, bit) in sample.bits.iter().enumerate() {
+                    if i > 0 {
+                        result.push(',');
+                    }
+                    result.push_str(if *bit { "true" } else { "false" });
+                }
+                write!(result, "],\"execution_steps\":{}}}", sample.execution_steps).unwrap();
+            }
+            write!(result, "],\"execution_steps\":{total}}}").unwrap();
+            return Ok(result);
+        }
         let distribution =
             run_closed(&program, SimulationLimits::default()).map_err(simulation_failure)?;
         distribution_json(distribution)
@@ -149,20 +170,34 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
         .first()
         .and_then(|arg| arg.to_str())
         .unwrap_or("");
-    let valid = args.len() - positional.len() == 1
-        && positional.len() == 2
-        && matches!(command, "check" | "run")
-        && !positional[1].as_encoded_bytes().starts_with(b"-");
+    let options = super::options::Options::parse(args, true);
     let mut root = PathBuf::new();
-    let result = if valid {
-        root = PathBuf::from(positional[1]);
+    let mut artifact_pointer = None;
+    let result = if let Some(options) = options {
+        root = options.path.clone();
         if root.to_str().is_none() {
             Err(failure("project", "source root is not valid UTF-8"))
+        } else if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
+            // Keep source spans from emission separate from artifact pointers.
+            root = std::fs::canonicalize(&root).unwrap_or(root);
+            match super::artifacts::execute(&options) {
+                Ok(super::artifacts::Success::Emitted(path)) => {
+                    Ok(format!("{{\"path\":{}}}", quoted(&path)))
+                }
+                Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
+                    "{{\"verified\":true,\"request_checked\":{request}}}"
+                )),
+                Err(super::artifacts::Failure::Source(error)) => Err(error),
+                Err(super::artifacts::Failure::Artifact(error)) => {
+                    artifact_pointer = Some(error.json_pointer);
+                    Err(failure(error.code, error.message))
+                }
+            }
         } else {
             // Use the same canonical root for compilation and relative identities.
             // Failed canonicalization remains a handled project-load error.
             root = std::fs::canonicalize(&root).unwrap_or(root);
-            execute(command, &root)
+            execute(&options, &root)
         }
     } else {
         Err(failure(
@@ -174,8 +209,17 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
         Ok(result) => (envelope(command, None, &result), ExitCode::SUCCESS),
         Err(error) => {
             let status = if error.code == "usage" { 2 } else { 1 };
+            let diagnostic = match artifact_pointer {
+                None => diagnostic_json(&root, &error),
+                Some(pointer) => format!(
+                    "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
+                    quoted(error.code),
+                    quoted(&error.message),
+                    quoted(&format!("json_pointer: {pointer}"))
+                ),
+            };
             (
-                envelope(command, Some(&diagnostic_json(&root, &error)), "null"),
+                envelope(command, Some(&diagnostic), "null"),
                 ExitCode::from(status),
             )
         }

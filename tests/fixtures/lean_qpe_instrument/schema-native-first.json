@@ -1,0 +1,578 @@
+{
+  "native_decisions": 101,
+  "accepted": 64,
+  "controlled_path_comparisons": 4080,
+  "preparation_paths": 4080,
+  "largest_target_calls": 255,
+  "kernel_dense_dimension": 0,
+  "schema_decisions": 31,
+  "schema_accepted": 4,
+  "schema_results": [
+    {
+      "name": "qpe",
+      "accepted": true
+    },
+    {
+      "name": "qpe-unknown",
+      "accepted": false
+    },
+    {
+      "name": "qpe-version",
+      "accepted": false
+    },
+    {
+      "name": "qpe-declaration",
+      "accepted": false
+    },
+    {
+      "name": "qpe-template-zero",
+      "accepted": false
+    },
+    {
+      "name": "qpe-template-next",
+      "accepted": false
+    },
+    {
+      "name": "qpe-missing-parameters",
+      "accepted": false
+    },
+    {
+      "name": "qpe-extra-parameter",
+      "accepted": false
+    },
+    {
+      "name": "qft",
+      "accepted": true
+    },
+    {
+      "name": "qft-unknown",
+      "accepted": false
+    },
+    {
+      "name": "qft-version",
+      "accepted": false
+    },
+    {
+      "name": "qft-declaration",
+      "accepted": false
+    },
+    {
+      "name": "qft-template-zero",
+      "accepted": false
+    },
+    {
+      "name": "qft-template-next",
+      "accepted": false
+    },
+    {
+      "name": "qft-missing-parameters",
+      "accepted": false
+    },
+    {
+      "name": "qft-extra-parameter",
+      "accepted": false
+    },
+    {
+      "name": "powers",
+      "accepted": true
+    },
+    {
+      "name": "powers-unknown",
+      "accepted": false
+    },
+    {
+      "name": "powers-version",
+      "accepted": false
+    },
+    {
+      "name": "powers-declaration",
+      "accepted": false
+    },
+    {
+      "name": "powers-template-zero",
+      "accepted": false
+    },
+    {
+      "name": "powers-template-next",
+      "accepted": false
+    },
+    {
+      "name": "powers-missing-parameters",
+      "accepted": false
+    },
+    {
+      "name": "powers-extra-parameter",
+      "accepted": false
+    },
+    {
+      "name": "qpe-wrong-precision",
+      "accepted": false
+    },
+    {
+      "name": "qpe-wrong-provider",
+      "accepted": false
+    },
+    {
+      "name": "qpe-qft-witness",
+      "accepted": false
+    },
+    {
+      "name": "qft-qpe-witness",
+      "accepted": false
+    },
+    {
+      "name": "powers-qpe-witness",
+      "accepted": false
+    },
+    {
+      "name": "provider-4294967295",
+      "accepted": true
+    },
+    {
+      "name": "provider-4294967296",
+      "accepted": false
+    }
+  ],
+  "decisions": [
+    {
+      "name": "n1-m1",
+      "accepted": true
+    },
+    {
+      "name": "n1-m2",
+      "accepted": true
+    },
+    {
+      "name": "n1-m3",
+      "accepted": true
+    },
+    {
+      "name": "n1-m4",
+      "accepted": true
+    },
+    {
+      "name": "n1-m5",
+      "accepted": true
+    },
+    {
+      "name": "n1-m6",
+      "accepted": true
+    },
+    {
+      "name": "n1-m7",
+      "accepted": true
+    },
+    {
+      "name": "n1-m8",
+      "accepted": true
+    },
+    {
+      "name": "n2-m1",
+      "accepted": true
+    },
+    {
+      "name": "n2-m2",
+      "accepted": true
+    },
+    {
+      "name": "n2-m3",
+      "accepted": true
+    },
+    {
+      "name": "n2-m4",
+      "accepted": true
+    },
+    {
+      "name": "n2-m5",
+      "accepted": true
+    },
+    {
+      "name": "n2-m6",
+      "accepted": true
+    },
+    {
+      "name": "n2-m7",
+      "accepted": true
+    },
+    {
+      "name": "n2-m8",
+      "accepted": true
+    },
+    {
+      "name": "n3-m1",
+      "accepted": true
+    },
+    {
+      "name": "n3-m2",
+      "accepted": true
+    },
+    {
+      "name": "n3-m3",
+      "accepted": true
+    },
+    {
+      "name": "n3-m4",
+      "accepted": true
+    },
+    {
+      "name": "n3-m5",
+      "accepted": true
+    },
+    {
+      "name": "n3-m6",
+      "accepted": true
+    },
+    {
+      "name": "n3-m7",
+      "accepted": true
+    },
+    {
+      "name": "n3-m8",
+      "accepted": true
+    },
+    {
+      "name": "n4-m1",
+      "accepted": true
+    },
+    {
+      "name": "n4-m2",
+      "accepted": true
+    },
+    {
+      "name": "n4-m3",
+      "accepted": true
+    },
+    {
+      "name": "n4-m4",
+      "accepted": true
+    },
+    {
+      "name": "n4-m5",
+      "accepted": true
+    },
+    {
+      "name": "n4-m6",
+      "accepted": true
+    },
+    {
+      "name": "n4-m7",
+      "accepted": true
+    },
+    {
+      "name": "n4-m8",
+      "accepted": true
+    },
+    {
+      "name": "n5-m1",
+      "accepted": true
+    },
+    {
+      "name": "n5-m2",
+      "accepted": true
+    },
+    {
+      "name": "n5-m3",
+      "accepted": true
+    },
+    {
+      "name": "n5-m4",
+      "accepted": true
+    },
+    {
+      "name": "n5-m5",
+      "accepted": true
+    },
+    {
+      "name": "n5-m6",
+      "accepted": true
+    },
+    {
+      "name": "n5-m7",
+      "accepted": true
+    },
+    {
+      "name": "n5-m8",
+      "accepted": true
+    },
+    {
+      "name": "n6-m1",
+      "accepted": true
+    },
+    {
+      "name": "n6-m2",
+      "accepted": true
+    },
+    {
+      "name": "n6-m3",
+      "accepted": true
+    },
+    {
+      "name": "n6-m4",
+      "accepted": true
+    },
+    {
+      "name": "n6-m5",
+      "accepted": true
+    },
+    {
+      "name": "n6-m6",
+      "accepted": true
+    },
+    {
+      "name": "n6-m7",
+      "accepted": true
+    },
+    {
+      "name": "n6-m8",
+      "accepted": true
+    },
+    {
+      "name": "n7-m1",
+      "accepted": true
+    },
+    {
+      "name": "n7-m2",
+      "accepted": true
+    },
+    {
+      "name": "n7-m3",
+      "accepted": true
+    },
+    {
+      "name": "n7-m4",
+      "accepted": true
+    },
+    {
+      "name": "n7-m5",
+      "accepted": true
+    },
+    {
+      "name": "n7-m6",
+      "accepted": true
+    },
+    {
+      "name": "n7-m7",
+      "accepted": true
+    },
+    {
+      "name": "n7-m8",
+      "accepted": true
+    },
+    {
+      "name": "n8-m1",
+      "accepted": true
+    },
+    {
+      "name": "n8-m2",
+      "accepted": true
+    },
+    {
+      "name": "n8-m3",
+      "accepted": true
+    },
+    {
+      "name": "n8-m4",
+      "accepted": true
+    },
+    {
+      "name": "n8-m5",
+      "accepted": true
+    },
+    {
+      "name": "n8-m6",
+      "accepted": true
+    },
+    {
+      "name": "n8-m7",
+      "accepted": true
+    },
+    {
+      "name": "n8-m8",
+      "accepted": true
+    },
+    {
+      "name": "n-0",
+      "accepted": false
+    },
+    {
+      "name": "n-9",
+      "accepted": false
+    },
+    {
+      "name": "n-1000000",
+      "accepted": false
+    },
+    {
+      "name": "m-0",
+      "accepted": false
+    },
+    {
+      "name": "m-9",
+      "accepted": false
+    },
+    {
+      "name": "m-1000000",
+      "accepted": false
+    },
+    {
+      "name": "wrong-provider",
+      "accepted": false
+    },
+    {
+      "name": "dirty-precision",
+      "accepted": false
+    },
+    {
+      "name": "missing-zero",
+      "accepted": false
+    },
+    {
+      "name": "missing-h",
+      "accepted": false
+    },
+    {
+      "name": "wrong-h-axis",
+      "accepted": false
+    },
+    {
+      "name": "extra-scalar-phase",
+      "accepted": false
+    },
+    {
+      "name": "reversed-power-order",
+      "accepted": false
+    },
+    {
+      "name": "power-field-0-0",
+      "accepted": false
+    },
+    {
+      "name": "power-field-1-8",
+      "accepted": false
+    },
+    {
+      "name": "power-field-2-0",
+      "accepted": false
+    },
+    {
+      "name": "power-field-2-3",
+      "accepted": false
+    },
+    {
+      "name": "power-field-3-False",
+      "accepted": false
+    },
+    {
+      "name": "missing-power",
+      "accepted": false
+    },
+    {
+      "name": "forward-qft",
+      "accepted": false
+    },
+    {
+      "name": "reverse-measurement",
+      "accepted": false
+    },
+    {
+      "name": "aliased-precision-axis",
+      "accepted": false
+    },
+    {
+      "name": "wrong-target-axis",
+      "accepted": false
+    },
+    {
+      "name": "aliased-owner",
+      "accepted": false
+    },
+    {
+      "name": "wrong-target-owner",
+      "accepted": false
+    },
+    {
+      "name": "measure-target",
+      "accepted": false
+    },
+    {
+      "name": "discard-target",
+      "accepted": false
+    },
+    {
+      "name": "unitary-effect",
+      "accepted": false
+    },
+    {
+      "name": "classical-input",
+      "accepted": false
+    },
+    {
+      "name": "wrong-classical-width",
+      "accepted": false
+    },
+    {
+      "name": "cbit-not-cbits",
+      "accepted": false
+    },
+    {
+      "name": "drop-target-output",
+      "accepted": false
+    },
+    {
+      "name": "extra-bits0-owner",
+      "accepted": false
+    },
+    {
+      "name": "tuple-not-bits",
+      "accepted": false
+    },
+    {
+      "name": "wrong-qft-phase",
+      "accepted": false
+    },
+    {
+      "name": "dangling-qft-entry",
+      "accepted": false
+    },
+    {
+      "name": "wrong-qft-type",
+      "accepted": false
+    }
+  ],
+  "kraus_entries": 1080,
+  "joint_density_branches": 180,
+  "largest_oracle_vector": 64,
+  "maximum_error": 4.440937517184161e-15,
+  "unitary_completeness_cases": 24,
+  "joint_trace_cases": 24,
+  "completeness_counterexamples": 3,
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "temporary native QPE harness",
+      "exit": 0,
+      "stdout": "\u2714 [28/31] Built QleisliKernel.Schema:c.o (311ms)\n\u2714 [29/31] Built Main (1.7s)\n\u2714 [30/31] Built Main:c.o (629ms)\n\u2714 [31/31] Built \u00abqpe-test\u00bb:exe (277ms)\nBuild completed successfully (31 jobs).\n",
+      "stderr": "info: qpe_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "qpe-test"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "executable_sha256": "6fbf10b0de5e7be119153e89b3b5e7635ef08973b8e26487ac938837c3a3a436"
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "738014b4b255cd76764d98866b3e9251f7e577f2b065c72e15f8dcbbd52a831a",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean/Qleisli/Qpe.lean": "1a23271e65af99dbcc16f6386ff94a6e6c3cefcf18247dd21aa83de402e24d18",
+    "lean-kernel/QleisliKernel/Schema.lean": "880eac35e9c32cf5b4e76b87c86ed20d25ce15125fbd17811fe7e70969fb3b75",
+    "lean/Qleisli/QpeComplete.lean": "a34f68e9b439c65bd4f737335998547d0810e548e65f784d10be198f3ef4d184",
+    "scripts/test_lean_qpe.py": "cd1519f2c82fefabc703589b9181f96a061bddb1c2a6c9d849fa49253d6b30ea"
+  }
+}

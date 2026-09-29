@@ -1,0 +1,11 @@
+First attempted build was launched from the repository root by mistake.
+No Lean source was checked; no admission or toolchain change occurred.
+
+warning: failed to query latest release, using existing version 'leanprover/lean4:v4.34.1'
+error: [root]: no configuration file with a supported extension:
+/Users/masa/git/Qleisli/lakefile.lean
+/Users/masa/git/Qleisli/lakefile.toml
+
+The actual check was subsequently run from lean-kernel/, using its pinned
+Lean 4.30.0 toolchain. Before that check, review added charges for actual child
+headers even when a proposed premise list does not bind those children.

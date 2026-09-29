@@ -1,0 +1,15 @@
+[
+  {
+    "command": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "QleisliKernel"
+    ],
+    "cwd": "lean-kernel",
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

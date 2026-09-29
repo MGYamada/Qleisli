@@ -1,0 +1,18 @@
+QleisliKernel/LayoutDag.lean:54:70: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [lookup, List.getElem?_map, List.getElem?_eq_getElem inside,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/LayoutDag.lean:57:37: warning: This simp argument is unused:
+  Function.comp_def
+
+Hint: Omit it from the simp argument list.
+  simp [lookup, List.getElem?_map, List.getElem?_eq_none (by omega : second.length ≤ i),
+        List.getElem?_eq_none outside,̵ ̵F̵u̵n̵c̵t̵i̵o̵n̵.̵c̵o̵m̵p̵_̵d̵e̵f̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/LayoutDag.lean:104:3: error: unexpected token 'then'; expected '_' or identifier
+QleisliKernel/LayoutDag.lean:104:2: error: Missing alternative name: Expected `then`
+QleisliKernel/LayoutDag.lean:90:2: error: Alternative `then` has not been provided

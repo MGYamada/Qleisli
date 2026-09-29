@@ -1,0 +1,15 @@
+//! Desired one-bit client of the same sized QPE definition.
+use estimation::qpe;
+use std::registers::init_zero;
+use std::registers::on_bit;
+use std::registers::measure_bits;
+use std::quantum::t;
+
+unitary fn evolve(q: Q<Bits<1>>) -> Q<Bits<1>> {
+    on_bit[1,0,t](q)
+}
+
+observe fn main() -> (CWord<3>, CWord<1>) {
+    let (word, target) = qpe[1,3,evolve](init_zero[1]());
+    (word, measure_bits[1](target))
+}

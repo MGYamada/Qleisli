@@ -1,0 +1,135 @@
+import QleisliKernel.Hierarchical.Derivation
+import Mathlib.Data.List.OfFn
+import Mathlib.Tactic
+
+/-! Interpretation of actual whole-space equation derivations.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Environments obey actual body equations, not proposed proof conclusions.
+Concrete complex interpretation is separate from the executable checker. -/
+
+namespace Qleisli.HierarchicalSemantics
+open QleisliKernel.Hierarchical
+open Artifact
+
+inductive Tag where
+  | identity
+  | rewire (axes : List Nat)
+  | phase (owner j k : Nat)
+  | sequence | tensor | inverse
+  | control (polarity : Bool)
+  | power (count : Nat)
+  deriving DecidableEq
+
+structure Algebra (S : Type) where
+  apply : Interface → Tag → List S → S
+  identity_rewire : ∀ interface map, Rule.identityMap interface map = true →
+    apply interface (.rewire map.axes.toList) [] = apply interface .identity []
+
+def physicalCode (definition : Artifact.Definition) : Option (Tag × List Nat) :=
+  match definition.body with
+  | .rewire map => some (.rewire map.axes.toList,[])
+  | .structural _ => some (.rewire (Structural.axisMap definition.interface),[])
+  | .dyadicPhase owner j k => some (.phase owner j k,[])
+  | .sequence children => some (.sequence,children.toList)
+  | .tensor first second => some (.tensor,[first,second])
+  | .inverse child => some (.inverse,[child])
+  | .control child polarity => some (.control polarity,[child])
+  | .repeatOp count child => some (.power count,[child])
+  | _ => none
+
+def logicalCode (meaning : Meaning) : Option (Tag × List Nat) :=
+  match meaning.body with
+  | .identity => some (.identity,[])
+  | .rewire map => some (.rewire map.axes.toList,[])
+  | .structural _ => some (.rewire (Structural.axisMap meaning.interface),[])
+  | .phase j k => do
+    let target ← meaning.interface.inputs.quantum[0]?
+    return (.phase target.owner j k,[])
+  | .sequence children => some (.sequence,children.toList)
+  | .tensor first second => some (.tensor,[first,second])
+  | .inverse child => some (.inverse,[child])
+  | .control child polarity => some (.control polarity,[child])
+  | .power child count => some (.power count,[child])
+  | _ => none
+
+def physical {S : Type} (algebra : Algebra S) (environment : Nat → S)
+    (definition : Artifact.Definition) : Option S := do
+  let (tag,children) ← physicalCode definition
+  return algebra.apply definition.interface tag (children.map environment)
+
+def logical {S : Type} (algebra : Algebra S) (environment : Nat → S)
+    (meaning : Meaning) : Option S := do
+  let (tag,children) ← logicalCode meaning
+  return algebra.apply meaning.interface tag (children.map environment)
+
+/-- Every table node has its actual body interpretation. No proof table or
+producer-supplied equality occurs in these equations. Unsupported bodies cannot
+be given an interpretation in this slice. -/
+structure Interprets {S : Type} (algebra : Algebra S) (artifact : Artifact)
+    (operations meanings : Nat → S) : Prop where
+  definitions : ∀ index definition, artifact.definitions[index]? = some definition →
+    physical algebra operations definition = some (operations index)
+  meanings : ∀ index meaning, artifact.meanings[index]? = some meaning →
+    logical algebra meanings meaning = some (meanings index)
+
+theorem identity_interfaces (artifact : Artifact) (proof : Proof)
+    (definition : Artifact.Definition) (meaning : Meaning)
+    (hd : artifact.definitions[proof.implementation]? = some definition)
+    (hm : artifact.meanings[proof.meaning]? = some meaning)
+    (accepted : Power.identityEquation artifact proof = true) :
+    definition.interface = meaning.interface := by
+  cases hi : artifact.encodings[proof.inputEncoding]? with
+  | none => simp [Power.identityEquation,hi] at accepted
+  | some input =>
+    cases ho : artifact.encodings[proof.outputEncoding]? with
+    | none => simp [Power.identityEquation,hi,ho] at accepted
+    | some output =>
+      cases hbi : input.body <;> cases hbo : output.body <;>
+        simp [Power.identityEquation,hi,ho,hbi,hbo] at accepted
+      obtain ⟨⟨⟨_,_⟩,endpoints⟩,inputEq,outputEq⟩ := accepted
+      have bound := Artifact.endpoints_bound artifact proof definition meaning input output hd hm hi ho endpoints
+      rcases bound with ⟨il,ip,ol,op⟩
+      cases definition.interface
+      cases meaning.interface
+      simp_all
+
+theorem mapM_members {A B : Type} (xs : List A) (ys : List B) (f : A → Option B)
+    (accepted : xs.mapM f = some ys) :
+    ∀ y ∈ ys, ∃ x ∈ xs, f x = some y := by
+  induction xs generalizing ys with
+  | nil => simpa using accepted
+  | cons x xs ih =>
+    cases hx : f x with
+    | none => simp [hx] at accepted
+    | some y =>
+      cases hs : xs.mapM f with
+      | none => simp [hx,hs] at accepted
+      | some rest =>
+        have same : y :: rest = ys := by simpa [hx,hs] using accepted
+        subst ys
+        intro value member
+        rcases List.mem_cons.mp member with equal | following
+        · subst value; exact ⟨x,by simp,hx⟩
+        · obtain ⟨a,inside,found⟩ := ih rest hs value following
+          exact ⟨a,by simp [inside],found⟩
+
+theorem premises_members (artifact : Artifact) (proof : Proof) (ps : Array Proof)
+    (accepted : Rule.premises artifact proof = some ps) :
+    ∀ premise ∈ ps.toList, ∃ index ∈ proof.premises.toList, artifact.proofs[index]? = some premise := by
+  have mapped : proof.premises.toList.mapM (fun index => artifact.proofs[index]?) = some ps.toList := by
+    simpa only [Rule.premises,Array.toList_mapM,Functor.map] using
+      congrArg (fun result => Array.toList <$> result) accepted
+  exact mapM_members _ _ _ mapped
+
+theorem children_images {S : Type} (ps : Array Proof) (p m : Array Nat)
+    (operations meanings : Nat → S)
+    (accepted : Rule.children ps p m = true)
+    (equations : ∀ premise ∈ ps.toList, operations premise.implementation = meanings premise.meaning) :
+    p.toList.map operations = m.toList.map meanings := by
+  simp only [Rule.children,Bool.and_eq_true,beq_iff_eq] at accepted
+  rw [accepted.1,accepted.2]
+  simp only [Array.toList_map,List.map_map,Function.comp_def]
+  apply List.map_congr_left
+  exact equations
+
+end Qleisli.HierarchicalSemantics

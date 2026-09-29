@@ -26,6 +26,7 @@ pub(super) enum Value {
     Classical(ClassicalId),
     Quantum(Slot, Ty),
     Pair(Box<Value>, Box<Value>),
+    Tuple(Vec<Value>),
 }
 
 impl Value {
@@ -37,6 +38,9 @@ impl Value {
             size.depth = size.depth.max(depth);
             match value {
                 Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
+                Self::Tuple(fields) => {
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
+                }
                 Self::Quantum(_, basis) => {
                     let basis = basis.tree_size();
                     size.nodes += basis.nodes;
@@ -54,6 +58,7 @@ impl Value {
             Self::Classical(_) => Ty::CBit,
             Self::Quantum(_, basis) => Ty::Q(Box::new(basis.clone())),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
+            Self::Tuple(fields) => Ty::Tuple(fields.iter().map(Self::ty).collect()),
         }
     }
 
@@ -61,12 +66,30 @@ impl Value {
         match self {
             Self::Quantum(..) => true,
             Self::Pair(a, b) => a.owns_quantum() || b.owns_quantum(),
+            Self::Tuple(fields) => fields.iter().any(Self::owns_quantum),
             _ => false,
         }
     }
 
     pub(super) fn pair(a: Self, b: Self) -> Self {
         Self::Pair(Box::new(a), Box::new(b))
+    }
+
+    pub(super) fn tuple(mut fields: Vec<Self>) -> Self {
+        if fields.len() == 2 {
+            let b = fields.pop().expect("second field");
+            Self::pair(fields.pop().expect("first field"), b)
+        } else {
+            Self::Tuple(fields)
+        }
+    }
+
+    pub(super) fn into_fields(self) -> Option<Vec<Self>> {
+        match self {
+            Self::Pair(a, b) => Some(vec![*a, *b]),
+            Self::Tuple(fields) => Some(fields),
+            _ => None,
+        }
     }
 }
 

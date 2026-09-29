@@ -1,0 +1,117 @@
+✖ [31/33] Building QleisliKernel.Hierarchical.Graph (465ms)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/Graph.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Graph.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Graph.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Graph.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Graph.setup.json --json
+error: QleisliKernel/Hierarchical/Graph.lean:96:18: Tactic `contradiction` failed
+
+nodes : Nodes
+roots : List Nat
+order : Array Nat
+schedule : Schedule
+x✝ : Option (Array Nat)
+ranks✝ : Array Nat
+invalid : makeRanks (Array.size nodes) order = some ranks✝
+accepted :
+  (have __do_jp := fun y =>
+      have references := Array.foldl (fun count children => count + children.length) 0 nodes;
+      have visits := charge (Array.size nodes) references roots.length;
+      have __do_jp := fun y =>
+        have __do_jp := fun y => do
+          let ds ← depths nodes order
+          have __do_jp : PUnit → Except Failure Schedule := fun y =>
+            pure
+              { order := order, ranks := ranks✝,
+                stats :=
+                  { nodes := Array.size nodes, references := references, visits := visits,
+                    depth := Array.foldl max 0 ds } }
+          if (!reachable nodes order roots) = true then do
+              let y ← throw { kind := Error.invalidIr, node := none }
+              __do_jp y
+            else do
+              let y ← pure PUnit.unit
+              __do_jp y;
+        if (!topology nodes ranks✝ || !roots.all fun x => decide (x < Array.size nodes)) = true then do
+          let y ← throw { kind := Error.invalidIr, node := none }
+          __do_jp y
+        else do
+          let y ← pure PUnit.unit
+          __do_jp y;
+      if (decide (references > 1000000) || decide (visits > 2000000)) = true then do
+        let y ← throw { kind := Error.limit, node := none }
+        __do_jp y
+      else do
+        let y ← pure PUnit.unit
+        __do_jp y;
+    if
+        (Array.isEmpty nodes || decide (Array.size nodes > 100000) || roots.isEmpty ||
+            decide (roots.length > Array.size nodes)) =
+          true then
+      do
+      let y ← throw { kind := Error.limit, node := none }
+      __do_jp y
+    else do
+      let y ← pure PUnit.unit
+      __do_jp y) =
+    Except.ok schedule
+⊢ schedule.order = order ∧
+    makeRanks (Array.size nodes) order = some schedule.ranks ∧
+      topology nodes schedule.ranks = true ∧ reachable nodes order roots = true ∧ schedule.stats.visits ≤ 2000000
+error: QleisliKernel/Hierarchical/Graph.lean:102:13: unsolved goals
+case none
+nodes : Nodes
+roots : List Nat
+order : Array Nat
+schedule : Schedule
+x✝ : Option (Array Nat)
+bounded : ∀ (ranks : Array Nat), makeRanks (Array.size nodes) order = some ranks → False
+capacity :
+  ¬(Array.isEmpty nodes || decide (Array.size nodes > 100000) || roots.isEmpty ||
+        decide (roots.length > Array.size nodes)) =
+      true
+hr : makeRanks (Array.size nodes) order = none
+accepted :
+  (if
+        1000000 < Array.foldl (fun count children => count + children.length) 0 nodes ∨
+          2000000 <
+            charge (Array.size nodes) (Array.foldl (fun count children => count + children.length) 0 nodes)
+              roots.length then
+      do
+      throw { kind := Error.limit, node := none }
+      throw { kind := Error.invalidIr, node := none }
+    else throw { kind := Error.invalidIr, node := none }) =
+    Except.ok schedule
+⊢ schedule.order = order ∧
+    none = some schedule.ranks ∧
+      topology nodes schedule.ranks = true ∧ reachable nodes order roots = true ∧ schedule.stats.visits ≤ 2000000
+error: QleisliKernel/Hierarchical/Graph.lean:111:27: Unknown constant `Except.bind_ok`
+error: QleisliKernel/Hierarchical/Graph.lean:111:12: `simp` made no progress
+error: QleisliKernel/Hierarchical/Graph.lean:102:22: This simp argument is unused:
+  hr
+
+Hint: Omit it from the simp argument list.
+  simp [̵h̵r̵]̵ ̵at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: QleisliKernel/Hierarchical/Graph.lean:104:19: This simp argument is unused:
+  hr
+
+Hint: Omit it from the simp argument list.
+  simp only [h̵r̵,̵ ̵Option.bind_some] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: QleisliKernel/Hierarchical/Graph.lean:104:23: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  simp only [hr,̵ ̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵_̵s̵o̵m̵e̵] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: QleisliKernel/Hierarchical/Graph.lean:109:35: This simp argument is unused:
+  hd
+
+Hint: Omit it from the simp argument list.
+  simp [̵h̵d̵]̵ ̵at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Hierarchical.Graph
+error: build failed

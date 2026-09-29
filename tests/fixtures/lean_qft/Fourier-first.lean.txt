@@ -1,0 +1,65 @@
+import QleisliKernel.Qft
+import Qleisli.Interference
+import Mathlib.Data.ZMod.Basic
+
+/-! Fourier phase interpretation of the actual symbolic QFT certificate.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace Qleisli.Qft
+open QleisliKernel QleisliKernel.Interference QleisliKernel.PathSum
+open scoped BigOperators
+
+def value (width : Nat) (bits : Bits) : Nat :=
+  ∑ k ∈ Finset.range width, if bits k then 2 ^ k else 0
+
+private theorem sum_range {A : Type} [AddCommMonoid A] (n : Nat) (f : Nat → A) :
+    ((List.range n).map f).sum = ∑ i ∈ Finset.range n, f i := by
+  simpa using (List.sum_toFinset f (List.nodup_range n)).symm
+
+private theorem high_power_zero (width k l : Nat) (bounded : width ≤ 8)
+    (high : width ≤ k + l) : (2 : ZMod 256) ^ (8 - width + k + l) = 0 := by
+  have exponent : 8 - width + k + l = 8 + (k + l - width) := by omega
+  rw [exponent, pow_add]
+  norm_num
+
+private theorem phase_cast (width : Nat) (input choices : Bits) :
+    (PhasePolynomial.evaluate (QleisliKernel.Qft.fourierTerms width)
+      (assignment width input choices) : ZMod 256) =
+      ∑ k ∈ Finset.range width, ∑ l ∈ Finset.range (width - k),
+        if input k && choices l then (2 : ZMod 256) ^ (8 - width + k + l) else 0 := by
+  unfold PhasePolynomial.evaluate
+  rw [show modulus = 256 from rfl, ZMod.natCast_mod]
+  simp only [QleisliKernel.Qft.fourierTerms, List.map_flatMap, List.sum_flatMap,
+    Nat.cast_list_sum, List.map_map, Function.comp_def, sum_range]
+  apply Finset.sum_congr rfl
+  intro k hk
+  apply Finset.sum_congr rfl
+  intro l _
+  have inside : k < width := Finset.mem_range.mp hk
+  simp [PhasePolynomial.Term.value, assignment, inside]
+
+theorem fourier_phase (width : Nat) (bounded : width ≤ 8) (input choices : Bits) :
+    PhasePolynomial.evaluate (QleisliKernel.Qft.fourierTerms width)
+      (assignment width input choices) =
+      (2 ^ (8 - width) * value width input * value width choices) % 256 := by
+  apply (ZMod.natCast_eq_natCast_iff' _ _ 256).mp
+  rw [ZMod.natCast_mod, phase_cast]
+  have extend (k : Nat) :
+      (∑ l ∈ Finset.range (width - k),
+        if input k && choices l then (2 : ZMod 256) ^ (8 - width + k + l) else 0) =
+      ∑ l ∈ Finset.range width,
+        if input k && choices l then (2 : ZMod 256) ^ (8 - width + k + l) else 0 := by
+    apply Finset.sum_subset (Finset.range_mono (Nat.sub_le width k))
+    intro l _ outside
+    have high : width ≤ k + l := by simp only [Finset.mem_range, not_lt] at outside; omega
+    split <;> simp [high_power_zero width k l bounded high]
+  simp_rw [extend]
+  simp only [value, Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat, Nat.cast_sum,
+    Nat.cast_ite, Nat.cast_zero, Finset.sum_mul, Finset.mul_sum]
+  apply Finset.sum_congr rfl
+  intro k _
+  apply Finset.sum_congr rfl
+  intro l _
+  cases hi : input k <;> cases hc : choices l <;> simp [hi, hc, pow_add, mul_assoc]
+
+end Qleisli.Qft

@@ -96,7 +96,7 @@ iso fn prepare_edge[static n,
 observe fn sample_walk[static n, static steps,
     static VertexPrep: UnitaryOp<Bits<n>>,
     static Urow: UnitaryOp<(Bits<n>, Bits<n>)>]()
-    -> (CWord<n>, CWord<n>) {
+    -> (CBits<n>, CBits<n>) {
     let edge = prepare_edge[n, VertexPrep, Urow]();
     let edge = for static k in 0..steps carry current = edge {
         yield walk_step[n, Urow](current);
@@ -111,7 +111,7 @@ observe fn sample_walk[static n, static steps,
 `steps` is a finite static natural; zero steps still require all operation
 bodies and contracts to be checked. `init_zero<n>` and `measure_bits` are
 proposed ordinary register definitions over fresh preparation and consuming
-single-bit measurement. `CWord<n>` is the proposed classical measured bit
+single-bit measurement. `CBits<n>` is the proposed classical measured bit
 vector; `Bits<n>` is a basis type and `Q<Bits<n>>` denotes ownership.
 Their detailed future typing rules remain a specification question.
 
@@ -211,7 +211,7 @@ current standard-library contract ledger.
 | WALK-1: sizes, static operation parameters and ownership fold; language forms | `Bits<n>`, static `UnitaryOp<A>`, finite `carry`; retain the complete ordered interface. Specialize finite bodies or retain a future checked loop representation, with explicit budgets. | Accept finite `n,t` and closed operation descriptions. Reject captured live owners, dynamic/unbounded steps in this pure fold, duplicate axes, or a body that drops part of its carried owner. |
 | WALK-2: row access; ordinary implementation plus unresolved evidence schema | `Q<(Bits<n>,Bits<n>)> -> Q<(Bits<n>,Bits<n>)>`, `Unitary`; actual phase-fixed `Urow`, its adjoint, and `Urow E0 = E_A` evidence. Expand/verify the provider and retain its binding in final IR. | Accept a unitary row preparation satisfying the full padding contract. Reject a classical randomized sampler, a one-way `Iso`, or an inverse claim based only on the name `prepare`. |
 | WALK-3: zero reflection and swaps; ordinary definitions | `reflect_zero_plus:Q<Bits<n>> -> Q<Bits<n>>`, `Unitary`, plus `swap_halves` above. Expand reversible total zero-testing/phase/uncomputation and complete axis permutations. `nonzero:Bits<n> -> Bit` is total and true exactly away from zero. | Accept `+1` on zero and `-1` elsewhere. Reject the opposite sign as satisfying this contract, an incomplete padded table, or treating a same-width output permutation as identity. |
-| WALK-4: preparation and observation; ordinary definitions over sealed primitives | `init_zero:Unit -> Q<Bits<n>>` is `Iso`; `measure_bits:Q<Bits<n>> -> CWord<n>` is `Observe`. Expand fresh initialization and consuming measurements, keeping little-endian label decoding. | Accept both output labels, or an explicit observation/discard of an unused label. Reject reuse of measured ownership or omission of the right register at function exit. |
+| WALK-4: preparation and observation; ordinary definitions over sealed primitives | `init_zero:Unit -> Q<Bits<n>>` is `Iso`; `measure_bits:Q<Bits<n>> -> CBits<n>` is `Observe`. Expand fresh initialization and consuming measurements, keeping little-endian label decoding. | Accept both output labels, or an explicit observation/discard of an unused label. Reject reuse of measured ownership or omission of the right register at function exit. |
 | WALK-5: support and accuracy evidence; unresolved evidence schema | Record `N`, exact row/support equations, implementation identity, reference extension, and optional operator-norm bounds independently of ownership. Verify at the source/IR boundary; bounds must name the actual operator. | Accept a valid-domain preparation with a full-space step. Reject inferring coherent access from probabilities, treating approximate support as exact cleanup, or inferring a search speedup from `P=P^T`. |
 
 ## 6. Open questions and review targets

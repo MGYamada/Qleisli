@@ -249,12 +249,12 @@ def render_status(root: Path) -> str:
     if set(data) != {"format", "release_state", "milestones", "inventory"} or data["format"] != 1:
         raise ValueError("unsupported project-status format or fields")
     versions = []
-    for manifest in ["Cargo.toml", "lean/lakefile.toml"]:
+    for manifest in ["Cargo.toml", "lean/lakefile.toml", "lean-kernel/lakefile.toml"]:
         match = re.search(r'^version = "([^"]+)"$', (root / manifest).read_text(), re.MULTILINE)
         if not match:
             raise ValueError(f"missing project version in {manifest}")
         versions.append(match[1])
-    if versions[0] != versions[1]:
+    if len(set(versions)) != 1:
         raise ValueError("Rust and Lean project versions differ")
 
     def cell(value):
@@ -311,20 +311,30 @@ def check_status(root: Path, write: bool = False) -> list[str]:
     return []
 
 
+def markdown_paths(root: Path) -> list[Path]:
+    docs = [*root.glob("*.md"), *root.joinpath("docs").rglob("*.md")]
+    docs += list(root.joinpath("lean").glob("*.md"))
+    docs += list(root.joinpath("lean-kernel").glob("*.md"))
+    docs += list(root.joinpath("research").glob("*/README.md"))
+    for directory in ["examples", "corpus", "tests/fixtures"]:
+        docs += list(root.joinpath(directory).rglob("*.md"))
+    return docs
+
+
 def main() -> int:
     if sys.argv[1:] not in ([], ["--write-status"]):
         print("usage: check_docs.py [--write-status]", file=sys.stderr)
         return 2
     status_errors = check_status(ROOT, write=sys.argv[1:] == ["--write-status"])
-    docs = [*ROOT.glob("*.md"), *ROOT.joinpath("docs").rglob("*.md")]
-    docs += list(ROOT.joinpath("lean").glob("*.md"))
-    docs += list(ROOT.joinpath("research").glob("*/README.md"))
-    docs += list(ROOT.joinpath("examples").rglob("*.md"))
-    docs += list(ROOT.joinpath("tests/fixtures").rglob("*.md"))
-    errors, counts = check_links(ROOT, docs)
+    errors, counts = check_links(ROOT, markdown_paths(ROOT))
     errors.extend(status_errors)
     lean_errors, modules = check_lean(ROOT)
     errors.extend(lean_errors)
+    # Loaded here so the standalone checker can reuse lean_imports above.
+    from check_lean_kernel import check_kernel
+    kernel_errors, kernel_modules = check_kernel(ROOT)
+    errors.extend(kernel_errors)
+    modules += kernel_modules
     if errors:
         print("\n".join(errors), file=sys.stderr)
         return 1

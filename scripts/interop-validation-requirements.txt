@@ -1,4 +1,9 @@
 # Validation only; neither package is a production Rust dependency.
 # openqasm3: Apache-2.0; ANTLR Python runtime: BSD-3-Clause.
-openqasm3[parser]==1.0.1
-antlr4-python3-runtime==4.13.2
+# Hashes from the pinned releases' PyPI JSON metadata; wheels only.
+--require-hashes
+--only-binary=:all:
+openqasm3[parser]==1.0.1 \
+    --hash=sha256:0d3a1ebe3465e3ea619bcaa369858bba8944cbb0c49604b24f94662d3ec41d41
+antlr4-python3-runtime==4.13.2 \
+    --hash=sha256:fe3835eb8d33daece0e799090eda89719dbccee7aa39ef94eed3818cafa5a7e8

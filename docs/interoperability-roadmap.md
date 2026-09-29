@@ -53,6 +53,14 @@ the later shared representation for calls, repetition, exact meanings,
 encodings and bound evidence. Early interoperability does not satisfy R14 or
 justify flattening scalable algorithms into global matrices or expanded calls.
 
+The [Lean kernel migration](lean-kernel-migration.md) changes the implementation
+of the independent checker in stages; frontends, diagnostics, foreign adapters,
+CLI and numerical execution remain Rust responsibilities. The current finite
+checker is still authoritative. The initial Lean phase-word protocol checks
+only its declared cyclic action and does not consume QIRF, OpenQASM or QIR.
+Future Lean-required paths must reject unavailable/unsupported checkers and
+bind acceptance to the exact artifact subsequently executed or exported.
+
 "Quantum LLVM" means reusable frontends, explicit interfaces, composable passes
 and multiple targets. Retain Qleisli ownership, effects, exact phase, encodings
 and cleanup evidence until their obligations have been checked. Generic LLVM
@@ -74,6 +82,13 @@ Put convenience operations in untrusted desugaring and adapters. QIR/OpenQASM
 spellings must not cause new convenience variants in the verifier. The core
 retains the obligations external formats do not discharge: linear ownership,
 effects, ordered interfaces, exact phase and evidence permitting pure cleanup.
+
+The experimental [phase-word kernel](lean-kernel-migration.md#first-executable-slice)
+is produced by the isolated Rust host experiment and consumed by its native
+Lean checker. It adds no production `RawOp`, removes no existing acceptance
+rule, and does not close the compatibility debt below. New M2 kernel rules
+will be implemented in Lean with proofs about those actual definitions;
+translation and post-verification execution obligations remain separate.
 
 Here the **[desugaring layer](terminology.md#desugaring-layer)** is the
 meaning-preserving producer of already specified core operations from convenient
@@ -108,6 +123,36 @@ finite label binder. Their tables flow through the same lift/computed/meaning
 producers above. No IR constructor, verifier rule or compatibility-debt row is
 added or removed; this is source convenience, not a reduction of the trusted
 acceptance base.
+
+**0.2.0 tuple correction:** the [type contract](type-system.md) supersedes that
+left-folding source rule. Public AST tuple nodes now retain immediate fields;
+finite evidence adds a canonical n-ary `BasisType::Tuple` alongside binary Pair.
+The [transport](machine-interface-spec.md) preserves this distinction and checks
+it against independent requests. Existing lifts, ports and split/join implement
+explicit conversions; no raw quantum instruction is added. This is a breaking
+source/AST/evidence extension, not a reduction of the trusted acceptance base.
+
+**0.2.0 typed layout component:** the [Lean checker](lean-layout-slice.md) is
+an experimental consumer of explicit complete type/owner/axis descriptions.
+It checks permutation and request binding without a new finite RawOp variant.
+It is not a source producer, QIRF replacement, production authority transfer or
+reduction of the current Rust acceptance base. The [shared typed-call
+component](lean-layout-dag-slice.md) now consumes layout DAGs with explicit
+adapters and independent entry requests. It has no source producer and does
+not connect general gate or encoding rules yet. The subsequent [combined
+phase/layout consumer](lean-phase-layout-slice.md) adds sparse controlled dyadic
+phases to these typed graphs, with actual normalization/composition proofs.
+It still has no source producer, finite-leaf adapter or production authority;
+this does not reduce the current Rust acceptance base.
+
+**0.2.0 finite transport:** the [QIRF decoder](../src/interchange/mod.rs) is now an external producer for every frozen finite constructor. It reconstructs evidence with the existing exact checker and rechecks raw programs; it does not make the raw-only convenience variants desirable compiler targets. Their compatibility debt remains. The new trajectory sampler shares numeric execution code but adds no evidence-acceptance rule or trusted-core reduction.
+
+**0.1.9 review continuation in 0.2.0:** finite closed static transforms now
+compare emitted circuits with independently extracted verified-IR meanings
+through the existing matrix equation checker. Sharing inversion/basis helpers
+and source-storage accounting does not remove an IR variant or acceptance rule.
+The [review record](reviews/v0.1.9-followup.md) bounds this check to six bits and
+distinguishes its new capacities from a general source-preservation proof.
 
 This is an initial constructor-family inventory, not a proof of complete
 frontend coverage. Review it when adding an emitter, core constructor or
@@ -257,3 +302,49 @@ explicit compatibility decision.
   [PyO3 distribution guidance](https://pyo3.rs/v0.29.2/building-and-distribution.html)
   describes packaging native Python extensions. These are candidates to evaluate,
   not dependencies installed or versions selected by this design change.
+
+The [interference continuation](lean-interference-slice.md) adds an internal
+proved transformation and complex interpretation, with a generated native test
+producer. It introduces no further wire protocol or standalone acceptance
+variant, removes no Rust rule and does not yet supply a `.qli` hierarchical
+producer. Its amplitude equalities become usable checking premises only when
+original typed nodes and evidence bindings are validated by a later integration.
+
+The [QFT circuit proof](lean-qft-proof-packet.md) likewise has an internal
+matcher and generated native fixture producer. It adds no external protocol,
+production Rust acceptance rule or `.qli` hierarchy producer. Its source-level
+round trip and deliberate wrong reversal are finite regression clients. Typed
+ports, actual graph dependencies and the shipped theorem registry must bind
+the matched circuit before an external schema can use this theorem.
+
+The [typed shared QFT projection](lean-qft-graph-packet.md) now binds complete
+internal interfaces and dependencies to literal graph/Fourier semantics. It
+retains a generated native producer and has no `.qli` hierarchical producer
+or external decoder yet. A physical data permutation is separate from owner
+metadata renaming. The external finite-leaf/control/rewire projection and fixed
+registry remain debt to close before this component can issue external evidence.
+
+The [typed artifact preparer](hierarchical-ir-spec.md#typed-artifact-preparation)
+now represents every adopted node and derives references from actual fields,
+with exact proof endpoint binding and a shared-budget graph pass. Its producer
+is the retained native fixture generator. There is still no `.qli` producer or
+public hierarchical decoder; no variant issues semantic evidence. Finite-leaf
+reconstruction, derivations and independent request binding must
+close this integration debt before production use. This preparatory component
+does not remove a Rust acceptance rule or reduce the existing trusted base.
+The same fixture producer exercises the complete side-map checker and its
+reference round-trip theorem. This adds no wire variant; the enclosing node
+checker now binds both call sides, checks fresh names and charges the returned
+work. Its fixture producer tests the actual definition-node pass, which proves
+every definition was structurally checked, including zero-repeat bodies. This
+still supplies no semantic evidence handle or external decoder; finite leaves,
+mathematical meaning/encoding equations, proof derivation and independent requests remain debt.
+The meaning/encoding structural pass is now integrated with that node pass and
+has actual whole-table coverage/budget theorems. It still has only the generated
+fixture producer; opaque finite descriptions are not verified by their headers.
+The explicit `structural` definition/meaning variant now covers checked
+Bits/Bit, immediate tuple and empty-owner conversions with actual inverse
+routing proofs. Its only producer is the native fixture generator; source
+lowering, equation/encoding binding and execution are open integration debt.
+This adds a necessary ownership conversion rule without changing `rewire`'s
+type-preservation requirement or reducing the existing Rust trusted base.

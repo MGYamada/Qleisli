@@ -1,7 +1,8 @@
 # Selected M1 machine interfaces
 
-Status: **X1 check/run implemented in the 0.1.7 development tree; X2–X6
-specified, unimplemented** (updated 2026-09-28). These are independently
+Status: **X1 retained; X2–X6 implemented in the 0.2.0 finite profile**
+(updated 2026-09-29). See the executed checks and publication evidence in the
+[release record](releases/v0.2.0.md). These are independently
 shippable slices of [M1](next-minor-spec.md), versioned by
 [compatibility](versioning.md), with X1 first implemented in 0.1.7. Formats below
 have their own versions; product/package versions never change their meaning.
@@ -12,6 +13,15 @@ Python, OpenQASM 3 and QIR entry points. The bounded OpenQASM input/output
 and QIR output now have a separate [M1.1-A contract and implementation](interop-m1.1.md);
 Python, QIR input and adaptive extensions remain pending. They do not change X1–X6 below. In particular, this document's **QIRF**
 is Qleisli's JSON interchange, not QIR Alliance LLVM IR.
+
+The [Lean migration](lean-kernel-migration.md) adds a separate experimental
+[phase-word protocol](lean-kernel-migration.md#first-executable-slice): canonical
+LF text `.qpk` artifacts and independently supplied `.qpr` requirements, with
+a fixed JSON result. It is not QIRF1/2, a new QIRF tag, or a production evidence
+receipt. Existing QIRF import and `check`/`run` remain Rust-authoritative.
+Later migration must reconstruct evidence from data, bind the same immutable
+artifact and requested contract, and fail explicitly when a required Lean
+checker is unavailable or rejects; a Rust seal or supplied digest is no proof.
 
 For these adapters, **[desugaring](terminology.md#desugaring-layer)** means
 meaning-preserving translation of convenient representations to already
@@ -38,10 +48,8 @@ a diagnostics array.
 
 ## Diagnostics
 
-**Implemented scope:** `check` and `run`. `doc` remains Markdown-only and
-rejects `--format=json` as usage. `sample`, `emit-ir` and `verify-ir` are still
-unimplemented commands, so requests for them are usage failures, including
-in JSON mode. The rules below specify their future result transport as well.
+**Implemented scope:** `check`, `run`, `sample`, `emit-ir` and `verify-ir`.
+`doc` remains Markdown-only and rejects `--format=json` as usage.
 
 Add the opt-in flag `--format=json` to `check`, `run`, `sample`, `emit-ir` and
 `verify-ir`. Flags may precede/follow positional arguments; duplicates, unknown
@@ -111,9 +119,9 @@ returning `frontend::diagnostic::Diagnostic` (`code`, `message`, optional
 portable relative/`std://` rendering belongs to the CLI. Parser provenance and
 coordinates are retained from the loaded source rather than inferred from
 message text or a later file read. Load failures with source spans retain them;
-I/O/path failures and a missing entry point have null locations. No related
-locations or warnings are currently produced; the required `related` field
-is an empty array. Legacy `CompileError`, `ErrorCode` and `ProjectError`
+I/O/path failures and a missing entry point have null locations. Source errors
+still produce no related locations or warnings; artifact errors attach their
+JSON pointer with a null location. Legacy `CompileError`, `ErrorCode` and `ProjectError`
 shapes/categories remain unchanged, including parser failures as `Project`.
 
 ## Portable finite IR and evidence
@@ -159,7 +167,7 @@ non-null value describes the sole quantum input and sole quantum output of
 inputs/outputs. Import first verifies the raw program, then checks each tree's
 bit count against its corresponding verified port, including the output token's
 resolved shape and wire order. Bit leaves map left to right to the port's
-ordered wires, first leaf least significant; retain every Unit node and pair
+ordered wires, first leaf least significant; retain every Unit node, tuple arity and nested
 association. Both trees obey the existing depth-64 and 4,096-node type limits
 as well as the transport limits. Invalid port/effect/width binding rejects the
 artifact as `invalid_ir`; resource exhaustion is `limit`.
@@ -183,7 +191,7 @@ Rust fields are not silently added to the wire format.
 
 | Type | Version-1 JSON representation |
 | --- | --- |
-| BasisType | `{"tag":"unit"}`, `{"tag":"bit"}`, or `{"tag":"pair","left":T,"right":T}`; retain Unit nodes |
+| BasisType | `{"tag":"unit"}`, `{"tag":"bit"}`, `{"tag":"pair","left":T,"right":T}`, or `{"tag":"tuple","fields":[T,...]}` with at least three immediate fields; retain Unit nodes, exact arity and nesting. Two fields use `pair`; smaller `tuple` arrays reject. See the [0.2.0 type migration](tuple-shapes.md). |
 | ID/index/bit count | Nonnegative integer; token/wire/classical IDs are distinct namespaces; a shape is `{"bits":n}` with n≤12 |
 | QuantumPort | `{token,wires,shape}`; `wires` is an ordered array of wire IDs |
 | RawProgram | `{quantum_inputs,classical_inputs,operations,quantum_outputs,classical_outputs,declared_effect}`; quantum inputs are ports, quantum outputs are token IDs, classical inputs/outputs are classical IDs |
@@ -260,7 +268,7 @@ tag is `permutation` or `phase8`; table is the complete ordered u16 permutation
 or 0–7 phase table. `source_snapshot` is null (no provenance requirement) or
 the exact ordered array of `{path,text}`. `--against` requires a non-null,
 validated `root_interface` whose input and output trees both equal the request
-signature structurally, including Unit nodes and pair association. Missing
+signature structurally, including Unit nodes, tuple arity and nested association. Missing
 type information or either tree mismatch is `contract`, even if the bit counts
 and operators agree; never fill in or replace root types from the request.
 It also requires a closed unary unitary root (no classical inputs/outputs), exact
@@ -375,7 +383,7 @@ This specifies integration behavior; general efficient number theory is M4.
 
 ## Source input capacities and migration
 
-The future loader defaults to 1 MiB per UTF-8 `.qli` file and 16 MiB aggregate
+The 0.2.0 CLI loader defaults to 1 MiB per UTF-8 `.qli` file and 16 MiB aggregate
 across distinct canonical project files plus bundled modules, counting bytes
 before decoding/normalization. Stream at most limit+1 bytes per file, rejecting
 at the first excess; account files in existing deterministic path order.
@@ -397,7 +405,7 @@ projects is explicit opt-in legacy loading or larger bounds. 0.1.5 adds no cap.
 | Gate | Positive and adversarial evidence required |
 | --- | --- |
 | X1 diagnostics | Golden success/usage/type/runtime JSON; Unicode and EOF spans; no mixed stdout; unchanged human check/run and exits; reject unknown/duplicate flags. |
-| X2 interchange | Round-trip every RawOp/action, shared evidence DAG and exact root input/output trees (including Unit and pair association) through v1/v2; check requested meaning/provenance; reject cycles, dangling/unused entries, malformed tags/IDs, invalid root port/type binding, phase/output/source mutation and all limits, including deep-rejection destruction. |
+| X2 interchange | Round-trip every RawOp/action, shared evidence DAG and exact root input/output trees (including Unit, tuple arity and nested association) through v1/v2; check requested meaning/provenance; reject cycles, dangling/unused entries, malformed tags/IDs, invalid root port/type binding, phase/output/source mutation and all limits, including deep-rejection destruction. |
 | X3 independent trust | Import in a fresh process with no frontend/cache; mutate the root or requested target; accept matching typed identity requests, reject equal-width tree substitutions at either root port and null interfaces under `--against`; never infer types from requests; reject invalid contracts even when names/hashes match; document source-adequacy boundary. |
 | X4 sampling | Deterministic basis states; seeded known generator words; Bell correlation, reset/discard marginal and feedback; independent statistical tests against finite exhaustive distributions with stated confidence/tolerance. No golden lucky random frequency. |
 | X5 trials | Accept on first/later attempt, all retries, zero bound, injected RNG/runtime/numerical failure, invalid/odd periods, trivial gcds and checked factors; count preparation/attempts precisely. |
@@ -407,7 +415,32 @@ The original documentation release did not execute these tests. X1 check/run
 now has [Rust CLI regressions](../tests/cli_json.rs),
 [structured location checks](../tests/diagnostics.rs) and an
 [independent JSON decoder suite](../scripts/test_cli_json.py); execution results
-belong in the [0.1.7 record](releases/v0.1.7.md). X2–X6 remain unimplemented.
-Their future shipping still requires implementation, validation and a
+belong in the [0.1.7 record](releases/v0.1.7.md). X2–X6's implementation and
+validation are recorded separately in the [0.2.0 record](releases/v0.2.0.md).
+
+## 0.2.0 host API mapping
+
+[`interchange::export`](../src/interchange/mod.rs) accepts a `VerifiedProgram`,
+optional retained `RootInterface`, and `Version::V1`/`V2`.
+`export_with_meanings` retains explicitly supplied sealed `MeaningEvidence`
+receipts as v2 meaning entries; ordinary export retains their already checked
+canonical target circuits. `convert` checks the input and preserves source
+ordering and exact root types; it rejects a v2 meaning entry when targeting v1.
+`import(bytes, request)` reconstructs all receipts and returns the verified
+root, retained interface, `request_checked`, and charged exact work.
+
+The CLI emitter currently exports the closed observation entry as QIRF2, with
+a null root interface. Such an entry cannot satisfy a unary unitary request;
+typed unitary producers use the Rust exporter and retain their exact trees.
+`verify-ir` accepts both specified versions and has no frontend dependency in
+its execution path. No source-adequacy theorem is claimed by either adapter.
+
+[`sample_closed`](../src/sim/sampling.rs), `RandomSource`, `SampleLimits`,
+`SampleError` and `SplitMix64` implement X4; [`run_trials`](../src/host.rs) and
+the [bounded factoring helpers](../src/host/factoring.rs) implement X5.
+[`SourcePolicy`](../src/frontend/project.rs) and policy-bearing project/check/
+compile functions implement X6. Existing host entry points select `Legacy`.
+These are host APIs, not new sealed `.qli` operations or bundled definitions.
+Their future shipping still requires the remaining release validation and a
 compatibility-based release decision; reduced acceptance in X6 requires MINOR.
-This X1 transport is not portable IR or evidence.
+X1 diagnostic transport alone is not portable IR or evidence.

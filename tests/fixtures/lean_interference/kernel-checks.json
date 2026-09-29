@@ -1,0 +1,75 @@
+{
+  "record_kind": "commands observed in this development turn; stdout transcribed from tool results",
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (25 jobs)."
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit": 0,
+      "stdout": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit": 0,
+      "stdout": "Audited 1584 kernel/transport declarations, 1043 pure import modules and 1043 executable import modules; axioms used: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "cwd": "lean-kernel",
+      "exit": 0,
+      "stdout": ""
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "stdout": "16 tests passed"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": ".",
+      "exit": 0,
+      "stdout": "Checked 12 executable kernel/transport source modules; no external Lake dependencies."
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Interference.lean": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+    "lean-kernel/QleisliKernel.lean": "7dd1bdb81c5f875d0cd649f99094091e2e359e34246693b67ddbc0d33e8dd4af",
+    "lean-kernel/Tests.lean": "ebe21df3ad53263bb5f0b3c2cdff4289ff5f2e43c6b7223e039c8e60a3c10363",
+    "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6"
+  }
+}

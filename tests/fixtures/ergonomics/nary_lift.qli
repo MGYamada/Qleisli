@@ -1,4 +1,4 @@
-//! N-ary types, basis arguments, lift patterns and values share left association.
+//! N-ary types, basis arguments, lift patterns and values retain their immediate arity. Binary interfaces use explicit adapters.
 use std::quantum::init0;
 use std::quantum::x;
 use std::quantum::join;
@@ -8,8 +8,14 @@ basis fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }
 unitary fn cycle(q: Q<(Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit)> {
     do (a,b,c) <- q; pure rotate((a,b,c))
 }
+unitary fn flatten(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,Bit,Bit)> {
+    do ((a,b),c) <- q; pure (a,b,c)
+}
+unitary fn nest(q: Q<(Bit,Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {
+    do (a,b,c) <- q; pure ((a,b),c)
+}
 observe fn main() -> (CBit,CBit,CBit) {
-    let (ab,c) = split(cycle(join(join(x(init0()),init0()),init0())));
+    let (ab,c) = split(nest(cycle(flatten(join(join(x(init0()),init0()),init0())))));
     let (a,b) = split(ab);
     (measure_z(a),measure_z(b),measure_z(c))
 }

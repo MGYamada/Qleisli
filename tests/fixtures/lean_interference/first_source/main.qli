@@ -1,0 +1,11 @@
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+// The middle H pair is removable, including for an entangled input.
+unitary fn interference(q: Q<Bit>) -> Q<Bit> {
+    h(t(h(h(t(h(q))))))
+}
+
+observe fn main() -> CBit { measure_z(interference(init0())) }

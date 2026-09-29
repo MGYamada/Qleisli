@@ -1,0 +1,118 @@
+QleisliKernel/PhasePolynomial.lean:72:28: error(lean.unknownIdentifier): Unknown constant `Nat.rec_add_one`
+QleisliKernel/PhasePolynomial.lean:74:16: error: unsolved goals
+case isTrue
+term : Term
+bits : Nat → Bool
+n : Nat
+ih : ∀ (terms : Polynomial), evaluate (insertAux n term terms) bits = (term.value bits + evaluate terms bits) % modulus
+head : Term
+rest : List Term
+same : head.axes = term.axes
+h✝ : term.axes.all bits = true
+⊢ ((term.ticks % modulus % modulus + head.ticks % modulus % modulus) % modulus % modulus +
+        evaluate rest bits % modulus % modulus) %
+      modulus =
+    (term.ticks % modulus % modulus +
+        (head.ticks % modulus % modulus + evaluate rest bits % modulus % modulus) % modulus % modulus) %
+      modulus
+QleisliKernel/PhasePolynomial.lean:77:21: error: unsolved goals
+term : Term
+bits : Nat → Bool
+n : Nat
+ih : ∀ (terms : Polynomial), evaluate (insertAux n term terms) bits = (term.value bits + evaluate terms bits) % modulus
+head : Term
+rest : List Term
+different : ¬head.axes = term.axes
+⊢ ((evaluate rest bits % modulus % modulus + term.value bits % modulus % modulus) % modulus % modulus +
+        head.value bits % modulus % modulus) %
+      modulus =
+    (term.value bits % modulus % modulus +
+        (evaluate rest bits % modulus % modulus + head.value bits % modulus % modulus) % modulus % modulus) %
+      modulus
+QleisliKernel/PhasePolynomial.lean:76:37: warning: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, N̵a̵t̵.̵a̵d̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:76:66: warning: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, Nat.add_assoc, Nat.add_comm,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵l̵e̵f̵t̵_̵c̵o̵m̵m̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:80:27: warning: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, N̵a̵t̵.̵a̵d̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:80:56: warning: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, Nat.add_assoc, Nat.add_comm,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵l̵e̵f̵t̵_̵c̵o̵m̵m̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:93:4: error: unsolved goals
+case pos
+bits : Nat → Bool
+term : Term
+rest : List Term
+ih :
+  (List.map (fun term => term.value bits) (List.filter (fun term => term.ticks != 0) rest)).sum =
+    (List.map (fun term => term.value bits) rest).sum
+zero : term.ticks = 0
+⊢ (List.map (fun term => if ∀ (x : Nat), x ∈ term.axes → bits x = true then term.ticks else 0)
+        (List.filter (fun term => term.ticks != 0) rest)).sum =
+    (List.map (fun term => if ∀ (x : Nat), x ∈ term.axes → bits x = true then term.ticks else 0) rest).sum
+QleisliKernel/PhasePolynomial.lean:93:18: warning: This simp argument is unused:
+  ih
+
+Hint: Omit it from the simp argument list.
+  simp [zero, i̵h̵,̵ ̵Term.value]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:99:68: error(lean.invalidField): Invalid field `sum_eq`: The environment does not contain `List.Perm.sum_eq`, so it is not possible to project the field `sum_eq` from an expression
+  List.Perm.map (fun term => ?m.11) (List.mergeSort_perm ?m.14 ?m.7)
+of type
+  (List.map (fun term => ?m.11) (List.mergeSort ?m.14 ?m.7)).Perm (List.map (fun term => ?m.11) ?m.14)
+QleisliKernel/PhasePolynomial.lean:97:57: error: unsolved goals
+terms : Polynomial
+bits : Nat → Bool
+⊢ (List.map (fun term => term.value bits)
+          ((List.filter (fun term => term.ticks != 0) terms).mergeSort fun a b => decide (key a ≤ key b))).sum %
+      modulus =
+    (List.map (fun term => term.value bits) terms).sum % modulus
+QleisliKernel/PhasePolynomial.lean:107:22: error: unsolved goals
+case cons
+bits : Nat → Bool
+term : Term
+rest : List Term
+ih :
+  ∀ (initial : Polynomial),
+    evaluate (List.foldl insert initial rest) bits = (evaluate rest bits + evaluate initial bits) % modulus
+initial : Polynomial
+⊢ (evaluate rest bits % modulus % modulus +
+        (evaluate initial bits % modulus % modulus + term.value bits % modulus % modulus) % modulus % modulus) %
+      modulus =
+    (evaluate initial bits % modulus % modulus +
+        (evaluate rest bits % modulus % modulus + term.value bits % modulus % modulus) % modulus % modulus) %
+      modulus
+QleisliKernel/PhasePolynomial.lean:110:23: warning: This simp argument is unused:
+  Nat.add_assoc
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, N̵a̵t̵.̵a̵d̵d̵_̵a̵s̵s̵o̵c̵,̵ ̵Nat.add_comm, Nat.add_left_comm]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhasePolynomial.lean:110:52: warning: This simp argument is unused:
+  Nat.add_left_comm
+
+Hint: Omit it from the simp argument list.
+  simp [Nat.add_mod, Nat.add_assoc, Nat.add_comm,̵ ̵N̵a̵t̵.̵a̵d̵d̵_̵l̵e̵f̵t̵_̵c̵o̵m̵m̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

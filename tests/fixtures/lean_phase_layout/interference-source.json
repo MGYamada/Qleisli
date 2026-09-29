@@ -1,0 +1,15 @@
+{
+  "kind": "held-out finite interference client, preserved before first execution",
+  "sha256": "486bfe023acc602951912730b048f397e7949bf5d7bc7638a9624d304fa22ec9",
+  "observation": {
+    "command": [
+      "target/debug/qleisli",
+      "run",
+      "tests/fixtures/lean_phase_layout/interference_client",
+      "--format=json"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.4633883476483187},{\"bits\":[false,true],\"probability\":0.2133883476483186},{\"bits\":[true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true],\"probability\":0.10983495705504473}]}}\n",
+    "stderr": ""
+  }
+}

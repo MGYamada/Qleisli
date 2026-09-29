@@ -15,6 +15,7 @@ import unittest
 from check_distribution import (
     DistributionError, File, check_package, clean_candidate, compare_files, compare_package_metadata,
     digest, extract_checked, license_inventory, read_archive, tracked_files, validate,
+    SOURCE_ROOTS, check_source_roots,
 )
 
 
@@ -23,6 +24,14 @@ class ArchiveTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
+
+    def test_complete_archive_requires_kernel_source_audit_and_process_client(self):
+        files = {name: File(b"source") for name in SOURCE_ROOTS}
+        check_source_roots(files)
+        for name in ["lean-kernel/Audit.lean", "lean-kernel/Main.lean", "lean-kernel/Tests.lean",
+                     "scripts/check_lean_kernel.py", "examples/lean_kernel.rs"]:
+            with self.subTest(name=name), self.assertRaisesRegex(DistributionError, name):
+                check_source_roots({key: value for key, value in files.items() if key != name})
 
     def archive(self, entries):
         path = self.root / "candidate.tar"

@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "task": "Fresh sampled Grover trial",
+  "baseline_commit": "3c19c7669b5b14b738bceaa5f3eff18f92e2190e",
+  "project_version": "0.1.9",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "curated_repair_replay",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged pinned Grover2 translation",
+      "sha256": {
+        "main.qli": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+      },
+      "observations": [
+        "check-initial.json",
+        "sample-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Include the unchanged original local kernel after the actual missing-module diagnostic",
+      "sha256": {
+        "kernel.qli": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+        "main.qli": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+      },
+      "observations": [
+        "check-repaired.json",
+        "sample-repaired.json",
+        "sample-v020.json"
+      ]
+    }
+  ]
+}

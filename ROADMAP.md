@@ -6,6 +6,35 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Historical entries below retain the scope, dates, and counts of their original checks; English translation does not rerun those checks or adopt future syntax. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
+## v0.5.0: Qleisli Soundness Theorem and community foundation
+
+**Adopted target, 2026-09-29:** prove the **Qleisli Soundness Theorem** in Lean
+for the complete declared production verification profile, then make Lean the
+production acceptance authority. The [S05-C1–C5 gates](docs/release-milestones.md#qleisli-soundness-theorem-v050)
+require actual-checker soundness, complete coverage, reproducible proof/audit,
+artifact binding and independent review. The theorem remains unproved; the
+current phase-word theorem is an initial component.
+
+The existing 0.2.0–0.4.x sequence builds the executable kernel, exact contracts
+and full IR checker toward this milestone. During 0.4.x, prepare contributor
+onboarding, review responsibilities and maintenance/release procedures.
+**From v0.5 onward, expand individual development into a full-scale,
+community-oriented open-source project** on that verified foundation.
+[The community roadmap](docs/v0x-roadmap.md#community-development-from-v05)
+keeps source/optimizer/backend translation validation in K4 from 0.6.0, and
+retains M0–M5 and the v1 algorithm gates. Apache-2.0 licensing is already in
+place. This selects a future milestone, not a release date or a version bump.
+
+By v1, also prove the
+[Physical Realizability Theorem](docs/release-milestones.md#physical-realizability-theorem-v1)
+with a substantive Lean backend: derive CPTP semantics as a soundness corollary,
+construct an isometric dilation and prove its synthesis over the declared gate
+set. K4 must connect the actual emitted circuit to the checked meaning, with
+explicit exact/approximate contracts and remaining device assumptions. The
+longer-term direction extends Lean implementation beyond the frontend; backend
+proofs are required for the intended end-to-end Lean guarantee. This adds
+PR-C1–C4 to the v1 gates without changing M0–M5's algorithm dependencies.
+
 <a id="採用したリリース到達条件2026-09-27"></a>
 
 ## Adopted release milestones (2026-09-27)
@@ -23,9 +52,9 @@ For v1, Shor, QPE, and Grover must be readable in their textbook quantum-algorit
 | v0.1.4 | Adopt the original finite maintenance plan. | [Historical release record](docs/releases/v0.1.4.md); its release evidence is preserved. |
 | v0.1.5 | Complete compatible review maintenance, the selected M1 specifications and bounded M2 checker design; validate and package the local candidate. | **Local roadmap complete; publication pending.** [Completion evidence](docs/releases/v0.1.5.md#roadmap-completion-evidence) distinguishes delivered artifacts and validation from exact-commit CI, tagging and publication. M1/M2 feature implementations remain open. |
 | Before v0.2.0 | First write ideal imaginary Qleisli 1.0 code for QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT; record contracts, capabilities, and open questions. Compilation is not required. | The [six drafts and index](docs/imaginary-v1/README.md), with their [review](docs/imaginary-v1/review.md), satisfy the initial-code and requirement-record prerequisite. The code remains uncompiled. |
-| v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
+| v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. Also prove the Physical Realizability Theorem for the supported Lean backend under PR-C1–C4. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
 
-Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version. Do not infer release milestones from unrelated prior test results.
+Detailed V01-C1–C6, B019, V1-C1–C5 and PR-C1–C4 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version. Do not infer release milestones from unrelated prior test results.
 
 | Stage | Status | Deliverables |
 | --- | --- | --- |
@@ -36,9 +65,93 @@ Detailed V01-C1–C6, B019 and V1-C1–C5 criteria are in the [authoritative mil
 | 4. Reference execution | Tested on finite examples | Bell, phase-oracle, feedback, and structured algorithms executed from `.qli` |
 | 5. External backends | Initial bounded host adapters implemented | [M1.1-A](docs/interop-m1.1.md): OpenQASM import/export and QIR Base text output; general target capability checks and device execution remain open |
 
+<a id="v020-shared-qpe-and-code-driven-development"></a>
+
+## v0.2.0 foundation and v0.2.1 shared QPE
+
+**Current product version: 0.2.0.** The 2026-09-29
+[scope split](docs/v0.2.0-plan.md) retains implemented finite interfaces,
+sampling/trials, review fixes and the experimental Lean kernel/proof foundation
+in 0.2.0. The [release record](docs/releases/v0.2.0.md) records migration,
+validation and the separate publication evidence.
+The original 2026-09-28 shared-QPE target continues in [0.2.1](docs/v0.2.1-plan.md):
+complete hierarchical semantics and independent external binding, sized
+`Bits<n>`/`CBits<m>` source and ordinary QPE/QFT, then reference execution and
+integrated H1–H5. Preserve every feature gate; moving it does not mark it passed.
+0.2.1 requires compatible public additions; a required break selects 0.3.0.
+The subsequent 2026-09-29 decision adopts [arity-preserving tuples](docs/tuple-shapes.md)
+and a consolidated [type contract](docs/type-system.md); migrate legacy clients
+with explicit nesting/conversions. Type and ownership decisions follow the
+[Rust default](docs/design-philosophy.md#follow-rust-for-type-and-ownership-discipline),
+with quantum-specific differences stated explicitly. First establish the
+hierarchical meaning/encoding/evidence boundary; source size generalization
+cannot precede that gate. Current implementation and tests are in the
+[development record](docs/releases/v0.2.0.md), without claiming completed M2.
+
+CD-3 now also has a [typed layout checker](docs/lean-layout-slice.md) for
+multiple owners and up to 16 axes, preserving exact tuple shape and zero-width
+ownership. Its permutation/reference proofs and independent request tests are
+component evidence. [Shared typed calls and ordered composition](docs/lean-layout-dag-slice.md)
+now connect layouts to actual dependency semantics. The [combined sparse-phase
+profile](docs/lean-phase-layout-slice.md) adds controlled dyadic phases and proves
+actual composition without dense matrices. Local H/diagonal semantics and the
+[QFT circuit's Fourier coefficients](docs/lean-qft-proof-packet.md) are proved.
+An [internal typed QFT graph projection](docs/lean-qft-graph-packet.md) is also proved.
+The [QPE component theorem](docs/lean-qpe-instrument-packet.md) now establishes
+full branch/reference equations and, under the provider-isometry premise,
+completeness and total trace preservation. General non-diagonal graphs,
+transforms/encodings and external provider/schema binding remain pending.
+
+The user subsequently selected the [Lean kernel migration](docs/lean-kernel-migration.md)
+from 0.2.0 onward. The first dependency-free Lean executable checks bounded
+one-bit phase words and proves acceptance implies their cyclic-phase action;
+it is not a general IR verifier or a QPE proof. `check` and `run` still use the
+Rust verifier. New M2 checking is developed in Lean, with its Mathlib semantic
+bridge kept outside the runtime dependency graph. Shared-QPE/H1–H5 remain open
+for the 0.2.1 continuation; the 0.2.0 split does not claim full M2 or K0 completion.
+The [staged plan](docs/lean-kernel-migration.md#staged-migration) assigns intended
+later boundaries to exact contracts, complete raw verification, conditional
+Lean authority, and translation validation. It preserves M0–M5 and PATCH for
+compatible changes.
+
+Every language/library change now retains first source and real diagnostics,
+an independent oracle and semantic fault, the author obligation removed, and
+a held-out composition. The existing session/corpus/backlog machinery remains
+authoritative. Subsequent M3 Grover, M4 Shor and M5 stabilization follow their
+semantic gates; compatible features use PATCH and breaking changes MINOR.
+
+## Future QLT test language
+
+The [QLT design](docs/qlt-design.md) is adopted as a separate mathematical test
+language with Rust-style source and a one-way dependency on public `.qli`
+definitions. The current deliverable is the English design and
+[preserved sources/counterexamples](tests/fixtures/qlt_design/README.md).
+During 0.3–0.4, implement a Rust experiment for exact finite comparison,
+structural cost and doctests. From 0.5 onward, add complete instrument/reference
+comparisons and migrate actual evaluation to Lean with correspondence proofs;
+interval bounds and independent certificates follow their own contracts.
+
+Test success never substitutes for production contracts or checked IR. The
+QLT migration/proofs are independent targets, not additions to the existing
+0.2.0, S05-C1–C5 or PR-C1–C4/V1-C1–C5 gates. No QLT runtime or test command is
+implemented by this design record; choose release versions by compatibility.
+
+## Future 0.x.0: Lean-assisted mathematical debugging
+
+The [debugger plan](docs/lean-debugger-plan.md), adopted on 2026-09-29, connects
+Lean proof obligations, actual IR and source provenance to mathematical
+diagnostics. Explain phase/order, contract/cleanup and residual/reference
+failures with independently checked witnesses where available. Distinguish
+false claims from missing evidence, unsupported features and undecided checks.
+Reuse QLT references and extend to K4 backend preservation as proofs mature.
+
+The debugger is unimplemented, its precise version is unselected, and it
+neither replaces independent verification nor changes the fixed trust boundary.
+It adds no requirement to 0.2.0/0.2.1 or the soundness/realizability milestones.
+
 ## v0.1.9: review fixes and repair diagnostics
 
-**Current development version: v0.1.9, selected by the user on 2026-09-28.**
+**Historical development version: v0.1.9, selected by the user on 2026-09-28.**
 Repair static-argument EOF panics, locate effect violations at their cause and
 provide checked import/provider rewrite hints. Preserve current capability
 derivations and snapshot accounting, documenting the open issues as A020-09/10.
@@ -217,6 +330,11 @@ with typed associativity, rewire, compute/uncompute and schema instantiation.
 QFT and controlled-power schemas come first; general symbolic equivalence and
 proof search are outside this scope. No production implementation is claimed.
 
+Under the subsequent [migration decision](docs/lean-kernel-migration.md), this
+new M2 kernel is implemented in Lean. The retained Rust prototype supplies an
+independent regression oracle. The first executable phase-word slice is a
+prerequisite experiment and does not implement the hierarchical profile.
+
 Before sizes, require independently checked meanings/encodings and actual IR
 binding without whole dense matrices. Shared proofs and shared implementation
 IR must both remain compact. Reversible predicate/arithmetic synthesis without
@@ -272,7 +390,7 @@ The selected fixed-width M1 profile is distinct from M2 size generalization.
 | G020-1: extension specification | M0 scope selection followed by English grammar/types, capabilities, ownership/effects, meanings, positive/negative cases, IR binding, budgets and migration. M1 retains bounded dense checking; M2 must discharge R14/hierarchical-IR and exact dyadic-angle decisions. | Complete for fixed-width M1: [language rules](docs/next-minor-spec.md) and [machine interfaces](docs/machine-interface-spec.md). [M2 IR/checker profile](docs/hierarchical-ir-spec.md) selected; its sized source grammar is a separate extension gate. |
 | G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Implemented for fixed-width N1–N6 in [0.1.8](docs/releases/v0.1.8.md), and X1/M1.1-A in [0.1.7](docs/releases/v0.1.7.md). Other M1 slices and M2 production integration remain pending. |
 | G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | The implemented fixed-width N1–N6, X1 and M1.1-A profiles have validation and release records above. The [B019 check](docs/reviews/b019-2026-09-28.md) records current local revalidation and remaining audit/candidate gates. Remaining M1 slices, M2 and V1 are not validated; imaginary source is not execution evidence. |
-| V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. | Not achieved. |
+| V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. The Lean backend meets PR-C1–C4 and the Physical Realizability Theorem. | Not achieved. |
 
 Algorithmic approximation error/success probability and exact auxiliary zero return are separate contracts. The amplitude-estimation, walk, and QSVT drafts evaluate abstractions without expanding the three executable v1 targets to six. Finite-core regressions and the open general proofs in SPEC-3/4 continue alongside design work.
 

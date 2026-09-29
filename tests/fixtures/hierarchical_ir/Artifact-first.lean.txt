@@ -1,0 +1,387 @@
+import QleisliKernel.Layout
+import QleisliKernel.Hierarchical.Graph
+
+/-! Typed data and dependency/endpoint preparation for the selected hierarchy.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Preparation is NOT semantic verification. Finite payloads, node typing,
+derivations and external requests still require their independent checkers. -/
+
+namespace QleisliKernel.Hierarchical.Artifact
+
+abbrev Basis := Array Layout.TypeAtom
+
+structure QuantumPort where
+  owner : Nat
+  basis : Basis
+  axes : Array Nat
+  deriving BEq, DecidableEq, Repr
+
+structure ClassicalPort where
+  value : Nat
+  /-- At a classical port, Bit/Bits atoms denote CBit/CBits, never quantum data. -/
+  basis : Basis
+  deriving BEq, DecidableEq, Repr
+
+structure Side where
+  quantum : Array QuantumPort
+  classical : Array ClassicalPort := #[]
+  deriving BEq, DecidableEq, Repr
+
+structure Interface where
+  inputs : Side
+  outputs : Side
+  deriving BEq, DecidableEq, Repr
+
+inductive Effect where
+  | unitary | iso | observe
+  deriving BEq, DecidableEq, Repr
+
+/-- Maps use ordered port/flattened-axis positions; local IDs are not handles. -/
+structure PortMap where
+  owners : Array Nat
+  axes : Array Nat
+  classical : Array Nat
+  deriving BEq, DecidableEq, Repr
+
+inductive Body where
+  /-- Complete canonical finite packet, never an Arc, address, digest or flag.
+  The finite adapter must independently reconstruct and check these bytes. -/
+  | leaf (program : ByteArray)
+  | sequence (children : Array Nat)
+  | tensor (left right : Nat)
+  | call (definition : Nat) (inputMap outputMap : PortMap)
+  | repeatOp (count definition : Nat)
+  | inverse (definition : Nat)
+  | control (definition : Nat) (polarity : Bool)
+  | rewire (permutation : PortMap)
+  | dyadicPhase (target j k : Nat)
+  | computed (compute useOp logical encoding : Nat)
+  | observeZ (input output : Nat)
+  | init0 (output : Nat)
+  deriving Repr
+
+structure Definition where
+  interface : Interface
+  effect : Effect
+  body : Body
+  deriving Repr
+
+inductive MeaningBody where
+  | identity
+  | finite (description : ByteArray)
+  | sequence (children : Array Nat)
+  | tensor (left right : Nat)
+  | inverse (child : Nat)
+  | control (child : Nat) (polarity : Bool)
+  | power (child count : Nat)
+  | rewire (permutation : PortMap)
+  | phase (j k : Nat)
+  | qft (width : Nat)
+  | qpeInstrument (target precision providerMeaning : Nat)
+  deriving Repr
+
+structure Meaning where
+  interface : Interface
+  body : MeaningBody
+  deriving Repr
+
+inductive EncodingBody where
+  | identity
+  | tensor (left right : Nat)
+  | rewire (child : Nat) (permutation : PortMap)
+  | zeroScratch (scratchBits compute : Nat)
+  deriving Repr
+
+structure Encoding where
+  logical : Side
+  physical : Side
+  body : EncodingBody
+  deriving Repr
+
+inductive Table where
+  | definition | meaning | encoding | proof
+  deriving BEq, DecidableEq, Repr
+
+structure Ref where
+  table : Table
+  index : Nat
+  deriving BEq, DecidableEq, Repr
+
+inductive Kind where
+  | equation | instrument
+  deriving BEq, DecidableEq, Repr
+
+inductive Rule where
+  | finite | sequence | tensor | inverse | control | repeatOp | associativity
+  | rewire | computed | conjugation
+  | schema (id : String)
+  deriving BEq, DecidableEq, Repr
+
+/-- Witnesses can only select bounded data, never Lean expressions or code.
+Every witness reference is included in the actual dependency graph. -/
+structure Witness where
+  templateVersion : Nat
+  parameters : Array Nat
+  references : Array Ref
+  deriving Repr
+
+structure Proof where
+  kind : Kind
+  rule : Rule
+  premises : Array Nat
+  implementation : Nat
+  meaning : Nat
+  inputEncoding : Nat
+  outputEncoding : Nat
+  witness : Witness
+  deriving Repr
+
+structure Entry where
+  implementation : Nat
+  proof : Nat
+  deriving Repr
+
+structure Artifact where
+  definitions : Array Definition
+  meanings : Array Meaning
+  encodings : Array Encoding
+  proofs : Array Proof
+  entry : Entry
+  deriving Repr
+
+def tableSize (artifact : Artifact) : Table → Nat
+  | .definition => artifact.definitions.size
+  | .meaning => artifact.meanings.size
+  | .encoding => artifact.encodings.size
+  | .proof => artifact.proofs.size
+
+def offset (artifact : Artifact) : Table → Nat
+  | .definition => 0
+  | .meaning => artifact.definitions.size
+  | .encoding => artifact.definitions.size + artifact.meanings.size
+  | .proof => artifact.definitions.size + artifact.meanings.size + artifact.encodings.size
+
+/-- Check the referenced table BEFORE adding its offset. An out-of-range
+definition cannot alias an in-range meaning at the same flattened position. -/
+def index (artifact : Artifact) (ref : Ref) : Option Nat :=
+  if ref.index < tableSize artifact ref.table then some (offset artifact ref.table + ref.index)
+  else none
+
+theorem index_bound (artifact : Artifact) (ref : Ref) (flat : Nat)
+    (found : index artifact ref = some flat) :
+    ref.index < tableSize artifact ref.table ∧ flat = offset artifact ref.table + ref.index := by
+  unfold index at found
+  split at found
+  next inside => exact ⟨inside, (Option.some.inj found).symm⟩
+  next outside => contradiction
+
+def Body.references : Body → Array Ref
+  | .leaf _ | .rewire _ | .dyadicPhase _ _ _ | .observeZ _ _ | .init0 _ => #[]
+  | .sequence children => children.map (⟨.definition, ·⟩)
+  | .tensor left right => #[⟨.definition, left⟩, ⟨.definition, right⟩]
+  | .call child _ _ | .repeatOp _ child | .inverse child | .control child _ => #[⟨.definition, child⟩]
+  | .computed compute useOp logical encoding =>
+    #[⟨.definition, compute⟩, ⟨.definition, useOp⟩, ⟨.meaning, logical⟩, ⟨.encoding, encoding⟩]
+
+def MeaningBody.references : MeaningBody → Array Ref
+  | .identity | .finite _ | .rewire _ | .phase _ _ | .qft _ => #[]
+  | .sequence children => children.map (⟨.meaning, ·⟩)
+  | .tensor left right => #[⟨.meaning, left⟩, ⟨.meaning, right⟩]
+  | .inverse child | .control child _ | .power child _ | .qpeInstrument _ _ child => #[⟨.meaning, child⟩]
+
+def EncodingBody.references : EncodingBody → Array Ref
+  | .identity => #[]
+  | .tensor left right => #[⟨.encoding, left⟩, ⟨.encoding, right⟩]
+  | .rewire child _ => #[⟨.encoding, child⟩]
+  | .zeroScratch _ compute => #[⟨.definition, compute⟩]
+
+def Proof.references (proof : Proof) : Array Ref :=
+  #[⟨.definition, proof.implementation⟩, ⟨.meaning, proof.meaning⟩,
+    ⟨.encoding, proof.inputEncoding⟩, ⟨.encoding, proof.outputEncoding⟩] ++
+    proof.premises.map (⟨.proof, ·⟩) ++ proof.witness.references
+
+/-- Zero repetitions keep their actual body edge. -/
+theorem repeat_references (count definition : Nat) :
+    (Body.repeatOp count definition).references = #[⟨.definition, definition⟩] := rfl
+
+def totalNodes (artifact : Artifact) : Nat := offset artifact .proof + artifact.proofs.size
+
+def u32 (value : Nat) : Bool := value ≤ 4294967295
+
+def basisValid (basis : Basis) : Bool :=
+  if basis.size > 128 then false else (Layout.basisWidth basis.toList).isSome
+
+def wires (side : Side) : Array Nat := side.quantum.foldl (fun axes port => axes ++ port.axes) #[]
+
+/-- This cost is charged before the quadratic uniqueness and type comparisons. -/
+def sideCharge (side : Side) : Nat :=
+  let ports := side.quantum.size + side.classical.size
+  1 + 4 * ports * ports + side.quantum.foldl (fun cost p => cost + 4 * p.basis.size + 4 * p.axes.size) 0 +
+    side.classical.foldl (fun cost p => cost + 4 * p.basis.size) 0
+
+def sideValid (side : Side) : Bool :=
+  side.quantum.all (fun p => u32 p.owner && p.axes.size ≤ 16 && basisValid p.basis &&
+    Layout.basisWidth p.basis.toList == some p.axes.size && p.axes.all u32) &&
+  side.classical.all (fun p => u32 p.value && basisValid p.basis) &&
+  (wires side).size ≤ 16 && decide (side.quantum.toList.map QuantumPort.owner).Nodup &&
+  decide (side.classical.toList.map ClassicalPort.value).Nodup && decide (wires side).toList.Nodup
+
+def Interface.valid (interface : Interface) : Bool :=
+  sideValid interface.inputs && sideValid interface.outputs
+
+def Interface.charge (interface : Interface) : Nat :=
+  sideCharge interface.inputs + sideCharge interface.outputs
+
+def mapCharge (map : PortMap) : Nat := 1 + map.owners.size + map.axes.size + map.classical.size
+
+def mapBounded (map : PortMap) : Bool := map.owners.all u32 && map.axes.all u32 && map.classical.all u32
+
+def angleValid (j k : Nat) : Bool := if k > 8 then false else j < 2^k
+
+def Body.charge : Body → Nat
+  | .call _ input output => 1 + mapCharge input + mapCharge output
+  | .rewire permutation => 1 + mapCharge permutation
+  | .sequence children => 1 + children.size
+  | _ => 1
+
+def Body.bounded : Body → Bool
+  | .leaf bytes => !bytes.isEmpty
+  | .sequence children => !children.isEmpty
+  | .repeatOp count _ => count ≤ 4096
+  | .call _ input output => mapBounded input && mapBounded output
+  | .rewire permutation => mapBounded permutation
+  | .dyadicPhase target j k => u32 target && angleValid j k
+  | .observeZ input output => u32 input && u32 output
+  | .init0 output => u32 output
+  | _ => true
+
+def MeaningBody.charge : MeaningBody → Nat
+  | .rewire permutation => 1 + mapCharge permutation
+  | .sequence children => 1 + children.size
+  | _ => 1
+
+def MeaningBody.bounded : MeaningBody → Bool
+  | .finite bytes => !bytes.isEmpty
+  | .sequence children => !children.isEmpty
+  | .power _ count => count ≤ 4096
+  | .rewire permutation => mapBounded permutation
+  | .phase j k => angleValid j k
+  | .qft width => 1 ≤ width && width ≤ 8
+  | .qpeInstrument n m _ => 1 ≤ n && n ≤ 8 && 1 ≤ m && m ≤ 8 && n + m ≤ 16
+  | _ => true
+
+def EncodingBody.charge : EncodingBody → Nat
+  | .rewire _ permutation => 1 + mapCharge permutation
+  | _ => 1
+
+def EncodingBody.bounded : EncodingBody → Bool
+  | .zeroScratch scratch _ => scratch ≤ 16
+  | .rewire _ permutation => mapBounded permutation
+  | _ => true
+
+def Rule.known : Rule → Bool
+  | .schema id => id == "qft-dyadic8/1" || id == "controlled-power/1" || id == "qpe-instrument/1"
+  | _ => true
+
+def Proof.bounded (proof : Proof) : Bool :=
+  proof.rule.known && proof.witness.templateVersion == 1 && proof.witness.parameters.all u32
+
+/-- Bind every proof endpoint to complete actual interfaces, never dimensions.
+This is a necessary precondition, NOT validation of a derivation or witness. -/
+def endpoints (artifact : Artifact) (proof : Proof) : Bool := Id.run do
+  let some implementation := artifact.definitions[proof.implementation]? | return false
+  let some meaning := artifact.meanings[proof.meaning]? | return false
+  let some input := artifact.encodings[proof.inputEncoding]? | return false
+  let some output := artifact.encodings[proof.outputEncoding]? | return false
+  let bindings := input.logical == meaning.interface.inputs &&
+    input.physical == implementation.interface.inputs && output.logical == meaning.interface.outputs &&
+    output.physical == implementation.interface.outputs
+  match proof.kind, meaning.body, input.body, output.body with
+  | .instrument, .qpeInstrument _ _ _, .identity, .identity =>
+    return bindings && implementation.effect == .observe &&
+      input.logical == input.physical && output.logical == output.physical
+  | .equation, .qpeInstrument _ _ _, _, _ => return false
+  | .equation, _, _, _ => return bindings && implementation.effect != .observe
+  | _, _, _, _ => return false
+
+inductive Error where
+  | limit | invalidIr | contract
+  deriving BEq, DecidableEq, Repr
+
+structure Failure where
+  kind : Error
+  atNode : Option Ref
+  deriving Repr
+
+structure Projection where
+  nodes : Graph.Nodes := #[]
+  visits : Nat := 0
+  payloadBytes : Nat := 0
+  deriving Repr
+
+/-- A bounded helper returns graph edges in their actual order. The caller
+charges list allocation and table lookups; no producer edge list is accepted. -/
+def flattenRefs (artifact : Artifact) (refs : Array Ref) : Option (List Nat) :=
+  refs.toList.mapM (index artifact)
+
+def add (artifact : Artifact) (atNode : Ref) (state : Projection) (refs : Array Ref)
+    (charge bytes : Nat) (valid : Unit → Bool) : Except Failure Projection := do
+  let visits := state.visits + charge + 2 * refs.size + 1
+  let payloadBytes := state.payloadBytes + bytes
+  if visits > 2000000 || payloadBytes > 16777216 then throw ⟨.limit, some atNode⟩
+  if !valid () then throw ⟨.invalidIr, some atNode⟩
+  let some edges := flattenRefs artifact refs | throw ⟨.invalidIr, some atNode⟩
+  return ⟨state.nodes.push edges, visits, payloadBytes⟩
+
+/-- Projection reads all node constructors and proof fields itself. Definitions
+inside count-zero repeats and all finite bytes remain present for later checks. -/
+def project (artifact : Artifact) : Except Failure Projection := do
+  if totalNodes artifact = 0 || totalNodes artifact > 100000 then throw ⟨.limit, none⟩
+  let mut state : Projection := {}
+  for i in [:artifact.definitions.size] do
+    let definition := artifact.definitions[i]!
+    let bytes := match definition.body with | .leaf program => program.size | _ => 0
+    state ← add artifact ⟨.definition, i⟩ state definition.body.references
+      (definition.interface.charge + definition.body.charge) bytes
+      (fun _ => definition.interface.valid && definition.body.bounded)
+  for i in [:artifact.meanings.size] do
+    let meaning := artifact.meanings[i]!
+    let bytes := match meaning.body with | .finite description => description.size | _ => 0
+    state ← add artifact ⟨.meaning, i⟩ state meaning.body.references
+      (meaning.interface.charge + meaning.body.charge) bytes
+      (fun _ => meaning.interface.valid && meaning.body.bounded)
+  for i in [:artifact.encodings.size] do
+    let encoding := artifact.encodings[i]!
+    state ← add artifact ⟨.encoding, i⟩ state encoding.body.references
+      (sideCharge encoding.logical + sideCharge encoding.physical + encoding.body.charge) 0
+      (fun _ => sideValid encoding.logical && sideValid encoding.physical && encoding.body.bounded)
+  for i in [:artifact.proofs.size] do
+    let proof := artifact.proofs[i]!
+    state ← add artifact ⟨.proof, i⟩ state proof.references
+      (1 + proof.witness.parameters.size) 0 (fun _ => proof.bounded)
+    if !endpoints artifact proof then throw ⟨.contract, some ⟨.proof, i⟩⟩
+  return state
+
+structure Prepared where
+  projection : Projection
+  schedule : Graph.Schedule
+  totalVisits : Nat
+  deriving Repr
+
+/-- Structural preparation only. No function returns semantic evidence here. -/
+def prepare (artifact : Artifact) (order : Array Nat) : Except Failure Prepared := do
+  let projected ← project artifact
+  let some implementation := index artifact ⟨.definition, artifact.entry.implementation⟩ |
+    throw ⟨.invalidIr, some ⟨.definition, artifact.entry.implementation⟩⟩
+  let some proofIndex := index artifact ⟨.proof, artifact.entry.proof⟩ |
+    throw ⟨.invalidIr, some ⟨.proof, artifact.entry.proof⟩⟩
+  let some proof := artifact.proofs[artifact.entry.proof]? | throw ⟨.invalidIr, none⟩
+  if proof.implementation != artifact.entry.implementation then throw ⟨.contract, some ⟨.proof, artifact.entry.proof⟩⟩
+  let schedule ← match Graph.check projected.nodes [implementation, proofIndex] order with
+    | .error failure => .error ⟨if failure.kind == .limit then .limit else .invalidIr, none⟩
+    | .ok result => .ok result
+  let totalVisits := projected.visits + schedule.stats.visits
+  if totalVisits > 2000000 then throw ⟨.limit, none⟩
+  return ⟨projected, schedule, totalVisits⟩
+
+end QleisliKernel.Hierarchical.Artifact

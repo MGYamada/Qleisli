@@ -1,0 +1,999 @@
+{
+  "format": "qleisli.hierarchical-graph-validation",
+  "version": 1,
+  "cases": 152,
+  "accepted": 71,
+  "peak_nodes": 100000,
+  "largest_checked_visits": 1999998,
+  "dense_dimension": 0,
+  "binary_sha256": "3272857c4867b0dd55c0d89edabf792c74cb143ff0730cd06a8f0b2dc03149e7",
+  "harness_sha256": "b9241466676cc3dd64b25d52fefbff1ea269e3b2b9c7bb541b9f8171f3d10a4b",
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "b92cfa33fa07ac5ee3094fc99b62c9ba2db30d766f35688293b697e2eacd199e",
+    "scripts/test_hierarchical_graph.py": "15669abdbb5feb366aece668b383a97d6314a6095145ff914452040843d87f3f"
+  },
+  "results": {
+    "single": [
+      "accepted",
+      [
+        1,
+        0,
+        13,
+        1
+      ]
+    ],
+    "forward-table-reference": [
+      "accepted",
+      [
+        2,
+        1,
+        28,
+        2
+      ]
+    ],
+    "shared-child": [
+      "accepted",
+      [
+        3,
+        4,
+        53,
+        3
+      ]
+    ],
+    "unreachable": [
+      "invalid_ir",
+      null
+    ],
+    "self-dependency-even-in-unused-body": [
+      "invalid_ir",
+      null
+    ],
+    "cycle": [
+      "invalid_ir",
+      null
+    ],
+    "dangling": [
+      "invalid_ir",
+      null
+    ],
+    "wrong-order": [
+      "invalid_ir",
+      null
+    ],
+    "duplicate-order": [
+      "invalid_ir",
+      null
+    ],
+    "missing-order": [
+      "invalid_ir",
+      null
+    ],
+    "extra-order": [
+      "invalid_ir",
+      null
+    ],
+    "invalid-order-index": [
+      "invalid_ir",
+      null
+    ],
+    "invalid-root": [
+      "invalid_ir",
+      null
+    ],
+    "empty-roots": [
+      "limit",
+      null
+    ],
+    "empty-graph": [
+      "limit",
+      null
+    ],
+    "permuted-0": [
+      "accepted",
+      [
+        60,
+        169,
+        1448,
+        60
+      ]
+    ],
+    "dependency-before-body-0": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-1": [
+      "accepted",
+      [
+        9,
+        23,
+        208,
+        9
+      ]
+    ],
+    "dependency-before-body-1": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-2": [
+      "accepted",
+      [
+        45,
+        140,
+        1153,
+        45
+      ]
+    ],
+    "dependency-before-body-2": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-3": [
+      "accepted",
+      [
+        17,
+        40,
+        373,
+        17
+      ]
+    ],
+    "dependency-before-body-3": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-4": [
+      "accepted",
+      [
+        22,
+        71,
+        578,
+        22
+      ]
+    ],
+    "dependency-before-body-4": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-5": [
+      "accepted",
+      [
+        14,
+        38,
+        333,
+        14
+      ]
+    ],
+    "dependency-before-body-5": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-6": [
+      "accepted",
+      [
+        2,
+        4,
+        43,
+        2
+      ]
+    ],
+    "dependency-before-body-6": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-7": [
+      "accepted",
+      [
+        13,
+        35,
+        308,
+        13
+      ]
+    ],
+    "dependency-before-body-7": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-8": [
+      "accepted",
+      [
+        54,
+        148,
+        1283,
+        54
+      ]
+    ],
+    "dependency-before-body-8": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-9": [
+      "accepted",
+      [
+        21,
+        60,
+        513,
+        21
+      ]
+    ],
+    "dependency-before-body-9": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-10": [
+      "accepted",
+      [
+        35,
+        109,
+        898,
+        35
+      ]
+    ],
+    "dependency-before-body-10": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-11": [
+      "accepted",
+      [
+        18,
+        60,
+        483,
+        18
+      ]
+    ],
+    "dependency-before-body-11": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-12": [
+      "accepted",
+      [
+        15,
+        40,
+        353,
+        15
+      ]
+    ],
+    "dependency-before-body-12": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-13": [
+      "accepted",
+      [
+        35,
+        102,
+        863,
+        35
+      ]
+    ],
+    "dependency-before-body-13": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-14": [
+      "accepted",
+      [
+        58,
+        180,
+        1483,
+        58
+      ]
+    ],
+    "dependency-before-body-14": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-15": [
+      "accepted",
+      [
+        63,
+        173,
+        1498,
+        63
+      ]
+    ],
+    "dependency-before-body-15": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-16": [
+      "accepted",
+      [
+        34,
+        106,
+        873,
+        34
+      ]
+    ],
+    "dependency-before-body-16": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-17": [
+      "accepted",
+      [
+        19,
+        54,
+        463,
+        19
+      ]
+    ],
+    "dependency-before-body-17": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-18": [
+      "accepted",
+      [
+        14,
+        30,
+        293,
+        14
+      ]
+    ],
+    "dependency-before-body-18": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-19": [
+      "accepted",
+      [
+        22,
+        56,
+        503,
+        22
+      ]
+    ],
+    "dependency-before-body-19": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-20": [
+      "accepted",
+      [
+        34,
+        90,
+        793,
+        34
+      ]
+    ],
+    "dependency-before-body-20": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-21": [
+      "accepted",
+      [
+        3,
+        7,
+        68,
+        3
+      ]
+    ],
+    "dependency-before-body-21": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-22": [
+      "accepted",
+      [
+        9,
+        28,
+        233,
+        9
+      ]
+    ],
+    "dependency-before-body-22": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-23": [
+      "accepted",
+      [
+        37,
+        108,
+        913,
+        37
+      ]
+    ],
+    "dependency-before-body-23": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-24": [
+      "accepted",
+      [
+        43,
+        116,
+        1013,
+        43
+      ]
+    ],
+    "dependency-before-body-24": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-25": [
+      "accepted",
+      [
+        16,
+        34,
+        333,
+        16
+      ]
+    ],
+    "dependency-before-body-25": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-26": [
+      "accepted",
+      [
+        18,
+        45,
+        408,
+        18
+      ]
+    ],
+    "dependency-before-body-26": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-27": [
+      "accepted",
+      [
+        28,
+        93,
+        748,
+        28
+      ]
+    ],
+    "dependency-before-body-27": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-28": [
+      "accepted",
+      [
+        17,
+        44,
+        393,
+        17
+      ]
+    ],
+    "dependency-before-body-28": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-29": [
+      "accepted",
+      [
+        24,
+        75,
+        618,
+        24
+      ]
+    ],
+    "dependency-before-body-29": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-30": [
+      "accepted",
+      [
+        43,
+        138,
+        1123,
+        43
+      ]
+    ],
+    "dependency-before-body-30": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-31": [
+      "accepted",
+      [
+        62,
+        177,
+        1508,
+        62
+      ]
+    ],
+    "dependency-before-body-31": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-32": [
+      "accepted",
+      [
+        15,
+        45,
+        378,
+        15
+      ]
+    ],
+    "dependency-before-body-32": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-33": [
+      "accepted",
+      [
+        2,
+        4,
+        43,
+        2
+      ]
+    ],
+    "dependency-before-body-33": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-34": [
+      "accepted",
+      [
+        44,
+        129,
+        1088,
+        44
+      ]
+    ],
+    "dependency-before-body-34": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-35": [
+      "accepted",
+      [
+        10,
+        30,
+        253,
+        10
+      ]
+    ],
+    "dependency-before-body-35": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-36": [
+      "accepted",
+      [
+        42,
+        120,
+        1023,
+        42
+      ]
+    ],
+    "dependency-before-body-36": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-37": [
+      "accepted",
+      [
+        57,
+        159,
+        1368,
+        57
+      ]
+    ],
+    "dependency-before-body-37": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-38": [
+      "accepted",
+      [
+        13,
+        31,
+        288,
+        13
+      ]
+    ],
+    "dependency-before-body-38": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-39": [
+      "accepted",
+      [
+        62,
+        170,
+        1473,
+        62
+      ]
+    ],
+    "dependency-before-body-39": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-40": [
+      "accepted",
+      [
+        52,
+        164,
+        1343,
+        52
+      ]
+    ],
+    "dependency-before-body-40": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-41": [
+      "accepted",
+      [
+        38,
+        120,
+        983,
+        38
+      ]
+    ],
+    "dependency-before-body-41": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-42": [
+      "accepted",
+      [
+        17,
+        46,
+        403,
+        17
+      ]
+    ],
+    "dependency-before-body-42": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-43": [
+      "accepted",
+      [
+        3,
+        3,
+        48,
+        3
+      ]
+    ],
+    "dependency-before-body-43": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-44": [
+      "accepted",
+      [
+        31,
+        81,
+        718,
+        31
+      ]
+    ],
+    "dependency-before-body-44": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-45": [
+      "accepted",
+      [
+        57,
+        172,
+        1433,
+        57
+      ]
+    ],
+    "dependency-before-body-45": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-46": [
+      "accepted",
+      [
+        22,
+        67,
+        558,
+        22
+      ]
+    ],
+    "dependency-before-body-46": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-47": [
+      "accepted",
+      [
+        60,
+        163,
+        1418,
+        60
+      ]
+    ],
+    "dependency-before-body-47": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-48": [
+      "accepted",
+      [
+        23,
+        73,
+        598,
+        23
+      ]
+    ],
+    "dependency-before-body-48": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-49": [
+      "accepted",
+      [
+        7,
+        21,
+        178,
+        7
+      ]
+    ],
+    "dependency-before-body-49": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-50": [
+      "accepted",
+      [
+        7,
+        21,
+        178,
+        7
+      ]
+    ],
+    "dependency-before-body-50": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-51": [
+      "accepted",
+      [
+        10,
+        25,
+        228,
+        10
+      ]
+    ],
+    "dependency-before-body-51": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-52": [
+      "accepted",
+      [
+        32,
+        95,
+        798,
+        32
+      ]
+    ],
+    "dependency-before-body-52": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-53": [
+      "accepted",
+      [
+        64,
+        183,
+        1558,
+        64
+      ]
+    ],
+    "dependency-before-body-53": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-54": [
+      "accepted",
+      [
+        5,
+        11,
+        108,
+        5
+      ]
+    ],
+    "dependency-before-body-54": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-55": [
+      "accepted",
+      [
+        64,
+        201,
+        1648,
+        64
+      ]
+    ],
+    "dependency-before-body-55": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-56": [
+      "accepted",
+      [
+        19,
+        52,
+        453,
+        19
+      ]
+    ],
+    "dependency-before-body-56": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-57": [
+      "accepted",
+      [
+        54,
+        170,
+        1393,
+        54
+      ]
+    ],
+    "dependency-before-body-57": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-58": [
+      "accepted",
+      [
+        23,
+        57,
+        518,
+        23
+      ]
+    ],
+    "dependency-before-body-58": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-59": [
+      "accepted",
+      [
+        5,
+        11,
+        108,
+        5
+      ]
+    ],
+    "dependency-before-body-59": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-60": [
+      "accepted",
+      [
+        53,
+        152,
+        1293,
+        53
+      ]
+    ],
+    "dependency-before-body-60": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-61": [
+      "accepted",
+      [
+        32,
+        85,
+        748,
+        32
+      ]
+    ],
+    "dependency-before-body-61": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-62": [
+      "accepted",
+      [
+        43,
+        118,
+        1023,
+        43
+      ]
+    ],
+    "dependency-before-body-62": [
+      "invalid_ir",
+      null
+    ],
+    "permuted-63": [
+      "accepted",
+      [
+        10,
+        33,
+        268,
+        10
+      ]
+    ],
+    "dependency-before-body-63": [
+      "invalid_ir",
+      null
+    ],
+    "max-nodes": [
+      "accepted",
+      [
+        100000,
+        99999,
+        1499998,
+        2
+      ]
+    ],
+    "too-many-nodes": [
+      "limit",
+      null
+    ],
+    "depth-256": [
+      "accepted",
+      [
+        256,
+        255,
+        3838,
+        256
+      ]
+    ],
+    "depth-257": [
+      "limit",
+      null
+    ],
+    "shared-exponential": [
+      "accepted",
+      [
+        60,
+        118,
+        1193,
+        60
+      ]
+    ],
+    "last-work-budget": [
+      "accepted",
+      [
+        2,
+        399995,
+        1999998,
+        2
+      ]
+    ],
+    "over-work-budget": [
+      "limit",
+      null
+    ],
+    "over-reference-limit": [
+      "limit",
+      null
+    ],
+    "oversized-roots": [
+      "limit",
+      null
+    ]
+  },
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [4/7] Built QleisliKernel.Hierarchical.Graph:c.o (387ms)\n\u2714 [5/7] Built Main (2.8s)\n\u2714 [6/7] Built Main:c.o (317ms)\n\u2714 [7/7] Built \u00abgraph-test\u00bb:exe (281ms)\nBuild completed successfully (7 jobs).\n",
+      "stderr": "info: hierarchical_graph_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-graph-gr5d88tk/.lake/build/bin/graph-test"
+      ],
+      "exit_code": 0,
+      "stdout": "single|accepted|1|0|13|1\nforward-table-reference|accepted|2|1|28|2\nshared-child|accepted|3|4|53|3\nunreachable|invalid_ir\nself-dependency-even-in-unused-body|invalid_ir\ncycle|invalid_ir\ndangling|invalid_ir\nwrong-order|invalid_ir\nduplicate-order|invalid_ir\nmissing-order|invalid_ir\nextra-order|invalid_ir\ninvalid-order-index|invalid_ir\ninvalid-root|invalid_ir\nempty-roots|limit\nempty-graph|limit\npermuted-0|accepted|60|169|1448|60\ndependency-before-body-0|invalid_ir\npermuted-1|accepted|9|23|208|9\ndependency-before-body-1|invalid_ir\npermuted-2|accepted|45|140|1153|45\ndependency-before-body-2|invalid_ir\npermuted-3|accepted|17|40|373|17\ndependency-before-body-3|invalid_ir\npermuted-4|accepted|22|71|578|22\ndependency-before-body-4|invalid_ir\npermuted-5|accepted|14|38|333|14\ndependency-before-body-5|invalid_ir\npermuted-6|accepted|2|4|43|2\ndependency-before-body-6|invalid_ir\npermuted-7|accepted|13|35|308|13\ndependency-before-body-7|invalid_ir\npermuted-8|accepted|54|148|1283|54\ndependency-before-body-8|invalid_ir\npermuted-9|accepted|21|60|513|21\ndependency-before-body-9|invalid_ir\npermuted-10|accepted|35|109|898|35\ndependency-before-body-10|invalid_ir\npermuted-11|accepted|18|60|483|18\ndependency-before-body-11|invalid_ir\npermuted-12|accepted|15|40|353|15\ndependency-before-body-12|invalid_ir\npermuted-13|accepted|35|102|863|35\ndependency-before-body-13|invalid_ir\npermuted-14|accepted|58|180|1483|58\ndependency-before-body-14|invalid_ir\npermuted-15|accepted|63|173|1498|63\ndependency-before-body-15|invalid_ir\npermuted-16|accepted|34|106|873|34\ndependency-before-body-16|invalid_ir\npermuted-17|accepted|19|54|463|19\ndependency-before-body-17|invalid_ir\npermuted-18|accepted|14|30|293|14\ndependency-before-body-18|invalid_ir\npermuted-19|accepted|22|56|503|22\ndependency-before-body-19|invalid_ir\npermuted-20|accepted|34|90|793|34\ndependency-before-body-20|invalid_ir\npermuted-21|accepted|3|7|68|3\ndependency-before-body-21|invalid_ir\npermuted-22|accepted|9|28|233|9\ndependency-before-body-22|invalid_ir\npermuted-23|accepted|37|108|913|37\ndependency-before-body-23|invalid_ir\npermuted-24|accepted|43|116|1013|43\ndependency-before-body-24|invalid_ir\npermuted-25|accepted|16|34|333|16\ndependency-before-body-25|invalid_ir\npermuted-26|accepted|18|45|408|18\ndependency-before-body-26|invalid_ir\npermuted-27|accepted|28|93|748|28\ndependency-before-body-27|invalid_ir\npermuted-28|accepted|17|44|393|17\ndependency-before-body-28|invalid_ir\npermuted-29|accepted|24|75|618|24\ndependency-before-body-29|invalid_ir\npermuted-30|accepted|43|138|1123|43\ndependency-before-body-30|invalid_ir\npermuted-31|accepted|62|177|1508|62\ndependency-before-body-31|invalid_ir\npermuted-32|accepted|15|45|378|15\ndependency-before-body-32|invalid_ir\npermuted-33|accepted|2|4|43|2\ndependency-before-body-33|invalid_ir\npermuted-34|accepted|44|129|1088|44\ndependency-before-body-34|invalid_ir\npermuted-35|accepted|10|30|253|10\ndependency-before-body-35|invalid_ir\npermuted-36|accepted|42|120|1023|42\ndependency-before-body-36|invalid_ir\npermuted-37|accepted|57|159|1368|57\ndependency-before-body-37|invalid_ir\npermuted-38|accepted|13|31|288|13\ndependency-before-body-38|invalid_ir\npermuted-39|accepted|62|170|1473|62\ndependency-before-body-39|invalid_ir\npermuted-40|accepted|52|164|1343|52\ndependency-before-body-40|invalid_ir\npermuted-41|accepted|38|120|983|38\ndependency-before-body-41|invalid_ir\npermuted-42|accepted|17|46|403|17\ndependency-before-body-42|invalid_ir\npermuted-43|accepted|3|3|48|3\ndependency-before-body-43|invalid_ir\npermuted-44|accepted|31|81|718|31\ndependency-before-body-44|invalid_ir\npermuted-45|accepted|57|172|1433|57\ndependency-before-body-45|invalid_ir\npermuted-46|accepted|22|67|558|22\ndependency-before-body-46|invalid_ir\npermuted-47|accepted|60|163|1418|60\ndependency-before-body-47|invalid_ir\npermuted-48|accepted|23|73|598|23\ndependency-before-body-48|invalid_ir\npermuted-49|accepted|7|21|178|7\ndependency-before-body-49|invalid_ir\npermuted-50|accepted|7|21|178|7\ndependency-before-body-50|invalid_ir\npermuted-51|accepted|10|25|228|10\ndependency-before-body-51|invalid_ir\npermuted-52|accepted|32|95|798|32\ndependency-before-body-52|invalid_ir\npermuted-53|accepted|64|183|1558|64\ndependency-before-body-53|invalid_ir\npermuted-54|accepted|5|11|108|5\ndependency-before-body-54|invalid_ir\npermuted-55|accepted|64|201|1648|64\ndependency-before-body-55|invalid_ir\npermuted-56|accepted|19|52|453|19\ndependency-before-body-56|invalid_ir\npermuted-57|accepted|54|170|1393|54\ndependency-before-body-57|invalid_ir\npermuted-58|accepted|23|57|518|23\ndependency-before-body-58|invalid_ir\npermuted-59|accepted|5|11|108|5\ndependency-before-body-59|invalid_ir\npermuted-60|accepted|53|152|1293|53\ndependency-before-body-60|invalid_ir\npermuted-61|accepted|32|85|748|32\ndependency-before-body-61|invalid_ir\npermuted-62|accepted|43|118|1023|43\ndependency-before-body-62|invalid_ir\npermuted-63|accepted|10|33|268|10\ndependency-before-body-63|invalid_ir\nmax-nodes|accepted|100000|99999|1499998|2\ntoo-many-nodes|limit\ndepth-256|accepted|256|255|3838|256\ndepth-257|limit\nshared-exponential|accepted|60|118|1193|60\nlast-work-budget|accepted|2|399995|1999998|2\nover-work-budget|limit\nover-reference-limit|limit\noversized-roots|limit\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -32,7 +32,24 @@ regressions and independent verification remain required.
 
 <a id="共通項目"></a>
 
+The 0.2.0 [machine-interface host APIs](machine-interface-spec.md#020-host-api-mapping) are tracked separately from these twelve ordinary bundled definitions. Shared sized `qft`, `qpe`, preparation and `CBits` measurement helpers are deferred to the [0.2.1 target](v0.2.1-plan.md), remain unimplemented and must receive ledger entries with separate implementation, verification and proof status when introduced.
+
 ## Common contract fields
+
+The [QLT plan](qlt-design.md) selects a future test surface for independent
+mathematical references, structural cost regressions and doctests. QFT2/3 and
+modular increment are its [initial source drafts](../tests/fixtures/qlt_design/README.md).
+This is planned tooling, not a new public `.qli` API or additional verification
+authority. All entries still undergo ordinary checking. QLT results will be
+recorded separately from implementation, contract verification and proof;
+an exact Rust test result will not be labelled a Lean certificate. No current
+ledger contract version, adoption state or historical result changes here.
+
+The [0.2.0 tuple correction](tuple-shapes.md) does not change these twelve
+definitions' explicit binary signatures, ownership or numerical contracts.
+Their types follow the [structural equality rules](type-system.md); n-ary callers
+must convert explicitly. This migration adds no public standard-library API,
+and does not upgrade an entry's proof or adoption status.
 
 - **Classification, version, and adoption:** Every entry is an ordinary `.qli`
   definition, contract version 1, with **experimental API** status. It ships

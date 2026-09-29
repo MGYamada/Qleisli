@@ -1,0 +1,87 @@
+{
+  "recorded_utc": "2026-09-28T15:54:33.914974+00:00",
+  "scope": "Isolated Lean kernel source copy; not clean Git distribution or full QPE release validation",
+  "package": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-cd3-clean-eg2lbd5z/lean-kernel",
+  "toolchain": "leanprover/lean4:v4.30.0",
+  "manifest_packages": [],
+  "copy_excluded": [
+    ".lake",
+    ".git",
+    ".DS_Store"
+  ],
+  "environment_cleared": [
+    "LEAN_PATH",
+    "LEAN_SRC_PATH"
+  ],
+  "uses_existing_installed_lean_toolchain": true,
+  "checks": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [2/16] Built QleisliKernel.PhaseWord (429ms)\n\u2714 [3/16] Built QleisliKernel.PhaseWord:c.o (283ms)\n\u2714 [4/16] Built QleisliKernel.Composition (394ms)\n\u2714 [5/16] Built QleisliKernel.Composition:c.o (64ms)\n\u2714 [6/16] Built QleisliKernel.Dag (416ms)\n\u2714 [7/16] Built QleisliKernel.Dag:c.o (150ms)\n\u2714 [8/16] Built QleisliKernel.Hierarchy (496ms)\n\u2714 [9/16] Built QleisliKernel (329ms)\n\u2714 [10/16] Built QleisliKernel.Hierarchy:c.o (243ms)\n\u2714 [11/16] Built Protocol (453ms)\n\u2714 [13/16] Built Protocol:c.o (243ms)\n\u2714 [14/16] Built Main (403ms)\n\u2714 [15/16] Built Main:c.o (138ms)\n\u2714 [16/16] Built \u00abqleisli-kernel\u00bb:exe (259ms)\nBuild completed successfully (16 jobs).\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "Audited 697 kernel/transport declarations, 1038 pure import modules and 1039 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/masa/git/Qleisli/scripts/test_lean_hierarchy.py",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-cd3-clean-eg2lbd5z/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "Native DAG decisions: 647\n",
+      "stderr": "test_body_count_dependency_and_request_mutations (__main__.HierarchyTests.test_body_count_dependency_and_request_mutations) ... ok\ntest_closed_power_against_direct_boundary_execution (__main__.HierarchyTests.test_closed_power_against_direct_boundary_execution) ... ok\ntest_dag_cycles_forward_references_and_unreachable_entries (__main__.HierarchyTests.test_dag_cycles_forward_references_and_unreachable_entries) ... ok\ntest_exact_shape_and_zero_width_owner_ports (__main__.HierarchyTests.test_exact_shape_and_zero_width_owner_ports) ... ok\ntest_global_phase_and_all_dyadic_angles (__main__.HierarchyTests.test_global_phase_and_all_dyadic_angles) ... ok\ntest_immutable_first_artifacts (__main__.HierarchyTests.test_immutable_first_artifacts) ... ok\ntest_large_shared_work_and_depth_boundary (__main__.HierarchyTests.test_large_shared_work_and_depth_boundary) ... ok\ntest_node_reference_and_primitive_boundaries (__main__.HierarchyTests.test_node_reference_and_primitive_boundaries) ... ok\ntest_small_shared_dags_against_expanded_and_complex_oracles (__main__.HierarchyTests.test_small_shared_dags_against_expanded_and_complex_oracles) ... ok\ntest_strict_transport_and_no_schema_shortcuts (__main__.HierarchyTests.test_strict_transport_and_no_schema_shortcuts) ... ok\ntest_zero_repeat_checks_body_and_retains_reachability (__main__.HierarchyTests.test_zero_repeat_checks_body_and_retains_reachability) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 5.168s\n\nOK\n"
+    }
+  ],
+  "source_sha256": {
+    "Protocol.lean": "09ec854e2fd11e11ee60dc9dea711cc1ef5a44fea2be58b62eb49bd7014e3b5a",
+    "QleisliKernel.lean": "c8f7994844a589791b411d64857c5ba02f572d404e6bb4dbe3df8f5ecf8571eb",
+    "Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    "Tests.lean": "70f504a1a90dfa7f9452f405552b2fb74766035e984804709a06276c3c7c3a19",
+    "Main.lean": "d9c8d1b329ade3beb162c58ab248186e2ae9e6619184540f3d53325fb1501571",
+    "QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "QleisliKernel/PhaseWord.lean": "909fbf903f4ed7ffd7ce0fd50b5c92095bcba6e1aac1ae4cbfabde83906e760c"
+  },
+  "native_bytes": 3832112,
+  "native_sha256": "040f320b628f5ceb083c4220c553d4e7bbb6572d4921448e0eca3cba7bbd1c48"
+}

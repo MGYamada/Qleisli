@@ -1,0 +1,63 @@
+{
+  "scope": "Standalone Lean kernel clean build; not a complete clean Git distribution or release validation.",
+  "package": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-lean-kernel-clean-0n9uf82q/lean-kernel",
+  "toolchain": "leanprover/lean4:v4.30.0",
+  "manifest_packages": [],
+  "copy_excluded": [
+    ".lake",
+    ".git",
+    ".DS_Store"
+  ],
+  "environment_cleared": [
+    "LEAN_PATH",
+    "LEAN_SRC_PATH"
+  ],
+  "package_downloads": false,
+  "uses_existing_installed_lean_toolchain": true,
+  "checks": [
+    {
+      "command": "env -u LEAN_PATH -u LEAN_SRC_PATH lake build",
+      "exit": 0,
+      "result": "Build completed successfully (10 jobs)."
+    },
+    {
+      "command": "env -u LEAN_PATH -u LEAN_SRC_PATH lake env lean Tests.lean",
+      "exit": 0,
+      "result": "No diagnostics."
+    },
+    {
+      "command": "env -u LEAN_PATH -u LEAN_SRC_PATH lake env lean Audit.lean",
+      "exit": 0,
+      "result": "Audited 272 kernel/transport declarations, 1035 pure import modules and 1036 executable import modules; axioms used: [propext, Classical.choice, Quot.sound]"
+    },
+    {
+      "command": "env -u LEAN_PATH -u LEAN_SRC_PATH lake env leanchecker --fresh Main",
+      "exit": 0,
+      "result": "No diagnostics; bundled Lean checker replayed Main and its imports into a fresh environment."
+    },
+    {
+      "artifact": "phase_pair.qpk",
+      "requirement": "t_expected.qpr",
+      "exit": 0,
+      "accepted": true
+    },
+    {
+      "artifact": "global_phase.qpk",
+      "requirement": "identity.qpr",
+      "exit": 1,
+      "accepted": false,
+      "code": "rejected"
+    }
+  ],
+  "native_artifact": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-lean-kernel-clean-0n9uf82q/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "native_bytes": 3753328,
+  "native_sha256": "1552afada5eab135aa017620bc7a36be7bc22bc64d472f0c1fbbb40e760daf8f",
+  "source_sha256": {
+    "Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    "Main.lean": "fe19edfeb5699dd248483570cc30298ba8c1906e07cc920d04251041be68f1cf",
+    "Protocol.lean": "63364d55693effec44fdcff409553a3b89bfe4a978a8aad611500b108f5caae7",
+    "QleisliKernel/PhaseWord.lean": "909fbf903f4ed7ffd7ce0fd50b5c92095bcba6e1aac1ae4cbfabde83906e760c",
+    "QleisliKernel.lean": "cf97f00f9f3bbfaf748fad063a17faac800250056b312fcdefbb17917f4486b9",
+    "Tests.lean": "72d5cfdcbb31cb4efbd8c42349f1691402a339e80cf295c30f5b6d3190cdab73"
+  }
+}

@@ -1,0 +1,27 @@
+Tests.lean:77:72: error: failed to synthesize
+  Decidable
+    (Layout.check moved witness moved = Except.ok { owners := 3, axes := 3, typeAtoms := 12, workUnits := 2888 })
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Tests.lean:78:84: error: failed to synthesize
+  Decidable
+    (Layout.check moved { inverseOwners := [0, 1, 2], inverseAxes := [2, 0, 1] } moved = Except.error Error.invalidIr)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Tests.lean:79:93: error: failed to synthesize
+  Decidable
+    (Layout.check
+        (let __src := moved;
+        { inputs := __src.inputs, outputs := __src.outputs, owners := [2, 1], axes := __src.axes })
+        witness moved =
+      Except.error Error.invalidIr)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+Tests.lean:80:93: error: failed to synthesize
+  Decidable
+    (Layout.check moved witness
+        (let __src := moved;
+        { inputs := __src.inputs, outputs := __src.outputs, owners := __src.owners, axes := [0, 1, 2] }) =
+      Except.error Error.contract)
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.

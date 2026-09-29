@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "kind": "informed_design_draft",
+  "recorded_utc": "2026-09-28T19:48:59.108350+00:00",
+  "baseline_commit": "3c19c7669b5b14b738bceaa5f3eff18f92e2190e",
+  "project_version": "0.2.0",
+  "author": "Codex, informed by the adopted plan and existing implementation; exact deployment/settings unrecorded",
+  "status": "QLT unimplemented; preserve desired sources before checking only their QLI subjects",
+  "controlled_model_benchmark": false,
+  "sha256": {
+    "counterexamples/domain.qlt": "ceebeed6e8032419d93bfde1f9f007b417f306a3caf1fa8d811163f5782eaef6",
+    "counterexamples/meaning.qlt": "819013f9f2b0adf72c3fa3567e8940a3966dc90e6e4f5e6fa922210113e6820f",
+    "first-source/subjects.qli": "d6dba6831ff988a69542f58f87d524392bdfc3dbf7f6acb9927241ba67fd9fb4",
+    "first-source/tests/cost.qlt": "28630c9044e9ced1aeea25ebc05313e28d571db5901d85266553a01269716626",
+    "first-source/tests/exact.qlt": "cd30c396636aeb885acf9212de4b131825ae35797703f74c18a55b0e2f762f25",
+    "first-source/tests/reference.qlt": "57aadea269d8c2e67cf336ef0c479f76d9aaf73bfba42480bf6a1604f0570fe1"
+  },
+  "expected_qlt_not_executed": {
+    "first-source/tests/exact.qlt": "three exact comparisons pass",
+    "first-source/tests/reference.qlt": "three parameterized reference sanity cases pass; not a source-family theorem",
+    "first-source/tests/cost.qlt": "two logical primitive gate-count comparisons pass under the proposed profile",
+    "first-source/subjects.qli": "one extracted identity doctest passes",
+    "counterexamples/meaning.qlt": "four assertions fail",
+    "counterexamples/domain.qlt": "unsupported domain error before comparison"
+  },
+  "mathematical_witnesses": [
+    {
+      "subject": "inverse_qft2",
+      "entry": [
+        1,
+        1
+      ],
+      "actual": "-i/2",
+      "reference": "i/2"
+    },
+    {
+      "subject": "unreversed_qft2",
+      "entry": [
+        1,
+        1
+      ],
+      "actual": "-1/2",
+      "reference": "i/2"
+    },
+    {
+      "subject": "minus_identity",
+      "entry": [
+        0,
+        0
+      ],
+      "actual": "-1",
+      "reference": "1"
+    },
+    {
+      "subject": "controlled_minus",
+      "entry": [
+        1,
+        1
+      ],
+      "actual": "-1",
+      "reference": "1"
+    }
+  ],
+  "observations": [
+    "observations/current-qli-check.json",
+    "observations/qlt-unimplemented.json"
+  ]
+}

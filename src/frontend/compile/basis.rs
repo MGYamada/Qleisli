@@ -40,20 +40,24 @@ impl Compiler<'_> {
                     );
                 }
                 PatternKind::Wildcard => {}
-                PatternKind::Tuple(left, right) => {
-                    let Ty::Pair(a, b) = ty else {
+                PatternKind::Tuple(patterns) => {
+                    let Some(fields) = ty.fields().filter(|fields| fields.len() == patterns.len())
+                    else {
                         return Err(self.error(
                             module,
                             pattern.span,
                             ErrorCode::TypeMismatch,
-                            "tuple basis pattern requires a product basis type",
+                            "tuple basis pattern requires the same immediate arity as its basis type",
                         ));
                     };
-                    let left_bits = a.basis_bits().expect("basis pattern type");
-                    let left_label = label & ((1u16 << left_bits) - 1);
-                    // Push right first to visit pattern names from left to right.
-                    pending.push((right, b, label >> left_bits));
-                    pending.push((left, a, left_label));
+                    let mut offset = 0;
+                    let mut children = Vec::with_capacity(fields.len());
+                    for (pattern, field) in patterns.iter().zip(fields) {
+                        let bits = field.basis_bits().expect("basis pattern type");
+                        children.push((pattern, field, (label >> offset) & ((1u16 << bits) - 1)));
+                        offset += bits;
+                    }
+                    pending.extend(children.into_iter().rev());
                 }
             }
         }
@@ -155,22 +159,28 @@ impl Compiler<'_> {
                 ty: Ty::Unit,
                 label: 0,
             },
-            BasisExprKind::Tuple(a, b) => {
-                let a = self.eval_basis(module, a, env, depth + 1)?;
-                let b = self.eval_basis(module, b, env, depth + 1)?;
-                let a_bits = a.ty.basis_bits().expect("basis value");
-                let b_bits = b.ty.basis_bits().expect("basis value");
-                if a_bits + b_bits > MAX_BITS {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::Limit,
-                        "basis result exceeds 12 bits",
-                    ));
+            BasisExprKind::Tuple(fields) => {
+                let mut types = Vec::with_capacity(fields.len());
+                let mut bits = 0;
+                let mut label = 0;
+                for field in fields {
+                    let value = self.eval_basis(module, field, env, depth + 1)?;
+                    let width = value.ty.basis_bits().expect("basis value");
+                    if bits + width > MAX_BITS {
+                        return Err(self.error(
+                            module,
+                            expr.span,
+                            ErrorCode::Limit,
+                            "basis result exceeds 12 bits",
+                        ));
+                    }
+                    label |= value.label << bits;
+                    bits += width;
+                    types.push(value.ty);
                 }
                 BasisValue {
-                    ty: Ty::pair(a.ty, b.ty),
-                    label: a.label | (b.label << a_bits),
+                    ty: Ty::tuple(types),
+                    label,
                 }
             }
             BasisExprKind::Not(a) => {

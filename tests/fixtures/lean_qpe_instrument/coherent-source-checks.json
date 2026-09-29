@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.coherent-power-source-validation",
+  "version": 1,
+  "status": "passed",
+  "source_cases": 2,
+  "control_reference_phase_counterexample": true,
+  "commands": [
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "--format=json",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_qpe_instrument/coherent_phase/plus_x"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "--format=json",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_qpe_instrument/coherent_phase/minus_x"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    }
+  ],
+  "binary_sha256": "4e62725f0de92632bd6678871225ed7746be3b7d468167901ca7a4ed70c37167",
+  "source_sha256": {
+    "plus_x/main.qli": "2fb6c8f7d36c1d65336921c898d76b9fb521059cd4d0e9e695b4670a0af0fbfa",
+    "minus_x/main.qli": "85a5b72d6eca556eaff5990431f06fa6579f98a47df97ee6d82d40c84817e890"
+  }
+}

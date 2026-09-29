@@ -191,14 +191,35 @@ An explicit [function-contract call](function-contracts-v0.1.md) remains a
 `CircuitAction::Contract` referencing the same checked evidence. Flattening
 remaps its ordered interface, reversal toggles its adjoint flag, and coherent
 control appends disjoint predicates. Repetition reuses the evidence. Its exact
-meaning and retained implementation therefore remain inspectable in final IR;
-no fresh dense equality check is required for each invocation.
+meaning and retained implementation therefore remain inspectable in final IR.
+An ordinary contract invocation reuses its receipt; transforming a circuit is
+subject to the comparison below.
 
 Each statically transformed register is limited to 12 bits; `qif` counts the
 control and target together. This is separate from the program's live-wire
 limit. Duplicated step tables and controls count against the work budget. Raw
 IR is rechecked regardless of its origin. General machine-checked meaning
 preservation for the transformation remains an open obligation.
+
+**0.2.0 finite comparison:** for a concrete `adjoint` or `repeat_static` interface
+of at most six bits, and `qif` including its control of at most six bits, extract
+the original phase-fixed matrix from independently verified raw IR using the
+contract extractor, separately from frontend flattening. Compare the emitted
+steps with the adjoint, integer matrix power, or control-block matrix
+respectively. Cache the original closed function meaning by resolved function
+identity within one compilation; a static parameter uses its checked receipt.
+Abstract generic checking has no concrete matrix, so the comparison occurs at
+instantiation. Interfaces above six bits retain structural checking; no larger
+dense matrix is built. No function name grants acceptance.
+
+The original function must satisfy the finite extractor's 1,024-operation/step
+and dependency-depth bounds. Emitted flat repetitions can be checked in chunks
+of 1,024 steps, without changing their order. All comparisons spend the shared
+10,000,000-unit compilation budget; overflow/capacity exhaustion rejects, and
+unequal phase, axes or control blocks report a contract error. These additional
+finite capacities are part of the 0.2.0 MINOR migration. Inversion uses the
+existing audited contract routine. This reuses an existing equation checker;
+it adds neither a semantic acceptance rule nor a general frontend proof.
 
 <a id="最初の利用対象"></a>
 

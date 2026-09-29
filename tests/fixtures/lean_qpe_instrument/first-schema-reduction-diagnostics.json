@@ -1,0 +1,25 @@
+[
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "Build completed successfully (32 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "exit": 1,
+    "stdout": "Tests.lean:261:68: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached\n\nNote: Use `set_option maxHeartbeats <num>` to set the limit.\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\nTests.lean:266:98: error: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached\n\nNote: Use `set_option maxHeartbeats <num>` to set the limit.\n\nHint: Additional diagnostic information may be available using the `set_option diagnostics true` command.\n",
+    "stderr": ""
+  }
+]

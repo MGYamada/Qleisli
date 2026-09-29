@@ -122,7 +122,7 @@ The Rust interface separates raw descriptions from checked evidence:
 
 | Object or operation | Obligation |
 | --- | --- |
-| `BasisType` (`Unit`, `Bit`, `Pair`) | Preserve the finite type tree in addition to its width. |
+| `BasisType` (`Unit`, `Bit`, `Pair`, `Tuple`) | Preserve the finite type tree in addition to its width. Since 0.2.0, `Tuple` has at least three immediate fields; two-field nodes remain `Pair`, with no reassociation. |
 | `Circuit` | Bind a basis type and ordered finite circuit steps; validate the actual steps. |
 | `Encoding` | Bind logical and physical basis types and an exact rectangular matrix; check isometry. |
 | `Contract` | Fix input/output encodings and an exact logical operator independently of the implementation. |
@@ -142,6 +142,13 @@ results remain immutable. `check_binding` compares a complete structural
 snapshot, including the identities of checked function dependencies; it does
 not assert merely semantic equivalence of a replacement.
 Certify a changed implementation separately before substitution.
+
+The [0.2.0 type correction](tuple-shapes.md) retains n-ary shape in contracts
+and external requests; equality compares that structure even when matrices and
+widths coincide. Zero-, one- and two-field `Tuple` nodes reject as noncanonical.
+Existing node/depth/bit bounds and exact equations apply unchanged. Binary
+tensor/control constructors keep their specified output trees. This extension
+has regression evidence, not a new Lean theorem about all source types.
 
 `check_entry` checks compatibility between theorem interfaces only. A caller
 can construct an `Encoding` describing a subspace without holding any state

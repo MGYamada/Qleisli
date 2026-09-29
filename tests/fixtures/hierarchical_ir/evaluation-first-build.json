@@ -1,0 +1,10 @@
+{
+  "command": [
+    "lake",
+    "build",
+    "Qleisli.HierarchicalEvaluation"
+  ],
+  "exit_code": 0,
+  "stdout": "\u2714 [3376/3376] Built Qleisli.HierarchicalEvaluation (19s)\nBuild completed successfully (3376 jobs).\n",
+  "stderr": ""
+}

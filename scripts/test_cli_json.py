@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent JSON decoding and X1 CLI conformance; pass a built binary path."""
+"""Independent JSON decoding and machine CLI conformance; pass a built binary path."""
 
 import json
 import math
@@ -49,7 +49,10 @@ class JsonCliTests(unittest.TestCase):
         for diagnostic in result["diagnostics"]:
             self.assertEqual(set(diagnostic), {"code", "severity", "message", "primary", "related"})
             self.assertEqual(diagnostic["severity"], "error")
-            self.assertEqual(diagnostic["related"], [])
+            for related in diagnostic["related"]:
+                self.assertEqual(set(related), {"message", "location"})
+                self.assertTrue(related["message"].startswith("json_pointer:"))
+                self.assertIsNone(related["location"])
             if diagnostic["primary"] is not None:
                 self.assertEqual(set(diagnostic["primary"]), {"path", "start", "end", "line", "column"})
         return result
@@ -131,12 +134,43 @@ class JsonCliTests(unittest.TestCase):
         self.assertIsNone(diagnostic["primary"])
 
     def test_usage_and_escaped_command_names(self):
-        for command in ["doc", "sample", "emit-ir", "verify-ir", 'unknown"\\\n\t日本語']:
+        for command in ["doc", "sample", "emit-ir", 'unknown"\\\n\t日本語']:
             result = self.invoke(command, self.root, "--format=json", status=2)
             self.assertEqual(result["command"], command)
             self.assertEqual(result["diagnostics"][0]["code"], "usage")
         result = self.invoke("--format=json", status=2)
         self.assertEqual(result["command"], "")
+
+    def test_seeded_samples_use_fresh_preparation_and_preserve_correlation(self):
+        self.source("use std::quantum::init0; use std::quantum::h; use std::observe::measure_z;\n"
+                    "observe fn main() -> (CBit,CBit) { let a = measure_z(h(init0())); (a,not a) }")
+        args = ("sample", self.root, "--shots=64", "--seed=18446744073709551615", "--format=json")
+        result = self.invoke(*args)["result"]
+        self.assertEqual(result, self.invoke(*args)["result"])
+        self.assertEqual(set(result), {"rng", "seed", "shots", "execution_steps"})
+        self.assertEqual(result["rng"], "splitmix64-v1")
+        self.assertEqual(result["seed"], "18446744073709551615")
+        self.assertEqual(len(result["shots"]), 64)
+        self.assertEqual(result["execution_steps"], sum(s["execution_steps"] for s in result["shots"]))
+        for shot in result["shots"]:
+            self.assertEqual(set(shot), {"bits", "execution_steps"})
+            self.assertNotEqual(*shot["bits"])
+
+    def test_portable_ir_is_independently_decoded_and_reverified(self):
+        self.source("observe fn main() -> CBit { true }")
+        artifact = self.root / "artifact.json"
+        self.assertEqual(self.invoke("emit-ir", self.root, f"--output={artifact}", "--format=json")["result"], {"path": str(artifact)})
+        data = json.loads(artifact.read_bytes())
+        self.assertEqual(set(data), {"format", "version", "profile", "sources", "programs", "evidence", "root", "root_interface"})
+        self.assertEqual(data["format"], "qleisli.finite-ir")
+        self.assertEqual(data["version"], 2)
+        (self.root / "main.qli").unlink()
+        self.assertEqual(self.invoke("verify-ir", artifact, "--format=json")["result"], {"verified": True, "request_checked": False})
+        data["programs"][data["root"]]["classical_outputs"] = [4294967295]
+        artifact.write_text(json.dumps(data), encoding="utf-8")
+        error = self.invoke("verify-ir", artifact, "--format=json", status=1)["diagnostics"][0]
+        self.assertEqual(error["code"], "invalid_ir")
+        self.assertTrue(error["related"])
 
     @unittest.skipUnless(os.name == "posix", "raw POSIX argument bytes")
     def test_non_utf8_paths_and_commands(self):

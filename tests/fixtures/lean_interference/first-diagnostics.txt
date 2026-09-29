@@ -1,0 +1,9 @@
+QleisliKernel/Interference.lean:14:63: error: unsolved goals
+case h
+bits : Bits
+axis : Nat
+a b : Bool
+i : Nat
+⊢ (if i = axis then b else if i = axis then a else bits i) = if i = axis then b else bits i
+QleisliKernel/Interference.lean:50:6: error(lean.unknownIdentifier): Unknown constant `Bool.true_eq_true`
+QleisliKernel/Interference.lean:55:6: error(lean.unknownIdentifier): Unknown constant `Bool.true_eq_true`

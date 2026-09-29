@@ -1,0 +1,14 @@
+{
+  "kind": "informed development, not controlled model evaluation",
+  "source_sha256": "f60a400bc99b787a90136ea528a6fa2f868d8f0430877ee8532ff386678a5691",
+  "command": [
+    "target/debug/qleisli",
+    "run",
+    "tests/fixtures/lean_interference/first_source",
+    "--format=json"
+  ],
+  "exit": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+  "stderr": "",
+  "obligation": "No Mathlib-free amplitude semantics or proved H cancellation in the executable kernel yet; source is finite and already executable."
+}

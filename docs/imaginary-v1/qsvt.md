@@ -154,7 +154,7 @@ iso fn real_qsvt_dilation[static a, static n, static d,
 observe fn real_qsvt_observe[static a, static n, static d,
     static U: UnitaryOp<(Bits<a>, Bits<n>)>,
     static plan: VerifiedPhasePlan<d>]
-    (data: Q<Bits<n>>) -> ((CBit, CWord<a>), Q<Bits<n>>) {
+    (data: Q<Bits<n>>) -> ((CBit, CBits<a>), Q<Bits<n>>) {
     let (selector, block) = real_qsvt_dilation[a, n, d, U, plan](data);
     let (ancilla, data) = split(block);
     let s = measure_z(selector);
@@ -165,7 +165,7 @@ observe fn real_qsvt_observe[static a, static n, static d,
 observe fn real_qsvt_sample[static a, static n, static d,
     static U: UnitaryOp<(Bits<a>, Bits<n>)>,
     static plan: VerifiedPhasePlan<d>]
-    (data: Q<Bits<n>>) -> ((CBit, CWord<a>), CWord<n>) {
+    (data: Q<Bits<n>>) -> ((CBit, CBits<a>), CBits<n>) {
     let (outcome, data) = real_qsvt_observe[a, n, d, U, plan](data);
     let sample = measure_bits(data);
     (outcome, sample)              // Preserve failed outcomes as well.

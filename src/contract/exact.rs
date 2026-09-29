@@ -6,6 +6,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
 /// Maximum row or column dimension admitted by the exact matrix kernel.
 pub const MAX_MATRIX_DIMENSION: usize = 64;
@@ -45,14 +46,27 @@ impl Error for ExactError {}
 ///
 /// Matrix operations charge their full conservative cost before doing work.
 /// A failed arithmetic operation does not refund this charge.
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Budget {
     remaining: usize,
+    source_storage: Vec<Arc<Vec<(String, String)>>>,
+}
+
+impl fmt::Debug for Budget {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Budget")
+            .field("remaining", &self.remaining)
+            .field("shared_source_allocations", &self.source_storage.len())
+            .finish()
+    }
 }
 
 impl Budget {
     pub fn new(limit: usize) -> Self {
-        Self { remaining: limit }
+        Self {
+            remaining: limit,
+            source_storage: Vec::new(),
+        }
     }
 
     pub fn charge(&mut self, amount: usize) -> Result<(), ExactError> {
@@ -65,6 +79,26 @@ impl Budget {
 
     pub fn remaining(&self) -> usize {
         self.remaining
+    }
+
+    /// Charge immutable source storage once per derivation. Keep a strong
+    /// reference so an address cannot be reused for a different allocation.
+    /// This caches storage accounting only, never a semantic check.
+    pub(crate) fn charge_source_storage(
+        &mut self,
+        sources: &Arc<Vec<(String, String)>>,
+        bytes: usize,
+    ) -> Result<(), ExactError> {
+        self.charge(self.source_storage.len() + 1)?;
+        if !self
+            .source_storage
+            .iter()
+            .any(|seen| Arc::ptr_eq(seen, sources))
+        {
+            self.charge(bytes)?;
+            self.source_storage.push(Arc::clone(sources));
+        }
+        Ok(())
     }
 }
 

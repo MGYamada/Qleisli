@@ -1,0 +1,117 @@
+Replay of unchanged first source before repair.
+✖ [34/36] Building QleisliKernel.Hierarchical.NodeTyping (723ms)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/NodeTyping.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/NodeTyping.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/NodeTyping.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/NodeTyping.setup.json --json
+error: QleisliKernel/Hierarchical/NodeTyping.lean:79:28: Invalid dotted identifier notation: The expected type of `.unitary` could not be determined
+
+Hint: Using `Effect.unitary would be unambiguous:
+  [apply] `Effect.unitary`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:79:56: Invalid dotted identifier notation: The expected type of `.unitary` could not be determined
+
+Hint: Using `Effect.unitary would be unambiguous:
+  [apply] `Effect.unitary`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:80:6: Invalid field notation: Type of
+  control
+is not known; cannot resolve field `basis`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Layout.Port.basis`
+  • `ClassicalPort.basis`
+  • `QuantumPort.basis`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:80:25: Invalid dotted identifier notation: The expected type of `.bit` could not be determined
+
+Hint: Using one of these would be unambiguous:
+  [apply] `Layout.TypeAtom.bit`
+  [apply] `Std.Tactic.BVDecide.BVExpr.bitblast.blastUdiv.ShiftConcatInput.bit`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:80:34: Invalid field notation: Type of
+  control
+is not known; cannot resolve field `axes`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Layout.Port.axes`
+  • `Layout.Rewire.axes`
+  • `Layout.Stats.axes`
+  • `PortMap.axes`
+  • `QuantumPort.axes`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:100:3: unexpected token 'initialize'; expected identifier
+error: QleisliKernel/Hierarchical/NodeTyping.lean:116:32: Invalid dotted identifier notation: The expected type of `.unitary` could not be determined
+
+Hint: Using `Effect.unitary would be unambiguous:
+  [apply] `Effect.unitary`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:157:20: unexpected token 'initialize'; expected term
+error: QleisliKernel/Hierarchical/NodeTyping.lean:157:32: Unknown identifier `definition`
+error: QleisliKernel/Hierarchical/NodeTyping.lean:214:11: unsolved goals
+case none
+artifact : Artifact
+index remaining : Nat
+checked : Checked
+limit : ¬remaining > 2000000
+hd : artifact.definitions[index]? = none
+accepted :
+  (match Except.pure PUnit.unit with
+    | Except.error err => Except.error err
+    | Except.ok v => throw Error.invalidIr) =
+    Except.ok checked
+⊢ checked.visits ≤ remaining ∧
+    remaining ≤ 2000000 ∧ ∃ definition, none = some definition ∧ conditions artifact definition = true
+error: QleisliKernel/Hierarchical/NodeTyping.lean:229:34: Application type mismatch: The argument
+  accepted
+has type
+  (match Except.ok v✝ with
+    | Except.error err => Except.error err
+    | Except.ok v =>
+      if
+          1 + definition.body.referenceCount + definition.body.charge + definition.interface.scan +
+                  headerCost sideScan artifact definition +
+                16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
+              mapsCost artifact definition >
+            remaining then
+        Except.error Error.limit
+      else
+        match Except.ok v✝ with
+        | Except.error err => Except.error err
+        | Except.ok v =>
+          if (!conditions artifact definition) = true then Except.error Error.invalidIr
+          else
+            match Except.ok v✝ with
+            | Except.error err => Except.error err
+            | Except.ok v =>
+              Except.pure
+                {
+                  visits :=
+                    1 + definition.body.referenceCount + definition.body.charge + definition.interface.scan +
+                          headerCost sideScan artifact definition +
+                        16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
+                      mapsCost artifact definition }) =
+    Except.ok checked
+but is expected to have type
+  Except.ok ?m.237 = Except.ok ?m.238
+in the application
+  Except.ok.inj accepted
+error: QleisliKernel/Hierarchical/NodeTyping.lean:230:38: Application type mismatch: The argument
+  charged
+has type
+  Except.ok v✝¹ = Except.ok v✝
+but is expected to have type
+  ¬checked.visits > remaining
+in the application
+  Nat.le_of_not_gt charged
+error: QleisliKernel/Hierarchical/NodeTyping.lean:230:83: Application type mismatch: The argument
+  hd
+has type
+  artifact.definitions[index]? = some definition
+but is expected to have type
+  some definition = some definition
+in the application
+  And.intro hd
+error: QleisliKernel/Hierarchical/NodeTyping.lean:231:19: Type mismatch: After simplification, term
+  valid
+ has type
+  1 + definition.body.referenceCount + definition.body.charge + definition.interface.scan +
+      headerCost sideScan artifact definition ≤
+    remaining
+but is expected to have type
+  conditions artifact definition = true
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Hierarchical.NodeTyping
+error: build failed

@@ -1,0 +1,6 @@
+error: Qleisli/Schema.lean:29:54: Unknown identifier `definitions`
+error: Qleisli/Schema.lean:29:66: Unknown identifier `entry`
+error: Qleisli/Schema.lean:30:41: Unknown identifier `definitions`
+error: Qleisli/Schema.lean:30:53: Unknown identifier `entry`
+error: Qleisli/Schema.lean:32:27: Unknown identifier `definitions`
+error: Qleisli/Schema.lean:32:39: Unknown identifier `entry`

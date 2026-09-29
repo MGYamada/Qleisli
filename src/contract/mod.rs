@@ -47,6 +47,20 @@ impl fmt::Display for ContractError {
 
 impl std::error::Error for ContractError {}
 
+impl ContractError {
+    pub(crate) fn is_capacity(&self) -> bool {
+        matches!(
+            self,
+            Self::Limit(_)
+                | Self::Arithmetic(
+                    ExactError::WorkLimit
+                        | ExactError::ArithmeticCapacity
+                        | ExactError::Dimension { .. }
+                )
+        )
+    }
+}
+
 impl From<ExactError> for ContractError {
     fn from(error: ExactError) -> Self {
         Self::Arithmetic(error)
@@ -117,6 +131,8 @@ pub enum BasisType {
     Unit,
     Bit,
     Pair(Box<BasisType>, Box<BasisType>),
+    /// An arity-preserving product of at least three immediate fields.
+    Tuple(Vec<BasisType>),
 }
 
 // A rejected public tree can be much deeper than our accepted type profile.
@@ -128,10 +144,16 @@ impl Drop for BasisType {
             pending.push(std::mem::replace(a.as_mut(), Self::Unit));
             pending.push(std::mem::replace(b.as_mut(), Self::Unit));
         }
+        if let Self::Tuple(fields) = self {
+            pending.append(fields);
+        }
         while let Some(mut node) = pending.pop() {
             if let Self::Pair(a, b) = &mut node {
                 pending.push(std::mem::replace(a.as_mut(), Self::Unit));
                 pending.push(std::mem::replace(b.as_mut(), Self::Unit));
+            }
+            if let Self::Tuple(fields) = &mut node {
+                pending.append(fields);
             }
             // The children now are leaves, so this node's drop is bounded.
         }
@@ -160,6 +182,19 @@ impl BasisType {
                 Self::Bit => bits += 1,
                 Self::Pair(a, b) => {
                     pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
+                }
+                Self::Tuple(fields) => {
+                    if fields.len() < 3 {
+                        return Err(ContractError::Type(
+                            "tuple type requires at least three fields",
+                        ));
+                    }
+                    if fields.len() > 128 {
+                        return Err(ContractError::Limit(
+                            "contract tuple exceeds type-node limit",
+                        ));
+                    }
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)));
                 }
             }
         }

@@ -1,0 +1,25 @@
+[
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit": 0,
+    "stdout": "Build completed successfully (31 jobs).\n",
+    "stderr": ""
+  },
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "exit": 1,
+    "stdout": "Tests.lean:233:83: error: maximum recursion depth has been reached\nuse `set_option maxRecDepth <num>` to increase limit\nuse `set_option diagnostics true` to get diagnostic information\n",
+    "stderr": ""
+  }
+]

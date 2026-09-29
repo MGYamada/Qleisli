@@ -180,12 +180,21 @@ impl FunctionEvidence {
         let depth = implementation_depth.max(specification_depth);
         // The preflight bounds every raw branch and vector before cloning or
         // recursively invoking the independent verifier.
+        let verification_error = |(error, limit): (crate::verify::ValidationError, bool)| {
+            if limit {
+                ContractError::Limit(
+                    "independent function verification exceeded its work budget or finite capacity",
+                )
+            } else {
+                ContractError::InvalidCircuit(error.to_string())
+            }
+        };
         let verified_implementation =
-            crate::verify::verify_with_budget(implementation.clone(), budget)
-                .map_err(|error| ContractError::InvalidCircuit(error.to_string()))?;
+            crate::verify::verify_with_budget_classified(implementation.clone(), budget)
+                .map_err(verification_error)?;
         let verified_specification =
-            crate::verify::verify_with_budget(specification.clone(), budget)
-                .map_err(|error| ContractError::InvalidCircuit(error.to_string()))?;
+            crate::verify::verify_with_budget_classified(specification.clone(), budget)
+                .map_err(verification_error)?;
         let circuit = extract(verified_implementation.program(), &signature, budget)?;
         let specified = extract(verified_specification.program(), &signature, budget)?;
         expanded_steps(&specified)?;
@@ -300,7 +309,22 @@ fn validate_identity(
             ));
         }
     }
-    budget.charge(bytes)?;
+    match identity {
+        RetainedIdentity::Owned(_) => budget.charge(bytes)?,
+        RetainedIdentity::Shared { sources, .. } => {
+            let names = implementation.len() + specification.len();
+            budget.charge_source_storage(sources, bytes - names)?;
+            // Recheck every identity's bounds and path uniqueness above. The
+            // immutable source bytes are retained, not copied for each receipt.
+            budget.charge(
+                names
+                    + sources
+                        .iter()
+                        .map(|(name, _)| name.len() + 1)
+                        .sum::<usize>(),
+            )?;
+        }
+    }
     Ok(())
 }
 
@@ -471,6 +495,20 @@ fn inspect_steps(
         }
     }
     Ok(())
+}
+
+/// Independent finite denotation of a verified unary unitary. This exposes no
+/// evidence constructor and does not trust frontend circuit flattening.
+pub(crate) fn verified_meaning(
+    verified: &crate::VerifiedProgram,
+    signature: &BasisType,
+    budget: &mut Budget,
+) -> Result<Matrix, ContractError> {
+    let bits = signature.bits()?;
+    preflight(verified.raw(), bits, budget)?;
+    let circuit = extract(verified.raw(), signature, budget)?;
+    expanded_steps(&circuit)?;
+    circuit.matrix(budget)
 }
 
 fn extract(
@@ -1114,5 +1152,33 @@ mod snapshot_tests {
             .error,
             ContractError::EquationMismatch
         );
+    }
+
+    #[test]
+    fn aggregate_budget_charges_each_shared_source_allocation_once() {
+        let sources = Arc::new(vec![("main".into(), "p".repeat(100_000))]);
+        let mut budget = Budget::new(110_000);
+        for _ in 0..256 {
+            FunctionEvidence::check_retained_diagnostic(
+                BasisType::Unit,
+                raw(),
+                raw(),
+                RetainedIdentity::shared("i".into(), "s".into(), Arc::clone(&sources)),
+                &mut budget,
+            )
+            .unwrap();
+        }
+        assert!(budget.remaining() < 10_000);
+        // Equal text in a distinct allocation is not the retained storage.
+        let distinct = Arc::new(sources.as_ref().clone());
+        let error = FunctionEvidence::check_retained_diagnostic(
+            BasisType::Unit,
+            raw(),
+            raw(),
+            RetainedIdentity::shared("i".into(), "s".into(), distinct),
+            &mut budget,
+        )
+        .unwrap_err();
+        assert!(error.error.is_capacity());
     }
 }

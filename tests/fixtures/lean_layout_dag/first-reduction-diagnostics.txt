@@ -1,0 +1,12 @@
+Tests.lean:103:26: error: Ambiguous term
+  Definition
+Possible interpretations:
+  LayoutDag.Definition : Type
+  
+  Hierarchy.Definition : Type
+Tests.lean:106:0: warning: declaration uses `sorry`
+Tests.lean:106:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Tests.lean:107:0: warning: declaration uses `sorry`
+Tests.lean:107:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors
+Tests.lean:108:0: warning: declaration uses `sorry`
+Tests.lean:108:0: error: cannot evaluate code because 'sorryAx' uses 'sorry' and/or contains errors

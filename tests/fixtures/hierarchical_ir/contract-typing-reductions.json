@@ -1,0 +1,20 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Tests.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "source_sha256": {
+    "lean-kernel/Tests.lean": "15b56b961dac0f940f3c6af9d8cff63ddbb9d930290aae551d0158c4e2c02c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "861294be90e27e093b3e9864eaf6c7c66c9630762e2ec5d5d5fae8bea6f8ad61",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "b6e09ff1a09c5158a318f79f97e8b6f5691b676053a6f128294382e61285f053",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "270718a7935159099dba2206106fb7e18221369f86972ba662d7454c6ca3f3ae",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0"
+  }
+}

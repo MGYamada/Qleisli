@@ -1,0 +1,19 @@
+{
+  "command": [
+    "cargo",
+    "run",
+    "--offline",
+    "--quiet",
+    "--bin",
+    "qleisli",
+    "--",
+    "check",
+    "tests/fixtures/qlt_design/first-source",
+    "--format=json"
+  ],
+  "recorded_utc": "2026-09-28T19:48:59.996983+00:00",
+  "exit_code": 0,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+  "stderr": "",
+  "scope": "Only current QLI subjects were checked. QLT files were ignored by the QLI loader; no QLT assertion ran."
+}

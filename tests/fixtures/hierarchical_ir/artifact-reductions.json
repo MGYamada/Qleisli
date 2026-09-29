@@ -1,0 +1,20 @@
+{
+  "command": [
+    "lake",
+    "env",
+    "lean",
+    "Tests.lean"
+  ],
+  "cwd": "lean-kernel",
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "tests_sha256": "3db299195b9eb46d7f6e05830fb81e534e4d2a99b53d3cbae3212faa770e7ea0",
+  "note": "Artifact and side-map examples passed with kernel decide/cbv, no native proof evaluation.",
+  "source_sha256": {
+    "lean-kernel/Tests.lean": "3db299195b9eb46d7f6e05830fb81e534e4d2a99b53d3cbae3212faa770e7ea0",
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "861294be90e27e093b3e9864eaf6c7c66c9630762e2ec5d5d5fae8bea6f8ad61",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0"
+  }
+}

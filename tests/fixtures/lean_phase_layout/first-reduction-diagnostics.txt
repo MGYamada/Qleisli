@@ -1,0 +1,73 @@
+Tests.lean:142:87: error: Tactic `decide` failed for proposition
+  PhasePolynomial.normalize [{ axes := [0], ticks := 16 }, { axes := [], ticks := 7 }, { axes := [0], ticks := 240 }] =
+    [{ axes := [], ticks := 7 }]
+because its `Decidable` instance
+  instDecidableEqList
+    (PhasePolynomial.normalize
+      [{ axes := [0], ticks := 16 }, { axes := [], ticks := 7 }, { axes := [0], ticks := 240 }])
+    [{ axes := [], ticks := 7 }]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instance `instDecidableEqList`, reduction got stuck at the `Decidable` instance
+  match
+    PhasePolynomial.normalize
+      [{ axes := [0], ticks := 16 }, { axes := [], ticks := 7 }, { axes := [0], ticks := 240 }] with
+  | [] =>
+    match [{ axes := [], ticks := 7 }] with
+    | [] => isTrue ⋯
+    | head :: tail => isFalse ⋯
+  | a :: as =>
+    match [{ axes := [], ticks := 7 }] with
+    | [] => isFalse ⋯
+    | b :: bs =>
+      match decEq a b with
+      | isTrue hab =>
+        match as.hasDecEq bs with
+        | isTrue habs => isTrue ⋯
+        | isFalse nabs => isFalse ⋯
+      | isFalse nab => isFalse ⋯
+Tests.lean:143:75: error: Tactic `decide` failed for proposition
+  PhasePolynomial.normalize [{ axes := [], ticks := 255 }, { axes := [], ticks := 2 }] = [{ axes := [], ticks := 1 }]
+because its `Decidable` instance
+  instDecidableEqList (PhasePolynomial.normalize [{ axes := [], ticks := 255 }, { axes := [], ticks := 2 }])
+    [{ axes := [], ticks := 1 }]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instance `instDecidableEqList`, reduction got stuck at the `Decidable` instance
+  match PhasePolynomial.normalize [{ axes := [], ticks := 255 }, { axes := [], ticks := 2 }] with
+  | [] =>
+    match [{ axes := [], ticks := 1 }] with
+    | [] => isTrue ⋯
+    | head :: tail => isFalse ⋯
+  | a :: as =>
+    match [{ axes := [], ticks := 1 }] with
+    | [] => isFalse ⋯
+    | b :: bs =>
+      match decEq a b with
+      | isTrue hab =>
+        match as.hasDecEq bs with
+        | isTrue habs => isTrue ⋯
+        | isFalse nabs => isFalse ⋯
+      | isFalse nab => isFalse ⋯
+Tests.lean:144:71: error: Tactic `decide` failed for proposition
+  remap (fun i => 1 - i) [{ axes := [0, 1], ticks := 16 }] = [{ axes := [0, 1], ticks := 16 }]
+because its `Decidable` instance
+  instDecidableEqList (remap (fun i => 1 - i) [{ axes := [0, 1], ticks := 16 }]) [{ axes := [0, 1], ticks := 16 }]
+did not reduce to `isTrue` or `isFalse`.
+
+After unfolding the instances `decEq`, `instDecidableEqList`, `instDecidableEqTerm`, and `instDecidableEqTerm.decEq`, reduction got stuck at the `Decidable` instance
+  match (List.map (fun i => 1 - i) { axes := [0, 1], ticks := 16 }.axes).mergeSort fun x1 x2 => decide (x1 ≤ x2) with
+  | [] =>
+    match [0, 1] with
+    | [] => isTrue ⋯
+    | head :: tail => isFalse ⋯
+  | a :: as =>
+    match [0, 1] with
+    | [] => isFalse ⋯
+    | b :: bs =>
+      match decEq a b with
+      | isTrue hab =>
+        match as.hasDecEq bs with
+        | isTrue habs => isTrue ⋯
+        | isFalse nabs => isFalse ⋯
+      | isFalse nab => isFalse ⋯

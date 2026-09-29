@@ -1,0 +1,221 @@
+import Std
+
+/-! Typed, phase-free owner/axis permutations for the next hierarchy boundary.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+This bounded component does not verify source translation or general gates. -/
+
+namespace QleisliKernel.Layout
+
+inductive TypeAtom where
+  | unit | bit | bits (width : Nat) | tuple (arity : Nat)
+  deriving BEq, DecidableEq, Repr
+
+/-- Canonical prefix tree; immediate tuple arity is part of type identity. -/
+abbrev Basis := List TypeAtom
+
+structure Port where
+  basis : Basis
+  axes : List Nat
+  deriving BEq, DecidableEq, Repr
+
+abbrev Interface := List Port
+
+structure Rewire where
+  inputs : Interface
+  outputs : Interface
+  owners : List Nat
+  axes : List Nat
+  deriving BEq, DecidableEq, Repr
+
+structure Witness where
+  inverseOwners : List Nat
+  inverseAxes : List Nat
+  deriving Repr
+
+/-- Consume one prefix atom without expanding a type or erasing Unit factors. -/
+private def typeStep (state : List Nat × Nat) (atom : TypeAtom) :
+    Option (List Nat × Nat) := do
+  let pending := state.1.dropWhile (· == 0)
+  let remaining :: rest := pending | none
+  let next := (remaining - 1) :: rest
+  let (pending, width) ← match atom with
+    | .unit => some (next, state.2)
+    | .bit => some (next, state.2 + 1)
+    | .bits n => if n ≤ 8 then some (next, state.2 + n) else none
+    | .tuple arity =>
+      if 2 ≤ arity && arity ≤ 64 then some (arity :: next, state.2) else none
+  if pending.length > 33 || width > 16 then none else some (pending, width)
+
+/-- Exactly one complete type, with bounded prefix storage and nesting. -/
+def basisWidth (basis : Basis) : Option Nat := do
+  if basis.isEmpty || basis.length > 128 then none else do
+    let result ← basis.foldl (fun state atom => state.bind (fun s => typeStep s atom))
+      (some ([1], 0))
+    if (result.1.dropWhile (· == 0)).isEmpty then some result.2 else none
+
+def wires (ports : Interface) : List Nat := ports.flatMap Port.axes
+
+def typeAtoms (layout : Rewire) : Nat :=
+  (layout.inputs ++ layout.outputs).foldl (fun n p => n + p.basis.length) 0
+
+def workUnits (layout : Rewire) : Nat :=
+  8 * (1 + layout.inputs.length + (wires layout.inputs).length + typeAtoms layout) ^ 2
+
+def limits (layout : Rewire) : Bool :=
+  layout.inputs.length ≤ 64 && layout.outputs.length ≤ 64 &&
+  (wires layout.inputs).length ≤ 16 && (wires layout.outputs).length ≤ 16 &&
+  layout.owners.length ≤ 64 && layout.axes.length ≤ 16 &&
+  typeAtoms layout ≤ 512 && workUnits layout ≤ 2000000 &&
+  (layout.inputs ++ layout.outputs).all (fun p => p.basis.length ≤ 128)
+
+/-- IDs are local contiguous wire coordinates, not arbitrary external identities. -/
+def interfaceValid (ports : Interface) : Bool :=
+  let axes := wires ports
+  ports.all (fun p => basisWidth p.basis == some p.axes.length) &&
+  decide axes.Nodup && axes.all (fun i => i < axes.length)
+
+def indexAt (entries : List Nat) (index : Nat) : Nat := entries[index]?.getD 0
+
+/-- Two-sided finite inverses, with explicit bounds and lengths. -/
+def Permutation (n : Nat) (forward backward : List Nat) : Prop :=
+  forward.length = n ∧ backward.length = n ∧ ∀ i : Fin n,
+    indexAt forward i < n ∧ indexAt backward i < n ∧
+    indexAt forward (indexAt backward i) = i ∧ indexAt backward (indexAt forward i) = i
+
+instance (n : Nat) (forward backward : List Nat) : Decidable (Permutation n forward backward) := by
+  unfold Permutation
+  infer_instance
+
+private def emptyPort : Port := ⟨[.unit], []⟩
+
+/-- A coordinate permutation must agree with complete ordered typed owner ports. -/
+def PortsMatch (layout : Rewire) : Prop := ∀ j : Fin layout.outputs.length,
+  let output := layout.outputs[j.val]?.getD emptyPort
+  let input := layout.inputs[indexAt layout.owners j.val]?.getD emptyPort
+  output.basis = input.basis ∧ output.axes.map (indexAt layout.axes) = input.axes
+
+instance (layout : Rewire) : Decidable (PortsMatch layout) := by
+  unfold PortsMatch
+  infer_instance
+
+/-- Both owner and wire bijections are necessary: zero-width owners have no wires. -/
+def structureValid (layout : Rewire) (witness : Witness) : Bool :=
+  interfaceValid layout.inputs && interfaceValid layout.outputs &&
+  decide (layout.inputs.length = layout.outputs.length) &&
+  decide ((wires layout.inputs).length = (wires layout.outputs).length) &&
+  decide (Permutation layout.inputs.length layout.owners witness.inverseOwners) &&
+  decide (Permutation (wires layout.inputs).length layout.axes witness.inverseAxes) &&
+  decide (PortsMatch layout)
+
+inductive Error where
+  | limit | invalidIr | contract
+  deriving BEq, DecidableEq, Repr
+
+structure Stats where
+  owners : Nat
+  axes : Nat
+  typeAtoms : Nat
+  workUnits : Nat
+  deriving BEq, DecidableEq, Repr
+
+/-- Required interfaces/maps come from the independent consumer, never the artifact. -/
+def check (layout : Rewire) (witness : Witness) (required : Rewire) : Except Error Stats :=
+  if !(limits layout && limits required && witness.inverseOwners.length ≤ 64 &&
+       witness.inverseAxes.length ≤ 16) then .error .limit
+  else if !structureValid layout witness then .error .invalidIr
+  else if layout ≠ required then .error .contract
+  else .ok ⟨layout.inputs.length, (wires layout.inputs).length, typeAtoms layout, workUnits layout⟩
+
+/-- Acceptance binds actual metadata and checks all structural premises. -/
+theorem check_conditions (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) :
+    layout = required ∧ structureValid layout witness = true := by
+  unfold check at accepted
+  split at accepted
+  next h => contradiction
+  next h =>
+    split at accepted
+    next bad => contradiction
+    next good =>
+      split at accepted
+      next wrong => contradiction
+      next same =>
+        exact ⟨by simpa using same, by simpa using good⟩
+
+/-- Interface well-formedness and exact owner/axis counts are checked as well. -/
+theorem check_interfaces (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) :
+    interfaceValid layout.inputs = true ∧ interfaceValid layout.outputs = true ∧
+    layout.inputs.length = layout.outputs.length ∧
+    (wires layout.inputs).length = (wires layout.outputs).length := by
+  have valid := (check_conditions layout required witness stats accepted).2
+  simp only [structureValid, Bool.and_eq_true, decide_eq_true_eq] at valid
+  rcases valid.1.1.1 with ⟨⟨⟨hin, hout⟩, owners⟩, axes⟩
+  exact ⟨hin, hout, owners, axes⟩
+
+/-- No quantum owner, including Unit/Bits0, can be silently duplicated or lost. -/
+theorem check_owner_permutation (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) :
+    Permutation layout.inputs.length layout.owners witness.inverseOwners := by
+  have valid := (check_conditions layout required witness stats accepted).2
+  simp only [structureValid, Bool.and_eq_true, decide_eq_true_eq] at valid
+  exact valid.1.1.2
+
+/-- The actual coordinate map is a two-sided finite permutation. -/
+theorem check_axis_permutation (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) :
+    Permutation (wires layout.inputs).length layout.axes witness.inverseAxes := by
+  have valid := (check_conditions layout required witness stats accepted).2
+  simp only [structureValid, Bool.and_eq_true, decide_eq_true_eq] at valid
+  exact valid.1.2
+
+/-- A valid permutation cannot bypass exact type trees or within-register order. -/
+theorem check_ports (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) : PortsMatch layout := by
+  have valid := (check_conditions layout required witness stats accepted).2
+  simp only [structureValid, Bool.and_eq_true, decide_eq_true_eq] at valid
+  exact valid.2
+
+/-- Pure reindexing works for any values, with no copy/discard of coordinates. -/
+def reindex {n : Nat} {α : Type} (map : List Nat)
+    (bounded : ∀ i : Fin n, indexAt map i < n) (values : Fin n → α) : Fin n → α :=
+  fun i => values ⟨indexAt map i, bounded i⟩
+
+def Permutation.forwardBound {n : Nat} {f g : List Nat} (h : Permutation n f g) :
+    ∀ i : Fin n, indexAt f i < n := fun i => (h.2.2 i).1
+
+def Permutation.backwardBound {n : Nat} {f g : List Nat} (h : Permutation n f g) :
+    ∀ i : Fin n, indexAt g i < n := fun i => (h.2.2 i).2.1
+
+theorem reindex_round_trip {n : Nat} {α : Type} {f g : List Nat}
+    (h : Permutation n f g) (values : Fin n → α) :
+    reindex f h.forwardBound (reindex g h.backwardBound values) = values := by
+  funext i
+  change values ⟨indexAt g (indexAt f i), _⟩ = values i
+  congr 1
+  apply Fin.ext
+  exact (h.2.2 i).2.2.2
+
+theorem reindex_reverse_round_trip {n : Nat} {α : Type} {f g : List Nat}
+    (h : Permutation n f g) (values : Fin n → α) :
+    reindex g h.backwardBound (reindex f h.forwardBound values) = values := by
+  funext i
+  change values ⟨indexAt f (indexAt g i), _⟩ = values i
+  congr 1
+  apply Fin.ext
+  exact (h.2.2 i).2.2.1
+
+/-- Coefficients and arbitrary reference coordinates are untouched. This is
+basis reindexing, not a claim that separate owners have a product state. -/
+theorem check_reference_round_trip (layout required : Rewire) (witness : Witness) (stats : Stats)
+    (accepted : check layout witness required = .ok stats) {R C : Type}
+    (amplitude : (Fin (wires layout.inputs).length → Bool) → R → C) :
+    let h := check_axis_permutation layout required witness stats accepted
+    (fun bits reference => amplitude
+      (reindex layout.axes h.forwardBound
+        (reindex witness.inverseAxes h.backwardBound bits)) reference) = amplitude := by
+  dsimp
+  funext bits reference
+  rw [reindex_round_trip (check_axis_permutation layout required witness stats accepted)]
+
+end QleisliKernel.Layout

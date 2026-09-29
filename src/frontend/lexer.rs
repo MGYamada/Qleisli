@@ -230,6 +230,12 @@ fn scan(source: &str, retain_docs: bool) -> Result<(Vec<Token>, Vec<DocComment>)
     let mut tokens = Vec::new();
     let mut docs = Vec::new();
     while let Some(ch) = lexer.peek() {
+        if ch == '\r' && !source[lexer.pos..].starts_with("\r\n") {
+            return Err(LexError {
+                message: "bare carriage return is forbidden; use LF or CRLF".into(),
+                span: Span::new(lexer.pos, lexer.pos + 1),
+            });
+        }
         if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             lexer.bump();
             continue;
@@ -332,7 +338,7 @@ fn forbidden_character(ch: char) -> Option<&'static str> {
     ) {
         Some("unsupported line separator is forbidden")
     } else if ch.is_whitespace() {
-        Some("unsupported whitespace; use ASCII space, tab, LF, or CR")
+        Some("unsupported whitespace; use ASCII space, tab, LF, or CRLF")
     } else if ch.is_control() {
         Some("control character is forbidden")
     } else {
@@ -411,9 +417,9 @@ impl Lexer<'_> {
         })
     }
 
-    fn comment_character(&self, ch: char, doc: bool) -> Result<(), LexError> {
-        let message = if doc && ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
-            Some("bare carriage return is forbidden in documentation")
+    fn comment_character(&self, ch: char, _doc: bool) -> Result<(), LexError> {
+        let message = if ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
+            Some("bare carriage return is forbidden; use LF or CRLF")
         } else if matches!(ch, ' ' | '\t' | '\n' | '\r') {
             None
         } else {

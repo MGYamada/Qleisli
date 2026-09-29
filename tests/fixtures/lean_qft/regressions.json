@@ -1,0 +1,57 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_interference.py"
+    ],
+    "exit": 0,
+    "stdout": "{\"deliberate_semantic_faults\": 4, \"joint_amplitude_comparisons\": 1260, \"kernel_dense_dimension\": 0, \"largest_dense_oracle_dimension\": 8, \"max_error\": 2.8774787681579407e-13, \"native_words\": 422, \"source_sha256\": {\"lean-kernel/QleisliKernel/Interference.lean\": \"dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7\", \"lean/Qleisli/Interference.lean\": \"5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6\", \"scripts/test_lean_interference.py\": \"54c8663ae34b093c00dd96258168a1bd53a4510772c952ffb642f794c5cdc891\"}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_phase_layout.py"
+    ],
+    "exit": 0,
+    "stdout": "Native typed-phase/layout decisions: 382\n",
+    "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 5.094s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_check_lean_kernel.py",
+      "--compiled"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "................\n----------------------------------------------------------------------\nRan 16 tests in 25.379s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_check_docs.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.086s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_check_distribution.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.903s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_lean_kernel.py"
+    ],
+    "exit": 0,
+    "stdout": "Checked 14 executable kernel/transport source modules; no external Lake dependencies.\n",
+    "stderr": ""
+  }
+]

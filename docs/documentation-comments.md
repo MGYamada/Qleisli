@@ -12,6 +12,11 @@ Follow the [Rust Reference's comment distinctions](https://doc.rust-lang.org/ref
 for the spellings below. `.qli` does not implement Rust attributes, item syntax,
 rustdoc link resolution, doctest execution or the complete Rust language.
 
+The later [QLT design](qlt-design.md#cli-and-doctests) plans external execution
+of `qlt` fences during the 0.3–0.4 Rust experiment. That runner is unimplemented;
+current comment extraction/rendering still treats every code fence as text.
+QLT test attributes will belong to the separate test language, not `.qli`.
+
 | Spelling | Role in `.qli` |
 | --- | --- |
 | `// text` | Ordinary comment, ending at LF or end of file. |
@@ -60,8 +65,9 @@ pub basis fn f(x: Bit) -> Bit { /// local
 ```
 
 CRLF is retained in source spans and normalized to LF in extracted doc text.
-A bare CR is forbidden in doc comments. Ordinary line comments end only at LF,
-so bare CR no longer terminates them. The existing `.qli` forbidden-character
+A bare CR is forbidden throughout source since product 0.2.0, including doc
+and ordinary comments. Ordinary line comments end only at LF or EOF; CRLF
+is accepted. The existing `.qli` forbidden-character
 policy still applies inside all comments; this is stricter than adopting all
 Rust Unicode/source preprocessing rules. Spans are original UTF-8 byte ranges,
 including comment delimiters, excluding line terminators for line comments.

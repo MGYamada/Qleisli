@@ -167,7 +167,8 @@ and references to outputs of the same classical merge. The
 reset, mixed histories, and floating-point residuals against finite predictions.
 Regression cases include 8,000 branches and 80,000 preparations, bounding the
 observed cost of history and duplicate checks without proving complexity for
-all programs. Parser tests check recursion and left-associated AST depth limits.
+all programs. Parser tests check recursion, Boolean-chain AST depth and the
+separate tuple arity/nesting limits.
 Frontend, project, algorithm, and static-operation suites cover their own layers.
 Current commands, totals, and historical milestones are recorded in the
 [conformance record](specification-status.md); old compiler counts are not a

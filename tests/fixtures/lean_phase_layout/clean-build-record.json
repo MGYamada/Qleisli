@@ -1,0 +1,88 @@
+{
+  "recorded_utc": "2026-09-28T17:51:25.344356+00:00",
+  "package_directory": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-phase-layout-clean-so5m88yf/lean-kernel",
+  "external_packages": [],
+  "sources": {
+    "Audit.lean": "6a3235007c35a0ac34f0d3e263e83ef10ec21bfc91fc4ed5e94aadc74580fdba",
+    "Main.lean": "390454c47bc8cced6257d3079e1f83e7862dbaa22b14f293a3f9319d6f35728b",
+    "Protocol.lean": "8a86e747ce1c24e6bc8d2f3c7a03ee70edfd8007cc7b3f6f129abc701f89cbb4",
+    "QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "QleisliKernel/Layout.lean": "482658d4c0059174ed63e889b7d05389830051723f4120df1463257c75aa27a2",
+    "QleisliKernel/LayoutDag.lean": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+    "QleisliKernel/PhaseLayout.lean": "95c8b93f2872ef8668dc8b1169f6225b5e556491007f2fa7c0680dfb92386309",
+    "QleisliKernel/PhasePolynomial.lean": "62bd1477722a0ae223cc3ebef8938473e8be1b069c19fed48a5f26cdf451b2d2",
+    "QleisliKernel/PhaseWord.lean": "909fbf903f4ed7ffd7ce0fd50b5c92095bcba6e1aac1ae4cbfabde83906e760c",
+    "QleisliKernel.lean": "ca140b4eceef001a9b88b416c57a64c43afb0d6587fd31baa402dcbd5728d3d2",
+    "README.md": "4230a1110a1cd32414043020466f376f036fd3a852012eee352ff8f8a21d5c4c",
+    "Tests.lean": "4fcc0f57b25162ecbb9d2b3a3466bb900fb5ce3fff9f48713730c545c7469d93",
+    "lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
+    "lakefile.toml": "ac56021b7ca47f07acd15a64d8d54972ebd35e1d59503b50640a47f7f934ec8a",
+    "lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325"
+  },
+  "observations": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [2/24] Built QleisliKernel.PhaseWord (1.0s)\n\u2714 [3/24] Built QleisliKernel.Layout (2.1s)\n\u2714 [4/24] Built QleisliKernel.PhaseWord:c.o (304ms)\n\u2714 [5/24] Built QleisliKernel.Layout:c.o (295ms)\n\u2714 [6/24] Built QleisliKernel.Composition (577ms)\n\u2714 [7/24] Built QleisliKernel.PhasePolynomial (583ms)\n\u2714 [8/24] Built QleisliKernel.Composition:c.o (79ms)\n\u2714 [9/24] Built QleisliKernel.PhasePolynomial:c.o (122ms)\n\u2714 [10/24] Built QleisliKernel.LayoutDag (765ms)\n\u2714 [11/24] Built QleisliKernel.Dag (481ms)\n\u2714 [12/24] Built QleisliKernel.Dag:c.o (149ms)\n\u2714 [13/24] Built QleisliKernel.LayoutDag:c.o (304ms)\n\u2714 [14/24] Built QleisliKernel.PhaseLayout (658ms)\n\u2714 [15/24] Built QleisliKernel.Hierarchy (586ms)\n\u2714 [16/24] Built QleisliKernel.PhaseLayout:c.o (250ms)\n\u2714 [17/24] Built QleisliKernel.Hierarchy:c.o (247ms)\n\u2714 [18/24] Built QleisliKernel (397ms)\n\u2714 [19/24] Built Protocol (747ms)\n\u2714 [21/24] Built Main (500ms)\n\u2714 [22/24] Built Protocol:c.o (481ms)\n\u2714 [23/24] Built Main:c.o (239ms)\n\u2714 [24/24] Built \u00abqleisli-kernel\u00bb:exe (263ms)\nBuild completed successfully (24 jobs).\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "stdout": "Audited 1481 kernel/transport declarations, 1042 pure import modules and 1043 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "python3",
+        "/Users/masa/git/Qleisli/scripts/test_lean_phase_layout.py",
+        "--binary",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-phase-layout-clean-so5m88yf/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "Native typed-phase/layout decisions: 382\n",
+      "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 3.161s\n\nOK\n"
+    }
+  ],
+  "documentation_only_followup": {
+    "path": "lean-kernel/README.md",
+    "snapshot_sha256": "4230a1110a1cd32414043020466f376f036fd3a852012eee352ff8f8a21d5c4c",
+    "current_sha256": "9661d490e1044546c87ce63adc05175d05f7adac21131f3b90bc47f24ee57448",
+    "change": "Added cargo build --bin qleisli before the copyable finite-source command. Compiled sources unchanged; no additional Rust/Lean rerun claimed."
+  }
+}

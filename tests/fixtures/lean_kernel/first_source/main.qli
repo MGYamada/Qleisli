@@ -1,0 +1,10 @@
+use std::quantum::t;
+use std::quantum::h;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+// This is the current executable target for two ideal pi/8 phase gates.
+// The phase256 artifact describes those two gates; QLI does not yet expose them.
+unitary fn target(q: Q<Bit>) -> Q<Bit> { t(q) }
+
+observe fn main() -> CBit { measure_z(h(target(h(init0())))) }

@@ -1,0 +1,145 @@
+import QleisliKernel.PhaseWord
+
+/-! Sparse exact diagonal phases, without enumerating basis assignments.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace QleisliKernel.PhasePolynomial
+
+structure Term where
+  axes : List Nat
+  ticks : Nat
+  deriving BEq, DecidableEq, Repr
+
+abbrev Polynomial := List Term
+
+def Term.value (term : Term) (bits : Nat → Bool) : Nat :=
+  if term.axes.all bits then term.ticks else 0
+
+def evaluate (terms : Polynomial) (bits : Nat → Bool) : Nat :=
+  (terms.map (fun term => term.value bits)).sum % modulus
+
+def key (term : Term) : Nat := (term.axes.map (fun i => 2 ^ i)).sum
+
+/-- Fuel controls merging only; even exhausted fuel retains the complete meaning. -/
+def insertAux (fuel : Nat) (term : Term) (terms : Polynomial) : Polynomial :=
+  Nat.rec (motive := fun _ => Polynomial → Polynomial)
+    (fun terms => term :: terms)
+    (fun _ next terms => match terms with
+      | [] => [term]
+      | head :: rest =>
+        if head.axes = term.axes then
+          ⟨head.axes, (head.ticks + term.ticks) % modulus⟩ :: rest
+        else head :: next rest)
+    fuel terms
+
+def insert (terms : Polynomial) (term : Term) : Polynomial :=
+  insertAux terms.length term terms
+
+def clean (terms : Polynomial) : Polynomial :=
+  (terms.filter (fun term => term.ticks != 0)).mergeSort (fun a b => key a ≤ key b)
+
+def normalize (terms : Polynomial) : Polynomial :=
+  clean (terms.foldl insert [])
+
+def remap (map : Nat → Nat) (terms : Polynomial) : Polynomial :=
+  terms.map (fun term => ⟨(term.axes.map map).mergeSort (· ≤ ·), term.ticks⟩)
+
+def valid (width : Nat) (terms : Polynomial) : Bool :=
+  terms.length ≤ 128 && terms.all (fun term =>
+    term.ticks < modulus && term.axes.length ≤ 16 &&
+    decide (term.axes.Pairwise (· < ·)) && term.axes.all (· < width))
+
+def canonical (width : Nat) (terms : Polynomial) : Bool :=
+  valid width terms && terms.all (fun term => term.ticks != 0) &&
+    decide ((terms.map key).Pairwise (· < ·))
+
+theorem evaluate_cons (term : Term) (terms : Polynomial) (bits : Nat → Bool) :
+    evaluate (term :: terms) bits = (term.value bits + evaluate terms bits) % modulus := by
+  simp [evaluate, Nat.add_mod]
+
+theorem evaluate_append (first second : Polynomial) (bits : Nat → Bool) :
+    evaluate (first ++ second) bits = (evaluate first bits + evaluate second bits) % modulus := by
+  simp [evaluate, List.sum_append, Nat.add_mod]
+
+theorem insertAux_sound (fuel : Nat) (term : Term) (terms : Polynomial) (bits : Nat → Bool) :
+    evaluate (insertAux fuel term terms) bits =
+      (term.value bits + evaluate terms bits) % modulus := by
+  induction fuel generalizing terms with
+  | zero => exact evaluate_cons term terms bits
+  | succ n ih =>
+    cases terms with
+    | nil => simp [insertAux, evaluate, Term.value]
+    | cons head rest =>
+      simp only [insertAux]
+      split
+      next same =>
+        simp only [evaluate_cons, Term.value, same]
+        split <;> simp [Nat.add_assoc, Nat.add_comm]
+      next different =>
+        change evaluate (head :: insertAux n term rest) bits = _
+        rw [evaluate_cons, ih, evaluate_cons]
+        simp [Nat.add_assoc, Nat.add_comm, Nat.add_left_comm]
+
+theorem insert_sound (terms : Polynomial) (term : Term) (bits : Nat → Bool) :
+    evaluate (insert terms term) bits = (term.value bits + evaluate terms bits) % modulus :=
+  insertAux_sound terms.length term terms bits
+
+private theorem filter_sound (terms : Polynomial) (bits : Nat → Bool) :
+    ((terms.filter (fun term => term.ticks != 0)).map (fun term => term.value bits)).sum =
+      (terms.map (fun term => term.value bits)).sum := by
+  induction terms with
+  | nil => rfl
+  | cons term rest ih =>
+    by_cases zero : term.ticks = 0
+    · simp only [List.filter_cons, bne_iff_ne, zero, ne_eq, not_true_eq_false, ↓reduceIte, List.map_cons, List.sum_cons]
+      rw [ih]
+      simp [Term.value, zero]
+    · simp [zero, ih]
+
+private theorem sum_perm {first second : List Nat} (same : first.Perm second) :
+    first.sum = second.sum := by
+  induction same with
+  | nil => rfl
+  | cons x _ ih => simp [ih]
+  | swap x y rest => simp [Nat.add_left_comm]
+  | trans _ _ ih₁ ih₂ => exact ih₁.trans ih₂
+
+theorem clean_sound (terms : Polynomial) (bits : Nat → Bool) :
+    evaluate (clean terms) bits = evaluate terms bits := by
+  unfold clean evaluate
+  rw [sum_perm ((List.mergeSort_perm _ _).map (fun term : Term => term.value bits))]
+  rw [filter_sound]
+
+private theorem fold_sound (terms initial : Polynomial) (bits : Nat → Bool) :
+    evaluate (terms.foldl insert initial) bits =
+      (evaluate terms bits + evaluate initial bits) % modulus := by
+  induction terms generalizing initial with
+  | nil => simp [evaluate]
+  | cons term rest ih =>
+    simp only [List.foldl_cons]
+    rw [ih, insert_sound, evaluate_cons]
+    simp [Nat.add_comm, Nat.add_left_comm]
+
+theorem normalize_sound (terms : Polynomial) (bits : Nat → Bool) :
+    evaluate (normalize terms) bits = evaluate terms bits := by
+  rw [normalize, clean_sound, fold_sound]
+  simp [evaluate]
+
+theorem remap_sound (map : Nat → Nat) (terms : Polynomial) (bits : Nat → Bool) :
+    evaluate (remap map terms) bits = evaluate terms (bits ∘ map) := by
+  unfold evaluate remap
+  congr 2
+  simp only [List.map_map]
+  apply List.map_congr_left
+  intro term _
+  simp only [Function.comp_apply, Term.value]
+  rw [(List.mergeSort_perm _ _).all_eq]
+  simp [List.all_map, Function.comp_def]
+
+/-- The one-axis term agrees with the original cyclic phase primitive. -/
+theorem single_axis (axis ticks : Nat) (bits : Nat → Bool) (phase : Nat) :
+    (phase + evaluate [⟨[axis], ticks⟩] bits) % modulus =
+      (run [.phase ticks] (bits axis) phase).phase := by
+  cases h : bits axis <;> simp [evaluate, Term.value, run, execute, step, h, Nat.add_mod]
+
+end QleisliKernel.PhasePolynomial

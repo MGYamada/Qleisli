@@ -1,0 +1,77 @@
+import Qleisli.QftUnitary
+import QleisliKernel.Schema
+
+/-! Semantic consequences of the actual closed component dispatcher.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+External IR projection, provider evidence and transport remain separate. -/
+
+namespace Qleisli.Schema
+open scoped BigOperators Matrix
+
+theorem qft_sound (width : Nat) (proposal : QleisliKernel.Schema.Proposal)
+    (receipt : QleisliKernel.Schema.Receipt)
+    (accepted : QleisliKernel.Schema.check (.qft width) proposal = some receipt)
+    (definitions : List QleisliKernel.QftGraph.Definition) (entry : Nat)
+    (binding : proposal.witness = .qft definitions entry) :
+    ∃ actual : QleisliKernel.QftGraph.Action,
+      QleisliKernel.QftGraph.denote definitions entry = some actual ∧
+      (QftGraph.matrix width actual)ᴴ * QftGraph.matrix width actual = 1 ∧
+      QftGraph.matrix width actual * (QftGraph.matrix width actual)ᴴ = 1 ∧
+      ∀ input output : Fin width → Bool,
+        QftGraph.coefficient width actual input output =
+          Complex.exp (2 * Real.pi * Complex.I * Qft.value width (Qft.finiteBits input) *
+            Qft.value width (Qft.finiteBits output) / (2 : ℂ)^width) /
+            (Real.sqrt ((2 : ℝ)^width) : ℂ) := by
+  obtain ⟨actualDefs, actualEntry, circuit, projected, _, checked⟩ :=
+    QleisliKernel.Schema.check_qft width proposal receipt accepted
+  have same := QleisliKernel.Schema.Witness.qft.inj (projected.symm.trans binding)
+  obtain ⟨rfl, rfl⟩ := same
+  have meaning := (QleisliKernel.QftGraph.check_sound definitions entry width circuit checked).2.1
+  have unitary := QftGraph.check_unitary definitions entry width circuit checked _ meaning
+  exact ⟨_, meaning, unitary.1, unitary.2,
+    QftGraph.check_fourier definitions entry width circuit checked _ meaning⟩
+
+theorem powers_sound {S : Type} (operation : Nat → S → S)
+    (precision provider : Nat) (proposal : QleisliKernel.Schema.Proposal)
+    (receipt : QleisliKernel.Schema.Receipt)
+    (accepted : QleisliKernel.Schema.check (.powers precision provider) proposal = some receipt)
+    (stages : List QleisliKernel.ControlledPowers.Stage)
+    (binding : proposal.witness = .powers stages) (bits : QleisliKernel.Interference.Bits)
+    (state : S) :
+    QleisliKernel.ControlledPowers.run operation bits stages state =
+      QleisliKernel.ControlledPowers.iterate (operation provider)
+        (QleisliKernel.ControlledPowers.value precision bits) state := by
+  obtain ⟨actualStages, projected, _, checked⟩ :=
+    QleisliKernel.Schema.check_powers precision provider proposal receipt accepted
+  have same := QleisliKernel.Schema.Witness.powers.inj (projected.symm.trans binding)
+  subst actualStages
+  exact QleisliKernel.ControlledPowers.check_action operation precision provider stages checked bits state
+
+theorem qpe_sound {R : Type} [Fintype R] [DecidableEq R]
+    (targetWidth precision provider : Nat)
+    (operations : Nat → Matrix (Fin (2^targetWidth)) (Fin (2^targetWidth)) ℂ)
+    (proposal : QleisliKernel.Schema.Proposal) (receipt : QleisliKernel.Schema.Receipt)
+    (accepted : QleisliKernel.Schema.check (.qpe targetWidth precision provider) proposal = some receipt)
+    (plan : QleisliKernel.Qpe.Plan) (binding : proposal.witness = .qpe plan)
+    (isometry : (operations provider)ᴴ * operations provider = 1) :
+    ∃ actual : QleisliKernel.QftGraph.Action,
+      QleisliKernel.QftGraph.denote plan.fourier plan.fourierEntry = some actual ∧
+      plan.boundary = QleisliKernel.Qpe.header targetWidth precision ∧
+      plan.precisionInitial = List.replicate precision false ∧
+      Kraus.Complete (Qpe.branch precision plan.preparation plan.powers operations actual) ∧
+      ∀ rho : Matrix (Fin (2^targetWidth) × R) (Fin (2^targetWidth) × R) ℂ,
+        (∀ outcome : Fin precision → Bool,
+          Qpe.outcomeMap (Qpe.branch precision plan.preparation plan.powers operations actual outcome) rho =
+            Qpe.outcomeMap (Qpe.kraus precision (operations provider)
+              (Qft.value precision (Qft.finiteBits outcome))) rho) ∧
+        (∑ outcome : Fin precision → Bool,
+          Matrix.trace (Qpe.outcomeMap
+            (Qpe.branch precision plan.preparation plan.powers operations actual outcome) rho)) =
+          Matrix.trace rho := by
+  obtain ⟨actualPlan, circuit, projected, _, checked⟩ :=
+    QleisliKernel.Schema.check_qpe targetWidth precision provider proposal receipt accepted
+  have same := QleisliKernel.Schema.Witness.qpe.inj (projected.symm.trans binding)
+  subst actualPlan
+  exact Qpe.accepted_plan targetWidth precision provider operations plan circuit checked isometry
+
+end Qleisli.Schema

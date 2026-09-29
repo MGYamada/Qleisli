@@ -1,0 +1,159 @@
+import QleisliKernel.Hierarchical.NodeTyping
+open QleisliKernel.Hierarchical.Artifact
+def side (width : Nat) : Side := ⟨#[⟨0, #[.bits width], Array.range width⟩], #[]⟩
+def signature (width : Nat) : Interface := ⟨side width, side width⟩
+def identityMap (width : Nat) : PortMap := ⟨#[0], Array.range width, #[]⟩
+def witness : Witness := ⟨1, #[], #[]⟩
+def proof : Proof := ⟨.equation, .rewire, #[], 0, 0, 0, 0, witness⟩
+def base (width : Nat) : Artifact :=
+  ⟨#[⟨signature width, .unitary, .rewire (identityMap width)⟩],
+   #[⟨signature width, .identity⟩], #[⟨side width, side width, .identity⟩], #[proof], ⟨0,0⟩⟩
+def order : Array Nat := #[0,1,2,3]
+def changeDef (a : Artifact) (f : Definition → Definition) : Artifact :=
+  {a with definitions := a.definitions.map f}
+def changeMeaning (a : Artifact) (f : Meaning → Meaning) : Artifact :=
+  {a with meanings := a.meanings.map f}
+def changeEncoding (a : Artifact) (f : Encoding → Encoding) : Artifact :=
+  {a with encodings := a.encodings.map f}
+def changeProof (a : Artifact) (f : Proof → Proof) : Artifact :=
+  {a with proofs := a.proofs.map f}
+def changedBasis (a : Artifact) (basis : Basis) : Artifact :=
+  changeMeaning a fun m => {m with interface := {m.interface with inputs :=
+    {m.interface.inputs with quantum := #[⟨0,basis,#[0,1,2]⟩]}}}
+def repeated (count : Nat) : Artifact :=
+  let a := base 1
+  {a with definitions := a.definitions.push ⟨signature 1, .unitary, .repeatOp count 0⟩,
+          proofs := #[{proof with implementation := 1}], entry := ⟨1,0⟩}
+def invalidZero : Artifact :=
+  {repeated 0 with definitions := #[⟨signature 1, .unitary, .dyadicPhase 0 1 9⟩,
+    ⟨signature 1, .unitary, .repeatOp 0 0⟩]}
+def zeroCycle : Artifact := changeDef (base 1) fun d => {d with body := .repeatOp 0 0}
+def nested : Basis := #[.tuple 2,.tuple 2,.bit,.bit,.bit]
+def flat : Basis := #[.tuple 3,.bit,.bit,.bit]
+def typed (basis : Basis) (width : Nat) : Artifact :=
+  let s : Side := ⟨#[⟨0,basis,Array.range width⟩],#[]⟩
+  {base width with definitions := #[⟨⟨s,s⟩,.unitary,.rewire (identityMap width)⟩],
+                   meanings := #[⟨⟨s,s⟩,.identity⟩],encodings := #[⟨s,s,.identity⟩]}
+def withZero : Artifact :=
+  let s : Side := ⟨#[⟨0,#[.bit],#[0]⟩,⟨1,#[.bits 0],#[]⟩],#[]⟩
+  {base 1 with definitions := #[⟨⟨s,s⟩,.unitary,.rewire ⟨#[0,1],#[0],#[]⟩⟩],
+               meanings := #[⟨⟨s,s⟩,.identity⟩],encodings := #[⟨s,s,.identity⟩]}
+def duplicateZero : Artifact := changeDef withZero fun d =>
+  {d with interface := {d.interface with inputs :=
+    ⟨#[⟨0,#[.bit],#[0]⟩,⟨0,#[.bits 0],#[]⟩],#[]⟩}}
+def dropZero : Artifact := changeMeaning withZero fun m =>
+  {m with interface := {m.interface with inputs := ⟨#[⟨0,#[.bit],#[0]⟩],#[]⟩}}
+def proofStar (n : Nat) : Artifact :=
+  {base 8 with proofs := (Array.range n).map (fun i =>
+    {proof with premises := if i+1=n then Array.range i else #[]}), entry := ⟨0,n-1⟩}
+def bytes (n : Nat) : ByteArray := ⟨Array.replicate n 0⟩
+def payload (n : Nat) : Artifact := changeDef (base 1) fun d => {d with body := .leaf (bytes n)}
+def noPorts : Side := ⟨#[],#[]⟩
+def oversizedPorts : Artifact := changeDef (base 0) fun d =>
+  {d with interface := ⟨⟨Array.replicate 100000 ⟨0,#[.bits 0],#[]⟩,#[]⟩,noPorts⟩}
+def oversizedReferences : Artifact := changeDef (base 1) fun d =>
+  {d with body := .sequence (Array.replicate 1000001 0)}
+def oversizedWitness : Artifact := changeProof (base 1) fun p =>
+  {p with witness := {witness with references := Array.replicate 1000001 ⟨.definition,0⟩}}
+def code (failure : Failure) : String := match failure.kind with
+  | .limit => "limit" | .invalidIr => "invalid_ir" | .contract => "contract"
+def graphText (nodes : QleisliKernel.Hierarchical.Graph.Nodes) : String :=
+  "[" ++ String.intercalate "," (nodes.toList.map (fun edges =>
+    "[" ++ String.intercalate "," (edges.map toString) ++ "]")) ++ "]"
+def report (name : String) (a : Artifact) (schedule : Array Nat) : IO Unit := do
+  match prepare a schedule with
+  | .error e => IO.println s!"{name}|{code e}"
+  | .ok p => IO.println s!"{name}|prepared|{p.totalVisits}|{p.projection.payloadBytes}|{graphText p.projection.nodes}"
+def refText (ref : Ref) : String :=
+  let table := match ref.table with
+    | .definition => "d" | .meaning => "m" | .encoding => "e" | .proof => "p"
+  s!"{table}{ref.index}"
+def reportPorts (name : String) (source destination : Side) (map : PortMap) (budget : Nat) : IO Unit :=
+  match QleisliKernel.Hierarchical.Ports.check source destination map budget with
+  | .error e => IO.println s!"{name}|{code ⟨e,none⟩}"
+  | .ok checked => IO.println s!"{name}|mapped|{checked.visits}"
+def bitPair : Side := ⟨#[⟨7,#[.bit],#[5]⟩,⟨8,#[.bit],#[1]⟩],#[]⟩
+def renamedPair : Side := ⟨#[⟨90,#[.bit],#[700]⟩,⟨91,#[.bit],#[300]⟩],#[]⟩
+def zeroPair : Side := ⟨#[⟨7,#[.unit],#[]⟩,⟨8,#[.bits 0],#[]⟩],#[]⟩
+def reversedZero : Side := ⟨#[⟨70,#[.bits 0],#[]⟩,⟨80,#[.unit],#[]⟩],#[]⟩
+def tupleSide (basis : Basis) : Side := ⟨#[⟨0,basis,#[0,1,2]⟩],#[]⟩
+def classicalSide : Side := ⟨#[],#[⟨7,#[.bit]⟩,⟨8,#[.bits 2]⟩]⟩
+def reversedClassical : Side := ⟨#[],#[⟨70,#[.bits 2]⟩,⟨80,#[.bit]⟩]⟩
+def hugeAxes : Side := ⟨#[⟨0,#[.bits 8],Array.replicate 1000000 0⟩],#[]⟩
+def refs (name : String) (rs : Array Ref) : IO Unit :=
+  IO.println s!"{name}|refs|{String.intercalate "," (rs.toList.map refText)}"
+
+open QleisliKernel.Hierarchical
+def bside (owner axis : Nat) : Side := ⟨#[⟨owner,#[.bit],#[axis]⟩],#[]⟩
+def leaf (s : Side) : Definition := ⟨⟨s,s⟩,.unitary,.leaf (bytes 1)⟩
+def localArtifact (definitions : Array Definition) : Artifact :=
+  {base 1 with definitions := definitions}
+def single (body : Body) (effect : Effect := .unitary) : Artifact :=
+  localArtifact #[⟨⟨bside 0 0,bside 0 0⟩,effect,body⟩]
+def wrap (body : Body) (effect : Effect := .unitary) : Artifact :=
+  localArtifact #[leaf (bside 0 0),⟨⟨bside 0 0,bside 0 0⟩,effect,body⟩]
+def initialized : Definition := ⟨⟨noPorts,bside 0 0⟩,.iso,.init0 0⟩
+def observed : Definition := ⟨⟨bside 0 0,⟨#[],#[⟨1,#[.bit]⟩]⟩⟩,.observe,.observeZ 0 1⟩
+def trial (order : Array Nat) (effect : Effect) : Artifact :=
+  localArtifact #[initialized,observed,⟨⟨noPorts,⟨#[],#[⟨1,#[.bit]⟩]⟩⟩,effect,.sequence order⟩]
+def parentCall (outOwner outAxis : Nat) : Definition :=
+  ⟨⟨bside 10 10,bside outOwner outAxis⟩,.unitary,.call 0 (identityMap 1) (identityMap 1)⟩
+def called (outOwner outAxis : Nat) : Artifact :=
+  localArtifact #[leaf (bside 7 3),parentCall outOwner outAxis]
+def newCalled (outOwner : Nat) : Artifact :=
+  localArtifact #[⟨⟨bside 7 3,bside 8 3⟩,.unitary,.rewire (identityMap 1)⟩,parentCall outOwner 10]
+def controller (owner axis : Nat) (basis : Basis := #[.bit]) : Artifact :=
+  let c : Side := ⟨#[⟨owner,basis,#[axis]⟩],#[]⟩
+  let s := NodeTyping.append c (bside 0 0)
+  localArtifact #[leaf (bside 0 0),⟨⟨s,s⟩,.unitary,.control 0 true⟩]
+def parallel (owner axis : Nat) : Artifact :=
+  let a := leaf (bside 0 0)
+  let b := leaf (bside owner axis)
+  let s := NodeTyping.append a.interface.inputs b.interface.inputs
+  localArtifact #[a,b,⟨⟨s,s⟩,.unitary,.tensor 0 1⟩]
+def measuredFrame : Definition :=
+  ⟨⟨⟨#[⟨0,#[.bit],#[0]⟩,⟨2,#[.bits 0],#[]⟩],#[⟨4,#[.bit]⟩]⟩,
+    ⟨#[⟨2,#[.bits 0],#[]⟩],#[⟨4,#[.bit]⟩,⟨5,#[.bit]⟩]⟩⟩,.observe,.observeZ 0 5⟩
+def preparedFrame : Definition :=
+  ⟨⟨⟨#[⟨2,#[.bits 0],#[]⟩],#[⟨4,#[.bit]⟩]⟩,
+    ⟨#[⟨2,#[.bits 0],#[]⟩,⟨0,#[.bit],#[0]⟩],#[⟨4,#[.bit]⟩]⟩⟩,.iso,.init0 0⟩
+def computeRegion : Artifact :=
+  let logical := bside 0 0
+  let physical := NodeTyping.append logical (bside 1 1)
+  {base 1 with definitions := #[leaf physical,leaf physical,
+      ⟨⟨logical,logical⟩,.unitary,.computed 0 1 0 0⟩],
+               meanings := #[⟨⟨logical,logical⟩,.identity⟩], encodings := #[⟨logical,physical,.zeroScratch 1 0⟩]}
+def invalidZeroTyped : Artifact :=
+  {repeated 0 with definitions := #[⟨signature 1,.unitary,.dyadicPhase 0 1 3⟩,
+    ⟨signature 1,.unitary,.repeatOp 0 0⟩]}
+def lifetimeTensor : Artifact :=
+  localArtifact #[observed,initialized,
+    ⟨⟨observed.interface.inputs,NodeTyping.append observed.interface.outputs initialized.interface.outputs⟩,
+      .observe,.tensor 0 1⟩]
+def classicalCall (output : Nat) : Artifact :=
+  let callee : Definition := ⟨⟨⟨#[],#[⟨3,#[.bit]⟩]⟩,⟨#[],#[⟨4,#[.bit]⟩]⟩⟩,.observe,.leaf (bytes 1)⟩
+  let caller : Definition := ⟨⟨⟨#[],#[⟨10,#[.bit]⟩]⟩,⟨#[],#[⟨output,#[.bit]⟩]⟩⟩,.observe,
+    .call 0 ⟨#[],#[],#[0]⟩ ⟨#[],#[],#[0]⟩⟩
+  localArtifact #[callee,caller]
+def renamedUnitary (swap : Bool) (isRepeat : Bool) : Artifact :=
+  let a := bside 0 0
+  let b := bside 1 0
+  let interface : Interface := if swap then ⟨b,a⟩ else ⟨a,b⟩
+  localArtifact #[⟨⟨a,b⟩,.unitary,.rewire (identityMap 1)⟩,
+    ⟨interface,.unitary,if isRepeat then .repeatOp 0 0 else .inverse 0⟩]
+def reportNode (name : String) (a : Artifact) (index budget : Nat) : IO Unit :=
+  match NodeTyping.check a index budget with
+  | .error e => IO.println s!"{name}|{code ⟨e,none⟩}"
+  | .ok checked => IO.println s!"{name}|typed|{checked.visits}"
+def reportAll (name : String) (a : Artifact) (order : Array Nat) : IO Unit :=
+  match NodeTyping.checkAll a order with
+  | .error e => IO.println s!"{name}|{code e}"
+  | .ok checked => IO.println s!"{name}|typed|{checked.totalVisits}"
+
+def main : IO Unit :=
+  let first := bside 0 0
+  let second : Side := ⟨#[⟨1,#[.bits 1],#[0]⟩],#[]⟩
+  let ctrl := bside 2 1
+  reportNode "control-changes-target-type" (localArtifact #[
+    ⟨⟨first,second⟩,.unitary,.leaf (bytes 1)⟩,
+    ⟨⟨NodeTyping.append ctrl first,NodeTyping.append ctrl second⟩,.unitary,.control 0 true⟩]) 1 2000000

@@ -280,7 +280,7 @@ fn library_check_needs_no_entry_and_project_errors_have_coordinates() {
         compile_project(&root.0).unwrap_err().code,
         ErrorCode::InvalidEntry
     );
-    let source = "// λ\r\nobserve fn main() -> Unit {\r @\r}";
+    let source = "// λ\r\nobserve fn main() -> Unit {\r\n @\r\n}";
     fs::write(root.0.join("main.qli"), source).unwrap();
     let error = compile_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Project);

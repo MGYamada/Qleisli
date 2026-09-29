@@ -1,24 +1,24 @@
 {
   "format": 1,
-  "release_state": "0.1.9 release scope finalized: finite [B019 foundation complete](reviews/b019-completion.md), compatible F1/F2 repairs, 24 three-source translations and code-driven handoff; candidate CI/distribution passed; the [release procedure and publication record](releases/v0.1.9.md#release-validation-and-publication) identify final commit checks, immutable tag and GitHub source distribution; registry publication is not included",
+  "release_state": "0.2.0 release scope finalized on 2026-09-29: [finite interfaces and experimental Lean foundation](v0.2.0-plan.md) retained; migration and release validation recorded separately; remaining shared-QPE work and unchanged feature gates moved to the compatible [0.2.1 target](v0.2.1-plan.md), or 0.3.0 if a public break is necessary; CBits spelling retained; [structural type contract and tuple migration](type-system.md) implemented with distinct n-ary/nested types; Rust is the default for unresolved type/ownership design; finite X2\u2013X6 implemented and tested; [Lean migration](lean-kernel-migration.md) adopted with proved experimental phase-word and [shared-DAG](lean-hierarchy-slice.md) executables plus [typed layout](lean-layout-slice.md) permutation/reference proofs and [shared typed call](lean-layout-dag-slice.md) graph soundness, now joined by [sparse phase/layout](lean-phase-layout-slice.md) composition proofs and [interference/complex interpretation](lean-interference-slice.md) and [actual QFT circuit/Fourier proofs](lean-qft-proof-packet.md), extended to an [accepted typed graph projection](lean-qft-graph-packet.md), plus [QPE residual-instrument, coherent controlled-power and conditional completeness proofs](lean-qpe-instrument-packet.md); [Qleisli Soundness Theorem / S05-C1\u2013C5](release-milestones.md#qleisli-soundness-theorem-v050) targeted for v0.5.0 with community expansion thereafter, not yet achieved; [Physical Realizability Theorem / PR-C1\u2013C4](release-milestones.md#physical-realizability-theorem-v1) and a proved Lean backend adopted as v1 requirements, not yet implemented or proved; production acceptance remains Rust; component schema types/source are pinned; typed artifact preparation derives dependencies, binds exact proof endpoints and shares its budget with the proved acyclic scheduler and actual whole-definition and meaning/encoding typing checks; explicit Bits/Bit, tuple and empty-owner conversions now have checked actual inverse routing and reference coefficient round trips; controlled powers now project actual implementation/meaning bodies and retain explicit provider-proof obligations with operator/reference theorems; a supported whole-space derivation pass now checks actual rules and provider premises from an empty cache, with proved finite closure and constructed equal, unique complex operator/reference denotations for supported accepted rules, without an assumed interpretation environment; whole-space unitarity, full-profile semantics, hierarchy/schema integration, sized source, reference execution and H1\u2013H5 remain pending in the 0.2.1 continuation; all external schema entries remain disabled; [QLT design and TQL-0 source records](qlt-design.md) adopted for a future 0.3\u20130.4 Rust experiment and later independent Lean migration; no QLT runtime implemented; [Lean-assisted mathematical debugger](lean-debugger-plan.md) adopted as future 0.x.0 tooling with no selected version, implementation or new release gate; [release record](releases/v0.2.0.md#release-validation-and-publication) and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.0)",
   "milestones": [
     {
       "id": "M0",
-      "state": "original M1 scope/specification complete; added interoperability direction selected",
-      "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [M1 specification](next-minor-spec.md); [v0.2.0 authoring issue intake, not adopted scope](v0.2.0-backlog.md)",
+      "state": "0.2.0 foundation scope finalized; remaining common-QPE scope moved to the compatible 0.2.1 target; CBits spelling retained",
+      "evidence": "[Decision dossier](decisions/2026-09-27-v1-path.md); [revised 0.2.0 plan](v0.2.0-plan.md); [0.2.1 continuation](v0.2.1-plan.md); [v0.5 theorem and community direction](v0x-roadmap.md#community-development-from-v05)",
       "open": "Implementation-readiness checkpoint 2026-10-04 JST; remaining Python, QIR input and adaptive extension specifications pending"
     },
     {
       "id": "M1",
-      "state": "Fixed-width operations/meanings implemented alongside released X1 and M1.1-A; remaining slices pending",
-      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md)",
-      "open": "X2–X6, standard-reader QIR import, adaptive connections and Python bindings/distribution remain separate gates"
+      "state": "Fixed-width operations and X1/M1.1-A retained; finite X2\u2013X6 implemented with regression evidence",
+      "evidence": "[Language rules](next-minor-spec.md); [machine interfaces](machine-interface-spec.md); [interoperability direction](interoperability-roadmap.md); [M1.1 terminal contract](interop-m1.1.md); [0.1.8 implementation and validation](releases/v0.1.8.md); [0.2.0 implementation record](releases/v0.2.0.md)",
+      "open": "Continuing adversarial review; Python/QIR input/adaptive work independent"
     },
     {
       "id": "M2",
-      "state": "IR/checker profile specified; unimplemented",
-      "evidence": "[Hierarchy/schema/QPE profile](hierarchical-ir-spec.md); [coefficient-domain recommendation, not a profile extension](coefficient-domains.md)",
-      "open": "Sized source extension specification; schema proofs, production implementation and H1–H5 validation"
+      "state": "Remaining production scope deferred to 0.2.1; CD-3 has actual QFT graph/Fourier and QPE branch/reference theorems, plus completeness and joint trace preservation under a provider-isometry premise; fixed component dispatch is proved; full external binding and sized source pending",
+      "evidence": "[0.2.1 plan and compatibility gate](v0.2.1-plan.md); [Hierarchy/schema/QPE profile](hierarchical-ir-spec.md); [coefficient-domain recommendation, not a profile extension](coefficient-domains.md); [initial CD-3 checker and proof scope](lean-hierarchy-slice.md); [typed owner/axis component](lean-layout-slice.md); [combined phase/layout component](lean-phase-layout-slice.md); [actual-definition interference and complex bridge](lean-interference-slice.md); [QFT circuit proof](lean-qft-proof-packet.md); [typed QFT graph binding](lean-qft-graph-packet.md); [QPE instrument and conditional completeness](lean-qpe-instrument-packet.md)",
+      "open": "0.2.1 compatibility review; sized-source extension specification; whole-space unitarity, finite reconstruction and remaining derivation rules; full hierarchy/provider/encoding/schema binding, reference execution and integrated H1\u2013H5 validation"
     },
     {
       "id": "M3",
@@ -35,22 +35,22 @@
     {
       "id": "M5",
       "state": "planned",
-      "evidence": "[V1-C1–C5](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure)",
+      "evidence": "[V1-C1\u2013C5](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure)",
       "open": "Costs, stable public contracts and executable acceptance for all three families"
     }
   ],
   "inventory": [
     {
-      "rule": "[Linear ownership, including zero-width owners](language-spec.md#2-型と文脈)",
+      "rule": "[Linear ownership, including zero-width owners](language-spec.md#2-\u578b\u3068\u6587\u8108)",
       "implementation": "[Lowering](../src/frontend/compile/lower/mod.rs); [`verify`](../src/verify.rs)",
       "tests": "[`finite_v0_type_shapes_and_zero_wire_ownership`](../tests/compile.rs); [`copied_quantum_token_is_rejected_even_for_unit`](../tests/verify.rs)",
       "proof": "[R1 and its Lean accounting projection](formal-core.md#4-theorem-status-and-proof-work); full Rust adequacy open"
     },
     {
-      "rule": "[Declared effects and observations](language-spec.md#4-効果と意味論)",
+      "rule": "[Declared effects and observations](language-spec.md#4-\u52b9\u679c\u3068\u610f\u5473\u8ad6)",
       "implementation": "[Source checking](../src/frontend/compile/mod.rs); [IR verifier](../src/verify.rs)",
       "tests": "[`declared_effects_survive_arguments_tuples_conditions_and_both_arms`](../tests/source_judgments.rs); [`measurement_cannot_claim_pure_effect`](../tests/verify.rs); [causal effect diagnostics](../tests/repair_diagnostics.rs)",
-      "proof": "[T3/Q1–Q3 paper results](formal-core.md); verifier acceptance-to-denotation mechanization open"
+      "proof": "[T3/Q1\u2013Q3 paper results](formal-core.md); verifier acceptance-to-denotation mechanization open"
     },
     {
       "rule": "[Names, scopes and spent bindings](syntax-v0.md#names-and-scopes)",
@@ -59,19 +59,19 @@
       "proof": "[Local scope model](lowering-state-refinement.md); complete Rust trace/holder premises open"
     },
     {
-      "rule": "[Complete branch/result/frame coverage](language-spec.md#7-古典分岐の合流)",
+      "rule": "[Complete branch/result/frame coverage](language-spec.md#7-\u53e4\u5178\u5206\u5c90\u306e\u5408\u6d41)",
       "implementation": "[Branch lowering](../src/frontend/compile/lower/branch.rs); [verifier](../src/verify.rs)",
       "tests": "[`resource_rules_pending_mixed_argument_survives_nested_call`](../tests/compile.rs); [`resource_rules_zero_width_result_and_frame_are_both_merged`](../tests/compile.rs); [`branch_rejects_unmerged_or_mismatched_quantum_contexts`](../tests/verify.rs)",
       "proof": "[S3 paper composition](source-semantics.md); [Lean phi projection](lean-resource-proof.md); general lowering correspondence open"
     },
     {
       "rule": "[Static transformations, phase and zero repetitions](static-operations.md)",
-      "implementation": "[Static lowering](../src/frontend/compile/lower/mod.rs); [circuit transforms](../src/frontend/compile/circuit.rs)",
-      "tests": "[Static acceptance suite](../tests/static_operations.rs); [`nested_qif_preserves_zero_one_controls_and_branch_phases`](../tests/static_semantics.rs); [`computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control`](../tests/static_semantics.rs)",
-      "proof": "[F1–F5 conditional paper proof](static-semantics.md); no general Rust transformation proof"
+      "implementation": "[Static lowering](../src/frontend/compile/lower/mod.rs); [circuit transforms](../src/frontend/compile/circuit.rs); [independent finite comparison](../src/frontend/compile/lower/transforms.rs)",
+      "tests": "[Static acceptance suite](../tests/static_operations.rs); [`nested_qif_preserves_zero_one_controls_and_branch_phases`](../tests/static_semantics.rs); [`computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control`](../tests/static_semantics.rs); [phase/control/axis mutations](../src/frontend/compile/operations.rs)",
+      "proof": "[F1\u2013F5 conditional paper proof](static-semantics.md); no general Rust transformation proof"
     },
     {
-      "rule": "[Total basis computations and injective lifts](language-spec.md#5-基底計算と単射リフト)",
+      "rule": "[Total basis computations and injective lifts](language-spec.md#5-\u57fa\u5e95\u8a08\u7b97\u3068\u5358\u5c04\u30ea\u30d5\u30c8)",
       "implementation": "[Basis tables](../src/frontend/compile/basis.rs); [lift lowering](../src/frontend/compile/lower/mod.rs); [IR table checks](../src/verify.rs)",
       "tests": "[`finite_v0_basis_lifts_are_injective_and_closed`](../tests/compile.rs); [`noninjective_and_partial_lifts_are_rejected`](../tests/verify.rs)",
       "proof": "[T1/C1 paper schemas](source-ir-correspondence.md); scalable circuit synthesis and its correspondence open"
@@ -91,7 +91,7 @@
     {
       "rule": "[Lexical grammar and located errors](syntax-v0.md)",
       "implementation": "[Parser](../src/frontend/parser.rs)",
-      "tests": "[`accepts_comments_and_reports_utf8_byte_offsets`](../tests/parser.rs); [`invisible_separators_and_bad_bit_literals_have_precise_errors`](../tests/parser.rs); [`example_and_stdlib_token_prefixes_parse_without_panicking`](../tests/parser.rs); [`static_operation_errors_point_to_the_unconsumed_token_or_eof`](../tests/parser.rs)",
+      "tests": "[`accepts_comments_and_reports_utf8_byte_offsets`](../tests/parser.rs); [`invisible_separators_and_bad_bit_literals_have_precise_errors`](../tests/parser.rs); [`example_and_stdlib_token_prefixes_parse_without_panicking`](../tests/parser.rs); [`static_operation_errors_point_to_the_unconsumed_token_or_eof`](../tests/parser.rs); [`bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset`](../tests/review_v019.rs)",
       "proof": "Normative grammar and finite parser regressions; complete parser-to-grammar adequacy unproved"
     },
     {
@@ -121,8 +121,8 @@
     {
       "rule": "[Finite work, width, depth and numeric execution limits](frontend-v0.md)",
       "implementation": "[Frontend](../src/frontend/compile/mod.rs); [verifier](../src/verify.rs); [simulator](../src/sim.rs)",
-      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`branch_depth_limit_counts_empty_branches_in_both_arms`](../tests/verify.rs); [`branch_preflight_checks_both_functions_and_inactive_empty_arms`](../tests/function_evidence.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs); [shared source retention bounds](../tests/source_snapshots.rs)",
-      "proof": "Operational boundedness regressions; no end-to-end resource-complexity or floating-error theorem; future source-byte limits are separately specified"
+      "tests": "[`exponential_call_expansion_has_a_checked_work_limit`](../tests/compile.rs); [`oversized_register_and_deeply_nested_branch_are_rejected`](../tests/verify.rs); [`branch_depth_limit_counts_empty_branches_in_both_arms`](../tests/verify.rs); [`branch_preflight_checks_both_functions_and_inactive_empty_arms`](../tests/function_evidence.rs); [`nonclosed_input_and_dimension_limit_are_reported`](../tests/sim.rs); [shared source retention bounds](../tests/source_snapshots.rs); [`unused_static_arguments_share_exact_work_across_calls`](../tests/review_v019.rs)",
+      "proof": "Shared structural/exact work regressions; no end-to-end resource-complexity, elapsed-time or floating-error theorem"
     },
     {
       "rule": "[Comments and descriptive documentation](documentation-comments.md)",
@@ -155,10 +155,154 @@
       "proof": "Finite branch/reference-sensitive simulation and existing exact checks; not a general protocol/compiler proof or measured LLM benchmark"
     },
     {
-      "rule": "[Basis parameter patterns and n-ary tuple sugar](syntax-v0.md#authoring-forms-added-in-product-018)",
-      "implementation": "[Binary AST parsing](../src/frontend/parser.rs); [finite basis bindings](../src/frontend/compile/basis.rs); [binding locations](../src/frontend/compile/lower/scope.rs)",
-      "tests": "[Source, semantic, rejection, location and depth regressions](../tests/authoring_ergonomics.rs); [scope rebinding regressions](../tests/source_scope.rs)",
-      "proof": "Existing finite checking boundary reused; no new IR rule or Lean theorem; full source-to-core preservation remains open"
+      "rule": "[Structural types and arity-preserving tuples](type-system.md); [migration](tuple-shapes.md)",
+      "implementation": "[Arity-preserving AST parsing](../src/frontend/parser.rs); [finite basis bindings](../src/frontend/compile/basis.rs); [ownership values](../src/frontend/compile/lower/value.rs); [exact type trees](../src/contract/mod.rs)",
+      "tests": "[Type, shape, ownership, semantic and capacity cases](../tests/tuple_shapes.rs); [external type requests](../tests/interchange.rs); [pattern/location cases](../tests/authoring_ergonomics.rs)",
+      "proof": "Existing finite operations reused with distinct n-ary evidence metadata; no new quantum instruction or Lean theorem; general source-to-core preservation remains open"
+    },
+    {
+      "rule": "[Portable finite evidence and independent requests](machine-interface-spec.md#portable-finite-ir-and-evidence)",
+      "implementation": "[Strict QIRF1/2 decoder and exact reconstruction](../src/interchange/mod.rs); [exclusive CLI artifact adapter](../src/bin/qleisli/artifacts.rs)",
+      "tests": "[All variant wire round trips](../src/interchange/codec.rs); [typed requests, tampering and fresh processes](../tests/interchange.rs); [independent JSON decoder](../scripts/test_cli_json.py)",
+      "proof": "Existing finite exact checker reused; transport and Rust/source adequacy unproved; no new schema theorem"
+    },
+    {
+      "rule": "[Fresh trajectory sampling and typed trials](machine-interface-spec.md#sampling-and-typed-trials)",
+      "implementation": "[Sampler](../src/sim/sampling.rs); [trial driver](../src/host.rs); [bounded factor validation](../src/host/factoring.rs)",
+      "tests": "[Bell, interference, reset/discard, RNG and limits](../tests/sampling.rs); [typed retries and factor checks](../tests/trials.rs); [atomic CLI samples](../tests/cli_sampling.rs)",
+      "proof": "Approximate reference execution with checked finite IR, not an exact probability or hardware proof"
+    },
+    {
+      "rule": "[Bounded source loading and explicit legacy migration](machine-interface-spec.md#source-input-capacities-and-migration)",
+      "implementation": "[SourcePolicy and streaming reads](../src/frontend/project.rs); [no-follow opening on macOS/listed Linux](../src/frontend/project/source_file.rs)",
+      "tests": "[UTF-8, per-file/aggregate bytes, bundles and legacy](../tests/source_capacities.rs); [CLI policies](../tests/cli_sampling.rs); [source/parent symlink replacement](../src/frontend/project/source_file.rs)",
+      "proof": "Byte limits precede decoding; they do not establish whole-process resource isolation"
+    },
+    {
+      "rule": "[Executable Lean phase-word kernel](lean-kernel-migration.md#first-executable-slice)",
+      "implementation": "[Mathlib-free actual checker](../lean-kernel/QleisliKernel/PhaseWord.lean); [bounded protocol](../lean-kernel/Protocol.lean); [Rust launcher](../examples/lean_kernel.rs)",
+      "tests": "[Reduction and boundary cases](../lean-kernel/Tests.lean); [native differential experiment](../examples/lean_kernel.rs); [compiled audit mutations](../scripts/test_check_lean_kernel.py)",
+      "proof": "normalize_correct and verify_sound over cyclic phase semantics; complex bridge, transport, full IR/QPE and native execution correspondence remain open"
+    },
+    {
+      "rule": "[Shared phase DAG composition and independent receipts](lean-hierarchy-slice.md)",
+      "implementation": "[Proved closed powers](../lean-kernel/QleisliKernel/Composition.lean); [shared evaluator](../lean-kernel/QleisliKernel/Dag.lean); [bounded checker](../lean-kernel/QleisliKernel/Hierarchy.lean)",
+      "tests": "[Fresh-process oracle, mutations and scaling](../scripts/test_lean_hierarchy.py); [zero-width and pure API work limits](../lean-kernel/Tests.lean); [preserved source/diagnostics](../tests/fixtures/lean_hierarchy/README.md)",
+      "proof": "compose_action, powerSummary_action, Dag.evaluate_map and Hierarchy.check_sound over cyclic phase actions; complex interpretation, full resource/interface/schema and source/native correspondence remain open"
+    },
+    {
+      "rule": "[Typed layouts and zero-width owner conservation](lean-layout-slice.md)",
+      "implementation": "[Lean interface/permutation checker and reindexing](../lean-kernel/QleisliKernel/Layout.lean); [bounded protocol](../lean-kernel/Protocol.lean)",
+      "tests": "[Independent process, mutation, capacity and reference cases](../scripts/test_lean_layout.py); [pure reductions](../lean-kernel/Tests.lean); [preserved development record](../tests/fixtures/lean_layout/README.md)",
+      "proof": "Actual check_conditions/interfaces/owner_permutation/axis_permutation/ports and reference round-trip theorems; shared typed-call composition is recorded separately; general gates, encodings, source/native correspondence and H1\u2013H5 remain open"
+    },
+    {
+      "rule": "[Shared typed calls and ordered composition](lean-layout-dag-slice.md)",
+      "implementation": "[Proved cached coordinate graph checker](../lean-kernel/QleisliKernel/LayoutDag.lean); [bounded protocol](../lean-kernel/Protocol.lean)",
+      "tests": "[Independent graph oracle and mutation/scaling cases](../scripts/test_lean_layout_dag.py); [pure API reductions](../lean-kernel/Tests.lean); [first-source record](../tests/fixtures/lean_layout_dag/README.md)",
+      "proof": "compose_sound, evalNode_sound, evaluateFrom_sound and check_sound connect actual acceptance to direct coordinate-graph semantics and the independent entry resource certificate; sparse phase integration is recorded separately; general gates, encodings, source/native correspondence and H1\u2013H5 remain open"
+    },
+    {
+      "rule": "[Sparse dyadic phases with typed shared layouts](lean-phase-layout-slice.md)",
+      "implementation": "[Polynomial normalizer and remapper](../lean-kernel/QleisliKernel/PhasePolynomial.lean); [phase/layout checker](../lean-kernel/QleisliKernel/PhaseLayout.lean)",
+      "tests": "[Native graph/complex-reference oracle and finite source formula](../scripts/test_lean_phase_layout.py); [pure API reductions](../lean-kernel/Tests.lean); [retained source/repair record](../tests/fixtures/lean_phase_layout/README.md)",
+      "proof": "normalize_sound, remap_sound, single_axis, PhaseLayout.compose_sound/check_sound/check_reference prove actual cyclic basis actions and request binding; complex linear extension, non-diagonal gates, source/native adequacy and full H1\u2013H5 remain open"
+    },
+    {
+      "rule": "[Local interference normalization and complex interpretation](lean-interference-slice.md)",
+      "implementation": "[Actual amplitude definitions and normalizer](../lean-kernel/QleisliKernel/Interference.lean)",
+      "tests": "[Native joint-amplitude oracle and source clients](../scripts/test_lean_interference.py); [retained records](../tests/fixtures/lean_interference/README.md)",
+      "proof": "[Mathlib-free normalize_sound / normalize_reference](../lean-kernel/QleisliKernel/Interference.lean); [complex model, local probability identities and accepted weighted transitions](../lean/Qleisli/Interference.lean); no new external acceptance rule"
+    },
+    {
+      "rule": "[Actual QFT circuit and Fourier coefficients](lean-qft-proof-packet.md)",
+      "implementation": "[Symbolic literal paths](../lean-kernel/QleisliKernel/PathSum.lean); [bounded actual-circuit matcher](../lean-kernel/QleisliKernel/Qft.lean)",
+      "tests": "[Native path/Fourier/reference oracle](../scripts/test_lean_qft.py); [retained round trip and wrong-reversal source](../tests/fixtures/lean_qft/README.md)",
+      "proof": "[compile_sound, matched_paths and matched_output](../lean-kernel/QleisliKernel/Qft.lean); [matched_fourier and matched_reference](../lean/Qleisli/Qft.lean); typed hierarchy, registry binding and full QPE remain open"
+    },
+    {
+      "rule": "[Typed shared QFT graph projection](lean-qft-graph-packet.md)",
+      "implementation": "[Actual graph checker and operational semantics](../lean-kernel/QleisliKernel/QftGraph.lean)",
+      "tests": "[Native mutations, independent paths and sharing limits](../scripts/test_lean_qft_graph.py); [retained first attempts](../tests/fixtures/lean_qft_graph/README.md)",
+      "proof": "[check_sound, check_signature and check_action](../lean-kernel/QleisliKernel/QftGraph.lean); [check_fourier and check_reference](../lean/Qleisli/QftGraph.lean) over direct graph coefficients; complete external hierarchy projection and production registry enablement still pending; [check_unitary](../lean/Qleisli/QftUnitary.lean) proves both whole-space inverse laws"
+    },
+    {
+      "rule": "[Actual QPE instrument and conditional completeness](lean-qpe-instrument-packet.md)",
+      "implementation": "[Controlled schedules](../lean-kernel/QleisliKernel/ControlledPowers.lean); [fresh preparation](../lean-kernel/QleisliKernel/Uniform.lean); [plan checker](../lean-kernel/QleisliKernel/Qpe.lean); [closed schema dispatcher](../lean-kernel/QleisliKernel/Schema.lean)",
+      "tests": "[Native decisions and independent branch/reference/trace oracle](../scripts/test_lean_qpe.py); [retained sources, faults and diagnostics](../tests/fixtures/lean_qpe_instrument/README.md)",
+      "proof": "[checked_branch, checked_instrument and checked_plan](../lean/Qleisli/Qpe.lean); [accepted_plan, checked_plan_complete and complete_trace](../lean/Qleisli/QpeComplete.lean); provider-isometry premise explicit; external hierarchy/provider binding remains pending; component type/source manifest checked separately; [qft_sound, power_coherent_sound and qpe_sound](../lean/Qleisli/Schema.lean) concern actual dispatch with independent parameters"
+    },
+    {
+      "rule": "[Closed component type/source registry](lean-qpe-instrument-packet.md#shipped-type-and-source-manifest)",
+      "implementation": "[Shipped manifest](../lean/schema-registry.json); [rebuilt type export](../lean/SchemaExport.lean); [validation gate](../scripts/check_schema_registry.py)",
+      "tests": "[ID/type/checker/domain/source mutations](../scripts/test_check_schema_registry.py)",
+      "proof": "Rebuilds and audits the actual component declarations; exact exported-type comparison, not arbitrary proof import. All external entries disabled; no claim of native or transport adequacy."
+    },
+    {
+      "rule": "[Full-profile dependency scheduling](hierarchical-ir-spec.md#dependency-scheduling-implementation)",
+      "implementation": "[Actual combined-graph scheduler](../lean-kernel/QleisliKernel/Hierarchical/Graph.lean)",
+      "tests": "[Native schedules, DFS oracle and capacity boundaries](../scripts/test_hierarchical_graph.py); [first attempt and diagnostics](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "check_conditions, topology_edge, path_decreases and check_acyclic concern the actual checker. checkWithBudget accepts only within the remaining allowance. Typed extraction is implemented by the separately recorded artifact preparer; full semantic verification remains pending."
+    },
+    {
+      "rule": "[Typed artifact dependency and endpoint preparation](hierarchical-ir-spec.md#typed-artifact-preparation)",
+      "implementation": "[Actual four-table preparer](../lean-kernel/QleisliKernel/Hierarchical/Artifact.lean)",
+      "tests": "[54 structural and 22 reference cases](../scripts/test_hierarchical_artifact.py); [first source, diagnostics and budget boundaries](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "prepare_conditions and prepare_acyclic bind actual projection to the remaining-budget scheduler; endpoints_bound establishes complete logical/physical interface equalities. Preparation issues no semantic evidence; definition and meaning/encoding typing are implemented separately; finite semantic reconstruction, derivations, external decoding and independent requests remain pending."
+    },
+    {
+      "rule": "[Complete typed side maps](hierarchical-ir-spec.md#complete-side-map-checker)",
+      "implementation": "[Actual map checker](../lean-kernel/QleisliKernel/Hierarchical/Ports.lean)",
+      "tests": "[39 native map cases](../scripts/test_hierarchical_artifact.py); [kernel reductions and source record](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "check_owners, check_axes and check_types prove actual accepted bijections and full type matching; check_reference_round_trip preserves arbitrary reference coordinates. Both call maps and fresh names are now checked by the definition-node pass; full semantic integration remains pending."
+    },
+    {
+      "rule": "[Actual definition-node typing](hierarchical-ir-spec.md#definition-node-typing)",
+      "implementation": "[Lean node and whole-table checker](../lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean)",
+      "tests": "[Native ownership/effect/call/frame/zero-repeat cases](../scripts/test_hierarchical_typing.py); [retained attempts and diagnostics](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "check_conditions, scan_conditions and checkAll_conditions concern actual constructor/child checks and prove every definition is structurally checked within the aggregate budget. Meaning/encoding typing is implemented separately; finite semantics, their semantic equations and proof derivation remain mandatory; no semantic evidence is issued."
+    },
+    {
+      "rule": "[Meaning and encoding typing](hierarchical-ir-spec.md#meaning-and-encoding-typing)",
+      "implementation": "[Actual contract-table checker](../lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean)",
+      "tests": "[164 native cases including 64 QPE header combinations](../scripts/test_hierarchical_contract_typing.py); [first sources, control counterexample and diagnostics](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "checkAll_conditions, checkAll_meaning and checkAll_encoding prove coverage of actual indexed nodes and the same aggregate budget. Finite equations, provider/compute unitarity, entry/return evidence, rule derivation and external schema/request binding remain pending."
+    },
+    {
+      "rule": "[Explicit structural conversions](hierarchical-ir-spec.md#explicit-structural-conversions)",
+      "implementation": "[Actual conversion checker](../lean-kernel/QleisliKernel/Hierarchical/Structural.lean), used by both hierarchical typing passes",
+      "tests": "[123 native cases and 7,216 basis probes](../scripts/test_hierarchical_structural.py); [desired helper and first implementation packet](../tests/fixtures/hierarchical_ir/structural-packet.md)",
+      "proof": "Actual valid/check predicates imply complete type/ownership transitions and a finite basis permutation. Both coefficient round trips use actual reversed endpoints and preserve arbitrary phases/reference coordinates. Source lowering, external equation/encoding binding and execution remain pending."
+    },
+    {
+      "rule": "[Coherent controlled powers](lean-qpe-instrument-packet.md#coherent-controlled-power-bridge)",
+      "implementation": "[Actual coherent stage/schedule execution](../lean-kernel/QleisliKernel/ControlledPowers.lean)",
+      "tests": "[188 native decisions, 9,352 exact coefficients and 17,280 joint-density entries](../scripts/test_lean_controlled_power.py); [retained phase-sensitive QLI sources](../tests/fixtures/lean_qpe_instrument/coherent_phase/plus_x/main.qli)",
+      "proof": "[Actual native action, coherent operator and unitary/reference equations](../lean/Qleisli/ControlledPowers.lean); [power_coherent_sound](../lean/Qleisli/Schema.lean) is the registry theorem, with explicit provider isometry. Full external IR/provider binding remains pending."
+    },
+    {
+      "rule": "[Actual controlled-power artifact binding](hierarchical-ir-spec.md#direct-controlled-power-artifact-binding)",
+      "implementation": "[Actual-body projection and shared-budget entry](../lean-kernel/QleisliKernel/Hierarchical/Power.lean)",
+      "tests": "[182 native cases: 127 pending, 48 rejected, seven typed counterexamples](../scripts/test_hierarchical_power.py); [first attempts, diagnostics and repairs](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "[inspect_operators, inspect_unitary and inspectEntry_reference](../lean/Qleisli/HierarchicalPower.lean) bind actual implementation/meaning projections with explicit provider-equation/isometry premises. The supported provider derivation and its conditional operator proof are recorded below; complete unitarity, finite reconstruction, external decoding/request binding and schema enablement remain pending; no semantic receipt is issued."
+    },
+    {
+      "rule": "[Whole-space derivation closure](hierarchical-ir-spec.md#whole-space-derivation-implementation)",
+      "implementation": "[Actual rule matcher](../lean-kernel/QleisliKernel/Hierarchical/Rule.lean) and [empty-cache derivation pass](../lean-kernel/QleisliKernel/Hierarchical/Derivation.lean)",
+      "tests": "[235 native cases, 69 recursive-oracle graphs, 132 exact monomial coefficients, 21 semantic counterexamples](../scripts/test_hierarchical_derivation.py); [first attempts and diagnostics](../tests/fixtures/hierarchical_ir/README.md)",
+      "proof": "step_invariant, scan_invariant, checkAll_conditions and powerEntry_provider establish actual finite derivations with all premises checked and a shared budget. Conditional complex interpretation is recorded separately below; complete semantic environment construction, whole-space unitarity, finite reconstruction, call/encoded/computed rules and external acceptance remain open. No production semantic seal is issued."
+    },
+    {
+      "rule": "[Supported derivation operator equations](hierarchical-ir-spec.md#whole-space-derivation-implementation)",
+      "implementation": "[Actual-body interpretation and rule induction](../lean/Qleisli/HierarchicalSemantics.lean); [complex operator instantiation](../lean/Qleisli/HierarchicalOperators.lean)",
+      "tests": "Six kernel-checked phase/orientation/tensor/inverse/control example theorems; [first sources and real diagnostics](../tests/fixtures/hierarchical_ir/README.md#actual-body-complex-interpretation)",
+      "proof": "temporary (TP-001) assumed-environment wrappers, now superseded for supported rules by the constructed denotations below. checkAll_entry_sound, checkAll_operator/matrix/reference and powerEntry_operators prove exact equations conditional on interpretation of actual table bodies, not assumed proof conclusions. matrix_compose and matrix_power establish the finite matrix laws. Complete environment construction, whole-space unitarity, finite reconstruction, remaining rules and external/native correspondence are still open; no schema enabled."
+    },
+    {
+      "rule": "[Constructed actual-body denotations](hierarchical-ir-spec.md#whole-space-derivation-implementation)",
+      "implementation": "[Partial evaluator, stability and actual derivation induction](../lean/Qleisli/HierarchicalEvaluation.lean)",
+      "tests": "Nine kernel-checked accepted/negative evaluation theorems, including permuted meaning indices and \u03c0/8; [first source, build and repairs](../tests/fixtures/hierarchical_ir/README.md#constructed-denotations)",
+      "proof": "evaluate_more/unique and derives_evaluate construct equal successful denotations from actual accepted rules. checkAll_denotes and its complex operator/matrix/reference corollaries bind the actual entry without an Interprets premise. The readers are independent of proof metadata; zero-repeat children are mandatory. Full-profile rules, finite reconstruction, whole-space unitarity, external/native correspondence and sized source remain open."
     }
   ]
 }

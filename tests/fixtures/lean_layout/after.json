@@ -1,0 +1,88 @@
+{
+  "recorded_utc": "2026-09-28T16:59:34.318322+00:00",
+  "kind": "informed implementation observation; not a controlled authoring benchmark",
+  "profile": "typed-layout-v1",
+  "observations": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/reorder.qhl",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/reorder.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"stats\":{\"owners\":3,\"axes\":3,\"type_atoms\":12,\"work_units\":2888,\"dense_dimension\":0}}\n",
+      "stderr": "",
+      "artifact_bytes": 240,
+      "request_bytes": 204
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/wrong_swap.qhl",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/identity.qhr"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-v1\",\"accepted\":false,\"code\":\"contract\",\"stage\":\"verification\",\"stats\":null}\n",
+      "stderr": "",
+      "artifact_bytes": 176,
+      "request_bytes": 144
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--layout",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/sixteen_axes.qhl",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_layout/sixteen_axes.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-layout-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"stats\":{\"owners\":2,\"axes\":16,\"type_atoms\":4,\"work_units\":4232,\"dense_dimension\":0}}\n",
+      "stderr": "",
+      "artifact_bytes": 322,
+      "request_bytes": 255
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Layout.lean": "482658d4c0059174ed63e889b7d05389830051723f4120df1463257c75aa27a2",
+    "lean-kernel/Protocol.lean": "c579bdc6d2b77f7b972978998827a790bc160b6b5f2d207fddd95f3a6058ee5f",
+    "lean-kernel/Main.lean": "180ece4c7a2603e60e6dab5dfa67b22939ba99e8efc92487785c18deea127277",
+    "scripts/test_lean_layout.py": "34f4b373958985e8e88d964bff63725bd8ec13a6357f0b6881e5f68275a9c3fe",
+    "tests/fixtures/lean_layout/reorder.qhl": "83253b54b231d9e83a433a46e63ea274d6d54cc935d32984699ac2725869df31",
+    "tests/fixtures/lean_layout/sixteen_axes.qhl": "68befa757255c2a532af850e4df6048f0f46a6f359b2cc3d66aa87a7dd8f2809",
+    "tests/fixtures/lean_layout/wrong_swap.qhl": "aa9cfbc299ac4a47fe5fea852258ff6ca00bee0c2bb5856ee2bed40237d5d53c",
+    "tests/fixtures/lean_layout/identity.qhr": "892e94c6b6c40cd1e04140e46d3a497cfd290c0d019bd8cf347227ab254892c4",
+    "tests/fixtures/lean_layout/reorder.qhr": "542340e2cc93a77d40b5ec6cb9ba2ac20e86bdb7cc274c2ec92d89de9efda9ad",
+    "tests/fixtures/lean_layout/sixteen_axes.qhr": "4fb22498836b074be0ee2b478a9c406c8ffd5e7cd1d84d445ca8399d105be20c"
+  },
+  "executable_sha256": "f989299ae9c9bf208db7b72bb93e861872bbdcfd6b1b01ac73f05159ead9ae9e",
+  "native_layout": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.735s\n\nOK\nNative typed-layout decisions: 230\n",
+  "compiled_audit": "Audited 967 kernel/transport declarations, 1039 pure import modules and 1040 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+  "compiled_audit_regressions": "................\n----------------------------------------------------------------------\nRan 16 tests in 17.879s\n\nOK\n",
+  "phase_dag_regressions": "test_body_count_dependency_and_request_mutations (__main__.HierarchyTests.test_body_count_dependency_and_request_mutations) ... ok\ntest_closed_power_against_direct_boundary_execution (__main__.HierarchyTests.test_closed_power_against_direct_boundary_execution) ... ok\ntest_dag_cycles_forward_references_and_unreachable_entries (__main__.HierarchyTests.test_dag_cycles_forward_references_and_unreachable_entries) ... ok\ntest_exact_shape_and_zero_width_owner_ports (__main__.HierarchyTests.test_exact_shape_and_zero_width_owner_ports) ... ok\ntest_global_phase_and_all_dyadic_angles (__main__.HierarchyTests.test_global_phase_and_all_dyadic_angles) ... ok\ntest_immutable_first_artifacts (__main__.HierarchyTests.test_immutable_first_artifacts) ... ok\ntest_large_shared_work_and_depth_boundary (__main__.HierarchyTests.test_large_shared_work_and_depth_boundary) ... ok\ntest_node_reference_and_primitive_boundaries (__main__.HierarchyTests.test_node_reference_and_primitive_boundaries) ... ok\ntest_small_shared_dags_against_expanded_and_complex_oracles (__main__.HierarchyTests.test_small_shared_dags_against_expanded_and_complex_oracles) ... ok\ntest_strict_transport_and_no_schema_shortcuts (__main__.HierarchyTests.test_strict_transport_and_no_schema_shortcuts) ... ok\ntest_zero_repeat_checks_body_and_retains_reachability (__main__.HierarchyTests.test_zero_repeat_checks_body_and_retains_reachability) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 5.237s\n\nOK\nNative DAG decisions: 647\n",
+  "rust_word_oracle": "   Compiling qleisli-core v0.2.0 (/Users/masa/git/Qleisli)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.52s\n     Running `target/debug/examples/lean_kernel lean-kernel/.lake/build/bin/qleisli-kernel --self-test`\nPassed 1307 native Lean decisions; 341 Rust exact-matrix oracles; all 256 dyadic scalar phases.\n",
+  "source_compatibility_checks": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/v020-msrv/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_layout/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

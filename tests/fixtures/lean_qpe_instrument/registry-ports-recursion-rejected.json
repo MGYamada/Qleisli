@@ -1,0 +1,48 @@
+{
+  "format": "qleisli.schema-registry-validation",
+  "version": 1,
+  "mode": "rebuilt-types-and-audits",
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 0.153,
+      "stdout_sha256": "3ac37fcea92fff1951c56e9da9fe957e9a1ccb0d7b368d363379ed512adcf79f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 22 executable kernel/transport source modules; no external Lake dependencies.\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 0.173,
+      "stdout_sha256": "29dcd3fd407dfea5b8f393d7b1a6c18a9c165033f82f2476641218ab83effb6f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Build completed successfully (35 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 1,
+      "seconds": 0.805,
+      "stdout_sha256": "828ca9114980c4a745b84397e8c7e269dd7672801634e1ec2839799c4bfa1914",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audit.lean:81:0: error: QleisliKernel.Hierarchical.Ports.coordinatesFrom._unsafe_rec: partial project declaration\n"
+    }
+  ],
+  "error": "command failed: ['lake', 'env', 'lean', '-DwarningAsError=true', 'Audit.lean']\nAudit.lean:81:0: error: QleisliKernel.Hierarchical.Ports.coordinatesFrom._unsafe_rec: partial project declaration\n"
+}

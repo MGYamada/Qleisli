@@ -1,0 +1,185 @@
+import Qleisli.QftGraph
+import Qleisli.Kraus
+import QleisliKernel.ControlledPowers
+import QleisliKernel.Uniform
+import QleisliKernel.Qpe
+import Mathlib.Algebra.BigOperators.Fin
+
+/-! QPE branch operators from actual preparation, controlled powers and QFT.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+External IR binding, provider unitarity and completeness are separate obligations. -/
+
+namespace Qleisli.Qpe
+open QleisliKernel QleisliKernel.Interference QleisliKernel.PathSum
+open Qleisli.Interference Qleisli.Qft
+open scoped BigOperators Matrix
+
+variable {T R : Type} [Fintype T] [DecidableEq T]
+
+theorem value_bridge (width : Nat) (bits : Bits) :
+    ControlledPowers.value width bits = Qft.value width bits := by
+  induction width with
+  | zero => rfl
+  | succ width ih =>
+    simpa [ControlledPowers.value, Qft.value, List.range_succ, Finset.sum_range_succ] using ih
+
+/-- Canonical little-endian bit-vector/natural-index equivalence. -/
+noncomputable def bitEquiv (width : Nat) : (Fin width → Bool) ≃ Fin (2^width) :=
+  (Equiv.piCongrRight (fun _ : Fin width => finTwoEquiv.symm)).trans finFunctionFinEquiv
+
+theorem bitEquiv_value (width : Nat) (bits : Fin width → Bool) :
+    (bitEquiv width bits).val = Qft.value width (finiteBits bits) := by
+  simp only [bitEquiv, Equiv.trans_apply, finFunctionFinEquiv_apply,
+    Equiv.piCongrRight_apply, Qft.value]
+  rw [← Fin.sum_univ_eq_sum_range]
+  apply Finset.sum_congr rfl
+  intro i _
+  cases h : bits i <;> simp [finTwoEquiv, finiteBits, i.isLt, h]
+
+/-- Each literal controlled stage multiplies the target by its actual provider. -/
+theorem iterate_left_mul (U A : Matrix T T ℂ) (count : Nat) :
+    ControlledPowers.iterate (fun B => U * B) count A = U^count * A := by
+  induction count with
+  | zero => simp [ControlledPowers.iterate]
+  | succ count ih =>
+    change U * ControlledPowers.iterate (fun B => U * B) count A = _
+    rw [ih, pow_succ', Matrix.mul_assoc]
+
+theorem checked_powers (operations : Nat → Matrix T T ℂ) (width target : Nat)
+    (stages : List ControlledPowers.Stage)
+    (accepted : ControlledPowers.check width target stages = true) (bits : Bits) :
+    ControlledPowers.run (fun op A => operations op * A) bits stages (1 : Matrix T T ℂ) =
+      operations target ^ Qft.value width bits := by
+  rw [ControlledPowers.check_action _ width target stages accepted,
+    iterate_left_mul, value_bridge, Matrix.mul_one]
+
+/-- Primitive H paths on fresh zero input, before any oracle or QFT action. -/
+noncomputable def preparationCoefficient (width : Nat) (word : List Interference.Gate)
+    (output : Fin width → Bool) : ℂ :=
+  ∑ choices : Fin width → Bool,
+    let result := runFrom word (finiteBits choices) Uniform.zero
+    if (fun i : Fin width => result.bits i) = output then pathWeight result else 0
+
+theorem uniform_coefficient (width : Nat) (output : Fin width → Bool) :
+    preparationCoefficient width (Uniform.word width) output = complexModel.halfRoot^width := by
+  have endpoints (choices : Fin width → Bool) :
+      (fun i : Fin width => (Uniform.prepared width (finiteBits choices)).bits i) = choices := by
+    funext i
+    simp [Uniform.prepared, finiteBits, i.isLt]
+  simp only [preparationCoefficient, Uniform.run_word, endpoints, Finset.sum_ite_eq',
+    Finset.mem_univ, if_true]
+  simp [pathWeight, Uniform.prepared]
+
+/-- Meaning of the hierarchical inverse constructor: conjugate transpose of
+that actual accepted forward circuit, not an independently named QFT. -/
+noncomputable def inverseCoefficient (width : Nat) (actual : QleisliKernel.QftGraph.Action)
+    (input output : Fin width → Bool) : ℂ :=
+  star (QftGraph.coefficient width actual output input)
+
+theorem inverse_coefficient (definitions : List QleisliKernel.QftGraph.Definition)
+    (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
+    (accepted : QleisliKernel.QftGraph.check definitions entry width = some receipt)
+    (actual : QleisliKernel.QftGraph.Action)
+    (meaning : QleisliKernel.QftGraph.denote definitions entry = some actual)
+    (input output : Fin width → Bool) :
+    inverseCoefficient width actual input output =
+      Complex.exp (-2 * Real.pi * Complex.I * value width (finiteBits input) *
+        value width (finiteBits output) / (2 : ℂ)^width) /
+        (Real.sqrt ((2 : ℝ)^width) : ℂ) := by
+  rw [inverseCoefficient, QftGraph.check_fourier definitions entry width receipt accepted
+    actual meaning output input]
+  change (starRingEnd ℂ) (_ / _) = _
+  simp only [map_div₀, ← Complex.exp_conj, map_mul, map_pow, Complex.conj_ofReal,
+    Complex.conj_natCast, Complex.conj_I, map_ofNat]
+  congr 2
+  ring
+
+theorem preparation_readout_scale (width : Nat) (z : ℂ) :
+    complexModel.halfRoot^width * (z / (Real.sqrt ((2 : ℝ)^width) : ℂ)) =
+      z / (2 : ℂ)^width := by
+  have square : (Real.sqrt ((2 : ℝ)^width) : ℂ)^2 = (2 : ℂ)^width := by
+    exact_mod_cast Real.sq_sqrt (by positivity : (0 : ℝ) ≤ 2^width)
+  rw [halfRoot_power]
+  calc
+    _ = z / (Real.sqrt ((2 : ℝ)^width) : ℂ)^2 := by ring
+    _ = _ := by rw [square]
+
+/-- Actual composition of fresh preparation coefficients, literal controlled
+repetition, inverse of the accepted graph, and the chosen Z-measurement row. -/
+noncomputable def branch (width : Nat) (preparation : List Interference.Gate)
+    (stages : List ControlledPowers.Stage) (operations : Nat → Matrix T T ℂ)
+    (fourier : QleisliKernel.QftGraph.Action) (outcome : Fin width → Bool) : Matrix T T ℂ :=
+  ∑ control : Fin width → Bool,
+    (preparationCoefficient width preparation control * inverseCoefficient width fourier control outcome) •
+      ControlledPowers.run (fun op A => operations op * A) (finiteBits control) stages (1 : Matrix T T ℂ)
+
+/-- Independently specified target Kraus operator, indexed by natural j. -/
+noncomputable def kraus (width : Nat) (U : Matrix T T ℂ) (outcome : Nat) : Matrix T T ℂ :=
+  ∑ j : Fin (2^width), (Complex.exp (-2 * Real.pi * Complex.I * j.val * outcome /
+    (2 : ℂ)^width) / (2 : ℂ)^width) • U^j.val
+
+/-- No eigenstate or exact-phase premise: equality of full target operators. -/
+theorem checked_branch (operations : Nat → Matrix T T ℂ) (width target : Nat)
+    (stages : List ControlledPowers.Stage)
+    (powers : ControlledPowers.check width target stages = true)
+    (definitions : List QleisliKernel.QftGraph.Definition) (entry : Nat)
+    (receipt : QleisliKernel.QftGraph.Receipt)
+    (qft : QleisliKernel.QftGraph.check definitions entry width = some receipt)
+    (actual : QleisliKernel.QftGraph.Action)
+    (meaning : QleisliKernel.QftGraph.denote definitions entry = some actual)
+    (outcome : Fin width → Bool) :
+    branch width (Uniform.word width) stages operations actual outcome =
+      kraus width (operations target) (value width (finiteBits outcome)) := by
+  unfold branch kraus
+  apply Fintype.sum_equiv (bitEquiv width)
+  intro control
+  rw [uniform_coefficient, inverse_coefficient definitions entry width receipt qft actual meaning,
+    checked_powers operations width target stages powers, preparation_readout_scale,
+    bitEquiv_value]
+
+/-- Tensor with the identity on every reference coordinate. -/
+noncomputable def withReference [DecidableEq R] (K : Matrix T T ℂ) : Matrix (T × R) (T × R) ℂ :=
+  fun output input => if output.2 = input.2 then K output.1 input.1 else 0
+
+/-- The entire residual target/reference map for one classical outcome. -/
+noncomputable def outcomeMap [Fintype R] [DecidableEq R]
+    (K : Matrix T T ℂ) (rho : Matrix (T × R) (T × R) ℂ) : Matrix (T × R) (T × R) ℂ :=
+  withReference K * rho * (withReference K)ᴴ
+
+theorem checked_instrument [Fintype R] [DecidableEq R]
+    (operations : Nat → Matrix T T ℂ) (width target : Nat)
+    (stages : List ControlledPowers.Stage)
+    (powers : ControlledPowers.check width target stages = true)
+    (definitions : List QleisliKernel.QftGraph.Definition) (entry : Nat)
+    (receipt : QleisliKernel.QftGraph.Receipt)
+    (qft : QleisliKernel.QftGraph.check definitions entry width = some receipt)
+    (actual : QleisliKernel.QftGraph.Action)
+    (meaning : QleisliKernel.QftGraph.denote definitions entry = some actual)
+    (outcome : Fin width → Bool) (rho : Matrix (T × R) (T × R) ℂ) :
+    outcomeMap (branch width (Uniform.word width) stages operations actual outcome) rho =
+      outcomeMap (kraus width (operations target) (value width (finiteBits outcome))) rho := by
+  rw [checked_branch operations width target stages powers definitions entry receipt qft actual meaning]
+
+/-- Actual plan acceptance fixes fresh zero input, gate order, inverse direction,
+measurement layout and target return before applying the component equation. -/
+theorem checked_plan [Fintype R] [DecidableEq R]
+    (targetWidth precision provider : Nat)
+    (operations : Nat → Matrix (Fin (2^targetWidth)) (Fin (2^targetWidth)) ℂ)
+    (plan : QleisliKernel.Qpe.Plan) (receipt : QleisliKernel.QftGraph.Receipt)
+    (accepted : QleisliKernel.Qpe.check targetWidth precision provider plan = some receipt)
+    (actual : QleisliKernel.QftGraph.Action)
+    (meaning : QleisliKernel.QftGraph.denote plan.fourier plan.fourierEntry = some actual)
+    (outcome : Fin precision → Bool)
+    (rho : Matrix (Fin (2^targetWidth) × R) (Fin (2^targetWidth) × R) ℂ) :
+    plan.boundary = QleisliKernel.Qpe.header targetWidth precision ∧
+    plan.precisionInitial = List.replicate precision false ∧
+    outcomeMap (branch precision plan.preparation plan.powers operations actual outcome) rho =
+      outcomeMap (kraus precision (operations provider) (value precision (finiteBits outcome))) rho := by
+  obtain ⟨_, boundary, fresh, preparation, powers, qft⟩ :=
+    QleisliKernel.Qpe.check_conditions targetWidth precision provider plan receipt accepted
+  refine ⟨boundary, fresh, ?_⟩
+  rw [preparation]
+  exact checked_instrument operations precision provider plan.powers powers plan.fourier
+    plan.fourierEntry receipt qft actual meaning outcome rho
+
+end Qleisli.Qpe

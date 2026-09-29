@@ -1,0 +1,99 @@
+import QleisliKernel.Interference
+
+/-! Actual controlled-repeat schedules and their phase-sensitive action law.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+
+namespace QleisliKernel.ControlledPowers
+open Interference
+
+structure Stage where
+  control : Nat
+  targetDefinition : Nat
+  count : Nat
+  whenOne : Bool
+  deriving BEq, DecidableEq, Repr
+
+def template (width target : Nat) : List Stage :=
+  (List.range width).map (fun k => ⟨k, target, 2 ^ k, true⟩)
+
+/-- An internal structural check; the external provider still needs checked
+type, whole-space unitarity and controlled-access evidence. -/
+def check (width target : Nat) (stages : List Stage) : Bool :=
+  1 ≤ width && width ≤ 8 && stages.length = width && decide (stages = template width target)
+
+theorem check_conditions (width target : Nat) (stages : List Stage)
+    (accepted : check width target stages = true) :
+    1 ≤ width ∧ width ≤ 8 ∧ stages = template width target := by
+  simp only [check, Bool.and_eq_true, decide_eq_true_eq] at accepted
+  exact ⟨accepted.1.1.1, accepted.1.1.2, accepted.2⟩
+
+/-- Semantic execution, never called by the schedule checker. -/
+def repeat {A : Type} (operation : A → A) (count : Nat) (state : A) : A :=
+  Nat.rec state (fun _ previous => operation previous) count
+
+theorem repeat_add {A : Type} (operation : A → A) (first second : Nat) (state : A) :
+    repeat operation (first + second) state = repeat operation second (repeat operation first state) := by
+  induction second with
+  | zero => rfl
+  | succ n ih => simpa [repeat, Nat.add_succ] using congrArg operation ih
+
+def selected (bits : Bits) (stage : Stage) : Nat :=
+  if bits stage.control = stage.whenOne then stage.count else 0
+
+def applyStage {A : Type} (operations : Nat → A → A) (bits : Bits) (state : A) (stage : Stage) : A :=
+  if bits stage.control = stage.whenOne then repeat (operations stage.targetDefinition) stage.count state
+  else state
+
+def run {A : Type} (operations : Nat → A → A) (bits : Bits) (stages : List Stage) (state : A) : A :=
+  stages.foldl (applyStage operations bits) state
+
+def selectedUses (stages : List Stage) (bits : Bits) : Nat := (stages.map (selected bits)).sum
+
+def maximumUses (stages : List Stage) : Nat := (stages.map Stage.count).sum
+
+def value (width : Nat) (bits : Bits) : Nat :=
+  ((List.range width).map (fun k => if bits k then 2 ^ k else 0)).sum
+
+theorem applyStage_same {A : Type} (operations : Nat → A → A) (target : Nat)
+    (bits : Bits) (state : A) (stage : Stage) (same : stage.targetDefinition = target) :
+    applyStage operations bits state stage = repeat (operations target) (selected bits stage) state := by
+  simp only [applyStage, selected, same]
+  split <;> rfl
+
+theorem run_same {A : Type} (operations : Nat → A → A) (target : Nat) (bits : Bits)
+    (stages : List Stage) (same : ∀ stage ∈ stages, stage.targetDefinition = target) (state : A) :
+    run operations bits stages state = repeat (operations target) (selectedUses stages bits) state := by
+  induction stages generalizing state with
+  | nil => rfl
+  | cons stage rest ih =>
+    have first := same stage (by simp)
+    have remaining : ∀ s ∈ rest, s.targetDefinition = target := fun s h => same s (by simp [h])
+    change run operations bits rest (applyStage operations bits state stage) = _
+    rw [ih remaining, applyStage_same operations target bits state stage first]
+    exact (repeat_add (operations target) (selected bits stage) (selectedUses rest bits) state).symm
+
+theorem selected_template (width target : Nat) (bits : Bits) :
+    selectedUses (template width target) bits = value width bits := by
+  simp [selectedUses, template, selected, value, List.map_map]
+
+theorem check_action {A : Type} (operations : Nat → A → A) (width target : Nat)
+    (stages : List Stage) (accepted : check width target stages = true) (bits : Bits) (state : A) :
+    run operations bits stages state = repeat (operations target) (value width bits) state := by
+  obtain ⟨_, _, same⟩ := check_conditions width target stages accepted
+  subst stages
+  rw [run_same operations target bits (template width target) (by simp [template]) state,
+    selected_template]
+
+/-- Counts reflect literal U applications, not the number of descriptors. -/
+theorem maximumUses_template (width target : Nat) :
+    maximumUses (template width target) + 1 = 2 ^ width := by
+  induction width with
+  | zero => rfl
+  | succ width ih =>
+    have next : maximumUses (template (width + 1) target) =
+        maximumUses (template width target) + 2 ^ width := by
+      simp [maximumUses, template, List.range_succ, List.sum_append]
+    rw [next, Nat.pow_succ]
+    omega
+
+end QleisliKernel.ControlledPowers

@@ -60,6 +60,7 @@ pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseEr
 
 /// An implementation limit on recursive syntax and left-associated expression ASTs.
 const MAX_NESTING: usize = 64;
+const MAX_TUPLE_FIELDS: usize = 64;
 
 struct Parser {
     tokens: Vec<Token>,
@@ -435,31 +436,37 @@ impl Parser {
 
     fn tuple_type(&mut self, basis_only: bool) -> Result<Type, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
-        let mut left = if basis_only {
+        let mut fields = vec![if basis_only {
             self.basis_type()?
         } else {
             self.ty()?
-        };
+        }];
         self.expect(&TokenKind::Comma)?;
         loop {
-            let right = if basis_only {
+            fields.push(if basis_only {
                 self.basis_type()?
             } else {
                 self.ty()?
-            };
-            left = Type {
-                span: left.span.cover(right.span),
-                kind: TypeKind::Tuple(Box::new(left), Box::new(right)),
-            };
-            // Check each fold before the tree can grow beyond bounded depth.
-            Self::type_depth(&left)?;
+            });
+            self.tuple_arity(fields.len())?;
             if self.consume(&TokenKind::Comma).is_none() {
                 break;
             }
         }
         let close = self.expect(&TokenKind::RParen)?;
-        left.span = open.span.cover(close.span);
-        Ok(left)
+        let ty = Type {
+            kind: TypeKind::Tuple(fields),
+            span: open.span.cover(close.span),
+        };
+        Self::type_depth(&ty)?;
+        Ok(ty)
+    }
+
+    fn tuple_arity(&self, fields: usize) -> Result<(), ParseError> {
+        if fields > MAX_TUPLE_FIELDS {
+            return Err(self.error("tuple exceeds the initial 64-field limit"));
+        }
+        Ok(())
     }
 
     fn type_depth(ty: &Type) -> Result<(), ParseError> {
@@ -472,8 +479,8 @@ impl Parser {
                 });
             }
             match &node.kind {
-                TypeKind::Tuple(a, b) => {
-                    pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
+                TypeKind::Tuple(fields) => {
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
                 }
                 TypeKind::Q(inner) => pending.push((inner, depth + 1)),
                 _ => {}
@@ -556,22 +563,20 @@ impl Parser {
             });
         }
         let open = self.expect(&TokenKind::LParen)?;
-        let mut left = self.pattern()?;
+        let mut fields = vec![self.pattern()?];
         self.expect(&TokenKind::Comma)?;
         loop {
-            let right = self.pattern()?;
-            left = Pattern {
-                span: left.span.cover(right.span),
-                kind: PatternKind::Tuple(Box::new(left), Box::new(right)),
-            };
-            Self::pattern_depth(&left)?;
+            fields.push(self.pattern()?);
+            self.tuple_arity(fields.len())?;
             if self.consume(&TokenKind::Comma).is_none() {
                 break;
             }
         }
         let close = self.expect(&TokenKind::RParen)?;
-        left.span = open.span.cover(close.span);
-        Ok(left)
+        Ok(Pattern {
+            kind: PatternKind::Tuple(fields),
+            span: open.span.cover(close.span),
+        })
     }
 
     fn pattern_depth(pattern: &Pattern) -> Result<(), ParseError> {
@@ -583,8 +588,8 @@ impl Parser {
                     span: node.span,
                 });
             }
-            if let PatternKind::Tuple(a, b) = &node.kind {
-                pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)]);
+            if let PatternKind::Tuple(fields) = &node.kind {
+                pending.extend(fields.iter().map(|field| (field, depth + 1)));
             }
         }
         Ok(())
@@ -683,8 +688,10 @@ impl Parser {
                 | ExprKind::CoherentLift { input: inner, .. } => {
                     pending.push((inner, depth + 1));
                 }
-                ExprKind::Tuple(a, b)
-                | ExprKind::Xor(a, b)
+                ExprKind::Tuple(fields) => {
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
+                }
+                ExprKind::Xor(a, b)
                 | ExprKind::And(a, b)
                 | ExprKind::QuantumIf {
                     control: a,
@@ -932,20 +939,21 @@ impl Parser {
         }
         let mut left = self.expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
+            let mut fields = vec![left];
             loop {
-                let right = self.expr()?;
-                left = Expr {
-                    span: left.span.cover(right.span),
-                    kind: ExprKind::Tuple(Box::new(left), Box::new(right)),
-                };
-                Self::expr_depth(&left)?;
+                fields.push(self.expr()?);
+                self.tuple_arity(fields.len())?;
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
             }
             let close = self.expect(&TokenKind::RParen)?;
-            left.span = open.span.cover(close.span);
-            return Ok(left);
+            let result = Expr {
+                kind: ExprKind::Tuple(fields),
+                span: open.span.cover(close.span),
+            };
+            Self::expr_depth(&result)?;
+            return Ok(result);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);
@@ -1018,9 +1026,10 @@ impl Parser {
             }
             match &node.kind {
                 BasisExprKind::Not(inner) => pending.push((inner, depth + 1)),
-                BasisExprKind::Tuple(a, b)
-                | BasisExprKind::Xor(a, b)
-                | BasisExprKind::And(a, b) => {
+                BasisExprKind::Tuple(fields) => {
+                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
+                }
+                BasisExprKind::Xor(a, b) | BasisExprKind::And(a, b) => {
                     pending.extend([(a.as_ref(), depth + 1), (b.as_ref(), depth + 1)])
                 }
                 BasisExprKind::Call { args, .. } => {
@@ -1139,20 +1148,21 @@ impl Parser {
         }
         let mut left = self.basis_expr()?;
         if self.consume(&TokenKind::Comma).is_some() {
+            let mut fields = vec![left];
             loop {
-                let right = self.basis_expr()?;
-                left = BasisExpr {
-                    span: left.span.cover(right.span),
-                    kind: BasisExprKind::Tuple(Box::new(left), Box::new(right)),
-                };
-                Self::basis_depth(&left)?;
+                fields.push(self.basis_expr()?);
+                self.tuple_arity(fields.len())?;
                 if self.consume(&TokenKind::Comma).is_none() {
                     break;
                 }
             }
             let close = self.expect(&TokenKind::RParen)?;
-            left.span = open.span.cover(close.span);
-            return Ok(left);
+            let result = BasisExpr {
+                kind: BasisExprKind::Tuple(fields),
+                span: open.span.cover(close.span),
+            };
+            Self::basis_depth(&result)?;
+            return Ok(result);
         }
         let close = self.expect(&TokenKind::RParen)?;
         left.span = open.span.cover(close.span);

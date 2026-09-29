@@ -18,6 +18,11 @@ criteria. The [contract ledger](stdlib-contracts.md) records the 12 bundled
 public definitions. Proposed metatypes are distinct from current APIs, and
 host-side trials and statistical processing remain outside `.qli` operations.
 
+The [0.2.0 type contract](type-system.md) preserves tuple arity and nesting.
+Every binary signature below, including `split`, `join` and `toffoli`, retains
+its explicit shape. N-ary callers use [checked explicit conversions](tuple-shapes.md);
+no implicit flattening or new sealed operation is introduced.
+
 <a id="qli-が表すもの"></a>
 
 ## What a `.qli` file represents

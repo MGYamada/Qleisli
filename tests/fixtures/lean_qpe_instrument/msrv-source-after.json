@@ -1,0 +1,35 @@
+{
+  "source_probabilities": 32,
+  "off_grid_residual_coherence": true,
+  "commands": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/v020-msrv/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_qpe_instrument/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.2408470869120798},{\"bits\":[false,false,false,true],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,false],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,true],\"probability\":0.2408470869120798},{\"bits\":[false,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,true],\"probability\":0.009152913087920394},{\"bits\":[true,false,false,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,false,true],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,true],\"probability\":0.053347086912079664},{\"bits\":[true,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,true],\"probability\":0.009152913087920394}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/v020-msrv/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/lean_qpe_instrument/dephased",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.17834708691207973},{\"bits\":[false,false,false,true],\"probability\":0.17834708691207973},{\"bits\":[false,false,true,false],\"probability\":0.17834708691207973},{\"bits\":[false,false,true,true],\"probability\":0.17834708691207973},{\"bits\":[false,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,true],\"probability\":0.009152913087920394},{\"bits\":[true,false,false,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,false,true],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,true],\"probability\":0.053347086912079664},{\"bits\":[true,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,true],\"probability\":0.009152913087920394}]}}\n",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "738014b4b255cd76764d98866b3e9251f7e577f2b065c72e15f8dcbbd52a831a",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean/Qleisli/Qpe.lean": "1a23271e65af99dbcc16f6386ff94a6e6c3cefcf18247dd21aa83de402e24d18",
+    "scripts/test_lean_qpe.py": "d1dc1c6fa9da7f270676af39aa5dcdedf55de69478e43e25e440caa84e2f5db8"
+  }
+}

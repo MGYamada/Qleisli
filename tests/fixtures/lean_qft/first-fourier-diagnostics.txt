@@ -1,0 +1,61 @@
+Qleisli/Qft.lean:17:36: error: Function expected at
+  List.nodup_range
+but this term has type
+  (List.range ?m.18).Nodup
+
+Note: Expected a function because this term is being applied to the argument
+  n
+Qleisli/Qft.lean:20:73: error: unsolved goals
+width k l : ℕ
+bounded : width ≤ 8
+high : width ≤ k + l
+exponent : 8 - width + k + l = 8 + (k + l - width)
+⊢ 256 * 2 ^ (k + l - width) = 0
+Qleisli/Qft.lean:32:63: error(lean.unknownIdentifier): Unknown constant `List.sum_flatMap`
+Qleisli/Qft.lean:34:2: error: Tactic `apply` failed: could not unify the conclusion of `Finset.sum_congr rfl`
+  Finset.sum ?m.68 ?m.65 = Finset.sum ?m.68 ?m.66
+with the goal
+  (List.flatMap
+        (fun a =>
+          List.map
+            (fun x =>
+              ↑({ axes := [a, width + x], ticks := 2 ^ (8 - width + a + x) }.value (assignment width input choices)))
+            (List.range (width - a)))
+        (List.range width)).sum =
+    ∑ k ∈ Finset.range width,
+      ∑ l ∈ Finset.range (width - k), if (input k && choices l) = true then 2 ^ (8 - width + k + l) else 0
+
+Note: The full type of `Finset.sum_congr rfl` is
+  (∀ x ∈ ?m.68, ?m.65 x = ?m.66 x) → Finset.sum ?m.68 ?m.65 = Finset.sum ?m.68 ?m.66
+
+width : ℕ
+input choices : Bits
+⊢ (List.flatMap
+        (fun a =>
+          List.map
+            (fun x =>
+              ↑({ axes := [a, width + x], ticks := 2 ^ (8 - width + a + x) }.value (assignment width input choices)))
+            (List.range (width - a)))
+        (List.range width)).sum =
+    ∑ k ∈ Finset.range width,
+      ∑ l ∈ Finset.range (width - k), if (input k && choices l) = true then 2 ^ (8 - width + k + l) else 0
+Qleisli/Qft.lean:33:56: error: This simp argument is unused:
+  sum_range
+
+Hint: Omit it from the simp argument list.
+  simp only [QleisliKernel.Qft.fourierTerms, List.map_flatMap, List.sum_flatMap,
+  ̵  ̵ ̵ ̵Nat.cast_list_sum,
+  ̲  ̲ ̲ ̲List.map_map, Function.comp_def,̵ ̵s̵u̵m̵_̵r̵a̵n̵g̵e̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/Qft.lean:46:6: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑(?a % ?n)
+in the target expression
+  ↑(List.map (fun term => term.value (assignment width input choices)) (Qft.fourierTerms width)).sum =
+    ↑(2 ^ (8 - width) * value width input * value width choices)
+
+width : ℕ
+bounded : width ≤ 8
+input choices : Bits
+⊢ ↑(List.map (fun term => term.value (assignment width input choices)) (Qft.fourierTerms width)).sum =
+    ↑(2 ^ (8 - width) * value width input * value width choices)

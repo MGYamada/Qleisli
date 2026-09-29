@@ -15,7 +15,7 @@ pub(super) fn binding_span(pattern: &Pattern, name: &str) -> Option<Span> {
     while let Some(pattern) = pending.pop() {
         match &pattern.kind {
             PatternKind::Name(ident) if ident.text == name => return Some(ident.span),
-            PatternKind::Tuple(a, b) => pending.extend([b.as_ref(), a.as_ref()]),
+            PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
             _ => {}
         }
     }

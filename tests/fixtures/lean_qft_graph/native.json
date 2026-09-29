@@ -1,0 +1,574 @@
+{
+  "native_decisions": 68,
+  "accepted": 28,
+  "graph_path_comparisons": 744,
+  "runtime_dense_dimension": 0,
+  "sharing": {
+    "name": "no-expansion-2^59",
+    "accepted": true,
+    "nodes": 170,
+    "references": 228,
+    "copied_gates": 773,
+    "depth": 62,
+    "expanded_actions": 576460752303423525
+  },
+  "decisions": [
+    {
+      "name": "qft-1",
+      "accepted": true,
+      "nodes": 3,
+      "references": 2,
+      "copied_gates": 2,
+      "depth": 2,
+      "expanded_actions": 2
+    },
+    {
+      "name": "calls-1",
+      "accepted": true,
+      "nodes": 4,
+      "references": 3,
+      "copied_gates": 2,
+      "depth": 3,
+      "expanded_actions": 2
+    },
+    {
+      "name": "shared-identity-1",
+      "accepted": true,
+      "nodes": 10,
+      "references": 13,
+      "copied_gates": 3,
+      "depth": 7,
+      "expanded_actions": 18
+    },
+    {
+      "name": "qft-2",
+      "accepted": true,
+      "nodes": 7,
+      "references": 6,
+      "copied_gates": 11,
+      "depth": 4,
+      "expanded_actions": 4
+    },
+    {
+      "name": "calls-2",
+      "accepted": true,
+      "nodes": 10,
+      "references": 9,
+      "copied_gates": 11,
+      "depth": 5,
+      "expanded_actions": 4
+    },
+    {
+      "name": "shared-identity-2",
+      "accepted": true,
+      "nodes": 16,
+      "references": 19,
+      "copied_gates": 14,
+      "depth": 7,
+      "expanded_actions": 20
+    },
+    {
+      "name": "qft-3",
+      "accepted": true,
+      "nodes": 13,
+      "references": 12,
+      "copied_gates": 32,
+      "depth": 7,
+      "expanded_actions": 7
+    },
+    {
+      "name": "calls-3",
+      "accepted": true,
+      "nodes": 19,
+      "references": 18,
+      "copied_gates": 32,
+      "depth": 8,
+      "expanded_actions": 7
+    },
+    {
+      "name": "shared-identity-3",
+      "accepted": true,
+      "nodes": 25,
+      "references": 28,
+      "copied_gates": 38,
+      "depth": 9,
+      "expanded_actions": 23
+    },
+    {
+      "name": "qft-4",
+      "accepted": true,
+      "nodes": 21,
+      "references": 20,
+      "copied_gates": 74,
+      "depth": 11,
+      "expanded_actions": 11
+    },
+    {
+      "name": "calls-4",
+      "accepted": true,
+      "nodes": 31,
+      "references": 30,
+      "copied_gates": 74,
+      "depth": 12,
+      "expanded_actions": 11
+    },
+    {
+      "name": "shared-identity-4",
+      "accepted": true,
+      "nodes": 37,
+      "references": 40,
+      "copied_gates": 84,
+      "depth": 13,
+      "expanded_actions": 27
+    },
+    {
+      "name": "qft-5",
+      "accepted": true,
+      "nodes": 31,
+      "references": 30,
+      "copied_gates": 149,
+      "depth": 16,
+      "expanded_actions": 16
+    },
+    {
+      "name": "calls-5",
+      "accepted": true,
+      "nodes": 46,
+      "references": 45,
+      "copied_gates": 149,
+      "depth": 17,
+      "expanded_actions": 16
+    },
+    {
+      "name": "shared-identity-5",
+      "accepted": true,
+      "nodes": 52,
+      "references": 55,
+      "copied_gates": 164,
+      "depth": 18,
+      "expanded_actions": 32
+    },
+    {
+      "name": "qft-6",
+      "accepted": true,
+      "nodes": 43,
+      "references": 42,
+      "copied_gates": 272,
+      "depth": 22,
+      "expanded_actions": 22
+    },
+    {
+      "name": "calls-6",
+      "accepted": true,
+      "nodes": 64,
+      "references": 63,
+      "copied_gates": 272,
+      "depth": 23,
+      "expanded_actions": 22
+    },
+    {
+      "name": "shared-identity-6",
+      "accepted": true,
+      "nodes": 70,
+      "references": 73,
+      "copied_gates": 293,
+      "depth": 24,
+      "expanded_actions": 38
+    },
+    {
+      "name": "qft-7",
+      "accepted": true,
+      "nodes": 57,
+      "references": 56,
+      "copied_gates": 461,
+      "depth": 29,
+      "expanded_actions": 29
+    },
+    {
+      "name": "calls-7",
+      "accepted": true,
+      "nodes": 85,
+      "references": 84,
+      "copied_gates": 461,
+      "depth": 30,
+      "expanded_actions": 29
+    },
+    {
+      "name": "shared-identity-7",
+      "accepted": true,
+      "nodes": 91,
+      "references": 94,
+      "copied_gates": 489,
+      "depth": 31,
+      "expanded_actions": 45
+    },
+    {
+      "name": "qft-8",
+      "accepted": true,
+      "nodes": 73,
+      "references": 72,
+      "copied_gates": 737,
+      "depth": 37,
+      "expanded_actions": 37
+    },
+    {
+      "name": "calls-8",
+      "accepted": true,
+      "nodes": 109,
+      "references": 108,
+      "copied_gates": 737,
+      "depth": 38,
+      "expanded_actions": 37
+    },
+    {
+      "name": "shared-identity-8",
+      "accepted": true,
+      "nodes": 115,
+      "references": 118,
+      "copied_gates": 773,
+      "depth": 39,
+      "expanded_actions": 53
+    },
+    {
+      "name": "no-expansion-2^59",
+      "accepted": true,
+      "nodes": 170,
+      "references": 228,
+      "copied_gates": 773,
+      "depth": 62,
+      "expanded_actions": 576460752303423525
+    },
+    {
+      "name": "wrong-final-permutation",
+      "accepted": false,
+      "preflight": true,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "aliased-final-axes",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "outside-final-axis",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "wrong-h-axis",
+      "accepted": false,
+      "preflight": true,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "outside-h-axis",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "wrong-phase-sign",
+      "accepted": false,
+      "preflight": true,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "invalid-phase-tick",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "changed-valid-call-dependencies",
+      "accepted": false,
+      "preflight": true,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "wrong-call-input-axes",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "wrong-call-output-axes",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "observe-effect-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "observe-effect-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "iso-effect-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "iso-effect-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "classical-input-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "classical-input-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "classical-output-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "classical-output-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "flat-tuple-type-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "flat-tuple-type-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "nested-tuple-type-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "nested-tuple-type-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "extra-bits0-owner-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "extra-bits0-owner-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "missing-owner-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "missing-owner-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "aliased-input-axis-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "aliased-input-axis-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "changed-output-order-node0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "changed-output-order-node18",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "cycle",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": false
+    },
+    {
+      "name": "dangling",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": false
+    },
+    {
+      "name": "dead-node",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "bad-entry",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "permutation-before-gates",
+      "accepted": false,
+      "preflight": true,
+      "metadata": true,
+      "evaluation": false
+    },
+    {
+      "name": "width-0",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "width-9",
+      "accepted": false,
+      "preflight": true,
+      "metadata": false,
+      "evaluation": true
+    },
+    {
+      "name": "depth-64",
+      "accepted": true,
+      "nodes": 65,
+      "references": 64,
+      "copied_gates": 2,
+      "depth": 64,
+      "expanded_actions": 2
+    },
+    {
+      "name": "depth-65",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "nodes-255",
+      "accepted": true,
+      "nodes": 255,
+      "references": 254,
+      "copied_gates": 3,
+      "depth": 10,
+      "expanded_actions": 128
+    },
+    {
+      "name": "nodes-256",
+      "accepted": true,
+      "nodes": 256,
+      "references": 255,
+      "copied_gates": 3,
+      "depth": 11,
+      "expanded_actions": 128
+    },
+    {
+      "name": "nodes-257",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": true
+    },
+    {
+      "name": "37-gates",
+      "accepted": false,
+      "preflight": false,
+      "metadata": true,
+      "evaluation": false
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "temporary native QFT graph harness",
+      "exit": 0,
+      "stdout": "\u2714 [21/23] Built Main (2.5s)\n\u2714 [22/23] Built Main:c.o (2.3s)\n\u2714 [23/23] Built \u00abgraph-test\u00bb:exe (270ms)\nBuild completed successfully (23 jobs).\n",
+      "stderr": "info: qft_graph_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "graph-test"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "executable_sha256": "e0a9b616aa4816142799c24f6598838b560c6613f43c16f445e45339dfdff354"
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/QftGraph.lean": "737b23fb404cc08df4b955e2eb876fa8ecca2cbe273d6971868f26d9126157d3",
+    "lean/Qleisli/QftGraph.lean": "e320eb918e4a03338bff49a3ff760a478dd9de3613aed897b429b1a379ab41f3",
+    "scripts/test_lean_qft_graph.py": "870d0447c3b1879e2b65dc73254324da042db63f56b6977d92226d478a46a0e6"
+  }
+}

@@ -1,0 +1,111 @@
+QleisliKernel/PhaseLayout.lean:40:29: error: Type mismatch
+  first.phases ++ remap (LayoutDag.lookup first.layout.axes) second.phases
+has type
+  Polynomial
+but is expected to have type
+  Word
+QleisliKernel/PhaseLayout.lean:48:19: error: Type mismatch
+  first.phases ++ remap (LayoutDag.lookup first.layout.axes) second.phases
+has type
+  Polynomial
+but is expected to have type
+  Word
+QleisliKernel/PhaseLayout.lean:46:16: error: unsolved goals
+case some.h
+first second : Summary
+layout : Rewire
+hc : LayoutDag.compose first.layout second.layout = some layout
+ok : compose first second = some { layout := layout, phases := sorry }
+coordinates : LayoutDag.lookup layout.axes = LayoutDag.lookup first.layout.axes ∘ LayoutDag.lookup second.layout.axes
+state : State
+⊢ (state.phase + evaluate (sorry ()) state.bits) % modulus =
+    (state.phase +
+        (evaluate first.phases state.bits +
+          evaluate second.phases fun x => state.bits (LayoutDag.lookup first.layout.axes x))) %
+      modulus
+QleisliKernel/PhaseLayout.lean:45:18: warning: declaration uses `sorry`
+QleisliKernel/PhaseLayout.lean:55:38: warning: This simp argument is unused:
+  normalize_sound
+
+Hint: Omit it from the simp argument list.
+  simp [Summary.action, thenAction, n̵o̵r̵m̵a̵l̵i̵z̵e̵_̵s̵o̵u̵n̵d̵,̵ ̵evaluate_append, remap_sound, coordinates, Function.comp_def,
+  ̲  ̲ ̲ ̲ ̲ ̲Nat.add_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhaseLayout.lean:55:55: warning: This simp argument is unused:
+  evaluate_append
+
+Hint: Omit it from the simp argument list.
+  simp [Summary.action, thenAction, normalize_sound, e̵v̵a̵l̵u̵a̵t̵e̵_̵a̵p̵p̵e̵n̵d̵,̵ ̵remap_sound, coordinates, Function.comp_def,
+  ̲  ̲ ̲ ̲ ̲ ̲Nat.add_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhaseLayout.lean:55:72: warning: This simp argument is unused:
+  remap_sound
+
+Hint: Omit it from the simp argument list.
+  simp [Summary.action, thenAction, normalize_sound, evaluate_append, r̵e̵m̵a̵p̵_̵s̵o̵u̵n̵d̵,̵coordinates,
+        Function.comp_def, Nat.add_assoc]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhaseLayout.lean:60:44: error: Application type mismatch: The argument
+  definition.sourcePhases
+has type
+  Polynomial
+but is expected to have type
+  Word
+in the application
+  normalize definition.sourcePhases
+QleisliKernel/PhaseLayout.lean:83:44: error: Application type mismatch: The argument
+  definition.sourcePhases
+has type
+  Polynomial
+but is expected to have type
+  Word
+in the application
+  normalize definition.sourcePhases
+QleisliKernel/PhaseLayout.lean:82:16: error: unsolved goals
+case leaf.h
+env : Array Summary
+definition : Definition
+layout : Rewire
+hb : definition.wiring.body = LayoutDag.Body.leaf layout
+ok : evalNode env definition = some { layout := layout, phases := sorry }
+state : State
+⊢ (state.phase + evaluate definition.sourcePhases state.bits) % modulus =
+    (state.phase + evaluate (sorry ()) state.bits) % modulus
+QleisliKernel/PhaseLayout.lean:84:13: warning: declaration uses `sorry`
+QleisliKernel/PhaseLayout.lean:88:26: warning: This simp argument is unused:
+  normalize_sound
+
+Hint: Omit it from the simp argument list.
+  simp [Summary.action,̵ ̵n̵o̵r̵m̵a̵l̵i̵z̵e̵_̵s̵o̵u̵n̵d̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/PhaseLayout.lean:125:4: error: Tactic `split` failed: Could not split an `if` or `match` expression in the type
+  (do
+      let result ← some actual
+      if result = definition.claim then some result else none) =
+    some result
+of `ok`
+
+Hint: Use `set_option trace.split.failure true` to display additional diagnostic information
+
+case some
+env : Array Summary
+definition : Definition
+result actual : Summary
+hn : evalNode env definition = some actual
+ok :
+  (do
+      let result ← some actual
+      if result = definition.claim then some result else none) =
+    some result
+⊢ denoteNode (Array.map Summary.action env) definition = some result.action
+QleisliKernel/PhaseLayout.lean:124:19: warning: This simp argument is unused:
+  Option.bind_some
+
+Hint: Omit it from the simp argument list.
+  simp only [hn,̵ ̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵_̵s̵o̵m̵e̵] at ok
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

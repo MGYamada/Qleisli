@@ -1,0 +1,60 @@
+qleisli.phase-layout 1 typed-phase256-dag-v1
+entry 1
+definitions 2
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+source_phases 1
+term 16 1 0
+claim_phases 1
+term 16 1 0
+call 0
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+source_phases 0
+claim_phases 1
+term 16 1 0

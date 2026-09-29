@@ -16,8 +16,9 @@ evidence. Each concrete expansion passes the existing independent checker.
 The [release record](releases/v0.1.8.md) gives public AST/error and reserved-word
 migration, executed validation and remaining gates.
 
-The 0.1.8 authoring extension adds product patterns to basis parameters and
-left-associated n-ary tuple sugar in types, values and patterns. See the
+The 0.1.8 authoring extension added product patterns to basis parameters.
+The 0.2.0 [type specification](type-system.md) now retains n-ary tuple arity
+and nesting, superseding the former left-folding sugar. See the
 [grammar](syntax-v0.md#authoring-forms-added-in-product-018). Unreturned owners
 now point to their actual parameter, local or computed-region binder, including
 shadowed names; diagnostic codes/schema and ownership acceptance are unchanged.
@@ -26,7 +27,7 @@ shadowed names; diagnostic codes/schema and ownership acceptance are unchanged.
 
 Concrete type mismatches now include expected/actual types in ordinary/basis
 calls and returns, branches, static operation interfaces, primitives and
-classical conditions/Boolean operands. Types print exact binary trees including
+classical conditions/Boolean operands. Types print exact arity and nesting including
 Unit factors. The restricted `with_computed` diagnostic points to the explicit
 logical-contract form and its exact cleanup obligation. These are explanatory
 message changes; categories, source locations, JSON v1 and acceptance remain
@@ -41,7 +42,7 @@ unused functions. Bundled ordinary definitions in `std::basis`, `std::routines`,
 `std::transforms`, and `std::arithmetic` receive the same checks.
 `check_project` permits a library without `main`. `compile_project` requires
 `observe fn main() -> T` in `main.qli`, with a classical result of the recursive
-shape `T ::= Unit | CBit | (T,T)`. Arbitrarily nested finite binary products
+shape `T ::= Unit | CBit | (T1,...,Tk)`, k=2..64. Nested finite products
 are permitted within the implementation limits; there is no two-leaf limit.
 
 Each ordinary function is lowered from typed input resources and independently
@@ -145,7 +146,7 @@ and [specification boundary suite](../tests/specification_boundaries.rs).
 
 `CompileError` contains an `ErrorCode`, file path, UTF-8 byte span, one-based
 line/Unicode-character column, and explanatory message. Line tracking supports
-LF, CRLF, and CR. Consumers can inspect the category instead of matching free
+LF and CRLF; bare CR is a located lexical error since 0.2.0. Consumers can inspect the category instead of matching free
 text. Lower-level `ParseError`, `ProjectError`, and `ValidationError` do not all
 have equivalent enum categories.
 
@@ -217,6 +218,26 @@ These checks bound exponential nonrecursive expansion and classical
 copying as well as quantum data. They are implementation limits, not limits on
 the mathematical finite types. The simulator has separate
 [capacity and numerical limits](ir-prototype.md#参照実行系の範囲).
+
+Since 0.2.0, exact arithmetic and verification additionally share **10,000,000
+units per compilation**, including static arguments unused by their callees,
+function receipts and closed static transformations. Matrix operations charge
+their conservative full cost before execution. Shared immutable source storage
+is charged once per allocation within this budget; metadata validity is still
+checked on every receipt. This newly aggregate restriction is a MINOR change,
+not a retroactive interpretation of 0.1.9's lowering-only bound. It bounds
+specified work, not elapsed wall time or whole-process memory. There is no flag
+to reset it per call; reduce the derivation or wait for the separately gated
+hierarchical profile. Source-byte overrides do not override exact work.
+
+On macOS, source opening rejects symlinks in every path component atomically.
+On Linux x86/x86_64, ARM/AArch64 and RISC-V, held directory descriptors and
+no-follow opens provide the corresponding protection; readable `/proc/self/fd`
+is required and failure does not fall back to following links. Opened sources
+must be regular files; nonblocking acquisition avoids hanging on a substituted
+FIFO. Other targets retain the old filesystem trust assumption. This is not a
+filesystem sandbox, nor does it freeze files against concurrent in-place writes.
+See the [review disposition and platform validation](reviews/v0.1.9-followup.md).
 
 <a id="確認した結果と残件"></a>
 

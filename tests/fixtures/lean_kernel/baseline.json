@@ -1,0 +1,32 @@
+{
+  "recorded_utc": "2026-09-28T14:54:53.168230+00:00",
+  "context": "Initial development fixtures before executable kernel integration; informed work, not a model benchmark",
+  "sources": {
+    "phase_pair.qpk": "54adc9358f234114a55b059da37c8b161fc3d7c30a572887ddea87533262e189",
+    "global_phase.qpk": "c9c0dc01b05c4da928963e43878826eaf6cfe341873d0353a8a1494e602f9e21",
+    "t_expected.qpr": "b2778fe093aa201227f7117cb9816b08dabc6556ae01aa13a1b9daa7ff80d778",
+    "identity.qpr": "8146650dc75217d2b264377f4b095fb66d21ec04c42d7b59413e366929d9bca4",
+    "first_source/main.qli": "87d50eae8b51b350a3598cee88b684bbcda2c559d725637c8534924fb2a9c56d"
+  },
+  "observations": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_kernel/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "tests/fixtures/lean_kernel/phase_pair.qpk",
+        "tests/fixtures/lean_kernel/t_expected.qpr"
+      ],
+      "spawn_error": "[Errno 2] No such file or directory: 'lean-kernel/.lake/build/bin/qleisli-kernel'"
+    }
+  ]
+}

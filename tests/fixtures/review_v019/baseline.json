@@ -1,0 +1,59 @@
+{
+  "baseline": "0.2.0 development before v0.1.9 review repairs",
+  "recorded_utc": "2026-09-28T12:54:25.971961+00:00",
+  "observations": [
+    {
+      "source": "tests/fixtures/review_v019/bare_cr/main.qli",
+      "sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v019/bare_cr",
+        "--format=json"
+      ],
+      "elapsed_seconds": 0.013959333067759871,
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false
+              ],
+              "probability": 1
+            }
+          ]
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "source": "tests/fixtures/review_v019/static_budget/main.qli",
+      "sha256": "318e5ff5f54cb36cd78843b9205ffb05f9f8724fa00750dc3bcd8dfca6c83020",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v019/static_budget",
+        "--format=json"
+      ],
+      "elapsed_seconds": 12.332751041976735,
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true
+        }
+      },
+      "stderr": ""
+    }
+  ]
+}

@@ -70,14 +70,14 @@ iso fn amplify<n,k>(
 observe fn grover_sample<n,k>(
     static A: UnitaryOp<Bits<n>>,
     static good: BasisFn<Bits<n>, Bit>
-) -> CWord<n> {
+) -> CBits<n> {
     let q = amplify<n,k>(A, good);
     measure_bits<n>(q)
 }
 
 // HOST PSEUDOCODE — A SEPARATE, PROPOSED EXECUTION BOUNDARY
 host fn search<n,k>(A, good, attempts: UInt)
-    -> Result<CWord<n>, SearchFailure> {
+    -> Result<CBits<n>, SearchFailure> {
     for attempt in 0..attempts {
         let candidate = sample(grover_sample<n,k>(A, good))?;
         if eval_basis(good, candidate) {
@@ -199,7 +199,7 @@ acceptance tests.
 | GR-1 sized predicate and static builders | Language-form candidates: `BasisFn<Bits<n>,Bit>`, `static fn`, basis/unitary closures and static parameters. No runtime quantum capture. | Accept total predicates and finite descriptions; reject nontermination or captured live owners. Resolve dependencies and types before lowering. Closure grammar and capability representation remain unresolved. |
 | GR-2 `phase_oracle`, `zero_reflection` | Ordinary-definition candidates: builder to `UnitaryOp<Bits<n>>`; applications are `Unitary`. `nonzero` is an ordinary total basis definition. | Accept exact computed-flag cleanup; reject a flag modified without a valid inverse/meaning certificate. Generalize checked computed regions with all axes and actual body retained. |
 | GR-3 `preparation_reflection`, `grover_iterate` | Ordinary-definition candidates with A apply/inverse access. Controlled use additionally needs justified phase-fixed control access. | Accept full-space unitary A and the positive R0 convention; reject reversing an initializer or replacing G by −G under control. Compose independent evidence through inverse and final IR. |
-| GR-4 `amplify`, `grover_sample`, register helpers | Ordinary-definition candidates; `amplify: () -> Q<Bits<n>>` is `Iso`; sampling returns `CWord<n>` with `Observe`. `init_zero`/`measure_bits` derive from sealed single-bit primitives. | Accept each owner exactly once; reject implicit disposal or a measurement inside a unitary. Fold/group resource creation and consuming measurements with fixed bit order. |
+| GR-4 `amplify`, `grover_sample`, register helpers | Ordinary-definition candidates; `amplify: () -> Q<Bits<n>>` is `Iso`; sampling returns `CBits<n>` with `Observe`. `init_zero`/`measure_bits` derive from sealed single-bit primitives. | Accept each owner exactly once; reject implicit disposal or a measurement inside a unitary. Fold/group resource creation and consuming measurements with fixed bit order. |
 | GR-5 static carry loop | Language-form candidate; carry `Q<Bits<n>>` through a finite same-interface body. | Accept k=0 with body checking and identity ownership transfer; reject duplicate owners or unchecked zero-iteration bodies. Enforce generation budgets and reverify generated IR. |
 | GR-6 host search and `eval_basis` | Host-only proposal; `sample` returns classical execution results, predicate evaluation returns Boolean, search returns candidate or failure. | Accept fresh attempts, exact classical validation and explicit exhaustion; reject simulator-distribution access, unvalidated candidates, or treating failure as proof of absence. Host ABI and predicate-artifact binding are unresolved. |
 

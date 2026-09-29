@@ -1,0 +1,12 @@
+{
+  "status": "before first Lean check",
+  "source": "lean-kernel/QleisliKernel/Schema.lean",
+  "sha256": "9ce53d6a2cf2467e5ec04b5bbfc37896c6fd815436c87e6a59a6779fbf697805",
+  "contract": "Closed component dispatch binds fixed theorem ID, template version, all static parameters and actual witness to an independent request. Full external extraction and finite-provider evidence remain prerequisites for production acceptance.",
+  "counterexamples": [
+    "qft-dyadic8/2",
+    "qpe-instrument/1 paired with QFT witness",
+    "wrong precision with well-typed QPE plan",
+    "wrong provider with matching width"
+  ]
+}

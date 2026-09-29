@@ -26,6 +26,11 @@ ownership footprint is an occurrence **list**, with pair footprints appended.
 Classical leaves contribute zero occurrences; every quantum leaf contributes
 one, including `Q<Unit>`.
 
+This model remains binary. The [0.2.0 source type contract](type-system.md)
+adds distinct n-ary tuples; its indexed paper rules and Rust regressions do not
+extend this Lean model automatically. Establishing their projection and
+implementation correspondence remains a separate proof obligation.
+
 A `Register` contains a typed port, an SSA token, and an ordered wire list.
 A `Config` contains all current holders and a finite register store. Holders
 include visible values, pending tuple fields or actual arguments, suspended

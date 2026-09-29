@@ -1,0 +1,2 @@
+SchemaExport.lean:59:0: error: Unknown option `pp.width`
+SchemaExport.lean:73:2: error(lean.unknownIdentifier): Unknown identifier `liftIO`

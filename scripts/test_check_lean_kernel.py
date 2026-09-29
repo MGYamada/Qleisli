@@ -1,0 +1,180 @@
+"""Runtime policy regressions; --compiled also mutates real Lean modules.
+
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+"""
+
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+
+from check_lean_kernel import ROOT, TOOLCHAIN, check_kernel, lean_code, source_errors
+
+
+COMPILED = "--compiled" in sys.argv
+if COMPILED:
+    sys.argv.remove("--compiled")
+
+
+class RuntimeSourcePolicy(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.write("QleisliKernel.lean", "import QleisliKernel.Check\n")
+        self.write("QleisliKernel/Check.lean", "import Std\ndef check := true\n")
+        self.write("Main.lean", "import QleisliKernel\nimport Protocol\n")
+        self.write("Protocol.lean", "import Lean.Data.Json\n")
+        self.write("Audit.lean", "import QleisliKernel\nimport Main\n")
+        self.write("lakefile.toml", 'name = "qleisli_kernel"\nversion = "0.2.0"\n')
+        self.write("lake-manifest.json", json.dumps({"packages": []}))
+        self.write("lean-toolchain", TOOLCHAIN + "\n")
+
+    def write(self, name, content):
+        path = self.root / "lean-kernel" / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content, encoding="utf-8")
+
+    def errors(self):
+        return check_kernel(self.root)[0]
+
+    def test_separate_transport_imports_are_allowed(self):
+        self.assertEqual(check_kernel(self.root), ([], 4))
+
+    def test_comments_and_plain_raw_literals_do_not_trigger_tokens(self):
+        source = '''/- extern /- unsafe -/ partial -/
+-- native_decide
+def explanation := "axiom sorry \\" extern"
+def rawText := r##"unsafe /- string -/ \" partial"##
+def quote := '\"'
+def escape := '\\n'
+def apostrophe' := true
+'''
+        self.assertEqual(source_errors(source), [])
+        self.assertEqual(lean_code(source).count("\n"), source.count("\n"))
+
+    def test_tokens_cannot_hide_behind_comments_or_quoted_names(self):
+        for source in ["partial /- note -/ def loop := loop", "@[ /- note -/ extern \"f\"] def f := 0",
+                       "attribute [implemented_by /- note -/ replacement] f",
+                       "def «unsafe» := 0", "theorem p := by decide + /- note -/ native"]:
+            with self.subTest(source=source):
+                self.assertTrue(source_errors(source))
+
+    def test_interpolation_does_not_hide_executable_tokens(self):
+        self.assertTrue(source_errors('def text := s!"{by sorry}"'))
+        self.assertEqual(source_errors('def text := s!"result {1 + 2}"'), [])
+
+    def test_unterminated_comments_and_strings_fail_closed(self):
+        for source in ["/-", 'def s := "', 'def s := r##"', 'def s := s!"']:
+            with self.subTest(source=source):
+                self.assertTrue(source_errors(source))
+
+    def test_mathlib_and_unowned_helpers_are_not_runtime_dependencies(self):
+        for module in ["Mathlib", "Batteries", "External.Helper"]:
+            with self.subTest(module=module):
+                self.write("QleisliKernel/Check.lean", f"import {module}\n")
+                self.assertTrue(any("forbidden" in error for error in self.errors()))
+
+    def test_pure_code_cannot_import_transport_or_lean_metaprogramming(self):
+        for module in ["Protocol", "Main", "Lean", "Lean.Data.Json"]:
+            with self.subTest(module=module):
+                self.write("QleisliKernel/Check.lean", f"import {module}\n")
+                self.assertTrue(self.errors())
+
+    def test_hidden_generated_build_files_do_not_count_as_source(self):
+        self.write(".lake/Bad.lean", "axiom bad : False")
+        self.assertEqual(self.errors(), [])
+        self.write("QleisliKernel/Hidden.lean", "def hidden := true\n")
+        self.assertTrue(any("absent from root" in error for error in self.errors()))
+
+    def test_comments_cannot_supply_required_imports(self):
+        self.write("QleisliKernel.lean", "-- import QleisliKernel.Check\n")
+        self.assertTrue(any("absent from root" in error for error in self.errors()))
+        self.write("Audit.lean", "import QleisliKernel\n-- import Main\n")
+        self.assertTrue(any("must import both" in error for error in self.errors()))
+
+    def test_import_cycles_and_unknown_owned_module_names_fail(self):
+        self.write("QleisliKernel/Check.lean", "import QleisliKernel\n")
+        self.assertTrue(any("cyclic" in error for error in self.errors()))
+        self.write("Other.lean", "def f := 0\n")
+        self.assertTrue(any("unaudited" in error for error in self.errors()))
+
+    def test_reduction_tests_are_checked_but_not_executable_roots(self):
+        self.write("Tests.lean", "import QleisliKernel\nexample : true = true := by decide\n")
+        self.assertEqual(check_kernel(self.root), ([], 4))
+        self.write("Tests.lean", "example : False := by sorry\n")
+        self.assertTrue(any("sorry" in error for error in self.errors()))
+
+    def test_dependencies_and_toolchain_are_pinned(self):
+        self.write("lakefile.toml", '[[require]]\nname = "mathlib"\n')
+        self.write("lake-manifest.json", json.dumps({"packages": [{"name": "mathlib"}]}))
+        self.write("lean-toolchain", "leanprover/lean4:v4.31.0\n")
+        self.assertEqual(len(self.errors()), 3)
+
+
+@unittest.skipUnless(COMPILED, "pass --compiled to test actual Lean declaration metadata")
+class CompiledAudit(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        result = subprocess.run(["lake", "env", "lean", "--print-prefix"],
+                                cwd=ROOT / "lean-kernel", text=True, capture_output=True, check=True)
+        cls.lean = Path(result.stdout.strip()) / "bin" / "lean"
+        cls.audit_source = (ROOT / "lean-kernel/Audit.lean").read_text(encoding="utf-8")
+
+    def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n"):
+        with tempfile.TemporaryDirectory(prefix="qleisli-kernel-audit-") as directory:
+            root = Path(directory)
+            env = dict(os.environ, LEAN_PATH=str(root))
+            (root / "QleisliKernel.lean").write_text("import Init\n" + body, encoding="utf-8")
+            (root / "Main.lean").write_text(main, encoding="utf-8")
+            (root / "Audit.lean").write_text(self.audit_source, encoding="utf-8")
+            for module in ["QleisliKernel", "Main"]:
+                compiled = subprocess.run([self.lean, "-o", module + ".olean", module + ".lean"],
+                                          cwd=root, env=env, text=True, capture_output=True)
+                self.assertEqual(compiled.returncode, 0, compiled.stdout + compiled.stderr)
+            result = subprocess.run([self.lean, "Audit.lean"], cwd=root, env=env,
+                                    text=True, capture_output=True)
+            return result.returncode, result.stdout + result.stderr
+
+    def test_safe_runtime_declarations_pass(self):
+        code, output = self.audit("def value : Nat := 1\n")
+        self.assertEqual(code, 0, output)
+        self.assertIn("Audited", output)
+
+    def test_compiled_escape_hatches_fail_including_private_helpers(self):
+        cases = [
+            ("private partial def loop (n : Nat) : Nat := loop (n + 1)\n", "partial project"),
+            ("unsafe def value : Nat := 1\n", "unsafe project"),
+            ('@[extern "untrusted_audit_test"] def value : Nat := 1\n', "extern implementation"),
+            ("def replacement : Nat := 2\n@[implemented_by replacement] def value : Nat := 1\n",
+             "implemented_by replacement"),
+            ("namespace Other\naxiom forged : False\nend Other\n", "project axiom"),
+            ("private theorem unfinished : False := by sorry\n", "forbidden axiom"),
+            ("noncomputable def value : Nat := Classical.choice (inferInstance : Nonempty Nat)\n",
+             "noncomputable project"),
+        ]
+        for body, expected in cases:
+            with self.subTest(expected=expected):
+                code, output = self.audit(body)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn(expected, output)
+
+    def test_native_proof_in_transport_is_still_rejected(self):
+        main = ("import QleisliKernel\nimport Lean\n"
+                "theorem nativeProof : 1 + 1 = 2 := by native_decide\n"
+                "def main : IO Unit := pure ()\n")
+        code, output = self.audit("def value : Nat := 1\n", main)
+        self.assertNotEqual(code, 0, output)
+        self.assertTrue("forbidden axiom" in output or "project axiom" in output, output)
+
+    def test_compiled_pure_import_closure_cannot_add_lean_metaprogramming(self):
+        code, output = self.audit("import Lean\ndef value : Nat := 1\n")
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("forbidden runtime import Lean", output)
+
+
+if __name__ == "__main__":
+    unittest.main()

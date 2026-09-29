@@ -4,8 +4,12 @@
 from 0.2.0 onward, practice the
 [program-first method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
 through concrete quantum programs and their checked contracts. This document
-prepares that work. It does not select 0.2.0, adopt new syntax, or declare any
-pending M1/M2 implementation complete. The current product version is 0.1.9.
+now governs the [0.2.0 foundation](v0.2.0-plan.md) and
+[0.2.1 shared-QPE continuation](v0.2.1-plan.md). The
+product version is 0.2.0; its [record](releases/v0.2.0.md)
+separates implemented packets from deferred M2 gates and final release checks.
+The selected classical sequence spelling is `CBits<m>`; desired source is
+not accepted syntax.
 
 ## What the 0.1.x handoff must establish
 
@@ -50,7 +54,7 @@ notation**:
 
 ```text
 observe fn qpe<n,m>(static U: UnitaryOp<Bits<n>>,
-                    target: Q<Bits<n>>) -> (CWord<m>, Q<Bits<n>>)
+                    target: Q<Bits<n>>) -> (CBits<m>, Q<Bits<n>>)
 ```
 
 The current [source](../examples/operation_algorithms/estimation.qli) instead
@@ -80,7 +84,7 @@ claims. An entry is not a blanket prerequisite for starting another cycle.
 
 | Obstacle and author burden | Required boundary and experiment | Dependency / compatibility decision |
 | --- | --- | --- |
-| A020-01/05: manually rebuild product trees and remember same-typed result roles | Preserve full trees, Unit ownership, ordered axes and reference correlations; compare the same QFT/teleportation clients and deliberate bit swaps. Role names alone cannot prove an algorithm. | Layout investigation can begin now. Changing the current left-fold meaning or public AST requires MINOR; explicit additive adapters may be PATCH. |
+| A020-01/05: manually rebuild product trees and remember same-typed result roles | Preserve full trees, Unit ownership, ordered axes and reference correlations; compare the same QFT/teleportation clients and deliberate bit swaps. Role names alone cannot prove an algorithm. | The user selected the breaking arity-preserving correction for 0.2.0; see the [type contract](type-system.md), [migration](tuple-shapes.md) and [preserved source experiment](../tests/fixtures/tuple_shapes/README.md). Broader layout ergonomics remain open. |
 | A020-02/03: duplicate bodies across target types, precision and iteration count | Source substitution must bind complete interfaces, dependencies, effects and capabilities; check zero-sized/zero-repeat boundaries and excessive work. | R14 and joint hierarchy are prerequisites for size generalization. A finite-template exception remains an unadopted scheduling alternative. G020-1 is required before source implementation. |
 | A020-07: four-bit QPE needs a controlled π/8 phase outside the finite exact gate profile | Bind the selected ideal dyadic semantics to actual hierarchical circuits and checked QFT/QPE schemas; reject unsupported angles and compare branch instruments. | M2 H1–H5 and pinned Lean schema obligations. Raising a finite limit or using floating tolerance cannot supply this evidence. Public IR migration is reviewed separately. |
 | A020-09/17: a provider's label or serialized claim cannot replace independently checked access/evidence | Retain the current transparent constructor closure; mutate phase, type, dependencies and requested meaning in a fresh process. Opaque access needs its own contract. | M1 X2–X3 are specified but unimplemented. Tightening current access acceptance is MINOR; additive interchange need not change existing APIs. |
@@ -101,6 +105,10 @@ memory, input/output and filesystem boundaries and retain a distinct resource
 failure result. Such driver limits do not change what the language claims to
 accept; they must be disclosed as limits of that experiment. Never treat a
 lowering-work budget as a bound on initial file reading or tokenization.
+
+## Required completion evidence from 0.2.0
+
+The user adopted the cycle below as the normal completion criterion for every language and bundled-library change. Retain the pre-change source, actual repair history, named author burden, independent oracle and type-correct semantic counterexample, smallest justified implementation, a second use, and CI/quick-reference coverage. Report repair counts, duplicated definitions, manual layout conversions and generation/checking costs before/after; label missing measurements explicitly. These are development observations, not controlled LLM performance estimates.
 
 ## A repeatable development cycle
 
@@ -146,8 +154,7 @@ of the version in which the experiment was attempted.
 
 ## Bounded first cycles for the remaining M1 and M2 work
 
-These are prepared work packets, in dependency order, not claims of implemented
-features or a promise that all ship in 0.2.0. The maintainer selects a packet and
+These are prepared work packets, in dependency order, not substitutes for their acceptance gates. The revised [0.2.0 plan](v0.2.0-plan.md) retains implemented packets and final release validation; remaining CD-3 production integration and CD-4 shared source/execution move to [0.2.1](v0.2.1-plan.md), with the same acceptance gates. CD-1/CD-2 and X6 are implemented with recorded tests. CD-3 has proved [shared phase DAG](lean-hierarchy-slice.md), [typed layout](lean-layout-slice.md) [shared typed call](lean-layout-dag-slice.md), and [combined phase/layout](lean-phase-layout-slice.md) components; local H/diagonal semantics and [QFT circuit Fourier/reference proofs](lean-qft-proof-packet.md) are also implemented, including an [internal typed QFT graph projection](lean-qft-graph-packet.md) and [QPE instrument/conditional completeness and coherent controlled-power bridge](lean-qpe-instrument-packet.md); the closed component registry now binds rebuilt theorem types and source revisions, full-profile graph scheduling proves acyclicity, and typed artifact preparation derives actual references and exact proof endpoints under the same budget; definition-node typing checks complete call names, frames and effects, and the meaning/encoding pass proves every indexed header satisfies its structural conditions under the same budget; explicit structural conversions now check Bits/Bit, tuple and empty-owner transitions in both passes, with reference-preserving inverse routing; mathematical equations, transform/schema verification, external decoding and CD-4 remain pending. The maintainer selects a packet and
 its compatibility impact; assign an implementer when execution starts. The
 first two M1 packets are independent and may proceed concurrently.
 
@@ -158,8 +165,17 @@ first two M1 packets are independent and may proceed concurrently.
 | CD-3: evidence-bound hierarchical composition | Start from the existing fixed-width QPE building blocks and [bounded research kernel](../research/semantic-kernel/README.md). Implement the selected successor IR/checker path first, retaining the finite adapter and its exact leaves. | H1/H2/H5 component gates: independently bind shared calls/repeats/transformations to meanings and encodings; check invalid zero-repeat bodies, stale dependencies and complete ports. Establish required Lean schema statements and audits. A prototype pass is not production integration or complete H1–H5. |
 | CD-4: shared QPE across declared widths | After the hierarchy prerequisite is established, complete the sized-source G020-1 specification, then implement one QPE/QFT source with its declared type/size and angle profile. The existing [QPE draft](imaginary-v1/qpe.md) guides source shape without predetermining final notation. | Complete H1–H5, including H3 instances `(n,m)=(1,3),(2,4),(8,8)`, H4 reference-sensitive instruments and π/8 cases, no dense matrices above six-bit leaves and no expansion of shared repeats during checking. Preserve old finite clients and document public migrations. Only then claim this M2 profile. |
 
+The [typed layout continuation](lean-layout-slice.md) preserves an already valid
+three-owner source and the missing Lean boundary, then checks complete owner/axis
+permutations against an independent request. Its proof/test record does not close
+the general hierarchy or sized-source gates.
+
 CD-3 does not authorize premature sized source: its first deliverable is the
 specified verification architecture with concrete bounded interfaces. The
+initial [preserved repetition example](../tests/fixtures/lean_hierarchy/README.md)
+now has an independently checked experimental DAG, but its original `.qli`
+source still reaches the finite evidence limit. This begins the composition
+proofs and binding tests without claiming the production profile is complete. The
 hierarchy and source layers are developed in stages but neither can be declared
 complete by demonstrating the other alone. CD-4's larger case is a generation/
 checking experiment under the selected profile, not a demand to run an
@@ -195,3 +211,21 @@ records and attribution, mathematical draft checks do not execute imaginary
 source, and finite numerical comparison does not issue exact semantic certificates.
 Record actual executed commands and results in the selected cycle's record;
 the command list here is an entry point, not a new validation claim.
+
+## Executable-kernel continuation
+
+The [adopted Lean migration](lean-kernel-migration.md) applies this method to
+verification code as well as source-language additions. The first
+[phase-word record](../tests/fixtures/lean_kernel/README.md) retains actual first
+source/proof attempts, the requested contract, a well-typed phase counterexample
+and independent native checks. Its theorem concerns the executable checker;
+its source ergonomics improvement is explicitly zero. Later M2 work must
+connect the desired shared-QPE source to evidence-bound Lean checking and keep
+all existing H1–H5 gates. The first experiment supplies neither that source
+translation nor permission to enable unproved hierarchy schemas.
+
+The [interference packet](lean-interference-slice.md) continues from two retained
+finite `.qli` clients. It proves local H/diagonal normalization on arbitrary
+joint amplitudes and imports those actual definitions into the separate complex
+proof package. It adds no source syntax or external acceptance variant; typed
+non-diagonal graph integration and QFT/QPE schemas remain CD-3 obligations.

@@ -1,0 +1,99 @@
+use qleisli_core::frontend::project::SourcePolicy;
+use std::ffi::OsString;
+use std::path::PathBuf;
+
+pub(super) struct Options {
+    pub command: String,
+    pub path: PathBuf,
+    pub policy: SourcePolicy,
+    pub shots: Option<u64>,
+    pub seed: Option<u64>,
+    pub output: Option<PathBuf>,
+    pub against: Option<PathBuf>,
+}
+
+fn number(text: &str) -> Option<u64> {
+    if text.is_empty()
+        || !text.bytes().all(|b| b.is_ascii_digit())
+        || text.len() > 1 && text.starts_with('0')
+    {
+        None
+    } else {
+        text.parse().ok()
+    }
+}
+
+impl Options {
+    pub fn parse(args: &[OsString], json: bool) -> Option<Self> {
+        let mut positional = Vec::new();
+        let (mut format, mut legacy) = (false, false);
+        let (mut source, mut project, mut shots, mut seed) = (None, None, None, None);
+        let (mut output, mut against) = (None, None);
+        for arg in args {
+            match arg.to_str() {
+                Some("--format=json") if json && !format => format = true,
+                Some("--legacy-source-limits") if !legacy => legacy = true,
+                Some(s) if s.starts_with("--source-bytes=") && source.is_none() => {
+                    source = Some(number(&s[15..])?)
+                }
+                Some(s) if s.starts_with("--project-bytes=") && project.is_none() => {
+                    project = Some(number(&s[16..])?)
+                }
+                Some(s) if s.starts_with("--shots=") && shots.is_none() => {
+                    shots = Some(number(&s[8..])?)
+                }
+                Some(s) if s.starts_with("--seed=") && seed.is_none() => {
+                    seed = Some(number(&s[7..])?)
+                }
+                Some(s) if s.starts_with("--output=") && output.is_none() && s.len() > 9 => {
+                    output = Some(PathBuf::from(&s[9..]));
+                }
+                Some(s) if s.starts_with("--against=") && against.is_none() && s.len() > 10 => {
+                    against = Some(PathBuf::from(&s[10..]));
+                }
+                _ if !arg.as_encoded_bytes().starts_with(b"-") => positional.push(arg),
+                _ => return None,
+            }
+        }
+        if format != json
+            || positional.len() != 2
+            || legacy && (source.is_some() || project.is_some())
+            || source == Some(0)
+            || project == Some(0)
+        {
+            return None;
+        }
+        let command = positional[0].to_str()?;
+        if command != "emit-ir" && output.is_some()
+            || command != "verify-ir" && against.is_some()
+            || matches!(command, "emit-ir" | "verify-ir") && (shots.is_some() || seed.is_some())
+            || command == "verify-ir" && (legacy || source.is_some() || project.is_some())
+        {
+            return None;
+        }
+        match command {
+            "sample" if shots.is_some_and(|n| (1..=1_000_000).contains(&n)) && seed.is_some() => {}
+            "check" | "run" if shots.is_none() && seed.is_none() => {}
+            "doc" if !json && shots.is_none() && seed.is_none() => {}
+            "emit-ir" if output.is_some() => {}
+            "verify-ir" => {}
+            _ => return None,
+        }
+        Some(Self {
+            command: command.into(),
+            path: PathBuf::from(positional[1]),
+            policy: if legacy {
+                SourcePolicy::Legacy
+            } else {
+                SourcePolicy::Bounded {
+                    source_bytes: source.unwrap_or(1 << 20),
+                    project_bytes: project.unwrap_or(16 << 20),
+                }
+            },
+            shots,
+            seed,
+            output,
+            against,
+        })
+    }
+}

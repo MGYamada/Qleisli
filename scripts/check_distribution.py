@@ -39,6 +39,38 @@ class File:
     mode: int = 0o644
 
 
+SOURCE_ROOTS = (
+    "research/semantic-kernel/Cargo.toml", "lean/Audit.lean", "lean/lakefile.toml",
+    "lean/lean-toolchain", "lean-kernel/QleisliKernel.lean", "lean-kernel/Audit.lean",
+    "lean-kernel/Main.lean", "lean-kernel/Protocol.lean", "lean-kernel/Tests.lean",
+    "lean-kernel/lakefile.toml", "lean-kernel/lean-toolchain", "lean-kernel/lake-manifest.json",
+    "scripts/check_lean_kernel.py", "scripts/test_check_lean_kernel.py", "scripts/test_lean_hierarchy.py",
+    "scripts/test_lean_layout.py",
+    "scripts/test_lean_layout_dag.py",
+    "scripts/test_lean_phase_layout.py",
+    "scripts/test_lean_interference.py",
+    "scripts/test_lean_qft.py",
+    "scripts/test_lean_qft_graph.py",
+    "scripts/test_lean_qpe.py",
+    "scripts/test_lean_controlled_power.py",
+    "lean/SchemaExport.lean", "lean/schema-registry.json",
+    "scripts/check_schema_registry.py", "scripts/test_check_schema_registry.py",
+    "scripts/test_hierarchical_graph.py",
+    "scripts/test_hierarchical_artifact.py",
+    "scripts/test_hierarchical_typing.py",
+    "scripts/test_hierarchical_contract_typing.py",
+    "scripts/test_hierarchical_structural.py",
+    "scripts/test_hierarchical_power.py",
+    "scripts/test_hierarchical_derivation.py",
+    "examples/lean_kernel.rs",
+)
+
+
+def check_source_roots(files):
+    missing = [name for name in SOURCE_ROOTS if name not in files]
+    require(not missing, "missing research/proof/kernel root: " + repr(missing))
+
+
 def git(root, *args, input=None):
     result = subprocess.run(["git", "-C", str(root), *args], input=input,
                             capture_output=True, check=False)
@@ -275,10 +307,10 @@ def validate(root, report_path, target_dir=None):
                                     "file_count": len(archived), "excluded_tracked_files": []}
         source = artifacts / "source"
         extract_checked(archived, source)
-        required_roots = ["research/semantic-kernel/Cargo.toml", "lean/Audit.lean",
-                          "lean/lakefile.toml", "lean/lean-toolchain"]
-        require(all(name in archived for name in required_roots), "missing research/proof root")
+        check_source_roots(archived)
         commands.run([sys.executable, "scripts/check_input_corpus.py"], source)
+        commands.run([sys.executable, "scripts/check_lean_kernel.py"], source)
+        commands.run([sys.executable, "scripts/check_schema_registry.py", "--source-only"], source)
         listed = commands.run(["cargo", "package", "--offline", "--list"], root).decode().splitlines()
         commands.run(["cargo", "package", "--offline", "--target-dir", target / "package"], root)
         crate_path = target / "package" / "package" / (prefix + ".crate")

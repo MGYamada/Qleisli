@@ -122,11 +122,11 @@ fn doc_text_normalizes_crlf_but_preserves_utf8_source_spans() {
     }
     assert!(
         parse_module("// ordinary\rbasis fn hidden() -> Bit { 0 }")
-            .unwrap()
-            .decls
-            .is_empty()
+            .unwrap_err()
+            .message
+            .contains("bare carriage return")
     );
-    parse_module("/* ordinary\r */basis fn visible() -> Bit { 0 }").unwrap();
+    assert!(parse_module("/* ordinary\r */basis fn visible() -> Bit { 0 }").is_err());
 }
 
 #[test]

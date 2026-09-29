@@ -1,0 +1,56 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_phase_layout.py"
+    ],
+    "exit": 0,
+    "stdout": "Native typed-phase/layout decisions: 382\n",
+    "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 3.682s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_layout_dag.py"
+    ],
+    "exit": 0,
+    "stdout": "Native typed-layout DAG decisions: 147\n",
+    "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 1.629s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_layout.py"
+    ],
+    "exit": 0,
+    "stdout": "Native typed-layout decisions: 230\n",
+    "stderr": ".........\n----------------------------------------------------------------------\nRan 9 tests in 2.225s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_lean_hierarchy.py"
+    ],
+    "exit": 0,
+    "stdout": "Native DAG decisions: 647\n",
+    "stderr": "test_body_count_dependency_and_request_mutations (__main__.HierarchyTests.test_body_count_dependency_and_request_mutations) ... ok\ntest_closed_power_against_direct_boundary_execution (__main__.HierarchyTests.test_closed_power_against_direct_boundary_execution) ... ok\ntest_dag_cycles_forward_references_and_unreachable_entries (__main__.HierarchyTests.test_dag_cycles_forward_references_and_unreachable_entries) ... ok\ntest_exact_shape_and_zero_width_owner_ports (__main__.HierarchyTests.test_exact_shape_and_zero_width_owner_ports) ... ok\ntest_global_phase_and_all_dyadic_angles (__main__.HierarchyTests.test_global_phase_and_all_dyadic_angles) ... ok\ntest_immutable_first_artifacts (__main__.HierarchyTests.test_immutable_first_artifacts) ... ok\ntest_large_shared_work_and_depth_boundary (__main__.HierarchyTests.test_large_shared_work_and_depth_boundary) ... ok\ntest_node_reference_and_primitive_boundaries (__main__.HierarchyTests.test_node_reference_and_primitive_boundaries) ... ok\ntest_small_shared_dags_against_expanded_and_complex_oracles (__main__.HierarchyTests.test_small_shared_dags_against_expanded_and_complex_oracles) ... ok\ntest_strict_transport_and_no_schema_shortcuts (__main__.HierarchyTests.test_strict_transport_and_no_schema_shortcuts) ... ok\ntest_zero_repeat_checks_body_and_retains_reachability (__main__.HierarchyTests.test_zero_repeat_checks_body_and_retains_reachability) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 5.615s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_check_docs.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.055s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_check_distribution.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.808s\n\nOK\n"
+  }
+]

@@ -1,0 +1,27 @@
+Qleisli/QpeComplete.lean:35:22: error: This simp argument is unused:
+  nonzero
+
+Hint: Omit it from the simp argument list.
+  simp ̵[̵n̵o̵n̵z̵e̵r̵o̵]̵
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/QpeComplete.lean:41:64: error: unsolved goals
+T : Type
+inst✝³ : Fintype T
+inst✝² : DecidableEq T
+I Y : Type
+inst✝¹ : Fintype I
+inst✝ : Fintype Y
+c : Y → I → ℂ
+A : I → Matrix T T ℂ
+j : I
+a✝ : j ∈ Finset.univ
+⊢ ∑ x, c x j • ∑ x_1, star (c x x_1) • ((A x_1)ᴴ * A j) = ∑ y, ∑ x, (star (c y j) * c y x) • ((A j)ᴴ * A x)
+Qleisli/QpeComplete.lean:43:70: error: This simp argument is unused:
+  smul_smul
+
+Hint: Omit it from the simp argument list.
+  simp only [Matrix.conjTranspose_sum, Matrix.conjTranspose_smul, Matrix.sum_mul, Matrix.mul_sum,
+  ̲  ̲ ̲ ̲Matrix.smul_mul, Matrix.mul_smul, s̵m̵u̵l̵_̵s̵m̵u̵l̵,̵Finset.sum_smul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

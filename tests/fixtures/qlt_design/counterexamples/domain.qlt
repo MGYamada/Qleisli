@@ -1,0 +1,10 @@
+// Expected unsupported-domain error in TQL-1, not a failed equality or pass.
+// DFT16 fits the matrix dimension cap but its roots are outside R8.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qlt::math::dft;
+
+#[test]
+fn finer_roots_are_not_current_exact_constants() {
+    let f = dft(16);
+    assert_eq!(&f, &f);
+}

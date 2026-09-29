@@ -43,9 +43,10 @@ source/Rust correspondence follows from that addition.
 Use exact type trees, without implicit associativity or unit isomorphisms:
 
 ```text
-A ::= Unit | Bit | (A,A)                 basis types
-T ::= Unit | CBit | Q<A> | (T,T)         ordinary types
-C ::= Unit | CBit | (C,C)                classical types
+A ::= Unit | Bit | (A1,...,Ak)           basis types
+T ::= Unit | CBit | Q<A> | (T1,...,Tk)    ordinary types
+C ::= Unit | CBit | (C1,...,Ck)          classical types
+k = 2..64, with exact immediate arity and nesting
 effects: Unitary <= Iso <= Observe
 ```
 
@@ -53,7 +54,7 @@ effects: Unitary <= Iso <= Observe
 `lin(T)` holds exactly when the tree contains `Q`. A symbolic ordinary value is
 
 ```text
-v ::= () | c | q(s,A) | (v,v)
+v ::= () | c | q(s,A) | (v1,...,vk)
 ```
 
 Here `c` is a classical SSA identifier, and `s` is a register **slot**, not an
@@ -68,6 +69,7 @@ Define the multiset of ownership occurrences:
 own(()) = own(c) = empty
 own(q(s,A)) = [s]
 own((v1,v2)) = own(v1) + own(v2)
+own((v1,...,vk)) = sum_i own(vi)
 ```
 
 The use of a multiset is essential: `[s,s]` is invalid even if `R(s)` has zero
@@ -155,6 +157,15 @@ E0 ; F        ; R0 |- (e1,e2) => (v1,v2):(T1,T2)
                                       ! max(eps1,eps2) ; E2 ; R2
 ```
 
+For 0.2.0's [arity-preserving tuples](type-system.md), the indexed `TUPLE`
+case uses frame `F ++ [v1,...,v(i-1)]` at premise i and returns the exact
+k-field value. Sum ownership occurrences over all fields and join their effects.
+Tuple binding requires equal immediate arity before applying each field's
+binding rule. Width is the sum of field widths, including zero-width factors.
+The resource preservation argument is induction over the fields using the
+same pending-frame invariant; the existing Lean binary accounting projection
+is not thereby a proof of the new frontend representation.
+
 `D` and sequentially threaded histories are suppressed in inference displays
 only. The same left-to-right rule evaluates an argument list, adding all prior
 results to `F` while evaluating the next argument. This includes quantum
@@ -195,7 +206,7 @@ is not. The result and the surviving outer bindings are separate holders.
 
 Basis expressions use only `Xi |-basis b : A`. Variables in `Xi` are copyable
 basis labels, never ordinary quantum handles or `CBit` values. The rules for
-`()` and `0/1` give `Unit` and `Bit`; pairing gives the exact product tree;
+`()` and `0/1` give `Unit` and `Bit`; tuple construction gives the exact arity and nested type tree;
 `not` requires one `Bit`; `and/xor` require two `Bit` operands and return `Bit`.
 A basis call requires matching parameter trees and returns its declared basis
 type. Its name must resolve to a basis declaration and must not be a local

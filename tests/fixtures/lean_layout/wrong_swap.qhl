@@ -1,0 +1,11 @@
+qleisli.layout 1 typed-layout-v1
+inputs 2
+port 1 Bit 1 0
+port 1 Bit 1 1
+outputs 2
+port 1 Bit 1 0
+port 1 Bit 1 1
+owners 2 1 0
+axes 2 1 0
+inverse_owners 2 1 0
+inverse_axes 2 1 0

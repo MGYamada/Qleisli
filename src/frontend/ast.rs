@@ -66,7 +66,7 @@ pub struct Decl {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Param {
     /// Basis functions accept name/wildcard/product patterns. Ordinary
-    /// function parameters remain names. Tuple sugar is already binary here.
+    /// function parameters remain names. Tuple nodes retain their immediate arity.
     pub pattern: Pattern,
     pub ty: Type,
     pub span: Span,
@@ -84,7 +84,7 @@ pub enum TypeKind {
     Bit,
     CBit,
     Q(Box<Type>),
-    Tuple(Box<Type>, Box<Type>),
+    Tuple(Vec<Type>),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -123,7 +123,7 @@ pub struct Pattern {
 pub enum PatternKind {
     Name(Ident),
     Wildcard,
-    Tuple(Box<Pattern>, Box<Pattern>),
+    Tuple(Vec<Pattern>),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -157,7 +157,7 @@ pub enum ExprKind {
     Name(Ident),
     CBit(bool),
     Unit,
-    Tuple(Box<Expr>, Box<Expr>),
+    Tuple(Vec<Expr>),
     Not(Box<Expr>),
     And(Box<Expr>, Box<Expr>),
     Xor(Box<Expr>, Box<Expr>),
@@ -246,7 +246,7 @@ pub enum BasisExprKind {
     Name(Ident),
     Bit(bool),
     Unit,
-    Tuple(Box<BasisExpr>, Box<BasisExpr>),
+    Tuple(Vec<BasisExpr>),
     Call { callee: Ident, args: Vec<BasisExpr> },
     Not(Box<BasisExpr>),
     Xor(Box<BasisExpr>, Box<BasisExpr>),

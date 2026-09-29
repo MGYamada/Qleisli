@@ -14,12 +14,242 @@ diagnostic improvements and local validation from publication; the historical
 
 This ledger retains dated Japanese entries as original historical evidence.
 Their counts, “pending” statements, and checks not rerun describe those steps.
-The current [release record](releases/v0.1.9.md) and
+The current [development record](releases/v0.2.0.md) and
 [documentation map](documentation-map.md) identify subsequent results and
 English authority. Historical text does not override current specifications.
 The original 2026-09-26 introduction recorded paper Q1–Q3, unfinished general
 Rust/IR correspondence, SPEC-0–2 records, and SPEC-3/4 progress in the
 [roadmap](../ROADMAP.md); those proof limitations remain.
+
+## v0.2.0 release validation (2026-09-29)
+
+The user requested the foundation release after moving remaining production
+hierarchy, sized source/shared QPE and execution/H1–H5 to 0.2.1. The
+[final local validation](releases/v0.2.0.md#release-validation-and-publication)
+passed 400 production Rust tests, 43 research tests, 9,412 independent corpus
+probes, both pinned Lean builds/axiom audits, executable replay and native
+oracles. Migration and release-facing status now describe the implemented
+finite profile and experimental components. All external hierarchy schemas
+remain disabled and Rust retains production acceptance authority. Exact
+commit CI, distribution, tagging and hosted publication are recorded separately
+in the release evidence; this checkpoint does not claim the deferred gates.
+
+## Future Lean-assisted mathematical debugger (2026-09-29)
+
+The user adopted a [future 0.x.0 debugger direction](lean-debugger-plan.md):
+connect mathematical obligations, actual IR and source provenance, distinguish
+counterexamples from missing evidence or undecided checks, and independently
+replay certified mismatch witnesses. The roadmap, QLT/kernel migration links,
+A020-22 backlog entry and generated status record this as unimplemented work
+with no selected version and no added current release or theorem gate.
+
+Documentation validation: `check_docs.py --write-status` and `check_docs.py`
+passed; `test_check_docs.py` passed 21 tests; `git diff --check` passed.
+No Rust/Lean source, manifest, schema enablement or fixed trust partition was
+changed. No runtime tests, proof build/audit, debugger trial or release
+validation were performed for this planning-only addition.
+
+## Release scope split (2026-09-29)
+
+The user moved remaining hierarchy semantics, independent production binding,
+sized source/shared QPE and execution/H1–H5 to the [0.2.1 target](v0.2.1-plan.md).
+The [0.2.0 plan](v0.2.0-plan.md) retains implemented finite interfaces,
+tuple/resource-policy changes and experimental Lean components; migration and
+final release/distribution validation remain pending. Deferred acceptance gates
+are unchanged and not marked complete. Public compatibility remains required
+for 0.2.1, with 0.3.0 selected if a breaking change is necessary.
+
+This is a scheduling/documentation decision, not new implementation or proof.
+Earlier dated validation and goal statements below retain their historical
+scope. No Rust/Lean rerun, tag, push or publication is implied by this revision.
+
+## Component registry and dependency scheduling (2026-09-29)
+
+The [shipped registry](lean-qpe-instrument-packet.md#shipped-type-and-source-manifest)
+binds fixed component IDs to complete rebuilt theorem types, concrete domains,
+the actual checker entry and a content revision. Both compiled audits and
+fresh kernel replay accompany the export; all external entries stay disabled.
+The [full-profile graph pass](hierarchical-ir-spec.md#dependency-scheduling-implementation)
+now proves acyclicity of its actual accepted graph and checks schedule,
+reachability, depth and shared work. Its native suite passed **152 cases**, with
+**71 accepted** and **81 rejected**, against an independent DFS and explicit
+capacity cases. Typed extraction, equations/encodings, external schema binding,
+sized source and complete H1–H5 remain open. These checks do not complete 0.2.0.
+
+## QPE instrument and conditional completeness (2026-09-29)
+
+The [QPE component](lean-qpe-instrument-packet.md) connects actual accepted
+preparation, controlled powers and inverse-QFT coefficients to the entire
+residual target/reference map. The subsequent completeness proof requires the
+actual provider to be a whole-space isometry and includes all outcomes. It
+also establishes arbitrary-reference total trace preservation. The
+[executed checkpoint](releases/v0.2.0.md#qpe-instrument-and-completeness-checkpoint-2026-09-29)
+records audits and independent counterexamples. External IR/provider/encoding/
+registry binding is still required before enabling the production schema.
+
+## Typed shared QFT graph theorem (2026-09-29)
+
+The [typed graph continuation](lean-qft-graph-packet.md) proves actual cached
+checking against literal shared graph execution, complete interface/effect
+binding and positive normalized Fourier/reference coefficients. Physical data
+permutation is distinct from owner metadata renaming. The [executed checkpoint](releases/v0.2.0.md#typed-qft-graph-checkpoint-2026-09-29)
+records native semantic mutations and graph limits. This internal projection
+does not enable the complete external hierarchy or schema registry.
+
+## QFT circuit-to-Fourier theorem (2026-09-29)
+
+The [QFT packet](lean-qft-proof-packet.md) proves actual symbolic path
+compilation, bounded literal-circuit matching, positive normalized Fourier
+coefficients and arbitrary reference amplitudes. Runtime compilation/checking
+uses no dense matrices or path enumeration. Typed hierarchy, external registry
+binding and QPE instruments remain open. The [executed checkpoint](releases/v0.2.0.md#qft-circuit-proof-checkpoint-2026-09-29)
+records native counterexamples, both proof audits and the exact validation scope.
+
+## Interference and executable-definition bridge (2026-09-29)
+
+The [bounded continuation](lean-interference-slice.md) proves H involution,
+local phase/word normalization and reference-parametric preservation for actual
+Mathlib-free definitions. The separate Mathlib package imports them and proves
+the complex model premises and local probability identities. Native checks
+cover 422 words and 1,260 joint-amplitude comparisons. This is a semantic
+foundation; no new external artifact or QFT/QPE schema is accepted. See the
+[executed checkpoint](releases/v0.2.0.md#interference-and-complex-bridge-checkpoint-2026-09-29).
+
+## Combined phase/layout component for CD-3 (2026-09-29)
+
+The [combined component](lean-phase-layout-slice.md) binds sparse dyadic phase
+conditions to typed shared calls and layout composition. Its actual checker
+has normalization, remapping, composition and request-soundness theorems over
+cyclic basis actions, plus extension by an unchanged reference coordinate.
+It reuses the entry layout certificate. The complex linear extension and full
+quantum instrument theorem remain open.
+
+The [development record](../tests/fixtures/lean_phase_layout/README.md) and
+[release checkpoint](releases/v0.2.0.md#typed-phase-and-layout-checkpoint-2026-09-29)
+retain native phase/axis/order counterexamples, shared scaling and an independently
+computed finite source interference experiment. Phase terms are not lost from
+expanded application accounting when their normalized coefficients cancel.
+This adds no general gate/encoding schema, source syntax or production authority.
+
+## Shared typed-call component for CD-3 (2026-09-29)
+
+The [layout DAG continuation](lean-layout-dag-slice.md) binds explicit whole-owner
+call adapters, actual earlier dependencies and ordered composition to an
+independent entry request. `LayoutDag.compose_sound`, `evalNode_sound`,
+`evaluateFrom_sound` and `check_sound` are proved about executable definitions;
+acceptance implies direct coordinate-graph semantics and the entry's checked
+resource/permutation certificate. No result claim is an operational premise.
+
+The [development record](../tests/fixtures/lean_layout_dag/README.md) and
+[release checkpoint](releases/v0.2.0.md#shared-typed-layout-checkpoint-2026-09-29)
+retain 147 fresh-process decisions, a 64-node shared graph representing 2^63
+layout applications, 16-axis checks, the compiled-recursion audit repair and
+isolated replay. Source compatibility remains checked on both installed Rust
+toolchains. Full gate/encoding integration, general transforms, QPE schemas,
+source translation and native correspondence remain separate obligations.
+
+## Typed layout component for CD-3 (2026-09-29)
+
+The [typed layout checker](lean-layout-slice.md) now validates complete quantum
+owner/axis permutations against independent requests, including exact n-ary
+type trees and zero-wire owners. `Layout.check_conditions`, `check_interfaces`,
+`check_owner_permutation`, `check_axis_permutation`, `check_ports` and
+`check_reference_round_trip` are proved about the actual executable definitions.
+Both finite reindexing round trips preserve arbitrary coefficient functions
+and an unchanged reference coordinate; no product-state premise is imposed.
+
+The [source and observations](../tests/fixtures/lean_layout/README.md) and
+[release checkpoint](releases/v0.2.0.md#typed-layout-checkpoint-2026-09-29) record
+230 fresh-process decisions, 16-axis checking without dense matrices, pinned
+build/reduction/audit and isolated replay. This is a separate component, not yet
+integrated with general typed DAG calls or `.qli` generation. The prefix/source
+correspondence, general gates and encodings, QPE schema proofs, native adequacy
+and full H1–H5/S05-C1–C5 remain open.
+
+## Type contract and arity-preserving tuples (2026-09-29)
+
+The user replaced the earlier tuple left-folding rule with distinct n-ary and
+nested types in unreleased 0.2.0. The normative [type contract](type-system.md)
+consolidates formation, equality, ownership, effects, conversions and limits.
+The [Rust default](design-philosophy.md#follow-rust-for-type-and-ownership-discipline)
+governs unresolved type/ownership design; intentional quantum differences and
+unsupported Rust syntax are explicit.
+
+The parser, public AST, source checker, values, patterns and finite evidence
+retain immediate arity. External QIRF requests also distinguish full type trees
+with the same width and numerical meaning. Existing lifts implement explicit
+conversions; no new raw quantum instruction is needed. Historical 0.1.8 records
+remain evidence of the superseded rule, not current acceptance.
+
+[Preserved first source and observations](../tests/fixtures/tuple_shapes/README.md)
+pair an originally accepted shape mismatch with a checked explicit conversion
+and a type-correct wrong permutation rejected by exact evidence. The
+[release checkpoint](releases/v0.2.0.md#tuple-and-type-contract-checkpoint-2026-09-29)
+records 400 Rust tests on each of 1.98.1 and MSRV 1.85.0, external-process
+binding/arity cases, 9,412 corpus probes and documentation checks. General
+source/Rust adequacy and n-ary correspondence with the binary Lean resource
+model remain unproved; neither the full QPE gate nor v0.5.0 soundness is closed.
+
+## Initial shared-DAG checker and proofs (2026-09-29)
+
+The [CD-3 phase DAG slice](lean-hierarchy-slice.md) adds actual executable
+composition, closed powers, shared interpretation and request checking in the
+Mathlib-free kernel. `compose_action`, `powerSummary_action`, `Dag.evaluate_map`
+and `Hierarchy.check_sound` are proved about those definitions over cyclic phase
+actions. Exact shape tags and complete single-owner ports, including zero-width
+owners, are checked; no general resource or complex-interpretation theorem is
+claimed. The independent request and all intermediate producer claims must
+match meanings recomputed from actual instructions.
+
+The [preserved development record](../tests/fixtures/lean_hierarchy/README.md)
+retains the initial source, failure, proof attempt and measured after-state.
+The [release checkpoint](releases/v0.2.0.md#shared-phase-dag-checkpoint-2026-09-29)
+records the executed tests and audits. Full QPE hierarchy, finite-leaf integration,
+schema proofs, sized source, H1–H5 and the v0.5.0 theorem remain open. No production
+acceptance authority or public `.qli` semantics changes in this packet.
+
+## v0.5.0 theorem milestone and community direction (2026-09-29)
+
+The user adopted the **Qleisli Soundness Theorem** as v0.5.0's central milestone
+and broader open-source development from v0.5 onward. The
+[S05-C1–C5 acceptance conditions](release-milestones.md#qleisli-soundness-theorem-v050)
+make the supported production IR profile, actual Lean checker, mathematical
+interpretation, runtime assumptions, artifact binding and independent review
+explicit. The [roadmap](v0x-roadmap.md#community-development-from-v05) prepares
+community processes during 0.4.x and retains K4 translation validation after
+K3. This is a documentation/design adoption, not a new theorem, implementation
+change or product version selection. Current phase-word evidence and all
+historical validation counts retain their original scope.
+Documentation checks, their 21-test helper suite and `git diff --check` passed
+for this policy update. Rust/Lean code was unchanged and their execution suites
+were not rerun for this documentation-only change.
+
+## Executable Lean kernel seed (2026-09-29)
+
+The [staged migration](lean-kernel-migration.md) adds a separate Mathlib-free
+Lean 4.30.0 package and proves `normalize_correct` and `verify_sound` about its
+actual one-bit phase-word definitions. The cyclic-action theorem quantifies
+over all input bits and initial phases and binds the producer claim to the
+independently requested action. A native transport adapter, Rust differential
+experiment and compiled-declaration audit accompany it. The
+[development record](releases/v0.2.0.md) reports executed checks separately.
+
+This is the first implemented K0 slice. Complex interpretation, full raw IR,
+QFT/QPE schema proofs and source/native correspondence remain open; production
+Rust verification is unchanged. The historical claims below describe their
+own prior checkpoints, not this newly added theorem.
+
+## v0.2.0 development and v0.1.9 follow-up review (2026-09-28)
+
+The user selected the [shared-QPE plan](v0.2.0-plan.md), including `CBits<m>`.
+The finite machine-interface implementation and its validations are recorded
+in [0.2.0 development](releases/v0.2.0.md); hierarchy, schema proofs, sized source
+and common QPE/QFT remain pending. The later
+[review repairs](reviews/v0.1.9-followup.md) add shared exact work, logarithmic
+power evaluation, finite closed-transform comparisons and bare-CR rejection,
+with retained before/after sources. The newly restricting limits and lexical
+rule belong to 0.2.0, not the historical 0.1.9 acceptance policy. No new semantic
+primitive, Lean theorem or general Rust adequacy proof is claimed.
 
 ## v0.1.9 release procedure (2026-09-28)
 

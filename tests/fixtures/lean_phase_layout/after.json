@@ -1,0 +1,113 @@
+{
+  "recorded_utc": "2026-09-28T17:50:19.357648+00:00",
+  "kind": "informed implementation; not a controlled model benchmark",
+  "source_sha256": {
+    "tests/fixtures/lean_phase_layout/cancelled.qhr": "3702923b45b09e5e7e59bc4f1fc1fabd8eff73330eb835668305b6790c883c40",
+    "tests/fixtures/lean_phase_layout/sixteen_axes.qhd": "39fb0240c8ccce36255b2564921297bbfcc6257af7c68fbe90700073c5a2df09",
+    "tests/fixtures/lean_phase_layout/axis_actual.qhr": "97605f949e02e3040f0897186054d3b49504a5318b85026c1aa02c3eb51ae103",
+    "tests/fixtures/lean_phase_layout/wrong_axis.qhd": "87b250dda5226ccd467b520d7f6f7eb481ff2438db8da874a785ebf02fb71371",
+    "tests/fixtures/lean_phase_layout/expected.qhr": "0cdcb987a96947a26d406231ed76e82feb102e0866e3c87927af659bf8cee524",
+    "tests/fixtures/lean_phase_layout/axis_expected.qhr": "34c2058633f4a0ba8a5097855a79b9a044e8a677fbb7eb786bdd876bae26dbee",
+    "tests/fixtures/lean_phase_layout/sixteen_axes.qhr": "6d422ab42ceba29e52b72d6ff5dcd74fbf2135ad49e49c0da7ae9bc0ee5f0754",
+    "tests/fixtures/lean_phase_layout/shared.qhd": "804448a3c7499ae4aede5306094c03b429015caa0c05d75599ef878646e07858",
+    "tests/fixtures/lean_phase_layout/depth64.qhd": "d37f5f88fe00c154a1272411c3277b1300aa33e3bcd0b1e713377c6e3fe97c61",
+    "tests/fixtures/lean_phase_layout/first_source/main.qli": "9d479e02485412d84005f08fedf4b54a3f87566e727f8ccf117c37c30ec9128b",
+    "tests/fixtures/lean_phase_layout/interference_client/main.qli": "486bfe023acc602951912730b048f397e7949bf5d7bc7638a9624d304fa22ec9",
+    "lean-kernel/QleisliKernel/PhasePolynomial.lean": "62bd1477722a0ae223cc3ebef8938473e8be1b069c19fed48a5f26cdf451b2d2",
+    "lean-kernel/QleisliKernel/PhaseLayout.lean": "95c8b93f2872ef8668dc8b1169f6225b5e556491007f2fa7c0680dfb92386309",
+    "lean-kernel/Protocol.lean": "8a86e747ce1c24e6bc8d2f3c7a03ee70edfd8007cc7b3f6f129abc701f89cbb4",
+    "lean-kernel/Main.lean": "390454c47bc8cced6257d3079e1f83e7862dbaa22b14f293a3f9319d6f35728b",
+    "lean-kernel/Tests.lean": "4fcc0f57b25162ecbb9d2b3a3466bb900fb5ce3fff9f48713730c545c7469d93",
+    "scripts/test_lean_phase_layout.py": "1295cbea45562a360899bdd9a63853a58b05cb371acf3cc783321266860c1820"
+  },
+  "executable_sha256": "ccb8a38ec5f054d823b05aa1bb6a175ab1ba9c1252627bb6a3e7d4c3c57f2dff",
+  "observations": [
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "tests/fixtures/lean_phase_layout/shared.qhd",
+        "tests/fixtures/lean_phase_layout/expected.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":5,\"references\":5,\"work_units\":12289,\"phase_work_units\":3048,\"depth\":4,\"expanded_layouts\":7,\"expanded_phase_terms\":3,\"terms\":3,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "tests/fixtures/lean_phase_layout/depth64.qhd",
+        "tests/fixtures/lean_phase_layout/cancelled.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":64,\"references\":126,\"work_units\":22664,\"phase_work_units\":9096,\"depth\":64,\"expanded_layouts\":9223372036854775808,\"expanded_phase_terms\":9223372036854775808,\"terms\":0,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "tests/fixtures/lean_phase_layout/sixteen_axes.qhd",
+        "tests/fixtures/lean_phase_layout/sixteen_axes.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":2,\"references\":1,\"work_units\":30502,\"phase_work_units\":3456,\"depth\":2,\"expanded_layouts\":3,\"expanded_phase_terms\":3,\"terms\":3,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "tests/fixtures/lean_phase_layout/wrong_axis.qhd",
+        "tests/fixtures/lean_phase_layout/axis_expected.qhr"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-phase256-dag-v1\",\"accepted\":false,\"code\":\"contract\",\"stage\":\"verification\",\"node\":1,\"stats\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--phase-layout",
+        "tests/fixtures/lean_phase_layout/wrong_axis.qhd",
+        "tests/fixtures/lean_phase_layout/axis_actual.qhr"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.kernel-result\",\"version\":1,\"profile\":\"typed-phase256-dag-v1\",\"accepted\":true,\"code\":\"accepted\",\"stage\":\"verification\",\"node\":null,\"stats\":{\"nodes\":2,\"references\":1,\"work_units\":6630,\"phase_work_units\":864,\"depth\":2,\"expanded_layouts\":3,\"expanded_phase_terms\":1,\"terms\":1,\"dense_dimension\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_phase_layout/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/v020-msrv/debug/qleisli",
+        "check",
+        "tests/fixtures/lean_phase_layout/first_source",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ],
+  "native_suite_with_snapshot_checks": {
+    "command": [
+      "python3",
+      "scripts/test_lean_phase_layout.py"
+    ],
+    "exit_code": 0,
+    "stdout": "Native typed-phase/layout decisions: 382\n",
+    "stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 3.306s\n\nOK\n",
+    "recorded_utc": "2026-09-28T17:56:05.871812+00:00"
+  }
+}

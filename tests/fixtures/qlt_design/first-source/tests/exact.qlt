@@ -1,0 +1,22 @@
+// Desired TQL-1 source, not executable in Qleisli 0.2.0.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qli::std::transforms::qft2;
+use qli::std::transforms::qft3;
+use qli::std::arithmetic::increment2;
+use qlt::math::dft;
+use qlt::math::permutation;
+
+#[test]
+fn qft2_is_dft() {
+    assert_eq!(denote(qft2), dft(4));
+}
+
+#[test]
+fn qft3_is_dft() {
+    assert_eq!(denote(qft3), dft(8));
+}
+
+#[test]
+fn increment_wraps_modulo_four() {
+    assert_eq!(denote(increment2), permutation([1, 2, 3, 0]));
+}

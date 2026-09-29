@@ -30,13 +30,14 @@ public signature and independently checked function equality are additional
 premises; the original T1–T3 record and Lean model do not verify the new
 implementation path.
 
-**0.1.8 authoring supplement:** [tuple syntax](syntax-v0.md#authoring-forms-added-in-product-018)
-left-folds to the existing binary constructors before these judgments. Basis
+**0.2.0 tuple supplement:** [tuple syntax](tuple-shapes.md) now retains
+immediate arity, superseding the 0.1.8 left fold. The consolidated
+[type specification](type-system.md) governs equality. Basis
 parameter patterns use the same BP-NAME/BP-WILD/BP-PAIR binding relation as
 basis `do`, applied to each declared argument independently. This changes no
-core type, source argument arity or exact product-tree equality. Parameter
+source argument arity. Product-tree equality includes arity. Parameter
 names must be distinct across all patterns; ordinary parameters remain names.
-These implementation additions do not extend the scope of the older proofs.
+These additions do not extend the scope of the older Lean projection proofs.
 
 ## 1. Types and judgment interfaces
 
@@ -58,7 +59,10 @@ T ordinary    U ordinary
 (T,U) ordinary
 ```
 
-These are all formation rules. In particular `Bit` is not an ordinary type,
+For `3 <= k <= 64`, add `B-TUPLE` and `T-TUPLE`: if every `Ai` is a basis
+type, `(A1,...,Ak)` is a basis type; if every `Ti` is ordinary, `(T1,...,Tk)`
+is ordinary. Pair is the two-field case, never an association of a larger
+tuple. These are all current formation rules. In particular `Bit` is not an ordinary type,
 and `CBit` and `Q<A>` are not basis types. There is no implicit flattening,
 reassociation, unit removal, or conversion from `Bit` to `CBit`. Ordinary
 functions can have different input/output type trees; a static target has
@@ -69,6 +73,37 @@ Define `classical(Unit)=classical(CBit)=true`,
 `classical(Q<A>)=false`. Set `linear(T)=not classical(T)` for ordinary types.
 Thus a whole mixed pair moves, and `Q<Unit>` remains linear. Use
 `bits(Unit)=0`, `bits(Bit)=1`, `bits((A,B))=bits(A)+bits(B)`.
+For a larger tuple, classicality is the conjunction over all fields and width
+is their sum. Exact equality requires equal arity and equal fields recursively.
+
+### N-ary typing and binding supplement
+
+The following indexed rules retain a tuple constructor rather than folding it:
+
+```text
+Xi |- ei : Ai for each i in 1..k
+-------------------------------- B-TUPLE-VALUE
+Xi |- (e1,...,ek) : (A1,...,Ak)
+
+Xi_i = bindBasis(pi, Ai), with pairwise disjoint bound names
+-------------------------------------------------------- BP-TUPLE
+bindBasis((p1,...,pk), (A1,...,Ak)) = union_i Xi_i
+```
+
+`BP-TUPLE` requires equal immediate arity and applies recursively to each
+field. Its valuation extracts each label using cumulative preceding widths.
+For ordinary tuples, thread the ownership environment, histories and effects
+through `e1` to `ek`, retaining all earlier results in the pending frame. Return
+the k-field value, with type `(T1,...,Tk)` and joined effects. Ordinary tuple
+binding likewise checks arity and sequentially binds corresponding fields;
+names remain distinct and wildcards require classical fields. These rules
+include the existing binary cases as k=2. No reassociation rule is present.
+
+The local paper arguments generalize by induction over the ordered field list:
+typed labels concatenate at cumulative widths, each field's ownership remains
+in the frame for later fields, and grouping the final holders changes no
+occurrence counts. This is not a mechanized proof about the Rust implementation
+or an extension of the existing binary Lean projection model.
 
 Let `D` record declaration identities `(module,name)`, kind, parameter list,
 result type, body, imports, and visibility. Let `E,F,R,H` be the visible
@@ -292,6 +327,9 @@ pattern**, initially empty. Its complete rules are:
 - `P-WILD`: accept `_` exactly when `classical(T)`. No binding is installed.
 - `P-PAIR`: require `v=(v1,v2)` and bind both subpatterns left to right,
   sharing the pattern-name set. The product tree is not flattened.
+- `P-TUPLE`: require the same immediate arity in `(p1,...,pk)` and
+  `(v1,...,vk)`, then bind corresponding fields left to right with the same
+  pattern-name set. Nested patterns are checked recursively.
 
 A block has a list of statements and a mandatory final expression. Its
 statement-sequence rules are:
@@ -378,7 +416,8 @@ for increasing bit count. A total injection between these finite bases cannot
 decrease bit count.
 
 The lift binder is a typed basis pattern `p`, using the same surface
-`Name`, `_`, and binary-pair pattern shapes as `let` but a **different** judgment:
+`Name`, `_`, and tuple pattern shapes as `let` but a **different** judgment.
+`BP-TUPLE` above handles arbitrary allowed arity; its binary case is:
 
 ```text
 A basis                           A basis

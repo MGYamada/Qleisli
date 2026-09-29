@@ -1,0 +1,56 @@
+[
+  {
+    "cwd": "lean-kernel",
+    "command": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "QleisliKernel"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/test_check_lean_kernel.py",
+      "--compiled"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "................\n----------------------------------------------------------------------\nRan 16 tests in 15.333s\n\nOK\n"
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/test_check_docs.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.081s\n\nOK\n"
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/test_check_distribution.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.715s\n\nOK\n"
+  },
+  {
+    "cwd": ".",
+    "command": [
+      "python3",
+      "scripts/test_lean_qft.py"
+    ],
+    "exit": 0,
+    "stdout": "{\"complex_matrix_entries\": 84, \"direct_path_comparisons\": 3180, \"joint_reference_cases\": 9, \"kernel_dense_dimension\": 0, \"largest_dense_oracle_dimension\": 8, \"max_error\": 1.4613774201543397e-13, \"modular_fourier_comparisons\": 1600, \"native_cases\": 109}\n",
+    "stderr": ""
+  }
+]

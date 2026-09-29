@@ -1,0 +1,61 @@
+{
+  "recorded_utc": "2026-09-28T16:30:42.542090+00:00",
+  "kind": "informed development observation; not a model benchmark",
+  "project_version": "0.2.0",
+  "compiler_sha256": "4e62725f0de92632bd6678871225ed7746be3b7d468167901ca7a4ed70c37167",
+  "sources": {
+    "explicit_layout.qli": "3db4c53ae8ce0fab2b24fa3a9a122916281b3fac0b1cad8666311211f04d1c8f",
+    "first_source/main.qli": "ca5d6436c41b1993bfcbc1d571f56a584510d5884b202584e222ee222953bd78",
+    "wrong_permutation.qli": "0aecaaa2f70a1f8b2bdfd55bef3d968c1cb7c035c981b619e691c6bc603a26d7"
+  },
+  "observations": [
+    {
+      "source": "first_source/main.qli",
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "tests/fixtures/tuple_shapes/first_source",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"basis result does not match its declared type: expected `((Bit,Bit),Bit)`, found `(Bit,Bit,Bit)`\",\"primary\":{\"path\":\"main.qli\",\"start\":153,\"end\":160,\"line\":3,\"column\":5},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "source": "explicit_layout.qli",
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-tuple-record-_g87c8m1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "source": "explicit_layout.qli",
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-tuple-record-_g87c8m1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "source": "wrong_permutation.qli",
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-tuple-record-_g87c8m1",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_ir\",\"severity\":\"error\",\"message\":\"function semantic contract: exact equation U E_in = E_out u does not hold; input column 1, output row 1 (zero-based): actual 0, expected 1\",\"primary\":{\"path\":\"main.qli\",\"start\":922,\"end\":959,\"line\":25,\"column\":13},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

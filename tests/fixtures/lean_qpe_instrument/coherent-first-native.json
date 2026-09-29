@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 1,
+      "stdout": "\u2714 [28/31] Built QleisliKernel.ControlledPowers:c.o (307ms)\n\u2716 [29/31] Building Main (679ms)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/Main.lean -o /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/.lake/build/lib/lean/Main.olean -i /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/.lake/build/lib/lean/Main.ilean -c /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/.lake/build/ir/Main.c --setup /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qmryn0mi/.lake/build/ir/Main.setup.json --json\nerror: Main.lean:11:37: Ambiguous term\n  State\nPossible interpretations:\n  _root_.State : Type\n  \n  QleisliKernel.State : Type\nerror: Main.lean:11:46: Ambiguous term\n  State\nPossible interpretations:\n  _root_.State : Type\n  \n  QleisliKernel.State : Type\nerror: Main.lean:13:16: Invalid field notation: Type of\n  vector\nis not known; cannot resolve field `mapIdx`\n\nHint: Consider replacing the field projection with a call to one of the following:\n  \u2022 `Array.mapIdx`\n  \u2022 `List.mapIdx`\n  \u2022 `Vector.mapIdx`\nerror: Main.lean:22:46: Ambiguous term\n  State\nPossible interpretations:\n  _root_.State : Type\n  \n  QleisliKernel.State : Type\nerror: Main.lean:28:55: Ambiguous term\n  State\nPossible interpretations:\n  _root_.State : Type\n  \n  QleisliKernel.State : Type\nwarning: Main.lean:32:4: declaration uses `sorry`\nwarning: Main.lean:40:4: declaration uses `sorry`\nerror: Lean exited with code 1\nSome required targets logged failures:\n- Main\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n"
+    }
+  ]
+}

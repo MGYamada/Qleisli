@@ -1,0 +1,15 @@
+name = "qleisli_kernel"
+version = "0.2.0"
+defaultTargets = ["QleisliKernel", "qleisli-kernel"]
+
+[leanOptions]
+autoImplicit = false
+warningAsError = true
+
+[[lean_lib]]
+name = "QleisliKernel"
+roots = ["QleisliKernel", "Protocol"]
+
+[[lean_exe]]
+name = "qleisli-kernel"
+root = "Main"

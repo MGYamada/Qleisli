@@ -1,0 +1,20 @@
+{
+  "status": "first-sources-retained",
+  "source_sha256": {
+    "plus_x/main.qli": "2fb6c8f7d36c1d65336921c898d76b9fb521059cd4d0e9e695b4670a0af0fbfa",
+    "minus_x/main.qli": "85a5b72d6eca556eaff5990431f06fa6579f98a47df97ee6d82d40c84817e890"
+  },
+  "first_outcomes": {
+    "plus_x": [
+      false,
+      false,
+      false
+    ],
+    "minus_x": [
+      true,
+      false,
+      false
+    ]
+  },
+  "first_attempts_passed": true
+}

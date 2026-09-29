@@ -1,0 +1,66 @@
+qleisli.layout-dag 1 typed-layout-dag-v1
+entry 2
+definitions 3
+leaf
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 1 0 2
+axes 2 1 0
+inverse_owners 3 1 0 2
+inverse_axes 2 1 0
+call 0
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 1 0 2
+axes 2 1 0
+inverse_owners 3 1 0 2
+inverse_axes 2 1 0
+then 1 1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+inverse_owners 3 0 1 2
+inverse_axes 2 0 1

@@ -1,0 +1,21 @@
+✖ [37/39] Building QleisliKernel.Hierarchical.Power (10s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/Power.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Power.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Power.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Power.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Power.setup.json --json
+error: QleisliKernel/Hierarchical/Power.lean:56:13: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: QleisliKernel/Hierarchical/Power.lean:56:38: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: QleisliKernel/Hierarchical/Power.lean:62:13: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: QleisliKernel/Hierarchical/Power.lean:62:35: Invalid `⟨...⟩` notation: The expected type of this term could not be determined
+error: QleisliKernel/Hierarchical/Power.lean:179:38: (deterministic) timeout at `whnf`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: QleisliKernel/Hierarchical/Power.lean:177:30: (deterministic) timeout at `«tactic execution»`, maximum number of heartbeats (200000) has been reached
+
+Note: Use `set_option maxHeartbeats <num>` to set the limit.
+
+Hint: Additional diagnostic information may be available using the `set_option diagnostics true` command.
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Hierarchical.Power
+error: build failed
+

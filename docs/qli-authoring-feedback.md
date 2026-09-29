@@ -18,6 +18,35 @@ body's four-branch distribution, with explicit imports, on macOS. The new
 programs were authored and revised in this session: there is no controlled
 comparison of models or estimate of general LLM success rate.
 
+## Code-driven continuation, 0.2.0
+
+The [QLT first-source packet](../tests/fixtures/qlt_design/README.md), recorded
+on 2026-09-29, captures a future mathematical test language. It retains QFT/DFT,
+modular-increment, cost and doctest drafts, plus deliberate sign/reversal/phase
+faults and an unsupported-domain case. The current `.qli` subjects check with
+zero repairs, while `qleisli test` is still rejected as an unsupported command.
+No QLT assertion was executed. The proposed improvement is removal of repeated
+host harness and diagnostic plumbing, while keeping independent mathematical
+references. Before/after authoring and evaluation costs remain unmeasured;
+[A020-21](v0.2.0-backlog.md#a020-21--mathematical-quantum-tests-require-separate-host-harnesses)
+tracks the future experiment without adding a 0.2.0 release requirement.
+
+The [shared-QPE first source](../tests/fixtures/authoring_sessions/shared-qpe-v020/session.json) was saved before its actual 0.1.9 parse failure. Current design adopts `CBits<m>`; the old `CWord<m>` snapshot remains unchanged. No sized QPE source is executable yet, so no reduction in QPE body duplication, manual axis wiring or source repairs is claimed. Generation/checking growth for (1,3), (2,4), (8,8) remains unmeasured until the hierarchical implementation exists.
+
+The [Grover session](../tests/fixtures/authoring_sessions/grover-trial-v020/session.json) records one real repair: adding the original missing local kernel. After that, the exact same source moves from an unsupported sample command to four fresh `11` samples at seed 0, with 22 execution steps each. Sampling required **zero subsequent source revisions**; body duplication and layout conversions are unchanged. The author no longer writes a random trajectory executor or retry-state/error bookkeeping. The [sampled Shor15 host](../examples/sampled_shor15.rs) is the second use: seed 0 accepts on attempt 3 after two invalid candidates, with validated period 4 and factors 3 and 5. These are informed development observations.
+
+[Independent tests](../tests/sampling.rs) use Bell/reset/feedback correlation and the analytic H T H probability, including RNG/numerical/limit failures. [Portable evidence tests](../tests/interchange.rs) distinguish matching contracts from type-correct wrong phase and equal-width wrong type trees. Current finite tests do not establish shared QPE, general Shor or a controlled model-performance result.
+
+The later [0.1.9 review reproductions](../tests/fixtures/review_v019/README.md)
+preserve first source bytes and real before/after diagnostics. A bare CR now
+points directly to a lexical error; one explicit CRLF repair exposes the X
+line and changes the measurement from zero to one as intended. The nested
+static argument needs no source repair after repeated squaring (observed debug
+check: 12.333 to 0.892 seconds); repeated calls share a checked exact budget.
+No algorithm body duplication or manual layout conversion was removed by these
+repairs. Structurally valid wrong phase/control/axis circuits fail the independent
+meaning comparison. These are development observations, not a model benchmark.
+
 ## Review follow-up, 0.1.9
 
 The supplied 0.1.8 review exposed a parser panic on truncated static arguments
@@ -187,3 +216,260 @@ subsequent continuation implements issues 1–3. The user retained 0.1.8 after
 the temporary 0.2.0 selection; the public Rust `Param` migration stays explicit.
 Continue evaluating LLM authoring through actual source and independent
 semantic regressions, preserving failures that reveal missing abstractions.
+
+## Lean kernel migration development record (2026-09-29)
+
+The [first executable-kernel record](../tests/fixtures/lean_kernel/README.md)
+preserves a current `.qli` target, desired phase-word artifacts, the actual
+missing-executable baseline, a failed proof attempt and native after-results.
+The public obligation removed in this slice is trusting a proposed phase
+summary: an actual proved Lean function now compares the gate word with a
+separate required action. It removes no `.qli` duplication or manual wiring;
+those counts stay zero rather than being presented as an authoring improvement.
+The T-equivalent positive case is paired with a well-typed global-phase
+counterexample and a separate exact Rust circuit experiment. General dyadic
+source, shared QPE and translation validation remain future work. This is
+informed development, not a controlled model evaluation or fourth corpus source.
+
+## Tuple equality correction and type contract (2026-09-29)
+
+The user superseded the historical left-fold choice above: flat and nested
+products must be different types. The [consolidated type contract](type-system.md)
+and [tuple migration](tuple-shapes.md) now specify exact arity, nesting, ownership
+and explicit conversions. The [preserved counterexample](../tests/fixtures/tuple_shapes/baseline.json)
+shows the old checker accepting a flat basis result as a nested result; the
+updated checker rejects it with both shapes in the diagnostic. The
+[explicit adapter](../tests/fixtures/tuple_shapes/explicit_layout.qli) is checked
+by exact function evidence and an entangled-reference execution test.
+
+This correction removes an implicit source-to-type association, not manual
+conversion work: explicit adapters are now visible where shapes differ. Three
+external-corpus kernels spell their former binary shapes explicitly, retaining
+their licenses, numeric contracts and all old authoring snapshots in the
+[appended migration attempt](../corpus/authoring/session.json). QPE fixture
+consumers now match their producer's actual three-field result. This is an
+informed migration with real diagnostics, not a controlled model evaluation.
+
+## Shared hierarchy continuation (2026-09-29)
+
+The [CD-3 record](../tests/fixtures/lean_hierarchy/README.md) preserves the first
+nested-repeat source, its actual finite-evidence rejection, the desired shared
+artifact, an initial failed Lean proof and later native results. The experimental
+DAG checker now validates the three-definition artifact without expanding its
+16,777,216 implied primitive operations. A second reuse experiment checks mixed
+call/sequence/repetition DAGs against independent small execution, including
+well-typed wrong-phase counterexamples and false intermediate claims.
+
+The removed burden is expanding repeated bodies for this IR verification.
+The original `.qli` still rejects: zero duplicate source definitions or manual
+layout conversions have been removed. Complete repair counts were not measured;
+the first failed proof is retained, without claiming a full editing transcript.
+Costs distinguish input/evidence size, stored definitions, charged checker work
+and implied execution multiplicities. A020-02/03/07, shared order-finding and
+amplitude-estimation clients remain open. This is an informed implementation
+experiment, not a measured model-performance result.
+
+
+## Typed layout continuation (2026-09-29)
+
+The [first multi-owner source](../tests/fixtures/lean_layout/first_source/main.qli)
+already checks in Rust but could not be represented by the earlier one-owner
+Lean phase DAG. The [typed layout component](lean-layout-slice.md) now checks
+full owner/axis maps independently, retaining exact n-ary shape and Q<Unit>
+ownership. Its two-sided permutations and reference-coefficient round trip
+are proved about executable definitions. This removes manual assurance about
+a submitted layout, not source adapters: `.qli` generation/integration and
+broader authoring improvements remain open. Actual first diagnostics, corrected
+proof/test attempts and after-state metrics are in the
+[development record](../tests/fixtures/lean_layout/README.md). The experiment
+adds no new external source and is not a controlled model benchmark.
+
+## Shared typed calls (2026-09-29)
+
+The [first source](../tests/fixtures/lean_layout_dag/first_source/main.qli) reuses
+one ordinary swap definition twice while retaining `Q<Unit>`. It required zero
+source repairs; the old experimental Lean command rejected the desired DAG.
+The [continuation](lean-layout-dag-slice.md) now validates explicit call adapters,
+dependency identity and ordered composition with a direct-graph soundness proof.
+A second independent exercise composes noncommuting permutations, arbitrary
+reference amplitudes and differently shaped registers. Type-valid wrong
+dependencies/adapters/orders fail an unchanged consumer request.
+
+The removed checker obligation is expanding shared layout bodies or relying on
+manual assurances about call wiring. No source definition duplication or manual
+source adapter has been removed yet: there is no source-to-layout-DAG producer.
+The retained [development record](../tests/fixtures/lean_layout_dag/README.md)
+includes the actual initial Lean, compiled-audit and oracle diagnostics. These
+are informed engineering observations, not measured model performance.
+
+## Phase and typed-call composition (2026-09-29)
+
+The [first source](../tests/fixtures/lean_phase_layout/first_source/main.qli)
+applies the same phase-and-swap body twice, retains a quantum Unit owner and
+adds a controlled T. It required no source repair. The previous experimental
+Lean command could not check a joint phase/layout graph. The
+[combined component](lean-phase-layout-slice.md) now binds actual phase axes,
+call adapters and sparse composition to an independently requested cyclic action.
+The removed checker obligation is manual phase/axis accounting or expanded
+shared bodies; source duplication and manual source conversions are unchanged.
+
+A separate [finite interference client](../tests/fixtures/lean_phase_layout/interference_client/main.qli)
+prepares and measures both bits. Its four probabilities agree with an independent
+Fourier sum on both installed Rust toolchains. It uses supported T phases;
+π/8 and finer angles belong to the new Lean experiment. This does not establish
+source-to-new-IR translation. [Actual diagnostics and observations](../tests/fixtures/lean_phase_layout/README.md)
+include polynomial proof repairs, kernel reduction choices and work-accounting
+review. No full repair count, generation-time improvement or LLM benchmark is claimed.
+
+## Interference foundation (2026-09-29)
+
+The [retained source experiment](../tests/fixtures/lean_interference/README.md)
+uses H;T;H;H;T;H and a second client acting on half of a Bell pair. Both original
+sources execute unchanged; their independent expectations are two equiprobable
+outputs and four equiprobable joint outputs. The executable Lean normalizer now
+has an amplitude-preservation proof, and the separate proof package instantiates
+the actual definitions over complex numbers. This removes a proof obligation
+from future compiler-generated H-pair rewrites. It has not yet reduced source
+body duplication, wiring or source repairs: each remains unchanged. Initial
+proof diagnostics and native/complex comparisons are retained; no controlled
+model-performance or QPE-completion claim follows.
+
+## QFT circuit proof (2026-09-29)
+
+The [retained round trip and wrong-reversal source](../tests/fixtures/lean_qft/README.md)
+exercise ordinary qft3. Both initial programs pass typing without repair; the
+second fails the intended round trip and agrees with an independent F† R F
+calculation. Source duplication and wiring costs remain unchanged. The new
+symbolic-path/Fourier theorem removes the obligation to prove that literal QFT
+pattern separately at each width 1–8. Native symbolic visits and small complex
+oracles are recorded separately from proof elaboration and source execution.
+This is informed development, not a measured model-performance study.
+
+## QPE instrument and completeness (2026-09-29)
+
+The [retained off-grid Bell client and dephasing fault](../tests/fixtures/lean_qpe_instrument/README.md)
+have identical phase-label marginals but different residual X correlations.
+Both first sources check without repair. Native plan checking visits precision
+stages without executing their powers; actual controlled execution retains up
+to 255 provider applications. The component theorem proves full branch maps,
+then completeness and reference-trace preservation under a provider-isometry
+premise. U=2I is a counterexample to omitting that premise. This removes a
+repeated schema-proof obligation; source body duplication and manual wiring
+are unchanged until the external hierarchy and sized source are integrated.
+
+## Registry and dependency integration (2026-09-29)
+
+The same retained shared-QPE source now motivates the shipped component
+type/source manifest and full-profile dependency scheduler. They remove no
+source-level duplication or manual wiring yet. They make stale theorem types,
+changed provider/schema metadata and unsafe dependency schedules reviewable and
+continuously checked. The [152 native graph cases](../tests/fixtures/hierarchical_ir/README.md)
+include sharing and capacity boundaries; no runtime expanded-use speedup or
+controlled model-performance claim follows. Typed graph extraction and exact
+logical/physical endpoint binding are now implemented by the artifact preparer.
+Its 54 structural and 22 reference cases preserve flat/nested distinctions and
+zero-width owners, and charge repeated endpoint comparisons against the same
+budget as graph scheduling. The retained phase mutation intentionally prepares
+without receiving semantic evidence. Full node/provider/encoding/derivation
+checks and sized-source implementation remain the next obligations; authoring
+duplication and manual conversion counts have not decreased in this step.
+The subsequent 39 side-map cases check whole port/axis permutations and exact
+types, including zero owners. The mathematical round-trip result supports
+future call/rewire checking, while source authors still need the explicit
+conversion and sized-source implementation.
+
+## Actual definition-node typing (2026-09-29)
+
+The [node checker and fixture](../tests/fixtures/hierarchical_ir/README.md)
+now apply those maps to both sides of real calls. Cases with two separately
+valid maps but inconsistent owner/wire names fail, as do tensor frames that
+capture identities across their input/output lifetimes. All 69 native cases
+pass their independent expected decisions. A locally closed zero-repeat parent
+is paired with a malformed body: the whole-definition pass rejects it.
+Preparation, map checks and node typing share one budget. The resulting theorem
+is structural; the well-typed wrong phase and opaque leaf remain semantic
+obligations. Source duplication and manual conversion burdens are unchanged.
+
+
+## Meaning/encoding typing and controlled target types (2026-09-29)
+
+The next [164 native cases](../tests/fixtures/hierarchical_ir/README.md) cover
+all meaning and encoding constructors, including the 64 selected QPE width/
+precision headers. Zero-repeat meaning bodies and scratch ownership are
+checked under the same budget as the actual definitions. The pre-change
+controlled Bit-to-Bits(1) counterexample was retained before tightening the
+inactive-sector target-type rule; consistent renaming remains accepted.
+The actual checker has whole-table coverage theorems and passed compiled
+runtime audits. These structural results do not discharge finite semantics or
+mathematical equations. Desired shared source remains unimplemented, so this
+step does not claim a reduction in author duplication or manual conversions.
+
+
+## Explicit register and tuple conversion boundary (2026-09-29)
+
+The desired [take/put helper](imaginary-v1/qpe.md#visible-algorithm-and-ownership-routing)
+now has an internal [structural conversion checker](hierarchical-ir-spec.md#explicit-structural-conversions).
+It covers all eight widths and every selected axis, requires the Bits(0)
+remainder at width one, and preserves immediate tuple arity and nested fields.
+Both definition and meaning typing call this actual predicate. Its basis
+bijection and arbitrary-reference coefficient round trips are proved without
+matrices; 123 native cases include 7,216 independently checked basis routes.
+The first source, actual harness failure and repair record are retained.
+Source lowering is still pending, so no source-length, duplicate-definition or
+manual-conversion reduction is claimed yet. This closes an internal prerequisite
+of A020-01 rather than the authoring obligation itself.
+
+
+## Controlled phase and reference correlation (2026-09-29)
+
+Two retained ordinary [QLI source probes](../tests/fixtures/lean_qpe_instrument/README.md#coherent-controlled-power-completion)
+prepare a control/reference Bell pair and a |+> target, then apply controlled
+X or −X. Uncompute and interference distinguish 000 from 100. Both first source
+attempts passed without repair; the second program is a type-correct semantic
+counterexample. The new native exact oracle independently distinguishes X^2
+from (iX)^2 even when their basis probabilities agree. The actual coherent
+runtime action now has a complex operator/reference proof and the registry
+binds that stronger statement. These are informed development observations,
+not an algorithm correctness proof, controlled model study or sized-source
+completion. Source duplication and manual routing burdens remain unchanged.
+
+The [subsequent binding packet](../tests/fixtures/hierarchical_ir/power-binding-packet.md)
+extracts control/repetition and logical power directly from the actual hierarchy.
+Seven well-typed count/polarity changes pass structural typing but fail the new
+projection. Independent definition/meaning table permutations check that their
+indices cannot be confused. The component's native tests retain pending provider
+proofs, including deliberately false meaning data, so an author cannot replace
+semantic checking with a schema name. The actual operator/reference bridge is
+proved with explicit provider premises. This removes an internal duplicated
+circuit witness obligation; sized source and author-visible code reduction
+remain unfinished. First sources, real diagnostics and repairs are retained.
+
+The [provider derivation continuation](../tests/fixtures/hierarchical_ir/derivation-packet.md)
+now rejects the false and opaque provider obligations instead of treating their
+projection as sufficient. Whole-space rules bind exact actual children and
+premise equations; an empty internal cache prevents supplied success flags from
+replacing those checks. The 235-case native suite includes an independent
+recursive rule oracle and exact phase/permutation interpretation. The Lean
+closure proof concerns this actual pass; complete complex interpretation,
+finite leaves, source lowering and author-visible burden reduction remain open.
+
+The [next interpretation packet](../tests/fixtures/hierarchical_ir/operator-packet.md)
+proves those supported derivation equations under interpretation of actual
+definition/meaning bodies and instantiates them with complex operators and
+arbitrary reference maps. The direct-power bridge now obtains its provider
+equation from the accepted derivation. Six mathematical example theorems retain
+phase, orientation, tensor ordering and control counterexamples. This removes
+an internal assumed provider-equation obligation; construction of the complete
+semantic environment, provider unitarity, finite leaves and source support
+remain open. No reduction in source duplication or manual author wiring is
+claimed at this proof-only checkpoint.
+
+The [constructed-evaluation continuation](../tests/fixtures/hierarchical_ir/evaluation-packet.md)
+then removes the assumed interpretation environment for supported accepted
+derivations. Actual implementation and meaning tables have equal successful,
+unique mathematical denotations, even when their index orders differ. Zero
+repeat does not hide a missing or cyclic body; unsupported finite claims remain
+failures. Nine kernel-checked example theorems exercise these cases through
+π/8. This discharges a proof obligation rather than changing source ergonomics;
+whole-space unitarity, finite reconstruction, remaining schema/rule integration
+and the common QLI source still need implementation and acceptance evidence.

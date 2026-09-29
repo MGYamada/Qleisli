@@ -7,6 +7,7 @@
 pub mod contract;
 pub mod frontend;
 pub mod host;
+pub mod interchange;
 pub mod interop;
 pub mod ir;
 pub mod sim;

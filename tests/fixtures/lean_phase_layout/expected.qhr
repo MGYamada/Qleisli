@@ -1,0 +1,15 @@
+qleisli.phase-layout-request 1 typed-phase256-dag-v1
+inputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+outputs 3
+port 1 Bit 1 0
+port 1 Bit 1 1
+port 1 Unit 0
+owners 3 0 1 2
+axes 2 0 1
+expect_phases 3
+term 32 1 0
+term 32 1 1
+term 32 2 0 1
