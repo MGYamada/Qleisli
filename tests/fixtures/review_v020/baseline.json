@@ -1,0 +1,130 @@
+{
+  "recorded_at": "2026-09-29T04:15:31.604830+00:00",
+  "results": [
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/long_trajectory"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/long_trajectory\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/long_trajectory"
+      ],
+      "exit": 0,
+      "stdout": "0: 9.364286341696e-1\n1: 6.357136583154e-2\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "sample",
+        "tests/fixtures/review_v020/long_trajectory",
+        "--shots=3",
+        "--seed=0"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/long_trajectory: numerical: numerical sampling failure: trajectory norm differs from one\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/shared_identities"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/shared_identities\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/shared_identities"
+      ],
+      "exit": 0,
+      "stdout": "0: 1.000000000000e0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "emit-ir",
+        "tests/fixtures/review_v020/shared_identities",
+        "--output=/private/tmp/qleisli-review-v020-baseline.json"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "limit at : aggregate identity bytes exceed 1 MiB\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/expansion_limit"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "/Users/masa/git/Qleisli/tests/fixtures/review_v020/expansion_limit/main.qli:6:41: limit: source expansion exceeds the initial work limit\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_300"
+      ],
+      "exit": 0,
+      "stdout": "checked source and verified IR: tests/fixtures/review_v020/repeat_300\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_1000"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "/Users/masa/git/Qleisli/tests/fixtures/review_v020/repeat_1000/main.qli:6:39: limit: exact arithmetic capacity exhausted\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/roundoff_outcome"
+      ],
+      "exit": 0,
+      "stdout": "0: 1.000000000000e0\n1: 6.162975822039e-33\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "target/debug/qleisli"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli <check|run> <source-root>\n       qleisli doc <source-file>\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "--format=json"
+      ],
+      "exit": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage: qleisli <check|run> <source-root> [--format=json]\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "probe": "source_errors only; no Lean code evaluated",
+      "source": "#eval (IO.FS.writeFile \"x\" \"x\")",
+      "errors": []
+    }
+  ]
+}

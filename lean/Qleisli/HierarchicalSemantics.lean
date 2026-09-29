@@ -68,7 +68,7 @@ def logical {S : Type} (algebra : Algebra S) (environment : Nat → S)
   let (tag,children) ← logicalCode meaning
   return algebra.apply meaning.interface tag (children.map environment)
 
-/-- temporary (TP-001): intermediate assumed-environment interface. Retire
+/-- temporary (TP-001), importance P2: intermediate assumed-environment interface. Retire
 with its wrappers after callers use constructed denotations and public-API
 migration has been reviewed. Every table node has its actual body interpretation. No proof table or
 producer-supplied equality occurs in these equations. Unsupported bodies cannot
@@ -233,7 +233,7 @@ theorem bodies_sound {S : Type} (algebra : Algebra S) (artifact : Artifact) (pro
     simp [physical,logical,physicalCode,logicalCode,hd,hm,interface,same,matched.1]
   next => contradiction
 
-/-- temporary (TP-001): assumed-environment wrapper; use `HierarchicalEvaluation.ordinary_evaluate`.
+/-- temporary (TP-001), importance P2: assumed-environment wrapper; use `HierarchicalEvaluation.ordinary_evaluate`.
 Retire after dependent wrappers migrate and public-API compatibility review. -/
 theorem ordinary_sound {S : Type} (algebra : Algebra S) (artifact : Artifact) (proof : Proof)
     (operations meanings : Nat → S) (environment : Interprets algebra artifact operations meanings)
@@ -304,7 +304,7 @@ theorem meaning_stage_data (artifact : Artifact) (index : Nat) (stage : Power.Lo
       subst stage
       exact ⟨root,child,powered,rfl,hb,hc,hp⟩
 
-/-- temporary (TP-001): assumed-environment wrapper; use `HierarchicalEvaluation.power_evaluate`.
+/-- temporary (TP-001), importance P2: assumed-environment wrapper; use `HierarchicalEvaluation.power_evaluate`.
 Retire after dependent wrappers migrate and public-API compatibility review. -/
 theorem power_sound {S : Type} (algebra : Algebra S) (artifact : Artifact)
     (index exponent provider remaining : Nat) (pending : Power.Pending)
@@ -351,7 +351,7 @@ theorem power_sound {S : Type} (algebra : Algebra S) (artifact : Artifact)
       rw [environment.definitions _ _ hd,environment.meanings _ _ hm] at roots
       exact Option.some.inj roots
 
-/-- temporary (TP-001): assumed-environment wrapper; use `HierarchicalEvaluation.derives_evaluate`.
+/-- temporary (TP-001), importance P2: assumed-environment wrapper; use `HierarchicalEvaluation.derives_evaluate`.
 Retire after dependent wrappers migrate and public-API compatibility review. -/
 theorem derives_sound {S : Type} (algebra : Algebra S) (artifact : Artifact)
     (operations meanings : Nat → S) (environment : Interprets algebra artifact operations meanings)
@@ -375,7 +375,7 @@ theorem derives_sound {S : Type} (algebra : Algebra S) (artifact : Artifact)
     simpa only [same] using power_sound algebra artifact atIndex exponent provider remaining pending
       checked operations meanings environment equation
 
-/-- temporary (TP-001): replaced for supported rules by
+/-- temporary (TP-001), importance P2: replaced for supported rules by
 `HierarchicalEvaluation.checkAll_denotes`; retire after wrapper callers migrate
 and public-API compatibility review. Acceptance starts with the actual empty derivation cache. The only semantic
 premise is interpretation of actual bodies, never the proposed proof equations. -/
@@ -421,7 +421,7 @@ theorem checkAll_entry (artifact : Artifact) (order : Array Nat) (checked : Deri
   | ok projection =>
     exact finish_entry artifact projection order checked.typed.nodes.prepared (by simpa only [projected] using hp)
 
-/-- temporary (TP-001): assumed-environment entry wrapper, superseded by
+/-- temporary (TP-001), importance P2: assumed-environment entry wrapper, superseded by
 `HierarchicalEvaluation.checkAll_denotes`; retire with the other TP-001 wrappers
 after public-API compatibility review. Binds the equation to the artifact's actual entry implementation. The
 independently requested external contract is an additional, separate boundary. -/

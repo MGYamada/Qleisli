@@ -1,9 +1,9 @@
-use qleisli_core::interop::{
+use qleisli::interop::{
     InteropErrorKind, MAX_OPENQASM_BYTES, export_openqasm3, export_qir_base, import_openqasm3,
 };
-use qleisli_core::ir::*;
-use qleisli_core::sim::{SimulationLimits, run_closed};
-use qleisli_core::{VerifiedProgram, verify};
+use qleisli::ir::*;
+use qleisli::sim::{SimulationLimits, run_closed};
+use qleisli::{VerifiedProgram, verify};
 
 const BELL: &str = include_str!("fixtures/interop/bell.qasm");
 const GATES: &str = include_str!("fixtures/interop/gates.qasm");
@@ -278,8 +278,8 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
         vec![ClassicalId(0)],
     );
     assert_eq!(export_qir_base(&observed).unwrap_err().operation, Some(2));
-    let p = qleisli_core::frontend::compile::compile_project(std::path::Path::new("examples/bell"))
-        .unwrap();
+    let p =
+        qleisli::frontend::compile::compile_project(std::path::Path::new("examples/bell")).unwrap();
     assert!(
         export_openqasm3(&p).is_err(),
         "arbitrary lifts are not silently rewritten"
@@ -288,7 +288,7 @@ fn valid_ir_can_still_be_unrepresentable_in_the_target() {
 
 #[test]
 fn qli_frontend_and_qir_profile_contract() {
-    let p = qleisli_core::frontend::compile::compile_project(std::path::Path::new(
+    let p = qleisli::frontend::compile::compile_project(std::path::Path::new(
         "tests/fixtures/interop/terminal",
     ))
     .unwrap();

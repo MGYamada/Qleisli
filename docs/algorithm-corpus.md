@@ -44,11 +44,19 @@ reference instrument, and [session records](../tests/fixtures/authoring_sessions
 preserve the first source and subsequent observations.
 
 The separately [licensed input corpus](../corpus/README.md), adopted on
-2026-09-28, provides 24 executed finite translations from a closed set of three
+2026-09-28 and expanded during 0.2.1 development, provides 30 finite translations from a closed set of three
 sources. It is distinct from the C01–C20 research inventory above. Its fixed
 QAOA/VQE kernels do not change the unimplemented general-algorithm claims in
 that inventory. Contracts, original sources, actual authoring attempts and
 independent semantic oracles accompany the translations.
+
+The six 0.2.1 additions cover majority-oracle Deutsch–Jozsa, destructive Bell
+measurement, constant addition, register equality, a two-wire LCU projector
+embedding and a fixed quantum-kernel overlap. The LCU example returns its
+selector and tests a chosen full unitary completion; it does not implement
+general C13 time evolution or deterministic nonunitary projection. Bell
+measurement is checked on its full conditional reference state. These remain
+finite case-local definitions, not new standard APIs.
 
 ## Next extraction tasks
 

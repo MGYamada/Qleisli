@@ -1,0 +1,458 @@
+✖ [3385/3385] Building Qleisli.HierarchicalRoot (19s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean/Qleisli/HierarchicalRoot.lean -o /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalRoot.olean -i /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalRoot.ilean -c /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalRoot.c --setup /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalRoot.setup.json --json
+error: Qleisli/HierarchicalRoot.lean:11:36: unexpected token '('; expected command
+error: Qleisli/HierarchicalRoot.lean:37:15: Application type mismatch: The argument
+  ha
+has type
+  artifact.meanings[pair.actual]? = some a
+but is expected to have type
+  some a = some a
+in the application
+  And.intro ha
+error: Qleisli/HierarchicalRoot.lean:37:18: Application type mismatch: The argument
+  hr
+has type
+  request.meanings[pair.requested]? = some r
+but is expected to have type
+  some r = some r
+in the application
+  And.intro hr
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.199 →
+    Leaves ?m.199 → Artifact → ℕ → ℕ → Option ?m.199
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.199 → (ℕ → ?m.199) → Meaning → Option ?m.199
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.200 →
+    Leaves ?m.200 → Artifact → ℕ → ℕ → Option ?m.200
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.200 → (ℕ → ?m.200) → Meaning → Option ?m.200
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.201 →
+    Leaves ?m.201 → Artifact → ℕ → ℕ → Option ?m.201
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.201 → (ℕ → ?m.201) → Meaning → Option ?m.201
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.202 →
+    Leaves ?m.202 → Artifact → ℕ → ℕ → Option ?m.202
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.202 → (ℕ → ?m.202) → Meaning → Option ?m.202
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.203 →
+    Leaves ?m.203 → Artifact → ℕ → ℕ → Option ?m.203
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.203 → (ℕ → ?m.203) → Meaning → Option ?m.203
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.204 →
+    Leaves ?m.204 → Artifact → ℕ → ℕ → Option ?m.204
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.204 → (ℕ → ?m.204) → Meaning → Option ?m.204
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.205 →
+    Leaves ?m.205 → Artifact → ℕ → ℕ → Option ?m.205
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.205 → (ℕ → ?m.205) → Meaning → Option ?m.205
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.206 →
+    Leaves ?m.206 → Artifact → ℕ → ℕ → Option ?m.206
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.206 → (ℕ → ?m.206) → Meaning → Option ?m.206
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.207 →
+    Leaves ?m.207 → Artifact → ℕ → ℕ → Option ?m.207
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.207 → (ℕ → ?m.207) → Meaning → Option ?m.207
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.208 →
+    Leaves ?m.208 → Artifact → ℕ → ℕ → Option ?m.208
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.208 → (ℕ → ?m.208) → Meaning → Option ?m.208
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.209 →
+    Leaves ?m.209 → Artifact → ℕ → ℕ → Option ?m.209
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.209 → (ℕ → ?m.209) → Meaning → Option ?m.209
+error: Qleisli/HierarchicalRoot.lean:55:10: Ambiguous term
+  logical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.logical : HierarchicalSemantics.Algebra ?m.210 →
+    Leaves ?m.210 → Artifact → ℕ → ℕ → Option ?m.210
+  
+  HierarchicalSemantics.logical : HierarchicalSemantics.Algebra ?m.210 → (ℕ → ?m.210) → Meaning → Option ?m.210
+error: Qleisli/HierarchicalRoot.lean:53:109: unsolved goals
+case identity
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+body : m.body = MeaningBody.identity
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    some (algebra.apply m.interface Tag.identity [])
+
+case finite
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+description✝ : ByteArray
+body : m.body = MeaningBody.finite description✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    leaves.meaning m.interface description✝
+
+case sequence
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+children✝ : Array ℕ
+body : m.body = MeaningBody.sequence children✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      List.mapM
+        (HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel ∘
+          Ref.index ∘ fun x => { table := Table.meaning, index := x })
+        children✝.toList,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case tensor
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+left✝ right✝ : ℕ
+body : m.body = MeaningBody.tensor left✝ right✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel left✝, fun __do_lift =>
+        match
+          match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel right✝, fun __do_lift =>
+            some [__do_lift] with
+          | none, x => none
+          | some a, f => f a,
+          fun __do_lift_1 => some (__do_lift :: __do_lift_1) with
+        | none, x => none
+        | some a, f => f a with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case inverse
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ : ℕ
+body : m.body = MeaningBody.inverse child✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel child✝, fun __do_lift =>
+        some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case control
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ : ℕ
+polarity✝ : Bool
+body : m.body = MeaningBody.control child✝ polarity✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel child✝, fun __do_lift =>
+        some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case power
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ count✝ : ℕ
+body : m.body = MeaningBody.power child✝ count✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel child✝, fun __do_lift =>
+        some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case rewire
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+permutation✝ : PortMap
+body : m.body = MeaningBody.rewire permutation✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    some (algebra.apply m.interface (Tag.rewire permutation✝.axes.toList) [])
+
+case structural
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+operation✝ : StructuralOp
+body : m.body = MeaningBody.structural operation✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    some (algebra.apply m.interface (Tag.rewire (Structural.axisMap m.interface)) [])
+
+case phase
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+j✝ k✝ : ℕ
+body : m.body = MeaningBody.phase j✝ k✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match m.interface.inputs.quantum[0]?, fun target => some (Tag.phase target.owner j✝ k✝, []) with
+      | none, x => none
+      | some a, f => f a,
+      fun __discr => some (algebra.apply m.interface __discr.1 []) with
+    | none, x => none
+    | some a, f => f a
+
+case qft
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+width✝ : ℕ
+body : m.body = MeaningBody.qft width✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index = none
+
+case qpeInstrument
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+target✝ precision✝ providerMeaning✝ : ℕ
+body : m.body = MeaningBody.qpeInstrument target✝ precision✝ providerMeaning✝
+⊢ HierarchicalFiniteEvaluation.logical algebra leaves artifact (fuel + 1) index =
+    match
+      match HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel providerMeaning✝, fun __do_lift =>
+        some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+error: Qleisli/HierarchicalRoot.lean:55:18: This simp argument is unused:
+  evaluate
+
+Hint: Omit it from the simp argument list.
+  simp [logical,e̵v̵a̵l̵u̵a̵t̵e̵,̵ ̲meaning, ̲found, ̲body, ̲render, ̲logicalCode, ̲Root.children, ̲MeaningBody.references,
+        bind, ̲Option.bind, ̲pure, ̲bind_none]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Qleisli/HierarchicalRoot.lean:55:27: This simp argument is unused:
+  meaning
+
+Hint: Omit it from the simp argument list.
+  simp [̵l̵o̵g̵i̵c̵a̵l̵,̵e̵v̵a̵l̵u̵a̵t̵e̵,̵m̵e̵a̵n̵i̵n̵g̵,̵f̵o̵u̵n̵d̵,̵b̵o̵d̵y̵,̵r̵e̵n̵d̵e̵r̵,̵l̵o̵g̵i̵c̵a̵l̵C̵o̵d̵e̵,̵R̵o̵o̵t̵.̵c̵h̵i̵l̵d̵r̵e̵n̵,̵M̵e̵a̵n̵i̵n̵g̵B̵o̵d̵y̵.̵r̵e̵f̵e̵r̵e̵n̵c̵e̵s̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵b̵i̵n̵d̵,̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵,̵p̵u̵r̵e̵,̵b̵i̵n̵d̵_̵n̵o̵n̵e̵]̵[̲l̲o̲g̲i̲c̲a̲l̲,̲ ̲e̲v̲a̲l̲u̲a̲t̲e̲,̲ ̲f̲o̲u̲n̲d̲,̲ ̲b̲o̲d̲y̲,̲ ̲r̲e̲n̲d̲e̲r̲,̲ ̲l̲o̲g̲i̲c̲a̲l̲C̲o̲d̲e̲,̲ ̲R̲o̲o̲t̲.̲c̲h̲i̲l̲d̲r̲e̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲M̲e̲a̲n̲i̲n̲g̲B̲o̲d̲y̲.̲r̲e̲f̲e̲r̲e̲n̲c̲e̲s̲,̲ ̲b̲i̲n̲d̲,̲ ̲O̲p̲t̲i̲o̲n̲.̲b̲i̲n̲d̲,̲ ̲p̲u̲r̲e̲,̲ ̲b̲i̲n̲d̲_̲n̲o̲n̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Qleisli/HierarchicalRoot.lean:55:35: This simp argument is unused:
+  found
+
+Hint: Omit it from the simp argument list.
+  simp [̵l̵o̵g̵i̵c̵a̵l̵,̵e̵v̵a̵l̵u̵a̵t̵e̵,̵m̵e̵a̵n̵i̵n̵g̵,̵f̵o̵u̵n̵d̵,̵b̵o̵d̵y̵,̵r̵e̵n̵d̵e̵r̵,̵l̵o̵g̵i̵c̵a̵l̵C̵o̵d̵e̵,̵R̵o̵o̵t̵.̵c̵h̵i̵l̵d̵r̵e̵n̵,̵M̵e̵a̵n̵i̵n̵g̵B̵o̵d̵y̵.̵r̵e̵f̵e̵r̵e̵n̵c̵e̵s̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵b̵i̵n̵d̵,̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵,̵p̵u̵r̵e̵,̵b̵i̵n̵d̵_̵n̵o̵n̵e̵]̵[̲l̲o̲g̲i̲c̲a̲l̲,̲ ̲e̲v̲a̲l̲u̲a̲t̲e̲,̲ ̲m̲e̲a̲n̲i̲n̲g̲,̲ ̲b̲o̲d̲y̲,̲ ̲r̲e̲n̲d̲e̲r̲,̲ ̲l̲o̲g̲i̲c̲a̲l̲C̲o̲d̲e̲,̲ ̲R̲o̲o̲t̲.̲c̲h̲i̲l̲d̲r̲e̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲M̲e̲a̲n̲i̲n̲g̲B̲o̲d̲y̲.̲r̲e̲f̲e̲r̲e̲n̲c̲e̲s̲,̲ ̲b̲i̲n̲d̲,̲ ̲O̲p̲t̲i̲o̲n̲.̲b̲i̲n̲d̲,̲ ̲p̲u̲r̲e̲,̲ ̲b̲i̲n̲d̲_̲n̲o̲n̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Qleisli/HierarchicalRoot.lean:56:28: This simp argument is unused:
+  bind_none
+
+Hint: Omit it from the simp argument list.
+  simp [̵l̵o̵g̵i̵c̵a̵l̵,̵e̵v̵a̵l̵u̵a̵t̵e̵,̵m̵e̵a̵n̵i̵n̵g̵,̵f̵o̵u̵n̵d̵,̵b̵o̵d̵y̵,̵r̵e̵n̵d̵e̵r̵,̵l̵o̵g̵i̵c̵a̵l̵C̵o̵d̵e̵,̵R̵o̵o̵t̵.̵c̵h̵i̵l̵d̵r̵e̵n̵,̵M̵e̵a̵n̵i̵n̵g̵B̵o̵d̵y̵.̵r̵e̵f̵e̵r̵e̵n̵c̵e̵s̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵b̵i̵n̵d̵,̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵,̵p̵u̵r̵e̵,̵b̵i̵n̵d̵_̵n̵o̵n̵e̵]̵[̲l̲o̲g̲i̲c̲a̲l̲,̲ ̲e̲v̲a̲l̲u̲a̲t̲e̲,̲ ̲m̲e̲a̲n̲i̲n̲g̲,̲ ̲f̲o̲u̲n̲d̲,̲ ̲b̲o̲d̲y̲,̲ ̲r̲e̲n̲d̲e̲r̲,̲ ̲l̲o̲g̲i̲c̲a̲l̲C̲o̲d̲e̲,̲ ̲R̲o̲o̲t̲.̲c̲h̲i̲l̲d̲r̲e̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲M̲e̲a̲n̲i̲n̲g̲B̲o̲d̲y̲.̲r̲e̲f̲e̲r̲e̲n̲c̲e̲s̲,̲ ̲b̲i̲n̲d̲,̲ ̲O̲p̲t̲i̲o̲n̲.̲b̲i̲n̲d̲,̲ ̲p̲u̲r̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Qleisli/HierarchicalRoot.lean:82:43: Invalid field notation: Type of
+  pair
+is not known; cannot resolve field `actual`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `Power.Pending.actual`
+  • `Root.FinitePair.actual`
+  • `Root.Pair.actual`
+error: Qleisli/HierarchicalRoot.lean:83:56: Invalid field notation: Type of
+  pair
+is not known; cannot resolve field `requested`
+
+Hint: Consider replacing the field projection with a call to one of the following:
+  • `requested`
+  • `Root.Pair.requested`
+error: Qleisli/HierarchicalRoot.lean:90:18: failed to synthesize instance of type class
+  Membership (?m.37 algebra leaves artifact request pairs order remaining pending accepted finite (fuel + 1) i)
+    (List Root.Pair)
+
+Hint: Type class instance resolution failures can be inspected with the `set_option trace.Meta.synthInstance true` command.
+error: Qleisli/HierarchicalRoot.lean:91:56: Application type mismatch: The argument
+  found
+has type
+  getElem?.{0, u_2, u_1} pairs i = some pair
+but is expected to have type
+  getElem?.{?u.7715, 0, ?u.7715} ?m.80 ?m.78 = some ?m.79
+in the application
+  Array.getElem?_eq_some_iff.mp found
+error: Qleisli/HierarchicalRoot.lean:94:58: Application type mismatch: The argument
+  checked.right.right.right.right ?m.96 ?m.97
+has type
+  Root.aligned artifact request pairs ?m.96 = true
+but is expected to have type
+  Root.aligned artifact request pairs ?m.87 = true
+in the application
+  Root.aligned_conditions artifact request pairs ?m.87 (checked.right.right.right.right ?m.96 ?m.97)
+error: Qleisli/HierarchicalRoot.lean:133:60: Unknown constant `Option.pure`
+error: Qleisli/HierarchicalRoot.lean:135:25: Application type mismatch: The argument
+  hd
+has type
+  artifact.definitions[artifact.entry.implementation]? = some d
+but is expected to have type
+  some d = some d
+in the application
+  And.intro hd
+error: Qleisli/HierarchicalRoot.lean:135:28: Application type mismatch: The argument
+  hp
+has type
+  artifact.proofs[artifact.entry.proof]? = some p
+but is expected to have type
+  some p = some p
+in the application
+  And.intro hp
+error: Qleisli/HierarchicalRoot.lean:135:31: Application type mismatch: The argument
+  hf
+has type
+  pairs[0]? = some first
+but is expected to have type
+  some first = some first
+in the application
+  And.intro hf
+error: Qleisli/HierarchicalRoot.lean:154:16: Unknown identifier `pairs_denote`
+error: Qleisli/HierarchicalRoot.lean:146:84: unsolved goals
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+order : Array ℕ
+request : Root.Request
+pairs : Array Root.Pair
+pairOrder : Array ℕ
+checked : Root.Checked
+accepted : Root.checkAll artifact order request pairs pairOrder = Except.ok checked
+implementations : ∀ leaf ∈ checked.artifact.state.requests.toList, Equation leaves leaf
+meanings :
+  ∀ i ∈ checked.binding.requests,
+    ∀ (obligation : Root.FinitePair),
+      Root.finitePair artifact request pairs i = some obligation → FiniteEquation leaves obligation
+ha : Conditional.checkAll artifact order = Except.ok checked.artifact
+hb : Root.inspect artifact request pairs pairOrder (2000000 - checked.artifact.state.visits) = Except.ok checked.binding
+proof : Proof
+fuel : ℕ
+value : S
+hp : artifact.proofs[artifact.entry.proof]? = some proof
+left✝⁵ : proof.implementation = artifact.entry.implementation
+physical : HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel artifact.entry.implementation = some value
+logical : HierarchicalFiniteEvaluation.logical algebra leaves artifact fuel proof.meaning = some value
+bound :
+  checked.binding.visits ≤ 2000000 - checked.artifact.state.visits ∧
+    checked.binding.requests = Root.obligations artifact request pairs ∧
+      Root.root artifact request pairs = true ∧
+        Root.covered request pairs = true ∧ ∀ pair ∈ pairs.toList, Root.aligned artifact request pairs pair = true
+d : Definition
+first : Root.Pair
+left✝⁴ : artifact.definitions[artifact.entry.implementation]? = some d
+hf : pairs[0]? = some first
+left✝³ : d.effect = request.effect
+left✝² : d.interface = request.interface
+right : first.requested = request.entry
+found : artifact.proofs[artifact.entry.proof]? = some proof
+left✝¹ : proof.implementation = artifact.entry.implementation
+left✝ : proof.kind = request.kind
+left : first.actual = proof.meaning
+⊢ ∃ fuel value,
+    HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel artifact.entry.implementation = some value ∧
+      HierarchicalFiniteEvaluation.logical algebra leaves (requested request) fuel request.entry = some value
+error: Lean exited with code 1
+Some required targets logged failures:
+- Qleisli.HierarchicalRoot
+error: build failed

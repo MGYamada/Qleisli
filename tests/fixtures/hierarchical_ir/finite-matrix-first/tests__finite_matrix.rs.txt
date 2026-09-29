@@ -1,0 +1,139 @@
+use qleisli_core::contract::DEFAULT_EXACT_WORK;
+use qleisli_core::contract::exact::{Budget, Exact, Matrix};
+use qleisli_core::interchange::finite_matrix::{decode, encode};
+
+const ZERO: &str = r#"{"numerator":"0","denominator_bits":0}"#;
+const ONE: &str = r#"{"numerator":"1","denominator_bits":0}"#;
+
+fn scalar(a: &str, b: &str, c: &str, d: &str) -> String {
+    format!("[{a},{b},{c},{d}]")
+}
+
+fn envelope(rows: u64, cols: u64, entries: &str) -> String {
+    format!(
+        r#"{{"format":"qleisli.finite-matrix","version":1,"domain":"zeta8-dyadic-v1","rows":{rows},"cols":{cols},"entries":[{entries}]}}"#
+    )
+}
+
+fn read(text: &str) -> Matrix {
+    decode(text.as_bytes(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap()
+}
+
+#[test]
+fn handwritten_description_fixes_coefficient_and_row_major_order() {
+    let complex = scalar(
+        r#"{"numerator":"3","denominator_bits":1}"#,
+        r#"{"numerator":"-5","denominator_bits":2}"#,
+        r#"{"numerator":"7","denominator_bits":3}"#,
+        r#"{"numerator":"-9","denominator_bits":4}"#,
+    );
+    let one = scalar(ONE, ZERO, ZERO, ZERO);
+    let zero = scalar(ZERO, ZERO, ZERO, ZERO);
+    let actual = read(&envelope(2, 2, &format!("{one},{complex},{zero},{one}")));
+    // Independent common-denominator arithmetic, not the encoder under test.
+    let z = Exact::new([24, -20, 14, -9], 4).unwrap();
+    assert_eq!(actual, Matrix::new(2, 2, vec![Exact::one(), z, Exact::zero(), Exact::one()]).unwrap());
+    let rectangular = read(&envelope(1, 2, &format!("{one},{complex}")));
+    assert_eq!(rectangular.rows(), 1);
+    assert_eq!(rectangular.cols(), 2);
+    assert_eq!(rectangular.entries(), &[Exact::one(), z]);
+}
+
+#[test]
+fn independent_exponents_preserve_the_full_existing_scalar_capacity() {
+    // A shared denominator would overflow this perfectly representable scalar.
+    let wide = Exact::new([i128::MIN, i128::MAX, 0, 0], 0)
+        .unwrap()
+        .add(Exact::new([0, 0, 1, -1], 126).unwrap())
+        .unwrap();
+    let matrix = Matrix::new(1, 1, vec![wide]).unwrap();
+    let bytes = encode(&matrix).unwrap();
+    assert_eq!(decode(&bytes, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap(), matrix);
+    let text = String::from_utf8(bytes).unwrap();
+    assert!(text.contains(&i128::MIN.to_string()));
+    assert!(text.contains(&i128::MAX.to_string()));
+    assert!(text.contains("\"denominator_bits\":126"));
+    assert_eq!(encode(&read(&text)).unwrap(), text.as_bytes());
+    assert!(text.ends_with('\n'));
+}
+
+#[test]
+fn all_exact_phases_and_sixty_four_dimensions_round_trip() {
+    let entries = (0..8).map(|k| Exact::phase(k).unwrap()).collect();
+    let phases = Matrix::new(2, 4, entries).unwrap();
+    for matrix in [phases, Matrix::identity(64).unwrap()] {
+        let bytes = encode(&matrix).unwrap();
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        assert_eq!(decode(&bytes, &mut budget).unwrap(), matrix);
+        assert_eq!(DEFAULT_EXACT_WORK - budget.remaining(), 4 * matrix.entries().len());
+    }
+}
+
+#[test]
+fn reject_noncanonical_or_out_of_capacity_dyadics() {
+    let invalid = [
+        (r#"{"numerator":"+1","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"-0","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"01","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"-01","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"1 ","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"١","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":1,"denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"1.0","denominator_bits":0}"#, "format"),
+        (r#"{"numerator":"0","denominator_bits":1}"#, "format"),
+        (r#"{"numerator":"2","denominator_bits":1}"#, "format"),
+        (r#"{"numerator":"-4","denominator_bits":1}"#, "format"),
+        (r#"{"numerator":"1","denominator_bits":127}"#, "limit"),
+        (r#"{"numerator":"1","denominator_bits":18446744073709551615}"#, "limit"),
+        (r#"{"numerator":"170141183460469231731687303715884105728","denominator_bits":0}"#, "limit"),
+        (r#"{"numerator":"-170141183460469231731687303715884105729","denominator_bits":0}"#, "limit"),
+        (r#"{"numerator":"1","denominator_bits":-1}"#, "format"),
+        (r#"{"numerator":"1","denominator_bits":0.0}"#, "format"),
+        (r#"{"numerator":"1","denominator_bits":0,"checked":true}"#, "format"),
+    ];
+    for (bad, code) in invalid {
+        let text = envelope(1, 1, &scalar(bad, ZERO, ZERO, ZERO));
+        assert_eq!(decode(text.as_bytes(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err().code, code, "{bad}");
+    }
+}
+
+#[test]
+fn reject_unknown_envelopes_dimensions_counts_and_json_ambiguities() {
+    let one = scalar(ONE, ZERO, ZERO, ZERO);
+    let good = envelope(1, 1, &one);
+    for bad in [
+        good.replace("finite-matrix", "finite-ir"),
+        good.replace("\"version\":1", "\"version\":2"),
+        good.replace("zeta8-dyadic-v1", "floating-point"),
+        good.replace("\"rows\":1", "\"rows\":1,\"rows\":1"),
+        good.replacen('{', "{\"checked\":true,", 1),
+        good.replace("\"domain\":\"zeta8-dyadic-v1\",", ""),
+        envelope(1, 1, ""),
+        envelope(1, 1, &format!("{one},{one}")),
+        envelope(1, 1, &format!("[{ONE},{ZERO},{ZERO}]")),
+        envelope(1, 1, &format!("[{ONE},{ZERO},{ZERO},{ZERO},{ZERO}]")),
+        format!("{good}null"),
+    ] {
+        assert_eq!(decode(bad.as_bytes(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err().code, "format", "{bad}");
+    }
+    for (rows, cols) in [(0, 1), (1, 0), (65, 1), (1, 65), (u64::MAX, 1)] {
+        assert_eq!(decode(envelope(rows, cols, &one).as_bytes(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err().code, "limit");
+    }
+    assert_eq!(decode(&[0xff], &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err().code, "format");
+    assert_eq!(decode(&vec![b' '; (16 << 20) + 1], &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err().code, "limit");
+}
+
+#[test]
+fn aggregate_decode_work_is_precharged_and_never_reset_on_failure() {
+    let good = envelope(1, 1, &scalar(ONE, ZERO, ZERO, ZERO));
+    let mut budget = Budget::new(8);
+    decode(good.as_bytes(), &mut budget).unwrap();
+    assert_eq!(budget.remaining(), 4);
+    let bad = good.replace("\"1\"", "\"01\"");
+    let error = decode(bad.as_bytes(), &mut budget).unwrap_err();
+    assert_eq!(error.json_pointer, "/entries/0/0");
+    assert_eq!(budget.remaining(), 0);
+    assert_eq!(decode(good.as_bytes(), &mut budget).unwrap_err().code, "limit");
+    assert_eq!(decode(good.as_bytes(), &mut Budget::new(DEFAULT_EXACT_WORK + 1)).unwrap_err().code, "limit");
+}

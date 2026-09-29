@@ -1,0 +1,164 @@
+use qleisli_core::contract::exact::{Exact, Matrix};
+use qleisli_core::contract::BasisType;
+use qleisli_core::interchange::{self, RootInterface, Version, finite_matrix};
+use qleisli_core::interchange::hierarchical::Kernel;
+use qleisli_core::ir::*;
+use qleisli_core::verify;
+
+fn quoted(text: &str) -> String {
+    // Test payloads are ASCII JSON. Escape the outer string independently.
+    format!("\"{}\"",text.replace('\\',"\\\\").replace('"',"\\\"").replace('\n',"\\n"))
+}
+
+fn h_matrix(negative: bool) -> Matrix {
+    let h=Exact::inv_sqrt2();
+    let entries=vec![h,h,h,h.neg().unwrap()];
+    Matrix::new(2,2,entries.into_iter().map(|x| if negative { x.neg().unwrap() } else { x }).collect()).unwrap()
+}
+
+fn finite_program() -> Vec<u8> {
+    let raw=RawProgram {
+        quantum_inputs:vec![QuantumPort { token:TokenId(0),wires:vec![WireId(7)],shape:BasisShape { bits:1 } }],
+        classical_inputs:vec![], operations:vec![RawOp::Gate { gate:SingleGate::H,input:TokenId(0),output:TokenId(1) }],
+        quantum_outputs:vec![TokenId(1)],classical_outputs:vec![],declared_effect:Effect::Unitary,
+    };
+    interchange::export(&verify(raw).unwrap(),Some(&RootInterface { input:BasisType::Bit,output:BasisType::Bit }),Version::V2).unwrap()
+}
+
+fn side(owner:u32, controlled:bool) -> String {
+    let target=format!(r#"{{"owner":{owner},"basis":[{{"tag":"bit"}}],"axes":[7]}}"#);
+    let ports=if controlled { format!(r#"{{"owner":99,"basis":[{{"tag":"bit"}}],"axes":[11]}},{target}"#) } else { target };
+    format!(r#"{{"quantum":[{ports}],"classical":[]}}"#)
+}
+
+fn family(count:u32, logical_count:u32, negative:bool, controlled:bool) -> Vec<u8> {
+    let program=quoted(std::str::from_utf8(&finite_program()).unwrap());
+    let matrix=quoted(std::str::from_utf8(&finite_matrix::encode(&h_matrix(negative)).unwrap()).unwrap());
+    let n=if controlled { 5 } else { 4 };
+    let rev=|i| n-1-i;
+    let permutation=r#"{"owners":[0],"axes":[0],"classical":[]}"#;
+    let mut d=vec![
+        format!(r#"{{"tag":"leaf","program":{program}}}"#),
+        format!(r#"{{"tag":"rewire","permutation":{permutation}}}"#),
+        r#"{"tag":"sequence","children":[0,1]}"#.to_string(),
+        format!(r#"{{"tag":"repeat","count":{count},"definition":2}}"#),
+    ];
+    let mut m=vec![
+        format!(r#"{{"tag":"finite","description":{matrix}}}"#),
+        format!(r#"{{"tag":"rewire","permutation":{permutation}}}"#),
+        format!(r#"{{"tag":"sequence","children":[{},{}]}}"#,rev(0),rev(1)),
+        format!(r#"{{"tag":"power","child":{},"count":{logical_count}}}"#,rev(2)),
+    ];
+    if controlled {
+        d.push(r#"{"tag":"control","definition":3,"polarity":true}"#.into());
+        m.push(format!(r#"{{"tag":"control","child":{},"polarity":true}}"#,rev(3)));
+    }
+    let rules=["finite","rewire","sequence","repeat","control"];
+    let premises=["[]","[]","[0,1]","[2]","[3]"];
+    let mut definitions=vec![]; let mut meanings=vec![]; let mut encodings=vec![]; let mut proofs=vec![];
+    for i in 0..n {
+        let a=side(if i==1 {1} else {0},i==4);
+        let b=side(if i==0 {1} else {0},i==4);
+        let header=format!(r#"{{"inputs":{a},"outputs":{b}}}"#);
+        definitions.push(format!(r#"{{"interface":{header},"effect":"unitary","body":{}}}"#,d[i]));
+        meanings.push(format!(r#"{{"interface":{header},"body":{}}}"#,m[i]));
+        for s in [&a,&b] { encodings.push(format!(r#"{{"logical":{s},"physical":{s},"body":{{"tag":"identity"}}}}"#)); }
+        proofs.push(format!(r#"{{"kind":"equation","rule":{{"tag":"{}"}},"premises":{},"implementation":{i},"meaning":{},"input_encoding":{},"output_encoding":{},"witness":{{"template_version":1,"parameters":[],"references":[]}}}}"#,rules[i],premises[i],rev(i),2*i,2*i+1));
+    }
+    meanings.reverse();
+    format!(r#"{{"format":"qleisli.hierarchical-ir","version":1,"profile":"qpe-dyadic8-v1","definitions":[{}],"meanings":[{}],"encodings":[{}],"proofs":[{}],"entry":{{"implementation":{},"proof":{}}}}}"#,definitions.join(","),meanings.join(","),encodings.join(","),proofs.join(","),n-1,n-1).into_bytes()
+}
+
+fn native() -> Kernel {
+    let path=std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("set QLEISLI_HIERARCHY_KERNEL to the built audited executable");
+    assert!(std::path::Path::new(&path).is_file()); Kernel::new(path)
+}
+
+#[test]
+fn strict_json_rejects_before_starting_an_executable() {
+    let k=Kernel::new("/nonexistent/qleisli-kernel");
+    let good=String::from_utf8(family(3,3,false,false)).unwrap();
+    let malformed=[
+        good.replacen("\"version\":1", "\"version\":1,\"version\":1",1),
+        good.replacen("\"version\":1", "\"version\":2",1),
+        good.replacen("\"effect\":\"unitary\"", "\"effect\":\"unknown\"",1),
+        good.replacen("\"owner\":0", "\"owner\":0,\"checked\":true",1),
+        good.replacen("\"polarity\":true", "\"polarity\":1",1)+"null",
+        good.replacen("\"tag\":\"repeat\"", "\"tag\":\"eval\"",1),
+    ];
+    for bad in malformed { assert_eq!(k.inspect(bad.as_bytes()).unwrap_err().code,"format"); }
+    let big=good.replacen("\"owner\":0", "\"owner\":4294967296",1);
+    assert_eq!(k.inspect(big.as_bytes()).unwrap_err().code,"limit");
+}
+
+#[test]
+fn schedule_producer_rejects_cycles_and_cross_table_aliases() {
+    let k=Kernel::new("/nonexistent/qleisli-kernel");
+    let good=String::from_utf8(family(3,3,false,false)).unwrap();
+    for bad in [
+        good.replacen("\"children\":[0,1]", "\"children\":[0,2]",1),
+        good.replacen("\"definition\":2", "\"definition\":4",1),
+        good.replacen("\"input_encoding\":0", "\"input_encoding\":8",1),
+    ] { assert_eq!(k.inspect(bad.as_bytes()).unwrap_err().code,"invalid_ir"); }
+}
+
+#[test]
+fn external_schema_ids_cannot_enable_registry_entries() {
+    let good=String::from_utf8(family(3,3,false,false)).unwrap();
+    let bad=good.replacen("\"rule\":{\"tag\":\"finite\"}","\"rule\":{\"tag\":\"schema\",\"id\":\"controlled-power/1\"}",1);
+    assert_eq!(Kernel::new("/nonexistent/qleisli-kernel").inspect(bad.as_bytes()).unwrap_err().code,"contract");
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_shared_powers_reconstruct_one_bound_leaf_without_expansion() {
+    let k=native();
+    let mut costs=vec![];
+    for count in [0,1,3,4096] {
+        let bytes=family(count,count,false,true);
+        let result=k.inspect(&bytes).unwrap();
+        assert_eq!(result.payload(),bytes);
+        assert_eq!(result.leaves().len(),1);
+        assert_eq!(result.leaves()[0].0,0);
+        assert_eq!(result.leaves()[0].1.leaf().meaning(),&h_matrix(false));
+        assert_eq!(result.leaves()[0].1.leaf().payload(),finite_program());
+        costs.push((result.structural_work(),result.exact_work()));
+    }
+    assert!(costs.windows(2).all(|w|w[0]==w[1]));
+    println!("shared power costs: {costs:?}");
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_phase_fault_remains_an_obligation_under_zero_repeat() {
+    let k=native();
+    for count in [0,3,4096] {
+        let error=k.inspect(&family(count,count,true,true)).unwrap_err();
+        assert_eq!(error.code,"contract");
+        assert!(error.message.contains("does not hold"));
+    }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_actual_counts_premises_and_encodings_are_checked() {
+    let k=native();
+    assert_eq!(k.inspect(&family(3,4,false,true)).unwrap_err().code,"contract");
+    let good=String::from_utf8(family(3,3,false,true)).unwrap();
+    for bad in [
+        good.replacen("\"premises\":[2]", "\"premises\":[]",1),
+        good.replacen("\"input_encoding\":6", "\"input_encoding\":0",1),
+        good.replacen("\"polarity\":true", "\"polarity\":false",1),
+    ] { assert!(matches!(k.inspect(bad.as_bytes()).unwrap_err().code,"contract"|"invalid_ir")); }
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_leaf_type_and_owner_are_bound_to_the_embedded_program() {
+    let k=native();
+    let good=String::from_utf8(family(3,3,false,false)).unwrap();
+    let wrong_owner=good.replace("\"owner\":0","\"owner\":8");
+    assert_eq!(k.inspect(wrong_owner.as_bytes()).unwrap_err().code,"contract");
+    let wrong_type=good.replace("\"basis\":[{\"tag\":\"bit\"}]","\"basis\":[{\"tag\":\"bits\",\"width\":1}]");
+    assert!(matches!(k.inspect(wrong_type.as_bytes()).unwrap_err().code,"contract"|"invalid_ir"));
+}

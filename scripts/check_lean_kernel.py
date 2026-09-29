@@ -100,6 +100,11 @@ def source_errors(text: str) -> list[str]:
     except ValueError as error:
         return [str(error)]
     errors = []
+    # The identifier lexer omits '#'; command evaluation must be checked on the
+    # masked source itself. Both forms can perform IO during elaboration.
+    for match in re.finditer(r"#\s*eval\b!?", code):
+        line = code.count("\n", 0, match.start()) + 1
+        errors.append(f"line {line}: forbidden executable-source command {match[0]}")
     for match in TOKEN.finditer(code):
         token = match[0]
         if token in FORBIDDEN or token.startswith("debug."):

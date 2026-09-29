@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Actual shared-gradient binding, native rejection and independent phase oracles.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+No external schema or finite obligation is discharged by these diagnostics.
+"""
+import argparse
+import cmath
+import copy
+import hashlib
+import json
+import math
+from pathlib import Path
+
+from probe_hierarchical_qft_cost import artifact as lean_artifact, array
+from test_hierarchical_artifact import build_and_run
+from test_hierarchical_qft import SharedGradientCircuit, execute, text
+
+PRELUDE = '''import QleisliKernel.Hierarchical.Gradient
+import QleisliKernel.Hierarchical.Conditional
+open QleisliKernel.Hierarchical Artifact
+set_option maxRecDepth 10000
+def changed (a : Artifact) (index : Nat) (f : Definition → Definition) : Artifact :=
+  {a with definitions := a.definitions.modify index f}
+def renamedSide (s : Side) : Side :=
+  {s with quantum := s.quantum.map fun p => {p with owner := 10000+p.owner,
+    axes := p.axes.map fun axis => 99999-7*axis}}
+def renamed (a : Artifact) : Artifact :=
+  {a with definitions := a.definitions.map fun d => {d with
+    interface := ⟨renamedSide d.interface.inputs,renamedSide d.interface.outputs⟩,
+    body := match d.body with
+      | .dyadicPhase owner j k => .dyadicPhase (10000+owner) j k
+      | other => other}}
+def status (a : Artifact) (precision width index remaining : Nat) : String :=
+  match Gradient.inspect a precision width index remaining with
+  | .ok p => s!"ok:{p.visits}"
+  | .error .limit => "limit"
+  | .error .invalidIr => "invalid_ir"
+  | .error .contract => "contract"
+def report (name : String) (a : Artifact) (precision width index remaining : Nat) : IO Unit :=
+  IO.println s!"{name}|{status a precision width index remaining}"
+def baseline (precision : Nat) (a : Artifact) (indices : Array Nat) : IO Unit := do
+  let pending ← match Conditional.checkAll a (Array.range (totalNodes a)) with
+    | .error e => throw <| IO.userError s!"whole typing {precision}: {repr e}"
+    | .ok pending => pure pending
+  let mut used := pending.state.visits
+  for width in [:indices.size] do
+    let index := indices[width]!
+    let remaining := 2000000-used
+    let p ← match Gradient.inspect a precision width index remaining with
+      | .error e => throw <| IO.userError s!"inspect {precision}/{width}: {repr e}"
+      | .ok p => pure p
+    IO.println s!"accepted-{precision}-{width}|ok:{p.visits}"
+    report s!"renamed-{precision}-{width}" (renamed a) precision width index remaining
+    report s!"exact-{precision}-{width}" a precision width index p.visits
+    report s!"short-{precision}-{width}" a precision width index (p.visits-1)
+    used := used + p.visits
+  IO.println s!"budget-{precision}|{pending.state.visits}|{used}"
+'''
+
+
+def fixtures():
+    artifacts, indices = {}, {}
+    for precision in range(1,9):
+        builder = SharedGradientCircuit()
+        artifacts[precision] = builder.qft(precision)
+        indices[precision] = [builder.gradient(n) for n in range(precision)]
+    return artifacts, indices
+
+
+def probes(artifacts, indices):
+    rows = []
+    for precision, a in artifacts.items():
+        for width, index in enumerate(indices[precision]):
+            size = 1 << width
+            vectors = [[complex(i == x) for i in range(size)] for x in range(size)]
+            columns = [[complex(((i+2*r)%7)-3,((3*i+r)%5)-2) for i in range(size)] for r in range(2)]
+            norm = math.sqrt(sum(abs(z)**2 for col in columns for z in col))
+            vectors += [[z/norm for z in col] for col in columns]
+            errors = []
+            for vector in vectors:
+                actual = execute(a,index,vector)
+                expected = [v*cmath.exp(2j*math.pi*x/(1 << precision)) for x,v in enumerate(vector)]
+                errors.append(max(abs(x-y) for x,y in zip(actual,expected)))
+            assert max(errors) < 1e-12, (precision,width,errors)
+            rows.append(dict(precision=precision,width=width,vectors=len(vectors),maximum_error=max(errors)))
+    # Coherent phase faults keep every norm unchanged; probabilities would miss them.
+    a = copy.deepcopy(artifacts[8])
+    phase = next(d for d in a['definitions'] if d['body']['tag'] == 'dyadic_phase')
+    phase['body']['j'] = 2
+    vector = [complex(1/math.sqrt(128))]*128
+    changed = execute(a,indices[8][7],vector)
+    expected = [v*cmath.exp(2j*math.pi*x/256) for x,v in enumerate(vector)]
+    assert max(abs(x-y) for x,y in zip(changed,expected)) > 1e-4
+    assert max(abs(abs(x)**2-abs(y)**2) for x,y in zip(changed,expected)) < 1e-14
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--record', type=Path)
+    args = parser.parse_args()
+    artifacts, indices = fixtures()
+    semantic = probes(artifacts,indices)
+    source = PRELUDE
+    for precision,a in artifacts.items():
+        source += f'def qft{precision} : Artifact := {lean_artifact(a)}\n'
+    root = indices[8][7]
+    sequence = artifacts[8]['definitions'][root]['body']['children']
+    enter,action,leave = sequence
+    tensor = artifacts[8]['definitions'][action]['body']
+    phase,tail = tensor['left'],tensor['right']
+    pbody = artifacts[8]['definitions'][phase]['body']
+    base = indices[8][0]
+    faults = {
+        'phase-numerator': f'changed qft8 {phase} (fun d => {{d with body := .dyadicPhase {pbody["target"]} 2 {pbody["k"]}}})',
+        'phase-exponent': f'changed qft8 {phase} (fun d => {{d with body := .dyadicPhase {pbody["target"]} 1 {pbody["k"]+1}}})',
+        'phase-target': f'changed qft8 {phase} (fun d => {{d with body := .dyadicPhase 909090 1 {pbody["k"]}}})',
+        'tensor-order': f'changed qft8 {action} (fun d => {{d with body := .tensor {tail} {phase}}})',
+        'tensor-alias': f'changed qft8 {action} (fun d => {{d with body := .tensor {phase} {phase}}})',
+        'dangling-tail': f'changed qft8 {action} (fun d => {{d with body := .tensor {phase} 999999}})',
+        'sequence-order': f'changed qft8 {root} (fun d => {{d with body := .sequence #[{leave},{action},{enter}]}})',
+        'short-sequence': f'changed qft8 {root} (fun d => {{d with body := .sequence #[{enter},{action}]}})',
+        'oversized-sequence': f'changed qft8 {root} (fun d => {{d with body := .sequence (Array.replicate 1000000 {enter})}})',
+        'take-position': f'changed qft8 {enter} (fun d => {{d with body := .structural (.takeBit 7 0)}})',
+        'put-width': f'changed qft8 {leave} (fun d => {{d with body := .structural (.putBit 6 6)}})',
+        'extra-repeat': f'changed qft8 {root} (fun d => {{d with body := .repeatOp 2 {tail}}})',
+        'routing': f'changed qft8 {enter} (fun d => {{d with interface := {{d.interface with inputs := {{d.interface.inputs with quantum := d.interface.inputs.quantum.map fun p => {{p with axes := p.axes.reverse}}}}}}}})',
+        'drop-empty-owner': f'changed qft8 {base} (fun d => {{d with interface := ⟨⟨#[],#[]⟩,⟨#[],#[]⟩⟩}})',
+        'duplicate-empty-owner': f'changed qft8 {base} (fun d => {{d with interface := {{d.interface with inputs := {{d.interface.inputs with quantum := d.interface.inputs.quantum ++ d.interface.inputs.quantum}}}}}})',
+        'unit-vs-empty-bits': f'changed qft8 {base} (fun d => {{d with interface := {{d.interface with inputs := {{d.interface.inputs with quantum := d.interface.inputs.quantum.map fun p => {{p with basis := #[.unit]}}}}}}}})',
+    }
+    source += 'def main : IO Unit := do\n'
+    source += ''.join(f'  baseline {p} qft{p} {array(indices[p])}\n' for p in range(1,9))
+    source += ''.join(f'  report {json.dumps(name)} ({a}) 8 7 {root} 2000000\n' for name,a in faults.items())
+    source += f'''  report "missing-root" qft8 8 7 999999 2000000
+  report "zero-budget" qft8 8 7 {root} 0
+  report "reset-budget" qft8 8 7 {root} 2000001
+  report "zero-precision" qft8 0 0 {base} 2000000
+  report "large-precision" qft8 9 7 {root} 2000000
+  report "excess-width" qft8 7 8 {root} 2000000
+  report "wrong-precision" qft8 7 7 {root} 2000000
+'''
+    commands,binary = build_and_run(source,args.record)
+    rows = {line.split('|')[0]:line.split('|')[1:] for line in commands[-1]['stdout'].splitlines()}
+    for precision in range(1,9):
+        before,after = map(int,rows[f'budget-{precision}'])
+        assert before < after <= 2000000
+        for width in range(precision):
+            ok = rows[f'accepted-{precision}-{width}']
+            assert ok[0].startswith('ok:')
+            assert rows[f'renamed-{precision}-{width}'] == ok
+            assert rows[f'exact-{precision}-{width}'] == ok
+            assert rows[f'short-{precision}-{width}'] == ['limit']
+    for fault in faults:
+        assert rows[fault] == ['contract'], (fault,rows[fault])
+    assert rows['missing-root'] == ['contract']
+    assert rows['wrong-precision'] == ['contract']
+    for name in ['zero-budget','reset-budget','zero-precision','large-precision','excess-width']:
+        assert rows[name] == ['limit']
+    report = dict(format='qleisli.hierarchical-gradient-binding',version=1,status='passed',
+        native_cases=len(rows),results=rows,semantic_probes=semantic,phase_only_fault=True,
+        source_sha256=hashlib.sha256(source.encode()).hexdigest(),binary_sha256=binary,commands=commands,
+        scope='Actual producer graphs and shared budget after Conditional.checkAll. Renaming tests the component, not finite payload reissuance. Full Fourier schema and external production authority remain disabled.')
+    if args.record:
+        args.record.write_text(json.dumps(report,indent=2)+'\n')
+    print(text({k:v for k,v in report.items() if k not in ('commands','results','semantic_probes')}))
+
+
+if __name__ == '__main__':
+    main()

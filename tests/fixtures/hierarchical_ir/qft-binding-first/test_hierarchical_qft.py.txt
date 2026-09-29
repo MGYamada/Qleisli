@@ -1,0 +1,190 @@
+#!/usr/bin/env python3
+"""Actual QFT hierarchy authoring and independent Fourier diagnostics.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+No algorithm name or floating-point oracle issues acceptance evidence.
+"""
+import argparse
+import cmath
+import copy
+import hashlib
+import json
+import math
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def text(value):
+    return json.dumps(value, separators=(',', ':'), sort_keys=True)
+
+
+def port(owner, axes, bit=False):
+    axes = list(axes)
+    return dict(owner=owner, axes=axes,
+                basis=[dict(tag='bit') if bit else dict(tag='bits', width=len(axes))])
+
+
+def side(ports):
+    return dict(quantum=ports, classical=[])
+
+
+def wires(ports):
+    return [axis for p in ports for axis in p['axes']]
+
+
+def hadamard_program(owner, output, axis):
+    return text(dict(format='qleisli.finite-ir', version=2, profile='finite-meaning-v1',
+        sources=[], evidence=[], root=0,
+        root_interface=dict(input=dict(tag='bit'), output=dict(tag='bit')),
+        programs=[dict(quantum_inputs=[dict(token=owner, wires=[axis], shape=dict(bits=1))],
+            quantum_outputs=[output], classical_inputs=[], classical_outputs=[],
+            declared_effect='unitary',
+            operations=[dict(tag='gate', gate='h', input=owner, output=output)])]))
+
+
+def hadamard_matrix():
+    entries = []
+    for sign in [1, 1, 1, -1]:
+        entries.append([dict(numerator=str(sign if i == 1 else 0),
+                             denominator_bits=1 if i == 1 else 0) for i in range(4)])
+    return text(dict(format='qleisli.finite-matrix', version=1, domain='zeta8-dyadic-v1',
+                     rows=2, cols=2, entries=entries))
+
+
+class Circuit:
+    def __init__(self):
+        self.definitions, self.meanings, self.encodings, self.proofs = [], [], [], []
+        self.cache = {}
+        self.encoding_cache = {}
+
+    def encoding(self, ports):
+        value = side(ports)
+        key = text(value)
+        if key not in self.encoding_cache:
+            self.encoding_cache[key] = len(self.encodings)
+            self.encodings.append(dict(logical=value, physical=value, body=dict(tag='identity')))
+        return self.encoding_cache[key]
+
+    def add(self, before, after, body, meaning, rule, premises=()):
+        header = dict(inputs=side(before), outputs=side(after))
+        key = text([header, body, meaning, rule, list(premises)])
+        if key in self.cache:
+            return self.cache[key]
+        index = len(self.definitions)
+        self.cache[key] = index
+        self.definitions.append(dict(interface=header, effect='unitary', body=body))
+        self.meanings.append(dict(interface=header, body=meaning))
+        self.proofs.append(dict(kind='equation', rule=dict(tag=rule), premises=list(premises),
+            implementation=index, meaning=index, input_encoding=self.encoding(before),
+            output_encoding=self.encoding(after),
+            witness=dict(template_version=1, parameters=[], references=[])))
+        return index
+
+    def ends(self, index):
+        h = self.definitions[index]['interface']
+        return h['inputs']['quantum'], h['outputs']['quantum']
+
+    def rewire(self, before, after, owners=None, axes=None):
+        owners = list(range(len(before))) if owners is None else owners
+        axes = list(range(len(wires(before)))) if axes is None else axes
+        body = dict(tag='rewire', permutation=dict(owners=owners, axes=axes, classical=[]))
+        return self.add(before, after, body, body, 'rewire')
+
+    def identity(self, ports):
+        return self.rewire(ports, ports)
+
+    def structural(self, before, after, tag, width, position):
+        body = dict(tag='structural', operation=dict(tag=tag, width=width, position=position))
+        return self.add(before, after, body, body, 'structural')
+
+    def sequence(self, children):
+        for first, second in zip(children, children[1:]):
+            assert self.ends(first)[1] == self.ends(second)[0]
+        body = dict(tag='sequence', children=children)
+        return self.add(self.ends(children[0])[0], self.ends(children[-1])[1],
+                        body, body, 'sequence', children)
+
+    def tensor(self, first, second):
+        a, b = self.ends(first)
+        c, d = self.ends(second)
+        body = dict(tag='tensor', left=first, right=second)
+        return self.add(a+c, b+d, body, body, 'tensor', [first, second])
+
+    def h(self, p):
+        output = port(5, p['axes'], True)
+        leaf = self.add([p], [output],
+            dict(tag='leaf', program=hadamard_program(p['owner'], 5, p['axes'][0])),
+            dict(tag='finite', description=hadamard_matrix()), 'finite')
+        return self.sequence([leaf, self.rewire([output], [p])])
+
+    def lifted(self, width, target, control=None):
+        register = [port(0, range(width))]
+        t = port(1, [target], True)
+        rest = port(2, [x for x in range(width) if x != target])
+        take = self.structural(register, [t, rest], 'take_bit', width, target)
+        put = self.structural([t, rest], register, 'put_bit', width, target)
+        if control is None:
+            middle = self.tensor(self.h(t), self.identity([rest]))
+        else:
+            c = port(3, [control], True)
+            residual = port(4, [x for x in rest['axes'] if x != control])
+            position = rest['axes'].index(control)
+            split = self.structural([rest], [c, residual], 'take_bit', width-1, position)
+            join = self.structural([c, residual], [rest], 'put_bit', width-1, position)
+            phase = self.add([t], [t], dict(tag='dyadic_phase', target=1, j=1, k=target-control+1),
+                             dict(tag='phase', j=1, k=target-control+1), 'phase')
+            controlled = self.add([c, t], [c, t], dict(tag='control', definition=phase, polarity=True),
+                                 dict(tag='control', child=phase, polarity=True), 'control', [phase])
+            before, after = [t, c, residual], [c, t, residual]
+            swap = [1, 0, *range(2, width)]
+            middle = self.sequence([self.tensor(self.identity([t]), split),
+                self.rewire(before, after, [1, 0, 2], swap),
+                self.tensor(controlled, self.identity([residual])),
+                self.rewire(after, before, [1, 0, 2], swap),
+                self.tensor(self.identity([t]), join)])
+        return self.sequence([take, middle, put])
+
+    def qft(self, width):
+        stages = []
+        for target in reversed(range(width)):
+            stages.append(self.lifted(width, target))
+            for control in reversed(range(target)):
+                stages.append(self.lifted(width, target, control))
+        register = [port(0, range(width))]
+        stages.append(self.rewire(register, register, axes=list(reversed(range(width)))))
+        entry = self.sequence(stages)
+        return dict(format='qleisli.hierarchical-ir', version=1, profile='qpe-dyadic8-v1',
+            definitions=self.definitions, meanings=self.meanings, encodings=self.encodings,
+            proofs=self.proofs, entry=dict(implementation=entry, proof=entry))
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--record', type=Path)
+    args = parser.parse_args()
+    artifacts = {n: Circuit().qft(n) for n in [1, 2, 3, 4, 8]}
+    with tempfile.TemporaryDirectory(prefix='qleisli-qft-hierarchy-') as directory:
+        for width, artifact in artifacts.items():
+            Path(directory, f'qft-{width}.json').write_text(text(artifact))
+        env = os.environ.copy()
+        env['QLEISLI_HIERARCHY_KERNEL'] = str(ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel')
+        env['QLEISLI_QFT_FIXTURES'] = directory
+        result = subprocess.run(['cargo', 'test', '--test', 'qft_hierarchy', '--', '--ignored', '--nocapture'],
+                                cwd=ROOT, env=env, capture_output=True, text=True, timeout=120)
+    observed = [line.split('|')[1:] for line in result.stdout.splitlines() if line.startswith('QFT|')]
+    report = dict(format='qleisli.qft-hierarchy-authoring', version=1,
+        status='observed' if result.returncode == 0 else 'error', results=observed,
+        artifact_sha256={str(n): hashlib.sha256(text(a).encode()).hexdigest() for n,a in artifacts.items()},
+        definition_counts={str(n): len(a['definitions']) for n,a in artifacts.items()},
+        stdout=result.stdout, stderr=result.stderr)
+    if args.record:
+        args.record.write_text(json.dumps(report, indent=2)+'\n')
+    print(json.dumps(report))
+    return result.returncode
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

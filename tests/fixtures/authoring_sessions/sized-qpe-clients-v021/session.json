@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "task": "Order finding and finite amplitude estimation using the same QPE source",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired clients and their complete shared source inputs preserved before the first compilation",
+      "sha256": {
+        "rotation.qli": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order.qli": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular.qli": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude.qli": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection.qli": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification.qli": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution.qli": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation.qli": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation.qli": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+      },
+      "observations": [
+        "first-check.json",
+        "first-native.json",
+        "complete-small-validation.json"
+      ]
+    }
+  ]
+}

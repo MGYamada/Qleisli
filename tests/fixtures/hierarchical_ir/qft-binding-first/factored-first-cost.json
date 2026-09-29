@@ -1,0 +1,76 @@
+{
+  "format": "qleisli.hierarchy-qft-cost-probe",
+  "version": 1,
+  "status": "diagnostic",
+  "columns": [
+    "width",
+    "preparation",
+    "definition_typing",
+    "contract_typing",
+    "legacy_local_rules",
+    "typed_local_rules"
+  ],
+  "rows": [
+    [
+      1,
+      4457,
+      21387,
+      24499,
+      171496,
+      20770
+    ],
+    [
+      2,
+      15437,
+      81488,
+      92162,
+      674053,
+      64671
+    ],
+    [
+      3,
+      23085,
+      124384,
+      138542,
+      1051560,
+      98678
+    ],
+    [
+      4,
+      38637,
+      219628,
+      243396,
+      1830193,
+      159651
+    ],
+    [
+      8,
+      112169,
+      722504,
+      781676,
+      5872261,
+      455007
+    ]
+  ],
+  "binary_sha256": "3fbfcc528ac887fd7efdaa5a485fd5e4b95ef03a28749739e7cce60b140772be",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [53/55] Built Main (5.3s)\n\u2714 [54/55] Built Main:c.o (563ms)\n\u2714 [55/55] Built \u00abartifact-test\u00bb:exe (138ms)\nBuild completed successfully (55 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-qsauot0v/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "1|4457|21387|24499|171496|20770\n2|15437|81488|92162|674053|64671\n3|23085|124384|138542|1051560|98678\n4|38637|219628|243396|1830193|159651\n8|112169|722504|781676|5872261|455007\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Local checks each use the unchanged 2000000 ceiling. Their separate totals are diagnostics, not acceptance of the complete artifact."
+}

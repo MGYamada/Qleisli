@@ -1,0 +1,130 @@
+{
+  "recorded_at": "2026-09-29T04:15:11.400967+00:00",
+  "results": [
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/long_trajectory/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/long_trajectory/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/long_trajectory/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/long_trajectory/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "sample",
+        "tests/fixtures/review_v020/long_trajectory/main.qli",
+        "--shots=3",
+        "--seed=0"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/long_trajectory/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/shared_identities/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/shared_identities/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/shared_identities/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/shared_identities/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "emit-ir",
+        "tests/fixtures/review_v020/shared_identities/main.qli",
+        "--output=/private/tmp/qleisli-review-v020-baseline.json"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/shared_identities/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/expansion_limit/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/expansion_limit/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_300/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/repeat_300/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v020/repeat_1000/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/repeat_1000/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v020/roundoff_outcome/main.qli"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "tests/fixtures/review_v020/roundoff_outcome/main.qli: project: source root is not a directory\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli <check|run> <source-root>\n       qleisli doc <source-file>\n"
+    },
+    {
+      "argv": [
+        "target/debug/qleisli",
+        "--format=json"
+      ],
+      "exit": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage: qleisli <check|run> <source-root> [--format=json]\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "probe": "source_errors only; no Lean code evaluated",
+      "source": "#eval (IO.FS.writeFile \"x\" \"x\")",
+      "errors": []
+    }
+  ]
+}

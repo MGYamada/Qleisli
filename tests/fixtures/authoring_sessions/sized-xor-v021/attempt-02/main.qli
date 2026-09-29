@@ -1,0 +1,8 @@
+//! Desired first client; nonzero/reference cases belong to the independent oracle.
+use bitwise::xor_into;
+use std::registers::init_zero;
+use std::registers::measure_bits;
+observe fn main() -> (CBits<2>, CBits<2>) {
+    let (x,y) = xor_into[2](init_zero[2](),init_zero[2]());
+    (measure_bits[2](x),measure_bits[2](y))
+}

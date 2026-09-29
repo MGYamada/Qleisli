@@ -2,7 +2,7 @@
 
 Status: **Stage 2 is partially implemented** (2026-09-26). This authoritative
 English implementation profile replaces the previous Japanese edition. It
-records the checks actually performed by `qleisli-core`, in relation to the
+records the checks actually performed by `qleisli`, in relation to the
 [finite-core formalization](formal-core.md). The [frontend](frontend-v0.md)
 checks supported `.qli` and generates this IR. General correspondence between
 the mathematical theorems and the Rust implementation remains unproved.

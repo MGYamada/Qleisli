@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-09-29T05:02:04.321456+00:00",
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-02",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: unexpected character `.`",
+        "primary": {
+          "path": "bitwise.qli",
+          "start": 728,
+          "end": 729,
+          "line": 15,
+          "column": 22
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

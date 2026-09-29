@@ -1,0 +1,137 @@
+import Qleisli.HierarchicalTyping
+
+/-! Unitarity of constructed denotations for the accepted internal hierarchy.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+Unsupported full-profile bodies still have no denotation in this evaluator.
+This adds no production acceptance rule or assumed semantic environment. -/
+
+namespace Qleisli.HierarchicalAcceptance
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalSemantics HierarchicalOperators HierarchicalTyping
+open HierarchicalEvaluation
+open scoped Matrix
+
+theorem apply_unitary (artifact : Artifact) (parent : Definition) (tag : Tag)
+    (children : List Nat) (values : Nat → Operator)
+    (code : physicalCode parent = some (tag,children))
+    (typed : NodeTyping.conditions artifact parent = true)
+    (ready : ∀ index ∈ children, ∃ child, artifact.definitions[index]? = some child ∧
+      UnitaryInterface child.interface (values index)) :
+    UnitaryInterface parent.interface (HierarchicalOperators.apply parent.interface tag (children.map values)) := by
+  cases body : parent.body with
+  | leaf payload => simp [physicalCode,body] at code
+  | call child inputs outputs => simp [physicalCode,body] at code
+  | computed compute useOp logical encoding => simp [physicalCode,body] at code
+  | observeZ input output => simp [physicalCode,body] at code
+  | init0 output => simp [physicalCode,body] at code
+  | rewire map =>
+    have same : tag = .rewire map.axes.toList ∧ children = [] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    apply unitaryInterface_apply
+    apply HierarchicalTyping.rewire_unitary
+    simp only [NodeTyping.conditions,body,Bool.and_eq_true] at typed
+    exact typed.2.2
+  | structural operation =>
+    have same : tag = .rewire (Structural.axisMap parent.interface) ∧ children = [] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    apply unitaryInterface_apply
+    apply structural_unitary
+    simp only [NodeTyping.conditions,body,Bool.and_eq_true] at typed
+    exact typed.2.2
+  | dyadicPhase owner j k =>
+    have same : tag = .phase owner j k ∧ children = [] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    apply unitaryInterface_apply
+    apply HierarchicalTyping.phase_unitary
+    simp only [NodeTyping.conditions,body,Bool.and_eq_true] at typed
+    exact typed.2
+  | sequence indices =>
+    have same : tag = .sequence ∧ children = indices.toList := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    exact typed_sequence artifact parent indices body typed values ready
+  | tensor left right =>
+    have same : tag = .tensor ∧ children = [left,right] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    obtain ⟨a,ha,ua⟩ := ready left (by simp)
+    obtain ⟨b,hb,ub⟩ := ready right (by simp)
+    exact typed_tensor artifact parent a b left right body ha hb typed (values left) (values right) ua ub
+  | inverse index =>
+    have same : tag = .inverse ∧ children = [index] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    obtain ⟨child,found,h⟩ := ready index (by simp)
+    exact typed_inverse artifact parent child index body found typed (values index) h
+  | repeatOp count index =>
+    have same : tag = .power count ∧ children = [index] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    obtain ⟨child,found,h⟩ := ready index (by simp)
+    exact typed_power artifact parent child index count body found typed (values index) h
+  | control index polarity =>
+    have same : tag = .control polarity ∧ children = [index] := by
+      simpa [physicalCode,body,eq_comm] using code
+    rcases same with ⟨rfl,rfl⟩
+    obtain ⟨child,found,h⟩ := ready index (by simp)
+    exact typed_control artifact parent child index polarity body found typed (values index) h
+
+/-- A successful list traversal has actually evaluated every dependency,
+including children under zero repetitions. -/
+theorem mapM_each {A B : Type} (entries : List A) (f : A → Option B) (values : List B)
+    (accepted : entries.mapM f = some values) :
+    ∀ index ∈ entries, ∃ value, f index = some value := by
+  induction entries generalizing values with
+  | nil => simp
+  | cons index rest ih =>
+    cases hf : f index with
+    | none => simp [hf] at accepted
+    | some value =>
+      cases hr : rest.mapM f with
+      | none => simp [hf,hr] at accepted
+      | some tail =>
+        intro child member
+        rcases List.mem_cons.mp member with same | inside
+        · subst child; exact ⟨value,hf⟩
+        · exact ih tail hr child inside
+
+theorem evaluate_unitary (artifact : Artifact)
+    (allTyped : ∀ index parent, artifact.definitions[index]? = some parent →
+      NodeTyping.conditions artifact parent = true)
+    (fuel index : Nat) (value : Operator)
+    (evaluated : HierarchicalEvaluation.physical algebra artifact fuel index = some value) :
+    ∃ parent, artifact.definitions[index]? = some parent ∧ UnitaryInterface parent.interface value := by
+  induction fuel generalizing index value with
+  | zero => simp [HierarchicalEvaluation.physical,evaluate] at evaluated
+  | succ fuel ih =>
+    cases hd : artifact.definitions[index]? with
+    | none => simp [HierarchicalEvaluation.physical,evaluate,definition,hd] at evaluated
+    | some parent =>
+      cases hc : physicalCode parent with
+      | none => simp [HierarchicalEvaluation.physical,evaluate,definition,hd,hc] at evaluated
+      | some code =>
+        rcases code with ⟨tag,children⟩
+        cases hv : children.mapM (HierarchicalEvaluation.physical algebra artifact fuel) with
+        | none => simp [HierarchicalEvaluation.physical,evaluate,definition,hd,hc] at evaluated
+        | some values =>
+          have each := mapM_each children (HierarchicalEvaluation.physical algebra artifact fuel) values hv
+          let environment := fun i => (HierarchicalEvaluation.physical algebra artifact fuel i).getD (identity 0)
+          have ready : ∀ i ∈ children, ∃ child, artifact.definitions[i]? = some child ∧
+              UnitaryInterface child.interface (environment i) := by
+            intro i member
+            obtain ⟨v,found⟩ := each i member
+            obtain ⟨child,present,unitary⟩ := ih i v found
+            exact ⟨child,present,by simpa [environment,found] using unitary⟩
+          have mapped := mapM_getD children (HierarchicalEvaluation.physical algebra artifact fuel) (identity 0)
+            (fun i member => by obtain ⟨v,h⟩ := each i member; simp [h])
+          have values_eq : values = children.map environment := Option.some.inj (hv.symm.trans mapped)
+          have result : HierarchicalOperators.apply parent.interface tag values = value := by
+            simpa [HierarchicalEvaluation.physical,evaluate,definition,hd,hc,hv,algebra] using evaluated
+          refine ⟨parent,hd,?_⟩
+          rw [← result,values_eq]
+          exact apply_unitary artifact parent tag children environment hc (allTyped index parent hd) ready
+
+end Qleisli.HierarchicalAcceptance

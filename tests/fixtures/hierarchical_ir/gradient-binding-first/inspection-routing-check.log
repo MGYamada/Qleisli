@@ -1,0 +1,61 @@
+QleisliKernel/Hierarchical/Gradient.lean:234:6: error: Type mismatch: After simplification, term
+  limits
+ has type
+  ((remaining ≤ 2000000 ∧ ¬precision = 0) ∧ precision ≤ 8) ∧ width ≤ precision
+but is expected to have type
+  remaining ≤ 2000000 ∧ precision ≠ 0 ∧ precision ≤ 8 ∧ width ≤ precision
+QleisliKernel/Hierarchical/Gradient.lean:248:31: warning: This simp argument is unused:
+  List.getElem?_append
+
+Hint: Omit it from the simp argument list.
+  simp [̵L̵a̵y̵o̵u̵t̵.̵i̵n̵d̵e̵x̵A̵t̵,̵l̵o̵w̵A̵x̵e̵s̵,̵L̵i̵s̵t̵.̵g̵e̵t̵E̵l̵e̵m̵?̵_̵a̵p̵p̵e̵n̵d̵]̵[̲L̲a̲y̲o̲u̲t̲.̲i̲n̲d̲e̲x̲A̲t̲,̲ ̲l̲o̲w̲A̲x̲e̲s̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/Hierarchical/Gradient.lean:262:18: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑i
+in the target expression
+  Layout.indexAt (highAxes n) 0 < n + 1
+
+case zero
+n : Nat
+i : Fin (n + 1)
+hb : Layout.indexAt (lowAxes n) ↑i < n + 1
+hi : ↑i = 0
+⊢ Layout.indexAt (highAxes n) 0 < n + 1
+QleisliKernel/Hierarchical/Gradient.lean:263:20: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑i
+in the target expression
+  Layout.indexAt (highAxes n) (k + 1) < n + 1
+
+case succ
+n : Nat
+i : Fin (n + 1)
+hb : Layout.indexAt (lowAxes n) ↑i < n + 1
+k : Nat
+hi : ↑i = k + 1
+⊢ Layout.indexAt (highAxes n) (k + 1) < n + 1
+QleisliKernel/Hierarchical/Gradient.lean:270:18: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑i
+in the target expression
+  Layout.indexAt (lowAxes n) (Layout.indexAt (highAxes n) 0) = 0
+
+case refine_2.zero
+n : Nat
+i : Fin (n + 1)
+hb : Layout.indexAt (lowAxes n) ↑i < n + 1
+hf : Layout.indexAt (highAxes n) ↑i < n + 1
+hi : ↑i = 0
+⊢ Layout.indexAt (lowAxes n) (Layout.indexAt (highAxes n) 0) = 0
+QleisliKernel/Hierarchical/Gradient.lean:271:20: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  ↑i
+in the target expression
+  Layout.indexAt (lowAxes n) (Layout.indexAt (highAxes n) (k + 1)) = k + 1
+
+case refine_2.succ
+n : Nat
+i : Fin (n + 1)
+hb : Layout.indexAt (lowAxes n) ↑i < n + 1
+hf : Layout.indexAt (highAxes n) ↑i < n + 1
+k : Nat
+hi : ↑i = k + 1
+⊢ Layout.indexAt (lowAxes n) (Layout.indexAt (highAxes n) (k + 1)) = k + 1

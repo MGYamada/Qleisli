@@ -57,6 +57,15 @@ synthesis without whole-space truth tables.
 
 ## 0.2.0 foundation and 0.2.1 shared-QPE continuation
 
+**Latest scope revision, 2026-09-30:** the user splits [0.2.1](v0.2.1-plan.md)
+at the completed corpus/review/experimental-component boundary, adding bounded
+[Python/OpenQASM/QIR connections](connections-v021.md). Heavy implementation,
+production integration and proof work moves to [0.2.2](v0.2.2-plan.md).
+R14/H1–H5 and full instrument/source correspondence are deferred with the
+features, not waived or completed. Existing components remain audited and
+ordinary 0.2.1 compatibility, Rust/docs/corpus/Lean/distribution checks remain
+release gates. The earlier assignment below is historical.
+
 **User scope revision, 2026-09-29.** The [0.2.0 plan](v0.2.0-plan.md) now
 ships implemented tuple/type and resource-policy changes, finite X2–X6, and
 experimental Lean components with their actual proof limits. Its remaining
@@ -78,6 +87,19 @@ breaking AST/API/format or capacity change, select 0.3.0 under the existing
 version policy. M0–M5, R14, S05-C1–C5, PR-C1–C4 and the independent QLT plan
 retain their obligations. No manifest bump or release completion follows from
 this scheduling revision.
+
+## v0.3.0 type-system specification and later QLT
+
+**User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
+of the **v0.3.0 breaking-change release**. The
+[detailed plan](v0x-roadmap.md#v030-qleisli-type-system-specification) requires
+explicit rules, checking obligations and migration from the current contracts;
+concrete changes remain to be specified. K1 exact-contract work remains in the
+same release plan. QLT implementation is deferred to **v0.4.0 or later**.
+
+This selects future work without changing the current 0.2.1 version or its
+compatibility/acceptance criteria. It neither adopts new type rules now nor
+adds QLT completion to the S05/PR theorem gates.
 
 ## Qleisli Soundness Theorem (v0.5.0)
 
@@ -109,6 +131,12 @@ contracts describe the complete classical–quantum instrument and its branch
 probabilities and residual states. Auxiliary release requires exact zero
 return and separation from the remaining system and reference. An isometry
 contract alone does not grant inverse or controlled access.
+
+Here `ResourceSafe` names linear ownership/resource validity. It is distinct
+from the later quantitative [Resource Safety Theorem](#resource-safety-theorem-v1),
+which requires statically computed finite cost bounds preserved by compilation.
+The 2026-09-30 addition does not retroactively claim that S05 or R1 supplies that
+quantitative result or move its full proof into the v0.5.0 milestone.
 
 | Gate | Required v0.5.0 evidence |
 | --- | --- |
@@ -159,6 +187,22 @@ auxiliary release: workspace promised clean must still return exactly to zero.
 | PR-C3: actual backend correspondence | Implement the relevant backend transformations in Lean and prove their connection from the accepted IR to the actual emitted target program, covering lowering, optimization, layout and emission. Bind every stage to its checked input/output; source-to-IR translation validation remains a separate prerequisite for source-level claims. |
 | PR-C4: release evidence and trust | Publish the supported profile, proof/coverage and assumption ledger, reproducible audits and independent review. Include the three v1 algorithm families; unsupported target capabilities reject explicitly. Record remaining native compiler/runtime, transport and physical-device assumptions. |
 
+The [external-search policy](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
+applies to PR-C2/C3: synthesis search, including norm-equation search for
+rotations, may remain an untrusted oracle. Its actual circuit and witnesses
+must pass the proved Lean `LeafRealizer` checker against the independent target
+and exact or certified-approximate contract. The backend proof composes the
+checked realization; it need not prove the oracle's search procedure or move
+it into Lean. This preserves the supported-profile synthesis obligation and
+explicit failure behavior rather than assuming oracle success.
+
+The [backend execution policy](lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
+requires the substantive Lean backend in addition to external search checking.
+Project backend code forbids `unsafe def`, `@[implemented_by]`, `@[extern]`
+and `partial def`, enforced by source and complete compiled-declaration CI
+alongside axiom auditing. Include private/generated helpers; a proof about a
+logical definition does not authorize a different native implementation.
+
 These are adopted proof and implementation gates, not existing Lean declarations
 or a hardware-noise guarantee. The executable backend follows the Mathlib-free
 runtime boundary; separate proof libraries may provide its mathematical bridge.
@@ -166,7 +210,43 @@ The longer-term migration aims to cover the implementation beyond the frontend.
 Under this project direction, a Lean backend with actual-transformation proofs
 is necessary for the goal “LLMs write `.qli`; Lean guarantees it all the way
 down”; merely moving code to Lean is insufficient. V1 requires PR-C1–C4 in
-addition to the existing algorithm gates V1-C1–C5.
+addition to V1-C1–C5 and the subsequently adopted RS-C1–C5 below.
+
+## Resource Safety Theorem (v1)
+
+<a id="resource-safety-theorem-v1"></a>
+
+**Adopted 2026-09-30; to prove.** Resource Safety is the third important pillar
+toward v1, alongside Qleisli Soundness and Physical Realizability:
+
+> Well-typed Qleisli programs admit finite, statically computable resource bounds
+> that are preserved by compilation.
+
+The target is the supported finite, resource-checked profile, with explicit
+input/size premises and target cost semantics. The [resource-semantics account](resource-semantics.md)
+defines the intended operational-bound and pass-preservation obligations.
+Existence of a finite number alone is insufficient: actual analysis/checking
+must produce the bound, and every permitted execution must satisfy it. Types,
+quantum meanings, effects and resource accounts should compose together.
+The proposed vector `(q, a, T, D, M, ...)` is a design direction, not adopted
+syntax, a final cost model or an implemented public API.
+
+| Gate | Required evidence by v1 |
+| --- | --- |
+| RS-C1: explicit resource semantics | Specify a versioned finite bound domain, units/order, input/size and target premises, operational cost and composition rules for every supported construct. Cover retained frames, auxiliary space, actual repetitions, branches, initialization, routing and measurements. |
+| RS-C2: executable static bound | Implement the analysis/evidence checker and prove that its actual accepted result bounds every admissible execution, with finite bounds for every admitted size instantiation. Inconclusive, unsupported, overflow and limit outcomes cannot issue evidence. |
+| RS-C3: compilation preservation | Prove or independently validate resource-contract preservation for actual source lowering, optimization, synthesis, layout and emission. Bind each certificate to input/output artifacts and cost models. Changed representations require explicit bound translation; exceeding the accepted contract requires rechecking under a revised contract or rejection. |
+| RS-C4: complete execution boundary | Establish termination for the supported finite execution model and bound all permitted execution prefixes, measurement/classical branches and bounded retry policies. Distinguish worst-case from expected cost and quantum execution from compiler/search/simulator/host work. State excluded costs and physical assumptions. No hidden unbounded retry or oracle may satisfy a finite whole-workflow claim. |
+| RS-C5: release evidence | Publish the supported profile, actual-definition proofs, coverage/assumption ledger, reproducible audits and independent review, including the three v1 algorithm families. Test underestimated counts, stale certificates, phase-preserving but cost-changing passes and resource-model mismatches. |
+
+This is an explicit [dated addition to the trust boundary](../TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30),
+not a change to trusted assumptions or present production authority. Existing
+ownership proofs, exact-work budgets and numerical cost reports do not establish
+it. Mathematical realizability does not establish this bound either. V1 requires
+RS-C1–C5 alongside S05, PR-C1–C4 and V1-C1–C5; their completed scopes must agree.
+This adoption changes no current 0.2.1/0.2.2 feature gate, accepted program,
+manifest version, theorem registry or proof status. It does not add a claim
+of polynomial complexity, practical advantage or noiseless hardware execution.
 
 ## Project north star
 
@@ -325,6 +405,8 @@ error contract; it does not weaken exact auxiliary-cleanup requirements.
 
 The [Physical Realizability Theorem and PR-C1–C4](#physical-realizability-theorem-v1)
 are additional v1 requirements under the 2026-09-29 backend migration decision.
+The 2026-09-30 amendment adds the [Resource Safety Theorem and RS-C1–C5](#resource-safety-theorem-v1)
+as a third pillar, with finite static bounds preserved by compilation.
 V1-C1–C5 retain their algorithm-specific meanings.
 
 <a id="pre-v020-imaginary-v1-code"></a>

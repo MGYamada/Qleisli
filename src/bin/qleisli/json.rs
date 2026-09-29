@@ -6,11 +6,11 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli_core::frontend::compile::{check_project_with_policy, compile_project_with_policy};
-use qleisli_core::frontend::diagnostic::{Diagnostic, SourceLocation};
-use qleisli_core::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
+use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
+use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 
-fn quoted(text: &str) -> String {
+pub(super) fn quoted(text: &str) -> String {
     let mut output = String::from("\"");
     for ch in text.chars() {
         match ch {
@@ -24,7 +24,7 @@ fn quoted(text: &str) -> String {
     output
 }
 
-fn envelope(command: &str, diagnostic: Option<&str>, result: &str) -> String {
+pub(super) fn envelope(command: &str, diagnostic: Option<&str>, result: &str) -> String {
     format!(
         "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":{},\"outcome\":{},\"diagnostics\":[{}],\"result\":{result}}}\n",
         quoted(command),
@@ -60,7 +60,7 @@ fn location_json(root: &Path, location: &SourceLocation) -> Option<String> {
     ))
 }
 
-fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
+pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
     let primary = diagnostic
         .primary
         .as_ref()
@@ -86,7 +86,7 @@ fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
     }
 }
 
-fn simulation_failure(error: SimulationError) -> Diagnostic {
+pub(super) fn simulation_failure(error: SimulationError) -> Diagnostic {
     let code = match error {
         SimulationError::DimensionLimit { .. }
         | SimulationError::ComponentLimit { .. }
@@ -97,7 +97,7 @@ fn simulation_failure(error: SimulationError) -> Diagnostic {
     failure(code, error.to_string())
 }
 
-fn distribution_json(
+pub(super) fn distribution_json(
     distribution: std::collections::BTreeMap<Vec<bool>, f64>,
 ) -> Result<String, Diagnostic> {
     let mut output = String::from("{\"distribution\":[");
@@ -200,10 +200,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             execute(&options, &root)
         }
     } else {
-        Err(failure(
-            "usage",
-            "usage: qleisli <check|run> <source-root> [--format=json]",
-        ))
+        Err(failure("usage", super::options::USAGE))
     };
     let (document, status) = match result {
         Ok(result) => (envelope(command, None, &result), ExitCode::SUCCESS),
@@ -236,7 +233,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use qleisli_core::frontend::ast::Span;
+    use qleisli::frontend::ast::Span;
 
     #[test]
     fn json_escaping_covers_controls_quotes_backslashes_and_unicode() {

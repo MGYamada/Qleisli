@@ -379,3 +379,13 @@ private def falseProvider : Artifact :=
 example : (Power.inspect falseProvider 1 1 0 2000000).isOk = true := by decide +kernel
 example : (Derivation.checkAll falseProvider (Array.range 10)).isOk = false := by decide +kernel
 end HierarchicalPowerTests
+
+-- Focused reshape sentinels complement the audit of every compiled declaration.
+-- Future size-normalization/bit-segment theorems need their own sentinels when implemented.
+/-- info: 'QleisliKernel.Reshape.check_encoding' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms QleisliKernel.Reshape.check_encoding
+
+/-- info: 'QleisliKernel.Reshape.check_reference_coefficients' depends on axioms: [propext, Quot.sound] -/
+#guard_msgs in
+#print axioms QleisliKernel.Reshape.check_reference_coefficients

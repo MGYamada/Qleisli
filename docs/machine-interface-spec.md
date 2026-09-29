@@ -107,6 +107,12 @@ The JSON adapter clamps reference probabilities to [0,1] only when endpoint
 roundoff is at most 2^-40, inclusive. Nonfinite values or larger excursions
 produce `numerical`, exit 1 and no partial distribution. It does not renormalize
 the distribution, change the underlying simulator or weaken exact evidence.
+Both text and JSON `run` retain every positive computed weight: ideal-zero
+outcomes may appear as roundoff residues (for example about `6.16e-33` for
+`H; T^8; H` on zero). Listing an outcome does not prove it has nonzero ideal
+probability. No automatic display cutoff hides genuinely rare outcomes;
+[A020-13](v0.2.0-backlog.md#a020-13--numerical-zero-outcomes-obscure-ideal-deterministic-examples)
+tracks a separately specified, optional display summary.
 Simulation capacity errors map to `limit`; other current runtime failures map
 to `simulation`. Existing compiler codes, including contract failures currently
 classified as `InvalidIr`, retain their specified snake_case category. Future
@@ -257,10 +263,114 @@ incrementally before allocation; reject deep inputs without recursive drop.
 The stricter current semantic limits (six-bit evidence, 1,024 circuit steps,
 1,000,000 expanded steps and 10,000,000 aggregate exact work per import) still
 apply. The current 1 MiB identity budget counts implementation/specification
-names and source path bytes as well as source text. Counts are aggregate, not
-reset by each evidence entry. Exhaustion is
+names for each distinct evidence entry, plus each referenced source path and
+its exact text once per artifact. Repeated references to the same source index
+spend no additional source-byte budget; duplicate indices within an identity
+still reject. One path cannot label conflicting text. Import retains shared
+immutable snapshots for identical ordered source-index sequences; changing
+order or membership changes the snapshot. The ordinary evidence checker
+revalidates every receipt, and its aggregate exact-work/storage budget still
+applies. Export borrows metadata without materializing per-receipt source copies.
+Counts are aggregate, not reset by each evidence entry. Exhaustion is
 `limit`, not `invalid_ir`; both reject the artifact. These are limits on a new
 format, not capacity changes to existing Rust constructors.
+
+### Reconstructed finite unitary leaves
+
+The additive Rust API [interchange::finite_leaf](../src/interchange/finite_leaf.rs)
+reuses the finite verifier and exact checker for an explicit transitional
+leaf premise. `UnitaryBoundary::new` requires a complete legacy `BasisType`
+tree and one input/output `QuantumPort`, including each owner ID, shape and
+ordered wire list. Both endpoints have that exact type; zero-width `Unit`
+still has an owner. Equal widths do not identify distinct type trees or
+authorize an implicit Bit/Bits conversion.
+
+`check_unitary(payload, boundary, meaning, budget)` freshly imports all QIRF1/2
+programs and embedded evidence. It requires declared and derived `Unitary`,
+no external classical ports, the exact retained root type trees, the requested
+input port and the verifier's actual final output port. It extracts the exact
+whole-space matrix in those ordered axes, checks equality to the independently
+required matrix including global phase, and checks its isometry. Internal
+closed classical control is allowed by the existing finite contract. The
+six-bit/64-dimensional, arithmetic and circuit limits remain unchanged.
+
+The caller supplies the same `Budget` for all leaves of one artifact. Imports,
+embedded receipts, matrix extraction/comparison and isometry checks consume
+that allowance; the adapter neither resets it nor accepts an allowance above
+the existing 10,000,000-unit ceiling. QIRF byte/graph limits still apply to each
+packet; the future hierarchy host must also enforce its aggregate transport
+limits and reconstruct each bound packet. Capacity exhaustion returns `limit`;
+malformed QIRF and failed equations retain the existing `format`/`contract`
+diagnostics.
+
+`CheckedUnitaryLeaf` has private fields and retains immutable complete bytes,
+the required boundary, checked program and exact matrix. Its `matches` method
+compares complete bytes and structural values, never addresses or digests.
+Different whitespace can encode the same program, but constitutes a distinct
+byte binding. This result has no serialized authority form. It is not a Lean
+theorem, a hierarchy seal or a proof of the Rust implementation. The
+[migration plan](lean-kernel-migration.md) retains that Rust correspondence
+premise until K1/K2. The pure [hierarchical request projection](hierarchical-ir-spec.md#finite-reconstruction-requests)
+now retains actual indexed program/meaning bytes and identity-encoded endpoints.
+The [fresh hierarchy host](hierarchical-ir-spec.md#external-field-encoding-and-reconstruction-host)
+now reconstructs the actual returned indices from the same immutable artifact.
+Its additive [independent request API](hierarchical-ir-spec.md#independently-requested-roots)
+also checks the supported conditional root against a separate meaning graph.
+Its [singleton Fourier path](hierarchical-ir-spec.md#fourier-request-host) now
+uses the same API and request envelope for a closed single-`Bits<n>` QFT. A fresh
+composite Lean check binds the actual circuit to the independent Fourier
+contract, and Rust reconstructs both ordinary finite proofs and the additional
+phase-fixed H obligations on the same bytes and exact budget. Private `QLF1`
+framing and pending output are transport data, not producer evidence.
+Complete production integration, rectangular isometries, instruments and
+multi-owner leaves remain pending.
+
+### Exact finite matrix descriptions
+
+The additive `interchange::finite_matrix` transport encodes a mathematical
+matrix independently of its implementation. Its version-one envelope is
+exactly `{format:"qleisli.finite-matrix",version:1,domain:"zeta8-dyadic-v1",
+rows,cols,entries}`. Rows and columns are unsigned integers in 1–64; `entries`
+is a row-major array with exactly `rows*cols` scalars. Rectangular matrices are
+valid descriptions, but the unitary-leaf adapter requires the square dimension
+specified by its independently required type. A description is not evidence.
+
+Each scalar is an array of four dyadics in the fixed order `a,b,c,d`, denoting
+`a + b*sqrt(2) + i*(c + d*sqrt(2))`. A dyadic is exactly
+`{numerator:string,denominator_bits:integer}`, denoting `numerator/2^denominator_bits`.
+The numerator is canonical signed decimal i128 text: `0`, a nonzero positive
+decimal without leading zeros, or `-` followed by such a positive decimal.
+No plus sign, negative zero, whitespace or floating-point number is allowed.
+The exponent is 0–126. Zero requires exponent zero; a nonzero numerator must be
+odd when the exponent is positive. The four exponents are independent; an
+encoder must not rescale all coefficients to a common denominator. The complete
+existing exact scalar capacity is retained. Out-of-range numerators/exponents
+or dimensions return `limit`; malformed/noncanonical representations return
+`format`. Unknown fields, domains, versions and duplicate keys are rejected.
+
+`finite_matrix::encode(matrix)` produces deterministic JSON and a trailing LF.
+`decode(description, budget)` uses the existing bounded strict JSON reader
+(16 MiB, depth 128, one million values), checks dimensions and entry count,
+then charges four units per entry before constructing scalars. Failed scalar
+decoding does not refund that charge. The same caller budget is shared with
+leaf reconstruction and cannot exceed 10,000,000 units. Tokenization has its
+separate existing transport limits. Decoding performs no equation/isometry
+check and does not establish that a matrix is a supported program meaning.
+
+`finite_leaf::check_serialized_unitary(payload, boundary, description, budget)`
+first requires the combined payload and description size to be at most 16 MiB,
+decodes the description and invokes `check_unitary` with that exact matrix.
+`CheckedSerializedUnitaryLeaf` privately retains the checked leaf and the
+complete description bytes. `matches` compares both complete byte strings and
+the required boundary; altered whitespace changes the binding even if decoding
+is equal. Its work count includes decoding and reconstruction. All equation,
+phase, ownership and embedded-evidence checks of `check_unitary` still apply.
+This is a transitional finite Rust result, not a serialized authority token or
+a whole-hierarchy result. The reconstruction host now binds it to actual Lean
+request indices and shares aggregate work and payload accounting. Independent
+production root contracts and decoder correspondence remain separate obligations.
+
+### Independently supplied finite requests
 
 A request-file is exactly `{format:"qleisli.request",version:1,signature,
 meaning:{tag,table},source_snapshot}`. The signature is a basis tree; meaning
@@ -312,9 +422,16 @@ Use one normalized pure-state trajectory, starting from empty state on every
 call. At measurement, compute p0 by ascending basis index, draw
 `u=(word>>11)*2^-53`, select zero iff u<p0, collapse and renormalize the chosen
 branch. Clamp a probability outside [0,1] only within 2^-40; otherwise return
-numerical failure. Require finite amplitudes and |norm²−1|≤2^-40 before every
-observation and at completion; renormalize within tolerance, never continue
-from a zero-norm selected branch. Deterministic observations still consume a
+numerical failure. After each deterministic IR operation, require finite
+amplitudes, positive finite norm² and
+`|norm²−1| ≤ 2^-40 + 16 × f64::EPSILON × executed_steps`, then renormalize.
+Here `executed_steps` is work charged by that operation since the previous
+normalization, including nested circuit/contract steps; unused configured
+capacity contributes nothing. Before each observation, after collapse and at
+completion, use the base `2^-40` norm guard and renormalize within tolerance.
+Never continue from a zero-norm selected branch. Renormalization consumes no
+random word or extra IR execution step. This empirical roundoff guard is not
+a certified forward-error bound and does not authorize evidence. Deterministic observations still consume a
 word. Reset/discard use a hidden computational-basis measurement, then remove
 the old wire and optionally allocate fresh zero; this reproduces the ensemble
 partial trace, including entangled inputs. Consume hidden draws in program and

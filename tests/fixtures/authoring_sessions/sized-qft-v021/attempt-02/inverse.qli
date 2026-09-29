@@ -1,0 +1,11 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Inverse client of the pinned Qualtran QFTTextBook translation.
+use fourier::fourier;
+
+/// Reuse the same source definition; reverse its phase-fixed unitary action.
+pub unitary fn inverse_fourier[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>>
+requires n >= 1 {
+    adjoint(fourier[n], q)
+}

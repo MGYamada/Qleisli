@@ -1,0 +1,123 @@
+import QleisliKernel.Hierarchical.Gradient
+
+/-! Actual positive control and precision-scaled shared Fourier gradient.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+All child inspection uses the same remaining budget. Repetitions are checked
+as literal counts and never expanded. Whole-artifact typing remains required. -/
+
+namespace QleisliKernel.Hierarchical.FourierControl
+open Artifact
+
+structure Request where
+  root : Definition
+  childIndex : Nat
+  child : Definition
+  gradientIndex : Nat
+  gradient : Definition
+  count : Option Nat
+  polarity : Bool
+  deriving Repr
+
+def project (artifact : Artifact) (index : Nat) : Option Request := do
+  let root ← artifact.definitions[index]?
+  let .control childIndex polarity := root.body | none
+  let child ← artifact.definitions[childIndex]?
+  match child.body with
+  | .repeatOp count gradientIndex =>
+    let gradient ← artifact.definitions[gradientIndex]?
+    return ⟨root,childIndex,child,gradientIndex,gradient,some count,polarity⟩
+  | _ => return ⟨root,childIndex,child,childIndex,child,none,polarity⟩
+
+def Bound (artifact : Artifact) (index : Nat) (r : Request) : Prop :=
+  artifact.definitions[index]? = some r.root ∧
+  r.root.body = .control r.childIndex r.polarity ∧
+  artifact.definitions[r.childIndex]? = some r.child ∧
+  artifact.definitions[r.gradientIndex]? = some r.gradient ∧
+  match r.count with
+  | none => r.childIndex = r.gradientIndex ∧ r.child = r.gradient
+  | some count => r.child.body = .repeatOp count r.gradientIndex
+
+theorem project_bound (artifact : Artifact) (index : Nat) (r : Request)
+    (projected : project artifact index = some r) : Bound artifact index r := by
+  unfold project at projected
+  simp only [bind,Option.bind] at projected
+  repeat (split at projected <;> (try dsimp only at projected) <;> (try contradiction))
+  all_goals try contradiction
+  all_goals
+    cases Option.some.inj projected
+    simp only [Bound]
+    first
+    | exact ⟨by assumption,by assumption,by assumption,by assumption,by assumption⟩
+    | exact ⟨by assumption,by assumption,by assumption,by assumption,by simp⟩
+
+def shape (precision n : Nat) (r : Request) : Bool :=
+  NodeTyping.controlled r.root r.child && Gradient.register r.child n &&
+    Gradient.register r.gradient n && r.child.interface == r.gradient.interface &&
+    (wires r.root.interface.inputs).size == n+1 &&
+    (wires r.root.interface.outputs).size == n+1 && r.polarity &&
+    match r.count with
+    | none => precision == n+1
+    | some count => decide (n+1 < precision) && count == 2^(precision-(n+1))
+
+def headers (r : Request) : List Interface := [r.root.interface,r.child.interface,r.gradient.interface]
+
+def scan (r : Request) : Nat := 48+(headers r).foldl (fun n h => n+h.scan) 0
+
+def charge (r : Request) : Nat := scan r+(headers r).foldl (fun n h =>
+  n+32+16*(TypedRule.sideFields h.inputs+TypedRule.sideFields h.outputs)) 0
+
+structure Pending where
+  request : Request
+  gradient : Gradient.Pending
+  visits : Nat
+  deriving Repr
+
+def inspect (artifact : Artifact) (precision n index remaining : Nat) : Except Error Pending :=
+  if remaining > 2000000 || precision > 8 || n = 0 || n+1 > precision then .error .limit else
+  match project artifact index with
+  | none => .error .contract
+  | some r =>
+    if scan r > remaining then .error .limit else
+    let cost := charge r
+    if cost > remaining then .error .limit else
+    if !shape precision n r then .error .contract else
+    match Gradient.inspect artifact precision n r.gradientIndex (remaining-cost) with
+    | .error e => .error e
+    | .ok gradient => .ok ⟨r,gradient,cost+gradient.visits⟩
+
+theorem inspect_sound (artifact : Artifact) (precision n index remaining : Nat) (pending : Pending)
+    (accepted : inspect artifact precision n index remaining = .ok pending) :
+    pending.visits ≤ remaining ∧ remaining ≤ 2000000 ∧ 0 < n ∧ n+1 ≤ precision ∧ precision ≤ 8 ∧
+    Bound artifact index pending.request ∧ shape precision n pending.request = true ∧
+    Gradient.inspect artifact precision n pending.request.gradientIndex
+      (remaining-charge pending.request) = .ok pending.gradient := by
+  unfold inspect at accepted
+  split at accepted
+  next exceeded => contradiction
+  next limits =>
+    simp only [Bool.or_eq_true,decide_eq_true_eq,not_or] at limits
+    split at accepted
+    next absent => contradiction
+    next r projected =>
+      split at accepted
+      next exceeded => contradiction
+      next scanned =>
+        dsimp only at accepted
+        split at accepted
+        next exceeded => contradiction
+        next charged =>
+          split at accepted
+          next invalid => contradiction
+          next valid =>
+            split at accepted
+            next failed => contradiction
+            next gradient checked =>
+              cases Except.ok.inj accepted
+              have bounded := (Gradient.inspect_sound artifact precision n r.gradientIndex
+                (remaining-charge r) gradient checked).1
+              refine ⟨?_,by omega,by omega,by omega,by omega,project_bound artifact index r projected,
+                by simpa using valid,checked⟩
+              change charge r+gradient.visits ≤ remaining
+              omega
+
+end QleisliKernel.Hierarchical.FourierControl

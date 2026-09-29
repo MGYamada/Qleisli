@@ -1,0 +1,650 @@
+{
+  "format": "qleisli.hierarchical-fourier-stage-binding",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 144,
+  "results": {
+    "budget-1": [
+      "71718",
+      "71840",
+      "71840"
+    ],
+    "pending-2-1": [
+      "pending:3916"
+    ],
+    "renamed-2-1": [
+      "pending:3916"
+    ],
+    "exact-2-1": [
+      "pending:3916"
+    ],
+    "short-2-1": [
+      "limit"
+    ],
+    "budget-2": [
+      "255471",
+      "256851",
+      "260767"
+    ],
+    "pending-3-1": [
+      "pending:3916"
+    ],
+    "renamed-3-1": [
+      "pending:3916"
+    ],
+    "exact-3-1": [
+      "pending:3916"
+    ],
+    "short-3-1": [
+      "limit"
+    ],
+    "pending-3-2": [
+      "pending:4556"
+    ],
+    "renamed-3-2": [
+      "pending:4556"
+    ],
+    "exact-3-2": [
+      "pending:4556"
+    ],
+    "short-3-2": [
+      "limit"
+    ],
+    "budget-3": [
+      "373896",
+      "378006",
+      "386478"
+    ],
+    "pending-4-1": [
+      "pending:3916"
+    ],
+    "renamed-4-1": [
+      "pending:3916"
+    ],
+    "exact-4-1": [
+      "pending:3916"
+    ],
+    "short-4-1": [
+      "limit"
+    ],
+    "pending-4-2": [
+      "pending:4556"
+    ],
+    "renamed-4-2": [
+      "pending:4556"
+    ],
+    "exact-4-2": [
+      "pending:4556"
+    ],
+    "short-4-2": [
+      "limit"
+    ],
+    "pending-4-3": [
+      "pending:5324"
+    ],
+    "renamed-4-3": [
+      "pending:5324"
+    ],
+    "exact-4-3": [
+      "pending:5324"
+    ],
+    "short-4-3": [
+      "limit"
+    ],
+    "budget-4": [
+      "620825",
+      "629601",
+      "643397"
+    ],
+    "pending-5-1": [
+      "pending:3916"
+    ],
+    "renamed-5-1": [
+      "pending:3916"
+    ],
+    "exact-5-1": [
+      "pending:3916"
+    ],
+    "short-5-1": [
+      "limit"
+    ],
+    "pending-5-2": [
+      "pending:4556"
+    ],
+    "renamed-5-2": [
+      "pending:4556"
+    ],
+    "exact-5-2": [
+      "pending:4556"
+    ],
+    "short-5-2": [
+      "limit"
+    ],
+    "pending-5-3": [
+      "pending:5324"
+    ],
+    "renamed-5-3": [
+      "pending:5324"
+    ],
+    "exact-5-3": [
+      "pending:5324"
+    ],
+    "short-5-3": [
+      "limit"
+    ],
+    "pending-5-4": [
+      "pending:6220"
+    ],
+    "renamed-5-4": [
+      "pending:6220"
+    ],
+    "exact-5-4": [
+      "pending:6220"
+    ],
+    "short-5-4": [
+      "limit"
+    ],
+    "budget-5": [
+      "778980",
+      "794950",
+      "814966"
+    ],
+    "pending-6-1": [
+      "pending:3916"
+    ],
+    "renamed-6-1": [
+      "pending:3916"
+    ],
+    "exact-6-1": [
+      "pending:3916"
+    ],
+    "short-6-1": [
+      "limit"
+    ],
+    "pending-6-2": [
+      "pending:4556"
+    ],
+    "renamed-6-2": [
+      "pending:4556"
+    ],
+    "exact-6-2": [
+      "pending:4556"
+    ],
+    "short-6-2": [
+      "limit"
+    ],
+    "pending-6-3": [
+      "pending:5324"
+    ],
+    "renamed-6-3": [
+      "pending:5324"
+    ],
+    "exact-6-3": [
+      "pending:5324"
+    ],
+    "short-6-3": [
+      "limit"
+    ],
+    "pending-6-4": [
+      "pending:6220"
+    ],
+    "renamed-6-4": [
+      "pending:6220"
+    ],
+    "exact-6-4": [
+      "pending:6220"
+    ],
+    "short-6-4": [
+      "limit"
+    ],
+    "pending-6-5": [
+      "pending:7244"
+    ],
+    "renamed-6-5": [
+      "pending:7244"
+    ],
+    "exact-6-5": [
+      "pending:7244"
+    ],
+    "short-6-5": [
+      "limit"
+    ],
+    "budget-6": [
+      "1095539",
+      "1121951",
+      "1149211"
+    ],
+    "pending-7-1": [
+      "pending:3916"
+    ],
+    "renamed-7-1": [
+      "pending:3916"
+    ],
+    "exact-7-1": [
+      "pending:3916"
+    ],
+    "short-7-1": [
+      "limit"
+    ],
+    "pending-7-2": [
+      "pending:4556"
+    ],
+    "renamed-7-2": [
+      "pending:4556"
+    ],
+    "exact-7-2": [
+      "pending:4556"
+    ],
+    "short-7-2": [
+      "limit"
+    ],
+    "pending-7-3": [
+      "pending:5324"
+    ],
+    "renamed-7-3": [
+      "pending:5324"
+    ],
+    "exact-7-3": [
+      "pending:5324"
+    ],
+    "short-7-3": [
+      "limit"
+    ],
+    "pending-7-4": [
+      "pending:6220"
+    ],
+    "renamed-7-4": [
+      "pending:6220"
+    ],
+    "exact-7-4": [
+      "pending:6220"
+    ],
+    "short-7-4": [
+      "limit"
+    ],
+    "pending-7-5": [
+      "pending:7244"
+    ],
+    "renamed-7-5": [
+      "pending:7244"
+    ],
+    "exact-7-5": [
+      "pending:7244"
+    ],
+    "short-7-5": [
+      "limit"
+    ],
+    "pending-7-6": [
+      "pending:8396"
+    ],
+    "renamed-7-6": [
+      "pending:8396"
+    ],
+    "exact-7-6": [
+      "pending:8396"
+    ],
+    "short-7-6": [
+      "limit"
+    ],
+    "budget-7": [
+      "1299056",
+      "1340006",
+      "1375662"
+    ],
+    "pending-8-1": [
+      "pending:3916"
+    ],
+    "renamed-8-1": [
+      "pending:3916"
+    ],
+    "exact-8-1": [
+      "pending:3916"
+    ],
+    "short-8-1": [
+      "limit"
+    ],
+    "pending-8-2": [
+      "pending:4556"
+    ],
+    "renamed-8-2": [
+      "pending:4556"
+    ],
+    "exact-8-2": [
+      "pending:4556"
+    ],
+    "short-8-2": [
+      "limit"
+    ],
+    "pending-8-3": [
+      "pending:5324"
+    ],
+    "renamed-8-3": [
+      "pending:5324"
+    ],
+    "exact-8-3": [
+      "pending:5324"
+    ],
+    "short-8-3": [
+      "limit"
+    ],
+    "pending-8-4": [
+      "pending:6220"
+    ],
+    "renamed-8-4": [
+      "pending:6220"
+    ],
+    "exact-8-4": [
+      "pending:6220"
+    ],
+    "short-8-4": [
+      "limit"
+    ],
+    "pending-8-5": [
+      "pending:7244"
+    ],
+    "renamed-8-5": [
+      "pending:7244"
+    ],
+    "exact-8-5": [
+      "pending:7244"
+    ],
+    "short-8-5": [
+      "limit"
+    ],
+    "pending-8-6": [
+      "pending:8396"
+    ],
+    "renamed-8-6": [
+      "pending:8396"
+    ],
+    "exact-8-6": [
+      "pending:8396"
+    ],
+    "short-8-6": [
+      "limit"
+    ],
+    "pending-8-7": [
+      "pending:9676"
+    ],
+    "renamed-8-7": [
+      "pending:9676"
+    ],
+    "exact-8-7": [
+      "pending:9676"
+    ],
+    "short-8-7": [
+      "limit"
+    ],
+    "budget-8": [
+      "1694205",
+      "1754765",
+      "1800097"
+    ],
+    "tensor-order": [
+      "contract"
+    ],
+    "tensor-alias": [
+      "contract"
+    ],
+    "recursive-order": [
+      "contract"
+    ],
+    "dangling-child": [
+      "contract"
+    ],
+    "sequence-order": [
+      "contract"
+    ],
+    "missing-gradient": [
+      "contract"
+    ],
+    "oversized-sequence": [
+      "contract"
+    ],
+    "take-position": [
+      "contract"
+    ],
+    "put-width": [
+      "contract"
+    ],
+    "low-permutation": [
+      "contract"
+    ],
+    "high-nonidentity": [
+      "contract"
+    ],
+    "routing": [
+      "contract"
+    ],
+    "bits-vs-tuple": [
+      "contract"
+    ],
+    "observe-child": [
+      "contract"
+    ],
+    "gradient-interface": [
+      "contract"
+    ],
+    "aliased-recursion": [
+      "contract"
+    ],
+    "missing-root": [
+      "contract"
+    ],
+    "zero-budget": [
+      "limit"
+    ],
+    "reset-budget": [
+      "limit"
+    ],
+    "zero-width": [
+      "limit"
+    ],
+    "excess-width": [
+      "limit"
+    ],
+    "wrong-width": [
+      "contract"
+    ],
+    "leaf-obligation-remains": [
+      "pending:9676"
+    ],
+    "gradient-obligation-remains": [
+      "pending:9676"
+    ]
+  },
+  "semantic_probes": [
+    {
+      "precision": 2,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 2.5114115397022025e-16
+    },
+    {
+      "precision": 3,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 2.0471103266002644e-16
+    },
+    {
+      "precision": 3,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.3743915342634358e-15
+    },
+    {
+      "precision": 4,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 3.2196075878347775e-16
+    },
+    {
+      "precision": 4,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.4360660794162128e-15
+    },
+    {
+      "precision": 4,
+      "width": 4,
+      "vectors": 6,
+      "maximum_error": 3.798401069772352e-15
+    },
+    {
+      "precision": 5,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 3.1023929892146347e-16
+    },
+    {
+      "precision": 5,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.4713073293813407e-15
+    },
+    {
+      "precision": 5,
+      "width": 4,
+      "vectors": 6,
+      "maximum_error": 3.771727337545778e-15
+    },
+    {
+      "precision": 5,
+      "width": 5,
+      "vectors": 6,
+      "maximum_error": 3.365299161289335e-15
+    },
+    {
+      "precision": 6,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 3.77252584467803e-16
+    },
+    {
+      "precision": 6,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.3788683915077173e-15
+    },
+    {
+      "precision": 6,
+      "width": 4,
+      "vectors": 6,
+      "maximum_error": 3.812612049375558e-15
+    },
+    {
+      "precision": 6,
+      "width": 5,
+      "vectors": 6,
+      "maximum_error": 3.350156614833261e-15
+    },
+    {
+      "precision": 6,
+      "width": 6,
+      "vectors": 6,
+      "maximum_error": 4.2099133379706924e-15
+    },
+    {
+      "precision": 7,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 4.549353625119069e-16
+    },
+    {
+      "precision": 7,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.5393713663616246e-15
+    },
+    {
+      "precision": 7,
+      "width": 4,
+      "vectors": 6,
+      "maximum_error": 3.818294554823767e-15
+    },
+    {
+      "precision": 7,
+      "width": 5,
+      "vectors": 6,
+      "maximum_error": 3.3460149361160777e-15
+    },
+    {
+      "precision": 7,
+      "width": 6,
+      "vectors": 6,
+      "maximum_error": 4.231360032896745e-15
+    },
+    {
+      "precision": 7,
+      "width": 7,
+      "vectors": 6,
+      "maximum_error": 5.673270513883451e-15
+    },
+    {
+      "precision": 8,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 1.2681704611657094e-15
+    },
+    {
+      "precision": 8,
+      "width": 3,
+      "vectors": 6,
+      "maximum_error": 1.6439175459749098e-15
+    },
+    {
+      "precision": 8,
+      "width": 4,
+      "vectors": 6,
+      "maximum_error": 3.875476255473177e-15
+    },
+    {
+      "precision": 8,
+      "width": 5,
+      "vectors": 6,
+      "maximum_error": 3.3661002731378914e-15
+    },
+    {
+      "precision": 8,
+      "width": 6,
+      "vectors": 6,
+      "maximum_error": 4.257383221254243e-15
+    },
+    {
+      "precision": 8,
+      "width": 7,
+      "vectors": 6,
+      "maximum_error": 5.669502959638102e-15
+    },
+    {
+      "precision": 8,
+      "width": 8,
+      "vectors": 6,
+      "maximum_error": 9.505822624549878e-15
+    }
+  ],
+  "wrong_h_oracle_rejected": true,
+  "semantic_evidence_issued": false,
+  "source_sha256": "7e9eb4bd97c6f5d1418177863c295963463f3e6e0bc848be7a992e531e323868",
+  "binary_sha256": "ec09df27ca9f0585f6e7d4ff5e09938c54ffde35e79de9fa9c95a63d4a8937b3",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [57/59] Built Main (9.2s)\n\u2714 [58/59] Built Main:c.o (1.1s)\n\u2714 [59/59] Built \u00abartifact-test\u00bb:exe (284ms)\nBuild completed successfully (59 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-k2u9p8sr/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "budget-1|71718|71840|71840\npending-2-1|pending:3916\nrenamed-2-1|pending:3916\nexact-2-1|pending:3916\nshort-2-1|limit\nbudget-2|255471|256851|260767\npending-3-1|pending:3916\nrenamed-3-1|pending:3916\nexact-3-1|pending:3916\nshort-3-1|limit\npending-3-2|pending:4556\nrenamed-3-2|pending:4556\nexact-3-2|pending:4556\nshort-3-2|limit\nbudget-3|373896|378006|386478\npending-4-1|pending:3916\nrenamed-4-1|pending:3916\nexact-4-1|pending:3916\nshort-4-1|limit\npending-4-2|pending:4556\nrenamed-4-2|pending:4556\nexact-4-2|pending:4556\nshort-4-2|limit\npending-4-3|pending:5324\nrenamed-4-3|pending:5324\nexact-4-3|pending:5324\nshort-4-3|limit\nbudget-4|620825|629601|643397\npending-5-1|pending:3916\nrenamed-5-1|pending:3916\nexact-5-1|pending:3916\nshort-5-1|limit\npending-5-2|pending:4556\nrenamed-5-2|pending:4556\nexact-5-2|pending:4556\nshort-5-2|limit\npending-5-3|pending:5324\nrenamed-5-3|pending:5324\nexact-5-3|pending:5324\nshort-5-3|limit\npending-5-4|pending:6220\nrenamed-5-4|pending:6220\nexact-5-4|pending:6220\nshort-5-4|limit\nbudget-5|778980|794950|814966\npending-6-1|pending:3916\nrenamed-6-1|pending:3916\nexact-6-1|pending:3916\nshort-6-1|limit\npending-6-2|pending:4556\nrenamed-6-2|pending:4556\nexact-6-2|pending:4556\nshort-6-2|limit\npending-6-3|pending:5324\nrenamed-6-3|pending:5324\nexact-6-3|pending:5324\nshort-6-3|limit\npending-6-4|pending:6220\nrenamed-6-4|pending:6220\nexact-6-4|pending:6220\nshort-6-4|limit\npending-6-5|pending:7244\nrenamed-6-5|pending:7244\nexact-6-5|pending:7244\nshort-6-5|limit\nbudget-6|1095539|1121951|1149211\npending-7-1|pending:3916\nrenamed-7-1|pending:3916\nexact-7-1|pending:3916\nshort-7-1|limit\npending-7-2|pending:4556\nrenamed-7-2|pending:4556\nexact-7-2|pending:4556\nshort-7-2|limit\npending-7-3|pending:5324\nrenamed-7-3|pending:5324\nexact-7-3|pending:5324\nshort-7-3|limit\npending-7-4|pending:6220\nrenamed-7-4|pending:6220\nexact-7-4|pending:6220\nshort-7-4|limit\npending-7-5|pending:7244\nrenamed-7-5|pending:7244\nexact-7-5|pending:7244\nshort-7-5|limit\npending-7-6|pending:8396\nrenamed-7-6|pending:8396\nexact-7-6|pending:8396\nshort-7-6|limit\nbudget-7|1299056|1340006|1375662\npending-8-1|pending:3916\nrenamed-8-1|pending:3916\nexact-8-1|pending:3916\nshort-8-1|limit\npending-8-2|pending:4556\nrenamed-8-2|pending:4556\nexact-8-2|pending:4556\nshort-8-2|limit\npending-8-3|pending:5324\nrenamed-8-3|pending:5324\nexact-8-3|pending:5324\nshort-8-3|limit\npending-8-4|pending:6220\nrenamed-8-4|pending:6220\nexact-8-4|pending:6220\nshort-8-4|limit\npending-8-5|pending:7244\nrenamed-8-5|pending:7244\nexact-8-5|pending:7244\nshort-8-5|limit\npending-8-6|pending:8396\nrenamed-8-6|pending:8396\nexact-8-6|pending:8396\nshort-8-6|limit\npending-8-7|pending:9676\nrenamed-8-7|pending:9676\nexact-8-7|pending:9676\nshort-8-7|limit\nbudget-8|1694205|1754765|1800097\ntensor-order|contract\ntensor-alias|contract\nrecursive-order|contract\ndangling-child|contract\nsequence-order|contract\nmissing-gradient|contract\noversized-sequence|contract\ntake-position|contract\nput-width|contract\nlow-permutation|contract\nhigh-nonidentity|contract\nrouting|contract\nbits-vs-tuple|contract\nobserve-child|contract\ngradient-interface|contract\naliased-recursion|contract\nmissing-root|contract\nzero-budget|limit\nreset-budget|limit\nzero-width|limit\nexcess-width|limit\nwrong-width|contract\nleaf-obligation-remains|pending:9676\ngradient-obligation-remains|pending:9676\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Actual five-node stage geometry and cumulative Conditional/Gradient/FourierStage budget. The one-bit base, exact H, controlled-gradient/recursive obligations, complete reversal and requested-root binding remain; external schemas stay disabled."
+}

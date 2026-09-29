@@ -1,0 +1,5 @@
+Protocol.lean:603:12: error(lean.unknownIdentifier): Unknown identifier `QleisliKernel.Hierarchical.FourierRoot.Request`
+Protocol.lean:606:4: warning: declaration uses `sorry`
+Protocol.lean:620:13: warning: unused variable `width`
+
+Note: This linter can be disabled with `set_option linter.unusedVariables false`

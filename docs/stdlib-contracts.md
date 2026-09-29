@@ -21,6 +21,14 @@ contracts with independently checked implementation evidence for v0.1;
 the bounded checking path is implemented separately. Documentation and
 regression evidence in this ledger do not automatically issue those proofs.
 
+Under the [adopted library goal](stdlib-roadmap.md#adopted-library-goal), this
+ledger supplies the explicit specification/evidence part of an integrated
+computational foundation and quantum-information textbook. Future component
+reviews must connect these contracts to conceptual explanations, derivations,
+readable implementations and worked examples. Existing entries retain their
+recorded status; documentation coverage and open proofs must remain visible.
+This direction does not change ledger format v1 or claim complete coverage.
+
 **Source-documentation follow-up (2026-09-28):** all four bundled files have
 module documentation and their twelve public/three private definitions have
 English docstrings. [The documentation extension](documentation-comments.md)
@@ -143,3 +151,82 @@ model for correction, and QPE precision are separate assumptions recorded in the
 This ledger records all 12 public definitions in its initial format.
 Generalized `amplify`/`phase_estimate` APIs, evaluation on multiple previously
 unseen tasks, and automatic evidence-schema checking remain L2-and-later work.
+
+## Sized corpus candidates before standard adoption
+
+The [corpus-first continuation](../corpus/sized/README.md) supplies two ordinary
+source definitions through an experimental development compiler. These are
+case-local candidates, not additions to the twelve bundled APIs or a frozen
+module hierarchy. The [source contract](sized-corpus-source.md) distinguishes
+language forms, sealed operations and ordinary definitions.
+
+| Candidate | Contract and scope | Current verification | Standard adoption condition |
+| --- | --- | --- | --- |
+| `xor_into[n]` | Two `Q<Bits<n>>` owners in and out; unitary, phase +1, corresponding-bit XOR, n=1/2/4/8 plus local n=0. No zero-input promise. | Actual generated hierarchy independently inspected; every basis column and coherent reference columns compared to the formula. | Production source/call support and independently bound algorithm contract, preservation/compatibility gates and a reviewed public module/API. |
+| `ghz[n]` | One `Q<Bits<n>>` owner in and out; unitary H on low bit then controlled X fanout, n=1/2/3/8. GHZ preparation requires all-zero input. | Full circuit checked on every basis input, beyond the preparation premise, plus coherent reference columns. | Same source/contract gates; keep full unitary meaning distinct from the zero-input preparation claim. |
+
+The source comments and corpus explanation form the initial reading surface.
+General natural-size proofs and source preservation remain open; native tests
+are not those proofs. Keep source-specific licenses before any standard adoption.
+
+The [QFT continuation](../corpus/sized/qualtran_qft/README.md) adds the case-local
+`fourier[n]: Q<Bits<n>> -> Q<Bits<n>>`, unitary with the positive Fourier
+matrix, and `inverse_fourier[n]`, an ordinary imported adjoint client. Widths
+1/2/3/4/8 have native reconstruction and complete forward/inverse numerical
+columns; forward artifacts also match independently requested Fourier meaning.
+Repeated calls share the compiled body, and a framed call preserves reference
+correlations. These remain experimental source candidates with production
+integration, general source preservation and independently named inverse binding
+open. Record the 255 width-eight H/phase applications separately from 160
+forward definitions and the source's 36 H/controlled-phase operations; sharing
+does not certify an execution cost reduction. Existing bundled APIs are unchanged.
+
+The [coherent QPE continuation](../corpus/sized/qualtran_qpe/README.md) adds
+ordinary case-local `hadamard_bits`, `evolve` and `estimate` candidates.
+`hadamard_bits[n]` implements H tensor n on arbitrary input. `evolve[n,j,d]`
+phases the low target bit by `exp(2*pi*i*j/2^d)` and preserves the rest.
+`estimate[n,m,U]` is unitary, consumes/returns both quantum registers, and
+requires declared Controlled access to its transparent `Op<Bits<n>>` provider.
+Its complete Walsh/DFT/operator-power contract and zero-phase-input specialization
+are in the corpus explanation. Small cases pass full-column/reference and
+diagnostic branch-vector checks, including off-grid and global-phase probes.
+The 2026-09-30 user decision defers further maximum-size validation. Standard
+adoption still needs independent named QPE binding, initialization/measurement
+into `CBits`, production source/runtime integration and reviewed public APIs;
+these definitions do not extend the bundled library or claim instrument proof.
+
+The [shared arithmetic continuation](../corpus/sized/qualtran_arithmetic/README.md)
+adds five case-local ordinary candidates, each with unitary effect and phase +1
+on its stated permutation. All input owners are returned, with no scratch.
+
+| Candidate | Contract | Verification and adoption |
+| --- | --- | --- |
+| `all_ones[n]` | `(Q<Bits<n>>,Q<Bit>)` maps to the same owner group, flipping the target iff all control bits are one; true for the local empty case. | Recursive actual controls; small native/finite checks and complete basis/reference tests. |
+| `increment[n]` | `Q<Bits<n>>` maps to itself with modular addition by one. | Coherent carry before low-bit updates; wrong-order/missing-carry counterexamples detected. |
+| `add_k[n,K]` | Same register type, modular addition by K, including zero and wraparound. | Shared increment K times; nK X applications, without an efficient synthesis claim. |
+| `invert_bits[n]` | Same register type, XOR with `2^n-1`. | Shared complement used twice in equality; phase-sensitive regression coverage. |
+| `equals[n]` | `(Q<Bits<n>>,Q<Bits<n>>,Q<Bit>)` maps to the same owner group, `t` becoming `t xor [x=y]`. | Both input registers restored; both target values and coherent references checked, including missing restoration and extra phase faults. |
+
+Widths 0–3 pass the [recorded tests](../corpus/sized/arithmetic-validation.json);
+zero width is a local boundary test. These candidates require production
+source/call integration, independently bound arithmetic contracts, preservation
+and compatibility gates, reviewed cost expectations and a public module/API
+decision before standard adoption. The twelve bundled definitions are unchanged.
+
+The [local QPE clients](../tests/fixtures/sized_clients/README.md) add six
+Qleisli-authored integration candidates, also outside the bundled APIs:
+
+| Candidate | Unitary contract and premises | Verification/adoption status |
+| --- | --- | --- |
+| `order_phase[n,m,U]` | Same complete quantum phase/target group in and out; shared QPE for phase-fixed U with declared Controlled access. Order interpretation requires a specified permutation/orbit and zero phase input. | Tested with the actual `mul_two` provider; no generic order-recovery or measured API claim. |
+| `mul_two[n]` | Same `Q<Bits<n>>`, scalar +1 modular doubling for residues below `2^n-1`, fixing the unused all-ones label; n>=2. | Full small-input/reference checks including n=4,N=15; not general modular synthesis. |
+| `prepare[n,j,d]` | Same register, low-bit `H P(j,d) H` with spectator identity; n>=1 and normalized dyadic phase bounds. | Complete circuit phase retained; from zero, low-bit success is `sin(pi*j/2^d)^2`. |
+| `reflect_low[n]` | Same register, phase-fixed low-bit Z with spectator identity. | Exact dyadic rule; not a general n-qubit zero-state reflection. |
+| `grover[n,j,d]` | Same register, `A Z A† Z` for that exact shared A. | Actual source calls and inverse; wrong sign/conjugation detected by full-state tests. |
+| `amplitude_phase[n,m,j,d]` | Same phase/target group, first A on target then shared QPE of G. Probability interpretation additionally requires zero initial phase/target. | p=0/1, aligned/off-grid and spectator cases pass; numerical decoder is diagnostic only. |
+
+The [record](../tests/fixtures/sized_clients/validation.json) covers 432 basis
+and 31 coherent/reference columns. These clients still require initialization,
+measurement into `CBits`, classical-result integration, independently bound
+algorithm contracts, production source/runtime and compatibility gates before
+standard adoption. They do not fix a general library module organization.

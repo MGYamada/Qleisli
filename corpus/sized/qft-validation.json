@@ -1,0 +1,467 @@
+{
+  "format": "qleisli.sized-qft-experiment",
+  "version": 1,
+  "status": "passed-experimental-source-path",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "check_source_fourier_contracts",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "kernel_sha256": "3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a",
+  "source_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+  "inverse_source_sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+  "source_rejections": [
+    {
+      "case": "zero-width",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "oversized-register",
+      "diagnostic": "register width exceeds the eight-bit register profile"
+    },
+    {
+      "case": "false-premise",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "angle-denominator",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "unnormalized-angle",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "alias-control",
+      "diagnostic": "unknown, captured or already moved quantum value control"
+    },
+    {
+      "case": "unselected-branch-alias",
+      "diagnostic": "unknown, captured or already moved quantum value high"
+    },
+    {
+      "case": "unselected-static-name",
+      "diagnostic": "unbound static natural unknown"
+    },
+    {
+      "case": "unknown-module",
+      "diagnostic": "unsupported or duplicate import fourier::fourier"
+    },
+    {
+      "case": "unknown-imported-declaration",
+      "diagnostic": "unknown imported declaration fourier::fourier"
+    },
+    {
+      "case": "missing-static-argument",
+      "diagnostic": "ordinary operation signature/static arguments do not match"
+    },
+    {
+      "case": "operation-type-mismatch",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "operation-cycle",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "aggregate-source-work",
+      "diagnostic": "invalid or excessive static fold range"
+    }
+  ],
+  "artifacts": {
+    "qft-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "inverse-1": {
+      "sha256": "2747beba2fb43ac725fd6587ea1ad3ad33af14d0b12e82eda1a01d3895cc9afd",
+      "bytes": 17765,
+      "definitions": 18
+    },
+    "qft-2": {
+      "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+      "bytes": 33836,
+      "definitions": 34
+    },
+    "inverse-2": {
+      "sha256": "8ab71c0a1e97645294ac005be591e3576c7c97d2dec03e6339c8c60bcddeb667",
+      "bytes": 37619,
+      "definitions": 38
+    },
+    "qft-3": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "inverse-3": {
+      "sha256": "b69df295952421152361f49b447d650f5bab762009c5e5f35376a63e9b0e397f",
+      "bytes": 58376,
+      "definitions": 59
+    },
+    "qft-4": {
+      "sha256": "c535a00e2d6b54ab404e59c6319ab9dbd9e0f81e396ab39d7a74da77b3a56b03",
+      "bytes": 75408,
+      "definitions": 76
+    },
+    "inverse-4": {
+      "sha256": "998954c33776cedb05b356a2135b85373a79b30d063b31224ee5bac49b9853a0",
+      "bytes": 79295,
+      "definitions": 80
+    },
+    "qft-8": {
+      "sha256": "3aff0fe1b86fdecee31f0557d1a74e088fef193b55e83326319182ca00177ba4",
+      "bytes": 160669,
+      "definitions": 160
+    },
+    "inverse-8": {
+      "sha256": "8704bedfc1f574d3e0c14c7c2e1bcdce2fdbb5c54d4342734bc47bb5335af344",
+      "bytes": 164784,
+      "definitions": 164
+    },
+    "equivalent-angle": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "wrapped-inverse-3": {
+      "sha256": "606f10185d7c3d5f1756674bc97a7f491ad6a153c0c1679bcaac5c62180bec28",
+      "bytes": 55269,
+      "definitions": 56
+    },
+    "shared-twice-8": {
+      "sha256": "b4fa43c92453f21fc4ed03feeb0139ab13be436112786935be93f9b7190bc752",
+      "bytes": 167646,
+      "definitions": 167
+    },
+    "framed-call-2": {
+      "sha256": "256d36c2b4fa05ae3389ee5569ccc71a32a697e59ff698a0e2d9164c07a2c546",
+      "bytes": 43501,
+      "definitions": 42
+    },
+    "framed-call-8": {
+      "sha256": "d330861165d163ad9d62a39a83984bb83c32a1035ccb0e891ecf0476c036f073",
+      "bytes": 171646,
+      "definitions": 168
+    },
+    "missing-reversal": {
+      "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "missing-phase": {
+      "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+      "bytes": 28857,
+      "definitions": 25
+    },
+    "wrong-phase": {
+      "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "wrong-h": {
+      "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+      "bytes": 35524,
+      "definitions": 31
+    },
+    "inverse-changed-dependency": {
+      "sha256": "18876d261be80f73b5a710c6c981c0d5e09441d1f46e957ab5cff99618c34314",
+      "bytes": 36276,
+      "definitions": 32
+    }
+  },
+  "native": [
+    [
+      "qft-1",
+      "inspect",
+      "77268",
+      "67"
+    ],
+    [
+      "qft-1",
+      "ok",
+      "83027",
+      "118"
+    ],
+    [
+      "inverse-1",
+      "inspect",
+      "96301",
+      "67"
+    ],
+    [
+      "qft-2",
+      "inspect",
+      "211873",
+      "134"
+    ],
+    [
+      "qft-2",
+      "ok",
+      "228027",
+      "236"
+    ],
+    [
+      "inverse-2",
+      "inspect",
+      "236798",
+      "134"
+    ],
+    [
+      "qft-3",
+      "inspect",
+      "367196",
+      "201"
+    ],
+    [
+      "qft-3",
+      "ok",
+      "397395",
+      "354"
+    ],
+    [
+      "inverse-3",
+      "inspect",
+      "398653",
+      "201"
+    ],
+    [
+      "qft-4",
+      "inspect",
+      "541883",
+      "268"
+    ],
+    [
+      "qft-4",
+      "ok",
+      "590720",
+      "472"
+    ],
+    [
+      "inverse-4",
+      "inspect",
+      "580512",
+      "268"
+    ],
+    [
+      "qft-8",
+      "inspect",
+      "1457311",
+      "536"
+    ],
+    [
+      "qft-8",
+      "ok",
+      "1649990",
+      "944"
+    ],
+    [
+      "inverse-8",
+      "inspect",
+      "1531028",
+      "536"
+    ],
+    [
+      "equivalent-angle",
+      "inspect",
+      "367196",
+      "201"
+    ],
+    [
+      "equivalent-angle",
+      "ok",
+      "397395",
+      "354"
+    ],
+    [
+      "wrapped-inverse-3",
+      "inspect",
+      "371766",
+      "201"
+    ],
+    [
+      "shared-twice-8",
+      "inspect",
+      "1597653",
+      "536"
+    ],
+    [
+      "framed-call-2",
+      "inspect",
+      "301566",
+      "134"
+    ],
+    [
+      "framed-call-8",
+      "inspect",
+      "1761048",
+      "536"
+    ],
+    [
+      "missing-reversal",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "missing-reversal",
+      "contract"
+    ],
+    [
+      "missing-phase",
+      "inspect",
+      "205811",
+      "134"
+    ],
+    [
+      "missing-phase",
+      "contract"
+    ],
+    [
+      "wrong-phase",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "wrong-phase",
+      "contract"
+    ],
+    [
+      "wrong-h",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "wrong-h",
+      "contract"
+    ],
+    [
+      "inverse-changed-dependency",
+      "inspect",
+      "280386",
+      "134"
+    ]
+  ],
+  "stdout": "\nrunning 1 test\nSIZED-FOURIER|qft-1|inspect|77268|67\nSIZED-FOURIER|qft-1|ok|83027|118\nSIZED-FOURIER|inverse-1|inspect|96301|67\nSIZED-FOURIER|qft-2|inspect|211873|134\nSIZED-FOURIER|qft-2|ok|228027|236\nSIZED-FOURIER|inverse-2|inspect|236798|134\nSIZED-FOURIER|qft-3|inspect|367196|201\nSIZED-FOURIER|qft-3|ok|397395|354\nSIZED-FOURIER|inverse-3|inspect|398653|201\nSIZED-FOURIER|qft-4|inspect|541883|268\nSIZED-FOURIER|qft-4|ok|590720|472\nSIZED-FOURIER|inverse-4|inspect|580512|268\nSIZED-FOURIER|qft-8|inspect|1457311|536\nSIZED-FOURIER|qft-8|ok|1649990|944\nSIZED-FOURIER|inverse-8|inspect|1531028|536\nSIZED-FOURIER|equivalent-angle|inspect|367196|201\nSIZED-FOURIER|equivalent-angle|ok|397395|354\nSIZED-FOURIER|wrapped-inverse-3|inspect|371766|201\nSIZED-FOURIER|shared-twice-8|inspect|1597653|536\nSIZED-FOURIER|framed-call-2|inspect|301566|134\nSIZED-FOURIER|framed-call-8|inspect|1761048|536\nSIZED-FOURIER|missing-reversal|inspect|276531|134\nSIZED-FOURIER|missing-reversal|contract\nSIZED-FOURIER|missing-phase|inspect|205811|134\nSIZED-FOURIER|missing-phase|contract\nSIZED-FOURIER|wrong-phase|inspect|276531|134\nSIZED-FOURIER|wrong-phase|contract\nSIZED-FOURIER|wrong-h|inspect|276531|134\nSIZED-FOURIER|wrong-h|contract\nSIZED-FOURIER|inverse-changed-dependency|inspect|280386|134\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.32s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-bc96fffc2cad5da1)\n",
+  "forward": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    },
+    "4": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.798401069772352e-15,
+      "executed_gates": 15
+    },
+    "8": {
+      "basis_columns": 256,
+      "reference_columns": 2,
+      "maximum_error": 1.7138574908887267e-14,
+      "executed_gates": 255
+    }
+  },
+  "inverse": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.1443916996305594e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    },
+    "4": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.783096678282069e-15,
+      "executed_gates": 15
+    },
+    "8": {
+      "basis_columns": 256,
+      "reference_columns": 2,
+      "maximum_error": 1.7138743469034517e-14,
+      "executed_gates": 255
+    }
+  },
+  "roundtrip_errors": {
+    "1": 1.2412670766236366e-16,
+    "2": 2.7755575615628914e-16,
+    "3": 2.0014830212433605e-16,
+    "4": 2.3551386880256624e-16,
+    "8": 7.897622740749008e-16
+  },
+  "semantic_faults": {
+    "missing-reversal": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 3
+    },
+    "missing-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "wrong-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "wrong-h": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.5204164998665333,
+      "executed_gates": 3
+    },
+    "inverse-changed-dependency": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    }
+  },
+  "shared_call": {
+    "basis_columns": 256,
+    "finite_leaves": 8,
+    "executed_gates": 510
+  },
+  "framed_call": {
+    "basis_columns": 16,
+    "entangled_vectors": 1,
+    "maximum_error": 2.5114115397022025e-16
+  }
+}

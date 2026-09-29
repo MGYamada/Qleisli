@@ -9,6 +9,17 @@ supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 
 ## Version identity
 
+**Explicit pre-registry identity exception, 2026-09-30:** the user selected
+`qleisli` for both the package and Rust import name in the first planned
+crates.io release, 0.2.1, replacing `qleisli-core` / `qleisli_core`. Existing
+Git/path Rust consumers require the documented
+[name migration or Cargo alias](crates-io-release.md#name-migration-from-github-releases-through-020).
+This is an incompatible identity change, not a compatible rename. The exception
+is limited to this user-requested first-publication naming decision; all other
+0.2.1 public contracts and capacities retain the normal PATCH policy, and the
+type-system changes still target 0.3.0. The subsequent 2026-09-30 user request
+authorizes registry publication after rechecking; record actual upload success.
+
 Compatible feature additions no longer need a version-policy exception.
 The previous 0.1.6/0.1.7 decisions and then-untagged 0.1.8 checkpoint retain their
 historical numbers and migration records; dated exception statements describe the former
@@ -22,11 +33,23 @@ The user initially selected **0.2.0 development** for shared QPE. The
 capacity and lexical changes, finite interfaces and experimental Lean foundation
 in 0.2.0. Validation and publication evidence are recorded separately in the
 [release record](releases/v0.2.0.md). The remaining shared-QPE work
-targets [0.2.1](v0.2.1-plan.md). That target grants no incompatible PATCH
+targets [0.2.1](v0.2.1-plan.md), selected as the current development version by
+the user on 2026-09-29. Its [record](releases/v0.2.1.md) tracks the development
+checkpoints and the verified 2026-09-30 crates.io and GitHub publications.
+The 2026-09-30 [boundary revision](v0.2.1-plan.md#adopted-release-boundary-2026-09-30)
+retains completed experiments/review fixes and bounded host connections in
+0.2.1; remaining heavy implementation/integration/proofs target [0.2.2](v0.2.2-plan.md).
+Manifests stay at 0.2.1. Neither target grants an incompatible PATCH
 exception: preserve existing public interfaces with additive successor APIs
 and adapters, or select 0.3.0 if a breaking change is necessary. The
 [development record](releases/v0.2.0.md) retains earlier checkpoints; no tag
 or publication follows from this scope selection.
+
+The subsequent 2026-09-29 user decision explicitly plans
+[Qleisli type-system specification in the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification),
+with QLT implementation deferred to v0.4.0 or later. Concrete type changes and
+migrations remain to be specified. The current manifests stay at 0.2.1, and
+this future boundary does not permit incompatible changes in that PATCH.
 
 The historical finite baseline and release state are in [current status](current-status.md)
 and the [0.1.9 review-fix record](releases/v0.1.9.md). The user selected 0.1.9
@@ -36,7 +59,8 @@ temporary 0.2.0 selection. The public Rust `Param.name` → `Param.pattern`
 migration remains incompatible and documented; the general compatibility
 policy below is unchanged. Version selection alone
 does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
-independently of version numbers; no theme reserves a MINOR number. Continuous
+independently of version numbers; a theme alone does not reserve a MINOR
+number. Explicit user-selected release targets are recorded separately above. Continuous
 audits need no PATCH unless a useful compatible change is being released.
 The legacy B019 finite maintenance checkpoint is not a requirement to ship
 patches 6–9 first, and later maintenance may use 0.1.10.
@@ -128,6 +152,13 @@ or an incompatible public Rust API change to be hidden in a patch.
 
 ## Release records and validation
 
+For Rust registry preparation and the separate upload step, follow the
+[crates.io procedure](crates-io-release.md). On 2026-09-30 the user authorized
+preparation for the first registry release from 0.2.1 and explicitly placed
+crates.io publication on hold. The user's subsequent instruction to recheck
+and run `cargo publish` outside the sandbox explicitly lifts that hold;
+preparation or a successful package build alone would not do so.
+
 For `0.2.0` and its prereleases, first verify that the conformance ledger links
 the completed initial imaginary-code corpus and its requirement records.
 
@@ -140,6 +171,7 @@ For each release or prerelease:
    specification/conformance references. Keep past release entries intact.
 3. Validate the release tree with `cargo fmt --check`,
    `cargo test --all-targets`, `cargo clippy --all-targets -- -D warnings`,
+   `cargo test --doc`, `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps`,
    `python3 scripts/test_check_docs.py`, `python3 scripts/check_docs.py`,
    `python3 scripts/test_check_imaginary_v1_examples.py`,
    `python3 scripts/check_imaginary_v1_examples.py`,

@@ -221,6 +221,18 @@ finite capacities are part of the 0.2.0 MINOR migration. Inversion uses the
 existing audited contract routine. This reuses an existing equation checker;
 it adds neither a semantic acceptance rule nor a general frontend proof.
 
+The exact scalar implementation has bounded `i128` coefficients and nonzero
+dyadic denominator exponents at most 126. This is distinct from the number of
+steps or charged arithmetic operations: repeated squaring reduces work but
+cannot prevent coefficient growth. In the [0.2.0 review reproduction](reviews/v0.2.0.md),
+`ht(q) = t(h(q))` with `repeat_static(300, ht, q)` checks, while count 1000
+exhausts exact arithmetic capacity. These are observations, not universal
+supported/rejected count thresholds. Rejection produces no evidence and no
+floating fallback. Checking a body once and accepting its repetitions
+structurally still needs actual-body/request binding and a proved composition
+rule in the production hierarchy; [A020-03](v0.2.0-backlog.md#a020-03--precision-and-repetition-duplicate-algorithm-bodies)
+retains that pending obligation.
+
 <a id="最初の利用対象"></a>
 
 ## Initial applications

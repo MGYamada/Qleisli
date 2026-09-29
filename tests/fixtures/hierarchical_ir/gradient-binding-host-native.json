@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.hierarchy-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_sha256": "cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830",
+  "binary_cases": 362,
+  "seconds": 11.095,
+  "host_command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 9 tests\ntest native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ok\ntest native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ok\ntest native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ok\ntest native_phase_fault_remains_an_obligation_under_zero_repeat ... ok\ntest native_request_permits_different_sharing_in_both_directions ... ok\nshared power costs: [(29903, 67), (29903, 67), (29903, 67), (29903, 67)]\ntest native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ok\ntest native_actual_counts_premises_and_encodings_are_checked ... ok\ntest native_request_detects_coordinated_body_changes_and_wrong_headers ... ok\nindependent request shared-power costs: [(37240, 103), (37240, 103), (37240, 103), (37240, 103)]\ntest native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ok\n\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.51s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-d195a413add0f6d5)\n"
+}

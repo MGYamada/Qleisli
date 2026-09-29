@@ -1,0 +1,130 @@
+{
+  "format": "qleisli.qft-hierarchy-authoring",
+  "version": 1,
+  "construction": "lifted",
+  "kernel_sha256": "cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830",
+  "status": "partial-profile",
+  "results": [
+    [
+      "1",
+      "accepted",
+      "47363",
+      "67",
+      "1"
+    ],
+    [
+      "2",
+      "accepted",
+      "279849",
+      "134",
+      "2"
+    ],
+    [
+      "3",
+      "accepted",
+      "657968",
+      "201",
+      "3"
+    ],
+    [
+      "4",
+      "accepted",
+      "1337496",
+      "268",
+      "4"
+    ],
+    [
+      "8",
+      "limit",
+      "Lean hierarchy inspection rejected the artifact"
+    ]
+  ],
+  "semantic_probes": [
+    {
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 8.659560562354933e-17,
+      "detected_faults": [
+        "wrong-h"
+      ]
+    },
+    {
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 2.5114115397022025e-16,
+      "detected_faults": [
+        "wrong-h",
+        "wrong-phase",
+        "missing-reversal",
+        "wrong-polarity"
+      ]
+    },
+    {
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 1.3947004136484323e-15,
+      "detected_faults": [
+        "wrong-h",
+        "wrong-phase",
+        "missing-reversal",
+        "wrong-polarity"
+      ]
+    },
+    {
+      "width": 4,
+      "vectors": 18,
+      "maximum_error": 3.783096678282069e-15,
+      "detected_faults": [
+        "wrong-h",
+        "wrong-phase",
+        "missing-reversal",
+        "wrong-polarity"
+      ]
+    },
+    {
+      "width": 8,
+      "vectors": 8,
+      "maximum_error": 9.473957653410645e-15,
+      "detected_faults": [
+        "wrong-h",
+        "wrong-phase",
+        "missing-reversal",
+        "wrong-polarity"
+      ]
+    }
+  ],
+  "native_faults": [
+    [
+      "layout",
+      "invalid_ir"
+    ],
+    [
+      "empty-owner",
+      "invalid_ir"
+    ],
+    [
+      "h",
+      "contract"
+    ],
+    [
+      "phase",
+      "contract"
+    ]
+  ],
+  "artifact_sha256": {
+    "1": "de08c4c3dfb82e0c0078854708d2d1316929fd42fe30977e2cd03fa8a1f5af55",
+    "2": "784220e43f4f70573f7abb5b91a67dd268fc715e0f8bc41e7cf90ee571863d0c",
+    "3": "d8e2259fe7c50b3ed843d9d332942b56b05d6439821872a6b28b3fbd61be1f80",
+    "4": "7802ddbe5081dfcf5355210e83833afccd24c04901bf90a9c63d026b797a4ac5",
+    "8": "0f30c55a85a9fbdd358b58f2e0c56f9d82c83dc36b49803b5a75acf9c849df75"
+  },
+  "definition_counts": {
+    "1": 9,
+    "2": 33,
+    "3": 66,
+    "4": 114,
+    "8": 420
+  },
+  "stdout": "\nrunning 1 test\nQFT|1|accepted|47363|67|1\nQFT|2|accepted|279849|134|2\nQFT|3|accepted|657968|201|3\nQFT|4|accepted|1337496|268|4\nQFT|8|limit|Lean hierarchy inspection rejected the artifact\nFAULT|layout|invalid_ir\nFAULT|empty-owner|invalid_ir\nFAULT|h|contract\nFAULT|phase|contract\ntest inspect_authored_qft_hierarchies ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running tests/qft_hierarchy.rs (target/debug/deps/qft_hierarchy-5d75744bf3a93d2c)\n"
+}

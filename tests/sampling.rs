@@ -1,8 +1,8 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::sim::{RandomSource, SampleError, SampleLimits, SplitMix64, sample_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::sim::{RandomSource, SampleError, SampleLimits, SplitMix64, sample_closed};
 use std::path::Path;
 
 #[test]
@@ -169,7 +169,7 @@ fn interference_probability_matches_an_independent_analytic_value() {
 
 #[test]
 fn sampler_rejects_open_interfaces_before_requesting_randomness() {
-    use qleisli_core::{ir::*, verify};
+    use qleisli::{ir::*, verify};
     let p = verify(RawProgram {
         quantum_inputs: vec![QuantumPort {
             token: TokenId(0),

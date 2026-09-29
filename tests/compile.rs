@@ -6,8 +6,8 @@ use std::path::Path;
 
 use common::SourceRoot;
 
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 fn run(root: &Path) -> BTreeMap<Vec<bool>, f64> {
     let checked = compile_project(root).unwrap();
@@ -677,7 +677,7 @@ observe fn main() -> ((CBit,CBit),(CBit,CBit)) {
 
 #[test]
 fn resource_rules_zero_width_result_and_frame_are_both_merged() {
-    use qleisli_core::ir::RawOp;
+    use qleisli::ir::RawOp;
 
     let root = SourceRoot::new(
         r#"

@@ -1,0 +1,150 @@
+Qleisli/HierarchicalFourierRoot.lean:22:44: error: `simp` made no progress
+Qleisli/HierarchicalFourierRoot.lean:22:54: error: `simp` made no progress
+Qleisli/HierarchicalFourierRoot.lean:18:81: error: unsolved goals
+case a
+n : ℕ
+op : Operator
+ready : HierarchicalWiring.At n (List.range n) op
+output input : Fin n → Bool
+selected : HierarchicalWiring.select (List.range n) (List.ofFn input) = List.ofFn input
+⊢ op.coefficient (List.ofFn output) (List.ofFn input) = if output = input then 1 else 0
+Qleisli/HierarchicalFourierRoot.lean:22:60: warning: This simp argument is unused:
+  selected
+
+Hint: Omit it from the simp argument list.
+  simp only [matrixAt, ̲ready.2.2.2.2 _ _ (by simp) (by simp),s̵e̵l̵e̵c̵t̵e̵d̵,̵ ̲List.ofFn_inj]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierRoot.lean:22:69: warning: This simp argument is unused:
+  List.ofFn_inj
+
+Hint: Omit it from the simp argument list.
+  simp only [̵m̵a̵t̵r̵i̵x̵A̵t̵,̵r̵e̵a̵d̵y̵.̵2̵.̵2̵.̵2̵.̵2̵[̲m̲a̲t̲r̲i̲x̲A̲t̲,̲ ̲r̲e̲a̲d̲y̲.̲2̲.̲2̲.̲2̲.̲2̲ _ _ (by simp) (by s̵i̵m̵p̵)̵,̵s̵e̵l̵e̵c̵t̵e̵d̵,̵L̵i̵s̵t̵.̵o̵f̵F̵n̵_̵i̵n̵j̵]̵s̲i̲m̲p̲)̲,̲ ̲s̲e̲l̲e̲c̲t̲e̲d̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierRoot.lean:32:2: error: unsolved goals
+case h
+n : ℕ
+input : Fin n → Bool
+selected : List.map (fun i => (List.ofFn input)[i]?.getD false) (List.range n) = List.ofFn input
+i : ℕ
+left : i < (List.ofFn input).reverse.length
+right : i < (List.ofFn (reverseBits input)).length
+⊢ input ⟨n - 1 - i, ⋯⟩ = input ⟨n - (i + 1), ⋯⟩
+Qleisli/HierarchicalFourierRoot.lean:39:44: error: `simp` made no progress
+Qleisli/HierarchicalFourierRoot.lean:39:54: error: `simp` made no progress
+Qleisli/HierarchicalFourierRoot.lean:40:2: error: Tactic `rfl` failed: The left-hand side
+  op.coefficient (List.ofFn output) (List.ofFn input)
+is not definitionally equal to the right-hand side
+  permutation (reversal n) output input
+
+case a
+n : ℕ
+op : Operator
+ready : HierarchicalWiring.At n (List.range n).reverse op
+output input : Fin n → Bool
+⊢ op.coefficient (List.ofFn output) (List.ofFn input) = permutation (reversal n) output input
+Qleisli/HierarchicalFourierRoot.lean:39:60: warning: This simp argument is unused:
+  reverse_select
+
+Hint: Omit it from the simp argument list.
+  simp only [̵m̵a̵t̵r̵i̵x̵A̵t̵,̵r̵e̵a̵d̵y̵.̵2̵.̵2̵.̵2̵.̵2̵[̲m̲a̲t̲r̲i̲x̲A̲t̲,̲ ̲r̲e̲a̲d̲y̲.̲2̲.̲2̲.̲2̲.̲2̲ _ _ (by simp) (by s̵i̵m̵p̵)̵,̵r̵e̵v̵e̵r̵s̵e̵_̵s̵e̵l̵e̵c̵t̵,̵L̵i̵s̵t̵.̵o̵f̵F̵n̵_̵i̵n̵j̵]̵s̲i̲m̲p̲)̲,̲ ̲L̲i̲s̲t̲.̲o̲f̲F̲n̲_̲i̲n̲j̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierRoot.lean:39:75: warning: This simp argument is unused:
+  List.ofFn_inj
+
+Hint: Omit it from the simp argument list.
+  simp only [̵m̵a̵t̵r̵i̵x̵A̵t̵,̵r̵e̵a̵d̵y̵.̵2̵.̵2̵.̵2̵.̵2̵[̲m̲a̲t̲r̲i̲x̲A̲t̲,̲ ̲r̲e̲a̲d̲y̲.̲2̲.̲2̲.̲2̲.̲2̲ _ _ (by simp) (by s̵i̵m̵p̵)̵,̵r̵e̵v̵e̵r̵s̵e̵_̵s̵e̵l̵e̵c̵t̵,̵L̵i̵s̵t̵.̵o̵f̵F̵n̵_̵i̵n̵j̵]̵s̲i̲m̲p̲)̲,̲ ̲r̲e̲v̲e̲r̲s̲e̲_̲s̲e̲l̲e̲c̲t̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierRoot.lean:141:2: error: unsolved goals
+case refine_1
+leaves : Leaves Operator
+artifact : Artifact
+request : FourierRoot.Request
+order : Array ℕ
+remaining : ℕ
+pending : FourierRoot.Pending
+accepted : FourierRoot.inspect artifact request order remaining = Except.ok pending
+equations : ∀ r ∈ pending.body.requests, HierarchicalHadamard.Equation leaves r
+left✝⁶ : pending.visits ≤ remaining
+left✝⁵ : remaining ≤ 2000000
+left✝⁴ : 1 ≤ request.width
+left✝³ : request.width ≤ 8
+d : Definition
+shell : FourierRoot.Shell
+found : artifact.definitions[artifact.entry.implementation]? = some d
+projected : FourierRoot.project d = some shell
+aligned : FourierRoot.aligned request d = true
+bodyChecked :
+  FourierBody.inspect artifact request.width request.width shell.body (remaining - FourierRoot.charge request d) =
+    Except.ok pending.body
+wiringChecked :
+  Wiring.inspect artifact order (remaining - FourierRoot.charge request d - pending.body.visits) =
+    Except.ok pending.wiring
+routed : FourierRoot.routes request.width shell pending.wiring.cache = some pending.codes
+left✝² : d.effect = Effect.unitary
+left✝¹ : d.interface = request.interface
+left✝ : NodeTyping.quantumOnly d.interface = true
+hi : (wires d.interface.inputs).size = request.width
+ho : (wires d.interface.outputs).size = request.width
+enterRoute : pending.wiring.cache[shell.enter]?.bind id = some (List.range request.width)
+suffixRoutes : List.mapM (fun i => pending.wiring.cache[i]?.bind id) shell.suffix = some pending.codes
+composed : List.foldlM Wiring.compose (List.range request.width) pending.codes = some (List.range request.width).reverse
+sound : Wiring.Sound artifact pending.wiring.cache
+ready :
+  ∀ (i : ℕ) (code : Wiring.Code),
+    pending.wiring.cache[i]?.bind id = some code →
+      ∃ fuel op,
+        HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel i = some op ∧
+          HierarchicalWiring.At (List.length code) code op
+enterFuel : ℕ
+enter : Operator
+enterEvaluated : HierarchicalFiniteEvaluation.physical algebra leaves artifact enterFuel shell.enter = some enter
+enterAt✝ : HierarchicalWiring.At (List.range request.width).length (List.range request.width) enter
+enterAt : HierarchicalWiring.At request.width (List.range request.width) enter
+suffixFuel : ℕ
+ops : List Operator
+suffixEvaluated :
+  List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact suffixFuel) shell.suffix = some ops
+suffixAt : List.Forall₂ (fun code op => HierarchicalWiring.At (List.length code) code op) pending.codes ops
+bodyFuel : ℕ
+body : Operator
+bodyEvaluated : HierarchicalFiniteEvaluation.physical algebra leaves artifact bodyFuel shell.body = some body
+bodyAt : HierarchicalFourierBody.IsBody request.width body
+fuel : ℕ := enterFuel + bodyFuel + suffixFuel
+enterMore : evaluate algebra (definition leaves artifact) fuel shell.enter = some enter
+bodyMore : evaluate algebra (definition leaves artifact) fuel shell.body = some body
+suffixMore : List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) shell.suffix = some ops
+code : physicalCode d = some (Tag.sequence, shell.enter :: shell.body :: shell.suffix)
+⊢ (match
+      match HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel shell.enter, fun __do_lift =>
+        match
+          match HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel shell.body, fun __do_lift =>
+            some (__do_lift :: ops) with
+          | none, x => none
+          | some a, f => f a,
+          fun __do_lift_1 => some (__do_lift :: __do_lift_1) with
+        | none, x => none
+        | some a, f => f a with
+      | none, x => none
+      | some a, f => f a,
+      fun values => some (apply d.interface Tag.sequence values) with
+    | none, x => none
+    | some a, f => f a) =
+    some (apply d.interface Tag.sequence (enter :: body :: ops))
+Qleisli/HierarchicalFourierRoot.lean:144:30: warning: This simp argument is unused:
+  enterMore
+
+Hint: Omit it from the simp argument list.
+  simp only [̵L̵i̵s̵t̵.̵m̵a̵p̵M̵_̵c̵o̵n̵s̵,̵e̵n̵t̵e̵r̵M̵o̵r̵e̵,̵b̵o̵d̵y̵M̵o̵r̵e̵,̵s̵u̵f̵f̵i̵x̵M̵o̵r̵e̵,̵b̵i̵n̵d̵,̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵,̵p̵u̵r̵e̵]̵[̲L̲i̲s̲t̲.̲m̲a̲p̲M̲_̲c̲o̲n̲s̲,̲ ̲b̲o̲d̲y̲M̲o̲r̲e̲,̲ ̲s̲u̲f̲f̲i̲x̲M̲o̲r̲e̲,̲ ̲b̲i̲n̲d̲,̲ ̲O̲p̲t̲i̲o̲n̲.̲b̲i̲n̲d̲,̲ ̲p̲u̲r̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierRoot.lean:144:40: warning: This simp argument is unused:
+  bodyMore
+
+Hint: Omit it from the simp argument list.
+  simp only [List.mapM_cons, ̲enterMore,b̵o̵d̵y̵M̵o̵r̵e̵,̵ ̲suffixMore, ̲bind, ̲Option.bind, ̲pure]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

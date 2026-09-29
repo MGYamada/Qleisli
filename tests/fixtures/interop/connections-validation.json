@@ -1,0 +1,65 @@
+{
+  "format": 1,
+  "recorded_utc": "2026-09-29T16:57:19.485662+00:00",
+  "project_version": "0.2.1",
+  "profile": "closed terminal connection profile v1; QIR 2.0 Base / qleisli.bit-vector.v1",
+  "environment": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.5",
+    "rust": "1.98.1",
+    "pyqir": "0.12.5",
+    "pyqir_bundled_llvm": "20.1 (wheel notice)",
+    "independent_llvm": "22.1.6"
+  },
+  "source_sha256": {
+    "src/bin/qleisli.rs": "e6813e604da6c54ade62aba22994490b6726c7b07ac515ab083175e172321600",
+    "src/bin/qleisli/interop.rs": "4121aa96c076651226c34171ca347027d1cd23d7c01aa1e8f7887c2485c73f87",
+    "src/bin/qleisli/json.rs": "d4f59dbf14a07cd9d3f59443d0d28a903b7719a5d8f1fdf700c48f5ccf22c82a",
+    "src/bin/qleisli/options.rs": "4a1a94f73e52ce3733f8a08574d15e7ebc90aa90e01b1f231c8df87d80ed41bd",
+    "python/qleisli/__init__.py": "d09e7f6d53c49ea1003830d081957a089263371ea134aa1a0ca1ebbf540161de",
+    "python/qleisli/__main__.py": "e0ea2bb515f5cbd9f8b6aafa4b797b32ca7095d7072843577c5cdd7115447cef",
+    "python/qleisli/_qir.py": "05025487490170816e87fa90fca5073948e282fcfe9722a5b3d85990eeafa47f",
+    "python/pyproject.toml": "4753c4ad003e8135d49c9c46cae96ffda0223e7719005298c0ce15a1550ab5e3",
+    "scripts/test_connections.py": "3140e8f8718e777f5eaaea085c8decb2fa36496ce76f9c7928be5328f47956b4",
+    "tests/connections.rs": "d3a429b334d0ca622b9a2814fa466f90d61921360aefe688793ea049fb12ca14",
+    "tests/fixtures/interop/independent.ll": "9d6a4e8c974c16e03a3d1de9403556883a5e9147b3d18ce74e88f7100a96085a",
+    "scripts/qir-reader-requirements.txt": "5048754c814ccef82019724786a4d14039680c206a33bbe92a0e531822396cab"
+  },
+  "binary_sha256": "d3429a095efb3a9ab95a2d3237af00b1aeac62491589d3f3ae9904c84178d3b5",
+  "wheel": {
+    "filename": "qleisli-0.2.1-py3-none-any.whl",
+    "sha256": "ca665d01eb497a8d69afe1396b7f4519cfde0f7022252bebf85214282fe9807d",
+    "requires_separate_rust_executable": true,
+    "clean_install_smoke": "OpenQASM import, simulation, sampling and missing optional QIR dependency diagnostic passed"
+  },
+  "validation": {
+    "installed_python_tests": 8,
+    "qir_rejected_mutations": 29,
+    "rust_connection_tests": 3,
+    "external_parser_llvm_tests": 3,
+    "independent_llvm_fixture": "assembled and verified",
+    "rust_all_targets": {
+      "passed": 437,
+      "ignored": 14,
+      "suites": 53
+    },
+    "rust_fmt": "passed",
+    "rust_clippy": "passed",
+    "corpus_integrity": "30 cases / 3 sources",
+    "authoring_integrity": "14 records / 21 snapshots / 42 observations"
+  },
+  "scope": {
+    "production_verifier": "existing Rust finite checker; no new acceptance rule",
+    "source_adequacy_or_translation_theorem": false,
+    "device_execution": false,
+    "new_maximum_size_corpus_checks": false,
+    "heavy_integration_and_proofs": "deferred to v0.2.2",
+    "publication": false
+  },
+  "not_rerun": [
+    "Lean builds/audits (unchanged sources)",
+    "MSRV",
+    "clean-HEAD distribution",
+    "remote CI"
+  ]
+}

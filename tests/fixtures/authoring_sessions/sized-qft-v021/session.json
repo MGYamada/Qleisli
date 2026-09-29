@@ -1,0 +1,35 @@
+{
+  "format": 1,
+  "task": "Shared QFT source and inverse transform",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired complete QFT source saved before first compilation",
+      "sha256": {
+        "fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+      },
+      "observations": [
+        "first-check.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Add an actual inverse client reusing the same source; forward source unchanged",
+      "sha256": {
+        "inverse.qli": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+        "fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+      },
+      "observations": [
+        "inverse-first-check.json",
+        "validated-source.json",
+        "profile-frame-validation.json",
+        "recursive-reversal-validation.json"
+      ]
+    }
+  ]
+}

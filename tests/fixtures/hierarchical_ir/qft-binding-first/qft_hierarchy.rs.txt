@@ -1,0 +1,22 @@
+//! Native QFT hierarchy authoring probe. Numerical oracles live in Python and
+//! are never passed to the acceptance API as evidence.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qleisli_core::interchange::hierarchical::Kernel;
+
+#[test]
+#[ignore = "run through scripts/test_hierarchical_qft.py with an audited kernel"]
+fn inspect_authored_qft_hierarchies() {
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let directory = std::env::var_os("QLEISLI_QFT_FIXTURES").unwrap();
+    for width in [1, 2, 3, 4, 8] {
+        let path = std::path::Path::new(&directory).join(format!("qft-{width}.json"));
+        let payload = std::fs::read(path).unwrap();
+        match kernel.inspect(&payload) {
+            Ok(checked) => println!(
+                "QFT|{width}|accepted|{}|{}|{}",
+                checked.structural_work(), checked.exact_work(), checked.leaves().len()
+            ),
+            Err(error) => println!("QFT|{width}|{}|{}", error.code, error.message),
+        }
+    }
+}

@@ -1,0 +1,66 @@
+Qleisli/HierarchicalFourier.lean:40:63: error: unsolved goals
+n : ℕ
+bits : Fin (n + 1) → Bool
+⊢ (number n fun i => bits i.rev.castSucc) = number n (reverseBits fun i => bits i.castSucc)
+Qleisli/HierarchicalFourier.lean:82:30: error(lean.unknownIdentifier): Unknown constant `Bool.true_eq_true`
+Qleisli/HierarchicalFourier.lean:83:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  x * (1 + 2 * z)
+in the target expression
+  (if false = true then -1 else 1) * phase x (n + 1) * phase (x * z) n =
+    phase ((x + if false = true then 2 ^ n else 0) * (1 + 2 * z)) (n + 1)
+
+case false.true
+n x z : ℕ
+⊢ (if false = true then -1 else 1) * phase x (n + 1) * phase (x * z) n =
+    phase ((x + if false = true then 2 ^ n else 0) * (1 + 2 * z)) (n + 1)
+Qleisli/HierarchicalFourier.lean:85:8: error: Tactic `rewrite` failed: Did not find an occurrence of the pattern
+  (x + 2 ^ n) * (2 * z)
+in the target expression
+  phase (x * z) n = phase ((x + if True then 2 ^ n else 0) * (2 * z)) (n + 1)
+
+case true.false
+n x z : ℕ
+⊢ phase (x * z) n = phase ((x + if True then 2 ^ n else 0) * (2 * z)) (n + 1)
+Qleisli/HierarchicalFourier.lean:87:29: error(lean.unknownIdentifier): Unknown constant `Bool.true_eq_true`
+Qleisli/HierarchicalFourier.lean:82:57: warning: This simp argument is unused:
+  ite_false
+
+Hint: Omit it from the simp argument list.
+  simp only [Bool.false_and, ̲Bool.true_eq_true, ̲ite_true,i̵t̵e̵_̵f̵a̵l̵s̵e̵,̵ ̲Nat.add_zero, ̲one_mul]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourier.lean:82:67: warning: This simp argument is unused:
+  Nat.add_zero
+
+Hint: Omit it from the simp argument list.
+  simp only [̵B̵o̵o̵l̵.̵f̵a̵l̵s̵e̵_̵a̵n̵d̵,̵B̵o̵o̵l̵.̵t̵r̵u̵e̵_̵e̵q̵_̵t̵r̵u̵e̵,̵i̵t̵e̵_̵t̵r̵u̵e̵,̵i̵t̵e̵_̵f̵a̵l̵s̵e̵,̵N̵a̵t̵.̵a̵d̵d̵_̵z̵e̵r̵o̵,̵o̵n̵e̵_̵m̵u̵l̵]̵[̲B̲o̲o̲l̲.̲f̲a̲l̲s̲e̲_̲a̲n̲d̲,̲ ̲B̲o̲o̲l̲.̲t̲r̲u̲e̲_̲e̲q̲_̲t̲r̲u̲e̲,̲ ̲i̲t̲e̲_̲t̲r̲u̲e̲,̲ ̲i̲t̲e̲_̲f̲a̲l̲s̲e̲,̲ ̲o̲n̲e̲_̲m̲u̲l̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourier.lean:82:80: warning: This simp argument is unused:
+  one_mul
+
+Hint: Omit it from the simp argument list.
+  simp only [Bool.false_and, ̲Bool.true_eq_true, ̲ite_true, ̲ite_false, ̲Nat.add_zero,̵o̵n̵e̵_̵m̵u̵l̵]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourier.lean:104:42: error: unsolved goals
+n : ℕ
+output input : Fin (n + 1) → Bool
+⊢ Interference.complexModel.halfRoot ^ n * Interference.complexModel.halfRoot *
+      phase
+        (((number n fun i => input i.castSucc) + if input (Fin.last n) = true then 2 ^ n else 0) *
+          ((if output (Fin.last n) = true then 1 else 0) + 2 * number n (reverseBits fun i => output i.castSucc)))
+        (n + 1) =
+    Interference.complexModel.halfRoot ^ n * Interference.complexModel.halfRoot *
+      phase
+        (((number n fun i => input i.castSucc) + if input (Fin.last n) = true then 2 ^ n else 0) *
+          ((number n fun i => reverseBits output i.castSucc) +
+            if reverseBits output (Fin.last n) = true then 2 ^ n else 0))
+        (n + 1)
+Qleisli/HierarchicalFourier.lean:105:45: warning: This simp argument is unused:
+  reverse_number_succ
+
+Hint: Omit it from the simp argument list.
+  simp only [̵h̵a̵d̵a̵m̵a̵r̵d̵,̵r̵e̵v̵e̵r̵s̵e̵d̵F̵o̵u̵r̵i̵e̵r̵,̵n̵u̵m̵b̵e̵r̵,̵r̵e̵v̵e̵r̵s̵e̵_̵n̵u̵m̵b̵e̵r̵_̵s̵u̵c̵c̵,̵p̵o̵w̵_̵s̵u̵c̵c̵]̵[̲h̲a̲d̲a̲m̲a̲r̲d̲,̲ ̲r̲e̲v̲e̲r̲s̲e̲d̲F̲o̲u̲r̲i̲e̲r̲,̲ ̲n̲u̲m̲b̲e̲r̲,̲ ̲p̲o̲w̲_̲s̲u̲c̲c̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

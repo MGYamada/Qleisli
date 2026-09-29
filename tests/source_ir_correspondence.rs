@@ -7,10 +7,10 @@ use std::collections::BTreeMap;
 use std::f64::consts::{FRAC_1_SQRT_2, FRAC_PI_4};
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::ir::RawOp;
-use qleisli_core::sim::{SimulationLimits, run_closed};
-use qleisli_core::{VerifiedProgram, verify};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::ir::RawOp;
+use qleisli::sim::{SimulationLimits, run_closed};
+use qleisli::{VerifiedProgram, verify};
 
 const TOLERANCE: f64 = 1e-12;
 const IMPORTS: &str = "

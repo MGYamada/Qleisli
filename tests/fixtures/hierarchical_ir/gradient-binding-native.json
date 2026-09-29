@@ -1,0 +1,782 @@
+{
+  "format": "qleisli.hierarchical-gradient-binding",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 175,
+  "results": {
+    "accepted-1-0": [
+      "ok:122"
+    ],
+    "renamed-1-0": [
+      "ok:122"
+    ],
+    "exact-1-0": [
+      "ok:122"
+    ],
+    "short-1-0": [
+      "limit"
+    ],
+    "budget-1": [
+      "71718",
+      "71840"
+    ],
+    "accepted-2-0": [
+      "ok:122"
+    ],
+    "renamed-2-0": [
+      "ok:122"
+    ],
+    "exact-2-0": [
+      "ok:122"
+    ],
+    "short-2-0": [
+      "limit"
+    ],
+    "accepted-2-1": [
+      "ok:1258"
+    ],
+    "renamed-2-1": [
+      "ok:1258"
+    ],
+    "exact-2-1": [
+      "ok:1258"
+    ],
+    "short-2-1": [
+      "limit"
+    ],
+    "budget-2": [
+      "255471",
+      "256851"
+    ],
+    "accepted-3-0": [
+      "ok:122"
+    ],
+    "renamed-3-0": [
+      "ok:122"
+    ],
+    "exact-3-0": [
+      "ok:122"
+    ],
+    "short-3-0": [
+      "limit"
+    ],
+    "accepted-3-1": [
+      "ok:1258"
+    ],
+    "renamed-3-1": [
+      "ok:1258"
+    ],
+    "exact-3-1": [
+      "ok:1258"
+    ],
+    "short-3-1": [
+      "limit"
+    ],
+    "accepted-3-2": [
+      "ok:2730"
+    ],
+    "renamed-3-2": [
+      "ok:2730"
+    ],
+    "exact-3-2": [
+      "ok:2730"
+    ],
+    "short-3-2": [
+      "limit"
+    ],
+    "budget-3": [
+      "373896",
+      "378006"
+    ],
+    "accepted-4-0": [
+      "ok:122"
+    ],
+    "renamed-4-0": [
+      "ok:122"
+    ],
+    "exact-4-0": [
+      "ok:122"
+    ],
+    "short-4-0": [
+      "limit"
+    ],
+    "accepted-4-1": [
+      "ok:1258"
+    ],
+    "renamed-4-1": [
+      "ok:1258"
+    ],
+    "exact-4-1": [
+      "ok:1258"
+    ],
+    "short-4-1": [
+      "limit"
+    ],
+    "accepted-4-2": [
+      "ok:2730"
+    ],
+    "renamed-4-2": [
+      "ok:2730"
+    ],
+    "exact-4-2": [
+      "ok:2730"
+    ],
+    "short-4-2": [
+      "limit"
+    ],
+    "accepted-4-3": [
+      "ok:4666"
+    ],
+    "renamed-4-3": [
+      "ok:4666"
+    ],
+    "exact-4-3": [
+      "ok:4666"
+    ],
+    "short-4-3": [
+      "limit"
+    ],
+    "budget-4": [
+      "620825",
+      "629601"
+    ],
+    "accepted-5-0": [
+      "ok:122"
+    ],
+    "renamed-5-0": [
+      "ok:122"
+    ],
+    "exact-5-0": [
+      "ok:122"
+    ],
+    "short-5-0": [
+      "limit"
+    ],
+    "accepted-5-1": [
+      "ok:1258"
+    ],
+    "renamed-5-1": [
+      "ok:1258"
+    ],
+    "exact-5-1": [
+      "ok:1258"
+    ],
+    "short-5-1": [
+      "limit"
+    ],
+    "accepted-5-2": [
+      "ok:2730"
+    ],
+    "renamed-5-2": [
+      "ok:2730"
+    ],
+    "exact-5-2": [
+      "ok:2730"
+    ],
+    "short-5-2": [
+      "limit"
+    ],
+    "accepted-5-3": [
+      "ok:4666"
+    ],
+    "renamed-5-3": [
+      "ok:4666"
+    ],
+    "exact-5-3": [
+      "ok:4666"
+    ],
+    "short-5-3": [
+      "limit"
+    ],
+    "accepted-5-4": [
+      "ok:7194"
+    ],
+    "renamed-5-4": [
+      "ok:7194"
+    ],
+    "exact-5-4": [
+      "ok:7194"
+    ],
+    "short-5-4": [
+      "limit"
+    ],
+    "budget-5": [
+      "778980",
+      "794950"
+    ],
+    "accepted-6-0": [
+      "ok:122"
+    ],
+    "renamed-6-0": [
+      "ok:122"
+    ],
+    "exact-6-0": [
+      "ok:122"
+    ],
+    "short-6-0": [
+      "limit"
+    ],
+    "accepted-6-1": [
+      "ok:1258"
+    ],
+    "renamed-6-1": [
+      "ok:1258"
+    ],
+    "exact-6-1": [
+      "ok:1258"
+    ],
+    "short-6-1": [
+      "limit"
+    ],
+    "accepted-6-2": [
+      "ok:2730"
+    ],
+    "renamed-6-2": [
+      "ok:2730"
+    ],
+    "exact-6-2": [
+      "ok:2730"
+    ],
+    "short-6-2": [
+      "limit"
+    ],
+    "accepted-6-3": [
+      "ok:4666"
+    ],
+    "renamed-6-3": [
+      "ok:4666"
+    ],
+    "exact-6-3": [
+      "ok:4666"
+    ],
+    "short-6-3": [
+      "limit"
+    ],
+    "accepted-6-4": [
+      "ok:7194"
+    ],
+    "renamed-6-4": [
+      "ok:7194"
+    ],
+    "exact-6-4": [
+      "ok:7194"
+    ],
+    "short-6-4": [
+      "limit"
+    ],
+    "accepted-6-5": [
+      "ok:10442"
+    ],
+    "renamed-6-5": [
+      "ok:10442"
+    ],
+    "exact-6-5": [
+      "ok:10442"
+    ],
+    "short-6-5": [
+      "limit"
+    ],
+    "budget-6": [
+      "1095539",
+      "1121951"
+    ],
+    "accepted-7-0": [
+      "ok:122"
+    ],
+    "renamed-7-0": [
+      "ok:122"
+    ],
+    "exact-7-0": [
+      "ok:122"
+    ],
+    "short-7-0": [
+      "limit"
+    ],
+    "accepted-7-1": [
+      "ok:1258"
+    ],
+    "renamed-7-1": [
+      "ok:1258"
+    ],
+    "exact-7-1": [
+      "ok:1258"
+    ],
+    "short-7-1": [
+      "limit"
+    ],
+    "accepted-7-2": [
+      "ok:2730"
+    ],
+    "renamed-7-2": [
+      "ok:2730"
+    ],
+    "exact-7-2": [
+      "ok:2730"
+    ],
+    "short-7-2": [
+      "limit"
+    ],
+    "accepted-7-3": [
+      "ok:4666"
+    ],
+    "renamed-7-3": [
+      "ok:4666"
+    ],
+    "exact-7-3": [
+      "ok:4666"
+    ],
+    "short-7-3": [
+      "limit"
+    ],
+    "accepted-7-4": [
+      "ok:7194"
+    ],
+    "renamed-7-4": [
+      "ok:7194"
+    ],
+    "exact-7-4": [
+      "ok:7194"
+    ],
+    "short-7-4": [
+      "limit"
+    ],
+    "accepted-7-5": [
+      "ok:10442"
+    ],
+    "renamed-7-5": [
+      "ok:10442"
+    ],
+    "exact-7-5": [
+      "ok:10442"
+    ],
+    "short-7-5": [
+      "limit"
+    ],
+    "accepted-7-6": [
+      "ok:14538"
+    ],
+    "renamed-7-6": [
+      "ok:14538"
+    ],
+    "exact-7-6": [
+      "ok:14538"
+    ],
+    "short-7-6": [
+      "limit"
+    ],
+    "budget-7": [
+      "1299056",
+      "1340006"
+    ],
+    "accepted-8-0": [
+      "ok:122"
+    ],
+    "renamed-8-0": [
+      "ok:122"
+    ],
+    "exact-8-0": [
+      "ok:122"
+    ],
+    "short-8-0": [
+      "limit"
+    ],
+    "accepted-8-1": [
+      "ok:1258"
+    ],
+    "renamed-8-1": [
+      "ok:1258"
+    ],
+    "exact-8-1": [
+      "ok:1258"
+    ],
+    "short-8-1": [
+      "limit"
+    ],
+    "accepted-8-2": [
+      "ok:2730"
+    ],
+    "renamed-8-2": [
+      "ok:2730"
+    ],
+    "exact-8-2": [
+      "ok:2730"
+    ],
+    "short-8-2": [
+      "limit"
+    ],
+    "accepted-8-3": [
+      "ok:4666"
+    ],
+    "renamed-8-3": [
+      "ok:4666"
+    ],
+    "exact-8-3": [
+      "ok:4666"
+    ],
+    "short-8-3": [
+      "limit"
+    ],
+    "accepted-8-4": [
+      "ok:7194"
+    ],
+    "renamed-8-4": [
+      "ok:7194"
+    ],
+    "exact-8-4": [
+      "ok:7194"
+    ],
+    "short-8-4": [
+      "limit"
+    ],
+    "accepted-8-5": [
+      "ok:10442"
+    ],
+    "renamed-8-5": [
+      "ok:10442"
+    ],
+    "exact-8-5": [
+      "ok:10442"
+    ],
+    "short-8-5": [
+      "limit"
+    ],
+    "accepted-8-6": [
+      "ok:14538"
+    ],
+    "renamed-8-6": [
+      "ok:14538"
+    ],
+    "exact-8-6": [
+      "ok:14538"
+    ],
+    "short-8-6": [
+      "limit"
+    ],
+    "accepted-8-7": [
+      "ok:19610"
+    ],
+    "renamed-8-7": [
+      "ok:19610"
+    ],
+    "exact-8-7": [
+      "ok:19610"
+    ],
+    "short-8-7": [
+      "limit"
+    ],
+    "budget-8": [
+      "1694205",
+      "1754765"
+    ],
+    "phase-numerator": [
+      "contract"
+    ],
+    "phase-exponent": [
+      "contract"
+    ],
+    "phase-target": [
+      "contract"
+    ],
+    "tensor-order": [
+      "contract"
+    ],
+    "tensor-alias": [
+      "contract"
+    ],
+    "dangling-tail": [
+      "contract"
+    ],
+    "sequence-order": [
+      "contract"
+    ],
+    "short-sequence": [
+      "contract"
+    ],
+    "oversized-sequence": [
+      "contract"
+    ],
+    "take-position": [
+      "contract"
+    ],
+    "put-width": [
+      "contract"
+    ],
+    "extra-repeat": [
+      "contract"
+    ],
+    "routing": [
+      "contract"
+    ],
+    "drop-empty-owner": [
+      "contract"
+    ],
+    "duplicate-empty-owner": [
+      "contract"
+    ],
+    "unit-vs-empty-bits": [
+      "contract"
+    ],
+    "missing-root": [
+      "contract"
+    ],
+    "zero-budget": [
+      "limit"
+    ],
+    "reset-budget": [
+      "limit"
+    ],
+    "zero-precision": [
+      "limit"
+    ],
+    "large-precision": [
+      "limit"
+    ],
+    "excess-width": [
+      "limit"
+    ],
+    "wrong-precision": [
+      "contract"
+    ]
+  },
+  "semantic_probes": [
+    {
+      "precision": 1,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 2,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 2,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 3,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 3,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 3,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 4,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 4,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 4,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 7.850462293418876e-17
+    },
+    {
+      "precision": 4,
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 6.206335383118183e-17
+    },
+    {
+      "precision": 5,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 5,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 5,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 1.1102230246251565e-16
+    },
+    {
+      "precision": 5,
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 1.1102230246251565e-16
+    },
+    {
+      "precision": 5,
+      "width": 4,
+      "vectors": 18,
+      "maximum_error": 2.7755575615628914e-16
+    },
+    {
+      "precision": 6,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 6,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 6,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 1.1102230246251565e-16
+    },
+    {
+      "precision": 6,
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 1.1102230246251565e-16
+    },
+    {
+      "precision": 6,
+      "width": 4,
+      "vectors": 18,
+      "maximum_error": 1.5700924586837752e-16
+    },
+    {
+      "precision": 6,
+      "width": 5,
+      "vectors": 34,
+      "maximum_error": 2.7755575615628914e-16
+    },
+    {
+      "precision": 7,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 7,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 7,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 5.551115123125783e-17
+    },
+    {
+      "precision": 7,
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 6.206335383118183e-17
+    },
+    {
+      "precision": 7,
+      "width": 4,
+      "vectors": 18,
+      "maximum_error": 2.220446049250313e-16
+    },
+    {
+      "precision": 7,
+      "width": 5,
+      "vectors": 34,
+      "maximum_error": 2.482534153247273e-16
+    },
+    {
+      "precision": 7,
+      "width": 6,
+      "vectors": 66,
+      "maximum_error": 2.7755575615628914e-16
+    },
+    {
+      "precision": 8,
+      "width": 0,
+      "vectors": 3,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 8,
+      "width": 1,
+      "vectors": 4,
+      "maximum_error": 0.0
+    },
+    {
+      "precision": 8,
+      "width": 2,
+      "vectors": 6,
+      "maximum_error": 1.1102230246251565e-16
+    },
+    {
+      "precision": 8,
+      "width": 3,
+      "vectors": 10,
+      "maximum_error": 1.1443916996305594e-16
+    },
+    {
+      "precision": 8,
+      "width": 4,
+      "vectors": 18,
+      "maximum_error": 1.2412670766236366e-16
+    },
+    {
+      "precision": 8,
+      "width": 5,
+      "vectors": 34,
+      "maximum_error": 2.482534153247273e-16
+    },
+    {
+      "precision": 8,
+      "width": 6,
+      "vectors": 66,
+      "maximum_error": 2.482534153247273e-16
+    },
+    {
+      "precision": 8,
+      "width": 7,
+      "vectors": 130,
+      "maximum_error": 3.1401849173675503e-16
+    }
+  ],
+  "phase_only_fault": true,
+  "source_sha256": "faf98ecfe9e771577b7716fec9aa6c8b047ba3660c70b088a54f4bdcf35a93db",
+  "binary_sha256": "70c0474ae059c6cfd9e8682e66c09367dfc76dfb8daecae9641e9981f981da0c",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [54/57] Built QleisliKernel.Hierarchical.Gradient:c.o (360ms)\n\u2714 [55/57] Built Main (8.6s)\n\u2714 [56/57] Built Main:c.o (913ms)\n\u2714 [57/57] Built \u00abartifact-test\u00bb:exe (275ms)\nBuild completed successfully (57 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-ckumikqq/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted-1-0|ok:122\nrenamed-1-0|ok:122\nexact-1-0|ok:122\nshort-1-0|limit\nbudget-1|71718|71840\naccepted-2-0|ok:122\nrenamed-2-0|ok:122\nexact-2-0|ok:122\nshort-2-0|limit\naccepted-2-1|ok:1258\nrenamed-2-1|ok:1258\nexact-2-1|ok:1258\nshort-2-1|limit\nbudget-2|255471|256851\naccepted-3-0|ok:122\nrenamed-3-0|ok:122\nexact-3-0|ok:122\nshort-3-0|limit\naccepted-3-1|ok:1258\nrenamed-3-1|ok:1258\nexact-3-1|ok:1258\nshort-3-1|limit\naccepted-3-2|ok:2730\nrenamed-3-2|ok:2730\nexact-3-2|ok:2730\nshort-3-2|limit\nbudget-3|373896|378006\naccepted-4-0|ok:122\nrenamed-4-0|ok:122\nexact-4-0|ok:122\nshort-4-0|limit\naccepted-4-1|ok:1258\nrenamed-4-1|ok:1258\nexact-4-1|ok:1258\nshort-4-1|limit\naccepted-4-2|ok:2730\nrenamed-4-2|ok:2730\nexact-4-2|ok:2730\nshort-4-2|limit\naccepted-4-3|ok:4666\nrenamed-4-3|ok:4666\nexact-4-3|ok:4666\nshort-4-3|limit\nbudget-4|620825|629601\naccepted-5-0|ok:122\nrenamed-5-0|ok:122\nexact-5-0|ok:122\nshort-5-0|limit\naccepted-5-1|ok:1258\nrenamed-5-1|ok:1258\nexact-5-1|ok:1258\nshort-5-1|limit\naccepted-5-2|ok:2730\nrenamed-5-2|ok:2730\nexact-5-2|ok:2730\nshort-5-2|limit\naccepted-5-3|ok:4666\nrenamed-5-3|ok:4666\nexact-5-3|ok:4666\nshort-5-3|limit\naccepted-5-4|ok:7194\nrenamed-5-4|ok:7194\nexact-5-4|ok:7194\nshort-5-4|limit\nbudget-5|778980|794950\naccepted-6-0|ok:122\nrenamed-6-0|ok:122\nexact-6-0|ok:122\nshort-6-0|limit\naccepted-6-1|ok:1258\nrenamed-6-1|ok:1258\nexact-6-1|ok:1258\nshort-6-1|limit\naccepted-6-2|ok:2730\nrenamed-6-2|ok:2730\nexact-6-2|ok:2730\nshort-6-2|limit\naccepted-6-3|ok:4666\nrenamed-6-3|ok:4666\nexact-6-3|ok:4666\nshort-6-3|limit\naccepted-6-4|ok:7194\nrenamed-6-4|ok:7194\nexact-6-4|ok:7194\nshort-6-4|limit\naccepted-6-5|ok:10442\nrenamed-6-5|ok:10442\nexact-6-5|ok:10442\nshort-6-5|limit\nbudget-6|1095539|1121951\naccepted-7-0|ok:122\nrenamed-7-0|ok:122\nexact-7-0|ok:122\nshort-7-0|limit\naccepted-7-1|ok:1258\nrenamed-7-1|ok:1258\nexact-7-1|ok:1258\nshort-7-1|limit\naccepted-7-2|ok:2730\nrenamed-7-2|ok:2730\nexact-7-2|ok:2730\nshort-7-2|limit\naccepted-7-3|ok:4666\nrenamed-7-3|ok:4666\nexact-7-3|ok:4666\nshort-7-3|limit\naccepted-7-4|ok:7194\nrenamed-7-4|ok:7194\nexact-7-4|ok:7194\nshort-7-4|limit\naccepted-7-5|ok:10442\nrenamed-7-5|ok:10442\nexact-7-5|ok:10442\nshort-7-5|limit\naccepted-7-6|ok:14538\nrenamed-7-6|ok:14538\nexact-7-6|ok:14538\nshort-7-6|limit\nbudget-7|1299056|1340006\naccepted-8-0|ok:122\nrenamed-8-0|ok:122\nexact-8-0|ok:122\nshort-8-0|limit\naccepted-8-1|ok:1258\nrenamed-8-1|ok:1258\nexact-8-1|ok:1258\nshort-8-1|limit\naccepted-8-2|ok:2730\nrenamed-8-2|ok:2730\nexact-8-2|ok:2730\nshort-8-2|limit\naccepted-8-3|ok:4666\nrenamed-8-3|ok:4666\nexact-8-3|ok:4666\nshort-8-3|limit\naccepted-8-4|ok:7194\nrenamed-8-4|ok:7194\nexact-8-4|ok:7194\nshort-8-4|limit\naccepted-8-5|ok:10442\nrenamed-8-5|ok:10442\nexact-8-5|ok:10442\nshort-8-5|limit\naccepted-8-6|ok:14538\nrenamed-8-6|ok:14538\nexact-8-6|ok:14538\nshort-8-6|limit\naccepted-8-7|ok:19610\nrenamed-8-7|ok:19610\nexact-8-7|ok:19610\nshort-8-7|limit\nbudget-8|1694205|1754765\nphase-numerator|contract\nphase-exponent|contract\nphase-target|contract\ntensor-order|contract\ntensor-alias|contract\ndangling-tail|contract\nsequence-order|contract\nshort-sequence|contract\noversized-sequence|contract\ntake-position|contract\nput-width|contract\nextra-repeat|contract\nrouting|contract\ndrop-empty-owner|contract\nduplicate-empty-owner|contract\nunit-vs-empty-bits|contract\nmissing-root|contract\nzero-budget|limit\nreset-budget|limit\nzero-precision|limit\nlarge-precision|limit\nexcess-width|limit\nwrong-precision|contract\n",
+      "stderr": ""
+    }
+  ],
+  "scope": "Actual producer graphs and shared budget after Conditional.checkAll. Renaming tests the component, not finite payload reissuance. Full Fourier schema and external production authority remain disabled."
+}

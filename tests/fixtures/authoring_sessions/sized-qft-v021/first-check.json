@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-09-29T14:45:58.079627+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "corpus/sized/qualtran_qft/fourier.qli",
+    "--entry",
+    "fourier",
+    "--size",
+    "n=3",
+    "--output",
+    "/tmp/qleisli-source-fourier-first.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: unbalanced or excessive source nesting/tokens\n"
+}

@@ -1,0 +1,76 @@
+import Qleisli.HierarchicalAcceptance
+import QleisliKernel.Hierarchical.CallLowering
+
+/-! Coordinate semantics of shared calls and their existing-node expansion.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+The producer is untrusted. These equations preserve the actual ordered maps;
+ordinary derivation checking of the generated nodes remains mandatory. -/
+
+namespace Qleisli.CallLowering
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalOperators HierarchicalSemantics HierarchicalUnitary HierarchicalTyping
+open scoped Matrix BigOperators
+
+noncomputable def adapters (parent callee : Interface) (input output : PortMap)
+    (child : Operator) : List Operator :=
+  [apply ⟨parent.inputs,callee.inputs⟩ (.rewire input.axes.toList) [],child,
+   apply ⟨callee.outputs,parent.outputs⟩ (.rewire output.axes.toList) []]
+
+noncomputable def expanded (parent callee : Interface) (input output : PortMap)
+    (child : Operator) : Operator :=
+  apply parent .sequence (adapters parent callee input output child)
+
+theorem typed_unitary (artifact : Artifact) (parent callee : Definition)
+    (index : Nat) (input output : PortMap)
+    (body : parent.body = .call index input output)
+    (found : artifact.definitions[index]? = some callee)
+    (typed : NodeTyping.conditions artifact parent = true)
+    (child : Operator) (ready : UnitaryInterface callee.interface child) :
+    UnitaryInterface parent.interface (expanded parent.interface callee.interface input output child) := by
+  obtain ⟨hin,hout,_⟩ := QleisliKernel.Hierarchical.CallLowering.typed_maps
+    artifact parent callee index input output body found typed
+  have wi := (ports_width _ _ input hin).1
+  have wo := (ports_width _ _ output hout).1
+  have before := HierarchicalTyping.rewire_unitary _ input hin
+  have after := HierarchicalTyping.rewire_unitary _ output hout
+  apply unitaryInterface_apply
+  apply apply_sequence_unitary _ (width parent.interface.inputs) _ rfl
+  · exact wo.symm.trans (ready.widths.trans wi.symm)
+  · intro operation member
+    simp only [adapters,List.mem_cons,List.mem_singleton] at member
+    rcases member with rfl | rfl | rfl
+    · exact before
+    · simpa only [wi] using ready.1
+    · simpa only [wi,ready.widths] using after
+
+theorem permutation_transport {I : Type} [Fintype I] [DecidableEq I]
+    (input output : I ≃ I) (operator : Matrix I I ℂ) :
+    permutation output * operator * permutation input =
+      operator.submatrix output.symm input := by
+  ext row column
+  simp [Matrix.mul_apply,permutation,Equiv.eq_symm_apply,eq_comm]
+
+theorem matrix_rewire (interface : Interface) (n : Nat) (forward backward : List Nat)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (h : QleisliKernel.Layout.Permutation n forward backward) :
+    matrixAt n n (apply interface (.rewire forward) []) = permutation (axisEquiv h) := by
+  ext output input
+  simp only [matrixAt,apply,bounded,raw,hi,ho,List.length_ofFn,and_self,ite_true]
+  rw [← axisEquiv_list h]
+  simp [permutation,List.ofFn_inj]
+
+theorem matrix_three (n : Nat) (first middle last : Operator)
+    (fi : first.inputWidth = n) (fo : first.outputWidth = n)
+    (mi : middle.inputWidth = n) (mo : middle.outputWidth = n)
+    (li : last.inputWidth = n) (lo : last.outputWidth = n) :
+    matrixAt n n (sequence n [first,middle,last]) =
+      matrixAt n n last * matrixAt n n middle * matrixAt n n first := by
+  have rule (a b : Operator) (ai : a.inputWidth = n) (ao : a.outputWidth = n)
+      (bi : b.inputWidth = n) :
+      matrixAt n n (compose a b) = matrixAt n n a * matrixAt n n b := by
+    simpa only [ai,ao,bi] using matrix_compose a b
+  simp only [sequence,List.foldl_cons,List.foldl_nil]
+  rw [rule last _ li lo (by rfl), rule middle _ mi mo (by rfl),
+    rule first _ fi fo rfl, matrix_identity,Matrix.mul_one,Matrix.mul_assoc]
+
+end Qleisli.CallLowering

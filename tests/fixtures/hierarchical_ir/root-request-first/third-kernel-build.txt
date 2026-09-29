@@ -1,0 +1,13 @@
+✖ [26/26] Building QleisliKernel.Hierarchical.Root (1.1s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean-kernel/QleisliKernel/Hierarchical/Root.lean -o /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Root.olean -i /Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/Root.ilean -c /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Root.c --setup /Users/masa/git/Qleisli/lean-kernel/.lake/build/ir/QleisliKernel/Hierarchical/Root.setup.json --json
+error: QleisliKernel/Hierarchical/Root.lean:192:74: Unknown identifier `not_lt`
+error: QleisliKernel/Hierarchical/Root.lean:193:22: Type mismatch
+  total.left
+has type
+  ¬used + schedule.stats.visits > remaining
+but is expected to have type
+  { visits := used + schedule.stats.visits, requests := obligations artifact request pairs }.visits ≤ remaining
+error: Lean exited with code 1
+Some required targets logged failures:
+- QleisliKernel.Hierarchical.Root
+error: build failed

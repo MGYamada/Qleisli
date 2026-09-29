@@ -1,0 +1,62 @@
+QleisliKernel/Hierarchical/FourierRoot.lean:177:39: error(lean.unknownIdentifier): Unknown identifier `Derivation.Failure`
+QleisliKernel/Hierarchical/FourierRoot.lean:191:12: error: unsolved goals
+case error
+artifact : Artifact
+order : Array Nat
+request : Request
+wiringOrder : Array Nat
+checked : Checked
+accepted :
+  (match sorry () with
+    | Except.error err => Except.error err
+    | Except.ok v =>
+      match inspect artifact request wiringOrder (2000000 - v.state.visits) with
+      | Except.error kind => Except.error (sorry ())
+      | Except.ok pending => pure { artifact := v, binding := pending }) =
+    Except.ok checked
+e : Failure
+ha : Conditional.checkAll artifact order = Except.error e
+⊢ Except.error e = Except.ok checked.artifact ∧
+    inspect artifact request wiringOrder (2000000 - checked.artifact.state.visits) = Except.ok checked.binding
+QleisliKernel/Hierarchical/FourierRoot.lean:195:14: error: unsolved goals
+case ok.error
+artifact : Artifact
+order : Array Nat
+request : Request
+wiringOrder : Array Nat
+checked : Checked
+accepted :
+  (match sorry () with
+    | Except.error err => Except.error err
+    | Except.ok v =>
+      match inspect artifact request wiringOrder (2000000 - v.state.visits) with
+      | Except.error kind => Except.error (sorry ())
+      | Except.ok pending => pure { artifact := v, binding := pending }) =
+    Except.ok checked
+pending : Conditional.Pending
+ha : Conditional.checkAll artifact order = Except.ok pending
+e : Error
+hb : inspect artifact request wiringOrder (2000000 - pending.state.visits) = Except.error e
+⊢ Except.ok pending = Except.ok checked.artifact ∧
+    inspect artifact request wiringOrder (2000000 - checked.artifact.state.visits) = Except.ok checked.binding
+QleisliKernel/Hierarchical/FourierRoot.lean:191:21: warning: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp [h̵a̵,̵bind, ̲Except.bind] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/Hierarchical/FourierRoot.lean:193:15: warning: This simp argument is unused:
+  ha
+
+Hint: Omit it from the simp argument list.
+  simp only [h̵a̵,̵bind, ̲Except.bind] at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+QleisliKernel/Hierarchical/FourierRoot.lean:195:23: warning: This simp argument is unused:
+  hb
+
+Hint: Omit it from the simp argument list.
+  simp [̵h̵b̵]̵ ̵at accepted
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

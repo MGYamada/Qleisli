@@ -1,0 +1,889 @@
+{
+  "format": "qleisli.sized-qpe-clients",
+  "version": 1,
+  "status": "passed-small-coherent-clients",
+  "scope": "Small coherent local integration clients; no maximum-size validation, measured CBits API, certified decoder or production integration claim.",
+  "source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+  },
+  "producer_sha256": "95bb5e76be50715f1d8476331aaba944f20dea32e85ecc3e7181d5520fea8262",
+  "source_rejections": [
+    {
+      "case": "forward-missing-controlled",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "forward-apply-is-not-control",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "forward-adjoint-is-not-control",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "forward-natural-for-operation",
+      "diagnostic": "operation argument expected, not a natural"
+    },
+    {
+      "case": "forward-operation-for-natural",
+      "diagnostic": "natural argument expected, not an operation"
+    },
+    {
+      "case": "forward-static-arity",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "forward-target-type",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "forward-alias",
+      "diagnostic": "unknown, captured or already moved quantum value target"
+    },
+    {
+      "case": "forward-access-empty-fold",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "forward-access-unselected-branch",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "callee-extra-access",
+      "diagnostic": "operation use requires declared Adjoint, Controlled access"
+    },
+    {
+      "case": "transparent-static-arity",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "transparent-wrong-target",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "hidden-transparent-provider",
+      "diagnostic": "quantum/static binding hides imported operation amplification::grover"
+    },
+    {
+      "case": "transparent-false-premise",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "unexpected-nested-provider",
+      "diagnostic": "ordinary operation signature/static arguments do not match"
+    },
+    {
+      "case": "provider-depth",
+      "diagnostic": "invalid or excessively nested transparent operation provider"
+    },
+    {
+      "case": "duplicate-provider",
+      "diagnostic": "invalid or duplicate nested operation argument"
+    }
+  ],
+  "kernel_sha256": "3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "inspect_source_produced_corpus",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 1 test\nCORPUS|order-2-2|ok|859211|268|4\nCORPUS|order-2-3|ok|1291615|402|6\nCORPUS|order-3-2|ok|981607|268|4\nCORPUS|order-3-3|ok|1414715|402|6\nCORPUS|order-4-3|ok|1572195|402|6\nCORPUS|amplitude-zero|ok|1354858|469|7\nCORPUS|amplitude-one|ok|1354858|469|7\nCORPUS|amplitude-half|ok|1354858|469|7\nCORPUS|amplitude-small|ok|937856|335|5\nCORPUS|amplitude-exact|ok|1354858|469|7\nCORPUS|amplitude-complement|ok|1354858|469|7\nCORPUS|amplitude-off-grid|ok|1354858|469|7\nCORPUS|amplitude-spectator|ok|1011356|335|5\nCORPUS|indirect-forward|ok|891312|268|4\nCORPUS|declaration-order|ok|859211|268|4\nCORPUS|wrong-modular-direction|ok|981607|268|4\nCORPUS|missing-preparation|ok|1279592|469|7\nCORPUS|wrong-reflection-sign|ok|1434902|603|9\nCORPUS|wrong-conjugation|ok|1351691|469|7\nCORPUS|shared-qpe-fault-order|ok|968242|268|4\nCORPUS|shared-qpe-fault-amplitude|ok|1336192|469|7\nCORPUS|nested-provider-cache|ok|292000|0|0\nCORPUS|false-forwarded-leaf|contract|exact equation U E_in = E_out u does not hold\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.19s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-bc96fffc2cad5da1)\n",
+  "native": [
+    [
+      "order-2-2",
+      "ok",
+      "859211",
+      "268",
+      "4"
+    ],
+    [
+      "order-2-3",
+      "ok",
+      "1291615",
+      "402",
+      "6"
+    ],
+    [
+      "order-3-2",
+      "ok",
+      "981607",
+      "268",
+      "4"
+    ],
+    [
+      "order-3-3",
+      "ok",
+      "1414715",
+      "402",
+      "6"
+    ],
+    [
+      "order-4-3",
+      "ok",
+      "1572195",
+      "402",
+      "6"
+    ],
+    [
+      "amplitude-zero",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-one",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-half",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-small",
+      "ok",
+      "937856",
+      "335",
+      "5"
+    ],
+    [
+      "amplitude-exact",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-complement",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-off-grid",
+      "ok",
+      "1354858",
+      "469",
+      "7"
+    ],
+    [
+      "amplitude-spectator",
+      "ok",
+      "1011356",
+      "335",
+      "5"
+    ],
+    [
+      "indirect-forward",
+      "ok",
+      "891312",
+      "268",
+      "4"
+    ],
+    [
+      "declaration-order",
+      "ok",
+      "859211",
+      "268",
+      "4"
+    ],
+    [
+      "wrong-modular-direction",
+      "ok",
+      "981607",
+      "268",
+      "4"
+    ],
+    [
+      "missing-preparation",
+      "ok",
+      "1279592",
+      "469",
+      "7"
+    ],
+    [
+      "wrong-reflection-sign",
+      "ok",
+      "1434902",
+      "603",
+      "9"
+    ],
+    [
+      "wrong-conjugation",
+      "ok",
+      "1351691",
+      "469",
+      "7"
+    ],
+    [
+      "shared-qpe-fault-order",
+      "ok",
+      "968242",
+      "268",
+      "4"
+    ],
+    [
+      "shared-qpe-fault-amplitude",
+      "ok",
+      "1336192",
+      "469",
+      "7"
+    ],
+    [
+      "nested-provider-cache",
+      "ok",
+      "292000",
+      "0",
+      "0"
+    ],
+    [
+      "false-forwarded-leaf",
+      "contract",
+      "exact equation U E_in = E_out u does not hold"
+    ]
+  ],
+  "semantics": {
+    "order-2-2": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.803658237888843e-16,
+      "executed_instructions": 6,
+      "diagnostic_probabilities": [
+        0.49999999999999967,
+        0.0,
+        0.49999999999999967,
+        0.0
+      ],
+      "diagnostic_branch_error": 2.0671475280152302e-16,
+      "orbit": [
+        1,
+        2
+      ]
+    },
+    "order-2-3": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 8.473409486550036e-16,
+      "executed_instructions": 11,
+      "diagnostic_probabilities": [
+        0.49999999999999956,
+        0.0,
+        0.0,
+        0.0,
+        0.49999999999999956,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_branch_error": 5.904179197264339e-16,
+      "orbit": [
+        1,
+        2
+      ]
+    },
+    "order-3-2": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 3.803658237888843e-16,
+      "executed_instructions": 7,
+      "diagnostic_probabilities": [
+        0.3749999999999998,
+        0.24999999999999983,
+        0.12499999999999992,
+        0.24999999999999986
+      ],
+      "diagnostic_branch_error": 1.8619006149354548e-16,
+      "orbit": [
+        1,
+        2,
+        4
+      ]
+    },
+    "order-3-3": {
+      "basis_columns": 64,
+      "reference_columns": 2,
+      "maximum_error": 8.473409486550036e-16,
+      "executed_instructions": 13,
+      "diagnostic_probabilities": [
+        0.3437499999999997,
+        0.014514565439601935,
+        0.06249999999999994,
+        0.23548543456039786,
+        0.031249999999999972,
+        0.23548543456039786,
+        0.062499999999999944,
+        0.01451456543960194
+      ],
+      "diagnostic_branch_error": 4.43531896276708e-16,
+      "orbit": [
+        1,
+        2,
+        4
+      ]
+    },
+    "order-4-3": {
+      "basis_columns": 128,
+      "reference_columns": 2,
+      "maximum_error": 8.473409486550036e-16,
+      "executed_instructions": 12,
+      "diagnostic_probabilities": [
+        0.24999999999999978,
+        0.0,
+        0.24999999999999978,
+        0.0,
+        0.24999999999999978,
+        0.0,
+        0.24999999999999978,
+        0.0
+      ],
+      "diagnostic_branch_error": 5.495323605393213e-16,
+      "orbit": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "amplitude-zero": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.3306690738754696e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        0.9999999999999967,
+        1.6355761337072877e-31,
+        6.317050217590133e-32,
+        3.173168299013693e-32,
+        1.232595164407831e-32,
+        3.173168299013693e-32,
+        6.317050217590133e-32,
+        1.6355761337072873e-31
+      ],
+      "diagnostic_branch_error": 1.6653345369377348e-15,
+      "target_probability": 0.0,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-one": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.3306690738754696e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        1.9824750557387562e-32,
+        3.9813100355895766e-32,
+        8.297512176225102e-32,
+        2.1065956555171275e-31,
+        0.9999999999999967,
+        2.1886566499506104e-31,
+        7.336107824278862e-32,
+        4.122104443200977e-32
+      ],
+      "diagnostic_branch_error": 1.8730246697312688e-15,
+      "target_probability": 1.0,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-half": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 1.5543122344752192e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        5.200010849845536e-32,
+        1.2312001156584527e-31,
+        0.49999999999999845,
+        1.328591585893445e-31,
+        5.97038282760043e-32,
+        1.010582339608289e-31,
+        0.4999999999999985,
+        8.900797100406503e-32
+      ],
+      "diagnostic_branch_error": 1.0235750533041806e-15,
+      "target_probability": 0.4999999999999999,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-small": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 7.108895957933346e-16,
+      "executed_instructions": 32,
+      "diagnostic_probabilities": [
+        0.4267766952966365,
+        0.24999999999999953,
+        0.07322330470336301,
+        0.24999999999999964
+      ],
+      "diagnostic_branch_error": 4.47545209131181e-16,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.4999999999999999,
+        1.0,
+        0.5000000000000001
+      ]
+    },
+    "amplitude-exact": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 1.7763568394002505e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        2.497690396627196e-31,
+        0.4999999999999984,
+        1.3166138582317241e-31,
+        4.237045877651919e-32,
+        4.061304770226583e-32,
+        6.085938624263665e-32,
+        1.5910588753069046e-31,
+        0.4999999999999982
+      ],
+      "diagnostic_branch_error": 1.2002298365256574e-15,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-complement": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 1.7208456881689926e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        2.1666711874356398e-32,
+        3.543711097672514e-32,
+        1.1488172118269857e-31,
+        0.49999999999999845,
+        1.872966870916586e-31,
+        0.4999999999999983,
+        9.52372357499488e-32,
+        3.543711097672514e-32
+      ],
+      "diagnostic_branch_error": 1.2375175177384219e-15,
+      "target_probability": 0.8535533905932737,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-off-grid": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.1086244689504383e-15,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        0.8131786634360709,
+        0.0639353306216793,
+        0.01624322077963401,
+        0.009287974081683472,
+        0.007888285597931711,
+        0.009287974081683475,
+        0.016243220779634006,
+        0.06393533062167939
+      ],
+      "diagnostic_branch_error": 1.3877787807814457e-15,
+      "target_probability": 0.009607359798384776,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "amplitude-spectator": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 7.108895957933346e-16,
+      "executed_instructions": 32,
+      "diagnostic_probabilities": [
+        0.4267766952966365,
+        0.24999999999999953,
+        0.07322330470336301,
+        0.24999999999999964
+      ],
+      "diagnostic_branch_error": 4.47545209131181e-16,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.4999999999999999,
+        1.0,
+        0.5000000000000001
+      ]
+    },
+    "indirect-forward": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.803658237888843e-16,
+      "executed_instructions": 6,
+      "diagnostic_probabilities": [
+        0.49999999999999967,
+        0.0,
+        0.49999999999999967,
+        0.0
+      ],
+      "diagnostic_branch_error": 2.0671475280152302e-16,
+      "orbit": [
+        1,
+        2
+      ]
+    },
+    "declaration-order": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 3.803658237888843e-16,
+      "executed_instructions": 6,
+      "diagnostic_probabilities": [
+        0.49999999999999967,
+        0.0,
+        0.49999999999999967,
+        0.0
+      ],
+      "diagnostic_branch_error": 2.0671475280152302e-16,
+      "orbit": [
+        1,
+        2
+      ]
+    }
+  },
+  "semantic_faults": {
+    "wrong-modular-direction": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 0.4999999999999999,
+      "executed_instructions": 7,
+      "diagnostic_probabilities": [
+        0.3749999999999998,
+        0.24999999999999983,
+        0.12499999999999992,
+        0.24999999999999986
+      ],
+      "diagnostic_branch_error": 0.4999999999999999,
+      "orbit": [
+        1,
+        2,
+        4
+      ]
+    },
+    "missing-preparation": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0.3826834323650903,
+      "executed_instructions": 66,
+      "diagnostic_probabilities": [
+        2.379893917124216e-31,
+        0.49999999999999883,
+        1.1237772735286896e-31,
+        3.1506661061302566e-32,
+        3.470058349583896e-32,
+        1.4337502949738163e-32,
+        1.029629453465959e-31,
+        0.49999999999999856
+      ],
+      "diagnostic_branch_error": 0.38268343236509,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "wrong-reflection-sign": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0.6532814824381884,
+      "executed_instructions": 97,
+      "diagnostic_probabilities": [
+        5.947512409510829e-32,
+        8.782240546405797e-32,
+        2.066643200949028e-31,
+        0.49999999999999833,
+        3.687794731636983e-31,
+        0.4999999999999981,
+        2.599162830572098e-31,
+        3.1970437076828115e-32
+      ],
+      "diagnostic_branch_error": 0.5,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "wrong-conjugation": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0.6035533905932735,
+      "executed_instructions": 69,
+      "diagnostic_probabilities": [
+        1.5284661521143196e-31,
+        0.9999999999999972,
+        1.4533548842832179e-31,
+        3.7510785868027326e-32,
+        1.8416705093202937e-32,
+        3.2548216060144286e-32,
+        2.2461157976416127e-32,
+        3.2063433372961547e-32
+      ],
+      "diagnostic_branch_error": 0.49999999999999994,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    },
+    "shared-qpe-fault-order": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 0.6249999999999993,
+      "executed_instructions": 5,
+      "diagnostic_probabilities": [
+        0.9999999999999993,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_branch_error": 0.49999999999999967,
+      "orbit": [
+        1,
+        2,
+        4
+      ]
+    },
+    "shared-qpe-fault-amplitude": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0.999999999999999,
+      "executed_instructions": 13,
+      "diagnostic_probabilities": [
+        0.999999999999999,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "diagnostic_branch_error": 0.9238795325112864,
+      "target_probability": 0.14644660940672624,
+      "diagnostic_grid_estimates": [
+        0.0,
+        0.14644660940672624,
+        0.4999999999999999,
+        0.8535533905932737,
+        1.0,
+        0.8535533905932737,
+        0.5000000000000001,
+        0.14644660940672632
+      ]
+    }
+  },
+  "provider_cache": {
+    "maximum_error": 2.220446049250313e-16,
+    "basis_columns": 8,
+    "reference_columns": 1
+  },
+  "totals": {
+    "basis_columns": 432,
+    "reference_columns": 31
+  },
+  "artifacts": {
+    "order-2-2": {
+      "definitions": 103,
+      "bytes": 109293,
+      "sha256": "854c4c69731c0ad55dde553599c6b39257453a4e1539b56047dc67818a466030"
+    },
+    "order-2-3": {
+      "definitions": 143,
+      "bytes": 153925,
+      "sha256": "3fd812abe9809692a1d24e42de64a5ce1786a88283f6b536e547e2ba31923cfd"
+    },
+    "order-3-2": {
+      "definitions": 108,
+      "bytes": 116996,
+      "sha256": "826b4edbc30a1dcef0aabe250a106e786c4fd3a780dcd8b5fd404af4463403bf"
+    },
+    "order-3-3": {
+      "definitions": 146,
+      "bytes": 158196,
+      "sha256": "1e7e7f39127a5a2f72af967346fa036e5f17c5be40994371f3e5ca15f61f2e32"
+    },
+    "order-4-3": {
+      "definitions": 150,
+      "bytes": 165312,
+      "sha256": "3134a6c5325ec979b4fc9c276f9a2571058057fc888a87c4318366298fb41d83"
+    },
+    "amplitude-zero": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "5f7c39d400ff3a84be12240c71714061caf05d250a188548d8b14a04eb69f20d"
+    },
+    "amplitude-one": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "3c1f1e543224d57c7939951c4db02680fc58d8db4118db1d15b56f3c48012536"
+    },
+    "amplitude-half": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "7f3d736cae1f8e1c02f3b261436d7d6b6e48f5f35c1cf0fc94b0fbd24f3d7d8b"
+    },
+    "amplitude-small": {
+      "definitions": 128,
+      "bytes": 131493,
+      "sha256": "d4e5ce84a0662114ec8f765dee1bb884905bda2799ca55a3339334f27f4fee61"
+    },
+    "amplitude-exact": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "4b730555be04297e6476bd58e31b64e78045480dea1dbe0ecbbded360001d5da"
+    },
+    "amplitude-complement": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "32e53b606965c53051e0dc8fcf5555e000371ddb5d99c650397a2f1175bcf3e5"
+    },
+    "amplitude-off-grid": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "25c33881191e236d12d3fe7bdc7cb528085d29e324d7b06d55b6f8677ebef6f1"
+    },
+    "amplitude-spectator": {
+      "definitions": 125,
+      "bytes": 128179,
+      "sha256": "0f6622f90d85c15277ec842325ecf2ca678d6a5e68ee78e92def4cfdc61cb447"
+    },
+    "indirect-forward": {
+      "definitions": 105,
+      "bytes": 111382,
+      "sha256": "f167e3883a19bda4f199ee8fd114b66f4c165321bbe3b317c22fe6bc5014da17"
+    },
+    "declaration-order": {
+      "definitions": 103,
+      "bytes": 109293,
+      "sha256": "854c4c69731c0ad55dde553599c6b39257453a4e1539b56047dc67818a466030"
+    },
+    "wrong-modular-direction": {
+      "definitions": 108,
+      "bytes": 116996,
+      "sha256": "0b4e18d24fd08b2e7ff026c40c8a273996708bebec7baf9827732ec08ff03fcc"
+    },
+    "missing-preparation": {
+      "definitions": 161,
+      "bytes": 167371,
+      "sha256": "6347540cb54b83dfd5e49b75386ca738f2044e7a7213876916fd1dc6d61e88ac"
+    },
+    "wrong-reflection-sign": {
+      "definitions": 180,
+      "bytes": 188848,
+      "sha256": "a0050c1e5a7fd7dcdef23be846d3101b444445c91e6a2bd0d9e29aedc7ec5e53"
+    },
+    "wrong-conjugation": {
+      "definitions": 166,
+      "bytes": 173632,
+      "sha256": "da3aaf3aa8eea6c7f92e9c19ebea8e49b2611ac71d33c2019457b30c7f69a8b6"
+    },
+    "shared-qpe-fault-order": {
+      "definitions": 106,
+      "bytes": 115468,
+      "sha256": "46edb6f88475ebd9dc6bb7423f97d05ec4865eeaf3fb90cfc0a1c937676e65fa"
+    },
+    "shared-qpe-fault-amplitude": {
+      "definitions": 163,
+      "bytes": 171373,
+      "sha256": "f9390db28c02bca3f1869da2bd991c6e2ee9a7e1d644bd6ef337f2f662c8d651"
+    },
+    "nested-provider-cache": {
+      "definitions": 41,
+      "bytes": 38102,
+      "sha256": "54099616e3387d6232a44afea481f5e72a516316232278e0021f901380ff21d7"
+    },
+    "false-forwarded-leaf": {
+      "definitions": 167,
+      "bytes": 174357,
+      "sha256": "6d01ac8c92b9c2e4b5ae9cda1efb458fa9f0761ce157a25bea37fb6731c2333a"
+    }
+  }
+}

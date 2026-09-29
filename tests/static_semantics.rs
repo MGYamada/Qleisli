@@ -5,8 +5,8 @@ mod common;
 use std::ops::{Add, Mul, Neg};
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::ir::{CircuitAction, CircuitStep, RawOp};
+use qleisli::frontend::compile::compile_project;
+use qleisli::ir::{CircuitAction, CircuitStep, RawOp};
 
 // Z[zeta, 1/2], where zeta = exp(i*pi/4) and zeta^4 = -1.
 // Normalization makes equality exact; checked arithmetic fails on overflow.

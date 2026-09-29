@@ -26,6 +26,8 @@ vqe: adgran
 variational_classifier: mariaschuld
 qpe: ixfoduap, KetPuntoG
 phase_kickback: Dan
+lcu_blockencoding: ixfoduap, Diego, Jay (Juan Miguel is named in the original demo)
+kernel_based_training: mariaschuld
 These are upstream author usernames, not substituted copyright claims.
 Licensed under Apache-2.0; see upstream/pennylane_demos/LICENSE and README.txt.
 

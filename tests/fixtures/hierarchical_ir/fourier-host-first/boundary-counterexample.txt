@@ -1,0 +1,30 @@
+{"argv":["cargo","test","--test","qft_hierarchy","native_fourier_request_faults","--","--ignored","--nocapture"],"binary_cases":187,"binary_sha256":"c148cbb962bfd2fbcb4ae87eabefb60c44f162762c18fea65c31d320999305ba","exit_code":101,"format":"qleisli.fourier-host-validation","host_cases":39,"seconds":7.256,"semantic_evidence_issued":false,"status":"failed","version":1}
+
+running 1 test
+HOST|width-1|ok|77158|118
+HOST|width-2|ok|273293|236
+HOST|width-3|ok|403852|354
+HOST|width-4|ok|675967|472
+HOST|width-5|ok|857457|590
+HOST|width-6|ok|1219749|708
+HOST|width-7|ok|1463626|826
+HOST|width-8|ok|1933823|944
+test native_fourier_request_faults ... FAILED
+
+failures:
+
+failures:
+    native_fourier_request_faults
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.80s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.27s
+     Running tests/qft_hierarchy.rs (target/debug/deps/qft_hierarchy-5d75744bf3a93d2c)
+
+thread 'native_fourier_request_faults' (847849) panicked at tests/qft_hierarchy.rs:179:17:
+assertion `left == right` failed: named-bit-boundary
+  left: "contract"
+ right: "ok"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test qft_hierarchy`
+

@@ -1,0 +1,18 @@
+{
+  "recorded_utc": "2026-09-29T15:14:15.718552+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/estimation.qli",
+    "--entry",
+    "estimate",
+    "--size",
+    "n=1",
+    "--size",
+    "m=3",
+    "--output",
+    "/tmp/qleisli-source-qpe-first.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: unsupported or duplicate import std::quantum::phase\n"
+}

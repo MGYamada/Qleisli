@@ -1,0 +1,9 @@
+Qleisli/HierarchicalFourierBase.lean:93:49: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`
+Qleisli/HierarchicalFourierBase.lean:104:10: warning: This simp argument is unused:
+  Matrix.diagonal_apply
+
+Hint: Omit it from the simp argument list.
+  simp [̵M̵a̵t̵r̵i̵x̵.̵d̵i̵a̵g̵o̵n̵a̵l̵_̵a̵p̵p̵l̵y̵,̵r̵e̵v̵e̵r̵s̵e̵d̵F̵o̵u̵r̵i̵e̵r̵,̵n̵u̵m̵b̵e̵r̵,̵p̵h̵a̵s̵e̵_̵z̵e̵r̵o̵,̵s̵a̵m̵e̵]̵[̲r̲e̲v̲e̲r̲s̲e̲d̲F̲o̲u̲r̲i̲e̲r̲,̲ ̲n̲u̲m̲b̲e̲r̲,̲ ̲p̲h̲a̲s̲e̲_̲z̲e̲r̲o̲,̲ ̲s̲a̲m̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalFourierBase.lean:122:68: error(lean.unknownIdentifier): Unknown constant `Bool.and_eq_true.mp`

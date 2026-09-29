@@ -6,6 +6,17 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Historical entries below retain the scope, dates, and counts of their original checks; English translation does not rerun those checks or adopt future syntax. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
+## v0.3.0: Qleisli type-system specification
+
+**User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
+of the v0.3.0 breaking-change release. Specify concrete rules, checking
+obligations and public migrations before implementation; the
+[current finite contract](docs/type-system.md) remains in force. This target
+coexists with K1 exact meanings/contracts in the
+[detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
+QLT implementation moves to **v0.4.0 or later**, after the type-system work.
+Current development remains 0.2.1; this decision changes the future plan only.
+
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
 **Adopted target, 2026-09-29:** prove the **Qleisli Soundness Theorem** in Lean
@@ -35,6 +46,15 @@ longer-term direction extends Lean implementation beyond the frontend; backend
 proofs are required for the intended end-to-end Lean guarantee. This adds
 PR-C1–C4 to the v1 gates without changing M0–M5's algorithm dependencies.
 
+The **2026-09-30 amendment** adds the
+[Resource Safety Theorem](docs/release-milestones.md#resource-safety-theorem-v1)
+as the third pillar toward v1, **to prove** under RS-C1–C5. Establish finite,
+statically computed resource bounds and preserve their contracts through
+actual lowering, optimization and emission. Develop
+[resource semantics](docs/resource-semantics.md) alongside types, meanings and
+effects. Current ownership checks, work limits and cost reports do not prove
+this target; the trusted/untrusted partition remains unchanged.
+
 <a id="採用したリリース到達条件2026-09-27"></a>
 
 ## Adopted release milestones (2026-09-27)
@@ -52,9 +72,9 @@ For v1, Shor, QPE, and Grover must be readable in their textbook quantum-algorit
 | v0.1.4 | Adopt the original finite maintenance plan. | [Historical release record](docs/releases/v0.1.4.md); its release evidence is preserved. |
 | v0.1.5 | Complete compatible review maintenance, the selected M1 specifications and bounded M2 checker design; validate and package the local candidate. | **Local roadmap complete; publication pending.** [Completion evidence](docs/releases/v0.1.5.md#roadmap-completion-evidence) distinguishes delivered artifacts and validation from exact-commit CI, tagging and publication. M1/M2 feature implementations remain open. |
 | Before v0.2.0 | First write ideal imaginary Qleisli 1.0 code for QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT; record contracts, capabilities, and open questions. Compilation is not required. | The [six drafts and index](docs/imaginary-v1/README.md), with their [review](docs/imaginary-v1/review.md), satisfy the initial-code and requirement-record prerequisite. The code remains uncompiled. |
-| v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. Also prove the Physical Realizability Theorem for the supported Lean backend under PR-C1–C4. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
+| v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. Also prove Physical Realizability under PR-C1–C4 and Resource Safety under RS-C1–C5 for their complete declared profiles. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
 
-Detailed V01-C1–C6, B019, V1-C1–C5 and PR-C1–C4 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version. Do not infer release milestones from unrelated prior test results.
+Detailed V01-C1–C6, B019, V1-C1–C5, PR-C1–C4 and RS-C1–C5 criteria are in the [authoritative milestones](docs/release-milestones.md); this section summarizes them. They are distinct from development stages 0–5, finite-core specification v0, ledger format v1, and the current Cargo version. Do not infer release milestones from unrelated prior test results.
 
 | Stage | Status | Deliverables |
 | --- | --- | --- |
@@ -67,9 +87,18 @@ Detailed V01-C1–C6, B019, V1-C1–C5 and PR-C1–C4 criteria are in the [autho
 
 <a id="v020-shared-qpe-and-code-driven-development"></a>
 
-## v0.2.0 foundation and v0.2.1 shared QPE
+## v0.2.0 foundation and subsequent release boundaries
 
-**Current product version: 0.2.0.** The 2026-09-29
+**Latest user decision, 2026-09-30:** [0.2.1](docs/v0.2.1-plan.md) packages
+completed corpus/source experiments, review fixes, component proofs and the
+[bounded Python/OpenQASM/QIR connection layer](docs/connections-v021.md).
+Remaining heavy measured-QPE implementation, production integration and proofs
+move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates. The following
+account preserves the earlier split; it is superseded for release assignment.
+
+**Current release: 0.2.1, published to crates.io and GitHub on 2026-09-30.** The
+[development record](docs/releases/v0.2.1.md) records version selection on
+2026-09-29, validation and both publications. The earlier 2026-09-29
 [scope split](docs/v0.2.0-plan.md) retains implemented finite interfaces,
 sampling/trials, review fixes and the experimental Lean kernel/proof foundation
 in 0.2.0. The [release record](docs/releases/v0.2.0.md) records migration,
@@ -78,6 +107,10 @@ The original 2026-09-28 shared-QPE target continues in [0.2.1](docs/v0.2.1-plan.
 complete hierarchical semantics and independent external binding, sized
 `Bits<n>`/`CBits<m>` source and ordinary QPE/QFT, then reference execution and
 integrated H1–H5. Preserve every feature gate; moving it does not mark it passed.
+The later user authorization makes corpus completion the active goal. Its
+G020-1 packet now includes [linear size arithmetic and explicit bit-segment
+reshape](docs/size-expressions.md), with `n+1` recursive interfaces and unchanged
+type/ownership distinctions; these are adopted design, not implemented syntax.
 0.2.1 requires compatible public additions; a required break selects 0.3.0.
 The subsequent 2026-09-29 decision adopts [arity-preserving tuples](docs/tuple-shapes.md)
 and a consolidated [type contract](docs/type-system.md); migrate legacy clients
@@ -86,7 +119,7 @@ with explicit nesting/conversions. Type and ownership decisions follow the
 with quantum-specific differences stated explicitly. First establish the
 hierarchical meaning/encoding/evidence boundary; source size generalization
 cannot precede that gate. Current implementation and tests are in the
-[development record](docs/releases/v0.2.0.md), without claiming completed M2.
+[0.2.0 record](docs/releases/v0.2.0.md), without claiming completed M2.
 
 CD-3 now also has a [typed layout checker](docs/lean-layout-slice.md) for
 multiple owners and up to 16 axes, preserving exact tuple shape and zero-width
@@ -112,7 +145,16 @@ for the 0.2.1 continuation; the 0.2.0 split does not claim full M2 or K0 complet
 The [staged plan](docs/lean-kernel-migration.md#staged-migration) assigns intended
 later boundaries to exact contracts, complete raw verification, conditional
 Lean authority, and translation validation. It preserves M0–M5 and PATCH for
-compatible changes.
+compatible changes. The adopted
+[pipeline migration policy](docs/lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary)
+moves passes from either end while preserving independent checking of the
+boundary IR and a verified downstream segment. Each proved adjacent pass can
+extend that segment without changing the fixed trust partition.
+[External synthesis search](docs/lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
+can remain outside Lean: rotation-synthesis norm-equation oracles propose
+circuits/witnesses, and the planned Lean `LeafRealizer` checker validates their
+realization contracts. This applies the de Bruijn criterion per pass; it does
+not require all Rust code or search algorithms to migrate.
 
 Every language/library change now retains first source and real diagnostics,
 an independent oracle and semantic fault, the author obligation removed, and
@@ -126,7 +168,8 @@ The [QLT design](docs/qlt-design.md) is adopted as a separate mathematical test
 language with Rust-style source and a one-way dependency on public `.qli`
 definitions. The current deliverable is the English design and
 [preserved sources/counterexamples](tests/fixtures/qlt_design/README.md).
-During 0.3–0.4, implement a Rust experiment for exact finite comparison,
+From v0.4.0 onward, after the 0.3.0 type-system work, implement a Rust
+experiment for exact finite comparison,
 structural cost and doctests. From 0.5 onward, add complete instrument/reference
 comparisons and migrate actual evaluation to Lean with correspondence proofs;
 interval bounds and independent certificates follow their own contracts.
@@ -390,7 +433,7 @@ The selected fixed-width M1 profile is distinct from M2 size generalization.
 | G020-1: extension specification | M0 scope selection followed by English grammar/types, capabilities, ownership/effects, meanings, positive/negative cases, IR binding, budgets and migration. M1 retains bounded dense checking; M2 must discharge R14/hierarchical-IR and exact dyadic-angle decisions. | Complete for fixed-width M1: [language rules](docs/next-minor-spec.md) and [machine interfaces](docs/machine-interface-spec.md). [M2 IR/checker profile](docs/hierarchical-ir-spec.md) selected; its sized source grammar is a separate extension gate. |
 | G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Implemented for fixed-width N1–N6 in [0.1.8](docs/releases/v0.1.8.md), and X1/M1.1-A in [0.1.7](docs/releases/v0.1.7.md). Other M1 slices and M2 production integration remain pending. |
 | G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | The implemented fixed-width N1–N6, X1 and M1.1-A profiles have validation and release records above. The [B019 check](docs/reviews/b019-2026-09-28.md) records current local revalidation and remaining audit/candidate gates. Remaining M1 slices, M2 and V1 are not validated; imaginary source is not execution evidence. |
-| V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. The Lean backend meets PR-C1–C4 and the Physical Realizability Theorem. | Not achieved. |
+| V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. The Lean backend meets PR-C1–C4; the Resource Safety Theorem and RS-C1–C5 cover static bounds and compilation preservation. | Not achieved. |
 
 Algorithmic approximation error/success probability and exact auxiliary zero return are separate contracts. The amplitude-estimation, walk, and QSVT drafts evaluate abstractions without expanding the three executable v1 targets to six. Finite-core regressions and the open general proofs in SPEC-3/4 continue alongside design work.
 
@@ -570,6 +613,12 @@ Reproducing existing examples and discovering new algorithms are separate achiev
 <a id="第3層の将来計画-標準ライブラリ"></a>
 
 ## Future layer 3: standard library
+
+The user fixed the [library goal](docs/stdlib-roadmap.md#adopted-library-goal)
+on 2026-09-29: a BLAS/LAPACK-like quantum-computing foundation integrating a
+textbook and formal specifications, so quantum information can be learned by
+reading the library. Its comprehensive organization and generalized APIs remain
+open; current minimum modules and recorded implementation/proof status persist.
 
 Following the [standard-vocabulary plan](docs/stdlib-roadmap.md), develop layer-2 components into standard APIs with contracts, verification status, and compatibility. L0's document ledger, L1's finite operation transformations, and L3's finite arithmetic/classical processing are implemented. Existing fixed examples did not require general L2 support. Build on the v0.1 path connecting finite L0/L1/L4 contracts; use imaginary-v1 drafts to identify missing vocabulary before implementing generalizations required by the three v1 algorithms. Completing all L0–L5 is not a v0.1/v1 requirement.
 

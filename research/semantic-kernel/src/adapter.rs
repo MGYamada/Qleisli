@@ -9,7 +9,7 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-use qleisli_core::ir::{
+use qleisli::ir::{
     CircuitAction, CircuitStep, Effect, RawOp, RawProgram, SingleGate, TokenId, WireId,
 };
 
@@ -423,7 +423,7 @@ fn preflight(raw: &RawProgram) -> Result<usize, AdapterError> {
 pub fn import_raw(raw: RawProgram) -> Result<ImportedProgram, AdapterError> {
     let bits = preflight(&raw)?;
     let verified =
-        qleisli_core::verify(raw).map_err(|error| AdapterError::InvalidIr(error.to_string()))?;
+        qleisli::verify(raw).map_err(|error| AdapterError::InvalidIr(error.to_string()))?;
     let raw = verified.raw();
     let mut builder = Builder::new(bits);
     let space = builder.widths[bits];

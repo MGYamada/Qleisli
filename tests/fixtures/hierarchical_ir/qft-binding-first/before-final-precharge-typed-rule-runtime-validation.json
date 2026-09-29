@@ -1,0 +1,34 @@
+{
+  "format": "qleisli.typed-rule-runtime-validation",
+  "version": 1,
+  "status": "failed",
+  "commands": [
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "seconds": 57.172,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "Tests.lean"
+      ],
+      "exit_code": 1,
+      "seconds": 0.268,
+      "stdout": "Tests.lean:1:0: error: object file '/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean/QleisliKernel/Hierarchical/TypedRule.olean' of module QleisliKernel.Hierarchical.TypedRule does not exist\n",
+      "stderr": ""
+    }
+  ]
+}

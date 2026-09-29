@@ -1,0 +1,59 @@
+//! Native QFT hierarchy authoring probe. Numerical oracles live in Python and
+//! are never passed to the acceptance API as evidence.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use qleisli_core::interchange::hierarchical::Kernel;
+
+#[test]
+#[ignore = "run through scripts/test_hierarchical_qft.py with an audited kernel"]
+fn inspect_authored_qft_hierarchies() {
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let directory = std::env::var_os("QLEISLI_QFT_FIXTURES").unwrap();
+    let shared = std::env::var("QLEISLI_QFT_CONSTRUCTION").unwrap() == "shared-gradient";
+    let widths: &[usize] = if shared { &[1, 2, 3, 4, 5, 6, 7, 8] } else { &[1, 2, 3, 4, 8] };
+    for &width in widths {
+        let path = std::path::Path::new(&directory).join(format!("qft-{width}.json"));
+        let payload = std::fs::read(path).unwrap();
+        match kernel.inspect(&payload) {
+            Ok(checked) => {
+                println!(
+                    "QFT|{width}|accepted|{}|{}|{}",
+                    checked.structural_work(),
+                    checked.exact_work(),
+                    checked.leaves().len()
+                );
+                let request = std::fs::read(
+                    std::path::Path::new(&directory).join(format!("qft-request-{width}.json")),
+                )
+                .unwrap();
+                // The requested Fourier meaning is still a distinct gate.
+                assert_eq!(
+                    kernel.check_against(&payload, &request).unwrap_err().code,
+                    "contract"
+                );
+            }
+            Err(error) => {
+                // The remaining capacity failure is recorded, not accepted as
+                // completion of the full width-eight profile.
+                assert!(!shared && width == 8, "{width}: {error}");
+                assert_eq!(error.code, "limit", "{width}: {error}");
+                println!("QFT|{width}|{}|{}", error.code, error.message);
+            }
+        }
+    }
+    let mut faults = vec![
+        ("layout", "invalid_ir"),
+        ("empty-owner", "invalid_ir"),
+        ("h", "contract"),
+        ("phase", "contract"),
+    ];
+    if shared {
+        faults.push(("repeat", "contract"));
+    }
+    for (name, code) in faults {
+        let payload =
+            std::fs::read(std::path::Path::new(&directory).join(format!("invalid-{name}.json")))
+                .unwrap();
+        assert_eq!(kernel.inspect(&payload).unwrap_err().code, code, "{name}");
+        println!("FAULT|{name}|{code}");
+    }
+}

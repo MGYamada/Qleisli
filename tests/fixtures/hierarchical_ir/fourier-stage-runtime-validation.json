@@ -1,0 +1,70 @@
+{
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 61.221,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "Tests.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 8.896,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 22.167,
+      "stdout": "",
+      "stderr": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 22.072s\n\nOK\n"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_hierarchical_gradient.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/fourier-stage-gradient-native.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 11.091,
+      "stdout": "{\"binary_sha256\":\"70c0474ae059c6cfd9e8682e66c09367dfc76dfb8daecae9641e9981f981da0c\",\"format\":\"qleisli.hierarchical-gradient-binding\",\"native_cases\":175,\"phase_only_fault\":true,\"scope\":\"Actual producer graphs and shared budget after Conditional.checkAll. Renaming tests the component, not finite payload reissuance. Full Fourier schema and external production authority remain disabled.\",\"source_sha256\":\"faf98ecfe9e771577b7716fec9aa6c8b047ba3660c70b088a54f4bdcf35a93db\",\"status\":\"passed\",\"version\":1}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_hierarchical_request.py",
+        "--record",
+        "tests/fixtures/hierarchical_ir/fourier-stage-root-native.json"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "seconds": 24.947,
+      "stdout": "{\"format\": \"qleisli.hierarchy-root-request-validation\", \"version\": 1, \"status\": \"passed\", \"cases\": 813, \"seconds\": 24.891, \"binary_sha256\": \"cf0362f7fe5d10e66460bac7f7e83979fc6da205da48171864bdca7929490830\"}\n",
+      "stderr": ""
+    }
+  ]
+}

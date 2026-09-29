@@ -76,7 +76,7 @@ theorem inspect_unitary (artifact : Artifact) (index exponent provider remaining
   have unitary := ControlledPowers.checked_single_unitary operations exponent provider pending.actual checked isometry
   exact ⟨_,by simp [implementationOperator,physical],unitary⟩
 
-/-- temporary (TP-002): projection-only entry wrapper. Retire once the
+/-- temporary (TP-002), importance P2: projection-only entry wrapper. Retire once the
 constructed derivation entry supplies the independently requested coherent
 power conclusion, with public-API compatibility review. The whole-artifact entry additionally establishes all structural checks,
 entry identity and the aggregate budget. The same provider premise remains. -/
@@ -93,7 +93,7 @@ theorem inspectEntry_equation (artifact : Artifact) (order : Array Nat) (exponen
     localCheck operations meanings providerEquation
   exact ⟨_,by simpa only [entry] using equations.1,equations.2⟩
 
-/-- temporary (TP-002): projection-only reference wrapper. Retire with
+/-- temporary (TP-002), importance P2: projection-only reference wrapper. Retire with
 `inspectEntry_equation` after the constructed entry bridge and public-API
 review. Compare entire residual joint maps, retaining every control/reference
 coherence. This is not a comparison of basis probabilities. -/

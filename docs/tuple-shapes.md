@@ -70,6 +70,13 @@ the full quantum state and reference correlations are retained. An actual
 permutation of fields has a different table and must not pass an identity
 contract just because its result type is well formed.
 
+The 0.2.1 [canonical reshape experiment](reshape-plan.md) checks explicit
+single-owner adapter metadata by comparing ordered non-Unit leaves and actual
+axes, with an inductive encoding proof. It is not a shipped source API or a
+replacement for the ordinary definitions above. Unit-only owners persist,
+sized atoms are not expanded, and production lowering must use existing
+independently checked structural operations. Type equality remains unchanged.
+
 To preserve the old type of a flat spelling, write its former binary tree
 explicitly: `(a,b,c,d)` becomes `(((a,b),c),d)`, in matching types and patterns.
 To adopt true n-ary types, update producer/consumer signatures and patterns

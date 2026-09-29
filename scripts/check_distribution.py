@@ -12,6 +12,7 @@ import datetime
 import hashlib
 import io
 import json
+import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import subprocess
 import sys
@@ -227,7 +228,8 @@ def check_package(files, tracked, listed, candidate):
 
 def compare_package_metadata(original, packaged):
     for key in ["name", "version", "license", "license_file", "edition", "rust_version",
-                "dependencies", "links", "features"]:
+                "dependencies", "links", "features", "readme", "documentation",
+                "description", "repository", "keywords", "categories"]:
         require(original.get(key) == packaged.get(key), f"packaged metadata changed: {key}")
     def targets(package):
         values = []
@@ -335,6 +337,21 @@ def validate(root, report_path, target_dir=None):
         report["crate"] = {"path": str(crate_copy), "sha256": digest(crate_copy.read_bytes()),
                            "file_count": len(contents), "cargo_verification": "passed",
                            "extracted_metadata_and_lock": "validated offline with --locked"}
+        # Exercise the distribution's documentation and actual installed binary,
+        # not the checkout's target/debug executable or external library files.
+        commands.run(["cargo", "rustdoc", "--offline", "--locked", "--lib",
+                      "--target-dir", target / "package-docs", "--", "-D", "warnings"],
+                     packaged_source)
+        commands.run(["cargo", "test", "--offline", "--locked", "--doc",
+                      "--target-dir", target / "package-docs"], packaged_source)
+        install_root = artifacts / "installed"
+        commands.run(["cargo", "install", "--path", packaged_source, "--offline", "--locked",
+                      "--bin", "qleisli", "--root", install_root,
+                      "--target-dir", target / "install"], artifacts)
+        executable = install_root / "bin" / ("qleisli.exe" if os.name == "nt" else "qleisli")
+        report["installed_quickstart"] = json.loads(commands.run(
+            [sys.executable, packaged_source / "scripts/check_installation.py", executable],
+            artifacts))
         commands.run(["cargo", "test", "--offline", "--all-targets", "--target-dir",
                       target / "source-production"], source)
         commands.run(["cargo", "test", "--offline", "--all-targets", "--manifest-path",

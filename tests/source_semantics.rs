@@ -6,10 +6,10 @@ use std::collections::BTreeMap;
 
 use common::SourceRoot;
 
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::ir::RawOp;
-use qleisli_core::sim::{SimulationLimits, run_closed};
-use qleisli_core::{VerifiedProgram, verify};
+use qleisli::frontend::compile::compile_project;
+use qleisli::ir::RawOp;
+use qleisli::sim::{SimulationLimits, run_closed};
+use qleisli::{VerifiedProgram, verify};
 
 fn compile(source: &str) -> VerifiedProgram {
     let root = SourceRoot::new(source);

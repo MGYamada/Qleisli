@@ -5,3 +5,6 @@
 /lean/.lake/
 /lean-kernel/.lake/
 __pycache__/
+/python/build/
+/python/dist/
+/python/*.egg-info/

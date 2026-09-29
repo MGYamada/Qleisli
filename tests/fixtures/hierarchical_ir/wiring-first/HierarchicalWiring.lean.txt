@@ -1,0 +1,114 @@
+import Qleisli.HierarchicalFiniteEvaluation
+import QleisliKernel.Hierarchical.Wiring
+
+/-! Exact coefficients for computed, phase-free hierarchical wiring.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+P0 actual-body binding supported by P1 reusable routing algebra. The finite
+matrix sums here are proof-only; the executable inspector computes axis lists. -/
+
+namespace Qleisli.HierarchicalWiring
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalOperators HierarchicalSemantics
+open scoped BigOperators Matrix
+
+def select (axes : Wiring.Code) (input : Bits) : Bits :=
+  axes.map (fun i => input[i]?.getD false)
+
+def At (n : Nat) (axes : Wiring.Code) (op : Operator) : Prop :=
+  axes.length = n ∧ (∀ i ∈ axes, i < n) ∧ op.inputWidth = n ∧ op.outputWidth = n ∧
+    ∀ output input, output.length = n → input.length = n →
+      op.coefficient output input = if output = select axes input then 1 else 0
+
+theorem select_compose (first second : Wiring.Code) (input : Bits)
+    (inside : ∀ i ∈ second, i < first.length) :
+    select (second.map (QleisliKernel.Layout.indexAt first)) input = select second (select first input) := by
+  unfold select
+  rw [List.map_map]
+  apply List.map_congr_left
+  intro i member
+  simp [QleisliKernel.Layout.indexAt,List.getElem?_map,List.getElem?_eq_getElem (inside i member)]
+
+theorem select_tensor (m : Nat) (first second : Wiring.Code) (input : Bits)
+    (size : first.length = m) (inside : ∀ i ∈ first, i < m) :
+    select (Wiring.tensor first second) input =
+      select first (input.take m) ++ select second (input.drop m) := by
+  simp only [select,Wiring.tensor,List.map_append,List.map_map,size]
+  congr 1
+  · apply List.map_congr_left
+    intro i member
+    rw [List.getElem?_take_of_lt (inside i member)]
+  · apply List.map_congr_left
+    intro i member
+    simp [List.getElem?_drop]
+
+theorem ofFn_bits (n : Nat) (bits : Bits) (size : bits.length = n) :
+    List.ofFn (fun i : Fin n => bits[i.val]?.getD false) = bits := by
+  subst n
+  simpa only [List.getElem?_eq_getElem,Option.getD_some] using (List.ofFn_getElem (xs := bits))
+
+theorem identity_at (n : Nat) : At n (List.range n) (identity n) := by
+  refine ⟨by simp,by simp,rfl,rfl,?_⟩
+  intro output input ho hi
+  have selected : select (List.range n) input = input := by
+    simpa [select,hi] using range_select input
+  simp [identity,bounded,ho,hi,selected]
+
+theorem route_at (interface : Interface) (n : Nat) (axes : Wiring.Code)
+    (hi : width interface.inputs = n) (ho : width interface.outputs = n)
+    (size : axes.length = n) (inside : ∀ i ∈ axes, i < n) :
+    At n axes (apply interface (.rewire axes) []) := by
+  refine ⟨size,inside,hi,ho,?_⟩
+  intro output input os ins
+  simp [apply,bounded,raw,select,hi,ho,os,ins]
+
+theorem compose_at (n : Nat) (a b : Wiring.Code) (first second : Operator)
+    (ha : At n a first) (hb : At n b second) :
+    At n (b.map (QleisliKernel.Layout.indexAt a)) (compose second first) := by
+  refine ⟨by simp [hb.1],?_,ha.2.2.1,hb.2.2.2.1,?_⟩
+  · intro i member
+    obtain ⟨j,hj,rfl⟩ := List.mem_map.mp member
+    have bound : j < a.length := by simpa [ha.1] using hb.2.1 j hj
+    simpa [QleisliKernel.Layout.indexAt,List.getElem?_eq_getElem bound] using
+      ha.2.1 a[j] (List.getElem_mem bound)
+  · intro output input ho hi
+    let chosen : Fin n → Bool := fun i => (select a input)[i.val]?.getD false
+    have chosen_eq : List.ofFn chosen = select a input :=
+      ofFn_bits n (select a input) (by simp [select,ha.1])
+    have input_eq (middle : Fin n → Bool) : List.ofFn middle = select a input ↔ middle = chosen := by
+      rw [← chosen_eq,List.ofFn_inj]
+    simp only [compose,bounded,ha.2.2.1,hb.2.2.1,hb.2.2.2.1,ho,hi,and_self,ite_true]
+    simp_rw [ha.2.2.2.2 _ input (List.length_ofFn _) hi,input_eq]
+    simp only [mul_ite,mul_one,mul_zero,Finset.sum_ite_eq',Finset.mem_univ,ite_true]
+    rw [hb.2.2.2.2 output _ ho (List.length_ofFn chosen),chosen_eq]
+    rw [select_compose a b input (by simpa [ha.1] using hb.2.1)]
+
+theorem tensor_at (interface : Interface) (m n : Nat) (a b : Wiring.Code) (first second : Operator)
+    (hi : width interface.inputs = m+n) (ho : width interface.outputs = m+n)
+    (ha : At m a first) (hb : At n b second) :
+    At (m+n) (Wiring.tensor a b) (apply interface .tensor [first,second]) := by
+  refine ⟨by simp [Wiring.tensor,ha.1,hb.1],?_,hi,ho,?_⟩
+  · intro i member
+    simp only [Wiring.tensor,List.mem_append,List.mem_map] at member
+    rcases member with left | ⟨j,hj,rfl⟩
+    · have := ha.2.1 i left; omega
+    · have := hb.2.1 j hj; rw [ha.1]; omega
+  · intro output input os ins
+    have ot : (output.take m).length = m := by simp [os]
+    have it : (input.take m).length = m := by simp [ins]
+    have od : (output.drop m).length = n := by simp [os]
+    have idrop : (input.drop m).length = n := by simp [ins]
+    have same : output = select a (input.take m) ++ select b (input.drop m) ↔
+        output.take m = select a (input.take m) ∧ output.drop m = select b (input.drop m) := by
+      constructor
+      · intro h
+        rw [h]
+        simp [select,ha.1]
+      · rintro ⟨ht,hd⟩
+        rw [← List.take_append_drop m output,ht,hd]
+    simp only [apply,bounded,raw,hi,ho,os,ins,and_self,ite_true,ha.2.2.1,ha.2.2.2.1]
+    rw [ha.2.2.2.2 _ _ ot it,hb.2.2.2.2 _ _ od idrop,
+      select_tensor m a b input ha.1 ha.2.1]
+    simp only [same]
+    split_ifs <;> simp_all
+
+end Qleisli.HierarchicalWiring

@@ -97,28 +97,89 @@ def check_manifest(corpus=CORPUS):
             if case["source"] == "qualtran":
                 require("Google LLC" in text, "lost Google attribution")
         require((project / "README.md").is_file(), "missing case explanation")
-    # This pilot is deliberately closed at 8 examples per source.
-    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 8 for k in APPROVED}), "pilot case inventory changed")
+    # The source policy is closed; the reviewed 0.2.1 intake has ten cases each.
+    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 10 for k in APPROVED}), "reviewed case inventory changed")
     projects = {str(p.parent.relative_to(corpus)) for key in APPROVED for p in (corpus / key).rglob("main.qli")}
     require(projects == {c["project"] for c in manifest["cases"]}, "unrecorded project")
-    session = json.loads((corpus / "authoring/session.json").read_text())
-    require(session["kind"] == "informed_first_attempt" and bool(session["context"]), "missing authoring context")
-    for attempt in session["attempts"]:
-        base = local(corpus / "authoring", attempt["id"])
-        require({str(p.relative_to(base)) for p in base.rglob("*.qli")} == set(attempt["sha256"]), "snapshot inventory changed")
-        for rel, digest in attempt["sha256"].items():
-            require(sha256(local(base, rel)) == digest, f"authoring snapshot changed: {attempt['id']}/{rel}")
-        require(bool(attempt["observations"]), "unobserved authoring attempt")
-        for record in attempt["observations"]:
-            observation = json.loads(local(corpus / "authoring", record).read_text())
-            if "results" in observation:
-                require(len(observation["results"]) == len(manifest["cases"]), "incomplete authoring check")
-                for result in observation["results"]:
-                    output = json.loads(result["stdout"])
-                    require((result["exit_code"] == 0) == (output["outcome"] == "ok"), "contradictory observation")
-    latest = session["attempts"][-1]
-    for rel, digest in latest["sha256"].items():
-        require(sha256(local(corpus, rel)) == digest, f"current source differs from latest attempt: {rel}")
+    # Sized authoring experiments reuse the same frozen inputs, with a distinct
+    # execution path; they do not silently increase the 30 production cases.
+    sized = manifest.get("sized_experiments", [])
+    sized_sources = set()
+    for case in sized:
+        require(case["id"] not in ids, "duplicate sized case")
+        ids.add(case["id"])
+        require(case["source"] in by_source, "unapproved sized source")
+        source = by_source[case["source"]]
+        require(case["license"] == source["license"], "sized translation license mismatch")
+        require(case["upstream_path"] in {f["path"] for f in source["files"]}, "missing sized original")
+        require(case["status"] == "experimental-source-path" and bool(case["contract"]) and
+                bool(case["limitations"]), "missing sized scope")
+        path = local(corpus, case["file"])
+        require(path.is_relative_to((corpus / "sized").resolve()) and path not in sized_sources,
+                "duplicate or misplaced sized source")
+        sized_sources.add(path)
+        require(sha256(path) == case["sha256"], "sized source hash mismatch")
+        content = path.read_text()
+        require(f"SPDX-License-Identifier: {case['license']}" in content and
+                "translation/modifications" in content, "missing sized license/modification notice")
+        require(("Microsoft Corporation" if case["source"] == "quantum_katas" else "Google LLC")
+                in content, "lost sized attribution")
+    require(sized_sources == {p.resolve() for p in (corpus / "sized").rglob("*.qli")},
+            "unrecorded sized source")
+    session_paths = manifest["authoring_sessions"]
+    require(len(set(session_paths)) == len(session_paths), "duplicate authoring session")
+    require({local(corpus, p) for p in session_paths} ==
+            {p.resolve() for p in (corpus / "authoring").rglob("session.json")},
+            "unrecorded authoring session")
+    recorded_sources = set()
+    for session_path in session_paths:
+        session_file = local(corpus, session_path)
+        session = json.loads(session_file.read_text())
+        require(session["kind"] == "informed_first_attempt" and bool(session["context"]), "missing authoring context")
+        require(bool(session["attempts"]), "missing authoring attempt")
+        for attempt in session["attempts"]:
+            base = local(session_file.parent, attempt["id"])
+            require({str(p.relative_to(base)) for p in base.rglob("*.qli")} == set(attempt["sha256"]), "snapshot inventory changed")
+            for rel, digest in attempt["sha256"].items():
+                require(sha256(local(base, rel)) == digest, f"authoring snapshot changed: {attempt['id']}/{rel}")
+            # Historical observations cover their own frozen projects, not later additions.
+            attempted = {str(Path(p).parent) for p in attempt["sha256"]}
+            require(bool(attempted) and attempted <= projects, "unregistered authoring project")
+            require(bool(attempt["observations"]), "unobserved authoring attempt")
+            for record in attempt["observations"]:
+                observation = json.loads(local(session_file.parent, record).read_text())
+                if "results" in observation:
+                    results = observation["results"]
+                    require(len(results) == len(attempted) and
+                            {r.get("project", r.get("case")) for r in results} == attempted,
+                            "incomplete authoring check")
+                    for result in results:
+                        output = json.loads(result["stdout"])
+                        require((result["exit_code"] == 0) == (output["outcome"] == "ok"), "contradictory observation")
+        latest = session["attempts"][-1]
+        for rel, digest in latest["sha256"].items():
+            require(rel not in recorded_sources, "duplicate current authoring source")
+            recorded_sources.add(rel)
+            require(sha256(local(corpus, rel)) == digest, f"current source differs from latest attempt: {rel}")
+    require(recorded_sources == {str(p.relative_to(corpus)) for project in projects
+                                for p in (corpus / project).glob("*.qli")},
+            "current sources missing authoring snapshots")
+    faults = json.loads((corpus / "semantic_faults/manifest.json").read_text())
+    require(faults["format"] == 1, "unsupported semantic fault format")
+    fault_projects = set()
+    for fault in faults["cases"]:
+        require(fault["reference"] in ids and bool(fault["reason"]), "unregistered semantic fault reference")
+        project = local(corpus, fault["project"])
+        require(project.is_relative_to((corpus / "semantic_faults").resolve()) and
+                project not in fault_projects, "duplicate or misplaced semantic fault")
+        fault_projects.add(project)
+        case = next(c for c in manifest["cases"] if c["id"] == fault["reference"])
+        for name in ["kernel.qli", "main.qli"]:
+            text = (project / name).read_text()
+            require(f"SPDX-License-Identifier: {case['license']}" in text,
+                    "semantic fault lost original license")
+    require(fault_projects == {p.parent.resolve() for p in (corpus / "semantic_faults").rglob("main.qli")},
+            "unrecorded semantic fault project")
     return manifest
 
 
@@ -208,6 +269,9 @@ def reference_column(case, column):
         return permute(single(state, 0, H), lambda i: i ^ (6 if i & 1 else 0))
     if name == "bernstein_vazirani":
         return permute(state, lambda i: i ^ 3)
+    if name == "deutsch_jozsa3":
+        return [sum((-1) ** (((column ^ row) & x).bit_count() + (x.bit_count() >= 2))
+                    for x in range(8)) / 8 for row in range(8)]
     if name == "grover2":
         phased = [((-1) ** ((column & i).bit_count() + (i == 3))) / 2 for i in range(4)]
         return [sum(phased) / 2 - a for a in phased]
@@ -221,6 +285,10 @@ def reference_column(case, column):
         return state
     if name == "add2":
         return permute(state, lambda i: (i & 3) + (((i & 3) + (i >> 2)) % 4) * 4)
+    if name == "add_constant3":
+        return permute(state, lambda i: (i + 3) % 8)
+    if name == "equals2":
+        return permute(state, lambda i: i ^ (16 if (i & 3) == ((i >> 2) & 3) else 0))
     if name == "xor2":
         return permute(state, lambda i: (i & 3) + (((i >> 2) ^ (i & 3)) << 2))
     if name == "less_than2":
@@ -235,6 +303,12 @@ def reference_column(case, column):
         return [a - sum(state) / 2 for a in state]
     if name == "qubit_rotation":
         return single(single(state, 0, RX), 0, RY)
+    if name == "kernel_overlap2":
+        # Analytic RX(x1-x2) tensor RX(x1-x2), not the QLI gate decomposition.
+        return [(-1j) ** ((row ^ column).bit_count()) / 2 for row in range(4)]
+    if name == "lcu_projector":
+        # The selected H completion has blocks P0, P1; data selects selector XOR.
+        return permute(state, lambda i: i ^ ((i >> 1) & 1))
     if name.startswith("qaoa"):
         for axis in range(n):
             state = single(state, axis, H)
@@ -291,14 +365,43 @@ def run(binary, project):
     return values
 
 
+class SemanticMismatch(ValueError):
+    """A well-formed numerical result differs from the independent contract."""
+
+
 def compare(actual, expected, label):
     require(abs(sum(actual.values()) - 1) < TOLERANCE, f"unnormalized output: {label}")
     require(abs(sum(expected.values()) - 1) < TOLERANCE, f"unnormalized oracle: {label}")
     for bits in actual.keys() | expected.keys():
-        require(abs(actual.get(bits, 0) - expected.get(bits, 0)) < TOLERANCE, f"{label}: {bits}: {actual.get(bits, 0)} != {expected.get(bits, 0)}")
+        if not abs(actual.get(bits, 0) - expected.get(bits, 0)) < TOLERANCE:
+            raise SemanticMismatch(f"{label}: {bits}: {actual.get(bits, 0)} != {expected.get(bits, 0)}")
 
 
 def protocol_probes(case):
+    if case["kind"] == "bell_measure":
+        for phase in [False, True]:
+            for parity in [False, True]:
+                a = "x(init0())" if phase else "init0()"
+                b = "x(init0())" if parity else "init0()"
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> (CBit,CBit) {\n"
+                source += f"let (a,b) = cnot(h({a}), {b});\nbell_measure(join(a,b))\n}}\n"
+                yield source, {(phase, parity): 1.0}, f"Bell-label-{phase}-{parity}"
+        # Choi probe: measure the two inputs of two Bell pairs, retaining both
+        # reference wires. Nine Pauli pairs determine every conditional matrix.
+        for left in "xyz":
+            for right in "xyz":
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> ((CBit,CBit),(CBit,CBit)) {\n"
+                source += "let (r0,a) = cnot(h(init0()),init0());\nlet (r1,b) = cnot(h(init0()),init0());\nlet outcome = bell_measure(join(a,b));\n"
+                source += f"(outcome, ({measure('r0', left)}, {measure('r1', right)}))\n}}\n"
+                expected = {}
+                for s in [False, True]:
+                    for t in [False, True]:
+                        correlation = {"x": (-1) ** s, "y": -(-1) ** (s + t), "z": (-1) ** t}[left] if left == right else 0
+                        for a in [False, True]:
+                            for b in [False, True]:
+                                expected[(s, t, a, b)] = (1 + (-1) ** (a + b) * correlation) / 16
+                yield source, expected, f"Bell-measure-Choi-{left}{right}"
+        return
     if case["kind"] == "dense":
         for a in [False, True]:
             for b in [False, True]:
@@ -308,6 +411,7 @@ def protocol_probes(case):
         for prep, expected in [("init0()", .5), ("x(init0())", .5), ("h(init0())", 1), ("h(x(init0()))", 0), ("t(t(h(init0())))", .5), ("t(h(init0()))", (2 + math.sqrt(2)) / 4)]:
             yield IMPORTS + f"use kernel::is_plus;\nobserve fn main() -> CBit {{ is_plus({prep}) }}\n", {(True,): expected, (False,): 1 - expected}, "plus-polarity"
         return
+    require(case["kind"] == "teleport", f"unknown protocol oracle: {case['kind']}")
     # Tomography of the teleported half of a Bell pair, with both message bits.
     # Nine Pauli products determine the two-qubit output density matrix; test
     # every classical branch separately rather than marginalizing the message.
@@ -332,6 +436,10 @@ def host_observables(case, values):
         return {}
     z0 = sum((1 - 2 * b[0]) * p for b, p in values.items())
     results = {"Z0": z0}
+    if name == "kernel_overlap2":
+        results["kernel_overlap"] = values.get((False, False), 0)
+    if name == "lcu_projector":
+        results["zero_selector_probability"] = sum(p for b, p in values.items() if not b[0])
     if name == "qaoa_maxcut":
         results["expected_cut_edges"] = sum(sum(b[a] != b[c] for a, c in [(0, 1), (0, 3), (1, 2), (2, 3)]) * p for b, p in values.items())
     if name == "qaoa_vertex_cover":
@@ -342,8 +450,8 @@ def host_observables(case, values):
     return results
 
 
-def check_case(case, binary, exhaustive):
-    project = CORPUS / case["project"]
+def check_case(case, binary, exhaustive, project=None):
+    project = CORPUS / case["project"] if project is None else project
     shipped = run(binary, project)
     probes = 0
     with tempfile.TemporaryDirectory(prefix="qleisli-corpus-") as temp:
@@ -376,12 +484,29 @@ def check_case(case, binary, exhaustive):
                 expected = {(True, False): 1.0}
             elif case["kind"] == "measure":
                 expected = {(True,): 1.0}
+            elif case["kind"] == "bell_measure":
+                expected = {(False, False): 1.0}
             else:
                 p = (2 + math.sqrt(2)) / 4
                 expected = {(a, b, c): (p if not c else 1 - p) / 4 for a in [False, True] for b in [False, True] for c in [False, True]}
             compare(shipped, expected, f"{case['id']} shipped main")
             observed = {}
     return {"id": case["id"], "semantic_probes": probes, "shipped_main": "passed", "host_observables": observed}
+
+
+def check_semantic_fault(fault, case, binary):
+    project = local(CORPUS, fault["project"])
+    process = subprocess.run([str(binary), "check", str(project), "--format=json"],
+                             capture_output=True, text=True, timeout=30)
+    require(process.returncode == 0 and not process.stderr,
+            f"semantic fault must typecheck: {fault['id']}: {process.stdout} {process.stderr}")
+    require(json.loads(process.stdout)["outcome"] == "ok", "semantic fault check envelope")
+    try:
+        check_case(case, binary, False, project=project)
+    except SemanticMismatch as error:
+        return {"id": fault["id"], "reference": case["id"], "typecheck": "passed",
+                "semantic_mismatch": str(error)}
+    raise ValueError(f"semantic fault escaped the oracle: {fault['id']}")
 
 
 def main():
@@ -393,13 +518,17 @@ def main():
     args = parser.parse_args()
     manifest = check_manifest()
     if not args.binary:
-        print("Corpus policy, provenance, notices and authoring snapshots: passed (24 cases / 3 sources)")
+        print(f"Corpus policy, provenance, notices and authoring snapshots: passed ({len(manifest['cases'])} cases / 3 sources)")
         return
     binary = args.binary.resolve()
     cases = [c for c in manifest["cases"] if not args.case or c["id"] == args.case]
     require(bool(cases), "unknown corpus case")
     with ThreadPoolExecutor(max_workers=4) as pool:
         results = list(pool.map(lambda case: check_case(case, binary, args.exhaustive), cases))
+    by_id = {c["id"]: c for c in cases}
+    faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"]
+              if f["reference"] in by_id]
+    fault_results = [check_semantic_fault(f, by_id[f["reference"]], binary) for f in faults]
     negative_results = []
     for case in json.loads((CORPUS / "negative/manifest.json").read_text())["cases"]:
         process = subprocess.run([str(binary), "check", str(local(CORPUS, case["project"])), "--format=json"], capture_output=True, text=True, timeout=30)
@@ -425,10 +554,14 @@ def main():
         "tolerance": TOLERANCE,
         "cases": results,
         "negative_cases": negative_results,
+        "semantic_faults": fault_results,
+        "semantic_fault_manifest_sha256": sha256(CORPUS / "semantic_faults/manifest.json"),
+        "semantic_fault_source_sha256": {str(p.relative_to(CORPUS)): sha256(p)
+                                         for f in faults for p in sorted(local(CORPUS, f["project"]).glob("*.qli"))},
     }
     if args.report:
         args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Passed {len(results)} cases, {sum(r['semantic_probes'] for r in results)} semantic probes, all shipped mains and {len(negative_results)} rejection cases; upstream frameworks not executed.")
+    print(f"Passed {len(results)} cases, {sum(r['semantic_probes'] for r in results)} semantic probes, all shipped mains and {len(negative_results)} rejection cases; detected {len(fault_results)} type-correct semantic faults; upstream frameworks not executed.")
 
 
 if __name__ == "__main__":

@@ -214,6 +214,14 @@ count in the shared lowering budget. This resolves
 without changing the public owned identity API or increasing a limit. Explicit
 public identity inspection may materialize one bounded owned compatibility view
 per receipt; compilation, checking and execution do not require that copy.
+Every declaration is checked independently, and each ordinary call is inlined
+at each use; the 1,000,000-unit budget is shared by the whole loaded project.
+A shallow doubling call graph can therefore exhaust it. The limit diagnostic
+now locates the declaration being checked and names the inner location where
+the next charge failed, with used/requested work. It does not attribute all
+project cost to that inner expression. The [review reproduction](reviews/v0.2.0.md)
+retains this finite limit; hierarchical sharing remains pending under A020-03.
+
 These checks bound exponential nonrecursive expansion and classical
 copying as well as quantum data. They are implementation limits, not limits on
 the mathematical finite types. The simulator has separate

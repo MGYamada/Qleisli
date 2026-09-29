@@ -1,0 +1,19 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Adapted from retained Qualtran AddK/Equals; see README.md.
+use increment::increment;
+use controls::all_ones;
+use std::registers::take_bit;
+use std::registers::put_bit;
+
+/// Add one modulo 2^n with phase +1 and no auxiliary register.
+/// Test the original lower bits for carry before incrementing them.
+pub unitary fn increment[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {
+    if static n == 0 { q } else {
+        let (high,low) = take_bit[n,n-1](q);
+        let (low,high) = all_ones[n-1](low,high);
+        let low = increment[n-1](low);
+        put_bit[n,n-1](high,low)
+    }
+}

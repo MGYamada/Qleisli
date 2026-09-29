@@ -1,0 +1,18 @@
+{
+  "recorded_utc": "2026-09-29T16:24:38.075079+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-01/readout.qli",
+    "--entry",
+    "qpe",
+    "--size",
+    "n=1",
+    "--size",
+    "m=3",
+    "--output",
+    "/tmp/qleisli-measured-first.json"
+  ],
+  "exit_code": 1,
+  "transcript": "sized corpus: unsupported or duplicate import registers::init_zero\n"
+}

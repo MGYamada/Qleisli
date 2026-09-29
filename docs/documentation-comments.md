@@ -13,8 +13,8 @@ for the spellings below. `.qli` does not implement Rust attributes, item syntax,
 rustdoc link resolution, doctest execution or the complete Rust language.
 
 The later [QLT design](qlt-design.md#cli-and-doctests) plans external execution
-of `qlt` fences during the 0.3–0.4 Rust experiment. That runner is unimplemented;
-current comment extraction/rendering still treats every code fence as text.
+of `qlt` fences in the Rust experiment deferred to v0.4.0 or later. That runner
+is unimplemented; current comment extraction/rendering still treats every code fence as text.
 QLT test attributes will belong to the separate test language, not `.qli`.
 
 | Spelling | Role in `.qli` |

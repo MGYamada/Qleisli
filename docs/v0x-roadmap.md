@@ -4,11 +4,13 @@
 
 Status: **revised development direction selected on 2026-09-27 for 0.1.5**.
 The [revised 0.2.0 plan](v0.2.0-plan.md) packages implemented finite interfaces
-and the experimental Lean foundation; [0.2.1](v0.2.1-plan.md) targets the remaining
-shared-QPE implementation and its unchanged acceptance gates. The
+and the experimental Lean foundation. The 2026-09-30 split retains completed
+corpus experiments, review fixes and bounded host connections in [0.2.1](v0.2.1-plan.md);
+remaining heavy shared-QPE implementation/integration/proofs and their unmet
+acceptance gates move to [0.2.2](v0.2.2-plan.md). The
 [decision dossier](decisions/2026-09-27-v1-path.md) records the original scope
 and bounded kernel restart. [Current states](current-status.md) are generated
-from one record; the current [release record](releases/v0.2.0.md) separates local
+from one record; the current [release record](releases/v0.2.1.md) separates local
 validation and publication. The [0.1.5 record](releases/v0.1.5.md) retains the
 original selection. This plan supersedes the 0.1.4 schedule, not its
 historical evidence or the current finite language contracts.
@@ -21,7 +23,8 @@ Use M0–M5 to schedule work. Choose a product version from the
 [compatibility policy](versioning.md) when shipping a concrete change.
 A compatible JSON diagnostic or sampling feature may ship in PATCH within
 0.y.z (y > 0); incompatible changes require MINOR. No capability/size theme
-reserves a release number. Audits run continuously and need no release of their own.
+reserves a release number by itself; explicit user-selected release targets
+are recorded separately below. Audits run continuously and need no release of their own.
 
 The user subsequently adopted a [Lean kernel migration](lean-kernel-migration.md)
 alongside M0–M5. Its intended boundaries are K0/0.2.x for the experimental
@@ -33,6 +36,10 @@ community development, completing the
 [Physical Realizability Theorem](release-milestones.md#physical-realizability-theorem-v1)
 by v1. CPTP semantics follows as a corollary of soundness; realizability
 constructs and synthesizes its isometric dilation over a declared gate set.
+The 2026-09-30 [Resource Safety Theorem](release-milestones.md#resource-safety-theorem-v1)
+adoption adds the third v1 pillar, with RS-C1–C5 and
+[resource semantics](resource-semantics.md) for finite static bounds preserved
+through compilation. It remains to prove and adds no current 0.2.1/0.2.2 gate.
 These are dependency and acceptance targets, not completed releases;
 compatible packets retain the PATCH rule. The first phase-word theorem concerns
 the actual restricted checker and cyclic action, not full IR or QPE soundness.
@@ -44,6 +51,17 @@ remaining production work moves to 0.2.1; 0.2.0 retains the completed K0
 components without claiming full M2/K0 integration. Preserve compatible public
 APIs for 0.2.1; any required break selects 0.3.0 under the same version policy.
 
+The [pipeline migration policy](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary)
+requires an independent IR check at the Rust/Lean boundary throughout migration
+from either end of the pipeline. Backend-to-frontend migration grows the proved
+downstream segment one pass at a time; remaining Rust transformations stay
+untrusted. The boundary IR may change, while the trust partition, translation
+obligations and existing K0–K4 gates remain explicit and stable.
+[External search and LeafRealizer](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
+refine that direction: retain expensive rotation-synthesis search outside Lean,
+check its circuits and witnesses with a proved Lean checker, and require no
+blanket rewrite of search algorithms. This does not relax PR-C2 or exact cleanup.
+
 The [2026-09-28 version-policy revision](versioning.md) permits compatible
 features in 0.1.x without exceptions. X1 check/run is recorded in the
 [0.1.7 record](releases/v0.1.7.md); fixed-width operation parameters and meanings
@@ -52,6 +70,27 @@ selected version and explicit migrations preserved. The historical v0.1.9
 checkpoint remains B019, without requiring patches 6–9 before new features.
 New work retains its specification, semantic and validation gates, regardless
 of the numeric bump. Later compatible work may use 0.1.10.
+
+## v0.3.0: Qleisli type-system specification
+
+**User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
+of the **v0.3.0 breaking-change release**. This makes the type-system work an
+explicit 0.3.0 target alongside K1 exact meanings/contracts; it is not merely
+a fallback version if 0.2.1 encounters a compatibility problem.
+
+The [current finite type contract](type-system.md) remains authoritative until
+its specified successor is adopted and implemented. The 0.3.0 work must state
+type formation/equality, ownership/effects, operation capabilities, sizes and
+explicit conversions, with source/IR checking obligations and migration from
+the existing public contracts. Concrete rule changes, syntax and APIs remain
+to be decided; this scheduling decision alone adopts none of them. Preserve
+the Rust design default, quantum invariants and fixed trust boundary.
+
+**QLT implementation is deferred to v0.4.0 or later**, after this type-system
+work. Its existing design and source records remain available. The current
+development version stays 0.2.1, whose compatible scope and R14/H1–H5 gates
+remain unchanged. This records future work, not implementation, validation,
+a manifest bump or publication.
 
 ## Community development from v0.5
 
@@ -64,11 +103,11 @@ concerns participation, review and maintenance rather than licensing.
 
 | Period | Technical focus | Project development |
 | --- | --- | --- |
-| 0.2.x–0.3.x | Shared QPE/H1–H5 and K0/K1 executable definitions, exact meanings and proofs. | Maintain focused individual development with public code, reproducible checks and recorded design decisions; contributions and review can begin now. |
+| 0.2.x–0.3.x | Shared QPE/H1–H5 and K0/K1 executable definitions, exact meanings and proofs; formulate the Qleisli type system at the 0.3.0 breaking boundary. | Maintain focused individual development with public code, reproducible checks and recorded design decisions; contributions and review can begin now. |
 | 0.4.x | Complete K2 raw-IR checks and compose the full soundness proof obligations. | Prepare contributor setup, bounded contribution issues, review ownership and maintenance/release procedures; invite independent review of the theorem statement, implementation and assumptions. |
 | **0.5.0** | **Prove the Qleisli Soundness Theorem and complete S05-C1–C5 before transferring production authority to Lean.** | Publish a reproducible proof/coverage/review package and contributor entry points as the foundation for broader participation. |
 | **0.5.x onward** | Maintain the proved kernel; develop translation validation and the Lean backend through K4 from 0.6.0, toward physical realizability; continue M3–M5. | Expand contributors and reviewers, document maintainer roles and decisions, and develop examples, documentation and integrations through the same contract/proof gates. |
-| 1.0.0 | Meet V1-C1–C5 and PR-C1–C4, prove the Physical Realizability Theorem for the supported Lean backend, and stabilize the public contracts. | Sustain documented review, releases and maintenance with community participation. |
+| 1.0.0 | Meet V1-C1–C5, PR-C1–C4 and RS-C1–C5; prove Physical Realizability and Resource Safety for the supported compiler/backend and stabilize the public contracts. | Sustain documented review, releases and maintenance with community participation. |
 
 The theorem's scope is the actual supported IR verifier, including exact
 phase, effects, reference correlations and clean return; general source and
@@ -87,7 +126,7 @@ adds an independent TQL-0–TQL-3 work stream alongside M0–M5 and K0–K4:
 | Packet | Intended period | Deliverable |
 | --- | --- | --- |
 | TQL-0 | Current design record | English design, desired source and semantic counterexamples; no runtime or proof claim. |
-| TQL-1 | 0.3–0.4 | Rust experiment: exact finite denotation comparison, structural costs and doctests, first for QFT2/3 and reversible arithmetic. |
+| TQL-1 | v0.4.0 or later, after the 0.3.0 type-system work | Rust experiment: exact finite denotation comparison, structural costs and doctests, first for QFT2/3 and reversible arithmetic. |
 | TQL-2 | From 0.5 onward | Complete instruments/reference comparisons and staged Lean evaluator/cost migration with actual-definition correspondence proofs. |
 | TQL-3 | After the relevant contracts | Interval bounds, further mathematical references and independent Lean certificates. |
 
@@ -95,8 +134,9 @@ The user explicitly chose Rust-first evaluation and a separate migration/proof
 target. QLT introduces no extra 0.2.0, v0.5 soundness or v1 realizability gate.
 The [design acceptance experiments](qlt-design.md#4-roadmap-and-acceptance)
 preserve checked-IR boundaries, exact phase, independent references and explicit
-failed/inconclusive/error results. These are intended periods, not reserved
-release numbers; the command and syntax remain unimplemented.
+failed/inconclusive/error results. The v0.4.0 lower bound supersedes the earlier
+0.3–0.4 TQL-1 window; it does not promise completion in 0.4.0. Later packets retain their dependencies,
+and the command and syntax remain unimplemented.
 
 ## Lean-assisted mathematical debugger
 

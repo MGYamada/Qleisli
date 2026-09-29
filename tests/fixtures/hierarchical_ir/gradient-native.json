@@ -1,0 +1,31 @@
+{
+  "format": "qleisli.sparse-phase-operations-native",
+  "version": 1,
+  "status": "passed",
+  "cases": 6142,
+  "mixed_cases": 5120,
+  "gradient_cases": 1004,
+  "wide_cases": 18,
+  "binary_sha256": "2ed08bbf2c586b37b0a04fc22517a5e1ddce9cb7206e46b556121d91b22f4f07",
+  "source_sha256": "6f0054def4e667bda69f5d59c042bcf6a5722ac7d49ffa0c034859480131a9f4",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [8/11] Built QleisliKernel.PhasePolynomial.Operations:c.o (241ms)\n\u2714 [9/11] Built Main (468ms)\n\u2714 [10/11] Built Main:c.o (106ms)\n\u2714 [11/11] Built \u00abartifact-test\u00bb:exe (320ms)\nBuild completed successfully (11 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-9cvexgmz/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stderr": "",
+      "stdout_sha256": "fa89f02e7d85ba741ca0f0396234fa7227ae8b3b4711167ffcfadfc00bea3a2d"
+    }
+  ],
+  "scope": "Exact integer/native differential checks and constant term counts, including zero powers, global phases and every shared-QFT gradient at precisions one through eight. No external schema or hierarchy projection is accepted by this helper."
+}

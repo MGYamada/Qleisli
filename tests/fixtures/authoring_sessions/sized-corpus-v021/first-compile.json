@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-09-29T14:26:06.542536+00:00",
+  "command": [
+    "python3",
+    "scripts/compile_sized_corpus.py",
+    "corpus/sized/qualtran_xor/bitwise.qli",
+    "--entry",
+    "xor_into",
+    "--size",
+    "n=8",
+    "--output",
+    "/tmp/qleisli-sized-xor8.json"
+  ],
+  "exit_code": 0,
+  "transcript": "[\n  {\n    \"command\": [\n      \"python3\",\n      \"scripts/compile_sized_corpus.py\",\n      \"corpus/sized/qualtran_xor/bitwise.qli\",\n      \"--entry\",\n      \"xor_into\",\n      \"--size\",\n      \"n=8\",\n      \"--output\",\n      \"/tmp/qleisli-sized-xor8.json\"\n    ],\n    \"exit_code\": 0,\n    \"stdout\": \"{\\\"status\\\": \\\"untrusted-proposal\\\", \\\"definitions\\\": 185, \\\"bytes\\\": 280002}\\n\",\n    \"stderr\": \"\"\n  },\n  {\n    \"command\": [\n      \"python3\",\n      \"scripts/compile_sized_corpus.py\",\n      \"corpus/sized/katas_ghz/prepare.qli\",\n      \"--entry\",\n      \"ghz\",\n      \"--size\",\n      \"n=8\",\n      \"--output\",\n      \"/tmp/qleisli-sized-ghz8.json\"\n    ],\n    \"exit_code\": 0,\n    \"stdout\": \"{\\\"status\\\": \\\"untrusted-proposal\\\", \\\"definitions\\\": 95, \\\"bytes\\\": 123899}\\n\",\n    \"stderr\": \"\"\n  }\n]"
+}

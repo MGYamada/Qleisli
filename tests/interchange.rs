@@ -1,12 +1,12 @@
 mod common;
 use common::SourceRoot;
-use qleisli_core::contract::exact::Budget;
-use qleisli_core::contract::meaning::{FiniteMeaning, MeaningEvidence};
-use qleisli_core::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionIdentity};
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::interchange::{self, RootInterface, Version};
-use qleisli_core::ir::*;
-use qleisli_core::{VerifiedProgram, verify};
+use qleisli::contract::exact::Budget;
+use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
+use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionIdentity};
+use qleisli::frontend::compile::compile_project;
+use qleisli::interchange::{self, RootInterface, Version};
+use qleisli::ir::*;
+use qleisli::{VerifiedProgram, verify};
 use std::process::Command;
 
 fn identity() -> RawProgram {
@@ -321,7 +321,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
 
 #[test]
 fn fixed_size_algorithm_and_feedback_artifacts_preserve_distributions() {
-    use qleisli_core::sim::{SimulationLimits, run_closed};
+    use qleisli::sim::{SimulationLimits, run_closed};
     for example in [
         "bell",
         "feedback",

@@ -1,0 +1,62 @@
+{
+  "format": "qleisli.typed-rule-runtime-validation",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "seconds": 62.937,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 8.622,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "exit_code": 0,
+      "seconds": 22.244,
+      "stdout": "",
+      "stderr": ".......................\n----------------------------------------------------------------------\nRan 23 tests in 22.162s\n\nOK\n"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "cargo",
+        "run",
+        "--example",
+        "lean_kernel",
+        "--",
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--self-test"
+      ],
+      "exit_code": 0,
+      "seconds": 9.217,
+      "stdout": "Passed 1307 native Lean decisions; 341 Rust exact-matrix oracles; all 256 dyadic scalar phases.\n",
+      "stderr": "    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s\n     Running `target/debug/examples/lean_kernel lean-kernel/.lake/build/bin/qleisli-kernel --self-test`\n"
+    }
+  ]
+}

@@ -1,10 +1,10 @@
 //! Independent finite audit of retained evidence under axis/control transport.
 
-use qleisli_core::contract::exact::{Budget, Exact};
-use qleisli_core::contract::{
+use qleisli::contract::exact::{Budget, Exact};
+use qleisli::contract::{
     BasisType, Circuit, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
 };
-use qleisli_core::ir::*;
+use qleisli::ir::*;
 use std::sync::Arc;
 
 fn work() -> Budget {

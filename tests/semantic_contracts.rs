@@ -1,15 +1,15 @@
 //! Exact finite contract checks against independently specified operators.
 
-use qleisli_core::contract::exact::{Budget, Exact, ExactError, Matrix};
-use qleisli_core::contract::{
+use qleisli::contract::exact::{Budget, Exact, ExactError, Matrix};
+use qleisli::contract::{
     BasisType, CheckedContract, Circuit, Contract, ContractError, DEFAULT_EXACT_WORK, Encoding,
     MAX_CONTRACT_STEPS, check_computed,
 };
-use qleisli_core::ir::{
+use qleisli::ir::{
     BasisShape, BitControl, CircuitAction, CircuitStep, Effect, QuantumPort, RawOp, RawProgram,
     TokenId, WireId,
 };
-use qleisli_core::verify;
+use qleisli::verify;
 
 fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)

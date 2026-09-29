@@ -4,8 +4,11 @@ Status: **design direction adopted on 2026-09-29; no QLT parser, evaluator,
 CLI command or certificate interface is implemented**. This English document
 records the user-approved design and future work packets. Examples are desired
 test source, not accepted `.qli` syntax or claims of executed `.qlt` tests.
-Product development remains 0.2.0. The first Rust experiment is targeted at the
-0.3–0.4 development period; later Lean migration is an independent goal.
+Product development is now 0.2.1. **The user deferred QLT implementation to
+v0.4.0 or later on 2026-09-29**, after the
+[Qleisli type-system specification planned for the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification).
+This supersedes the earlier 0.3–0.4 Rust-experiment window. Existing design and
+source records are retained; later Lean migration remains an independent goal.
 
 The [preserved first sources and semantic counterexamples](../tests/fixtures/qlt_design/README.md)
 make the proposed language concrete. Follow the
@@ -24,7 +27,7 @@ not a live quantum owner and not a device handle.
 
 | Boundary | Intended guarantee and restriction |
 | --- | --- |
-| `.qli` and its checked backend | The [Qleisli Soundness Theorem and Physical Realizability Theorem](release-milestones.md) concern their declared IR/target profiles. Their general implementation proofs remain open. |
+| `.qli` and its checked backend | The [Soundness, Physical Realizability and Resource Safety Theorems](release-milestones.md) concern their declared IR/target/resource profiles. Their general implementation proofs remain open; QLT cost diagnostics alone do not prove RS-C1–C5. |
 | `.qlt` evaluation | A separate future adequacy theorem relates the actual test evaluator's successful result to the Lean IR denotation or specified cost model. It does not make introspection into a `.qli` operation. |
 | Individual assertions | A successful finite comparison concerns its bound implementation, mathematical reference, parameters and domain. It is not a theorem about every instance of a family. |
 | Standard library | Ordinary definitions still undergo the same source, IR and evidence checks as user code. Tests support mathematical specification and regression review; bundled origin and test success grant no verification exemption. |
@@ -229,12 +232,13 @@ profile. Existing sampling/RNG regression tests remain necessary and unchanged.
 
 | Packet | Intended period | Deliverable and completion gate |
 | --- | --- | --- |
-| TQL-0: design record | Current 0.2.0 development | This English design, preserved desired sources and semantic faults, explicit execution status, author burden and links from README, roadmap and ledger. No QLT runtime claim. |
-| TQL-1: Rust experiment | 0.3–0.4 | Freeze the full extension specification, implement exact comparison, structural cost and doctests, then validate QFT2/3 and a separate reversible-arithmetic client against independent oracles. Keep all acceptance paths on checked IR. |
+| TQL-0: design record | Recorded during 0.2.0 development | This English design, preserved desired sources and semantic faults, explicit execution status, author burden and links from README, roadmap and ledger. No QLT runtime claim. |
+| TQL-1: Rust experiment | v0.4.0 or later, after the 0.3.0 type-system work | Freeze the full extension specification, implement exact comparison, structural cost and doctests, then validate QFT2/3 and a separate reversible-arithmetic client against independent oracles. Keep all acceptance paths on checked IR. |
 | TQL-2: observations and Lean migration | From 0.5 onward | Add complete instrument/reference comparisons; migrate actual evaluation and cost definitions to the Mathlib-free Lean runtime with separate mathematical bridges, correspondence proofs, audits and differential checks. |
 | TQL-3: approximation and certificates | After the required contracts | Add interval bounds, further mathematical references and independent Lean certificate checking; connect relevant evidence to realizability through an explicitly specified interface. |
 
-These are dependency targets, not reserved versions or release dates. Follow
+v0.4.0 is the earliest implementation target, not a promised completion date.
+Later packets retain their dependency targets. Follow
 [versioning](versioning.md) for each delivered change. TQL-1 does not precede
 unfinished [common-QPE/H1–H5 work now targeted for 0.2.1](v0.2.1-plan.md).
 QLT migration/proofs are independent targets, not extra requirements for

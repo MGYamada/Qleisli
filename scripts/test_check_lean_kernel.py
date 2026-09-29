@@ -63,9 +63,52 @@ def apostrophe' := true
             with self.subTest(source=source):
                 self.assertTrue(source_errors(source))
 
+    def test_four_escape_hatches_are_rejected_in_backend_modules(self):
+        self.write("QleisliKernel.lean", "import QleisliKernel.Check\nimport QleisliKernel.Backend.LeafRealizer\n")
+        for token, source in [
+                ("unsafe", "private unsafe def implementation : Nat := 1\n"),
+                ("partial", "private partial def loop (n : Nat) : Nat := loop (n + 1)\n"),
+                ("extern", '@[extern "untrusted_backend"] private def implementation : Nat := 1\n'),
+                ("implemented_by", "private def replacement : Nat := 2\n"
+                 "@[implemented_by replacement] private def implementation : Nat := 1\n")]:
+            with self.subTest(token=token):
+                self.write("QleisliKernel/Backend/LeafRealizer.lean", "import Init\n" + source)
+                self.assertTrue(any("Backend/LeafRealizer.lean" in error and token in error
+                                    for error in self.errors()))
+
+    def test_backend_modules_cannot_be_omitted_from_the_compiled_audit(self):
+        self.write("QleisliKernel/Backend/Emit.lean", "import Init\ndef emit : Nat := 1\n")
+        self.assertTrue(any("absent from root import/audit: QleisliKernel.Backend.Emit" in error
+                            for error in self.errors()))
+        self.write("QleisliKernel.lean", "import QleisliKernel.Check\nimport QleisliKernel.Backend.Emit\n")
+        self.assertEqual(self.errors(), [])
+
+    def test_build_time_harnesses_cannot_be_runtime_imports(self):
+        self.write("Tests.lean", "import QleisliKernel\nexample : true = true := by decide\n")
+        for module in ["Audit", "Tests"]:
+            with self.subTest(module=module):
+                self.write("Main.lean", f"import QleisliKernel\nimport Protocol\nimport {module}\n")
+                self.assertTrue(any(f"missing or forbidden kernel import: {module}" in error
+                                    for error in self.errors()))
+
     def test_interpolation_does_not_hide_executable_tokens(self):
         self.assertTrue(source_errors('def text := s!"{by sorry}"'))
         self.assertEqual(source_errors('def text := s!"result {1 + 2}"'), [])
+
+    def test_eval_commands_cannot_execute_during_elaboration(self):
+        for command in ['#eval', '#eval!', '# /- note -/ eval', '#eval /- note -/ !']:
+            with self.subTest(command=command):
+                source = '\n' + command + ' (IO.FS.writeFile "unused" "unused")\n'
+                self.assertTrue(any('line 2:' in e for e in source_errors(source)))
+                self.write('QleisliKernel/Check.lean', 'import Std\n' + source)
+                self.assertTrue(any('forbidden' in e for e in self.errors()))
+        self.assertEqual(source_errors('''-- #eval! ignored
+/- #eval ignored -/
+def explanation := "#eval IO.println"
+def rawText := r#"#eval!"#
+def eval := 1
+#check eval
+'''), [])
 
     def test_unterminated_comments_and_strings_fail_closed(self):
         for source in ["/-", 'def s := "', 'def s := r##"', 'def s := s!"']:
@@ -124,15 +167,24 @@ class CompiledAudit(unittest.TestCase):
         cls.lean = Path(result.stdout.strip()) / "bin" / "lean"
         cls.audit_source = (ROOT / "lean-kernel/Audit.lean").read_text(encoding="utf-8")
 
-    def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n"):
+    def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n",
+              *, module="QleisliKernel"):
+        """Compile mutations without the source scanner to test metadata independently."""
         with tempfile.TemporaryDirectory(prefix="qleisli-kernel-audit-") as directory:
             root = Path(directory)
             env = dict(os.environ, LEAN_PATH=str(root))
-            (root / "QleisliKernel.lean").write_text("import Init\n" + body, encoding="utf-8")
+            source = root / (module.replace(".", "/") + ".lean")
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_text("import Init\n" + body, encoding="utf-8")
+            modules = [module]
+            if module != "QleisliKernel":
+                (root / "QleisliKernel.lean").write_text(f"import {module}\n", encoding="utf-8")
+                modules.append("QleisliKernel")
             (root / "Main.lean").write_text(main, encoding="utf-8")
             (root / "Audit.lean").write_text(self.audit_source, encoding="utf-8")
-            for module in ["QleisliKernel", "Main"]:
-                compiled = subprocess.run([self.lean, "-o", module + ".olean", module + ".lean"],
+            for name in [*modules, "Main"]:
+                relative = name.replace(".", "/")
+                compiled = subprocess.run([self.lean, "-o", relative + ".olean", relative + ".lean"],
                                           cwd=root, env=env, text=True, capture_output=True)
                 self.assertEqual(compiled.returncode, 0, compiled.stdout + compiled.stderr)
             result = subprocess.run([self.lean, "Audit.lean"], cwd=root, env=env,
@@ -161,6 +213,56 @@ class CompiledAudit(unittest.TestCase):
                 code, output = self.audit(body)
                 self.assertNotEqual(code, 0, output)
                 self.assertIn(expected, output)
+
+    def test_backend_private_declarations_are_audited_by_origin_module(self):
+        cases = [
+            ("private unsafe def value : Nat := 1\n", "unsafe project"),
+            ("private partial def loop (n : Nat) : Nat := loop (n + 1)\n", "partial project"),
+            ('@[extern "untrusted_backend"] private def value : Nat := 1\n', "extern implementation"),
+            ("private def replacement : Nat := 2\n"
+             "@[implemented_by replacement] private def value : Nat := 1\n", "implemented_by replacement"),
+        ]
+        for body, expected in cases:
+            with self.subTest(expected=expected):
+                # The declaration namespace deliberately differs from its audited module.
+                code, output = self.audit("namespace Outside\n" + body + "end Outside\n",
+                                          module="QleisliKernel.Backend.LeafRealizer")
+                self.assertNotEqual(code, 0, output)
+                self.assertIn(expected, output)
+                self.assertIn("Outside", output)
+
+    def test_axiom_free_theorems_do_not_authorize_runtime_replacements(self):
+        for prefix, expected in [
+                ("def replacement : Nat := 2\n@[implemented_by replacement]", "implemented_by replacement"),
+                ('@[extern "untrusted_backend"]', "extern implementation")]:
+            with self.subTest(expected=expected):
+                body = prefix + " def value : Nat := 1\n" + """
+theorem kernelDefinition : value = 1 := rfl
+/-- info: 'kernelDefinition' does not depend on any axioms -/
+#guard_msgs in
+#print axioms kernelDefinition
+"""
+                code, output = self.audit(body, module="QleisliKernel.Backend.Emit")
+                self.assertNotEqual(code, 0, output)
+                self.assertIn(expected, output)
+
+    def test_plain_backend_definition_generated_helpers_are_audited(self):
+        # Pinned Lean generates a partial _unsafe_rec helper for this total
+        # equation-compiler definition. A source keyword check cannot see it.
+        body = """
+inductive Atom where
+  | unit | bit | bits (n : Nat) | tuple (n : Nat)
+def width : List Atom → Nat
+  | [] => 0
+  | .unit :: rest | .tuple _ :: rest => width rest
+  | .bit :: rest => 1 + width rest
+  | .bits n :: rest => n + width rest
+"""
+        self.assertEqual(source_errors(body), [])
+        code, output = self.audit(body, module="QleisliKernel.Backend.Generated")
+        self.assertNotEqual(code, 0, output)
+        self.assertIn("width._unsafe_rec", output)
+        self.assertIn("partial project", output)
 
     def test_native_proof_in_transport_is_still_rejected(self):
         main = ("import QleisliKernel\nimport Lean\n"

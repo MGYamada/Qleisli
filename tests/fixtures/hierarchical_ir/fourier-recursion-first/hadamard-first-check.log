@@ -1,0 +1,2 @@
+Qleisli/HierarchicalHadamard.lean:67:53: error(lean.unknownIdentifier): Unknown constant `Array.toList_mk`
+Qleisli/HierarchicalHadamard.lean:67:69: error(lean.unknownIdentifier): Unknown constant `List.toArray_toList`

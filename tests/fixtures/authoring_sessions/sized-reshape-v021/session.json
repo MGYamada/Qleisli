@@ -1,0 +1,22 @@
+{
+  "format": 1,
+  "task": "Linear-size explicit register reshape",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired source saved and hashed before checking; size grammar and lowering are pending",
+      "sha256": {
+        "layout.qli": "b30b8526993f52ca1ff45d7a158192e8d7b5fa878fb1cb38609c9b93cc8e49ef",
+        "main.qli": "f8cd8d655188a1bc009a4a3013cf8bad6dfb547eaa29d2ab8bd2f568607e0d24"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    }
+  ]
+}

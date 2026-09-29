@@ -38,6 +38,40 @@ QPE header shapes and explicit zero-scratch boundaries. Explicit structural
 conversions now connect Bits/Bit, immediate tuple fields and empty owners, with
 checked actual inverse routing and arbitrary-reference coefficient round trips.
 The source conversion producer and semantic derivation binding remain pending.
+The [finite request projection](../docs/hierarchical-ir-spec.md#finite-reconstruction-requests)
+retains the actual indexed program/meaning bytes, complete unary boundary and
+identity encodings under the structural budget. Its theorems establish binding,
+not the opaque bytes' meaning. The transitional Rust finite checker must still
+be connected to these requests and the semantic derivation pass.
+The [conditional derivation entry](../docs/hierarchical-ir-spec.md#conditional-finite-derivations)
+now checks whole-artifact composition while retaining every such obligation.
+Its state/request-origin invariants and conditional derivation are proved;
+the separate mathematical package constructs equal operators/reference maps
+from explicit leaf equations and now propagates finite-leaf unitarity to both
+entry inverse laws with arbitrary references. Pending results still require
+decoder/host correspondence before production acceptance. Rust can now freshly
+decode the exact finite matrix descriptions, but its result is not a Lean proof
+or a whole-hierarchy seal. The additive `--hierarchy-pending` command now reads
+the private bounded binary bridge on stdin, reconstructs complete tables and
+runs `Conditional.checkAll`. The Rust host freshly checks every returned finite
+proof index on the same immutable external artifact. Its inspection report
+does not establish an independently requested root contract. The additive
+`--hierarchy-request-pending` command runs `Root.checkAll` on that artifact and
+a separate complete request with an untrusted graph-pair proposal. The Rust
+`Kernel::check_against` API freshly checks both finite reconstruction and exact
+meaning-pair equality; the mathematical package proves the requested-root
+equation and unitary/reference laws conditional on those actual obligations.
+Remaining profile rules and reader/native correspondence still gate production
+acceptance; all external schemas remain disabled.
+For singleton named Fourier requests, `--hierarchy-fourier-pending` now reads
+the private `QLF1` frame and runs `FourierRoot.checkAll`. Complete artifact
+checking, the requested closed `Bits<n>` interface and actual Fourier geometry
+share the structural budget. The host additionally reconstructs every returned
+H index against the independent exact matrix with its remaining finite budget.
+The same `Kernel::check_against` API retains both raw inputs. This remains a
+conditional checked-request report, with the same correspondence and production
+limitations; [validation and contract](../docs/hierarchical-ir-spec.md#fourier-request-host)
+include coordinated semantic faults and malformed process responses.
 Production
 `qleisli check`/`run` and QIRF verification still use the Rust verifier.
 
@@ -51,6 +85,15 @@ lake env lean Audit.lean
 lake env leanchecker --fresh QleisliKernel
 lake env leanchecker --fresh Main
 ```
+
+The [backend execution policy](../docs/lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
+requires source and compiled-declaration rejection of `unsafe def`,
+`@[implemented_by]`, `@[extern]` and `partial def` for project executable code,
+including private/generated helpers. These bans already apply throughout this
+package and must carry over to future backend code or a separate backend
+package. Axiom auditing alone cannot rule out runtime replacements. The
+compiled negative suite covers nested backend modules and axiom-free
+replacement examples; it does not claim an implemented backend.
 
 There are no Mathlib downloads or external package dependencies. The separate
 [proof package](../lean/README.md) retains its existing Mathlib models.
@@ -113,6 +156,7 @@ failures. `global_phase.qpk` paired with `identity.qpr` must reject.
 | [Hierarchical/Artifact.lean](QleisliKernel/Hierarchical/Artifact.lean) | Typed four-table projection and exact proof endpoint binding under a shared budget; no semantic evidence issued |
 | [Hierarchical/Ports.lean](QleisliKernel/Hierarchical/Ports.lean) | Actual side-map bijections and exact types, with proved coefficient/reference round trips and a remaining-budget interface |
 | [Hierarchical/Structural.lean](QleisliKernel/Hierarchical/Structural.lean) | Explicit consuming/regrouping conversions, actual inverse routing and reference-preserving coefficient round trips; shared-budget checks used by definition and meaning typing |
+| [Reshape.lean](QleisliKernel/Reshape.lean) | Experimental canonical single-owner adapter metadata; general leaf-encoding, inverse/composition and reference-coefficient proofs. Not a new hierarchy rule, source API or evidence issuer; see the [adoption boundary](../docs/reshape-plan.md). |
 | [Hierarchical/NodeTyping.lean](QleisliKernel/Hierarchical/NodeTyping.lean) | Actual definition-node ownership/effect checks, both call maps and names, and proved whole-table checking under the shared budget |
 | [Hierarchical/ContractTyping.lean](QleisliKernel/Hierarchical/ContractTyping.lean) | Actual meaning/encoding types, QPE provider/header binding and zero-scratch shape, with whole-table budget/coverage theorems |
 | [Protocol.lean](Protocol.lean) | Bounded canonical text decoder; correspondence not mechanized |

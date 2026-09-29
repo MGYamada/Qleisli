@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.qft-hierarchy-authoring",
+  "version": 1,
+  "status": "observed",
+  "results": [
+    [
+      "1",
+      "accepted",
+      "144475",
+      "67",
+      "1"
+    ],
+    [
+      "2",
+      "accepted",
+      "964251",
+      "134",
+      "2"
+    ],
+    [
+      "3",
+      "limit",
+      "Lean hierarchy inspection rejected the artifact"
+    ],
+    [
+      "4",
+      "limit",
+      "Lean hierarchy inspection rejected the artifact"
+    ],
+    [
+      "8",
+      "limit",
+      "Lean hierarchy inspection rejected the artifact"
+    ]
+  ],
+  "artifact_sha256": {
+    "1": "de08c4c3dfb82e0c0078854708d2d1316929fd42fe30977e2cd03fa8a1f5af55",
+    "2": "784220e43f4f70573f7abb5b91a67dd268fc715e0f8bc41e7cf90ee571863d0c",
+    "3": "d8e2259fe7c50b3ed843d9d332942b56b05d6439821872a6b28b3fbd61be1f80",
+    "4": "7802ddbe5081dfcf5355210e83833afccd24c04901bf90a9c63d026b797a4ac5",
+    "8": "0f30c55a85a9fbdd358b58f2e0c56f9d82c83dc36b49803b5a75acf9c849df75"
+  },
+  "definition_counts": {
+    "1": 9,
+    "2": 33,
+    "3": 66,
+    "4": 114,
+    "8": 420
+  },
+  "stdout": "\nrunning 1 test\nQFT|1|accepted|144475|67|1\nQFT|2|accepted|964251|134|2\nQFT|3|limit|Lean hierarchy inspection rejected the artifact\nQFT|4|limit|Lean hierarchy inspection rejected the artifact\nQFT|8|limit|Lean hierarchy inspection rejected the artifact\ntest inspect_authored_qft_hierarchies ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/qft_hierarchy.rs (target/debug/deps/qft_hierarchy-5d75744bf3a93d2c)\n"
+}

@@ -1,7 +1,28 @@
 # Three-source QLI input corpus
 
-**24 finite translations, eight per approved source**, selected for Qleisli
-0.1.9 on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
+The [shared sized experiments](sized/README.md) now compile and independently
+inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
+adjoint client and shared calls. They reuse existing pinned
+inputs and have a separate development execution path. The 30 finite CLI cases
+below remain unchanged; production sized-source integration is still open.
+The [coherent QPE continuation](sized/qualtran_qpe/README.md) now passes its
+small selected configurations with static operation providers and full-state
+diagnostics. Further maximum-size checks are deferred by the 2026-09-30 user
+decision; initialization/measurement and `CBits` remain open.
+The [shared AddK/Equals continuation](sized/qualtran_arithmetic/README.md) now
+passes widths 0–3, using coherent recursive controls and shared XOR/complement
+to restore input registers. Its independent arithmetic oracles cover all small
+basis inputs and reference columns, including incorrect carry and restoration.
+These experiments do not add to the thirty production CLI translations.
+The [local order/amplitude integration clients](../tests/fixtures/sized_clients/README.md)
+now reuse the same coherent QPE at small sizes, with explicit operation
+forwarding and independent phase/reference formulas. They are local verification
+material under the existing policy, not a fourth external corpus. Their
+initialization/measurement and production integration remain open.
+
+**30 finite translations, ten per approved source**, including six additions
+for 0.2.1 on 2026-09-29. The original 24-case intake was selected for 0.1.9
+on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
 QuantumKatas, Qualtran Bloqs and PennyLane Demos and fixes their license handling.
 The [manifest](manifest.json) pins commits, original paths, file hashes, symbols,
 mathematical contracts, parameter specializations and exclusions.
@@ -19,6 +40,13 @@ new source snapshot and real before/after checks; the
 [exhaustive after-state](authoring/tuple-shapes-semantic.json) passes all 9,412
 semantic probes. Earlier attempts, upstream pins, numerical contracts and
 source-specific attribution remain intact.
+
+The [0.2.1 expansion session](authoring/v021-expansion/session.json) preserves
+the six new first attempts separately. Existing commits stay pinned. Two more
+PennyLane demo files and their author metadata were reviewed at that same
+commit; their repository-wide Apache-2.0 terms apply and neither file declares
+an exception. No imported library implementation, image, dataset or model is
+copied. Original 24-case snapshots and validation reports remain unchanged.
 
 ## Use and layout
 
@@ -73,6 +101,8 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | quantum_katas | [bernstein_vazirani](quantum_katas/bernstein_vazirani/README.md) | For the fixed hidden string (1,1), H^2 diag((-1)^(a xor b)) H^2 sends &#124;00> to &#124;11>. |
 | quantum_katas | [grover2](quantum_katas/grover2/README.md) | One Grover iteration with one marked item 11: D O H^2, D=2&#124;++><++&#124;-I, O=diag(1,1,1,-1). &#124;00> maps to &#124;11> with phase +1. |
 | quantum_katas | [qpe3](quantum_katas/qpe3/README.md) | Three-bit coherent QPE for U=T. On &#124;000>&#124;b>, the phase bits encode b/8, first bit least significant; the target survives. |
+| quantum_katas | [deutsch_jozsa3](quantum_katas/deutsch_jozsa3/README.md) | Three-bit balanced majority phase oracle between Hadamard layers; preserves the complete unitary and its signed Fourier spectrum. |
+| quantum_katas | [bell_measure](quantum_katas/bell_measure/README.md) | Destructive Bell measurement, returning phase/parity in upstream integer order and preserving the conditional state of arbitrary references. |
 | qualtran | [add2](qualtran/add2/README.md) | For a=a0+2*a1 and b=b0+2*b1, map &#124;a,b> to &#124;a,(a+b) mod 4> with amplitude +1 on the whole input space. |
 | qualtran | [xor2](qualtran/xor2/README.md) | Map &#124;a,b> to &#124;a,b xor a>, for two-bit registers; phase +1. |
 | qualtran | [less_than2](qualtran/less_than2/README.md) | Map &#124;a,b,t> to &#124;a,b,t xor [a<b]>, where a=a0+2*a1 and b=b0+2*b1. |
@@ -81,6 +111,8 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | qualtran | [qft2](qualtran/qft2/README.md) | F4[y,x]=exp(2*pi*i*x*y/4)/2 with output reversal included. Integer bit order is first leaf least significant. |
 | qualtran | [qpe2](qualtran/qpe2/README.md) | Two-bit coherent QPE with rectangular/uniform window and U=S=T^2. On &#124;00>&#124;b>, report b/4 and retain the target. |
 | qualtran | [reflection2](qualtran/reflection2/README.md) | I-2&#124;++><++&#124;, with prepare=H^2 and upstream global_phase=+1. |
+| qualtran | [add_constant3](qualtran/add_constant3/README.md) | Add 3 modulo 8 with an explicit carry circuit; includes overflow and phase +1 on every input. |
+| qualtran | [equals2](qualtran/equals2/README.md) | XOR two-register equality into either target value, restoring both two-bit registers coherently. |
 | pennylane_demos | [qubit_rotation](pennylane_demos/qubit_rotation/README.md) | Apply RY(pi/2) RX(pi/2) exactly, including scalar phase. From &#124;0>, the Z expectation is zero. |
 | pennylane_demos | [teleport](pennylane_demos/teleport/README.md) | The measured teleportation instrument returns ((phase, parity), Bob), each branch weight 1/4, preserving reference correlations. |
 | pennylane_demos | [qaoa_vertex_cover](pennylane_demos/qaoa_vertex_cover/README.md) | One layer exp(-i*alpha*sum X) exp(-i*gamma*C) H^4 with alpha=gamma=pi/4; C=3*sum_edges(Zi*Zj+Zi+Zj)-sum_i Zi on edges (0,1),(1,2),(2,0),(2,3). |
@@ -89,6 +121,8 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | pennylane_demos | [classifier_layer](pennylane_demos/classifier_layer/README.md) | Rot(0,pi/2,0)=RY(pi/2) on all four wires, followed by the original CNOT ring 0->1->2->3->0. |
 | pennylane_demos | [qpe3](pennylane_demos/qpe3/README.md) | Three-bit QPE for PhaseShift(3*pi/4)=T^3, returning low-weight-first phase bits and the retained target. |
 | pennylane_demos | [phase_lock](pennylane_demos/phase_lock/README.md) | The first wire is a lock meter. H, controlled FlipSign(0111), H XORs the predicate [key=0111] into that meter and preserves the four-wire key. |
+| pennylane_demos | [lcu_projector](pennylane_demos/lcu_projector/README.md) | PREP–SELECT–PREP† with an explicit H completion; zero-selector block (I+Z)/2. Both quantum owners are returned. |
+| pennylane_demos | [kernel_overlap2](pennylane_demos/kernel_overlap2/README.md) | Two-feature RX embedding followed by the adjoint embedding; exact phase and all-zero overlap probability 1/4. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -100,12 +134,19 @@ these boundaries before it can count as a port.
 
 ## What was validated
 
-[Recorded local results](validation.json): **24 shipped examples, 9,412 semantic
+[Current 0.2.1 results](validation-v0.2.1.json): **30 shipped examples, 11,849
+semantic probes and four rejection cases** passed with Rust 1.98.1 on macOS.
+All **six type-correct semantic faults** were detected by the independent
+oracle after successful source checking. The report additionally pins the
+fault manifest and source hashes. These results are finite numerical checks,
+not a general proof or upstream-framework execution.
+
+[Original local results](validation.json): **24 shipped examples, 9,412 semantic
 probes and four rejection cases** passed with the Rust 1.98.1 compiler on macOS.
 The report binds the manifest, final QLI files, oracle script and compiler by
 SHA-256. It is a reproducibility record, not a signed attestation.
 
-- For each of the 20 unitary kernels, enumerate every computational input and
+- For each of the 25 current unitary kernels, enumerate every computational input and
   compare its output distribution with an independent mathematical reference.
   Then measure every complex matrix entry using controlled X/Y interference.
   The reference branch maps the input basis vector to the selected output row;
@@ -118,12 +159,21 @@ SHA-256. It is a reproducibility record, not a signed attestation.
   classical branch with the ideal identity-channel Choi state. Also run the
   shipped T-phase input example. For `measure_plus`, check six states and the
   upstream Boolean polarity; dense coding checks all four messages.
+- Bell measurement adds all four known Bell labels and nine Pauli pairs on the
+  two retained references of its Choi input, comparing every classical branch.
+- The LCU test compares its full chosen unitary completion. The zero-selector
+  block is checked separately against the rank-one projector. Input data 1
+  produces selector 1: unpreparing does not imply clean auxiliary return.
 - Derive Z0, the QAOA cost expectation and expected MaxCut edge count on the host
   from the distributions. These are finite numerical aggregations, not a new
   QLI optimizer, gradient API, noisy shot estimator or chemistry calculation.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
+- Six [type-correct semantic faults](semantic_faults/README.md) must pass source
+  checking and then fail the mathematical oracle. They test majority/parity,
+  Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
+  A compiler or harness failure cannot count as semantic detection.
 
 References use elementary complex arithmetic and mathematical equations in
 [the runner](../scripts/check_input_corpus.py), without calling QLI or upstream
@@ -139,7 +189,7 @@ Upstream decomposition/T-count and QLI resource overhead were not compared;
 replacing a general Bloq with a finite basis map does not inherit its complexity.
 
 The primary Rust CI job runs the exhaustive runner; both Rust jobs run the
-[24-project and rejection smoke tests](../tests/input_corpus.rs). The docs job
+[30-project and rejection smoke tests](../tests/input_corpus.rs). The docs job
 checks provenance and the Python harness regressions.
 
 ## Authoring evidence and next language work
@@ -151,6 +201,12 @@ Five failures exposed unsupported Boolean `or`, `let` in basis bodies, and
 existing syntax and passed all 24; attempt 03 only removed unused imports and
 also passed. These are informed translations with prior repository and upstream
 access, not a controlled LLM benchmark. No failed attempts were invented.
+
+The six 0.2.1 additions all passed their first source checks with **zero source
+repairs**, using known syntax and existing rotation workarounds. The historical
+24-case observations are checked against their own snapshots; the second
+session covers the six additions. Their latest snapshots together must cover
+every current source, so growth cannot silently omit authoring records.
 
 The [authoring report](../docs/qli-authoring-feedback.md) and
 [backlog](../docs/v0.2.0-backlog.md) retain these gaps, phase-preserving rotation

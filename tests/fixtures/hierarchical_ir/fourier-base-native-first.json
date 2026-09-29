@@ -1,0 +1,14 @@
+{
+  "status": "error",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 1,
+      "stdout": "\u2714 [59/63] Built QleisliKernel.Hierarchical.FourierBase:c.o (234ms)\n\u2714 [60/63] Built QleisliKernel.Hierarchical.Hadamard:c.o (242ms)\n\u2716 [61/63] Building Main (5.8s)\ntrace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/Main.lean -o /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/.lake/build/lib/lean/Main.olean -i /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/.lake/build/lib/lean/Main.ilean -c /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/.lake/build/ir/Main.c --setup /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-wi3s_bnb/.lake/build/ir/Main.setup.json --json\nerror: Main.lean:62:15: failed to synthesize instance of type class\n  Inhabited QuantumPort\n\nHint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.QuantumPort` may allow Lean to derive the missing instance.\nerror: Main.lean:63:16: failed to synthesize instance of type class\n  Inhabited QuantumPort\n\nHint: Adding the command `deriving instance Inhabited for QleisliKernel.Hierarchical.Artifact.QuantumPort` may allow Lean to derive the missing instance.\nerror: Lean exited with code 1\nSome required targets logged failures:\n- Main\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n"
+    }
+  ]
+}

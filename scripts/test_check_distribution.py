@@ -187,7 +187,9 @@ class PackageTests(unittest.TestCase):
         compare_package_metadata(original, dict(original, manifest_path="different/path"))
         for key, value in [("name", "other"), ("version", "0.2.0"), ("license", "proprietary"),
                            ("dependencies", [{"name": "injected"}]), ("rust_version", "1.99"),
-                           ("features", {"default": ["changed"]})]:
+                           ("features", {"default": ["changed"]}),
+                           ("readme", "wrong.md"), ("documentation", "https://example.invalid"),
+                           ("keywords", ["wrong"]), ("categories", ["wrong"])]:
             with self.subTest(key=key), self.assertRaises(DistributionError):
                 compare_package_metadata(original, dict(original, **{key: value}))
 

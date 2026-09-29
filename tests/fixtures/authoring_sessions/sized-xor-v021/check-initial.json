@@ -1,0 +1,33 @@
+{
+  "recorded_utc": "2026-09-29T05:01:34.162748+00:00",
+  "command": [
+    "target/debug/qleisli",
+    "check",
+    "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-01",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected an identifier",
+        "primary": {
+          "path": "main.qli",
+          "start": 88,
+          "end": 91,
+          "line": 2,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

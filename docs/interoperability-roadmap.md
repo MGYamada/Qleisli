@@ -4,8 +4,11 @@ Status: **direction selected on 2026-09-28; initial M1.1-A connections implement
 The [bounded connection contract](interop-m1.1.md) specifies the current host
 adapters: OpenQASM 3 input/output and QIR 2.0 Base text output. The user's added
 M1.1 request added these adapters to 0.1.7; they change no `.qli` syntax,
-existing capacity or evidence-checking rule. QIR input, Python bindings,
-adaptive operations and general format/target coverage remain pending. The
+existing capacity or evidence-checking rule. The 0.2.1
+[bounded host connections](connections-v021.md) add Python orchestration,
+structured CLI commands and optional LLVM-backed QIR Base input. Adaptive
+operations, general format/target coverage and all-in-one binary wheels remain
+pending. The Python wheel currently requires a separate Rust executable. The
 internal execution consolidation below remains a distinct 0.1.6 maintenance
 step; planned interfaces are not thereby implemented.
 
@@ -29,8 +32,9 @@ coverage, arbitrary circuit sizes and cloud-device setup are separate costs;
 ## Compiler layers
 
 The following is the selected architecture. M1.1-A connects the existing finite
-verifier to the bounded OpenQASM importer/exporter and QIR writer; the Python,
-QIR-import and hierarchical paths remain future work:
+verifier to the bounded OpenQASM importer/exporter and QIR writer. The 0.2.1
+host layer connects Python and the declared QIR-import subset; hierarchical
+production integration remains future work:
 
 ```text
 .qli frontend     OpenQASM importer     QIR importer     Python circuit builder
@@ -303,6 +307,15 @@ explicit compatibility decision.
   describes packaging native Python extensions. These are candidates to evaluate,
   not dependencies installed or versions selected by this design change.
 
+The [Fourier request host](hierarchical-ir-spec.md#fourier-request-host) now
+connects the shared native QFT fixture producer and strict external request
+codec to one composite Lean checker and fresh Rust exact H reconstruction.
+Its named meaning is restricted to the published closed `Bits<n>` boundary.
+It adds no public IR variant or primitive, removes no Rust rule, and issues no
+production `VerifiedProgram`. Ordinary sized `.qli` lowering, remaining
+hierarchy/instrument cases and native/reader correspondence remain integration
+debt; external schema IDs and TP-005 API migration remain separate gates.
+
 The [interference continuation](lean-interference-slice.md) adds an internal
 proved transformation and complex interpretation, with a generated native test
 producer. It introduces no further wire protocol or standalone acceptance
@@ -348,3 +361,50 @@ routing proofs. Its only producer is the native fixture generator; source
 lowering, equation/encoding binding and execution are open integration debt.
 This adds a necessary ownership conversion rule without changing `rewire`'s
 type-preservation requirement or reducing the existing Rust trusted base.
+
+The 0.2.1 [canonical reshape helper](reshape-plan.md) adds experimental checked
+metadata and encoding proofs only. Its producer is the native test harness;
+the preserved `.qli` draft is rejected. It adds no `Body`, `MeaningBody`, rule
+or wire-format variant and cannot issue evidence. Source lowering must emit
+the existing structural/tensor/sequence nodes and retain exact bindings; this
+is open producer debt, not a reduction of the trusted acceptance base.
+
+The 0.2.1 [shared-call producer](../lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean)
+now emits existing `rewire` and `sequence` definitions while retaining the
+callee reference. Its native fixture generator supplies separate meanings and
+evidence to the existing derivation checker. This adds no `Body`, `MeaningBody`,
+rule or transport variant, and changes no acceptance predicate. Conditional
+coordinate/unitary/reference preservation is proved in the separate Mathlib
+package. The original call-typing premise remains explicit; `.qli` production,
+full external call translation validation and hierarchy-bound finite reconstruction remain open.
+
+The [finite unitary adapter](machine-interface-spec.md#reconstructed-finite-unitary-leaves)
+adds a successor API with private result fields, using existing QIRF import and
+exact checking under a shared budget. It reconstructs the bytes and binds the
+independently required matrix and complete actual unary boundary, including
+type trees, owners and output wire order. This adds no raw enum variant or
+Lean acceptance rule. It is still a transitional Rust premise; production
+hierarchy transport and the rest of the finite profile remain open. The pure
+[finite request projection](../lean-kernel/QleisliKernel/Hierarchical/Finite.lean)
+now retains actual indexed bytes and identity-encoded boundaries with proved
+binding. The [conditional whole-artifact pass](hierarchical-ir-spec.md#conditional-finite-derivations)
+composes those requests and proves exact operator/reference equality relative
+to explicit leaf interpretations. The mathematical extension also propagates
+leaf unitarity to both entry inverse laws with arbitrary references. The
+[exact matrix description](machine-interface-spec.md#exact-finite-matrix-descriptions)
+allows fresh decoding of both byte strings, with complete immutable binding and
+no change to scalar capacity. Rust host/decoder correspondence and production
+hierarchy acceptance are still pending. Moving this checking into an
+adapter does not reduce the Rust trusted acceptance base.
+
+The [fresh hierarchy host](hierarchical-ir-spec.md#external-field-encoding-and-reconstruction-host)
+connects strict external JSON, a bounded private binary bridge, actual native
+Lean conditional checking and fresh Rust reconstruction on retained immutable
+leaf data. Its successor result is an inspection report with private fields;
+it provides no legacy `VerifiedProgram` conversion or implicit reverse adapter.
+The existing public raw enums are unchanged. The additive
+[independent request API](hierarchical-ir-spec.md#independently-requested-roots)
+now matches a separate meaning graph through the actual pure checker and fresh
+finite equality checks, retaining both original byte strings. Remaining profile
+rules and native/transport correspondence still gate production integration;
+all external schema entries remain disabled.

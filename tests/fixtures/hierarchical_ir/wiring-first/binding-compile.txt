@@ -1,0 +1,127 @@
+Qleisli/HierarchicalWiring.lean:92:13: error: `simp` made no progress
+Qleisli/HierarchicalWiring.lean:177:46: error: Invalid simp theorem: Expected a proposition, but found
+  ℕ → List Operator → Operator
+Qleisli/HierarchicalWiring.lean:192:71: error(lean.unknownIdentifier): Unknown identifier `hi`
+Qleisli/HierarchicalWiring.lean:210:11: error: unsolved goals
+case cons.none
+leaves : Leaves Operator
+artifact : Artifact
+cache : Wiring.Cache
+ready :
+  ∀ (index : ℕ) (code : Wiring.Code),
+    cache[index]?.bind id = some code →
+      ∃ fuel op,
+        HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel index = some op ∧
+          At (List.length code) code op
+index : ℕ
+rest : List ℕ
+ih :
+  ∀ (codes : List Wiring.Code),
+    List.mapM (fun i => cache[i]?.bind id) rest = some codes →
+      ∃ fuel ops,
+        List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) rest = some ops ∧
+          List.Forall₂ (fun code op => At (List.length code) code op) codes ops
+codes : List Wiring.Code
+lookup : cache[index]?.bind id = none
+computed :
+  ((cache[index]?.bind fun a => a).bind fun __do_lift =>
+      (List.mapM (fun i => cache[i]?.bind fun a => a) rest).bind fun __do_lift_1 => some (__do_lift :: __do_lift_1)) =
+    some codes
+⊢ ∃ fuel ops,
+    List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) (index :: rest) = some ops ∧
+      List.Forall₂ (fun code op => At (List.length code) code op) codes ops
+Qleisli/HierarchicalWiring.lean:213:13: error: unsolved goals
+case cons.some.none
+leaves : Leaves Operator
+artifact : Artifact
+cache : Wiring.Cache
+ready :
+  ∀ (index : ℕ) (code : Wiring.Code),
+    cache[index]?.bind id = some code →
+      ∃ fuel op,
+        HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel index = some op ∧
+          At (List.length code) code op
+index : ℕ
+rest : List ℕ
+ih :
+  ∀ (codes : List Wiring.Code),
+    List.mapM (fun i => cache[i]?.bind id) rest = some codes →
+      ∃ fuel ops,
+        List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) rest = some ops ∧
+          List.Forall₂ (fun code op => At (List.length code) code op) codes ops
+codes : List Wiring.Code
+code : Wiring.Code
+lookup : cache[index]?.bind id = some code
+tail : List.mapM (fun i => cache[i]?.bind id) rest = none
+computed :
+  ((cache[index]?.bind fun a => a).bind fun __do_lift =>
+      (List.mapM (fun i => cache[i]?.bind fun a => a) rest).bind fun __do_lift_1 => some (__do_lift :: __do_lift_1)) =
+    some codes
+⊢ ∃ fuel ops,
+    List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) (index :: rest) = some ops ∧
+      List.Forall₂ (fun code op => At (List.length code) code op) codes ops
+Qleisli/HierarchicalWiring.lean:215:50: error: Type mismatch: After simplification, term
+  Eq.symm computed
+ has type
+  some codes =
+    (cache[index]?.bind fun a => a).bind fun __do_lift =>
+      (List.mapM (fun i => cache[i]?.bind fun a => a) rest).bind fun __do_lift_1 => some (__do_lift :: __do_lift_1)
+but is expected to have type
+  codes = code :: following
+Qleisli/HierarchicalWiring.lean:225:52: error: Ambiguous term
+  physical
+Possible interpretations:
+  HierarchicalFiniteEvaluation.physical : HierarchicalSemantics.Algebra ?m.361 →
+    Leaves ?m.361 → Artifact → ℕ → ℕ → Option ?m.361
+  
+  HierarchicalSemantics.physical : HierarchicalSemantics.Algebra ?m.361 → (ℕ → ?m.361) → Definition → Option ?m.361
+Qleisli/HierarchicalWiring.lean:225:28: error: unsolved goals
+leaves : Leaves Operator
+artifact : Artifact
+cache : Wiring.Cache
+index : ℕ
+rest : List ℕ
+code : Wiring.Code
+following✝ : List Wiring.Code
+firstFuel : ℕ
+op : Operator
+tailFuel : ℕ
+ops : List Operator
+fuel : ℕ := firstFuel + tailFuel
+ready :
+  ∀ (index : ℕ) (code : Wiring.Code),
+    (cache[index]?.bind fun a => a) = some code →
+      ∃ fuel op,
+        HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel index = some op ∧
+          At (List.length code) code op
+lookup : (cache[index]?.bind fun a => a) = some code
+tail : List.mapM (fun i => cache[i]?.bind fun a => a) rest = some following✝
+first : HierarchicalFiniteEvaluation.physical algebra leaves artifact firstFuel index = some op
+firstAt : At (List.length code) code op
+following : List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact tailFuel) rest = some ops
+followingAt : List.Forall₂ (fun code op => At (List.length code) code op) following✝ ops
+firstMore : evaluate algebra (definition leaves artifact) fuel index = some op
+tailMore : List.mapM (HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel) rest = some ops
+⊢ ((HierarchicalFiniteEvaluation.physical algebra leaves artifact fuel index).bind fun a => some (a :: ops)) =
+    some (op :: ops)
+Qleisli/HierarchicalWiring.lean:210:35: warning: This simp argument is unused:
+  lookup
+
+Hint: Omit it from the simp argument list.
+  simp [List.mapM_cons,̵l̵o̵o̵k̵u̵p̵] at computed
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalWiring.lean:213:37: warning: This simp argument is unused:
+  lookup
+
+Hint: Omit it from the simp argument list.
+  simp [̵L̵i̵s̵t̵.̵m̵a̵p̵M̵_̵c̵o̵n̵s̵,̵l̵o̵o̵k̵u̵p̵,̵t̵a̵i̵l̵]̵[̲L̲i̲s̲t̲.̲m̲a̲p̲M̲_̲c̲o̲n̲s̲,̲ ̲t̲a̲i̲l̲]̲ at computed
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+Qleisli/HierarchicalWiring.lean:213:44: warning: This simp argument is unused:
+  tail
+
+Hint: Omit it from the simp argument list.
+  simp [List.mapM_cons, ̲lookup,̵t̵a̵i̵l̵] at computed
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`

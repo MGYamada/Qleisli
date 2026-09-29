@@ -1,0 +1,1 @@
+Initial source retained unchanged. The attempted pre-check snapshot command used the wrong working directory and failed; the snapshot was saved after the first compilation was launched, before any source repair. Do not describe it as saved before checking.

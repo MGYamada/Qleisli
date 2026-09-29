@@ -10,7 +10,7 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-use qleisli_core::contract::exact::{Budget, Exact, ExactError, Matrix};
+use qleisli::contract::exact::{Budget, Exact, ExactError, Matrix};
 
 pub const MAX_LEAF_BITS: usize = 3;
 

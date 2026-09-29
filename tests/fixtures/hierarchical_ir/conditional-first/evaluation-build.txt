@@ -1,0 +1,21 @@
+✖ [3382/3382] Building Qleisli.HierarchicalFiniteEvaluation (20s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean/Qleisli/HierarchicalFiniteEvaluation.lean -o /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalFiniteEvaluation.olean -i /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalFiniteEvaluation.ilean -c /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalFiniteEvaluation.c --setup /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalFiniteEvaluation.setup.json --json
+error: Qleisli/HierarchicalFiniteEvaluation.lean:67:27: This simp argument is unused:
+  body
+
+Hint: Omit it from the simp argument list.
+  simp [definition, ̲found,b̵o̵d̵y̵,̵ ̲physicalCode, ̲body]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Qleisli/HierarchicalFiniteEvaluation.lean:74:24: This simp argument is unused:
+  body
+
+Hint: Omit it from the simp argument list.
+  simp [meaning, ̲found,b̵o̵d̵y̵,̵ ̲logicalCode, ̲body]
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- Qleisli.HierarchicalFiniteEvaluation
+error: build failed
+

@@ -1,0 +1,186 @@
+import QleisliKernel.Hierarchical.Gradient
+
+/-! Compute phase-free axis routing from actual shared hierarchical bodies.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+P0 actual-body binding. This component does not replace complete artifact
+typing or issue evidence. No producer route summary or cache is an input. -/
+
+namespace QleisliKernel.Hierarchical.Wiring
+open Artifact
+
+abbrev Code := List Nat
+abbrev Cache := Array (Option Code)
+
+inductive Operation where
+  | route (axes : Code)
+  | sequence
+  | tensor
+  deriving Repr
+
+structure Node where
+  operation : Operation
+  children : List Nat
+  deriving Repr
+
+def project (d : Definition) : Option Node := match d.body with
+  | .rewire map => some ⟨.route map.axes.toList,[]⟩
+  | .structural _ => some ⟨.route (Structural.axisMap d.interface),[]⟩
+  | .sequence children => some ⟨.sequence,children.toList⟩
+  | .tensor left right => some ⟨.tensor,[left,right]⟩
+  | _ => none
+
+def compose (first second : Code) : Option Code :=
+  if first.length = second.length then some (second.map (Layout.indexAt first)) else none
+
+def tensor (first second : Code) : Code :=
+  first ++ second.map (first.length + ·)
+
+def eval (width : Nat) : Operation → List Code → Option Code
+  | .route axes, [] => some axes
+  | .sequence, children => children.foldlM compose (List.range width)
+  | .tensor, [first,second] => some (tensor first second)
+  | _, _ => none
+
+def valid (width : Nat) (axes : Code) : Bool :=
+  decide (width ≤ 16) && axes.length == width && axes.all (· < width)
+
+theorem valid_fields (width : Nat) (axes : Code) (checked : valid width axes = true) :
+    width ≤ 16 ∧ axes.length = width ∧ ∀ i ∈ axes, i < width := by
+  simpa only [valid,Bool.and_eq_true,beq_iff_eq,List.all_eq_true,decide_eq_true_eq,and_assoc] using checked
+
+def summarize (cache : Cache) (d : Definition) : Option Code := do
+  let node ← project d
+  let children ← node.children.mapM (fun i => (cache[i]?).bind id)
+  let width := (wires d.interface.inputs).size
+  let axes ← eval width node.operation children
+  if decide (d.effect = Effect.unitary) && NodeTyping.quantumOnly d.interface &&
+      (wires d.interface.outputs).size == width && valid width axes then
+    some axes
+  else none
+
+/-- Fresh-cache derivations bind every result to actual definitions and earlier
+constructed children. There is no assumed semantic environment. -/
+inductive Derives (artifact : Artifact) : Nat → Code → Prop where
+  | node (index : Nat) (d : Definition) (cache : Cache) (axes : Code)
+      (found : artifact.definitions[index]? = some d)
+      (children : ∀ i code, (cache[i]?).bind id = some code → Derives artifact i code)
+      (computed : summarize cache d = some axes) : Derives artifact index axes
+
+def Sound (artifact : Artifact) (cache : Cache) : Prop :=
+  ∀ i code, (cache[i]?).bind id = some code → Derives artifact i code
+
+structure State where
+  cache : Cache
+  visits : Nat
+  deriving Repr
+
+def bodySize (d : Definition) : Nat := match d.body with
+  | .rewire map => map.owners.size + map.axes.size + map.classical.size
+  | .sequence children => children.size
+  | .tensor _ _ => 2
+  | _ => 0
+
+def scan (d : Definition) : Nat := 32 + d.interface.scan + bodySize d
+
+/-- Covers route lookup/composition, full endpoint scans and bounded cache
+updates before any corresponding materialization. No repeat is expanded. -/
+def charge (d : Definition) : Nat :=
+  scan d + 8*(TypedRule.sideFields d.interface.inputs + TypedRule.sideFields d.interface.outputs) +
+    8*(1+Ports.wireCount d.interface.inputs+Ports.wireCount d.interface.outputs)^2 +
+    16*bodySize d*(1+Ports.wireCount d.interface.inputs)
+
+def step (artifact : Artifact) (remaining : Nat) (state : State) (index : Nat) : Except Error State :=
+  match artifact.definitions[index]?, state.cache[index]? with
+  | some d, some none =>
+    if state.visits + scan d > remaining then .error .limit else
+    let cost := charge d
+    if state.visits + cost > remaining then .error .limit else
+    match summarize state.cache d with
+    | none => .error .contract
+    | some axes => .ok ⟨state.cache.setIfInBounds index (some axes),state.visits+cost⟩
+  | _, _ => .error .invalidIr
+
+def inspect (artifact : Artifact) (order : Array Nat) (remaining : Nat) : Except Error State :=
+  let cost := 16 + artifact.definitions.size + order.size
+  if remaining > 2000000 || cost > remaining then .error .limit else
+  order.toList.foldlM (step artifact remaining)
+    ⟨Array.replicate artifact.definitions.size none,cost⟩
+
+theorem summarize_fields (cache : Cache) (d : Definition) (axes : Code)
+    (computed : summarize cache d = some axes) :
+    ∃ node children, project d = some node ∧
+      node.children.mapM (fun i => (cache[i]?).bind id) = some children ∧
+      eval (wires d.interface.inputs).size node.operation children = some axes ∧
+      d.effect = Effect.unitary ∧ NodeTyping.quantumOnly d.interface = true ∧
+      (wires d.interface.outputs).size = (wires d.interface.inputs).size ∧
+      valid (wires d.interface.inputs).size axes = true := by
+  unfold summarize at computed
+  simp only [bind,Option.bind] at computed
+  repeat (split at computed <;> (try dsimp only at computed) <;> (try contradiction))
+  all_goals
+    cases Option.some.inj computed
+    simp only [Bool.and_eq_true,beq_iff_eq,decide_eq_true_eq] at *
+    exact ⟨_,_,by assumption,by assumption,by assumption,by simp_all,by simp_all,by simp_all,by simp_all⟩
+
+theorem step_sound (artifact : Artifact) (remaining : Nat) (state result : State) (index : Nat)
+    (sound : Sound artifact state.cache) (accepted : step artifact remaining state index = .ok result) :
+    Sound artifact result.cache ∧ result.visits ≤ remaining := by
+  unfold step at accepted
+  split at accepted
+  next d found empty =>
+    split at accepted
+    next exceeded => contradiction
+    next scanned =>
+      dsimp only at accepted
+      split at accepted
+      next exceeded => contradiction
+      next bounded =>
+        split at accepted
+        next absent => contradiction
+        next axes computed =>
+          cases Except.ok.inj accepted
+          refine ⟨?_,Nat.le_of_not_gt bounded⟩
+          intro i code present
+          by_cases same : i = index
+          · subst i
+            have inside := (Array.getElem?_eq_some_iff.mp empty).1
+            simp only [Array.getElem?_setIfInBounds_self_of_lt inside,Option.bind_some,id_eq,Option.some.injEq] at present
+            subst code
+            exact .node index d state.cache axes found sound computed
+          · have old : (state.cache[i]?).bind id = some code := by
+              simpa only [Array.getElem?_setIfInBounds_ne (Ne.symm same)] using present
+            exact sound i code old
+  next invalid => contradiction
+
+theorem fold_sound (artifact : Artifact) (order : List Nat) (remaining : Nat)
+    (state result : State) (sound : Sound artifact state.cache) (budget : state.visits ≤ remaining)
+    (accepted : order.foldlM (step artifact remaining) state = .ok result) :
+    Sound artifact result.cache ∧ result.visits ≤ remaining := by
+  induction order generalizing state with
+  | nil => cases Except.ok.inj accepted; exact ⟨sound,budget⟩
+  | cons index rest ih =>
+    cases checked : step artifact remaining state index with
+    | error e => simp [List.foldlM,checked,bind,Except.bind] at accepted
+    | ok next =>
+      have tail : rest.foldlM (step artifact remaining) next = .ok result := by
+        simpa [List.foldlM,checked] using accepted
+      have ready := step_sound artifact remaining state next index sound checked
+      exact ih next ready.1 ready.2 tail
+
+theorem inspect_sound (artifact : Artifact) (order : Array Nat) (remaining : Nat) (result : State)
+    (accepted : inspect artifact order remaining = .ok result) :
+    Sound artifact result.cache ∧ result.visits ≤ remaining ∧ remaining ≤ 2000000 := by
+  unfold inspect at accepted
+  dsimp only at accepted
+  split at accepted
+  next exceeded => contradiction
+  next bounded =>
+    simp only [Bool.or_eq_true,decide_eq_true_eq,not_or] at bounded
+    have empty : Sound artifact (Array.replicate artifact.definitions.size none) := by
+      intro i code found
+      simp [Array.getElem?_replicate] at found
+      split at found <;> simp_all
+    have result := fold_sound artifact order.toList remaining _ result empty (by dsimp; omega) accepted
+    exact ⟨result.1,result.2,by omega⟩
+
+end QleisliKernel.Hierarchical.Wiring

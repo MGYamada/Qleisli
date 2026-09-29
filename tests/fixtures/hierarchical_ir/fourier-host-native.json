@@ -1,0 +1,773 @@
+{
+  "format": "qleisli.fourier-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_cases": 187,
+  "host_cases": 39,
+  "results": [
+    {
+      "case": "valid",
+      "result": "pending"
+    },
+    {
+      "case": "magic",
+      "result": "format"
+    },
+    {
+      "case": "trailing",
+      "result": "format"
+    },
+    {
+      "case": "truncated-0",
+      "result": "format"
+    },
+    {
+      "case": "truncated-1",
+      "result": "format"
+    },
+    {
+      "case": "truncated-2",
+      "result": "format"
+    },
+    {
+      "case": "truncated-3",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4",
+      "result": "format"
+    },
+    {
+      "case": "truncated-5",
+      "result": "format"
+    },
+    {
+      "case": "truncated-6",
+      "result": "format"
+    },
+    {
+      "case": "truncated-7",
+      "result": "format"
+    },
+    {
+      "case": "truncated-8",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4662",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4663",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4664",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4665",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4666",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4667",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4668",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4669",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4670",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4671",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4672",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4673",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4674",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4675",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4676",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4677",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4678",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4679",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4680",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4681",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4682",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4683",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4684",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4685",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4686",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4687",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4688",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4689",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4690",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4691",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4692",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4693",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4694",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4695",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4696",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4697",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4698",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4699",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4700",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4701",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4702",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4703",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4704",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4705",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4706",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4707",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4708",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4709",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4710",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4711",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4712",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4713",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4714",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4715",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4716",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4717",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4718",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4719",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4720",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4721",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4722",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4723",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4724",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4725",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4726",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4727",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4728",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4729",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4730",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4731",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4732",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4733",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4734",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4735",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4736",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4737",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4738",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4739",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4740",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4741",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4742",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4743",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4744",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4745",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4746",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4747",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4748",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4749",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4750",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4751",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4752",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4753",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4754",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4755",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4756",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4757",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4758",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4759",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4760",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4761",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4762",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4763",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4764",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4765",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4766",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4767",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4768",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4769",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4770",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4771",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4772",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4773",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4774",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4775",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4776",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4777",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4778",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4779",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4780",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4781",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4782",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4783",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4784",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4785",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4786",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4787",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4788",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4789",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4790",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4791",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4792",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4793",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4794",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4795",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4796",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4797",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4798",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4799",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4800",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4801",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4802",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4803",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4804",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4805",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4806",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4807",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4808",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4809",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4810",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4811",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4812",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4813",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4814",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4815",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4816",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4817",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4818",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4819",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4820",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4821",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4822",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4823",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4824",
+      "result": "format"
+    },
+    {
+      "case": "truncated-4825",
+      "result": "format"
+    },
+    {
+      "case": "instrument",
+      "result": "format"
+    },
+    {
+      "case": "observe",
+      "result": "format"
+    },
+    {
+      "case": "header-owner",
+      "result": "format"
+    },
+    {
+      "case": "meaning-owner",
+      "result": "format"
+    },
+    {
+      "case": "unknown-body",
+      "result": "format"
+    },
+    {
+      "case": "wrong-width",
+      "result": "contract"
+    },
+    {
+      "case": "zero-width",
+      "result": "limit"
+    },
+    {
+      "case": "missing-entry",
+      "result": "format"
+    },
+    {
+      "case": "large-count",
+      "result": "limit"
+    },
+    {
+      "case": "large-order",
+      "result": "limit"
+    },
+    {
+      "case": "wrong-order",
+      "result": "invalid_ir"
+    }
+  ],
+  "seconds": 11.472,
+  "binary_sha256": "3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a",
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "qft_hierarchy",
+    "native_fourier_request_faults",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 1 test\nHOST|width-1|ok|77158|118\nHOST|width-2|ok|273293|236\nHOST|width-3|ok|403852|354\nHOST|width-4|ok|675967|472\nHOST|width-5|ok|857457|590\nHOST|width-6|ok|1219749|708\nHOST|width-7|ok|1463626|826\nHOST|width-8|ok|1933823|944\nHOST|named-bit-boundary|contract\nHOST|named-open-boundary|contract\nHOST|request-kind|contract\nHOST|request-effect|contract\nHOST|request-entry|invalid_ir\nHOST|request-width-0|limit\nHOST|request-width-3|contract\nHOST|request-width-9|limit\nHOST|header-owner|contract\nHOST|coordinated-header-owner|contract\nHOST|header-axes|contract\nHOST|coordinated-header-axes|contract\nHOST|header-basis|contract\nHOST|coordinated-header-basis|contract\nHOST|extra-meaning|contract\nHOST|producer-flag|format\nHOST|phase|contract\nHOST|polarity|contract\nHOST|repeat|contract\nHOST|missing-reversal|contract\nHOST|commuting-swaps|ok|675967|472\nHOST|negative-h|contract\nHOST|x-h|contract\nHOST|empty-owner|invalid_ir\nHOST|reindexed-definitions|ok|675967|472\nHOST|missing-h|format\nHOST|duplicate-h|format\nHOST|outside-h|format\nHOST|nonleaf-h|format\nHOST|too-many-h|limit\nHOST|truncated-h|format\ntest native_fourier_request_faults ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 4.88s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s\n     Running tests/qft_hierarchy.rs (target/debug/deps/qft_hierarchy-5d75744bf3a93d2c)\n",
+  "semantic_evidence_issued": false
+}

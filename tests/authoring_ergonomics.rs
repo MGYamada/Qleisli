@@ -2,11 +2,11 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::ast::{FnBody, PatternKind, TypeKind};
-use qleisli_core::frontend::compile::{check_project_diagnostic, compile_project};
-use qleisli_core::frontend::documentation::render_markdown;
-use qleisli_core::frontend::parser::parse_module;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::ast::{FnBody, PatternKind, TypeKind};
+use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
+use qleisli::frontend::documentation::render_markdown;
+use qleisli::frontend::parser::parse_module;
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::fs;
 use std::path::Path;
 

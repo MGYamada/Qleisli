@@ -18,7 +18,12 @@ noncomputable def coefficient (width : Nat) (actual : QleisliKernel.QftGraph.Act
       (realize width (initial width) (finiteBits input) (finiteBits choices))
     if (fun i : Fin width => result.bits i) = output then pathWeight result else 0
 
-/-- Acceptance determines the whole typed boundary and literal graph action;
+/-- temporary (TP-005), importance P1: Current QFT projection interface, still required by QPE/dispatch.
+Replacement: a full-artifact, independently requested Fourier theorem. Retire
+only after actual outer reversal, finite H binding, phase/unitary/reference
+coverage, caller/registry migration and public API compatibility review.
+
+Acceptance determines the whole typed boundary and literal graph action;
 the mathematical coefficient below is computed from that action, not a receipt. -/
 theorem check_fourier (definitions : List QleisliKernel.QftGraph.Definition)
     (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
@@ -54,7 +59,12 @@ theorem check_fourier (definitions : List QleisliKernel.QftGraph.Definition)
     halfRoot_power]
   ring
 
-/-- Arbitrary reference amplitudes survive the accepted graph equation. -/
+/-- temporary (TP-005), importance P1: Current QFT projection interface, still required by QPE/dispatch.
+Replacement: a full-artifact, independently requested Fourier theorem. Retire
+only after actual outer reversal, finite H binding, phase/unitary/reference
+coverage, caller/registry migration and public API compatibility review.
+
+Arbitrary reference amplitudes survive the accepted graph equation. -/
 theorem check_reference (definitions : List QleisliKernel.QftGraph.Definition)
     (entry width : Nat) (receipt : QleisliKernel.QftGraph.Receipt)
     (accepted : QleisliKernel.QftGraph.check definitions entry width = some receipt)

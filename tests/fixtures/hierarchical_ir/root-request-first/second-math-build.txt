@@ -1,0 +1,243 @@
+✖ [3385/3385] Building Qleisli.HierarchicalRoot (15s)
+trace: .> LEAN_PATH=/Users/masa/git/Qleisli/lean/.lake/packages/Cli/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/batteries/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/Qq/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/aesop/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/proofwidgets/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/importGraph/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/plausible/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/packages/mathlib/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/lean:/Users/masa/git/Qleisli/lean/.lake/build/lib/lean /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /Users/masa/git/Qleisli/lean/Qleisli/HierarchicalRoot.lean -o /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalRoot.olean -i /Users/masa/git/Qleisli/lean/.lake/build/lib/lean/Qleisli/HierarchicalRoot.ilean -c /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalRoot.c --setup /Users/masa/git/Qleisli/lean/.lake/build/ir/Qleisli/HierarchicalRoot.setup.json --json
+error: Qleisli/HierarchicalRoot.lean:38:23: Application type mismatch: The argument
+  hp
+has type
+  List.mapM (fun i => pairs[i]?) pair.children.toList = some ps
+but is expected to have type
+  some ps = some ps
+in the application
+  ⟨rfl, hp⟩
+error: Qleisli/HierarchicalRoot.lean:54:109: unsolved goals
+case finite
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+description✝ : ByteArray
+body : m.body = MeaningBody.finite description✝
+⊢ (match
+      match leaves.meaning m.interface description✝, fun __do_lift => some (Node.leaf __do_lift) with
+      | none, x => none
+      | some a, f => f a,
+      fun node =>
+      match node with
+      | Node.leaf value => some value
+      | Node.operation node =>
+        match List.mapM (evaluate algebra (meaning leaves artifact) fuel) node.children, fun values =>
+          some (algebra.apply node.interface node.tag values) with
+        | none, x => none
+        | some a, f => f a with
+    | none, x => none
+    | some a, f => f a) =
+    leaves.meaning m.interface description✝
+
+case sequence
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+children✝ : Array ℕ
+body : m.body = MeaningBody.sequence children✝
+⊢ (match List.mapM (evaluate algebra (meaning leaves artifact) fuel) children✝.toList, fun values =>
+      some (algebra.apply m.interface HierarchicalSemantics.Tag.sequence values) with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      List.mapM
+        (evaluate algebra (meaning leaves artifact) fuel ∘ Ref.index ∘ fun x => { table := Table.meaning, index := x })
+        children✝.toList,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case tensor
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+left✝ right✝ : ℕ
+body : m.body = MeaningBody.tensor left✝ right✝
+⊢ (match
+      match evaluate algebra (meaning leaves artifact) fuel left✝, fun __do_lift =>
+        match
+          match evaluate algebra (meaning leaves artifact) fuel right✝, fun __do_lift => some [__do_lift] with
+          | none, x => none
+          | some a, f => f a,
+          fun __do_lift_1 => some (__do_lift :: __do_lift_1) with
+        | none, x => none
+        | some a, f => f a with
+      | none, x => none
+      | some a, f => f a,
+      fun values => some (algebra.apply m.interface HierarchicalSemantics.Tag.tensor values) with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      match evaluate algebra (meaning leaves artifact) fuel left✝, fun __do_lift =>
+        match
+          match evaluate algebra (meaning leaves artifact) fuel right✝, fun __do_lift => some [__do_lift] with
+          | none, x => none
+          | some a, f => f a,
+          fun __do_lift_1 => some (__do_lift :: __do_lift_1) with
+        | none, x => none
+        | some a, f => f a with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case inverse
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ : ℕ
+body : m.body = MeaningBody.inverse child✝
+⊢ (match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      fun values => some (algebra.apply m.interface HierarchicalSemantics.Tag.inverse values) with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case control
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ : ℕ
+polarity✝ : Bool
+body : m.body = MeaningBody.control child✝ polarity✝
+⊢ (match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      fun values => some (algebra.apply m.interface (HierarchicalSemantics.Tag.control polarity✝) values) with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case power
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+child✝ count✝ : ℕ
+body : m.body = MeaningBody.power child✝ count✝
+⊢ (match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      fun values => some (algebra.apply m.interface (HierarchicalSemantics.Tag.power count✝) values) with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      match evaluate algebra (meaning leaves artifact) fuel child✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+
+case phase
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+j✝ k✝ : ℕ
+body : m.body = MeaningBody.phase j✝ k✝
+⊢ (match
+      match
+        match m.interface.inputs.quantum[0]?, fun target =>
+          some (HierarchicalSemantics.Tag.phase target.owner j✝ k✝, []) with
+        | none, x => none
+        | some a, f => f a,
+        fun __discr => some (Node.operation { interface := m.interface, tag := __discr.1, children := __discr.2 }) with
+      | none, x => none
+      | some a, f => f a,
+      fun node =>
+      match node with
+      | Node.leaf value => some value
+      | Node.operation node =>
+        match List.mapM (evaluate algebra (meaning leaves artifact) fuel) node.children, fun values =>
+          some (algebra.apply node.interface node.tag values) with
+        | none, x => none
+        | some a, f => f a with
+    | none, x => none
+    | some a, f => f a) =
+    match
+      match m.interface.inputs.quantum[0]?, fun target =>
+        some (HierarchicalSemantics.Tag.phase target.owner j✝ k✝, []) with
+      | none, x => none
+      | some a, f => f a,
+      fun __discr => some (algebra.apply m.interface __discr.1 []) with
+    | none, x => none
+    | some a, f => f a
+
+case qpeInstrument
+S : Type
+algebra : HierarchicalSemantics.Algebra S
+leaves : Leaves S
+artifact : Artifact
+fuel index : ℕ
+m : Meaning
+found : artifact.meanings[index]? = some m
+target✝ precision✝ providerMeaning✝ : ℕ
+body : m.body = MeaningBody.qpeInstrument target✝ precision✝ providerMeaning✝
+⊢ none =
+    match
+      match evaluate algebra (meaning leaves artifact) fuel providerMeaning✝, fun __do_lift => some [__do_lift] with
+      | none, x => none
+      | some a, f => f a,
+      render algebra leaves m with
+    | none, x => none
+    | some a, f => f a
+error: Qleisli/HierarchicalRoot.lean:57:28: This simp argument is unused:
+  bind_none
+
+Hint: Omit it from the simp argument list.
+  simp [̵l̵o̵g̵i̵c̵a̵l̵,̵e̵v̵a̵l̵u̵a̵t̵e̵,̵m̵e̵a̵n̵i̵n̵g̵,̵f̵o̵u̵n̵d̵,̵b̵o̵d̵y̵,̵r̵e̵n̵d̵e̵r̵,̵l̵o̵g̵i̵c̵a̵l̵C̵o̵d̵e̵,̵R̵o̵o̵t̵.̵c̵h̵i̵l̵d̵r̵e̵n̵,̵M̵e̵a̵n̵i̵n̵g̵B̵o̵d̵y̵.̵r̵e̵f̵e̵r̵e̵n̵c̵e̵s̵,̵
+  ̵ ̵ ̵ ̵ ̵ ̵ ̵b̵i̵n̵d̵,̵O̵p̵t̵i̵o̵n̵.̵b̵i̵n̵d̵,̵p̵u̵r̵e̵,̵b̵i̵n̵d̵_̵n̵o̵n̵e̵]̵[̲l̲o̲g̲i̲c̲a̲l̲,̲ ̲e̲v̲a̲l̲u̲a̲t̲e̲,̲ ̲m̲e̲a̲n̲i̲n̲g̲,̲ ̲f̲o̲u̲n̲d̲,̲ ̲b̲o̲d̲y̲,̲ ̲r̲e̲n̲d̲e̲r̲,̲ ̲l̲o̲g̲i̲c̲a̲l̲C̲o̲d̲e̲,̲ ̲R̲o̲o̲t̲.̲c̲h̲i̲l̲d̲r̲e̲n̲,̲
+  ̲ ̲ ̲ ̲ ̲ ̲ ̲M̲e̲a̲n̲i̲n̲g̲B̲o̲d̲y̲.̲r̲e̲f̲e̲r̲e̲n̲c̲e̲s̲,̲ ̲b̲i̲n̲d̲,̲ ̲O̲p̲t̲i̲o̲n̲.̲b̲i̲n̲d̲,̲ ̲p̲u̲r̲e̲]̲
+
+Note: This linter can be disabled with `set_option linter.unusedSimpArgs false`
+error: Lean exited with code 1
+Some required targets logged failures:
+- Qleisli.HierarchicalRoot
+error: build failed

@@ -1,0 +1,15 @@
+{
+  "recorded_utc": "2026-09-29T15:45:27.224614+00:00",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "inspect_source_produced_corpus",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "transcript": "\nrunning 1 test\nCORPUS|controls-0|ok|88743|67|1\nCORPUS|increment-0|ok|6716|0|0\nCORPUS|comparison-0|ok|384708|67|1\nCORPUS|addition-0|ok|40581|0|0\nCORPUS|controls-1|ok|189175|67|1\nCORPUS|increment-1|ok|191547|67|1\nCORPUS|comparison-1|ok|681111|201|3\nCORPUS|addition-1|ok|242392|67|1\nCORPUS|controls-2|ok|313370|67|1\nCORPUS|increment-2|ok|411298|67|1\nCORPUS|comparison-2|ok|1115078|335|5\nCORPUS|addition-2|ok|478267|67|1\nCORPUS|controls-3|ok|454151|67|1\nCORPUS|increment-3|ok|677536|67|1\nCORPUS|comparison-3|ok|1604715|469|7\nCORPUS|addition-3|ok|762549|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.71s\n\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-bc96fffc2cad5da1)\n"
+}

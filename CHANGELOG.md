@@ -6,10 +6,238 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-- Record the 0.3.0 design-coherence review. GitHub issues #14–#25, backlog
-  entries A020-23–A020-32 and an A020-01 update list syntactic distinctions
-  that have no physical or mathematical counterpart. Probe diagnostics were
-  reproduced with the 0.2.0 CLI. No syntax, API or version is selected.
+## 0.2.1 — 2026-09-30
+
+Published as `qleisli` on crates.io and as the
+[v0.2.1 GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1).
+Validation and publication evidence are recorded in the [release record](docs/releases/v0.2.1.md).
+
+- **Rust package/import migration:** adopt `qleisli` for the first crates.io
+  release at the user's explicit request. Earlier Git/path users must rename
+  the `qleisli-core` dependency and `qleisli_core` imports, or use the documented
+  Cargo alias. This is a narrow pre-registry identity exception; CLI/source/IR
+  semantics remain unchanged. Registry publication is authorized after rechecking.
+
+- Prepare the first crates.io release: add a registry README,
+  checkout-independent quickstart, Rust API example/guide and discovery metadata.
+  Repair rustdoc formatting and require warning-free docs plus doctests in CI.
+  Extend clean distribution validation to install the extracted package and run
+  documented source, bundled-library and ownership checks outside the checkout.
+  Document package contents and the separately authorized publication step.
+
+- Adopt Resource Safety as the third theorem pillar toward v1, alongside
+  Soundness and Physical Realizability. Record the 2026-09-30 trust-boundary
+  amendment as **to prove**: finite static resource bounds, compositional cost
+  semantics and preservation through actual compilation. Add RS-C1–C5 without
+  claiming existing ownership/work limits prove them or changing 0.2.1/0.2.2 gates.
+
+- Add a structured `qleisli interop` CLI and installable Python host package
+  for finite import/check/run/sample/export. Optional pinned PyQIR reads the
+  declared QIR 2.0 Base text/bitcode subset before Rust ownership/IR checking;
+  retain exact gate meanings, terminal measurement and explicit output order.
+  Adaptive input and all-in-one platform wheels remain outside this slice.
+- Split the release at the completed corpus/review/experimental-component
+  boundary. Retain bounded connections in 0.2.1; move heavy measured shared-QPE
+  implementation, production integration and proofs to 0.2.2 with unmet gates.
+  The original corpus completion goal is deferred, not achieved.
+
+- Reuse the same coherent QPE source in local order-finding and finite
+  amplitude-estimation clients. Add explicit natural/operation forwarding in
+  declaration order, preserve capability checks and key instantiations by
+  complete nested providers. Small-system phase/reference and sign-fault tests
+  pass; measured `CBits`, classical-result and production integration remain open.
+
+- Add shared sized AddK and Equals sources with coherent carry, recursive
+  controls and input restoration. Extend the experimental producer with explicit
+  multi-owner calls/control/adjoint and complete-content imported-graph sharing.
+  Validate widths 0–3, inverse/controlled clients, empty ownership and seven
+  arithmetic faults; use small-system source regressions in CI. Production
+  integration, named arithmetic binding and efficient general synthesis remain open.
+
+- Add one shared coherent QPE source with explicit controlled access, bounded
+  static powers, a reusable Hadamard definition and the same imported inverse
+  QFT. Validate small selected sizes, reference states, off-grid phases and
+  phase-sensitive provider changes. Follow the user's small-system validation
+  scope for remaining work, preserving the earlier (8,8) limit as history;
+  measured `CBits`, named QPE binding and production integration remain open.
+
+- Add shared sized QFT source with explicit output reversal, dyadic phases and
+  guarded affine sizes. Connect ordinary source modules and `adjoint` to the
+  same shared graph; independently check forward Fourier requests and inverse,
+  repeated-call and entangled-frame behavior. Record actual repeated execution
+  cost; production CLI, QPE/CBits and general source preservation remain open.
+
+- Prioritize actual corpus source: add one sized Xor and one sized GHZ
+  definition with an untrusted development compiler and independent native
+  reconstruction at every selected width. Check complete basis columns,
+  coherent reference columns, linear/size failures and valid-but-wrong circuit
+  mutations. Production sized-source CLI integration remains open.
+
+- Connect singleton Fourier requests to the existing fresh `check_against` API.
+  Compose complete Lean artifact checking with actual Fourier inspection;
+  reconstruct all finite proofs and every phase-fixed H from the same bytes.
+  Enforce the named contract's closed single-`Bits<n>` boundary and retain the
+  full request, aggregate budgets and conditional unitary/reference proofs.
+  Production hierarchy values and native/reader correspondence remain open.
+
+- Bind the actual complete QFT entry to an independently requested Fourier width
+  and interface. Derive identity renaming, recursive coefficients and explicit
+  output reversal from actual bodies; prove full complex/reference amplitudes
+  under bound exact-H obligations. Native widths 1–8 fit the unchanged shared
+  budget. Production transport/seals, correspondence and source/corpus gates
+  remain open; external schemas stay disabled.
+
+- Compute phase-free wiring from actual shared hierarchical definitions and
+  prove exact physical coefficients with arbitrary reference amplitudes.
+  Check the QFT producer's outer renames/SWAPs within the existing aggregate
+  budget; retain whole-artifact typing and the separate full Fourier-root gate.
+
+- Classify proof maintenance by importance and retirement intent. Extend the
+  temporary-proof inventory to the legacy reference alias and transitional
+  QFT/QPE projection interfaces, with explicit replacement/removal gates.
+  Retain actual-checker proofs, reusable mathematics and all current audits.
+
+- Bind the complete shared recursive QFT body through one structural budget.
+  Prove its full reversed-output Fourier coefficients from actual base,
+  control/repetition and recursive definitions, leaving only bound exact finite
+  H equations and transitional reader/native assumptions. Fresh H reconstruction
+  rejects X, global -H and stale owner bindings. Complete actual outer reversal,
+  independently requested Fourier roots and source/corpus integration remain open.
+
+- Prove the shared QFT stage coefficient law and the explicit output-reversal
+  equation, retaining full phases and reference amplitudes. Bind actual
+  five-node stage geometry with a bounded pure inspector and native mutation
+  checks; exact H, recursive/base and complete requested-root obligations remain
+  explicit, with all external schemas still disabled.
+
+- Clarify that GitHub Issues require no duplicate local backlog entry, update
+  or backlog ID; retain existing backlog history.
+
+- Bind actual shared-gradient definitions through a bounded Lean inspector and
+  prove their complete complex diagonal by induction, including empty owners,
+  actual routing and arbitrary reference amplitudes. Native producer/mutation
+  checks and independent phase probes fit the existing shared budget. Complete
+  outer QFT/Fourier and source/corpus integration remain pending.
+
+- Prove exact diagonal laws for the actual hierarchical complex operators,
+  including controlled repetitions, tensor products, inverse routing and
+  arbitrary reference amplitudes. Add sparse coefficient scaling/control
+  helpers with kernel proofs and independent native checks, without expanding
+  repeated bodies. Complete QFT graph/Fourier binding remains pending.
+
+- Reuse the actual complete-artifact typing context in conditional ordinary
+  rule matching, with Lean proofs of the original acceptance predicate.
+  Preserve all endpoint/phase/premise checks and existing work ceilings.
+  Directly lifted QFT hierarchy fixtures pass through width four. A subsequent
+  shared-gradient producer retains recursive register boundaries and shares
+  controlled repetitions, admitting every width 1–8 without new checker rules
+  or larger budgets. Independent Fourier schema/source integration remains open.
+
+- Bind the supported conditional hierarchy to a separately supplied root
+  contract through the actual Lean checker and fresh exact Rust reconstruction.
+  Prove equal requested denotations and unitary/reference laws under the actual
+  finite obligations. Preserve sharing and phase; reject coordinated circuit/
+  meaning mutations, malformed pair proposals and aggregate work excess.
+  Add a compatible request API and CI checks; complete production/profile,
+  sized-source and corpus integration remain pending.
+
+- Reaffirm the required Lean backend and its ban on `unsafe def`,
+  `@[implemented_by]`, `@[extern]` and `partial def`. Extend existing source/
+  compiled-audit CI regressions to nested backend modules, private/generated
+  helpers and axiom-free theorems with runtime replacements. This changes no
+  production acceptance rule and does not implement the future backend.
+
+- Adopt sequential Rust-to-Lean pipeline migration from either end, retaining
+  independent IR checking at the language boundary and extending the verified
+  downstream segment through actual-pass preservation proofs or translation
+  validation. Keep external candidate search, including rotation-synthesis
+  norm-equation search, behind a planned proved Lean `LeafRealizer` checker;
+  apply the de Bruijn criterion per pass without requiring all code to migrate.
+  Keep the fixed trust partition and existing authority/proof gates.
+
+- Plan Qleisli type-system specification as part of the v0.3.0 breaking-change
+  release and defer QLT implementation to v0.4.0 or later. Concrete type rules
+  and migrations remain to be specified; current 0.2.1 contracts and manifests
+  are unchanged by this scheduling decision.
+
+- Connect strict hierarchy JSON to a fresh native Lean conditional check and
+  reconstruct every returned finite obligation from the same immutable bytes
+  under one shared exact budget. Retain sharing under zero and large powers;
+  reject phase/type/binding faults and malformed transport. Keep independent
+  root-contract acceptance, remaining profile rules and external schemas pending.
+
+- Propagate bound finite-leaf unitarity through actual conditional derivations,
+  constructing a common unitary entry and both inverse laws with arbitrary
+  finite references. Add strict exact matrix byte transport with independent
+  dyadic exponents and fresh reconstruction of both sides of a finite equation.
+  Keep all existing capacities and the explicit Rust/decoder correspondence
+  boundary; complete hierarchy transport and production acceptance remain open.
+
+- Compose actual finite reconstruction obligations through a separate bounded
+  hierarchical derivation pass, retaining every request even under zero powers.
+  Prove constructed operator and reference-map equality conditional on exact
+  interpretations of those leaf bytes. Keep host/decoder correspondence
+  and production acceptance pending.
+
+- Add a finite unitary-leaf adapter that reconstructs complete QIRF1/2 bytes,
+  checks exact type/owner/axis boundaries and an independently supplied matrix,
+  and shares the existing exact-work budget across leaves. Preserve scalar phase
+  and zero-width ownership. Add a pure Lean projection with proved binding of
+  actual finite requests to indexed bytes, interfaces and encodings. Connecting
+  those requests to the Rust result and the remaining leaf
+  profile is still pending.
+
+- Add an untrusted shared-call expansion into existing rewire/sequence nodes,
+  preserving the actual callee index. Prove its coordinate transport and
+  unitary/reference laws; check generated artifacts with independent phase
+  and axis mutations. Retain the measured fragmented-header capacity case.
+  Production call transport and sized-source integration remain pending.
+
+- Adopt linear size obligations and explicit ordered bit-segment reshape in
+  the 0.2.1 design, with `n+1` recursive interfaces and checked size transport.
+  Preserve the first `n+m`/`2*n` source and real parser failure. Add focused
+  axiom guards for the two existing reshape theorems; sized source, the new
+  arithmetic/segment proofs and the separate array API remain pending.
+
+- Begin the authorized sized-corpus continuation with preserved Xor source and
+  actual diagnostics. Prove whole-space unitarity laws for the existing
+  hierarchical complex operators, including coherent control and arbitrary
+  finite reference extensions; bind phase, rewire and structural leaves to
+  actual typing predicates. Recursively derive entry unitarity from supported
+  internal checker success without assumed child isometries. Finite leaves,
+  remaining full-profile rules and sized source remain pending. Correct the
+  remaining current-design `CWord` table entry to `CBits`.
+
+- Address the [0.2.0 review](docs/reviews/v0.2.0.md): prevent roundoff drift from
+  rejecting long samples; count shared source snapshots once in QIRF and reuse
+  imported storage; remove empty error locations; list all CLI commands/options;
+  reject Lean `#eval`/`#eval!` in runtime source policy. Clarify numerical residues,
+  improve finite-capacity diagnostics, and add `check_reference_value` while
+  preserving the narrower `check_reference` compatibility theorem.
+
+- Adopt the standard-library goal of a BLAS/LAPACK-like foundation for quantum
+  computing integrated with a textbook and formal specifications: readers
+  should be able to learn quantum information by reading the library. The
+  comprehensive organization and generalized APIs remain separate decisions.
+
+- Add a proved experimental canonical-reshape metadata helper before sized
+  source: explicit single-owner regrouping preserves typed leaves, ordered
+  axes, labels and reference coefficients without basis enumeration. Keep
+  desired source, counterexamples and independent native checks; no new
+  production rule or `reshape` source API is enabled.
+
+- Expand the approved three-source input corpus from 24 to 30 finite translations:
+  majority-oracle Deutsch–Jozsa, Bell measurement, constant addition, equality,
+  LCU projector embedding and quantum-kernel overlap. Preserve first attempts,
+  pinned originals and source-specific notices; add phase/reference oracles
+  and six deliberate type-correct semantic faults. No new language rule or
+  general algorithm support is claimed.
+
+- Select development version 0.2.1, synchronizing Rust and both Lean packages
+  with the [continuation record](docs/releases/v0.2.1.md). Shared sized QPE,
+  production hierarchy and H1–H5 remain pending under the existing plan.
+- Fix the README soundness formula for GitHub rendering by replacing
+  `\operatorname` and specialized double-bracket macros with basic TeX notation.
 
 ## 0.2.0 — 2026-09-29
 

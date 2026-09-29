@@ -36,6 +36,11 @@ class DocumentationReferences(unittest.TestCase):
         self.write("Cargo.toml", '[package]\nversion = "0.1.5"\n')
         self.write("lean/lakefile.toml", 'version = "0.1.5"\n')
         self.write("lean-kernel/lakefile.toml", 'version = "0.1.5"\n')
+        self.write("python/pyproject.toml", 'version = "0.1.5"\n')
+        self.write("python/qleisli/__init__.py", '__version__ = "0.1.5"\n')
+        for notice in ["LICENSE", "NOTICE"]:
+            self.write(notice, "fixture attribution\n")
+            self.write("python/" + notice, "fixture attribution\n")
         data = {
             "format": 1,
             "release_state": "selected",
@@ -65,6 +70,19 @@ class DocumentationReferences(unittest.TestCase):
         self.write("lean-kernel/lakefile.toml", 'version = "0.1.4"\n')
         self.assertIn("versions differ", check_status(self.root, write=True)[0])
         self.assertFalse((self.root / "docs/current-status.md").exists())
+
+    def test_status_requires_synchronized_python_version_and_notices(self):
+        for name, content, message in [
+            ("python/pyproject.toml", 'version = "0.1.4"\n', "versions differ"),
+            ("python/qleisli/__init__.py", '__version__ = "0.1.4"\n', "runtime version differs"),
+            ("python/LICENSE", "wrong license\n", "LICENSE differs"),
+            ("python/NOTICE", "missing attribution\n", "NOTICE differs"),
+        ]:
+            with self.subTest(name=name):
+                self.status_fixture()
+                self.write(name, content)
+                self.assertIn(message, check_status(self.root, write=True)[0])
+                self.assertFalse((self.root / "docs/current-status.md").exists())
 
     def test_status_rejects_missing_proof_fields_and_duplicate_milestones(self):
         data = self.status_fixture()

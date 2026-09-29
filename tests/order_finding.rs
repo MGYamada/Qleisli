@@ -3,10 +3,10 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU64, Ordering};
 
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::frontend::project::{ImportOrigin, ModuleOrigin, Project};
-use qleisli_core::host::{Factors, PhaseInputError, factor_from_phase};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::project::{ImportOrigin, ModuleOrigin, Project};
+use qleisli::host::{Factors, PhaseInputError, factor_from_phase};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 const IMPORTS: &str = "

@@ -1,0 +1,117 @@
+import Qleisli.HierarchicalGradient
+
+/-! Fourier coefficients of the hierarchy's actual recursive QFT stages.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+The target is defined independently from little-endian integer labels. Matrix
+identities are proof-only and retain all phases and reference amplitudes. -/
+
+namespace Qleisli.HierarchicalFourier
+open QleisliKernel.Hierarchical
+open Artifact HierarchicalSemantics HierarchicalOperators HierarchicalUnitary
+open HierarchicalDiagonal HierarchicalGradient
+open scoped BigOperators Matrix
+
+theorem number_sum (n : Nat) (bits : Fin n → Bool) :
+    number n bits = ∑ i : Fin n, if bits i then 2^i.val else 0 := by
+  induction n with
+  | zero => simp [number]
+  | succ n ih =>
+    rw [number,ih,Fin.sum_univ_castSucc]
+    rfl
+
+theorem number_head (n : Nat) (bits : Fin (n+1) → Bool) :
+    number (n+1) bits = (if bits 0 then 1 else 0) +
+      2 * number n (fun i => bits i.succ) := by
+  rw [number_sum,Fin.sum_univ_succ,number_sum,Finset.mul_sum]
+  simp only [Fin.val_zero,pow_zero,Fin.val_succ]
+  congr 1
+  apply Finset.sum_congr rfl
+  intro i _
+  cases bits i.succ <;> simp [pow_succ,Nat.mul_comm]
+
+def reverseBits {n : Nat} (bits : Fin n → Bool) : Fin n → Bool := fun i => bits i.rev
+
+theorem reverse_twice {n : Nat} (bits : Fin n → Bool) : reverseBits (reverseBits bits) = bits := by
+  funext i
+  simp [reverseBits]
+
+theorem reverse_number_succ (n : Nat) (bits : Fin (n+1) → Bool) :
+    number (n+1) (reverseBits bits) = (if bits (Fin.last n) then 1 else 0) +
+      2 * number n (reverseBits (fun i => bits i.castSucc)) := by
+  rw [number_head]
+  simp [reverseBits,Fin.rev_succ]
+
+theorem number_value (n : Nat) (bits : Fin n → Bool) :
+    number n bits = Qft.value n (Qft.finiteBits bits) := by
+  rw [number_sum,Qft.value,← Fin.sum_univ_eq_sum_range]
+  simp [Qft.finiteBits]
+
+theorem phase_zero (n : Nat) : phase 0 n = 1 := by simp [phase]
+
+theorem phase_period (n : Nat) : phase (2^n) n = 1 := by
+  unfold phase
+  push_cast
+  rw [mul_div_cancel_right₀ _ (pow_ne_zero n (by norm_num : (2 : ℂ) ≠ 0))]
+  exact Complex.exp_two_pi_mul_I
+
+theorem phase_multiple (n k : Nat) : phase (2^n*k) n = 1 := by
+  rw [← phase_power,phase_period,one_pow]
+
+theorem phase_double (n a : Nat) : phase (2*a) (n+1) = phase a n := by
+  have h := phase_precision a (n+1) n (by omega)
+  rw [phase_power] at h
+  simpa [Nat.mul_comm] using h
+
+theorem phase_half (n : Nat) : phase (2^n) (n+1) = -1 := by
+  unfold phase
+  push_cast
+  have same : 2 * (Real.pi : ℂ) * Complex.I * 2^n / 2^(n+1) = Real.pi * Complex.I := by
+    rw [pow_succ]
+    field_simp
+  rw [same,Complex.exp_pi_mul_I]
+
+/-- The three factors in a recursive QFT stage, including the H sign. -/
+theorem phase_stage (n x z : Nat) (inputHigh outputHigh : Bool) :
+    (if inputHigh && outputHigh then (-1 : ℂ) else 1) *
+      (if outputHigh then phase x (n+1) else 1) * phase (x*z) n =
+    phase ((x + if inputHigh then 2^n else 0) *
+      ((if outputHigh then 1 else 0) + 2*z)) (n+1) := by
+  cases inputHigh <;> cases outputHigh
+  · simp only [Bool.false_and,Bool.false_eq_true,ite_false,Nat.add_zero,one_mul,zero_add]
+    rw [show x*(2*z) = 2*(x*z) by ring,phase_double]
+  · simp only [Bool.false_and,Bool.true_eq_true,ite_true,ite_false,Nat.add_zero,one_mul]
+    rw [show x*(1+2*z) = x + 2*(x*z) by ring,phase_add,phase_double]
+  · simp only [Bool.true_and,Bool.false_eq_true,ite_false,one_mul,zero_add]
+    rw [show (x+2^n)*(2*z) = 2*(x*z) + 2^(n+1)*z by rw [pow_succ]; ring,
+      phase_add,phase_double,phase_multiple,mul_one]
+  · simp only [Bool.true_and,Bool.true_eq_true,ite_true]
+    rw [show (x+2^n)*(1+2*z) = 2^n + x + 2*(x*z) + 2^(n+1)*z by rw [pow_succ]; ring,
+      phase_add,phase_add,phase_add,phase_half,phase_double,phase_multiple,mul_one]
+
+/-- Standard Hadamard coefficients, retaining the negative lower-right entry. -/
+noncomputable def hadamard (output input : Bool) : ℂ :=
+  Interference.complexModel.halfRoot * if input && output then -1 else 1
+
+/-- Independent desired coefficient before the final explicit data reversal. -/
+noncomputable def reversedFourier (n : Nat) (output input : Fin n → Bool) : ℂ :=
+  Interference.complexModel.halfRoot^n *
+    phase (number n input * number n (reverseBits output)) n
+
+theorem reversedFourier_step (n : Nat) (output input : Fin (n+1) → Bool) :
+    hadamard (output (Fin.last n)) (input (Fin.last n)) *
+      (if output (Fin.last n) then phase (number n (fun i => input i.castSucc)) (n+1) else 1) *
+      reversedFourier n (fun i => output i.castSucc) (fun i => input i.castSucc) =
+    reversedFourier (n+1) output input := by
+  simp only [hadamard,reversedFourier,number,reverse_number_succ,pow_succ]
+  rw [show Interference.complexModel.halfRoot *
+      (if input (Fin.last n) && output (Fin.last n) then -1 else 1) *
+      (if output (Fin.last n) then phase (number n (fun i => input i.castSucc)) (n+1) else 1) *
+      (Interference.complexModel.halfRoot^n *
+        phase (number n (fun i => input i.castSucc) * number n (reverseBits (fun i => output i.castSucc))) n) =
+      (Interference.complexModel.halfRoot^n * Interference.complexModel.halfRoot) *
+        ((if input (Fin.last n) && output (Fin.last n) then -1 else 1) *
+         (if output (Fin.last n) then phase (number n (fun i => input i.castSucc)) (n+1) else 1) *
+         phase (number n (fun i => input i.castSucc) * number n (reverseBits (fun i => output i.castSucc))) n) by ring]
+  rw [phase_stage]
+
+end Qleisli.HierarchicalFourier

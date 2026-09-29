@@ -1,9 +1,9 @@
-use qleisli_core::ir::{
+use qleisli::ir::{
     BasisShape, ClassicalId, ClassicalPhi, Control, Effect, ProtectedBit, ProtectedRegion,
     ProtectedUse, QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate,
     TargetTransition, TokenId, UnitaryStep, WireId,
 };
-use qleisli_core::verify;
+use qleisli::verify;
 
 fn t(id: u32) -> TokenId {
     TokenId(id)

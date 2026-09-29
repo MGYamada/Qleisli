@@ -14,6 +14,16 @@ must name the quantum-semantic or evidence obligation and the corresponding
 checking rule. The current rules below remain explicit, including linear
 quantum ownership and the smaller implemented syntax.
 
+## Planned v0.3.0 specification
+
+**User decision, 2026-09-29:** formulate the Qleisli type system in the
+**v0.3.0 breaking-change release**, as recorded in the
+[release plan](v0x-roadmap.md#v030-qleisli-type-system-specification).
+The concrete changes and migration remain to be specified; the current finite
+rules below continue to govern implemented source. This does not adopt new
+type syntax, weaken ownership/evidence rules or authorize incompatible changes
+in 0.2.1. QLT implementation is deferred to **v0.4.0 or later**, after this work.
+
 ## Formation and equality
 
 The implemented source types are exactly these finite trees, where a tuple
@@ -143,6 +153,15 @@ source syntax yet.** A future extension must specify static argument formation,
 bounds including zero width, ordering, explicit conversions and evidence binding
 before enabling acceptance. The experimental Lean DAG's `Bits0`/`Bits1` tags
 are not source types. They do not supply type parameters or these source APIs.
+
+The adopted [linear-size and reshape direction](size-expressions.md) restricts
+size obligations to a specified quantifier-free linear fragment, including
+constant multiplication and guarded subtraction. Proved equality may reconcile
+indices of the same constructor; it does not equate different constructors or
+product trees. `Q<Bits<n+m>>` to `Q<(Bits<n>,Bits<m>)>` is an explicit ordered
+bit-segment adapter. Bit reversal and changes in owner count remain separate
+explicit operations. Symbolic arrays are a future structural direction, not
+an implemented alternative spelling for a nonlinear flat register.
 
 `Iso<A,B>`, `Unitary<A,B>` and generalized type/size notation in design drafts
 are metanotation unless a normative implemented extension says otherwise.

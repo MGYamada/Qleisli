@@ -1,0 +1,399 @@
+{
+  "format": "qleisli.sized-qpe-experiment",
+  "version": 1,
+  "status": "passed-small-coherent-source-path",
+  "scope": "Unitary coherent core only; measured CBits API, named QPE contract and production execution remain open.",
+  "validation_selection": "Small qubit systems only, as requested on 2026-09-30; no new maximum-size generation or check. Earlier (8,8) limit is retained in the authoring history.",
+  "source_sha256": {
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+  },
+  "producer_sha256": "82beef5fe80bde20c588dcd4f5e8dc722bd50657a21622c01b63a8fd1a15cf0d",
+  "diagnostic_sha256": "dc17db165cc8efa07f255cd3dcd553b1e035c5f31c90d77d0085d76fbcffb7d8",
+  "source_rejections": [
+    {
+      "case": "missing-controlled-access",
+      "diagnostic": "controlled application requires declared Controlled access"
+    },
+    {
+      "case": "apply-is-not-controlled",
+      "diagnostic": "controlled application requires declared Controlled access"
+    },
+    {
+      "case": "adjoint-is-not-controlled",
+      "diagnostic": "controlled application requires declared Controlled access"
+    },
+    {
+      "case": "missing-access-empty-loop",
+      "diagnostic": "controlled application requires declared Controlled access"
+    },
+    {
+      "case": "missing-access-zero-repeat",
+      "diagnostic": "controlled application requires declared Controlled access"
+    },
+    {
+      "case": "unknown-access-parameter",
+      "diagnostic": "unknown or duplicate operation access constraint"
+    },
+    {
+      "case": "duplicate-access",
+      "diagnostic": "unknown or duplicate operation access constraint"
+    },
+    {
+      "case": "duplicate-operation-parameter",
+      "diagnostic": "duplicate static parameter"
+    },
+    {
+      "case": "alias-control",
+      "diagnostic": "unknown, captured or already moved quantum value control"
+    },
+    {
+      "case": "capture-outside-carry",
+      "diagnostic": "tuple pattern has the wrong shape"
+    },
+    {
+      "case": "unbound-count",
+      "diagnostic": "unbound static natural missing"
+    },
+    {
+      "case": "count-exponent-limit",
+      "diagnostic": "power exponent exceeds eight"
+    },
+    {
+      "case": "count-limit",
+      "diagnostic": "operation repetition exceeds 256"
+    },
+    {
+      "case": "composed-count-limit",
+      "diagnostic": "composed operation repetition exceeds 256"
+    },
+    {
+      "case": "non-two-power-base",
+      "diagnostic": "power counts require literal base two"
+    },
+    {
+      "case": "ambiguous-power-suffix",
+      "diagnostic": "expected ',', found '+' at token 177"
+    },
+    {
+      "case": "nonlinear-size",
+      "diagnostic": "expected '>', found '^' at token 58"
+    },
+    {
+      "case": "operation-shadow",
+      "diagnostic": "quantum binding shadows a static parameter/index"
+    },
+    {
+      "case": "wrong-provider-type",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "zero-target",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "zero-phase",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "wide-target",
+      "diagnostic": "register width exceeds the eight-bit register profile"
+    },
+    {
+      "case": "missing-provider",
+      "diagnostic": "static operation arguments do not match the declaration"
+    },
+    {
+      "case": "unknown-provider",
+      "diagnostic": "unknown source module missing"
+    },
+    {
+      "case": "wrong-provider-arity",
+      "diagnostic": "ordinary operation signature/static arguments do not match"
+    },
+    {
+      "case": "false-provider-premise-at-zero",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "invalid-unused-provider",
+      "diagnostic": "binding would discard live owner bit"
+    }
+  ],
+  "kernel_sha256": "3f2129f66316abb079239a7b0760abcceae111944b1f300391eabd05b9b2a49a",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "inspect_source_produced_corpus",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "stdout": "\nrunning 1 test\nCORPUS|qpe-1-3|ok|1112204|402|6\nCORPUS|qpe-2-4|ok|1655343|536|8\nCORPUS|off-grid|ok|1112204|402|6\nCORPUS|non-basis|ok|1134111|469|7\nCORPUS|global-phase|ok|1146696|536|8\nCORPUS|permuted-target|ok|1233610|402|6\nCORPUS|cyclic-target|ok|923647|268|4\nCORPUS|wrong-power-order|ok|1112204|402|6\nCORPUS|missing-high-power|ok|965065|402|6\nCORPUS|wrong-fourier-sign|ok|1107661|402|6\nCORPUS|missing-hadamards|ok|921650|201|3\nCORPUS|wrong-provider-phase|ok|1112204|402|6\nCORPUS|zero-repeat|ok|1093538|402|6\nCORPUS|false-finite-equation|contract|exact equation U E_in = E_out u does not hold\nCORPUS|false-repeat-equation|contract|Lean hierarchy inspection rejected the artifact\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.75s\n\n",
+  "stderr": "    Blocking waiting for file lock on build directory\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-bc96fffc2cad5da1)\n",
+  "exit_code": 0,
+  "native": [
+    [
+      "qpe-1-3",
+      "ok",
+      "1112204",
+      "402",
+      "6"
+    ],
+    [
+      "qpe-2-4",
+      "ok",
+      "1655343",
+      "536",
+      "8"
+    ],
+    [
+      "off-grid",
+      "ok",
+      "1112204",
+      "402",
+      "6"
+    ],
+    [
+      "non-basis",
+      "ok",
+      "1134111",
+      "469",
+      "7"
+    ],
+    [
+      "global-phase",
+      "ok",
+      "1146696",
+      "536",
+      "8"
+    ],
+    [
+      "permuted-target",
+      "ok",
+      "1233610",
+      "402",
+      "6"
+    ],
+    [
+      "cyclic-target",
+      "ok",
+      "923647",
+      "268",
+      "4"
+    ],
+    [
+      "wrong-power-order",
+      "ok",
+      "1112204",
+      "402",
+      "6"
+    ],
+    [
+      "missing-high-power",
+      "ok",
+      "965065",
+      "402",
+      "6"
+    ],
+    [
+      "wrong-fourier-sign",
+      "ok",
+      "1107661",
+      "402",
+      "6"
+    ],
+    [
+      "missing-hadamards",
+      "ok",
+      "921650",
+      "201",
+      "3"
+    ],
+    [
+      "wrong-provider-phase",
+      "ok",
+      "1112204",
+      "402",
+      "6"
+    ],
+    [
+      "zero-repeat",
+      "ok",
+      "1093538",
+      "402",
+      "6"
+    ],
+    [
+      "false-finite-equation",
+      "contract",
+      "exact equation U E_in = E_out u does not hold"
+    ],
+    [
+      "false-repeat-equation",
+      "contract",
+      "Lean hierarchy inspection rejected the artifact"
+    ]
+  ],
+  "semantics": {
+    "qpe-1-3": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.032645612729812e-15,
+      "executed_instructions": 17
+    },
+    "qpe-2-4": {
+      "basis_columns": 64,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 16,
+      "maximum_error": 2.6255072761184257e-15,
+      "executed_instructions": 34
+    },
+    "off-grid": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 9.305364597889227e-16,
+      "executed_instructions": 17
+    },
+    "non-basis": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 8.441528768080325e-16,
+      "executed_instructions": 31
+    },
+    "global-phase": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.032645612729812e-15,
+      "executed_instructions": 38
+    },
+    "permuted-target": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 8.473409486550036e-16,
+      "executed_instructions": 11
+    },
+    "cyclic-target": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 4,
+      "maximum_error": 3.803658237888843e-16,
+      "executed_instructions": 7
+    }
+  },
+  "semantic_faults": {
+    "wrong-power-order": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 0.853553390593274,
+      "executed_instructions": 17
+    },
+    "missing-high-power": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.0,
+      "executed_instructions": 13
+    },
+    "wrong-fourier-sign": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.2071067811865475,
+      "executed_instructions": 17
+    },
+    "missing-hadamards": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.3535533905932737,
+      "executed_instructions": 14
+    },
+    "wrong-provider-phase": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.207106781186547,
+      "executed_instructions": 17
+    },
+    "zero-repeat": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "diagnostic_phase_branches": 8,
+      "maximum_error": 1.0,
+      "executed_instructions": 10
+    }
+  },
+  "generated_artifacts": {
+    "qpe-1-3": {
+      "definitions": 135,
+      "bytes": 143579
+    },
+    "qpe-2-4": {
+      "definitions": 174,
+      "bytes": 187505
+    },
+    "off-grid": {
+      "definitions": 135,
+      "bytes": 143579
+    },
+    "non-basis": {
+      "definitions": 139,
+      "bytes": 148018
+    },
+    "global-phase": {
+      "definitions": 141,
+      "bytes": 150764
+    },
+    "permuted-target": {
+      "definitions": 140,
+      "bytes": 150371
+    },
+    "cyclic-target": {
+      "definitions": 105,
+      "bytes": 113442
+    },
+    "wrong-power-order": {
+      "definitions": 135,
+      "bytes": 143579
+    },
+    "missing-high-power": {
+      "definitions": 124,
+      "bytes": 130372
+    },
+    "wrong-fourier-sign": {
+      "definitions": 134,
+      "bytes": 142844
+    },
+    "missing-hadamards": {
+      "definitions": 107,
+      "bytes": 113023
+    },
+    "wrong-provider-phase": {
+      "definitions": 135,
+      "bytes": 143579
+    },
+    "zero-repeat": {
+      "definitions": 131,
+      "bytes": 140587
+    },
+    "false-finite-equation": {
+      "definitions": 135,
+      "bytes": 143579
+    },
+    "false-repeat-equation": {
+      "definitions": 135,
+      "bytes": 143579
+    }
+  }
+}

@@ -5,8 +5,8 @@ use crate::contract::exact::Budget;
 
 use crate::ir::{
     BasisShape, CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, Effect,
-    ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPhi, RawOp, RawProgram, SingleGate,
-    TargetTransition, TokenId, UnitaryStep, WireId,
+    ProtectedBit, ProtectedRegion, ProtectedUse, QuantumPhi, QuantumPort, RawOp, RawProgram,
+    SingleGate, TargetTransition, TokenId, UnitaryStep, WireId,
 };
 
 const MAX_REGISTER_BITS: u8 = 12;
@@ -17,6 +17,7 @@ const MAX_NESTED_BRANCHES: usize = 64;
 pub struct VerifiedProgram {
     program: RawProgram,
     derived_effect: Effect,
+    output_ports: Vec<QuantumPort>,
 }
 
 impl VerifiedProgram {
@@ -31,6 +32,12 @@ impl VerifiedProgram {
 
     pub fn derived_effect(&self) -> Effect {
         self.derived_effect
+    }
+
+    /// Exact final live registers in the declared output order. This is
+    /// reconstructed during verification, never inferred from input widths.
+    pub(crate) fn output_ports(&self) -> &[QuantumPort] {
+        &self.output_ports
     }
 }
 
@@ -956,8 +963,21 @@ fn verify_in_context(
     if program.declared_effect == Effect::Unitary && input_bits != output_bits {
         return Err(err(&[], "unitary function changes quantum dimension"));
     }
+    let output_ports = program
+        .quantum_outputs
+        .iter()
+        .map(|token| {
+            let register = &state.live[token];
+            QuantumPort {
+                token: *token,
+                wires: register.wires.clone(),
+                shape: register.shape(),
+            }
+        })
+        .collect();
     Ok(VerifiedProgram {
         program,
         derived_effect: state.effect,
+        output_ports,
     })
 }

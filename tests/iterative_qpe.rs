@@ -2,8 +2,8 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli_core::frontend::compile::compile_project;
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::compile_project;
+use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;

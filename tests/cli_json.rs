@@ -65,6 +65,9 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
+    let usage = include_str!("fixtures/review_v020/usage.txt")
+        .trim_end()
+        .replace('\n', "\\u000a");
     for args in [
         vec!["check", "--format=json"],
         vec!["check", ".", "--format=json", "--format=json"],
@@ -82,9 +85,9 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
             concat!(
                 "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",",
                 "\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",",
-                "\"message\":\"usage: qleisli <check|run> <source-root> [--format=json]\",",
+                "\"message\":\"USAGE\",",
                 "\"primary\":null,\"related\":[]}],\"result\":null}\n"
-            )
+            ).replace("USAGE", &usage)
         );
     }
 }

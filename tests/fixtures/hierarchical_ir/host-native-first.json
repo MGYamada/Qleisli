@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.hierarchy-host-native",
+  "version": 1,
+  "argv": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "seconds": 1.28,
+  "stdout": "\nrunning 4 tests\ntest native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ok\ntest native_phase_fault_remains_an_obligation_under_zero_repeat ... ok\ntest native_actual_counts_premises_and_encodings_are_checked ... ok\nshared power costs: [(75539, 67), (75539, 67), (75539, 67), (75539, 67)]\ntest native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ok\n\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.41s\n\n",
+  "stderr": "   Compiling qleisli-core v0.2.1 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.31s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-d195a413add0f6d5)\n"
+}

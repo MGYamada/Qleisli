@@ -1,0 +1,78 @@
+{
+  "recorded_utc": "2026-09-29T03:05:10.976045+00:00",
+  "compiler_sha256": "8c8170f53a19aac2c1f5598e8836e87122efe4026c73e75f4abb75bd28bf2d1d",
+  "results": [
+    {
+      "project": "pennylane_demos/kernel_overlap2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/kernel_overlap2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/lcu_projector",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/lcu_projector",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/add_constant3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/add_constant3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/equals2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/equals2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/bell_measure",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bell_measure",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/deutsch_jozsa3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/deutsch_jozsa3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

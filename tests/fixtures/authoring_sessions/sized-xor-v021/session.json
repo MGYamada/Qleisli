@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "task": "Shared sized Xor corpus component",
+  "baseline_commit": "32e1cc22cb34f69338d27e23240d20dd7ed81203",
+  "project_version": "0.2.1",
+  "author": "Codex; exact deployment/settings unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Desired shared source before any check; hierarchy and source extension still pending",
+      "sha256": {
+        "main.qli": "a57d75e3ce165ea89e8d978305c4110cdcd01770de0d923ddf18a7081e1bcdcc",
+        "xor.qli": "c29b322c140be85520834004f058a1344100e74261ec32998aebec86b623c7bf"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Rename reserved xor module/function to bitwise::xor_into after actual identifier diagnostic; retain the same desired sized body",
+      "sha256": {
+        "bitwise.qli": "3a94314244d5afddba3e426313ebfa50b81fddee23a43f4c677c4caeba571a9c",
+        "main.qli": "86d2f711ec95d66015004bf1e2479e1fdae15e76e4171a6403dd6628361df589"
+      },
+      "observations": [
+        "check-renamed.json"
+      ]
+    }
+  ]
+}

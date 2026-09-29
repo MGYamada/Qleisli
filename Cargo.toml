@@ -1,14 +1,18 @@
 [package]
-name = "qleisli-core"
-version = "0.2.0"
+name = "qleisli"
+version = "0.2.1"
 license = "Apache-2.0"
 repository = "https://github.com/MGYamada/Qleisli"
 edition = "2024"
 rust-version = "1.85"
-description = "Provisional Qleisli frontend and independently checked finite quantum IR"
+description = "Experimental quantum language with linear ownership, exact contracts and independent finite IR verification"
+readme = "README.crates.md"
+documentation = "https://docs.rs/qleisli"
+keywords = ["quantum", "compiler", "verification", "openqasm", "qir"]
+categories = ["compilers", "science", "command-line-utilities"]
 
 [lib]
-name = "qleisli_core"
+name = "qleisli"
 path = "src/lib.rs"
 
 [lints.rust]

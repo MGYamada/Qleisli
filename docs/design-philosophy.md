@@ -4,7 +4,8 @@
 
 Status: **adopted design principles** (2026-09-26), with release-direction
 additions dated 2026-09-27, a trusted-core boundary adopted on 2026-09-28,
-and the Rust type/ownership default adopted on 2026-09-29.
+and the Rust type/ownership default and standard-library goal adopted on
+2026-09-29.
 This English edition is authoritative for these
 principles and replaces the earlier Japanese text without changing them.
 Adopting the principles does not finalize syntax or establish a mathematical
@@ -22,6 +23,21 @@ actual source. Checking the connection between these concepts' meanings and
 their implementations is part of this goal. The release-policy summaries
 below follow the authoritative [release milestones](release-milestones.md).
 
+## Standard library as foundation, textbook and formal specification
+
+**Library goal fixed by the user on 2026-09-29:** build a BLAS/LAPACK-like
+foundation for quantum computing that integrates reusable computational
+components, a textbook of quantum information and formal specifications.
+Readers should be able to learn quantum information by reading the standard
+library. The [authoritative library goal](stdlib-roadmap.md#adopted-library-goal)
+connects concepts and derivations, readable implementations, examples,
+contracts and explicit verification/proof status.
+
+This fixes the purpose of the library. Comprehensive module organization and
+generalized APIs remain separate design decisions; existing specified APIs and
+the trusted-core boundary remain in force. Adopting this goal does not assert
+that today's library already provides complete teaching material or proofs.
+
 ## Follow Rust for type and ownership discipline
 
 **User decision, 2026-09-29: when uncertain about type or ownership discipline,
@@ -37,6 +53,11 @@ Quantum owners remain linear: no copying or implicit discard, and pure auxiliary
 release requires zero-return/separation evidence. Applying the Rust default
 does not weaken those obligations. Rust syntax or features not yet specified
 and implemented in Qleisli remain future extensions, not implicit APIs.
+
+The [linear-size decision](size-expressions.md) is an explicit adopted
+extension: independently checked size arithmetic supports register contracts
+and ordered reshape. It does not inherit Rust const-expression acceptance,
+alter tuple identity or make isomorphic basis types implicitly equal.
 
 The user's wording, as a supporting Japanese statement of the English policy:
 
@@ -134,6 +155,25 @@ principles and v1's execution and validation conditions. Adoption of this
 policy and completion of the drafts are separate events; the current artifact
 record is the [corpus and requirements index](imaginary-v1/README.md).
 
+## Resource semantics as a first-class account
+
+**User decision, 2026-09-30:** add the
+[Resource Safety Theorem](release-milestones.md#resource-safety-theorem-v1)
+as a third pillar toward v1, alongside semantic Soundness and Physical
+Realizability. It remains **to prove**. The intended guarantee is a finite,
+statically computable safe resource bound preserved through compilation for
+the supported profile, rather than merely the existence of a finite estimate.
+
+Develop [resource semantics](resource-semantics.md) alongside types, meanings
+and effects. Accounts for live qubits, auxiliary space, gate counts, depth and
+measurements must compose with actual program structure and target assumptions.
+Keep peak space, additive work, shared representation and repeated execution
+distinct. Compilers must preserve the accepted resource contract, with explicit
+checked bound translation where representations change. Finite does not imply
+efficient; budgets and ownership safety are not a proof of this theorem.
+The [dated trust-boundary amendment](../TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30)
+extends proof duties without trusting estimators or changing current acceptance.
+
 ## Keep the trusted core small
 
 **Boundary adopted on 2026-09-28:** the independent-checking architecture is
@@ -172,6 +212,19 @@ does not shrink that trusted base. Desugaring output must still pass independent
 checking; preserving the input program's meaning is a separate translation
 obligation, not a consequence of producing valid core IR. Keep ownership,
 phase, effects, zero-return evidence and resource limits intact during reduction.
+
+The [pipeline migration policy](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary)
+keeps independent IR checking at the Rust/Lean boundary throughout a sequence
+of pass migrations. Moving and proving an adjacent pass extends the verified
+downstream segment; changing implementation language alone does not. The IR
+level may move while the fixed trust partition and checking obligation remain
+unchanged. Frontend and backend translation preservation remain explicit.
+Apply the [de Bruijn criterion per pass](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker):
+external search may propose results, while proved Lean checkers establish their
+correctness. Rotation-synthesis norm-equation search can stay outside Lean;
+the planned `LeafRealizer` checker validates its bound circuit and witnesses.
+The migration targets correctness-critical transformations and checks, not
+rewriting every search algorithm.
 
 The [IR reduction inventory](interoperability-roadmap.md#ir-reduction-and-the-trusted-boundary)
 records the current deviations and initial maintenance work. This adopted

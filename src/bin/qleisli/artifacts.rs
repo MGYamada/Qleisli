@@ -1,8 +1,8 @@
 //! Filesystem adapter only. The library importer never resolves source labels.
 use super::options::Options;
-use qleisli_core::frontend::compile::compile_project_with_policy;
-use qleisli_core::frontend::diagnostic::Diagnostic;
-use qleisli_core::interchange::{self, Version};
+use qleisli::frontend::compile::compile_project_with_policy;
+use qleisli::frontend::diagnostic::Diagnostic;
+use qleisli::interchange::{self, Version};
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};

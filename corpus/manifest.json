@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "review_date": "2026-09-28",
+  "review_date": "2026-09-29",
   "policy": "POLICY.md",
   "sources": [
     {
@@ -219,6 +219,26 @@
           "path": "demonstrations_v2/tutorial_vqe/metadata.json",
           "local": "upstream/pennylane_demos/demonstrations_v2__tutorial_vqe__metadata.json",
           "sha256": "f982f9d667003e2c9d53538e0b860ea5c27b9ed2939a48ddbe9f938c7c3b84cb"
+        },
+        {
+          "path": "demonstrations_v2/tutorial_lcu_blockencoding/demo.py",
+          "local": "upstream/pennylane_demos/demonstrations_v2__tutorial_lcu_blockencoding__demo.py",
+          "sha256": "ef84f07c959e8c9b342da6b3388e50f44c02e64ba522125e4dd38d9ce18ca424"
+        },
+        {
+          "path": "demonstrations_v2/tutorial_lcu_blockencoding/metadata.json",
+          "local": "upstream/pennylane_demos/demonstrations_v2__tutorial_lcu_blockencoding__metadata.json",
+          "sha256": "053c94279af14360a2673df4d6708de6709d651f716ea425befc99a32a065675"
+        },
+        {
+          "path": "demonstrations_v2/tutorial_kernel_based_training/demo.py",
+          "local": "upstream/pennylane_demos/demonstrations_v2__tutorial_kernel_based_training__demo.py",
+          "sha256": "c24917d3c32c20f245e2f8aba5654ecd60ac52e53d527a8b2617e3db6242841f"
+        },
+        {
+          "path": "demonstrations_v2/tutorial_kernel_based_training/metadata.json",
+          "local": "upstream/pennylane_demos/demonstrations_v2__tutorial_kernel_based_training__metadata.json",
+          "sha256": "4a4521c9df9a298f6bccdfb5f22d82ee5cd8187bf1a23fe9417eaeb5f03a4127"
         }
       ]
     }
@@ -628,6 +648,284 @@
         0,
         0
       ]
+    },
+    {
+      "id": "quantum_katas/deutsch_jozsa3",
+      "source": "quantum_katas",
+      "upstream_path": "DeutschJozsaAlgorithm/ReferenceImplementation.qs",
+      "symbol": "DJ_Algorithm_Reference; Oracle_MajorityFunction_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "U = H^3 diag((-1)^majority(x0,x1,x2)) H^3. On |000>, outcomes 100,010,001,111 each have probability 1/4, and 000 is impossible.",
+      "limitations": "Specializes the balanced majority oracle on three query bits. Replaces the |- > answer register by independently checked compute/Z/uncompute phase kickback. Returns the full query register; the host identifies balanced from nonzero output. No arbitrary oracle, scalable synthesis or general Deutsch-Jozsa claim.",
+      "project": "quantum_katas/deutsch_jozsa3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/bell_measure",
+      "source": "quantum_katas",
+      "upstream_path": "Measurements/ReferenceImplementation.qs",
+      "symbol": "BellState_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "bell_measure",
+      "contract": "Consume both inputs and return (phase, parity), encoding the upstream integer phase + 2*parity. Branch (s,t) has effect <B_st|, where |B_st> = (|0,t> + (-1)^s |1,1 xor t>)/sqrt(2), including arbitrary reference systems.",
+      "limitations": "Translates the destructive Bell measurement to two CBit outputs instead of an Int. No quantum output is retained. Tests cover all four Bell labels and the complete branch/reference Choi state by nine Pauli pairs; no hardware Bell analyzer or general protocol proof.",
+      "project": "quantum_katas/bell_measure",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/add_constant3",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1+4*x2, map |x> to |(x+3) mod 8> with amplitude +1 on all eight basis states, including wraparound.",
+      "limitations": "Specializes AddK(QUInt(3), k=3) using an explicit carry circuit (+1 then +2), without temporary registers. General signed types, symbolic sizes and upstream resource-count claims are excluded.",
+      "project": "qualtran/add_constant3",
+      "default_input": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/equals2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "Equals",
+      "license": "Apache-2.0",
+      "qubits": 5,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1 and y=y0+2*y1, map |x,y,t> to |x,y,t xor [x=y]> with phase +1; both target values and all input registers are preserved coherently.",
+      "limitations": "Specializes Equals(QUInt(2)). XOR differences, zero-controlled Toffoli and inverse XOR preserve both registers; no truth-table synthesis or upstream asymptotic cost is claimed.",
+      "project": "qualtran/equals2",
+      "default_input": [
+        1,
+        0,
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/lcu_projector",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_lcu_blockencoding/demo.py",
+      "symbol": "lcu_circuit (Application: Projectors)",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "For selector s (first wire) and data d, U=(H_s tensor I_d) SELECT(I,Z) (H_s tensor I_d), so U|s,d>=|s xor d,d>. Its zero-selector block is (I+Z)/2=|0><0|.",
+      "limitations": "Preserves the original equal coefficients and I/Z operators. Chooses H as an explicit unitary completion of PREP|0>=|+>; it does not identify all columns with an unspecified upstream StatePrep completion. The full QLI unitary is tested separately from the projected-block equation. Both owners are returned: selector zero return, deterministic projection, postselection, arbitrary coefficients and general LCU/QSVT are not provided.",
+      "project": "pennylane_demos/lcu_projector",
+      "default_input": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/kernel_overlap2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_kernel_based_training/demo.py",
+      "symbol": "kernel",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "Apply S(x2)^dagger S(x1), S(x)=RX(x[0]) tensor RX(x[1]), for x1=(pi,pi/2), x2=(pi/2,0). The net operator is RX(pi/2) on each wire with exact scalar phase. On |00>, probability 00 and the kernel overlap equal 1/4.",
+      "limitations": "Specializes default RX AngleEmbedding to two features and exact quarter-turns. The host reads the all-zero probability instead of an imported Hermitian observable. No dataset, SVM, PyTorch, optimization, gradients or continuous-angle API is included.",
+      "project": "pennylane_demos/kernel_overlap2",
+      "default_input": [
+        0,
+        0
+      ]
+    }
+  ],
+  "authoring_sessions": [
+    "authoring/session.json",
+    "authoring/v021-expansion/session.json"
+  ],
+  "sized_experiments": [
+    {
+      "id": "sized/qualtran_xor",
+      "source": "qualtran",
+      "file": "sized/qualtran_xor/bitwise.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/bitwise.py",
+      "symbol": "Xor",
+      "license": "Apache-2.0",
+      "widths": [
+        0,
+        1,
+        2,
+        4,
+        8
+      ],
+      "status": "experimental-source-path",
+      "contract": "|x,y> -> |x,y xor x> with scalar +1, preserving both owners including the local n=0 case.",
+      "limitations": "Untrusted development source producer and independently inspected hierarchy; production CLI, general source adequacy and named algorithm acceptance remain open.",
+      "sha256": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+    },
+    {
+      "id": "sized/katas_ghz",
+      "source": "quantum_katas",
+      "file": "sized/katas_ghz/prepare.qli",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "GHZ_State_Reference",
+      "license": "MIT",
+      "widths": [
+        1,
+        2,
+        3,
+        8
+      ],
+      "status": "experimental-source-path",
+      "contract": "H on axis zero then CNOT to each other axis. The all-zero premise gives a GHZ state; tests also cover every general input.",
+      "limitations": "Untrusted development source producer and independently inspected hierarchy; production CLI, general source adequacy and named algorithm acceptance remain open.",
+      "sha256": "67b958139f21cc2a35a5f3d18d2c8685d604e504cf82ffaf5acd77a95ad74af6"
+    },
+    {
+      "id": "sized/qualtran_qft",
+      "source": "qualtran",
+      "file": "sized/qualtran_qft/fourier.qli",
+      "upstream_path": "qualtran/bloqs/qft/qft_text_book.py",
+      "symbol": "QFTTextBook",
+      "license": "Apache-2.0",
+      "widths": [
+        1,
+        2,
+        3,
+        4,
+        8
+      ],
+      "status": "experimental-source-path",
+      "contract": "Positive Fourier transform with explicit output reversal, phase fixed on all inputs and references.",
+      "limitations": "Development source path; positive Fourier artifacts receive fresh named requests. Inverse source uses checked composition and numerical inverse oracles. General source preservation, production CLI and independently named inverse requests remain open.",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "id": "sized/qualtran_iqft",
+      "source": "qualtran",
+      "file": "sized/qualtran_qft/inverse.qli",
+      "upstream_path": "qualtran/bloqs/qft/qft_text_book.py",
+      "symbol": "QFTTextBook",
+      "license": "Apache-2.0",
+      "widths": [
+        1,
+        2,
+        3,
+        4,
+        8
+      ],
+      "status": "experimental-source-path",
+      "contract": "Adjoint of the same imported shared Fourier source; all owners retained.",
+      "limitations": "Development source path; positive Fourier artifacts receive fresh named requests. Inverse source uses checked composition and numerical inverse oracles. General source preservation, production CLI and independently named inverse requests remain open.",
+      "sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4"
+    },
+    {
+      "id": "sized/qualtran_qpe_estimation",
+      "source": "qualtran",
+      "file": "sized/qualtran_qpe/estimation.qli",
+      "upstream_path": "qualtran/bloqs/phase_estimation/text_book_qpe.py",
+      "symbol": "TextbookQPE",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Coherent full-input QPE with a transparent phase-fixed operation parameter; retains both quantum registers. Small selected widths pass; no large-system capacity claim.",
+      "limitations": "Small-system coherent experiment. Further maximum-size checking deferred by the 2026-09-30 user decision. Initialization/measurement into CBits, independently named QPE binding, production integration and source preservation remain open.",
+      "sha256": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852"
+    },
+    {
+      "id": "sized/qualtran_qpe_preparation",
+      "source": "qualtran",
+      "file": "sized/qualtran_qpe/preparation.qli",
+      "upstream_path": "qualtran/bloqs/phase_estimation/text_book_qpe.py",
+      "symbol": "TextbookQPE",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Tensor Hadamard on a Bits<n> register, preserving all owners and arbitrary input correlations.",
+      "limitations": "Small-system coherent experiment. Further maximum-size checking deferred by the 2026-09-30 user decision. Initialization/measurement into CBits, independently named QPE binding, production integration and source preservation remain open.",
+      "sha256": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9"
+    },
+    {
+      "id": "sized/qualtran_qpe_evolution",
+      "source": "qualtran",
+      "file": "sized/qualtran_qpe/evolution.qli",
+      "upstream_path": "qualtran/bloqs/phase_estimation/text_book_qpe.py",
+      "symbol": "TextbookQPE",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Transparent test provider: normalized dyadic phase on the low target bit, identity on the rest.",
+      "limitations": "Small-system coherent experiment. Further maximum-size checking deferred by the 2026-09-30 user decision. Initialization/measurement into CBits, independently named QPE binding, production integration and source preservation remain open.",
+      "sha256": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f"
+    },
+    {
+      "id": "sized/qualtran_all_ones",
+      "source": "qualtran",
+      "file": "sized/qualtran_arithmetic/controls.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Coherent conjunction into the target, with scalar +1; controls and target are retained. Local empty conjunction is true.",
+      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "sha256": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d"
+    },
+    {
+      "id": "sized/qualtran_increment",
+      "source": "qualtran",
+      "file": "sized/qualtran_arithmetic/increment.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Phase-fixed addition by one modulo 2^n, high carry before low-bit updates, no scratch.",
+      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "sha256": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f"
+    },
+    {
+      "id": "sized/qualtran_add_k",
+      "source": "qualtran",
+      "file": "sized/qualtran_arithmetic/addition.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Phase-fixed addition by K modulo 2^n through the same shared increment; nK X applications, not efficient general synthesis.",
+      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
+    },
+    {
+      "id": "sized/qualtran_invert_bits",
+      "source": "qualtran",
+      "file": "sized/qualtran_arithmetic/negation.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "Equals",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Phase-fixed complement of every register bit, preserving the register owner.",
+      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "sha256": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3"
+    },
+    {
+      "id": "sized/qualtran_equals",
+      "source": "qualtran",
+      "file": "sized/qualtran_arithmetic/comparison.qli",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "Equals",
+      "license": "Apache-2.0",
+      "status": "experimental-source-path",
+      "contract": "Phase-fixed equality into either initial target value; both arbitrary input registers restored coherently, no scratch.",
+      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729"
     }
   ]
 }

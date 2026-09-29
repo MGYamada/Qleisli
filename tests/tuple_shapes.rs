@@ -1,10 +1,10 @@
 //! Tuple arity is semantic metadata, never inferred from bit width.
 mod common;
 use common::SourceRoot;
-use qleisli_core::contract::{BasisType, Circuit};
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::interchange::{self, Version};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::contract::{BasisType, Circuit};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::interchange::{self, Version};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 fn reject(source: &str, code: ErrorCode) {
     let source = format!("{source}\nobserve fn main() -> Unit {{ () }}");
@@ -152,7 +152,7 @@ fn nary_type_capacity_and_rejected_deep_drops_are_bounded() {
 
 #[test]
 fn flat_arity_and_nested_depth_have_distinct_bounds() {
-    use qleisli_core::frontend::parser::parse_module;
+    use qleisli::frontend::parser::parse_module;
     for count in [64, 65] {
         let source = format!(
             "unitary fn f()->({}){{({})}} observe fn main()->Unit{{()}}",

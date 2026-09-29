@@ -1,9 +1,9 @@
 //! Fixed-width M1 source/evidence regressions; not a general soundness proof.
 mod common;
 use common::SourceRoot;
-use qleisli_core::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli_core::ir::{CircuitAction, RawOp};
-use qleisli_core::sim::{SimulationLimits, run_closed};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::ir::{CircuitAction, RawOp};
+use qleisli::sim::{SimulationLimits, run_closed};
 
 const PRELUDE: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;
@@ -40,8 +40,8 @@ fn check(source: &str) {
 
 #[test]
 fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
-    use qleisli_core::frontend::documentation::render_markdown;
-    use qleisli_core::frontend::parser::parse_module;
+    use qleisli::frontend::documentation::render_markdown;
+    use qleisli::frontend::parser::parse_module;
     let source = "/// A phase-fixed contract.\nmeaning M:Bit=phase_by(phi);\n\
         /// Requires explicit access.\nunitary fn helper[static U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}";
     let rendered = render_markdown(source).unwrap();

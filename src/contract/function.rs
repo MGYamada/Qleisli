@@ -231,6 +231,10 @@ impl FunctionEvidence {
     pub fn identity(&self) -> &FunctionIdentity {
         self.identity.exposed()
     }
+    /// Borrow transport metadata without materializing the owned public view.
+    pub(crate) fn identity_parts(&self) -> (&str, &str, &[(String, String)]) {
+        self.identity.parts()
+    }
     pub fn circuit(&self) -> &Circuit {
         &self.circuit
     }
@@ -1063,6 +1067,10 @@ mod snapshot_tests {
             sources: sources.as_ref().clone(),
         };
         first.check_binding(&expected, &raw(), &raw()).unwrap();
+        let (implementation, specification, borrowed) = first.identity_parts();
+        assert_eq!(implementation, expected.implementation);
+        assert_eq!(specification, expected.specification);
+        assert!(std::ptr::eq(borrowed.as_ptr(), sources.as_ptr()));
         assert!(format!("{first:?}").contains("implementation"));
         for receipt in [&first, &second, &cloned] {
             let RetainedIdentity::Shared {

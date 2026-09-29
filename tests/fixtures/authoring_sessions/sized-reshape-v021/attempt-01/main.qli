@@ -1,0 +1,12 @@
+//! Desired round-trip client; this zero-input smoke case is not a semantic oracle.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use layout::split_register;
+use layout::merge_register;
+use std::registers::init_zero;
+use std::registers::measure_bits;
+
+observe fn main() -> CBits<3> {
+    let q = init_zero[3]();
+    let split = split_register[1,2](q);
+    measure_bits[3](merge_register[1,2](split))
+}
