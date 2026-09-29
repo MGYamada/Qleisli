@@ -96,9 +96,9 @@ Remaining heavy measured-QPE implementation, production integration and proofs
 move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates. The following
 account preserves the earlier split; it is superseded for release assignment.
 
-**Current development version: 0.2.1 (unreleased).** The
-[development record](docs/releases/v0.2.1.md) records the user's version
-selection on 2026-09-29. The earlier 2026-09-29
+**Current release: 0.2.1, published to crates.io and GitHub on 2026-09-30.** The
+[development record](docs/releases/v0.2.1.md) records version selection on
+2026-09-29, validation and both publications. The earlier 2026-09-29
 [scope split](docs/v0.2.0-plan.md) retains implemented finite interfaces,
 sampling/trials, review fixes and the experimental Lean kernel/proof foundation
 in 0.2.0. The [release record](docs/releases/v0.2.0.md) records migration,

@@ -7,6 +7,8 @@ fresh registry installation and hosted documentation were verified. See the
 [result record](releases/v0.2.1.md#successful-registry-publication-2026-09-30).
 The source tag and registry artifact are immutable. PyPI publication remains
 a separate action.
+The matching [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1)
+was subsequently published on the same date with the verified source archives.
 The [versioning policy](versioning.md) remains authoritative for compatibility
 and the complete release gates. Executed results belong in the
 [0.2.1 release record](releases/v0.2.1.md).

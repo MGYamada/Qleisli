@@ -8,8 +8,9 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## 0.2.1 — 2026-09-30
 
-Release selected for the first crates.io upload as `qleisli`; actual publication
-and validation are recorded in the [release record](docs/releases/v0.2.1.md).
+Published as `qleisli` on crates.io and as the
+[v0.2.1 GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1).
+Validation and publication evidence are recorded in the [release record](docs/releases/v0.2.1.md).
 
 - **Rust package/import migration:** adopt `qleisli` for the first crates.io
   release at the user's explicit request. Earlier Git/path users must rename

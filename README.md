@@ -266,8 +266,8 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 **Current release: [0.2.1 on crates.io](https://crates.io/crates/qleisli/0.2.1).**
 See the [validation and publication record](docs/releases/v0.2.1.md).
-The preceding GitHub release is
-[0.2.0](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.0).
+The matching [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1)
+provides release notes and complete source archives.
 The [revised 0.2.0 scope](docs/v0.2.0-plan.md) packages the implemented tuple/type
 correction, finite external verification, sampling/trials, resource limits and
 experimental Lean kernel/proof foundation. The [0.2.1 boundary](docs/v0.2.1-plan.md) retains review repairs, corpus growth,
