@@ -1,13 +1,12 @@
 # Preparing and publishing the Rust package
 
-Status: **0.2.1 verified; publication attempted on 2026-09-30 and blocked by
-the crates.io account's unverified email**.
-The user's later request to run `cargo publish` outside the sandbox lifts the
-earlier preparation-only hold. Upload success must still be confirmed in the
-release record. The source tag is published; the registry upload is not.
-After email verification, retry the clean, immutable `v0.2.1` checkout rather
-than the later documentation-only result commit. PyPI publication remains a
-separate action.
+Status: **0.2.1 published to crates.io on 2026-09-30**. The user authorized
+publication after rechecking and verified the account email after the first
+upload was rejected. Retrying the clean, immutable `v0.2.1` checkout succeeded;
+fresh registry installation and hosted documentation were verified. See the
+[result record](releases/v0.2.1.md#successful-registry-publication-2026-09-30).
+The source tag and registry artifact are immutable. PyPI publication remains
+a separate action.
 The [versioning policy](versioning.md) remains authoritative for compatibility
 and the complete release gates. Executed results belong in the
 [0.2.1 release record](releases/v0.2.1.md).

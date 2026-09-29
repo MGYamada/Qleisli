@@ -270,11 +270,11 @@ compatibility rules. `qargo` / `qlidoc` are possible separate future tool names,
 not implemented or reserved packages. The later 2026-09-30 user request lifts
 the registry hold and authorizes `cargo publish` outside the sandbox after
 rechecking. Keep validation, upload success, tagging and hosted releases distinct.
-The verified `v0.2.1` source tag was pushed; the actual crates.io attempt was
-rejected for an unverified account email. Follow the
-[attempt record](docs/releases/v0.2.1.md#verified-candidate-and-publication-attempt-2026-09-30).
-After email verification, retry the immutable tagged candidate, not a later
-documentation-only commit, and do not move the published tag.
+The verified `v0.2.1` source tag and crates.io package were published on
+2026-09-30 after the account email was verified. Follow the
+[publication record](docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30).
+The published tag/artifact are immutable; later result-record commits do not
+replace their source identity.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. The user selected development version 0.1.9 on

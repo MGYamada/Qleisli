@@ -34,7 +34,8 @@ capacity and lexical changes, finite interfaces and experimental Lean foundation
 in 0.2.0. Validation and publication evidence are recorded separately in the
 [release record](releases/v0.2.0.md). The remaining shared-QPE work
 targets [0.2.1](v0.2.1-plan.md), selected as the current development version by
-the user on 2026-09-29. Its [record](releases/v0.2.1.md) tracks unreleased work.
+the user on 2026-09-29. Its [record](releases/v0.2.1.md) tracks the development
+checkpoints and the verified 2026-09-30 crates.io publication.
 The 2026-09-30 [boundary revision](v0.2.1-plan.md#adopted-release-boundary-2026-09-30)
 retains completed experiments/review fixes and bounded host connections in
 0.2.1; remaining heavy implementation/integration/proofs target [0.2.2](v0.2.2-plan.md).
