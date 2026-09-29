@@ -6,8 +6,16 @@ corpus/upstream/** -text -whitespace
 # These are frozen records, not maintained source or regenerated diagnostics.
 tests/fixtures/authoring_sessions/grover-trial-v020/NOTICE-QuantumKatas.txt -text -whitespace
 tests/fixtures/hierarchical_ir/power-first-diagnostics.txt -text -whitespace
+tests/fixtures/hierarchical_ir/conditional-first/evaluation-build.txt -text -whitespace
+tests/fixtures/hierarchical_ir/finite-unitarity-first/first-build.txt -text -whitespace
+tests/fixtures/hierarchical_ir/fourier-host-first/boundary-counterexample.txt -text -whitespace
+tests/fixtures/hierarchical_ir/fourier-host-first/native-diagnostics.txt -text -whitespace
+tests/fixtures/hierarchical_ir/root-request-first/first-math-build.txt -text -whitespace
+tests/fixtures/hierarchical_ir/wiring-first/binding-compile.txt -text -whitespace
 tests/fixtures/lean_layout_dag/first-reduction-diagnostics.txt -text -whitespace
 tests/fixtures/lean_qft/first-path-diagnostics.txt -text -whitespace
 tests/fixtures/lean_qpe_instrument/CoherentSchema-first.lean.txt -text -whitespace
 tests/fixtures/lean_qpe_instrument/coherent-proof-first-diagnostics.txt -text -whitespace
 tests/fixtures/lean_qpe_instrument/first-qft-unitary-diagnostics.txt -text -whitespace
+# Padding is part of the retained-source identity budget regression.
+tests/fixtures/review_v020/shared_identities/main.qli -text -whitespace
