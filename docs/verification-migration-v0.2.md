@@ -4,8 +4,8 @@ Status: **VM-22 implemented, 2026-09-30; VM-23–VM-29 pending**.
 The user assigns the Rust-to-Lean verification migration to 0.2.2–0.2.9.
 This replaces the earlier K1/0.3.0 and K2/0.4.0 implementation schedule in the
 [migration policy](lean-kernel-migration.md#staged-migration). The current
-development version remains 0.2.2, unreleased; the latest published version is
-0.2.1. The [frozen VM-22 baseline](../tests/fixtures/verification_v022/README.md)
+version and latest published release are [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
+The [frozen VM-22 baseline](../tests/fixtures/verification_v022/README.md)
 records the implemented inventory, boundary contracts and small comparisons;
 it enables no schema or production Lean authority.
 

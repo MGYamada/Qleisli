@@ -26,7 +26,8 @@ checking, execution and measured clients, with scoped R14/H1–H5 evidence.
 Remaining validation uses small qubit systems; maximum cases are waived rather
 than claimed passed. General source/runtime correspondence and full-profile
 migration remain separate. No external schema is enabled; VM-23–VM-29 remain
-pending and 0.2.2 remains unpublished.
+pending. The bounded 0.2.2 scope is now
+[published and verified](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
 ## v0.3.0: Qleisli type-system specification
 
@@ -128,13 +129,14 @@ initially move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates; the late
 continuation. The following
 account preserves the earlier split; it is superseded for release assignment.
 
-**Current development: 0.2.2, selected on 2026-09-30; unreleased.** See its
+**Current version: 0.2.2, published on 2026-09-30.** See its
 [record](docs/releases/v0.2.2.md) and the
 [release procedure](docs/crates-io-release.md#release-sequence). Version selection
 alone did not resume feature work; the later explicit resumption is recorded
 above with its current implementation and validation scope.
-**Latest published release: 0.2.1, published to crates.io and GitHub on 2026-09-30.** The
-[development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) records version selection on
+**Latest published release: 0.2.2**, with
+[exact-source, registry, hosted docs and GitHub evidence](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
+The preceding 0.2.1 [development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) records version selection on
 2026-09-29, validation and both publications. The earlier 2026-09-29
 [scope split](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains implemented finite interfaces,
 sampling/trials, review fixes and the experimental Lean kernel/proof foundation

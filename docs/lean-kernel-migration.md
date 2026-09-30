@@ -2,9 +2,9 @@
 
 Status: **staged migration adopted; experimental phase-word, phase-DAG, typed-layout, typed-call and combined phase/layout
 slices implemented; production verification remains in Rust**. The user selected this
-direction during 2026-09-28–29 JST. The development version is 0.2.2, currently
-unreleased; see its [record](releases/v0.2.2.md). The latest published release is
-[0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md). Foundation publication evidence
+direction during 2026-09-28–29 JST. The current version and latest published
+release are [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
+Publication does not transfer production authority to Lean. Foundation publication evidence
 remains in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The [0.2.0 foundation scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains
 the implemented components. The 2026-09-30 [0.2.1 boundary](v0.2.2-plan.md)
 retains completed experiments and bounded connections; heavy production

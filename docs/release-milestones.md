@@ -64,8 +64,9 @@ production integration and proof work moves to [0.2.2](v0.2.2-plan.md).
 R14/H1–H5 and full instrument/source correspondence are deferred with the
 features, not waived or completed. Existing components remain audited and
 ordinary 0.2.1 compatibility, Rust/docs/corpus/Lean/distribution checks remain
-release gates. The later user request selects [0.2.2 development](releases/v0.2.2.md),
-unreleased; the latest published release remains 0.2.1. Version selection does
+release gates. The later user request selects [0.2.2 development](releases/v0.2.2.md).
+Its bounded scope is now [published as 0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30);
+general proof and migration gates remain open. Version selection alone does
 not satisfy these gates. The earlier assignment below is historical.
 
 **User scope revision, 2026-09-29.** The [0.2.0 plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) now
