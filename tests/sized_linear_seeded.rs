@@ -4,6 +4,7 @@
 
 use qleisli::frontend::sized::ParsedProgram;
 use std::collections::BTreeMap;
+use std::fmt::Write;
 
 #[test]
 fn seeded_generic_size_implications_agree_with_concrete_enumeration() {
@@ -35,17 +36,17 @@ fn seeded_generic_size_implications_agree_with_concrete_enumeration() {
         let guards: Vec<_> = (0..3)
             .map(|_| ([random(4), random(3), random(3)], random(6), random(10)))
             .collect();
-        let clauses = guards
-            .iter()
-            .map(|(coefficients, sign, constant)| {
-                format!(
-                    ", {} {} {}",
-                    expression(*coefficients),
-                    signs[*sign as usize],
-                    constant
-                )
-            })
-            .collect::<String>();
+        let mut clauses = String::new();
+        for (coefficients, sign, constant) in &guards {
+            write!(
+                clauses,
+                ", {} {} {}",
+                expression(*coefficients),
+                signs[*sign as usize],
+                constant
+            )
+            .unwrap();
+        }
         let source = format!(
             "pub unitary fn f[static n: Nat, static m: Nat](q: Q<Bits<{}>>) \
              -> Q<Bits<{}>> requires n <= {BOUND}, m <= {BOUND}{clauses} {{ q }}",
