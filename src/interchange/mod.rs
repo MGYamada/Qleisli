@@ -4,7 +4,7 @@ mod codec;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;
-mod json;
+pub(crate) mod json;
 
 use codec::Codec;
 use json::Value;
@@ -32,7 +32,7 @@ pub struct Error {
     pub json_pointer: String,
 }
 impl Error {
-    fn new(code: &'static str, message: impl Into<String>) -> Self {
+    pub(crate) fn new(code: &'static str, message: impl Into<String>) -> Self {
         Self {
             code,
             message: message.into(),

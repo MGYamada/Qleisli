@@ -950,7 +950,7 @@ fn verify_in_context(
         return Err(err(
             &[],
             format!(
-                "declared {:?} effect is stronger than derived {:?} effect",
+                "declared {:?} is narrower than the derived {:?} effect",
                 program.declared_effect, state.effect
             ),
         ));

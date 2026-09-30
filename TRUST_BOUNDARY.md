@@ -20,6 +20,36 @@ remain explicit; this policy does not declare the planned proofs complete.
    including proposed IR and evidence. Human or LLM authorship confers no
    authority; failed validation cannot be bypassed.
 
+## Reference specification review (2026-09-30)
+
+The review clarifies item 1's specification assumption: a soundness theorem is
+relative to its reference semantics. Lean checks the proof against definitions;
+it does not decide whether those definitions express the intended quantum
+operation. Gate action, complex interpretation, encoding, instruments and
+resource models therefore require explicit human specification review. This
+does not trust a checker implementation or enlarge its acceptance authority.
+
+Reference semantics must be small, stable modules independent of acceptance
+code. Checkers import those definitions; their normalization result or the
+producer's claimed meaning must not define the reference. Semantic changes need
+equations, premises, counterexamples and a recorded review. Author/AI identity
+and a successful axiom audit do not substitute for that review.
+
+The first separation is [cyclic phase-word semantics](lean-kernel/QleisliKernel/Semantics/PhaseWord.lean):
+`step`, `execute`, `run` and summary action retain their public names and meanings,
+while [PhaseWord](lean-kernel/QleisliKernel/PhaseWord.lean) imports them for checking.
+CI forbids modules under `QleisliKernel.Semantics` from importing checker or
+transport modules. Other existing operational/path/complex definitions still
+need staged separation and independent review; this first move does not claim
+that all reference semantics have been isolated or formally justified.
+
+The [complex instrument reference](lean/Qleisli/Semantics/Instrument.lean)
+separately defines zero insertion, full complex evolution and readout branches.
+CI also forbids `Qleisli.Semantics` modules from importing project checkers or
+transport. Its actual-IR conformance theorem retains finite-reader/native
+premises; the mathematical definition still needs human review before production
+adoption. This does not transfer production acceptance authority.
+
 ## Resource Safety amendment (2026-09-30)
 
 **Explicit post-adoption amendment requested by the user: to prove.** Add

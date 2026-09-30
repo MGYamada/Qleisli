@@ -1,0 +1,38 @@
+{
+  "native_cases": 89,
+  "direct_path_comparisons": 2580,
+  "modular_fourier_comparisons": 1600,
+  "complex_matrix_entries": 84,
+  "joint_reference_cases": 9,
+  "max_error": 1.4613774201543397e-13,
+  "kernel_dense_dimension": 0,
+  "largest_dense_oracle_dimension": 8,
+  "matcher": "compiled-symbolic-path",
+  "maximum_generated_fourier_width": 4,
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "cwd": "temporary native QFT harness",
+      "exit": 0,
+      "stdout": "\u2714 [21/23] Built Main (1.4s)\n\u2714 [22/23] Built Main:c.o (1.1s)\n\u2714 [23/23] Built \u00abqft-test\u00bb:exe (431ms)\nBuild completed successfully (23 jobs).\n",
+      "stderr": "info: qft_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "qft-test"
+      ],
+      "exit": 0,
+      "stderr": "",
+      "executable_sha256": "f535d4d6a7835c6d9d2e1dd6031a2d8752214ca70dbaaf30eb42d41f8d095d64"
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/PathSum.lean": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
+    "lean-kernel/QleisliKernel/Qft.lean": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+    "lean/Qleisli/Qft.lean": "a82e1bd2d17b1c74ae38571199865a4f5dde6b1d633329abfa7413d9094c2dbf",
+    "scripts/test_lean_qft.py": "cfb2a0630bda8ccdbb5167ebdbbd44ae9fa962fc77406d1eb09e2a9a385a0a54"
+  }
+}

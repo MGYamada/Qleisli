@@ -7,7 +7,7 @@ the [prototype record](../research/semantic-kernel/README.md) identifies the
 implemented subset and its tests. It is not new `.qli` syntax, a new stable
 Rust API, a generalized compiler, or a claim that v1 is achieved.
 
-The [v0.1.5 scope decision](decisions/2026-09-27-v1-path.md) supersedes the
+The [v0.1.5 scope decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) supersedes the
 initial indefinite deferral with bounded M2 continuation. Preserve this design
 and prototype. The [bounded hierarchy/evidence profile](hierarchical-ir-spec.md)
 now specifies their joint interface; implement/check per-size rules and selected

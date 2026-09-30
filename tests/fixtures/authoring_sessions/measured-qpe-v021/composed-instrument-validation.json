@@ -1,0 +1,79 @@
+{
+  "format": "qleisli.composed-instrument-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 14,
+  "results": {
+    "independent-request": {
+      "status": "pending",
+      "work": 60215,
+      "finite_implementation_obligations": 0,
+      "finite_meaning_obligations": 0
+    },
+    "finite-obligations-remain": {
+      "status": "pending",
+      "work": 64899,
+      "finite_implementation_obligations": 1,
+      "finite_meaning_obligations": 1
+    },
+    "wrong-pure-phase": {
+      "status": "contract"
+    },
+    "changed-root-request": {
+      "status": "contract"
+    },
+    "forged-initialization": {
+      "status": "contract"
+    },
+    "init-changes-target": {
+      "status": "contract"
+    },
+    "wrong-preparation-boundary": {
+      "status": "contract"
+    },
+    "wrong-readout-boundary": {
+      "status": "contract"
+    },
+    "wrong-readout-owner": {
+      "status": "contract"
+    },
+    "lost-target": {
+      "status": "contract"
+    },
+    "wrong-pack": {
+      "status": "contract"
+    },
+    "changed-public-result": {
+      "status": "contract"
+    },
+    "forged-readout-effect": {
+      "status": "contract"
+    },
+    "oversized-boundary": {
+      "status": "limit"
+    }
+  },
+  "binary_sha256": "ba6f1f178c866b2d430ae9573c66f3bf39623e07963c273d8519d8e698324e82",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [67/69] Built Main (403ms)\n\u2714 [68/69] Built Main:c.o (297ms)\n\u2714 [69/69] Built \u00abartifact-test\u00bb:exe (322ms)\nBuild completed successfully (69 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-ct9gsjkj/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "independent-request|pending|60215|0|0\nfinite-obligations-remain|pending|64899|1|1\nwrong-pure-phase|QleisliKernel.Hierarchical.Artifact.Error.contract\nchanged-root-request|QleisliKernel.Hierarchical.Artifact.Error.contract\nforged-initialization|QleisliKernel.Hierarchical.Artifact.Error.contract\ninit-changes-target|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-preparation-boundary|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-readout-boundary|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-readout-owner|QleisliKernel.Hierarchical.Artifact.Error.contract\nlost-target|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-pack|QleisliKernel.Hierarchical.Artifact.Error.contract\nchanged-public-result|QleisliKernel.Hierarchical.Artifact.Error.contract\nforged-readout-effect|QleisliKernel.Hierarchical.Artifact.Error.contract\noversized-boundary|QleisliKernel.Hierarchical.Artifact.Error.limit\n",
+      "stderr": ""
+    }
+  ],
+  "production_integration": false,
+  "named_qpe_binding": false,
+  "source_preservation_proved": false
+}

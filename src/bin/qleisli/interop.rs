@@ -6,39 +6,82 @@ use std::process::ExitCode;
 
 use qleisli::VerifiedProgram;
 use qleisli::frontend::compile::compile_project_with_policy;
-use qleisli::frontend::diagnostic::Diagnostic;
+use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
 use qleisli::frontend::project::SourcePolicy;
 use qleisli::interchange::{self, Version};
 use qleisli::interop::{self, InteropErrorKind};
 use qleisli::sim::{SimulationLimits, run_closed};
 
-use super::json::{diagnostic_json, distribution_json, envelope, quoted, simulation_failure};
+use super::json::{
+    artifact_diagnostic_json, diagnostic_json, distribution_json, envelope, quoted,
+    simulation_failure,
+};
 
-fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
-    Diagnostic {
-        code,
-        message: message.into(),
-        primary: None,
+enum Failure {
+    Diagnostic(Diagnostic),
+    Artifact(interchange::Error),
+}
+
+impl From<Diagnostic> for Failure {
+    fn from(value: Diagnostic) -> Self {
+        Self::Diagnostic(value)
     }
 }
 
-fn adapter(error: interop::InteropError) -> Diagnostic {
-    failure(
-        match error.kind {
+fn failure(code: &'static str, message: impl Into<String>) -> Failure {
+    Failure::Diagnostic(Diagnostic {
+        code,
+        message: message.into(),
+        primary: None,
+    })
+}
+
+fn adapter(error: interop::InteropError, source: Option<(&Path, &str)>) -> Failure {
+    let primary = source.and_then(|(path, text)| {
+        let span = error.span?;
+        let prefix = text.get(..span.start)?;
+        text.get(span.start..span.end)?;
+        let (mut line, mut column, mut previous_cr) = (1, 1, false);
+        for ch in prefix.chars() {
+            match ch {
+                '\r' => {
+                    line += 1;
+                    column = 1;
+                }
+                '\n' => {
+                    if !previous_cr {
+                        line += 1;
+                    }
+                    column = 1;
+                }
+                _ => column += 1,
+            }
+            previous_cr = ch == '\r';
+        }
+        Some(SourceLocation {
+            path: path.into(),
+            span,
+            line,
+            column,
+        })
+    });
+    Failure::Diagnostic(Diagnostic {
+        code: match error.kind {
             InteropErrorKind::Parse => "parse",
             InteropErrorKind::Unsupported => "unsupported",
             InteropErrorKind::Limit => "limit",
             InteropErrorKind::InvalidIr => "invalid_ir",
         },
-        error.to_string(),
-    )
+        message: error.to_string(),
+        primary,
+    })
 }
 
-fn artifact(error: interchange::Error) -> Diagnostic {
-    failure(error.code, error.to_string())
+fn artifact(error: interchange::Error) -> Failure {
+    Failure::Artifact(error)
 }
 
-fn bytes(path: &Path, limit: usize) -> Result<Vec<u8>, Diagnostic> {
+fn bytes(path: &Path, limit: usize) -> Result<Vec<u8>, Failure> {
     let reader: Box<dyn Read> = if path == Path::new("-") {
         Box::new(std::io::stdin())
     } else {
@@ -55,7 +98,7 @@ fn bytes(path: &Path, limit: usize) -> Result<Vec<u8>, Diagnostic> {
     Ok(data)
 }
 
-fn load(format: &str, path: &Path) -> Result<VerifiedProgram, Diagnostic> {
+fn load(format: &str, path: &Path) -> Result<VerifiedProgram, Failure> {
     match format {
         "qli" if path != Path::new("-") => compile_project_with_policy(
             path,
@@ -63,12 +106,13 @@ fn load(format: &str, path: &Path) -> Result<VerifiedProgram, Diagnostic> {
                 source_bytes: 1 << 20,
                 project_bytes: 16 << 20,
             },
-        ),
+        )
+        .map_err(Failure::Diagnostic),
         "qasm" => {
             let data = bytes(path, interop::MAX_OPENQASM_BYTES)?;
             let text =
                 std::str::from_utf8(&data).map_err(|_| failure("parse", "input is not UTF-8"))?;
-            interop::import_openqasm3(text).map_err(adapter)
+            interop::import_openqasm3(text).map_err(|e| adapter(e, Some((path, text))))
         }
         "qirf" => Ok(interchange::import(&bytes(path, 16 << 20)?, None)
             .map_err(artifact)?
@@ -91,7 +135,7 @@ fn number(text: &str) -> Option<u64> {
     }
 }
 
-fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Diagnostic> {
+fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let usage = || failure("usage", super::options::USAGE);
     if args.len() < 3 {
         return Err(usage());
@@ -123,7 +167,7 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Diagnostic> 
         return Err(usage());
     }
     let format = format.ok_or_else(usage)?;
-    if format == "qli" && root != Path::new("-") {
+    if matches!(format, "qli" | "qasm") && root != Path::new("-") {
         // Match the source loader's absolute identities for JSON source spans.
         *root = std::fs::canonicalize(&*root).unwrap_or_else(|_| root.clone());
     }
@@ -133,7 +177,8 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Diagnostic> 
         "run" => {
             return distribution_json(
                 run_closed(&program, SimulationLimits::default()).map_err(simulation_failure)?,
-            );
+            )
+            .map_err(Failure::Diagnostic);
         }
         "sample" => {
             let seed = seed.unwrap();
@@ -156,8 +201,8 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Diagnostic> 
             String::from_utf8(interchange::export(&program, None, Version::V2).map_err(artifact)?)
                 .map_err(|_| failure("format", "export is not UTF-8"))?
         }
-        "emit-qasm" => interop::export_openqasm3(&program).map_err(adapter)?,
-        "emit-qir" => interop::export_qir_base(&program).map_err(adapter)?,
+        "emit-qasm" => interop::export_openqasm3(&program).map_err(|e| adapter(e, None))?,
+        "emit-qir" => interop::export_qir_base(&program).map_err(|e| adapter(e, None))?,
         _ => unreachable!(),
     };
     Ok(format!("{{\"text\":{}}}", quoted(&text)))
@@ -170,8 +215,23 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     let (document, status) = match execute(args, &mut root) {
         Ok(result) => (envelope(&command, None, &result), ExitCode::SUCCESS),
         Err(error) => {
-            let status = if error.code == "usage" { 2 } else { 1 };
-            let diagnostic = diagnostic_json(&root, &error);
+            let (diagnostic, status) = match error {
+                Failure::Artifact(error) => (
+                    artifact_diagnostic_json(error.code, &error.message, &error.json_pointer),
+                    1,
+                ),
+                Failure::Diagnostic(error) => {
+                    let source_root = if error.primary.as_ref().is_some_and(|p| p.path == root) {
+                        root.parent().unwrap_or(Path::new(""))
+                    } else {
+                        &root
+                    };
+                    (
+                        diagnostic_json(source_root, &error),
+                        if error.code == "usage" { 2 } else { 1 },
+                    )
+                }
+            };
             (
                 envelope(&command, Some(&diagnostic), "null"),
                 ExitCode::from(status),

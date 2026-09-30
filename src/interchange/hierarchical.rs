@@ -3,6 +3,7 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 mod bridge;
+pub mod execution;
 
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -172,54 +173,13 @@ impl Kernel {
                 request: Arc::from(request),
             });
         }
-        let actual = decoded.actual.field("meanings")?.array()?;
-        let required = decoded.request.field("meanings")?.array()?;
-        let mut seen = vec![false; decoded.pairs.len()];
-        for index in response.pairs {
-            let &(a, r) = decoded
-                .pairs
-                .get(index)
-                .ok_or_else(|| Error::format("runtime returned invalid meaning pair index"))?;
-            if seen[index] {
-                return Err(Error::format(
-                    "runtime returned duplicate meaning pair index",
-                ));
-            }
-            seen[index] = true;
-            let a = actual[a].field("body")?;
-            let r = required[r].field("body")?;
-            if a.field("tag")?.text()? != "finite" || r.field("tag")?.text()? != "finite" {
-                return Err(Error::format("runtime returned non-finite meaning pair"));
-            }
-            let a = super::finite_matrix::decode(
-                a.field("description")?.text()?.as_bytes(),
-                &mut budget,
-            )?;
-            let r = super::finite_matrix::decode(
-                r.field("description")?.text()?.as_bytes(),
-                &mut budget,
-            )?;
-            budget
-                .charge(a.entries().len())
-                .map_err(ContractError::from)
-                .map_err(contract_error)?;
-            if a != r {
-                return Err(Error::new(
-                    "contract",
-                    "finite meaning differs from independently requested matrix",
-                ));
-            }
-        }
-        for (i, &(a, r)) in decoded.pairs.iter().enumerate() {
-            if actual[a].field("body")?.field("tag")?.text()? == "finite"
-                && required[r].field("body")?.field("tag")?.text()? == "finite"
-                && !seen[i]
-            {
-                return Err(Error::format(
-                    "runtime omitted finite meaning equality obligation",
-                ));
-            }
-        }
+        reconstruct_pairs(
+            &decoded.actual,
+            &decoded.request,
+            &decoded.pairs,
+            response.pairs,
+            &mut budget,
+        )?;
         Ok(CheckedRequest {
             reconstruction: Reconstructed {
                 payload: Arc::from(payload),
@@ -229,6 +189,173 @@ impl Kernel {
             },
             request: Arc::from(request),
         })
+    }
+}
+
+fn reconstruct_pairs(
+    actual: &Value,
+    required: &Value,
+    pairs: &[(usize, usize)],
+    indices: Vec<usize>,
+    budget: &mut Budget,
+) -> Result<()> {
+    let actual = actual.field("meanings")?.array()?;
+    let required = required.field("meanings")?.array()?;
+    let mut seen = vec![false; pairs.len()];
+    for index in indices {
+        let &(a, r) = pairs
+            .get(index)
+            .ok_or_else(|| Error::format("runtime returned invalid meaning pair index"))?;
+        if seen[index] {
+            return Err(Error::format(
+                "runtime returned duplicate meaning pair index",
+            ));
+        }
+        seen[index] = true;
+        let a = actual[a].field("body")?;
+        let r = required[r].field("body")?;
+        if a.field("tag")?.text()? != "finite" || r.field("tag")?.text()? != "finite" {
+            return Err(Error::format("runtime returned non-finite meaning pair"));
+        }
+        let a = super::finite_matrix::decode(a.field("description")?.text()?.as_bytes(), budget)?;
+        let r = super::finite_matrix::decode(r.field("description")?.text()?.as_bytes(), budget)?;
+        budget
+            .charge(a.entries().len())
+            .map_err(ContractError::from)
+            .map_err(contract_error)?;
+        if a != r {
+            return Err(Error::new(
+                "contract",
+                "finite meaning differs from independently requested matrix",
+            ));
+        }
+    }
+    for (i, &(a, r)) in pairs.iter().enumerate() {
+        if actual[a].field("body")?.field("tag")?.text()? == "finite"
+            && required[r].field("body")?.field("tag")?.text()? == "finite"
+            && !seen[i]
+        {
+            return Err(Error::format(
+                "runtime omitted finite meaning equality obligation",
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// A composed initialization, pure circuit and readout report bound to the
+/// caller's explicit request. All finite obligations have been reconstructed.
+/// This experimental report is not a production `VerifiedProgram`, a source
+/// preservation proof, or a proof of a named algorithm such as QPE.
+#[derive(Debug)]
+pub struct CheckedInstrument {
+    reconstruction: Reconstructed,
+    request: Arc<[u8]>,
+}
+
+impl CheckedInstrument {
+    /// Retains the full immutable instrument payload, finite circuit leaves
+    /// and work counts for the fresh composed check.
+    pub fn reconstruction(&self) -> &Reconstructed {
+        &self.reconstruction
+    }
+    pub fn request(&self) -> &[u8] {
+        &self.request
+    }
+}
+
+impl Kernel {
+    /// Check initialization, the independently selected unitary equation and
+    /// ordered readout together. No component success flag or cached report
+    /// can be supplied in place of a fresh native check.
+    pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument> {
+        let decoded = bridge::decode_instrument(payload, request)?;
+        let response = invoke(&self.executable, decoded.bridge, Mode::Instrument)?;
+        let response = response_indices(&response, Mode::Instrument)?;
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let leaves = reconstruct(&decoded.pure.actual, response.indices, &mut budget)?;
+        reconstruct_pairs(
+            &decoded.pure.actual,
+            &decoded.pure.request,
+            &decoded.pure.pairs,
+            response.pairs,
+            &mut budget,
+        )?;
+        Ok(CheckedInstrument {
+            reconstruction: Reconstructed {
+                payload: Arc::from(payload),
+                leaves,
+                structural_work: response.work,
+                exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
+            },
+            request: Arc::from(request),
+        })
+    }
+
+    /// Fresh named-QPE component checking against an independently chosen
+    /// provider/layout request and an untrusted structural candidate. All
+    /// finite equations, provider pairs and phase-fixed H roles are discharged
+    /// under one exact budget. This is not production verification authority
+    /// or a source-preservation theorem; the audited native runtime and Rust
+    /// finite adapter remain explicit correspondence premises.
+    pub fn check_qpe_instrument(
+        &self,
+        payload: &[u8],
+        request: &[u8],
+        candidate: &[u8],
+    ) -> Result<CheckedQpeInstrument> {
+        let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
+        let response = invoke(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
+        let response = response_indices(&response, Mode::QpeInstrument)?;
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let leaves = reconstruct(&decoded.provider.actual, response.indices, &mut budget)?;
+        reconstruct_pairs(
+            &decoded.provider.actual,
+            &decoded.provider.request,
+            &decoded.provider.pairs,
+            response.pairs,
+            &mut budget,
+        )?;
+        let returned: std::collections::BTreeSet<_> = response.hadamards.iter().copied().collect();
+        if returned.len() != response.hadamards.len() || returned != decoded.hadamards {
+            return Err(Error::format(
+                "runtime omitted, duplicated or substituted QPE Hadamard obligations",
+            ));
+        }
+        for index in response.hadamards {
+            reconstruct_hadamards(&decoded.provider.actual, 1, vec![index], &mut budget)?;
+        }
+        Ok(CheckedQpeInstrument {
+            instrument: CheckedInstrument {
+                reconstruction: Reconstructed {
+                    payload: Arc::from(payload),
+                    leaves,
+                    structural_work: response.work,
+                    exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
+                },
+                request: Arc::from(request),
+            },
+            candidate: Arc::from(candidate),
+        })
+    }
+}
+
+/// Checked named-QPE component report with a distinct independent provider
+/// request and retained candidate bytes. The contained instrument supports the
+/// existing bounded numerical execution/sampling APIs; no external schema,
+/// production `VerifiedProgram`, or source theorem is created.
+#[derive(Debug)]
+pub struct CheckedQpeInstrument {
+    instrument: CheckedInstrument,
+    candidate: Arc<[u8]>,
+}
+
+impl CheckedQpeInstrument {
+    pub fn instrument(&self) -> &CheckedInstrument {
+        &self.instrument
+    }
+    pub fn candidate(&self) -> &[u8] {
+        &self.candidate
     }
 }
 
@@ -281,6 +408,8 @@ enum Mode {
     Inspect,
     Request,
     Fourier,
+    Instrument,
+    QpeInstrument,
 }
 impl Mode {
     fn argument(self) -> &'static str {
@@ -288,6 +417,8 @@ impl Mode {
             Self::Inspect => "--hierarchy-pending",
             Self::Request => "--hierarchy-request-pending",
             Self::Fourier => "--hierarchy-fourier-pending",
+            Self::Instrument => "--instrument-pending",
+            Self::QpeInstrument => "--qpe-instrument-pending",
         }
     }
     fn header(self) -> &'static str {
@@ -295,12 +426,14 @@ impl Mode {
             Self::Inspect => "qleisli.hierarchy-pending 1",
             Self::Request => "qleisli.hierarchy-request-pending 1",
             Self::Fourier => "qleisli.hierarchy-fourier-pending 1",
+            Self::Instrument => "qleisli.instrument-pending 1",
+            Self::QpeInstrument => "qleisli.qpe-instrument-pending 1",
         }
     }
     fn maximum(self) -> usize {
         match self {
             Self::Inspect => 1_100_000,
-            Self::Request | Self::Fourier => 2_200_000,
+            Self::Request | Self::Fourier | Self::Instrument | Self::QpeInstrument => 2_200_000,
         }
     }
 }
@@ -308,6 +441,7 @@ struct Response {
     work: usize,
     indices: Vec<usize>,
     pairs: Vec<usize>,
+    hadamards: Vec<usize>,
 }
 
 fn legacy(value: &Value) -> Result<BasisType> {
@@ -392,6 +526,11 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
                 Some("format") => "format",
                 _ => return Err(Error::format("unknown runtime failure")),
             };
+            if matches!(mode, Mode::QpeInstrument)
+                && (lines.next() != Some("") || lines.next().is_some())
+            {
+                return Err(Error::format("trailing QPE runtime failure data"));
+            }
             return Err(Error::new(
                 code,
                 "Lean hierarchy inspection rejected the artifact",
@@ -423,7 +562,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
         .collect::<Result<_>>()?;
     let pairs = match mode {
         Mode::Inspect => Vec::new(),
-        Mode::Request | Mode::Fourier => {
+        Mode::Request | Mode::Fourier | Mode::Instrument | Mode::QpeInstrument => {
             let count = integer(
                 lines.next(),
                 if matches!(mode, Mode::Fourier) {
@@ -437,6 +576,14 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
                 .collect::<Result<_>>()?
         }
     };
+    let hadamards = if matches!(mode, Mode::QpeInstrument) {
+        let count = integer(lines.next(), 16)?;
+        (0..count)
+            .map(|_| integer(lines.next(), 99_999))
+            .collect::<Result<_>>()?
+    } else {
+        Vec::new()
+    };
     if lines.next() != Some("") || lines.next().is_some() {
         return Err(Error::format("trailing runtime response data"));
     }
@@ -444,6 +591,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
         work,
         indices,
         pairs,
+        hadamards,
     })
 }
 

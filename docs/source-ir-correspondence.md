@@ -480,7 +480,7 @@ and output-axis direction, including controlled scalar phases. The
 call-by-value and simultaneous-phi cases, and
 [malformed-IR tests](../tests/verify.rs) retain independent rejection evidence.
 Run results and the precise finite coverage are recorded in the
-[conformance ledger](specification-status.md).
+[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 The remaining proof obligations are concrete:
 

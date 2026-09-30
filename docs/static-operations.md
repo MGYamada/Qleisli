@@ -201,37 +201,42 @@ limit. Duplicated step tables and controls count against the work budget. Raw
 IR is rechecked regardless of its origin. General machine-checked meaning
 preservation for the transformation remains an open obligation.
 
-**0.2.0 finite comparison:** for a concrete `adjoint` or `repeat_static` interface
-of at most six bits, and `qif` including its control of at most six bits, extract
-the original phase-fixed matrix from independently verified raw IR using the
-contract extractor, separately from frontend flattening. Compare the emitted
-steps with the adjoint, integer matrix power, or control-block matrix
-respectively. Cache the original closed function meaning by resolved function
-identity within one compilation; a static parameter uses its checked receipt.
-Abstract generic checking has no concrete matrix, so the comparison occurs at
-instantiation. Interfaces above six bits retain structural checking; no larger
-dense matrix is built. No function name grants acceptance.
+**Current finite translation checks (0.2.2 review repair):** for concrete
+interfaces of at most six bits, independently extract the original phase-fixed
+matrix from verified raw IR, separately from frontend flattening. `adjoint`
+compares the emitted steps to its adjoint; `qif` compares the full control-block
+matrix including phase. Their matrix capacities remain. Cache the original
+closed meaning by resolved identity; static parameters use their checked
+receipt. Abstract generic checking defers concrete comparison to instantiation.
+Interfaces above six bits retain the existing structural checks and build no
+larger matrix. No function name grants acceptance.
 
-The original function must satisfy the finite extractor's 1,024-operation/step
-and dependency-depth bounds. Emitted flat repetitions can be checked in chunks
-of 1,024 steps, without changing their order. All comparisons spend the shared
-10,000,000-unit compilation budget; overflow/capacity exhaustion rejects, and
-unequal phase, axes or control blocks report a contract error. These additional
-finite capacities are part of the 0.2.0 MINOR migration. Inversion uses the
-existing audited contract routine. This reuses an existing equation checker;
-it adds neither a semantic acceptance rule nor a general frontend proof.
+For `repeat_static`, first compare **one** emitted body with that independent
+meaning. Then check that the actual candidate is exactly n ordered copies of
+the same complete circuit, including phase tables, axes, control polarities and
+issued receipt identities. Length and every copy must match; zero repetition
+is empty but still checks the target and body. The reference meaning is U^n by
+serial composition. The checker no longer constructs the product matrix U^n
+for this source form. Mutation regressions reject wrong count, phase, control
+and axis. Ordinary raw IR is still independently verified after lowering.
 
-The exact scalar implementation has bounded `i128` coefficients and nonzero
-dyadic denominator exponents at most 126. This is distinct from the number of
-steps or charged arithmetic operations: repeated squaring reduces work but
-cannot prevent coefficient growth. In the [0.2.0 review reproduction](reviews/v0.2.0.md),
-`ht(q) = t(h(q))` with `repeat_static(300, ht, q)` checks, while count 1000
-exhausts exact arithmetic capacity. These are observations, not universal
-supported/rejected count thresholds. Rejection produces no evidence and no
-floating fallback. Checking a body once and accepting its repetitions
-structurally still needs actual-body/request binding and a proved composition
-rule in the production hierarchy; [A020-03](v0.2.0-backlog.md#a020-03--precision-and-repetition-duplicate-algorithm-bodies)
-retains that pending obligation.
+This avoids coefficient growth caused solely by re-evaluating the repeated
+product: TH counts 400, 512, 1000 and 1024 now pass and agree with an independent
+one-qubit recurrence and an explicit 1024-call body. This is a bounded Rust
+translation-validation repair, not a machine-checked proof of all frontend
+preservation or a new production hierarchy rule. Flat IR still expands in
+proportion to the gate count. The base extractor retains its six-bit,
+1024-step/dependency bounds, i128 coefficients and dyadic denominator exponent
+limit 126. A long base, an explicit matrix contract, `repeat_op`'s declared matrix
+meaning, or adjoint/qif over a long body can still exhaust exact capacity.
+
+All existing step and shared work limits remain; structural comparisons spend
+the charged expansion work. Exhaustion rejects without approximate evidence.
+[A020-03](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-03--precision-and-repetition-duplicate-algorithm-bodies)
+and [VM-24–27](verification-migration-v0.2.md) retain actual-body/request binding,
+proved hierarchical serial composition and the remaining QPE scaling duties.
+The original 0.2.0/0.2.1 product-matrix failures remain dated history; the
+[0.2.1 review response](releases/v0.2.2.md) records the new scope precisely.
 
 <a id="最初の利用対象"></a>
 
@@ -312,4 +317,4 @@ all 92 tests (algorithms 7, compiler 17, parser 8, project 8, reference executio
 Documentation links, column counts of new tables, and the nine public bundled
 definitions present at that milestone were checked. These are the A2 milestone
 counts, not the current repository totals; see the
-[conformance record](specification-status.md) for subsequent validation.
+[conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) for subsequent validation.

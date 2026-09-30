@@ -2,7 +2,7 @@
 
 Status (2026-09-29): **implemented with executable permutation/reindexing proofs**
 in the Mathlib-free Lean kernel. This specifies the `typed-layout-v1` experiment. Its executed
-checks and proof status are recorded separately in the [0.2.0 record](releases/v0.2.0.md).
+checks and proof status are recorded separately in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
 It does not enable production hierarchical QPE or transfer Rust verification authority.
 
 ## Source, obligation and boundary

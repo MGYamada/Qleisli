@@ -1,7 +1,7 @@
 # Language specification development toward Qleisli 1.0
 
 Status: **English design framework; no new accepted syntax or API**
-(2026-09-27). This is P012-0 of the [0.1.2 plan](releases/v0.1.2.md).
+(2026-09-27). This is P012-0 of the [0.1.2 plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md).
 It organizes future language work before the imaginary algorithm drafts.
 The [finite-core specification](language-spec.md), [grammar](syntax-v0.md),
 and [sealed and module APIs](standard-library.md) remain the normative source
@@ -63,7 +63,7 @@ it with an explicit local definition; incompatible conventions must be resolved
 or recorded in their shared requirement index. Use fenced `text` blocks with
 an `IMAGINARY QLEISLI 1.0` label, not executable-example claims.
 
-The 2026-09-28 [naming decision](decisions/2026-09-27-v1-path.md#2026-09-28-adopt-the-020-shared-qpe-implementation)
+The 2026-09-28 [naming decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#2026-09-28-adopt-the-020-shared-qpe-implementation)
 selects `CBits<n>` for measured bit sequences. Earlier first-attempt snapshots
 retain their original spelling as historical evidence; it is not an alias.
 
@@ -121,10 +121,10 @@ and [machine interfaces](machine-interface-spec.md) settle fixed-width
 operation/access/meaning and host contracts under the [v0.x plan](v0x-roadmap.md),
 with size and evidence
 generalization subject to R14 and hierarchical IR in M2. The
-[decision dossier](decisions/2026-09-27-v1-path.md) selects that scope and bounded
+[decision dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects that scope and bounded
 kernel continuation. [R02](imaginary-v1/requirements.md#r02-notation-and-representation-alternatives)
 records the drafts' conflicting parameter/builder notations. Current special
 forms retain their compatibility under the specified M1 elaboration mechanism.
 Do not implement a hypothetical type solely because it appears in a draft.
-The [release plan](releases/v0.1.2.md) records completion of the design corpus
+The [release plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) records completion of the design corpus
 separately from implementation, general soundness, and publication.

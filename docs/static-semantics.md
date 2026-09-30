@@ -387,4 +387,4 @@ dependency and structural induction. Remaining work includes source/Rust
 adequacy, the boundary relation for Rust data structures, and correctness of
 the implemented verifier and executor. The conditional mathematical theorem
 does not establish full compiler correctness. See the
-[roadmap](../ROADMAP.md) and [conformance ledger](specification-status.md).
+[roadmap](../ROADMAP.md) and [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).

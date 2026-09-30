@@ -8,6 +8,40 @@ certificate or STAR backend. The current [finite contract](semantic-contracts-v0
 and the selected [M2 exact-angle profile](hierarchical-ir-spec.md#first-qpe-profile-and-exact-angles)
 remain unchanged.
 
+## Review inventory and v0.3 decision
+
+**v0.2.1 review follow-up, 2026-09-30; public changes still undecided.**
+The production finite domain is sufficient for its declared H/X/Z/T fragment,
+but not for exact general-width Fourier transforms. With
+`R_k = diag(1, exp(2*pi*i/2^k))`, width four already needs R4 outside R8.
+The existing `CircuitAction::Monomial` uses eighth-turn phase labels; increasing
+its width bound does not add those missing phases.
+
+| Path | Current exact interpretation | Integration limit |
+| --- | --- | --- |
+| Production flat IR and finite evidence | `Z[ζ8,1/2]`; bounded i128 arithmetic | Exact R4 and higher dyadic rotations cannot be encoded; long product matrices can exhaust coefficients. |
+| Experimental hierarchical dyadic phase nodes | The declared bounded dyadic-angle profile and its typed derivations | Finite-leaf bridges must explicitly establish the requested domain and meaning; this is not production CLI acceptance. |
+| PhaseWord / PathSum / QFT components | Cyclic phase modulo 256, with a separate complex bridge | The current QFT template profile is widths 1–8; this does not prove all-width QFT or unify the finite scalar implementation. |
+
+The v0.3 specification work must decide the public scalar/domain and IR contract
+alongside types, sizes and capabilities. A candidate common interpretation is
+`Z[ζ_(2^k),1/2]` for explicitly bounded `k >= 3`, with embedding
+`ζ8 -> ζ_(2^k)^(2^(k-3))`. A width-n QFT needs phase precision at least n;
+including H in the same coefficient ring needs `k >= max(3,n)`. These are
+mathematical requirements and a design candidate, not a selected representation
+or permission to change existing public Rust fields in PATCH.
+
+Before implementation, decide canonical arithmetic/equality, embeddings between
+precisions, complex interpretation, intermediate/aggregate limits, serialization,
+request/evidence binding and migration of existing R8 clients. For all-width
+symbolic QFT, prove the size-dependent phase laws and actual compiler acceptance;
+eight bounded template reductions cannot replace that proof. Keep ideal exact
+meaning separate from synthesis into Clifford+T and certified approximation.
+Tests at small widths must distinguish phase sign, reversal and controlled scalar
+phase. The [verification plan](verification-migration-v0.2.md#target-ir-and-reference-semantics-fixed-before-migration)
+reuses finite-leaf soundness under hierarchy rather than creating competing
+unconnected definitions of correctness. Current domains and schemas stay fixed.
+
 ## Avoid fixing the language to one hardware forecast
 
 Starting early risks designing around the wrong future logical gate set. For

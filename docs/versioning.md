@@ -25,34 +25,38 @@ The previous 0.1.6/0.1.7 decisions and then-untagged 0.1.8 checkpoint retain the
 historical numbers and migration records; dated exception statements describe the former
 policy, not a continuing requirement. This revision does not reclassify their
 documented source/API breaks as compatible or authorize future incompatible
-PATCH releases. See the [0.1.6](releases/v0.1.6.md),
-[0.1.7](releases/v0.1.7.md) and [0.1.8](releases/v0.1.8.md) records.
+PATCH releases. See the [0.1.6](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md),
+[0.1.7](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md) and [0.1.8](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) records.
 
 The user initially selected **0.2.0 development** for shared QPE. The
-2026-09-29 [scope revision](v0.2.0-plan.md) retains the implemented tuple/public-AST,
+2026-09-29 [scope revision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains the implemented tuple/public-AST,
 capacity and lexical changes, finite interfaces and experimental Lean foundation
 in 0.2.0. Validation and publication evidence are recorded separately in the
-[release record](releases/v0.2.0.md). The remaining shared-QPE work
-targets [0.2.1](v0.2.1-plan.md), selected as the current development version by
-the user on 2026-09-29. Its [record](releases/v0.2.1.md) tracks the development
+[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The remaining shared-QPE work
+initially targeted [0.2.1](v0.2.2-plan.md), selected as the then-current
+development version by the user on 2026-09-29. Its [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) tracks the development
 checkpoints and the verified 2026-09-30 crates.io and GitHub publications.
-The 2026-09-30 [boundary revision](v0.2.1-plan.md#adopted-release-boundary-2026-09-30)
+The 2026-09-30 [boundary revision](v0.2.2-plan.md)
 retains completed experiments/review fixes and bounded host connections in
 0.2.1; remaining heavy implementation/integration/proofs target [0.2.2](v0.2.2-plan.md).
-Manifests stay at 0.2.1. Neither target grants an incompatible PATCH
+The later 2026-09-30 user request selects **0.2.2 development**, synchronizing
+Rust, both Lean packages and the Python host; see the
+[0.2.2 record](releases/v0.2.2.md). The latest published version remains 0.2.1.
+Version selection does not complete feature gates or perform tagging/upload.
+Neither target grants an incompatible PATCH
 exception: preserve existing public interfaces with additive successor APIs
 and adapters, or select 0.3.0 if a breaking change is necessary. The
-[development record](releases/v0.2.0.md) retains earlier checkpoints; no tag
+[development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains earlier checkpoints; no tag
 or publication follows from this scope selection.
 
 The subsequent 2026-09-29 user decision explicitly plans
 [Qleisli type-system specification in the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification),
 with QLT implementation deferred to v0.4.0 or later. Concrete type changes and
-migrations remain to be specified. The current manifests stay at 0.2.1, and
+migrations remain to be specified. The current manifests select 0.2.2, and
 this future boundary does not permit incompatible changes in that PATCH.
 
 The historical finite baseline and release state are in [current status](current-status.md)
-and the [0.1.9 review-fix record](releases/v0.1.9.md). The user selected 0.1.9
+and the [0.1.9 review-fix record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md). The user selected 0.1.9
 for compatible review fixes and diagnostic improvements on 2026-09-28.
 Previously, the user explicitly retained version 0.1.8 for the authoring continuation after its
 temporary 0.2.0 selection. The public Rust `Param.name` → `Param.pattern`
@@ -66,15 +70,18 @@ The legacy B019 finite maintenance checkpoint is not a requirement to ship
 patches 6–9 first, and later maintenance may use 0.1.10.
 [Cargo.toml](../Cargo.toml)'s
 `package.version` is the source of truth. Keep the project's own package
-versions in [lean/lakefile.toml](../lean/lakefile.toml) and
-[lean-kernel/lakefile.toml](../lean-kernel/lakefile.toml) synchronized. Compiler,
+versions in [lean/lakefile.toml](../lean/lakefile.toml),
+[lean-kernel/lakefile.toml](../lean-kernel/lakefile.toml),
+[python/pyproject.toml](../python/pyproject.toml) and Python `__version__`
+synchronized; refresh the Cargo lockfile as well. Compiler,
 bundled standard library, examples, and proof development currently share
 one release version; this does not imply that their verification is complete.
 
 Manifests use `MAJOR.MINOR.PATCH`, without a leading `v`; release tags use
 `vMAJOR.MINOR.PATCH`. A prerelease, when needed, uses an explicit suffix such
-as `0.2.0-rc.1`, synchronized in all three manifests and its tag. The current
-release number is not changed merely because a task, commit, or test run
+as `0.2.0-rc.1`, synchronized in all four project manifests, Python `__version__`,
+the Cargo lockfile and its tag. The current release number is not changed
+merely because a task, commit, or test run
 finishes. Accumulate pending changes under `Unreleased` in the changelog;
 update the number when selecting the next release or prerelease.
 
@@ -164,8 +171,9 @@ the completed initial imaginary-code corpus and its requirement records.
 
 For each release or prerelease:
 
-1. Select the version from the compatibility review. Synchronize all three project
-   manifests and the changelog; update current-version summaries and links.
+1. Select the version from the compatibility review. Synchronize all four project
+   manifests, Python `__version__`, Cargo lockfile and the changelog; update
+   current-version summaries and links.
 2. Record added/changed/fixed behavior, breaking changes and migration,
    supported bounds/toolchains, license or dependency changes, and relevant
    specification/conformance references. Keep past release entries intact.

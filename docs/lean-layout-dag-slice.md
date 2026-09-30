@@ -84,5 +84,5 @@ phase-free format unchanged. General gate, encoding and QPE integration remains
 outside both component claims.
 
 The [development record](../tests/fixtures/lean_layout_dag/README.md) retains
-actual first diagnostics and subsequent results. The [release checkpoint](releases/v0.2.0.md#shared-typed-layout-checkpoint-2026-09-29)
+actual first diagnostics and subsequent results. The [release checkpoint](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md#shared-typed-layout-checkpoint-2026-09-29)
 separates performed checks from pending production and distribution gates.

@@ -252,7 +252,7 @@ must compose costs with types, meanings and effects, including frames and all
 branches. Ownership/R1 results and implementation work limits do not establish
 this quantitative guarantee. All three general theorem pillars remain open.
 
-The [QLT design](qlt-design.md#results-and-future-proofs) adds a separate future
+The [QLT design](https://github.com/MGYamada/Qleisli/issues/50) adds a separate future
 test-evaluator adequacy obligation: successful exact evaluation must agree with
 this IR denotation, and cost evaluation with its declared structural model.
 The first experiment will use Rust; later actual-definition Lean proofs and
@@ -314,7 +314,7 @@ Lean kernel migration decision):**
    proof or automatic permission to replace production verification. The initial
    `verify_sound` covers one-bit cyclic phase words only.
 3. Prove selected semantic-kernel rules and their checker/model correspondence
-   under the [bounded M2 scope](decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles).
+   under the [bounded M2 scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles).
    Preserve fixed requested meanings, entry evidence, output axes, exact phase,
    zero return and binding to hierarchical IR. Existing local matrix theorems
    prove equations, not acceptance soundness of the Rust implementation. New M2
@@ -370,6 +370,13 @@ Lean kernel migration decision):**
    resulting common operator to a separate requested meaning graph, preserving
    phase and arbitrary finite references. Exact finite meaning-pair equality
    remains an explicit, freshly reconstructed Rust/reader obligation.
+   The [instrument bridge](../lean/Qleisli/HierarchicalInstrument.lean) extends
+   this result through checked actual initialization and ordered readout:
+   complete branch coefficients, residual/reference density matrices and
+   classical packing match the independent request. Its small complex
+   [reference module](../lean/Qleisli/Semantics/Instrument.lean) imports no checker.
+   Named QPE binding, whole-instrument completeness, source preservation and
+   production integration remain open; finite/native correspondence is retained.
    The conditional pass now reuses its actual completed type context for
    ordinary matching. [TypedRule](../lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean)
    proves that the reduced matcher implies the original rule predicate;
@@ -457,7 +464,7 @@ priorities, not degrees of mathematical validity or permission to skip audits.
 
 | Importance | Obligation and current examples | Maintenance policy |
 | --- | --- | --- |
-| P0 — acceptance and binding | Actual executable checker soundness, complete ownership/effect/entry binding, finite-request extraction, actual-body denotations and reference preservation: kernel `Hierarchical` checks, `Reshape`, `HierarchicalEvaluation`, `HierarchicalAcceptance`, `HierarchicalFiniteEvaluation`, `HierarchicalFiniteUnitary`, `HierarchicalRoot`, and actual gradient/Fourier inspection bridges. | Keep and repair first. These obligations remain necessary when a checker or representation is replaced; a narrower theorem cannot replace them. Current component scope and explicit reader/native premises still apply. |
+| P0 — acceptance and binding | Actual executable checker soundness, complete ownership/effect/entry binding, finite-request extraction, actual-body denotations and reference preservation: kernel `Hierarchical` checks, `Reshape`, `HierarchicalEvaluation`, `HierarchicalAcceptance`, `HierarchicalFiniteEvaluation`, `HierarchicalFiniteUnitary`, `HierarchicalRoot`, `HierarchicalInstrument`, and actual gradient/Fourier inspection bridges. | Keep and repair first. These obligations remain necessary when a checker or representation is replaced; a narrower theorem cannot replace them. Current component scope and explicit reader/native premises still apply. |
 | P1 — semantic foundations and required components | Reusable operator/matrix, layout, phase, Fourier, Kraus/completeness and reference-extension laws; source resource/scope models; call-lowering laws; current QFT/QPE projection components and semantic regressions. | Preserve reusable results. Extend them for a concrete caller or acceptance obligation. A component may be temporary while its current callers still require it. |
 | P2 — migration and compatibility wrappers | Superseded assumed-environment conclusions, projection-only entry packaging, legacy basis-conditioned dispatch and a misleading compatibility name. | Maintain compatibility and validation; direct new development to the replacement. Avoid adding parallel wrapper families without a concrete caller. |
 

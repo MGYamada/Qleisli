@@ -1,0 +1,167 @@
+{
+  "status": "diagnostic-unintegrated-producer-candidate",
+  "original": {
+    "nodes": 201,
+    "totals": [
+      110361,
+      818042,
+      1318812,
+      1718740
+    ],
+    "trace_cost": 477614,
+    "route": [
+      5,
+      4,
+      3,
+      2,
+      0,
+      1
+    ],
+    "event_signature": [
+      [
+        "facb60b49b1403e40f5c4d230ff0a75d8062cbc6e3d977541cd240f00e0ef9d9",
+        [
+          5
+        ]
+      ],
+      [
+        "c0081390e26edc959e7b51a4fd302f0f1a0203ba194b24d7475c2a64755f51ff",
+        [
+          4
+        ]
+      ],
+      [
+        "2e5c7ab166049f9ac1f220dec4efb850ff2bd7584bf0ffe7a666de39c20fe0fb",
+        [
+          3
+        ]
+      ],
+      [
+        "631a20516dd9021b3cf5ef1624c3d067aceb452a88b9c2cbcadc17751449a558",
+        [
+          2
+        ]
+      ],
+      [
+        "d10dc2e83a59f770c47ca2c92b8f891c38222a9f2440158611e7cbbe3cefe3c1",
+        [
+          5,
+          0,
+          1
+        ]
+      ],
+      [
+        "c83ba0d477a988cc235bc92d081544cc7806ee1d5e57a68ccfd674176988c120",
+        [
+          4,
+          0,
+          1
+        ]
+      ],
+      [
+        "d1d2349a3d9b2a9041eec5e5a1b6bdd9e523172f7a8cdc4afbda3cb6a7e7dc68",
+        [
+          3,
+          0,
+          1
+        ]
+      ],
+      [
+        "f38aa7aa975d4d9b5f03a1a2ae3aa08ca02298dff23bc94b2c913b1d636a641a",
+        [
+          2,
+          0,
+          1
+        ]
+      ],
+      [
+        "c44dbbceaadcac17fb5f8b30ac3c68e52d2d5a1856f445821c22301f97dbaaea",
+        [
+          5,
+          4,
+          3,
+          2
+        ]
+      ]
+    ],
+    "trace_reconstruction_maximum_error": 2.3714374201337736e-16,
+    "graph_sha256": "49e30ab749ba38bd2109f2fb41c9656daa0f8cc666b3715caad373d3cd36f5d1",
+    "native_binary_sha256": "00d7edabd2638640095e9cca2276aff84d2e5acb8d6de63d126130b3e2204c3f"
+  },
+  "candidate": "Apply the same four original finite atoms on the initially separate bits before packing the final three bits through explicit structural constructors. Preserve every root endpoint field and every provider/control/inverse subtree. Drop only now-unreachable internal packing/empty-owner lifecycles.",
+  "combined_without_root_request_or_other_named_components": {
+    "original": 2474994,
+    "candidate": 2186271
+  },
+  "same_actual_trace_under_full_recursive_atom_hashes": true,
+  "columns_each": 65,
+  "coefficient_probes_each": 4160,
+  "repository_capacity_edits": false,
+  "format": "qleisli.capacity-producer-probe",
+  "version": 1,
+  "scope": "Diagnostic hand-selected untrusted prefix reconstruction only. No repository producer/checker implementation was changed. Existing native predicates/budgets check the actual graphs. The candidate remains above the shared two-million limit even before Root requests and other named QPE component checks.",
+  "acceptance_claim": false,
+  "source_preservation_proved": false,
+  "production_integration": false,
+  "actual_graph_comparison_maximum_error": 0.0,
+  "baseline_sources": {
+    "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+    "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+    "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "ce1150afbbc99b4b4b7f51bb3e61efe46dace471af7676e496672d32b9d1c21f",
+    "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc"
+  },
+  "diagnostic_script_texts": {
+    "qleisli-capacity-profile.py": "import sys,json,collections,copy\nfrom pathlib import Path\nsys.path.insert(0,'/Users/masa/git/Qleisli/scripts')\nfrom compile_sized_corpus import Operation\nfrom compile_sized_instrument import compile_instrument\nfrom test_sized_instrument import sources\nfrom test_hierarchical_artifact import build_and_run\nfrom test_hierarchical_circuit_trace import source_atoms\nfrom test_hierarchical_routed_power import body\nimport probe_hierarchical_qft_cost as serializer\nserializer.body=body\n\ngraph=compile_instrument(sources(),'measurement::qpe',dict(n=2,m=4),{'U':Operation('evolution::evolve',(2,1,3))})['graph']\nPath('/private/tmp/qleisli-capacity-graph.json').write_text(json.dumps(graph,indent=2))\natoms,order=source_atoms(graph)\nsource='''import QleisliKernel.Hierarchical.Conditional\nimport QleisliKernel.Hierarchical.CircuitTrace\nopen QleisliKernel.Hierarchical Artifact\nset_option maxRecDepth 20000\n'''\nsource+=f'def a : Artifact := {serializer.artifact(graph)}\\n'\nsource+='def atoms : Array CircuitTrace.Atom := '+serializer.array(f'\u27e8{i},{serializer.interface(graph[\"definitions\"][i][\"interface\"])}\u27e9' for i in atoms)+'\\n'\nsource+='def traceOrder : Array Nat := '+serializer.array(order)+'\\n'\nsource+='''def main : IO Unit := do\n  let order := Array.range (totalNodes a)\n  let .ok pending := Conditional.checkAll a order | throw <| IO.userError \"conditional failure\"\n  IO.println s!\"TOTAL|{pending.typed.nodes.prepared.totalVisits}|{pending.typed.nodes.totalVisits}|{pending.typed.totalVisits}|{pending.state.visits}\"\n  let .ok traces := CircuitTrace.inspect a atoms traceOrder 2000000 | throw <| IO.userError \"trace failure\"\n  IO.println s!\"TRACE|{traces.visits}\"\n  let some trace := (traces.cache[a.entry.implementation]?).bind id | throw <| IO.userError \"missing root trace\"\n  IO.println s!\"ROUTE|{String.intercalate \",\" (trace.route.map toString)}\"\n  for event in trace.events do\n    IO.println s!\"EVENT|{event.atom}|{String.intercalate \",\" (event.positions.map toString)}\"\n  for i in [:a.definitions.size] do\n    let .ok node := NodeTyping.check a i 2000000 | throw <| IO.userError s!\"node {i}\"\n    let .ok meaning := ContractTyping.check a \u27e8.meaning,i\u27e9 2000000 | throw <| IO.userError s!\"meaning {i}\"\n    let .ok rule := Conditional.localCheck a i 2000000 | throw <| IO.userError s!\"rule {i}\"\n    let some proof := a.proofs[i]? | throw <| IO.userError \"missing proof\"\n    let typedRule \u2190 if proof.rule == .finite then pure rule.visits else do\n      let .ok typed := TypedRule.check a i 2000000 | throw <| IO.userError s!\"typed {i}\"\n      pure typed.visits\n    let some d := a.definitions[i]? | throw <| IO.userError \"missing definition\"\n    let traceCost := if traceOrder.contains i then match CircuitTrace.project atoms i d with\n      | some projected => CircuitTrace.charge atoms traces.cache projected d\n      | none => 0\n      else 0\n    IO.println s!\"NODE|{i}|{node.visits}|{meaning.visits}|{typedRule}|{traceCost}\"\n  for i in [:a.encodings.size] do\n    let .ok encoding := ContractTyping.check a \u27e8.encoding,i\u27e9 2000000 | throw <| IO.userError s!\"encoding {i}\"\n    IO.println s!\"ENC|{i}|{encoding.visits}\"\n'''\nPath('/private/tmp/qleisli-capacity-profile.lean').write_text(source)\ncommands,binary=build_and_run(source,Path('/private/tmp/qleisli-capacity-profile-errors.json'))\nPath('/private/tmp/qleisli-capacity-profile-result.json').write_text(json.dumps(dict(commands=commands,binary=binary),indent=2))\nprint(commands[-1]['stdout'])\n",
+    "qleisli-capacity-candidate.py": "import sys,copy,json,math\nfrom pathlib import Path\nsys.path.insert(0,'/Users/masa/git/Qleisli/scripts')\nfrom compile_sized_corpus import Producer\nfrom compact_sized_graph import artifact,remap\nfrom test_hierarchical_qft import port\nfrom test_sized_corpus import circuit_action,difference\n\ng=json.load(open('/private/tmp/qleisli-capacity-graph.json')); c=Producer();root=c.import_artifact(g); assert root==200\n# Diagnostic construction only: selected actual original H atoms, with exact\n# boundary permutation inferred from the original trace. Not an algorithm API.\nh=[17,21,25,29]\ndef tensor_all(nodes):return nodes[0] if len(nodes)==1 else c.tensor(nodes[0],tensor_all(nodes[1:]))\ndef pack(ps,owner):\n if len(ps)==1:\n  end=port(owner,ps[0]['axes']);b=dict(tag='structural',operation=dict(tag='bit_to_bits'))\n  return c.add(ps,[end],b,b,'structural')\n tail=pack(ps[1:],owner+1);after=c.ends(tail)[1]\n layer=c.tensor(c.identity(ps[:1]),tail)\n result=port(owner,sum((p['axes'] for p in ps),[]))\n join=c.structural(ps[:1]+after,[result],'put_bit',len(ps),0)\n return c.sequence([layer,join])\n# Keep H0 separate for the first controlled operation; pack H1,H2,H3 afterwards.\ntail_h=tensor_all(h[1:]);tail=c.sequence([tail_h,pack(c.ends(tail_h)[1],105)])\nlayer=c.tensor(h[0],tail)\nnew_header=c.ends(172)[1][:-1]\nlayer=c.sequence([layer,c.rewire(c.ends(layer)[1],new_header)])\nlayer=c.tensor(layer,46)\nbefore=c.ends(200)[0];enter=c.rewire(before,c.ends(layer)[0],[4,3,2,1,0],[5,4,3,2,0,1])\nroot=c.sequence([enter,layer]+c.definitions[200]['body']['children'][4:])\n# Reachable rebuild only. No optimizer changes and no atom body rewriting.\nlive=set();todo=[root]\nwhile todo:\n i=todo.pop()\n if i not in live:live.add(i);todo+=c.proofs[i]['premises']\nr=Producer();indices={}\nfor i in sorted(live):\n d=c.definitions[i];p=c.proofs[i];before,after=c.ends(i)\n indices[i]=r.add(before,after,remap(d['body'],indices),remap(c.meanings[i]['body'],indices),p['rule']['tag'],[indices[j] for j in p['premises']])\nresult=artifact(r,indices[root]);assert c.ends(root)==(g['definitions'][200]['interface']['inputs']['quantum'],g['definitions'][200]['interface']['outputs']['quantum'])\none,_=circuit_action(g);two,_=circuit_action(result)\ncolumns=[{i:1} for i in range(64)]+[{i:complex(i%3-1,(i+1)%4-2)/math.sqrt(640) for i in range(64)}]\nerr=max(difference(one(x),two(x)) for x in columns);assert err<1e-12,err\nPath('/private/tmp/qleisli-capacity-candidate.json').write_text(json.dumps(result,indent=2))\nprint('nodes',len(result['definitions']),'column_error',err,'atoms', {i:indices[i] for i in h})\n",
+    "qleisli-capacity-candidate-profile.py": "import sys,json,collections,copy\nfrom pathlib import Path\nsys.path.insert(0,'/Users/masa/git/Qleisli/scripts')\nfrom compile_sized_corpus import Operation\nfrom compile_sized_instrument import compile_instrument\nfrom test_sized_instrument import sources\nfrom test_hierarchical_artifact import build_and_run\nfrom test_hierarchical_circuit_trace import source_atoms\nfrom test_hierarchical_routed_power import body\nimport probe_hierarchical_qft_cost as serializer\nserializer.body=body\n\ngraph=json.load(open('/private/tmp/qleisli-capacity-candidate.json'))\natoms,order=source_atoms(graph)\nsource='''import QleisliKernel.Hierarchical.Conditional\nimport QleisliKernel.Hierarchical.CircuitTrace\nopen QleisliKernel.Hierarchical Artifact\nset_option maxRecDepth 20000\n'''\nsource+=f'def a : Artifact := {serializer.artifact(graph)}\\n'\nsource+='def atoms : Array CircuitTrace.Atom := '+serializer.array(f'\u27e8{i},{serializer.interface(graph[\"definitions\"][i][\"interface\"])}\u27e9' for i in atoms)+'\\n'\nsource+='def traceOrder : Array Nat := '+serializer.array(order)+'\\n'\nsource+='''def main : IO Unit := do\n  let order := Array.range (totalNodes a)\n  let .ok pending := Conditional.checkAll a order | throw <| IO.userError \"conditional failure\"\n  IO.println s!\"TOTAL|{pending.typed.nodes.prepared.totalVisits}|{pending.typed.nodes.totalVisits}|{pending.typed.totalVisits}|{pending.state.visits}\"\n  let .ok traces := CircuitTrace.inspect a atoms traceOrder 2000000 | throw <| IO.userError \"trace failure\"\n  IO.println s!\"TRACE|{traces.visits}\"\n  let some trace := (traces.cache[a.entry.implementation]?).bind id | throw <| IO.userError \"missing root trace\"\n  IO.println s!\"ROUTE|{String.intercalate \",\" (trace.route.map toString)}\"\n  for event in trace.events do\n    IO.println s!\"EVENT|{event.atom}|{String.intercalate \",\" (event.positions.map toString)}\"\n  for i in [:a.definitions.size] do\n    let .ok node := NodeTyping.check a i 2000000 | throw <| IO.userError s!\"node {i}\"\n    let .ok meaning := ContractTyping.check a \u27e8.meaning,i\u27e9 2000000 | throw <| IO.userError s!\"meaning {i}\"\n    let .ok rule := Conditional.localCheck a i 2000000 | throw <| IO.userError s!\"rule {i}\"\n    let some proof := a.proofs[i]? | throw <| IO.userError \"missing proof\"\n    let typedRule \u2190 if proof.rule == .finite then pure rule.visits else do\n      let .ok typed := TypedRule.check a i 2000000 | throw <| IO.userError s!\"typed {i}\"\n      pure typed.visits\n    let some d := a.definitions[i]? | throw <| IO.userError \"missing definition\"\n    let traceCost := if traceOrder.contains i then match CircuitTrace.project atoms i d with\n      | some projected => CircuitTrace.charge atoms traces.cache projected d\n      | none => 0\n      else 0\n    IO.println s!\"NODE|{i}|{node.visits}|{meaning.visits}|{typedRule}|{traceCost}\"\n  for i in [:a.encodings.size] do\n    let .ok encoding := ContractTyping.check a \u27e8.encoding,i\u27e9 2000000 | throw <| IO.userError s!\"encoding {i}\"\n    IO.println s!\"ENC|{i}|{encoding.visits}\"\n'''\nPath('/private/tmp/qleisli-capacity-candidate-profile.lean').write_text(source)\ncommands,binary=build_and_run(source,Path('/private/tmp/qleisli-capacity-candidate-profile-errors.json'))\nPath('/private/tmp/qleisli-capacity-candidate-profile-result.json').write_text(json.dumps(dict(commands=commands,binary=binary),indent=2))\nprint(commands[-1]['stdout'])\n"
+  },
+  "replay": "These diagnostic scripts use the recorded /private/tmp filenames and /Users/masa/git/Qleisli checkout. Run profile, candidate, then candidate-profile in that order. They build actual native Lean probes through test_hierarchical_artifact.build_and_run and write temporary graphs/results. Graph hashes above are SHA-256 of JSON serialized with sort_keys=True.",
+  "native_results": {
+    "profile": {
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [61/63] Built Main (3.9s)\n\u2714 [62/63] Built Main:c.o (586ms)\n\u2714 [63/63] Built \u00abartifact-test\u00bb:exe (273ms)\nBuild completed successfully (63 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-y41oifpx/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "TOTAL|110361|818042|1318812|1718740\nTRACE|477614\nROUTE|5,4,3,2,0,1\nEVENT|17|5\nEVENT|21|4\nEVENT|25|3\nEVENT|29|2\nEVENT|58|5,0,1\nEVENT|67|4,0,1\nEVENT|76|3,0,1\nEVENT|85|2,0,1\nEVENT|167|5,4,3,2\nNODE|0|1030|1030|551|1218\nNODE|1|1984|1984|779|2027\nNODE|2|1593|1593|605|1220\nNODE|3|1970|1970|1965|2686\nNODE|4|4575|4575|1033|2544\nNODE|5|3868|3868|3396|2246\nNODE|6|2432|2432|843|2339\nNODE|7|1593|1593|605|1220\nNODE|8|2869|2869|2448|3879\nNODE|9|5824|5824|1115|2857\nNODE|10|5151|5151|3980|3495\nNODE|11|2944|2944|907|2667\nNODE|12|1593|1593|605|1220\nNODE|13|4024|4024|2904|5376\nNODE|14|7233|7233|1197|3186\nNODE|15|6690|6690|4564|5064\nNODE|16|2944|2944|907|2667\nNODE|17|454|454|5235|1218\nNODE|18|1593|1593|605|1220\nNODE|19|1360|1360|1609|1380\nNODE|20|2432|2432|843|2339\nNODE|21|454|454|5235|1218\nNODE|22|1593|1593|605|1220\nNODE|23|1360|1360|1609|1380\nNODE|24|1984|1984|779|2027\nNODE|25|454|454|5235|1218\nNODE|26|1593|1593|605|1220\nNODE|27|1360|1360|1609|1380\nNODE|28|1600|1600|715|1731\nNODE|29|454|454|5235|1218\nNODE|30|1593|1593|605|1220\nNODE|31|1360|1360|1609|1380\nNODE|32|952|952|523|939\nNODE|33|1714|1714|1855|2406\nNODE|34|1600|1600|715|1731\nNODE|35|2841|2841|2812|1445\nNODE|36|1970|1970|2010|3118\nNODE|37|1984|1984|779|2027\nNODE|38|3353|3353|3068|2309\nNODE|39|2226|2226|2138|4262\nNODE|40|2432|2432|843|2339\nNODE|41|3865|3865|3324|3749\nNODE|42|2482|2482|2266|5982\nNODE|43|2944|2944|907|2667\nNODE|44|4476|4476|851|2159\nNODE|45|5214|5214|4301|6958\nNODE|46|2394|2394|687|1517\nNODE|47|2944|2944|907|2667\nNODE|48|1984|1984|779|0\nNODE|49|454|454|551|0\nNODE|50|1593|1593|605|0\nNODE|51|1970|1970|1965|0\nNODE|52|1984|1984|779|0\nNODE|53|3353|3353|3068|0\nNODE|54|2394|2394|687|1517\nNODE|55|2394|2394|687|0\nNODE|56|2394|2394|687|0\nNODE|57|2325|2325|2421|0\nNODE|58|1790|1790|1609|2852\nNODE|59|14664|14664|1707|5431\nNODE|60|3355|3355|769|1830\nNODE|61|4280|4280|3142|7384\nNODE|62|2944|2944|907|2667\nNODE|63|14664|14664|1707|5431\nNODE|64|2944|2944|907|2667\nNODE|65|1146|1146|1217|0\nNODE|66|2325|2325|2403|0\nNODE|67|1790|1790|1609|2852\nNODE|68|14664|14664|1707|5431\nNODE|69|3355|3355|769|1830\nNODE|70|4280|4280|3142|7384\nNODE|71|2944|2944|907|2667\nNODE|72|14664|14664|1707|5431\nNODE|73|2944|2944|907|2667\nNODE|74|1146|1146|1217|0\nNODE|75|2325|2325|2403|0\nNODE|76|1790|1790|1609|2852\nNODE|77|14664|14664|1707|5431\nNODE|78|3355|3355|769|1830\nNODE|79|4280|4280|3142|7384\nNODE|80|2944|2944|907|2667\nNODE|81|14664|14664|1707|5431\nNODE|82|2944|2944|907|2667\nNODE|83|1146|1146|1217|0\nNODE|84|2325|2325|2403|0\nNODE|85|1790|1790|1609|2852\nNODE|86|14664|14664|1707|5431\nNODE|87|3355|3355|769|1830\nNODE|88|4280|4280|3142|7384\nNODE|89|2944|2944|907|2667\nNODE|90|14664|14664|1707|5431\nNODE|91|4476|4476|851|0\nNODE|92|2944|2944|907|0\nNODE|93|2944|2944|907|0\nNODE|94|454|454|5235|0\nNODE|95|1593|1593|605|0\nNODE|96|1360|1360|1609|0\nNODE|97|3355|3355|769|0\nNODE|98|2482|2482|2239|0\nNODE|99|2432|2432|843|0\nNODE|100|2432|2432|843|0\nNODE|101|454|454|551|0\nNODE|102|1984|1984|779|0\nNODE|103|1984|1984|779|0\nNODE|104|454|454|551|0\nNODE|105|1600|1600|715|0\nNODE|106|1600|1600|715|0\nNODE|107|454|454|551|0\nNODE|108|952|952|523|0\nNODE|109|1714|1714|1837|0\nNODE|110|2841|2841|2812|0\nNODE|111|1970|1970|1992|0\nNODE|112|3353|3353|3068|0\nNODE|113|2226|2226|2120|0\nNODE|114|3865|3865|3324|0\nNODE|115|2046|2046|1737|0\nNODE|116|1593|1593|605|0\nNODE|117|454|454|5235|0\nNODE|118|1593|1593|605|0\nNODE|119|1360|1360|1609|0\nNODE|120|2394|2394|687|0\nNODE|121|2226|2226|2111|0\nNODE|122|1146|1146|1217|0\nNODE|123|1790|1790|1591|0\nNODE|124|1593|1593|605|0\nNODE|125|454|454|5235|0\nNODE|126|1593|1593|605|0\nNODE|127|1360|1360|1609|0\nNODE|128|1593|1593|605|0\nNODE|129|1970|1970|1983|0\nNODE|130|890|890|1089|0\nNODE|131|1534|1534|1463|0\nNODE|132|1593|1593|605|0\nNODE|133|454|454|5235|0\nNODE|134|1593|1593|605|0\nNODE|135|1360|1360|1609|0\nNODE|136|1714|1714|1855|0\nNODE|137|1593|1593|605|0\nNODE|138|1714|1714|1837|0\nNODE|139|3808|3808|3687|0\nNODE|140|1970|1970|2001|0\nNODE|141|5543|5543|4937|0\nNODE|142|2226|2226|2138|0\nNODE|143|6311|6311|5321|0\nNODE|144|2482|2482|2266|0\nNODE|145|7079|7079|5705|0\nNODE|146|4476|4476|851|0\nNODE|147|2944|2944|907|0\nNODE|148|1593|1593|605|0\nNODE|149|2432|2432|843|0\nNODE|150|1593|1593|605|0\nNODE|151|1984|1984|779|0\nNODE|152|1593|1593|605|0\nNODE|153|1593|1593|605|0\nNODE|154|1970|1970|1965|0\nNODE|155|1984|1984|779|0\nNODE|156|2394|2394|687|0\nNODE|157|3934|3934|3661|0\nNODE|158|2226|2226|2129|0\nNODE|159|2432|2432|843|0\nNODE|160|3355|3355|769|0\nNODE|161|4574|4574|3981|0\nNODE|162|2482|2482|2257|0\nNODE|163|2944|2944|907|0\nNODE|164|4476|4476|851|0\nNODE|165|5214|5214|4301|0\nNODE|166|4186|4186|3708|0\nNODE|167|1658|1658|1482|2154\nNODE|168|4476|4476|851|2159\nNODE|169|4476|4476|851|2159\nNODE|170|3349|3349|2915|3557\nNODE|171|3027|3027|2549|5469\nNODE|172|3637|3637|2823|10143\nNODE|173|3542|3542|2841|3582\nNODE|174|4280|4280|3151|6208\nNODE|175|3542|3542|2841|3582\nNODE|176|4280|4280|3151|6208\nNODE|177|3542|3542|2841|3582\nNODE|178|4280|4280|3151|6208\nNODE|179|3027|3027|2540|3669\nNODE|180|3637|3637|2823|6615\nNODE|181|10531|10531|1361|3892\nNODE|182|10531|10531|1361|3892\nNODE|183|2944|2944|907|2667\nNODE|184|2432|2432|843|2339\nNODE|185|1984|1984|779|2027\nNODE|186|1030|1030|551|1218\nNODE|187|1593|1593|605|1220\nNODE|188|1970|1970|1965|2686\nNODE|189|2773|2773|2475|2173\nNODE|190|1593|1593|605|1220\nNODE|191|2869|2869|2439|3879\nNODE|192|3928|3928|2995|3366\nNODE|193|1593|1593|605|1220\nNODE|194|4024|4024|2895|5376\nNODE|195|5339|5339|3515|4863\nNODE|196|25330|25330|2399|10045\nNODE|197|5691|5691|3488|7745\nNODE|198|2394|2394|687|1517\nNODE|199|5691|5691|3479|7745\nNODE|200|58524|58524|35491|99824\nENC|0|454\nENC|1|454\nENC|2|1098\nENC|3|582\nENC|4|454\nENC|5|1098\nENC|6|1098\nENC|7|1226\nENC|8|710\nENC|9|454\nENC|10|1998\nENC|11|1226\nENC|12|1354\nENC|13|838\nENC|14|454\nENC|15|3154\nENC|16|1354\nENC|17|838\nENC|18|1354\nENC|19|454\nENC|20|454\nENC|21|710\nENC|22|1226\nENC|23|454\nENC|24|454\nENC|25|582\nENC|26|1098\nENC|27|454\nENC|28|454\nENC|29|454\nENC|30|970\nENC|31|454\nENC|32|454\nENC|33|326\nENC|34|838\nENC|35|582\nENC|36|1354\nENC|37|582\nENC|38|1098\nENC|39|454\nENC|40|1226\nENC|41|2382\nENC|42|2382\nENC|43|710\nENC|44|838\nENC|45|1354\nENC|46|1226\nENC|47|2382\nENC|48|2382\nENC|49|710\nENC|50|838\nENC|51|1354\nENC|52|1226\nENC|53|2382\nENC|54|2382\nENC|55|710\nENC|56|838\nENC|57|1354\nENC|58|1226\nENC|59|2382\nENC|60|2382\nENC|61|710\nENC|62|838\nENC|63|838\nENC|64|838\nENC|65|1354\nENC|66|454\nENC|67|454\nENC|68|710\nENC|69|1226\nENC|70|454\nENC|71|582\nENC|72|1098\nENC|73|454\nENC|74|454\nENC|75|970\nENC|76|454\nENC|77|326\nENC|78|454\nENC|79|454\nENC|80|454\nENC|81|1354\nENC|82|454\nENC|83|710\nENC|84|1226\nENC|85|454\nENC|86|582\nENC|87|1098\nENC|88|454\nENC|89|454\nENC|90|582\nENC|91|710\nENC|92|838\nENC|93|838\nENC|94|1610\nENC|95|1610\nENC|96|1610\nENC|97|1610\nENC|98|838\nENC|99|1354\nENC|100|710\nENC|101|1226\nENC|102|582\nENC|103|1098\nENC|104|454\nENC|105|454\nENC|106|454\nENC|107|1098\nENC|108|454\nENC|109|1998\nENC|110|454\nENC|111|3154\nENC|112|4694\nENC|113|4694\nENC|114|582\nENC|115|4694\n",
+          "stderr": ""
+        }
+      ],
+      "binary": "00d7edabd2638640095e9cca2276aff84d2e5acb8d6de63d126130b3e2204c3f"
+    },
+    "candidate-profile": {
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [61/63] Built Main (3.2s)\n\u2714 [62/63] Built Main:c.o (390ms)\n\u2714 [63/63] Built \u00abartifact-test\u00bb:exe (140ms)\nBuild completed successfully (63 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-smbg44oj/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "TOTAL|96407|712153|1156649|1508335\nTRACE|399296\nROUTE|5,4,3,2,0,1\nEVENT|0|5\nEVENT|1|4\nEVENT|2|3\nEVENT|3|2\nEVENT|14|5,0,1\nEVENT|23|4,0,1\nEVENT|32|3,0,1\nEVENT|41|2,0,1\nEVENT|123|5,4,3,2\nNODE|0|454|454|5235|1218\nNODE|1|454|454|5235|1218\nNODE|2|454|454|5235|1218\nNODE|3|454|454|5235|1218\nNODE|4|2394|2394|687|1517\nNODE|5|1984|1984|779|0\nNODE|6|454|454|551|0\nNODE|7|1593|1593|605|0\nNODE|8|1970|1970|1965|0\nNODE|9|1984|1984|779|0\nNODE|10|3353|3353|3068|0\nNODE|11|2394|2394|687|0\nNODE|12|2394|2394|687|0\nNODE|13|2325|2325|2421|0\nNODE|14|1790|1790|1609|2852\nNODE|15|14664|14664|1707|5431\nNODE|16|3355|3355|769|1830\nNODE|17|4280|4280|3142|7384\nNODE|18|2944|2944|907|2667\nNODE|19|14664|14664|1707|5431\nNODE|20|2944|2944|907|2667\nNODE|21|1146|1146|1217|0\nNODE|22|2325|2325|2403|0\nNODE|23|1790|1790|1609|2852\nNODE|24|14664|14664|1707|5431\nNODE|25|3355|3355|769|1830\nNODE|26|4280|4280|3142|7384\nNODE|27|2944|2944|907|2667\nNODE|28|14664|14664|1707|5431\nNODE|29|2944|2944|907|2667\nNODE|30|1146|1146|1217|0\nNODE|31|2325|2325|2403|0\nNODE|32|1790|1790|1609|2852\nNODE|33|14664|14664|1707|5431\nNODE|34|3355|3355|769|1830\nNODE|35|4280|4280|3142|7384\nNODE|36|2944|2944|907|2667\nNODE|37|14664|14664|1707|5431\nNODE|38|2944|2944|907|2667\nNODE|39|1146|1146|1217|0\nNODE|40|2325|2325|2403|0\nNODE|41|1790|1790|1609|2852\nNODE|42|14664|14664|1707|5431\nNODE|43|3355|3355|769|1830\nNODE|44|4280|4280|3142|7384\nNODE|45|2944|2944|907|2667\nNODE|46|14664|14664|1707|5431\nNODE|47|4476|4476|851|0\nNODE|48|2944|2944|907|0\nNODE|49|2944|2944|907|0\nNODE|50|454|454|5235|0\nNODE|51|1593|1593|605|0\nNODE|52|1360|1360|1609|0\nNODE|53|3355|3355|769|0\nNODE|54|2482|2482|2239|0\nNODE|55|2432|2432|843|0\nNODE|56|2432|2432|843|0\nNODE|57|454|454|551|0\nNODE|58|1984|1984|779|0\nNODE|59|1984|1984|779|0\nNODE|60|454|454|551|0\nNODE|61|1600|1600|715|0\nNODE|62|1600|1600|715|0\nNODE|63|454|454|551|0\nNODE|64|952|952|523|0\nNODE|65|1714|1714|1837|0\nNODE|66|2841|2841|2812|0\nNODE|67|1970|1970|1992|0\nNODE|68|3353|3353|3068|0\nNODE|69|2226|2226|2120|0\nNODE|70|3865|3865|3324|0\nNODE|71|2046|2046|1737|0\nNODE|72|1593|1593|605|0\nNODE|73|454|454|5235|0\nNODE|74|1593|1593|605|0\nNODE|75|1360|1360|1609|0\nNODE|76|2394|2394|687|0\nNODE|77|2226|2226|2111|0\nNODE|78|1146|1146|1217|0\nNODE|79|1790|1790|1591|0\nNODE|80|1593|1593|605|0\nNODE|81|454|454|5235|0\nNODE|82|1593|1593|605|0\nNODE|83|1360|1360|1609|0\nNODE|84|1593|1593|605|0\nNODE|85|1970|1970|1983|0\nNODE|86|890|890|1089|0\nNODE|87|1534|1534|1463|0\nNODE|88|1593|1593|605|0\nNODE|89|454|454|5235|0\nNODE|90|1593|1593|605|0\nNODE|91|1360|1360|1609|0\nNODE|92|1714|1714|1855|0\nNODE|93|1593|1593|605|0\nNODE|94|1714|1714|1837|0\nNODE|95|3808|3808|3687|0\nNODE|96|1970|1970|2001|0\nNODE|97|5543|5543|4937|0\nNODE|98|2226|2226|2138|0\nNODE|99|6311|6311|5321|0\nNODE|100|2482|2482|2266|0\nNODE|101|7079|7079|5705|0\nNODE|102|4476|4476|851|0\nNODE|103|2944|2944|907|0\nNODE|104|1593|1593|605|0\nNODE|105|2432|2432|843|0\nNODE|106|1593|1593|605|0\nNODE|107|1984|1984|779|0\nNODE|108|1593|1593|605|0\nNODE|109|1593|1593|605|0\nNODE|110|1970|1970|1965|0\nNODE|111|1984|1984|779|0\nNODE|112|2394|2394|687|0\nNODE|113|3934|3934|3661|0\nNODE|114|2226|2226|2129|0\nNODE|115|2432|2432|843|0\nNODE|116|3355|3355|769|0\nNODE|117|4574|4574|3981|0\nNODE|118|2482|2482|2257|0\nNODE|119|2944|2944|907|0\nNODE|120|4476|4476|851|0\nNODE|121|5214|5214|4301|0\nNODE|122|4186|4186|3708|0\nNODE|123|1658|1658|1482|2154\nNODE|124|4476|4476|851|2159\nNODE|125|4476|4476|851|2159\nNODE|126|3349|3349|2915|3557\nNODE|127|3542|3542|2841|3582\nNODE|128|4280|4280|3151|6208\nNODE|129|3542|3542|2841|3582\nNODE|130|4280|4280|3151|6208\nNODE|131|3542|3542|2841|3582\nNODE|132|4280|4280|3151|6208\nNODE|133|3027|3027|2540|3669\nNODE|134|3637|3637|2823|6615\nNODE|135|10531|10531|1361|3892\nNODE|136|2944|2944|907|2667\nNODE|137|2432|2432|843|2339\nNODE|138|1984|1984|779|2027\nNODE|139|1030|1030|551|1218\nNODE|140|1593|1593|605|1220\nNODE|141|1970|1970|1965|2686\nNODE|142|2773|2773|2475|2173\nNODE|143|1593|1593|605|1220\nNODE|144|2869|2869|2439|3879\nNODE|145|3928|3928|2995|3366\nNODE|146|1593|1593|605|1220\nNODE|147|4024|4024|2895|5376\nNODE|148|5339|5339|3515|4863\nNODE|149|2394|2394|687|1517\nNODE|150|5691|5691|3479|7745\nNODE|151|1970|1970|1965|3118\nNODE|152|3512|3512|2767|5800\nNODE|153|1030|1030|551|1218\nNODE|154|1593|1593|605|1220\nNODE|155|1970|1970|1965|2686\nNODE|156|1984|1984|779|2027\nNODE|157|2773|2773|2475|2173\nNODE|158|1593|1593|605|1220\nNODE|159|2869|2869|2439|3879\nNODE|160|2432|2432|843|2339\nNODE|161|3928|3928|2995|3366\nNODE|162|4698|4698|3341|4518\nNODE|163|4024|4024|2895|7776\nNODE|164|7233|7233|1197|3186\nNODE|165|5854|5854|3843|7776\nNODE|166|6334|6334|3807|13218\nNODE|167|25330|25330|2399|10045\nNODE|168|55310|55310|33119|91982\nENC|0|454\nENC|1|454\nENC|2|454\nENC|3|454\nENC|4|454\nENC|5|454\nENC|6|454\nENC|7|454\nENC|8|582\nENC|9|582\nENC|10|1098\nENC|11|454\nENC|12|1226\nENC|13|2382\nENC|14|2382\nENC|15|710\nENC|16|1354\nENC|17|838\nENC|18|1354\nENC|19|1226\nENC|20|2382\nENC|21|2382\nENC|22|710\nENC|23|838\nENC|24|1354\nENC|25|1226\nENC|26|2382\nENC|27|2382\nENC|28|710\nENC|29|838\nENC|30|1354\nENC|31|1226\nENC|32|2382\nENC|33|2382\nENC|34|710\nENC|35|838\nENC|36|838\nENC|37|838\nENC|38|1354\nENC|39|454\nENC|40|454\nENC|41|710\nENC|42|1226\nENC|43|454\nENC|44|582\nENC|45|1098\nENC|46|454\nENC|47|454\nENC|48|970\nENC|49|454\nENC|50|326\nENC|51|454\nENC|52|454\nENC|53|454\nENC|54|1354\nENC|55|454\nENC|56|710\nENC|57|1226\nENC|58|454\nENC|59|582\nENC|60|1098\nENC|61|454\nENC|62|454\nENC|63|582\nENC|64|710\nENC|65|838\nENC|66|838\nENC|67|1610\nENC|68|1610\nENC|69|838\nENC|70|1354\nENC|71|710\nENC|72|1226\nENC|73|582\nENC|74|1098\nENC|75|454\nENC|76|454\nENC|77|454\nENC|78|1098\nENC|79|454\nENC|80|1998\nENC|81|454\nENC|82|3154\nENC|83|582\nENC|84|4694\nENC|85|1098\nENC|86|1098\nENC|87|1998\nENC|88|1998\nENC|89|454\nENC|90|1098\nENC|91|582\nENC|92|1226\nENC|93|3154\nENC|94|1354\nENC|95|4694\nENC|96|4694\n",
+          "stderr": ""
+        }
+      ],
+      "binary": "11b05ac66bbc58856c4e8eee73aeaaa37cd9b1580d39ccf28fcbc7b56f493b02"
+    }
+  }
+}

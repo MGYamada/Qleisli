@@ -1,331 +1,134 @@
-<a id="qleisli-v0x-roadmap-and-the-v019-boundary"></a>
-
 # Qleisli milestones toward v1
 
-Status: **revised development direction selected on 2026-09-27 for 0.1.5**.
-The [revised 0.2.0 plan](v0.2.0-plan.md) packages implemented finite interfaces
-and the experimental Lean foundation. The 2026-09-30 split retains completed
-corpus experiments, review fixes and bounded host connections in [0.2.1](v0.2.1-plan.md);
-remaining heavy shared-QPE implementation/integration/proofs and their unmet
-acceptance gates move to [0.2.2](v0.2.2-plan.md). The
-[decision dossier](decisions/2026-09-27-v1-path.md) records the original scope
-and bounded kernel restart. [Current states](current-status.md) are generated
-from one record; the current [release record](releases/v0.2.1.md) separates local
-validation and publication. The [0.1.5 record](releases/v0.1.5.md) retains the
-original selection. This plan supersedes the 0.1.4 schedule, not its
-historical evidence or the current finite language contracts.
-
-<a id="decision-consolidate-the-finite-foundation-through-v019"></a>
-
-## Decision: milestones are independent of release numbers
-
-Use M0–M5 to schedule work. Choose a product version from the
-[compatibility policy](versioning.md) when shipping a concrete change.
-A compatible JSON diagnostic or sampling feature may ship in PATCH within
-0.y.z (y > 0); incompatible changes require MINOR. No capability/size theme
-reserves a release number by itself; explicit user-selected release targets
-are recorded separately below. Audits run continuously and need no release of their own.
-
-The user subsequently adopted a [Lean kernel migration](lean-kernel-migration.md)
-alongside M0–M5. Its intended boundaries are K0/0.2.x for the experimental
-executable kernel and shared-QPE integration, K1/0.3.0 for exact arithmetic/contracts, K2/0.4.0 for complete
-raw ownership/effect/evidence checking with dual acceptance, K3/0.5.0 for a
-**Qleisli Soundness Theorem** and transfer of production authority, and
-K4/0.6.0 onward for translation validation, a proved Lean backend and broader
-community development, completing the
-[Physical Realizability Theorem](release-milestones.md#physical-realizability-theorem-v1)
-by v1. CPTP semantics follows as a corollary of soundness; realizability
-constructs and synthesizes its isometric dilation over a declared gate set.
-The 2026-09-30 [Resource Safety Theorem](release-milestones.md#resource-safety-theorem-v1)
-adoption adds the third v1 pillar, with RS-C1–C5 and
-[resource semantics](resource-semantics.md) for finite static bounds preserved
-through compilation. It remains to prove and adds no current 0.2.1/0.2.2 gate.
-These are dependency and acceptance targets, not completed releases;
-compatible packets retain the PATCH rule. The first phase-word theorem concerns
-the actual restricted checker and cyclic action, not full IR or QPE soundness.
-New M2 kernel development uses Lean without Mathlib runtime dependencies; the
-Rust research prototype remains an independent comparison implementation.
-Current finite `check`/`run` acceptance remains in Rust. This migration leaves
-shared QPE, R14 and H1–H5 open. Under the 2026-09-29 user-selected split, their
-remaining production work moves to 0.2.1; 0.2.0 retains the completed K0
-components without claiming full M2/K0 integration. Preserve compatible public
-APIs for 0.2.1; any required break selects 0.3.0 under the same version policy.
-
-The [pipeline migration policy](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary)
-requires an independent IR check at the Rust/Lean boundary throughout migration
-from either end of the pipeline. Backend-to-frontend migration grows the proved
-downstream segment one pass at a time; remaining Rust transformations stay
-untrusted. The boundary IR may change, while the trust partition, translation
-obligations and existing K0–K4 gates remain explicit and stable.
-[External search and LeafRealizer](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
-refine that direction: retain expensive rotation-synthesis search outside Lean,
-check its circuits and witnesses with a proved Lean checker, and require no
-blanket rewrite of search algorithms. This does not relax PR-C2 or exact cleanup.
-
-The [2026-09-28 version-policy revision](versioning.md) permits compatible
-features in 0.1.x without exceptions. X1 check/run is recorded in the
-[0.1.7 record](releases/v0.1.7.md); fixed-width operation parameters and meanings
-are implemented in the [0.1.8 record](releases/v0.1.8.md), with their previously
-selected version and explicit migrations preserved. The historical v0.1.9
-checkpoint remains B019, without requiring patches 6–9 before new features.
-New work retains its specification, semantic and validation gates, regardless
-of the numeric bump. Later compatible work may use 0.1.10.
+Current development: **0.2.2, unreleased**; latest published: [0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md).
+The [current plan](v0.2.2-plan.md) and [VM-22–VM-29](verification-migration-v0.2.md)
+replace old release work plans. Product versions follow [compatibility](versioning.md):
+compatible changes use PATCH in 0.y.z, public breaks use MINOR. Milestone IDs
+express dependencies, not reserved version numbers.
 
 ## v0.3.0: Qleisli type-system specification
 
-**User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
-of the **v0.3.0 breaking-change release**. This makes the type-system work an
-explicit 0.3.0 target alongside K1 exact meanings/contracts; it is not merely
-a fallback version if 0.2.1 encounters a compatibility problem.
+The user selected v0.3.0 for the breaking type-system specification. Define type
+formation/equality, moves/borrowing, effects/capabilities, sizes/conversions,
+source/IR checking obligations and public migration. Follow Rust for unresolved
+type/ownership choices while retaining quantum linearity, explicit discard and
+proved clean release. The [current type contract](type-system.md) remains in force.
 
-The [current finite type contract](type-system.md) remains authoritative until
-its specified successor is adopted and implemented. The 0.3.0 work must state
-type formation/equality, ownership/effects, operation capabilities, sizes and
-explicit conversions, with source/IR checking obligations and migration from
-the existing public contracts. Concrete rule changes, syntax and APIs remain
-to be decided; this scheduling decision alone adopts none of them. Preserve
-the Rust design default, quantum invariants and fixed trust boundary.
+Resolve the [coefficient/phase-domain split](coefficient-domains.md#review-inventory-and-v03-decision)
+with explicit arithmetic, equality, interpretation, capacity and binding rules.
+A flat triple return for `toffoli` requires migration from its existing nested
+return ([#15](https://github.com/MGYamada/Qleisli/issues/15)). Concrete successor
+rules and syntax remain undecided. QLT implementation is deferred until v0.4.0
+or later ([#50](https://github.com/MGYamada/Qleisli/issues/50)); its [desired source/faults](../tests/fixtures/qlt_design/README.md)
+remain preserved. QDB is tracked in [#51](https://github.com/MGYamada/Qleisli/issues/51).
+Neither planned tool is an implemented language API.
 
-**QLT implementation is deferred to v0.4.0 or later**, after this type-system
-work. Its existing design and source records remain available. The current
-development version stays 0.2.1, whose compatible scope and R14/H1–H5 gates
-remain unchanged. This records future work, not implementation, validation,
-a manifest bump or publication.
+### Documentation discipline for v0.3.0
+
+**docs/ cleanup boundary at v0.3.0 — user decision, 2026-09-30.**
+Keep the active v0.2.x goals and VM-22–VM-29 migration plan during their
+implementation. Aggressively delete obsolete plans and historical reports now.
+By v0.3.0, retire every remaining pre-v0.3.0 file under `docs/` and write that
+release's documentation from scratch. This supersedes the content-preserving
+migration rule in [#48](https://github.com/MGYamada/Qleisli/issues/48).
+
+The enduring direction is the three theorems and six v1 algorithm goals in
+[README](../README.md#project-goals). Build the new documentation from adopted
+v0.3.0 decisions, actual code, proofs and executable examples; do not archive or
+transplant the old tree. Historical lookup uses Git history and published tags.
+Source attempts, counterexamples, validation artifacts, proof code and required
+notices outside `docs/` remain intact.
+
+Deletion precedes the new Reference. The rewrite must give each rule one home,
+state its implemented/tested/proved scope and pass link/example checks. This
+cleanup changes no present language acceptance or theorem status.
 
 ## Community development from v0.5
 
-**Adopted on 2026-09-29:** proof of the
-[Qleisli Soundness Theorem](release-milestones.md#qleisli-soundness-theorem-v050)
-is the central **v0.5.0** milestone. From v0.5 onward, the project is intended
-to grow from individual development into a full-scale, community-oriented
-open-source effort. Qleisli is already Apache-2.0 open source; this transition
-concerns participation, review and maintenance rather than licensing.
+| Target | Required result |
+| --- | --- |
+| 0.2.2–0.2.9 | Acceptance inventory, exact/finite evidence, pure/observing raw IR, hierarchy and explicitly selected production dual checking under VM-22–VM-29. Rust retains authority. |
+| 0.3.x | Adopt, migrate and reprove changed type rules at the breaking boundary. |
+| 0.4.x | Prepare S05 proof coverage, contributor setup, bounded issues, review/maintenance responsibilities and independent review; evaluate QLT separately. |
+| 0.5.0 | Prove the actual production **Qleisli Soundness Theorem**, complete [S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050), then transfer authority to Lean. |
+| 0.5.x onward | Begin mathlib-style stdlib growth under [STDLIB.md](../STDLIB.md) and expand community participation. From 0.6, K4 develops translation validation and a proved Lean backend. |
+| 1.0 | Meet [V1-C1–C5](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure), [PR-C1–C4](release-milestones.md#physical-realizability-theorem-v1) and [RS-C1–C5](release-milestones.md#resource-safety-theorem-v1), with Physical Realizability and Resource Safety proofs and stabilized contracts. |
 
-| Period | Technical focus | Project development |
-| --- | --- | --- |
-| 0.2.x–0.3.x | Shared QPE/H1–H5 and K0/K1 executable definitions, exact meanings and proofs; formulate the Qleisli type system at the 0.3.0 breaking boundary. | Maintain focused individual development with public code, reproducible checks and recorded design decisions; contributions and review can begin now. |
-| 0.4.x | Complete K2 raw-IR checks and compose the full soundness proof obligations. | Prepare contributor setup, bounded contribution issues, review ownership and maintenance/release procedures; invite independent review of the theorem statement, implementation and assumptions. |
-| **0.5.0** | **Prove the Qleisli Soundness Theorem and complete S05-C1–C5 before transferring production authority to Lean.** | Publish a reproducible proof/coverage/review package and contributor entry points as the foundation for broader participation. |
-| **0.5.x onward** | Maintain the proved kernel; develop translation validation and the Lean backend through K4 from 0.6.0, toward physical realizability; continue M3–M5. | Expand contributors and reviewers, document maintainer roles and decisions, and develop examples, documentation and integrations through the same contract/proof gates. |
-| 1.0.0 | Meet V1-C1–C5, PR-C1–C4 and RS-C1–C5; prove Physical Realizability and Resource Safety for the supported compiler/backend and stabilize the public contracts. | Sustain documented review, releases and maintenance with community participation. |
-
-The theorem's scope is the actual supported IR verifier, including exact
-phase, effects, reference correlations and clean return; general source and
-backend translation proofs follow in K4. The present phase-word result is only
-a precursor. Publication waits for the theorem and acceptance evidence, with
-no fixed date or substitute claim based on regression counts. The three-source
-external corpus policy, M0–M5 dependencies and compatibility-based versioning
-remain unchanged. Community readiness does not imply existing external
-maintainers or completed independent review.
-
-## QLT mathematical testing
-
-The [QLT mathematical test language](qlt-design.md), adopted on 2026-09-29,
-adds an independent TQL-0–TQL-3 work stream alongside M0–M5 and K0–K4:
-
-| Packet | Intended period | Deliverable |
-| --- | --- | --- |
-| TQL-0 | Current design record | English design, desired source and semantic counterexamples; no runtime or proof claim. |
-| TQL-1 | v0.4.0 or later, after the 0.3.0 type-system work | Rust experiment: exact finite denotation comparison, structural costs and doctests, first for QFT2/3 and reversible arithmetic. |
-| TQL-2 | From 0.5 onward | Complete instruments/reference comparisons and staged Lean evaluator/cost migration with actual-definition correspondence proofs. |
-| TQL-3 | After the relevant contracts | Interval bounds, further mathematical references and independent Lean certificates. |
-
-The user explicitly chose Rust-first evaluation and a separate migration/proof
-target. QLT introduces no extra 0.2.0, v0.5 soundness or v1 realizability gate.
-The [design acceptance experiments](qlt-design.md#4-roadmap-and-acceptance)
-preserve checked-IR boundaries, exact phase, independent references and explicit
-failed/inconclusive/error results. The v0.4.0 lower bound supersedes the earlier
-0.3–0.4 TQL-1 window; it does not promise completion in 0.4.0. Later packets retain their dependencies,
-and the command and syntax remain unimplemented.
-
-## Lean-assisted mathematical debugger
-
-**Future 0.x.0 work adopted on 2026-09-29; exact version unselected.** Build a
-[mathematical debugger](lean-debugger-plan.md) on Lean checking and later K4
-translation evidence: locate failed equations/premises in actual IR, connect
-available source provenance, and expose independently checked counterexamples.
-Separate semantic mismatches from missing/invalid evidence, undecided checks
-and unsupported/error results. QLT provides independent mathematical tests;
-the debugger explains failures without becoming an acceptance authority.
-
-Start from existing QFT phase/order and QPE residual/reference counterexamples.
-Implement bounded obligation reports, certified witnesses and source navigation,
-then backend-preservation and repair feedback as the relevant proofs mature.
-This adds no 0.2.0/0.2.1, S05 or PR/V1 completion requirement, changes no trust
-boundary and claims no implemented debugger. Keep release selection compatible
-with the existing version policy.
-
-## Responsibilities beyond ownership
-
-**Require every new abstraction to identify an obligation it removes from the
-algorithm author, the evidence that replaces that obligation, and the checker
-that enforces it.** Use the six [imaginary algorithm drafts](imaginary-v1/README.md)
-to evaluate that benefit. A shorter gate listing or another annotation is not
-sufficient. The intended user experience is ordinary component composition;
-library authors and evidence producers may still need to supply proofs.
-Inference is bounded: failure to establish a required capability or contract
-must produce a diagnostic, never unchecked acceptance.
-
-The names in this table describe design roles, **not new `.qli` types or APIs**.
-
-| Responsibility | Existing finite foundation | Next design direction and obligation removed |
-| --- | --- | --- |
-| Ownership: who may use a resource | Linear `Q<A>`, complete call/branch frames, no use after measurement | Preserve the same accounting under parameterized operations and register structure, so authors need not track individual wire lifetimes. |
-| Capability: which operations are available | Eligible closed unitary bodies support static adjoint, control, and repetition | Make phase-fixed unitary meaning, adjoint access, and controlled access explicit at operation-parameter boundaries. Derive capabilities only from supported implementations or checked access evidence, so callers need not reconstruct those derivations. |
-| Effect: what a computation does | Declared classifications and inferred body effects using `Unitary <= Iso <= Observe` | Consider finer summaries and inference only where they simplify composition. Preserve observation instruments and declared contracts; do not conflate allocation, measurement, classical selection, or host I/O with transformation access. |
-| Typestate: which invariant has been established | Consumed/live ownership and certified computed scopes | Track established auxiliary/encoding invariants across specified boundaries, so cleanup obligations can be checked automatically. A proposed `Clean` label requires exact zero/separation evidence; `Dirty` means no such established invariant, not a measured physical state. |
-| Proof contracts: why the implementation has its promised meaning | Bounded SC/FC checks, immutable evidence, independent final-IR verification | Reuse evidence and move proof production behind library boundaries while checking its binding independently. General proof search, import, and symbolic equality remain separate design tasks. |
-| Resource accounting: what execution costs | Documented finite limits and selected component costs | Later expose useful bounds for wires, depth, gates and oracle calls, separating compilation, checking, quantum execution, and classical work. A resource type system is not needed for the maintenance series. |
-
-Mathematical unitarity alone does not supply controlled access to an opaque
-operation or its inverse implementation. Preserve the operation's phase;
-`U` and `exp(i theta) U` can differ observably under control. Finite repeated
-application does not imply efficient or unit-cost access to large powers.
-Likewise, an isometric initializer is not freely invertible on its whole
-output space. `Measurable`, `Allocate`, and `Discard` are not adopted as
-synonyms for unitary transformation capabilities.
-
-Auxiliary cleanup must hold for every permitted input and arbitrary reference
-system. In an exact pure cleanup contract, for an implementation
-`F : H_in -> H_data tensor H_aux`, the required factorization is
-`F = (I_data tensor |0_aux>) V` with `V : H_in -> H_data` an isometry
-when cleanup is promised on all physical inputs. For an isometric entry
-encoding `E_in : H_logical -> H_in`, the encoded-input contract instead requires
-`F E_in = (I_data tensor |0_aux>) V`, with `V : H_logical -> H_data`
-an isometry and separately established entry evidence. Both equations extend
-by the identity on any reference system. Ownership, an inverse capability, scope exit, a
-typestate name, or an approximately zero measurement result alone does not
-establish this equation. General entanglement-region inference and dependent
-or graded type systems remain research options, with no selected release.
-
-<a id="maintenance-work-targets-v014-through-v019"></a>
-<a id="v02-toward-v1-capability-led-generalization"></a>
+These are adopted targets, not completed guarantees, fixed dates or claims of
+existing external maintainers. The supported production checker and complete
+declared profile determine S05 scope; phase-word/component proofs are precursors.
+General source/backend preservation follows K4. CPTP semantics is a soundness
+corollary; realizability must construct/synthesize a dilation over a declared gate
+set. Resource Safety covers actual execution under declared cost models, beyond
+linear ownership and checker budgets. Apache-2.0 and the three-source corpus
+policy continue to apply.
 
 ## Active milestones and dependencies
 
-| Milestone | Selected scope and dependencies | Completion evidence |
+| Milestone | Scope | Acceptance boundary |
 | --- | --- | --- |
-| M0: decide the path | Next-scope dossier, before new features. | Select a feasible M1 scope, capability representation, meaning language, angle policy, joint IR/evidence direction and bounded kernel go/no-go. A no-go needs dated reconsideration and cannot count as a completed handoff. [Scope selected](decisions/2026-09-27-v1-path.md); [M1 extension rules](next-minor-spec.md) and [machine interfaces](machine-interface-spec.md) specified. |
-| M1: fixed-width composition and external interfaces | Depends on M0 and G020-1 specification. Static operation parameters with checked capabilities and conjugation; bounded basis-derived meanings; preserve existing special forms as elaboration. Portable finite evidence, JSON diagnostics and sample/trial APIs are separately shippable slices, versioned by compatibility. | One fixed-width body accepts distinct checked implementations, rejects unavailable access and stale/wrong-phase evidence; independent interchange mutation cases; actual samples and explicit failure results. Existing finite dense checks are permitted within unchanged bounds. No size-generalization or V1-C2 claim. |
-| M2: scalable checking and QPE | Depends on M1's operation/evidence interfaces; specify hierarchical IR and proof binding together during M1. Bounded kernel production path, static sizes, ideal dyadic angles and shared multi-width QPE. | R14 and hierarchical-IR gates below, exact entry/cleanup, supported schema checks and phase/reference-sensitive QPE instrument cases. Same source across declared multiple widths and operations; QPE's contribution to V1-C2, not completion of all V1 criteria. |
-| M3: Grover and host trials | Depends on M2 and R06 predicate synthesis. | Reusable preparation, oracle, reflection and iteration; no whole-space table construction for the declared predicate fragment; fresh sampling, candidate checks and retries. Evaluate Grover against V1-C1–C5. |
-| M4: Shor with shared QPE | Depends on M2 and R09 arithmetic synthesis; may progress alongside M3. | Add/compare/reduce/uncompute implementation, whole-space modular meaning, controlled modular powers, exact scratch cleanup, shared QPE, actual samples, period/factor validation and explicit retry. Evaluate Shor against V1-C1–C5. |
-| M5: costs and stabilization | Depends on M3 and M4. | Separate generation, checking, execution, oracle and classical costs; migration and stable public contracts; all executable V1-C1–C5 evidence. |
-| Continuous maintenance and proof | Independent of release cadence; follow the verifier/kernel-first [proof order](formal-core.md#4-theorem-status-and-proof-work). | Rule/evidence audit dispositions, compatible fixes with regressions, Qleisli axiom audit (and a separate external audit if Physlib is reintroduced), honest proof premises and reproducible releases when selected. |
+| M0: choose the path | [Decision dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md), capability/meaning/angle policy and joint IR/evidence design. | Scope and bounded-kernel feasibility selected; a no-go is not completion. |
+| M1: fixed-width composition/interfaces | Checked static operation parameters, conjugation, bounded basis meanings, finite interchange, diagnostics and host trials. | Distinct checked implementations compose; unavailable access and wrong/stale phase/body evidence reject. Existing finite dense bounds remain. |
+| M2: scalable checking/QPE | Hierarchical IR, static sizes, dyadic phases, shared source across widths and operations. | R14/H1–H5, exact entry/cleanup and phase/reference-sensitive full QPE instrument; production integration remains open. |
+| M3: Grover | M2 plus reversible predicate synthesis and fresh host trials. | Preparation/oracle/reflection/iteration and candidate/retry results meet V1-C1–C5 without full-space truth-table synthesis. |
+| M4: Shor | M2 plus reversible whole-space modular arithmetic; may proceed alongside M3. | Shared QPE, clean scratch, controlled powers, samples, period/factor checks and explicit retries meet V1-C1–C5. |
+| M5: costs/stability | M3/M4 and all executable v1 evidence. | Separate generation/checking/execution/oracle/classical costs, public migrations and stable contracts. |
 
-Walk and QSVT remain design stress tests, not additional executable v1 gates.
-The [2026-09-28 interoperability direction](interoperability-roadmap.md) adds
-independently shippable M1 slices: Python access to the shared compiler/checker,
-bounded OpenQASM 3 import/export and QIR Base output/input, followed by a
-specified adaptive fragment. [M1.1-A](interop-m1.1.md) now specifies and implements
-the bounded OpenQASM adapter and QIR output; QIR import, adaptive behavior and
-Python extension specifications/implementations remain pending. Early finite interoperability can precede operation parameters and M2,
-while the hierarchical IR/evidence and R14 gates remain prerequisites for sizes.
-
-The [2026-09-28 source-authoring corpus](qli-authoring-feedback.md) supplies
-executable evidence for missing tuple/basis ergonomics and type-level QPE reuse.
-Its finite-template-before-R14 suggestion is an open scheduling alternative;
-it changes neither the current size gate nor the V1 acceptance criteria.
-The [v0.2.0 backlog](v0.2.0-backlog.md) collects these authoring issues with
-stable IDs, source evidence and acceptance experiments. It supplies scope-review
-inputs without duplicating active milestone states or assigning all M2 work to 0.2.0.
-
-The [coefficient-domain recommendation](coefficient-domains.md), also recorded
-on 2026-09-28, keeps future exact-domain parameterization separate from
-approximation and device contracts. It is preparation for uncertain future
-gate sets, not an implementation or a change to the selected M2 profile.
-
-No release date or completion of general compiler mechanization follows from
-this table. The **2026-10-04 JST** scope checkpoint in the dossier evaluates
-M1 specification and M2 kernel/IR feasibility, not release publication.
-
-<a id="cross-release-prerequisite-symbolic-contract-checking"></a>
+Walk and QSVT remain stress tests, not extra executable v1 gates. [Bounded connections](connections-v021.md)
+are shipped finite slices, without a general adaptive or hierarchical guarantee.
+Maintain the [verifier/kernel-first proof order](formal-core.md#4-theorem-status-and-proof-work),
+axiom/runtime-policy audits and independent checking throughout [pipeline migration](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary).
+Search/evidence producers stay untrusted; correctness-critical checkers belong
+in Lean, including the planned LeafRealizer role. Moving code does not prove it.
 
 ### Cross-release prerequisites
 
-| Prerequisite | Gate |
-| --- | --- |
-| Symbolic meaning/encoding/evidence composition (R14) | Before size generalization in M2, independently check actual implementation binding with bounded leaves and shared proofs, without a global dense operator. Fixed-width M1 may retain current bounded whole-function checking. |
-| Hierarchical IR and evidence binding (R02/R04) | Design with proof interchange in M1; validate shared calls, static loops, parameterized families and checked transformations in M2. Compact proofs over fully expanded IR do not pass. Breaking public enum/field changes require MINOR migration. |
-| Reversible synthesis without truth tables (R06/R09) | Required for M3 predicates and M4 arithmetic. Construct and certify circuits from a declared expression fragment, including zeroed scratch and whole-space behavior. No enumeration of every basis input as the delivered general construction. |
+- **R14:** compose actual meanings, encodings and evidence without global dense
+  matrices before size generalization. Compact proof over expanded IR is insufficient.
+- **R02/R04 and H1–H5:** bind shared calls/repeats, interfaces, requested roots and
+  checked transformations to the actual hierarchical artifact and pinned proofs.
+- **R06/R09:** synthesize reversible predicates/arithmetic over a declared fragment,
+  including outside-residue behavior and zeroed scratch, without full truth tables.
 
-These are complementary gates. Satisfying one does not establish the others.
-[R14 and the QPE profile](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
-state the detailed obligations; the [dossier](decisions/2026-09-27-v1-path.md)
-selects ideal dyadic QPE angles and a limited per-size checker. General symbolic
-equality, arbitrary proof search and an all-n theorem are not required.
-Production integration remains unimplemented.
+The [detailed QPE prerequisites](imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
+and [hierarchy gates](hierarchical-ir-spec.md#migration-and-implementation-gates)
+remain authoritative. Validation follows the [small-system scope](v0.2.2-plan.md#remaining-validation-scope-small-qubit-systems-2026-09-30).
+
+## Responsibilities beyond ownership
+
+Every abstraction must name the author obligation it removes, the replacing
+evidence and its independent checker. Mathematical unitarity does not provide
+an inverse or controlled implementation; preserve global phase under control.
+Large repeated powers are not automatically unit-cost access. An initializer's
+isometry is not a freely usable inverse.
+
+For pure cleanup, `F : H_in → H_data ⊗ H_aux` must factor as
+`F = (I_data ⊗ |0_aux⟩) V`, with isometry `V : H_in → H_data`.
+Under an isometric entry encoding `E_in`, instead prove
+`F E_in = (I_data ⊗ |0_aux⟩) V` and establish the entry premise separately.
+Both extend by identity to every reference. Ownership, scope duration, typestate
+names and approximately-zero measurements do not establish these equations.
+General entanglement-region inference and dependent/graded types remain research.
 
 <a id="v019-acceptance-boundary"></a>
 
 ## Finite maintenance checkpoint (legacy B019)
 
-The old v0.1.9 name remains a linkable checkpoint, not a mandatory release train.
-It requires all rows below and does not delay independent M1 specification work.
-New public features and symbolic-kernel development/integration follow the
-M1/M2 gates above rather than this maintenance checklist. This is a scope
-distinction, not a ban on compatible features in 0.1.x.
-
-The [initial boundary check](reviews/b019-2026-09-28.md) found B019 incomplete.
-The subsequent [completion record](reviews/b019-completion.md) closes all six
-conditions with the F2 repair, completed review dispositions, exact-commit CI
-and clean candidate distribution checks. The
-[code-driven handoff](code-driven-development.md) fixes the next work packets
-and obstacles without changing the acceptance conditions below.
-
-| ID | Required evidence |
-| --- | --- |
-| B019-1: compatibility | Preserve grammar, APIs, semantics, capacities and toolchains. For a patch fixing erroneous acceptance, record the already violated rule, before/after result, diagnostic and regression. |
-| B019-2: finite assurance | Revalidate V01-C1–C6 within declared bounds, including unchanged clients with substitutable implementations, phase, layout, complete ownership, exact cleanup and reference-sensitive cases. |
-| B019-3: audit dispositions | Publish rule/implementation/test/proof and evidence-boundary inventories; resolve discovered supported-contract defects. Inventory coverage and audit completion are separate. |
-| B019-4: proof ledger | Separate paper/Lean results, Rust correspondence and remaining verifier/numerical assumptions; retain project/external axiom audits. Whole-compiler proof is not a completion condition. |
-| B019-5: selected next scope | Keep the six drafts and R01–R14 current; select the next scope under G020-1 and provide its complete extension specification, compatibility and checking decisions. Record a bounded kernel go/no-go with a date and owner; no-go permits only dated reconsideration, not checkpoint completion. [M1 specification](next-minor-spec.md), [machine interfaces](machine-interface-spec.md), [M2 profile](hierarchical-ir-spec.md) and dated go decision now supply this handoff. M2 sized source grammar remains separate. |
-| B019-6: reproducibility | On an actual release candidate run the version policy's primary/MSRV Rust, research, docs/helpers, pinned Lean/audits, representative execution and distribution/attribution checks. Separate local results, exact-commit CI, tag, push and publication. |
-
-## Tracker handoff
-
-Use M1–M5 as GitHub milestone titles without product-version numbers. The
-following issue titles and linked acceptance bodies are ready for a requested
-tracker publication. The maintainer owns scope decisions; an implementer is
-assigned when work starts. This local handoff creates no external issue,
-notification or second mutable status ledger. Current states remain in
-[project-status.json](project-status.json); link tracker records back to it.
-
-| Issue title | Milestone / acceptance body | Dependency |
-| --- | --- | --- |
-| Implement fixed-width static operations and meaning contracts | M1 / [N1–N6](next-minor-spec.md#implementation-acceptance-matrix) | Selected specification |
-| Add versioned JSON command results | M1 / [X1](machine-interface-spec.md#required-conformance-before-shipping) | None of M2 |
-| Add independently checked finite IR interchange | M1 / [X2–X3](machine-interface-spec.md#required-conformance-before-shipping) | QIRF1 first; QIRF2 depends on new meaning evidence |
-| Add trajectory sampling and typed trial outcomes | M1 / [X4–X5](machine-interface-spec.md#required-conformance-before-shipping) | Existing verified IR; JSON mode after X1 |
-| Add bounded source loading with explicit legacy migration | M1 / [X6](machine-interface-spec.md#required-conformance-before-shipping) | MINOR capacity change |
-| Specify and implement the Python host binding and wheel distribution | M1 / [interoperability gates](interoperability-roadmap.md#required-evidence-and-scheduling) | Complete Python extension contract; X4 before exposing sampling |
-| Bounded OpenQASM 3 import/export | M1.1-A / [terminal profile](interop-m1.1.md) | Bounded terminal profile implemented, validated and released in [0.1.7](releases/v0.1.7.md); extensions need their own gates |
-| QIR Base output/input | M1.1-A/B / [connection gates](interop-m1.1.md#acceptance-and-remaining-gates) | Bounded output validated and released in [0.1.7](releases/v0.1.7.md); standard-reader input and its adversarial acceptance checks pending |
-| Implement bound hierarchical proofs and the QPE schema profile | M2 / [H1–H5](hierarchical-ir-spec.md#migration-and-implementation-gates) | M1 operation interfaces; required Lean schemas and sized source specification |
-| Synthesize predicate oracles and shared Grover | M3 / [Boolean DAG contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
-| Synthesize modular arithmetic and shared-QPE Shor | M4 / [arithmetic contract](hierarchical-ir-spec.md#synthesis-without-complete-truth-tables), V1-C1–C5 | M2 and sampling |
-| Stabilize cost reports and executable v1 evidence | M5 / [V1-C1–C5](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure) | M3 and M4 |
-
-Continuous verifier/kernel proof work and finite audits are not separate
-mandatory patch milestones. A discovered defect gets a concrete issue with
-the violated current rule and reproducer; an audit alone does not demand a release.
+The completed finite foundation is recorded in the [B019 review](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-completion.md)
+and [0.1.9 release](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md). Preserve original failed cases and executed
+evidence; the old maintenance schedule is no longer active.
 
 ## Legacy ID mapping
 
-Retain IDs and historical anchors instead of renumbering old evidence.
-
-| Previous planning label | Active home |
+| IDs | Meaning retained |
 | --- | --- |
-| v0.1.5 conformance / v0.1.6 evidence audit | Continuous maintenance; current inventory links rules, implementations, tests and proof gaps. |
-| v0.1.7 correspondence | Continuous verifier/kernel-first proof work, then frontend adequacy. |
-| v0.1.8 decision dossier | M0, brought forward to this change. |
-| v0.1.9 / B019 | Finite maintenance checkpoint above; no automatic no-go completion. |
-| v0.2–v0.9 themes | M1–M5 by dependency, without a reserved version assignment. |
-| G020-1 / G020-2 / G020-3 | Extension specification / implementation / validation gates for the selected scope; fixed-width M1 and sized M2 have different acceptance profiles. |
-| G013-S0–S2 / G013-S3 | Retained initial research artifacts / M2 production integration obligation. |
-| Stage/SPEC, A/L and local proof labels | Historical work areas and proof references, not new scheduling milestones or product versions. |
-| R01–R14 / V01-C / V1-C | Requirements / finite and executable-v1 acceptance criteria; retain their semantic identities. |
+| B019 | Completed finite maintenance checkpoint; not a prerequisite to ship patches in numerical order. |
+| G020-1 / G020-2 / G020-3 | Extension specification / implementation / validation, with separate fixed-width and sized profiles. |
+| G013-S0–S2 / G013-S3 | Research artifacts / production integration obligation. |
+| X1–X6 / CD-1–CD-4 | Finite interfaces and [program-first packets](code-driven-development.md). |
+| K0–K4 / VM-22–VM-29 | Lean migration axis / current eight verification packets. |
+| M0–M5 / A/L / SPEC | Dependency milestones / work areas / historical specification labels; no mechanical renumbering. |
+| R01–R14 / V01-C / V1-C | Requirements and finite/v1 acceptance identities. |
 
-[Historical release records](releases/v0.1.4.md) retain original plans, test
-counts and publication evidence. This mapping changes scheduling, not theorem
-statements or the current grammar.
+Actual adoption and publication evidence remains in the [dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md)
+and [release records](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md). A version selection does not publish.

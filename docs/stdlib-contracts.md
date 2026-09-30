@@ -29,6 +29,14 @@ readable implementations and worked examples. Existing entries retain their
 recorded status; documentation coverage and open proofs must remain visible.
 This direction does not change ledger format v1 or claim complete coverage.
 
+The 2026-09-30 [contribution conventions](../STDLIB.md) supply a short template
+and filled QFT2/Add2/corpus phase-oracle contracts. Their CI linter checks
+documentation sections, scoped status dimensions and links; it neither converts
+this whole ledger to a machine evidence schema nor proves conformance. Until
+v0.5.0, new algorithms generally remain in corpus; from v0.5.0, reviewed
+mathlib-style library growth uses those conventions. Existing entries stay
+experimental with their current contracts and proof status.
+
 **Source-documentation follow-up (2026-09-28):** all four bundled files have
 module documentation and their twelve public/three private definitions have
 English docstrings. [The documentation extension](documentation-comments.md)
@@ -40,11 +48,11 @@ regressions and independent verification remain required.
 
 <a id="共通項目"></a>
 
-The 0.2.0 [machine-interface host APIs](machine-interface-spec.md#020-host-api-mapping) are tracked separately from these twelve ordinary bundled definitions. Shared sized `qft`, `qpe`, preparation and `CBits` measurement helpers are deferred to the [0.2.1 target](v0.2.1-plan.md), remain unimplemented and must receive ledger entries with separate implementation, verification and proof status when introduced.
+The 0.2.0 [machine-interface host APIs](machine-interface-spec.md#020-host-api-mapping) are tracked separately from these twelve ordinary bundled definitions. Sized `qft`, `qpe`, preparation and `CBits` helpers remain corpus/local candidates, unimplemented as public standard APIs. Their production source/IR gates follow the [staged continuation](verification-migration-v0.2.md); standard adoption generally waits until v0.5.0 and requires separate implementation, verification and proof status in the ledger.
 
 ## Common contract fields
 
-The [QLT plan](qlt-design.md) selects a future test surface for independent
+The [QLT plan](https://github.com/MGYamada/Qleisli/issues/50) selects a future test surface for independent
 mathematical references, structural cost regressions and doctests. QFT2/3 and
 modular increment are its [initial source drafts](../tests/fixtures/qlt_design/README.md).
 This is planned tooling, not a new public `.qli` API or additional verification

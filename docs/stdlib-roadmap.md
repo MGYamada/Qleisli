@@ -1,178 +1,25 @@
-<a id="第3層の将来計画-量子アルゴリズムの標準語彙"></a>
-
-# Layer 3 roadmap: a standard vocabulary for quantum algorithms
-
-Status: **L0/L1 and the finite part of L3 are established; the v0.1 minimum and
-v1 target are adopted; generalized standard APIs remain unimplemented**
-(2026-09-27), with the library goal fixed by the user on 2026-09-29. The
-[contract ledger, format v1](stdlib-contracts.md), and
-[finite static-operation implementation](static-operations.md) provide the
-foundation. Higher-order types, algorithm-skeleton names, and generalized
-module organization in this document are design candidates. The
-[standard-library specification](standard-library.md) distinguishes current APIs.
-This authoritative English edition of the design plan replaces its Japanese
-edition without adopting its proposals as language rules or public APIs.
-[Release milestones](release-milestones.md) remain authoritative for release
-acceptance, and the [language evolution framework](language-evolution.md)
-distinguishes current specifications from future design.
-
-**Project north star:** make the language people use to think about quantum
-algorithms coincide with the language they use to write programs. Layer 3
-develops that language into a standard vocabulary with meanings, premises, and
-verification status. Real source in which Shor, QPE, and Grover retain their
-textbook structure is the concrete v1 acceptance target for this direction.
+# Standard-library direction
 
 ## Adopted library goal
 
-**Fixed by the user on 2026-09-29:** Qleisli's standard library is to be a
-**BLAS/LAPACK-like foundation for quantum computing, integrating reusable
-computational components, a textbook of quantum information, and formal
-specifications. Readers should be able to learn quantum information by reading
-the standard library.** These are three connected responsibilities of the same
-library and guide future component design, documentation and adoption.
+The adopted goal is a BLAS/LAPACK-like quantum-computing foundation combining
+reusable components, a quantum-information textbook and formal specifications.
+Readers should be able to learn quantum information by reading the library:
+concept/motivation → mathematical meaning and premises → readable `.qli` source
+→ examples/counterexamples → checking and proof status.
 
-The user's formulation, retained as a supporting Japanese statement of this
-authoritative English goal:
+Until v0.5.0, generally add algorithms to corpus. From v0.5, grow stdlib as a
+mathlib-style open-source project under [STDLIB.md](../STDLIB.md). Its [template](stdlib-contract-template.md)
+and [public ledger](stdlib-contracts.md) fix contribution/contract responsibilities.
+The comprehensive module hierarchy and generalized APIs remain open; current
+[modules and sealed primitives](standard-library.md) keep their contracts.
+`qlippy` remains a future tool, and general borrowing a separate language decision.
 
-> 量子計算における BLAS/LAPACK 的基盤
->
-> 「stdlibを読むだけで量子情報が学べる」――BLAS/LAPACK + 教科書 + 形式仕様を一体化したもの。
-
-| Responsibility | What the library should provide |
-| --- | --- |
-| Computational foundation | Reusable, composable building blocks for quantum computation, with stable mathematical contracts, explicit resource/capability requirements and scope for efficient interchangeable implementations. The analogy concerns this foundational role; it does not select a classical BLAS ABI or an external dependency. |
-| Textbook | A connected reading experience explaining quantum-information concepts, their motivation, mathematical derivations, algorithm structure and worked examples alongside readable reference implementations. State prerequisites and explain why the components work; the library's own material should carry the explanation, with external references supporting it. |
-| Formal specification | Explicit types, ownership, effects, input promises, operators or complete instruments, phase and bit-order conventions, access requirements, error/cost models and implementation correspondence. Link each claim to its checked evidence, Lean theorem and premises where available, or mark the obligation open. |
-
-For each component, the intended reading path connects **concept and motivation
-→ mathematical meaning and premises → readable `.qli` implementation →
-examples and counterexamples → checking and proof status**. Source documentation
-and directly linked library material form this reading surface. Definitions
-should reveal reusable quantum structure; explanations should make clear how
-the code realizes it. A short API description or a link to an external textbook
-alone does not fulfill the educational goal.
-
-Readable reference implementations and optimized implementations may coexist
-under the same explicit logical contract. Substitution needs independently
-checked correspondence, retaining ownership, phase, encoding, access and error
-obligations; report implementation-specific resource costs separately. The
-library remains subject to the ordinary verification boundary. Continue to
-review whether the specified mathematics expresses the intended operation:
-proving that code conforms to a specification does not establish that intent.
-
-**What this fixes:** the library's purpose and the requirement to develop its
-computational, educational and specification roles together. **What remains
-open:** its comprehensive module hierarchy, reading/chapter order, final
-generalized API names and signatures, packaging, and individual implementation
-and proof choices. The current minimum modules and sealed-operation boundary
-already have a [Stage 0 specification](standard-library.md); preserve those
-contracts. The seven areas below remain a concept classification, not a frozen
-future module tree.
-
-This is an adopted target, not a claim that today's finite library already
-teaches the whole subject or has complete formal proofs. The goal adoption alone
-did not authorize corpus experiments; the user's later request now authorizes
-the [0.2.1 corpus continuation](v0.2.1-plan.md#active-completion-goal).
-Sized recursive library interfaces follow the [linear-size convention](size-expressions.md):
-use `n+1`, retain explicit segment reshape and bit reversal, and carry size
-proofs without changing phase, axis order or ownership.
-
-**Priority adopted on 2026-09-27:** make evidence-bearing semantic contracts
-`U E_in = E_out u` and independent certificate checking the
-[v0.1 minimum](release-milestones.md#v01-minimum-semantic-contracts). Develop
-finite-core specification, ownership, and source/IR correspondence as their
-foundation, first demonstrating exchangeable implementations of one logical
-contract. The finite checker and three-argument computed form are
-[implemented](semantic-contracts-v0.1.md), and the finite v0.1 path including
-[public function contracts and final-IR evidence](function-contracts-v0.1.md)
-has been checked. General sizes and operation parameters follow this foundation
-to support the [v1 acceptance target](release-milestones.md#v1-north-star-textbook-algorithm-structure).
-Keep current v0 and fixed-width examples as regressions; adopting a standard
-API requires its own contract and validation.
-
-Before generalization, new standard-API implementation, or release for v0.2.0,
-complete the [imaginary Qleisli 1.0 code prerequisite](release-milestones.md#pre-v020-imaginary-v1-code).
-The six initial ideal-code drafts need not compile; they are design material
-for extracting vocabulary, contracts, and open questions. The
-[six-draft requirement index](imaginary-v1/README.md) and
-[semantic review](imaginary-v1/review.md) now exist. This satisfies the limited
-artifact-and-requirement prerequisite; APIs written in drafts are not thereby
-adopted into the standard library.
-
-> Build a standard vocabulary from concepts used in quantum-algorithm research,
-> with contracts for types, ownership, effects, meaning, evidence, and cost.
-> Humans and AI should be able to compose programs from that vocabulary and
-> pass them through the same verification foundation.
-
-<a id="1-三つの層の関係"></a>
-
-**Documentation follow-up (2026-09-28):** the [Rust-style comment extension](documentation-comments.md)
-adds module/function descriptions to all existing bundled definitions. Keep
-these in English, aligned with the contract ledger's phase, ordering, ownership,
-effects and assumptions. Docstrings are descriptive and grant no verification
-privilege. This adds no ordinary quantum API or generalized library facility.
-
-## 1. How the three layers relate
-
-| Layer | Role | Deliverables |
-| --- | --- | --- |
-| Layer 1: [verification foundation](ai-era-goal.md) | Define the grounds for accepting a program. | Type/effect/ownership rules, finite core, independent IR verifier. |
-| Layer 2: [algorithm structure](algorithm-structure-goal.md) | Extract reusable structures from existing algorithms. | Corpus, shared structures, experimental components, and recomposition for other problems. |
-| Layer 3: standard vocabulary | Establish contracts for the extracted structures and develop a maintainable standard library. | API-to-semantics correspondence, a contract ledger with verification status, implementations, conformance checks, and version management. |
-
-Layer 2 covers discovering and evaluating abstractions; Layer 3 covers
-adoption, distribution, and maintenance. This organization is separate from
-implementation stages 0–5 and does not mean that all three layers are complete.
-
-<a id="リリース目標と台帳の役割"></a>
-
-### Release targets and the role of the ledger
-
-| Target | Required library and verification result | Current status |
-| --- | --- | --- |
-| v0.1 | Independently check fixed logical meaning, encodings, entry evidence, and phase for finite exact semantic contracts, binding certificates to actual IR and the contract version. Demonstrate that substituting implementations of one contract preserves ownership and meaning, including coherent control and references. | **Met in the declared finite profile.** Exact checker, computed regions, public function evidence, retention through final IR, and substitution are implemented and checked. Automated checking of the entire ledger and generalization remain later work. |
-| v1 | Shor, QPE, and Grover retain their textbook algorithm structure in real source. Compose logical-component contracts and substitute gate, auxiliary, and layout implementations. | **Unimplemented and unmet.** Small Grover, QPE2/3, and N=15 order-finding examples are fixed-width foundations, not v1 acceptance evidence. |
-
-In the v0.1 contract, the specification fixes `u` and isometric `E_in/E_out`.
-Check type trees, phase, bit order, physical inputs/outputs, and evidence that
-the input satisfies its encoding, alongside ordinary ownership, effect, and
-complete-output-coverage checks. A certificate's name or presence alone cannot
-justify acceptance; modifying its circuit must invalidate stale evidence.
-If exact equality checking exceeds capacity, report a diagnostic rather than
-using approximate agreement to authorize pure auxiliary release.
-
-Acceptance examples include substituting a compute/phase/uncompute circuit and
-a direct implementation of one phase-oracle contract, an H;H identity, and
-simultaneous data/auxiliary X for `f(x)=x`. Check phase under coherent control
-and extension to references. Reject auxiliary-only X, incorrect phase,
-predicate, encoding or layout, mismatched evidence, and nonzero auxiliary
-leakage. H;H and simultaneous X use the finite exact three-argument form;
-the original two-argument form remains restricted to Z/T chains. The
-[conformance record](specification-status.md) distinguishes the checked scope
-from completion of general implementation substitution.
-
-Listing unimplemented function names or pseudocode does not establish v1
-structure. Follow the [algorithm-goal acceptance table](algorithm-structure-goal.md#リリース目標と構造化の判定):
-connect Shor's order finding, classical reconstruction and retries; QPE's
-controlled powers and inverse QFT; and Grover's preparation, phase oracle,
-reflection and repetition to real source and verification. Sizes, required
-control/inverse access, error/failure conditions, and host retries remain
-client-visible contracts. Gate sequences, private auxiliary management, and
-layout belong in component implementations and contracts. This description
-does not finalize syntax or API names.
-
-```mermaid
-flowchart LR
-    A[Existing algorithms] --> B[Shared structures and contracts]
-    B --> C[Experimental ordinary definitions]
-    C --> D[Independent checking and reuse evaluation]
-    D --> E[Standard library and contract ledger]
-    E --> F[Human and AI composition and exploration]
-    F --> G[Candidate new patterns]
-    G --> B
-```
-
-<a id="2-ライブラリの七つの領域"></a>
+Readable and optimized implementations may share a phase/encoding-fixed contract
+only through independently checked correspondence. Review mathematical intent
+separately from implementation conformance. Report ownership, effects, entry
+premises, access, complete instruments, exact scratch return, approximation and
+resources explicitly; tests, source preservation and actual-IR proofs are separate.
 
 ## 2. Seven library areas
 
@@ -194,38 +41,6 @@ require their own semantics and IR checks.
 `Qubit` and `QReg n` do not turn quantum states into copyable values. Ancillas
 also remain linear resources; neither a name nor a lifetime proves zero
 return. Separately owned registers may be entangled.
-
-<a id="3-各語彙に付ける契約"></a>
-
-## 3. Contracts attached to each concept
-
-The following fields are required in the contract ledger. Its
-[document format v1](stdlib-contracts.md) records the 12 bundled public
-definitions. Finite contracts and composable Rust evidence are implemented,
-as is a representation carrying public function contracts, dependencies, and
-evidence after final transformations. Making the entire ledger machine
-readable remains open. v0.1 completed the finite substitution path; it does
-not require generalizing the whole ledger and future approximation/observation
-contracts at once.
-
-| Field | Required content |
-| --- | --- |
-| Identity and status | Contract ID, version, sources and corpus IDs, and proposal/experimental implementation/standard-adoption status. Record proof, implementation, and testing separately. |
-| Classification and types | Language form, sealed built-in operation, or ordinary `.qli` definition; explicitly identify host plans. Include classical parameters, quantum inputs/outputs, and static-parameter domains. |
-| Ownership and effects | Every consumed, returned, and fresh resource; measurement/discard; `Unitary/Iso/Observe`. List captured resources if any. |
-| Meaning and premises | Phase-sensitive operator or instrument containing every outcome. Input model, promises, failure branches, success probability, and reference extension. |
-| Evidence and checked scope | Distinguish typing conditions, verifier-checked certificates, and individual mathematical premises. State checks for totality, injectivity, preservation effects, zero return, code spaces, and similar conditions. |
-| Approximation and cost | Error norm, failure probability, composition rules, oracle calls, gates, auxiliary resources, preparation/measurement counts, and classical postprocessing. |
-| Implementation correspondence | Ordinary definitions and IR lowering, independent IR verification, and required backend capabilities. Diagnose unsupported cases. |
-| Conformance | Acceptance/rejection cases, boundaries, phase-sensitive/reference-sensitive inputs, known output distributions, and reuse in different contexts. |
-
-Display resource safety from types, ideal-operation soundness, algorithmic
-success guarantees, and hardware performance separately. An ordinary `Q<A>`
-type alone does not establish an eigenstate promise, a correctable-error model,
-or a suitable initial success probability. If the certificate mechanism does
-not support a condition, retain it as an unchecked premise.
-
-<a id="4-最初に契約を具体化する骨格"></a>
 
 ## 4. First algorithm skeleton contracts
 
@@ -290,7 +105,7 @@ phase_estimate(U: ControlledAccess<U_A>, m: StaticNatPositive;
 
 **Proposed classification:** a family of ordinary `.qli` definitions.
 `ControlledAccess` is candidate wrapper notation for checked access evidence
-for phase-fixed controlled powers. The [selected semantic model](decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation)
+for phase-fixed controlled powers. The [selected semantic model](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation)
 uses constraints on static operation descriptions; the wrapper, `requires`
 predicates and evidence builders are distinct surface roles, not three
 competing notions of control. The [M1 grammar](next-minor-spec.md) now selects
@@ -448,21 +263,12 @@ effects, bit order, phase, error, or success conditions change the contract.
 Retain the current compiler-bundled version model as the distribution baseline;
 external package management needs separate design.
 
-<a id="6-着手条件と将来の順序"></a>
 
 ## 6. Entry conditions and future work order
 
-The imaginary drafts and requirement records must precede v0.2.0 implementation.
-The existing L0–L5 results below do not by themselves complete that prerequisite;
-its completion is recorded separately through the corpus and review linked above.
-
-The L0 ledger and finite A2/L1 implementation have reached and checked their
-initial milestones. The adopted order prioritizes finite L4 meaning contracts
-and evidence checking for the v0.1 minimum; that bounded path is now checked.
-Relate the areas below to [Layer 2's A2–A4](algorithm-structure-goal.md#実装順と到達基準)
-while distinguishing finite implementations from unimplemented generalization.
-L0–L5 are not release numbers, and completing every area is not itself a
-requirement of either v0.1 or v1.
+L0–L5 classify library work, not releases or a requirement to complete every
+candidate for v1. Generalization follows the language/evidence gates; finite
+implementations do not establish generalized APIs or standard adoption.
 
 | Area | Entry condition | Deliverables and completion status |
 | --- | --- | --- |
@@ -472,12 +278,3 @@ requirement of either v0.1 or v1.
 | L3: arithmetic and hybrid plans | Establish A3 arithmetic, angles, observables, and host boundaries. | [Fixed arithmetic, N=15 order finding, and classical factor extraction](arithmetic-order-finding.md) are connected; retry conditions and probabilities are checked. General arithmetic, automatic retries, and shared `estimate` use in VQE/QAOA remain unimplemented. |
 | L4: advanced skeletons with evidence | Finite exact meaning/auxiliary contracts come first as required by v0.1. Generalization needs A4 preservation effects, projected blocks, and error contracts. | Finite exact checker, three-argument computed form, public-function contract reuse, final-IR retention, and substitution are implemented and checked. Walk, LCU, QSVT, `simulate`, and general syndrome extraction remain later candidates; record each method's premises and verification status in the ledger. |
 | L5: standardization and feedback into search | Establish reuse evidence across multiple uses and previously unused evaluation problems. | Manage public API versions and conformance checks; apply the same review from AI-generated candidate through adoption. Decide adoption separately for each component. |
-
-The first step connected L0 records, L1 static operations, and finite L4 evidence
-to establish v0.1 contract checking and implementation substitution. Build on
-that foundation with L1 size/operation parameters, L2 structures, and L3
-arithmetic/host boundaries toward textbook-structured Shor, QPE, and Grover.
-L3 VQE/QAOA and general L4 block encoding do not become requirements of that
-same release target. Standard adoption of each API still requires Section 5's
-evaluation; finite examples and adopted release goals are not general proofs,
-completed generalized implementations, or standard adoption.

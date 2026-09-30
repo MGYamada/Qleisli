@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "task": "Add six simple one-to-three-qubit finite translations for 0.2.2 from the existing three pinned sources",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.2",
+  "baseline_commit": "abe42496fbfccf3ba605ff12cd58c9e7c68dfb45",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read repository design, frozen upstream symbols, current translations and known tuple/control/rotation workarounds. The previous 0.2.2 version/documentation changes remain uncommitted in this tree. Reused the known RX decomposition and existing driver template. No external model call; informed authoring, not a controlled benchmark. All first sources saved before checking.",
+  "created_utc": "2026-09-29T19:13:21.321864+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Untouched six new projects saved before their first QLI check",
+      "sha256": {
+        "quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
+        "quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+        "quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
+        "quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+        "qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
+        "qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+        "qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
+        "qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+        "pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+        "pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+        "pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
+        "pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3"
+      },
+      "observations": [
+        "check-initial.json",
+        "semantic-validation.json"
+      ]
+    }
+  ]
+}

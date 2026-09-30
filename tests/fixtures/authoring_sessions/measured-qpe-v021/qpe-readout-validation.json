@@ -1,0 +1,61 @@
+{
+  "format": "qleisli.sized-qpe-readout-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 4,
+  "branch_coefficients": 208,
+  "maximum_error": 4.652682298944613e-16,
+  "wrong_bit_order_counterexamples": 10,
+  "max_total_qubits": 4,
+  "initialization": "assumed zero in test inputs; source/checker integration pending",
+  "production_integration": false,
+  "named_qpe_receipt": false,
+  "kernel_sha256": "81b957242ef91d55eaf43a84fdd1b855c14568cad62c1cb6ecdae3d54ebf199c",
+  "readout_binary_sha256": "757daa67d6931b09ca943a9c4d8859449248f5e98c7cc4714f5d9cbc09d661a2",
+  "graph_reconstruction": {
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "sized_corpus",
+      "inspect_source_produced_corpus",
+      "--",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1-1-3|ok|396788|67|1\nCORPUS|qpe-1-2-1-3|ok|923235|268|4\nCORPUS|qpe-1-3-1-4|ok|1501251|402|6\nCORPUS|qpe-2-2-3-4|ok|980741|268|4\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.24s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+  },
+  "readout_commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [91/93] Built Main (498ms)\n\u2714 [92/93] Built Main:c.o (323ms)\n\u2714 [93/93] Built \u00abartifact-test\u00bb:exe (300ms)\nBuild completed successfully (93 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-68yuv52m/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "qpe-1-1-1-3|[[0,0,0],[0,1,2],[1,0,1],[1,1,3]]\nqpe-1-2-1-3|[[0,0,0],[0,1,4],[1,0,1],[1,1,5],[2,0,2],[2,1,6],[3,0,3],[3,1,7]]\nqpe-1-3-1-4|[[0,0,0],[0,1,8],[1,0,1],[1,1,9],[2,0,2],[2,1,10],[3,0,3],[3,1,11],[4,0,4],[4,1,12],[5,0,5],[5,1,13],[6,0,6],[6,1,14],[7,0,7],[7,1,15]]\nqpe-2-2-3-4|[[0,0,0],[0,1,4],[0,2,8],[0,3,12],[1,0,1],[1,1,5],[1,2,9],[1,3,13],[2,0,2],[2,1,6],[2,2,10],[2,3,14],[3,0,3],[3,1,7],[3,2,11],[3,3,15]]\n",
+      "stderr": ""
+    }
+  ],
+  "artifact_sha256": {
+    "qpe-1-1-1-3": "9f0223057b289f4e0642b43a15bb8714c402ccc431c4d51594da915241c36374",
+    "qpe-1-2-1-3": "393b05688390f95fb46258b457a669bf889443e883d643db539427ef625468c4",
+    "qpe-1-3-1-4": "5318d7256e392cd9dd1ec52c1a6b1074b9a73ab41dc0f72d56847f6873a2d0be",
+    "qpe-2-2-3-4": "a36a57739f2f148814ed3150b995baad1ad4c9279521783465e82c1579064d06"
+  },
+  "source_sha256": {
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+  }
+}

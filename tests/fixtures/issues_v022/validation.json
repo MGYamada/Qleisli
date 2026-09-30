@@ -1,0 +1,160 @@
+{
+  "format": 1,
+  "date": "2026-09-30",
+  "scope": "unreleased v0.2.2 local issue repairs and docs reduction; baseline is the pre-issue working tree, including earlier uncommitted work",
+  "base_commit": "abe42496fbfccf3ba605ff12cd58c9e7c68dfb45",
+  "version": "0.2.2",
+  "issues_reviewed": 43,
+  "repaired_issues": [
+    55,
+    56
+  ],
+  "environment": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "python": "3.14.5",
+    "pyqir": "0.12.5",
+    "installed_qleisli": "0.2.2",
+    "package_path": "/private/tmp/qleisli-connections-021/lib/python3.14/site-packages/qleisli/__init__.py"
+  },
+  "executable_sha256": "a58e630bf4a5da370f9ab05dae88e265eabfbcf00b5b2942c765aa6f24a0e43b",
+  "checks": [
+    {
+      "command": "cargo test --all-targets",
+      "passed": 446,
+      "ignored": 14,
+      "suites": 54,
+      "result": "pass"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "result": "pass"
+    },
+    {
+      "command": "cargo fmt --check",
+      "result": "pass"
+    },
+    {
+      "command": "/private/tmp/qleisli-connections-021/bin/python -m pip install --no-deps --no-build-isolation ./python",
+      "result": "pass; existing optional dependencies; installed 0.2.2 wheel"
+    },
+    {
+      "command": "/private/tmp/qleisli-connections-021/bin/python scripts/test_connections.py",
+      "passed": 10,
+      "result": "pass; installed package, no source PYTHONPATH"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "passed": 23,
+      "result": "pass"
+    },
+    {
+      "command": "python3 scripts/test_check_stdlib_contract_docs.py",
+      "passed": 11,
+      "result": "pass"
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "result": "pass; template and three pilots"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status; python3 scripts/check_docs.py",
+      "result": "pass; final regeneration and reference check recorded after writing this artifact"
+    },
+    {
+      "command": "git diff --check",
+      "result": "pass"
+    }
+  ],
+  "regressions": {
+    "qir": "LLVM-valid two/three-block unnamed and mixed chains; text/bitcode identical ordered results; genuine cycles and unvisited blocks still reject",
+    "diagnostics": "same malformed QIRF root has identical verify-ir/interop diagnostic array; file/stdin UTF-8 bytes and Unicode/CRLF coordinates retained; Python preserves structured diagnostics; usage/IO/unlocated errors do not acquire spans"
+  },
+  "documentation": {
+    "markdown_files_before": 115,
+    "markdown_files_after": 110,
+    "bytes_before": 2377703,
+    "bytes_after": 2187705,
+    "bytes_removed": 189998,
+    "percent_removed": 7.99,
+    "deleted": [
+      "docs/lean-debugger-plan.md",
+      "docs/qlt-design.md",
+      "docs/reshape-plan.md",
+      "docs/v0.2.0-plan.md",
+      "docs/v0.2.1-plan.md"
+    ],
+    "compressed": [
+      "docs/documentation-map.md",
+      "docs/code-driven-development.md",
+      "docs/stdlib-roadmap.md",
+      "docs/v0x-roadmap.md",
+      "docs/v0.2.0-backlog.md",
+      "docs/status-history.md",
+      "docs/project-status.json"
+    ],
+    "carried_forward": [
+      "docs/v0.2.2-plan.md",
+      "docs/size-expressions.md"
+    ],
+    "preserved_specification_and_release_prose_except_link_targets": [
+      "language-spec.md",
+      "type-system.md",
+      "syntax-v0.md",
+      "source-resource-rules.md",
+      "source-typing-rules.md",
+      "source-semantics.md",
+      "static-semantics.md",
+      "source-soundness.md",
+      "source-ir-correspondence.md",
+      "lowering-state-refinement.md",
+      "semantic-contracts-v0.1.md",
+      "function-contracts-v0.1.md",
+      "formal-core.md",
+      "release-milestones.md",
+      "machine-interface-spec.md",
+      "hierarchical-ir-spec.md",
+      "quantum-language-requirements.md",
+      "standard-library.md",
+      "resource-semantics.md",
+      "stdlib-contracts.md",
+      "releases/v0.2.0.md",
+      "releases/v0.2.1.md"
+    ],
+    "verified_historical_git_files": [
+      "docs/lean-debugger-plan.md",
+      "docs/qlt-design.md",
+      "docs/reshape-plan.md",
+      "docs/v0.2.0-plan.md",
+      "docs/v0.2.1-plan.md"
+    ],
+    "reference_consolidation": "deferred; #48 remains open",
+    "v03_discipline_plan": "docs/v0x-roadmap.md#documentation-discipline-for-v030"
+  },
+  "limits": [
+    "small qubit systems only; no new maximum-size corpus checks",
+    "no Lean code added for these issue repairs; no new Lean build/audit claimed",
+    "no new external-tool suite, remote CI or release/distribution validation",
+    "working tree remains uncommitted and unpublished"
+  ],
+  "fixtures": {
+    "before.json": "e40ebe900c30d559788d03c512d42fb3c2dc16009d3bc207f1d578ec12552c52",
+    "qasm-unknown.qasm": "69414ede76e463732d6842679d3274766d588a638833231590e86b9cc69207f5",
+    "after.json": "52504dbe4e53da1955fcc6a818bac4284606201296995325c9771fa0285b67f9",
+    "README.md": "ca84c92060c4814104cf9784ebdae8044bfaace3b29b74093d25dc5495ea5e6f",
+    "qir-unnamed.ll": "9b023a7d68a14dc69ad920414df40b819e4810e76688afadd8769b406c00cf21"
+  },
+  "issue_disposition": {
+    "55": {
+      "state": "closed",
+      "state_reason": "completed"
+    },
+    "56": {
+      "state": "closed",
+      "state_reason": "completed"
+    },
+    "48": {
+      "state": "open",
+      "remaining": "Reference consolidation and v0.3 documentation discipline"
+    }
+  }
+}

@@ -34,3 +34,11 @@ import QleisliKernel.Hierarchical.FourierControl
 import QleisliKernel.Hierarchical.FourierBody
 import QleisliKernel.Hierarchical.Wiring
 import QleisliKernel.Hierarchical.FourierRoot
+import QleisliKernel.Hierarchical.Readout
+import QleisliKernel.Hierarchical.Preparation
+import QleisliKernel.Hierarchical.Instrument
+import QleisliKernel.Hierarchical.RoutedPower
+import QleisliKernel.Hierarchical.CircuitTrace
+import QleisliKernel.Hierarchical.QpeSchedule
+import QleisliKernel.Hierarchical.QpeRoot
+import QleisliKernel.Hierarchical.QpeInstrument

@@ -1,0 +1,88 @@
+# VM-22: frozen verification boundaries
+
+Implemented for unreleased 0.2.2 on 2026-09-30. Rust remains the production
+authority. These development fixtures add no public format, dependency,
+acceptance rule or proof. The original baseline comparisons use at most three qubits.
+
+[inventory.json](inventory.json) freezes 232 public enum constructors (including
+all 19 `RawOp` forms), public signatures and capacity constants in 131 source
+snapshots. Thirty-six coverage groups give producers, consumers, obligations,
+replacement packets and executable positive/negative references. Sixteen boundary
+contracts distinguish validity from independent semantic requests and retain
+types, ordered ports, effects, phases, source/evidence binding and limits.
+Twenty-seven capacity scopes distinguish acceptance, transport and execution,
+including module-wide grouped-import prefix and documentation copy budgets.
+Capacity references exercise representative successes/failures; frozen constants
+and guards retain the remaining endpoints without new maximum-size corpus runs.
+Source hashes also cover private guards; changing or adding checking code requires
+reviewing the inventory and relevant comparisons. This is a source inventory,
+not a Rust parser or a proof of coverage/correctness.
+
+The reviewed continuation adds bounded Rust sized source/CLI preparation,
+independent initialization-trace validation, named QPE/provider/instrument
+checking and exact finite/H discharge. Execution and fresh-shot sampling stay
+outside acceptance, interpreting retained actual definitions and preserving
+conditional residual/reference states. Native/decoder/Rust correspondence,
+general source preservation and future production replacement remain separate.
+Reviewed source/API snapshots and small-system harnesses are updated explicitly;
+the original 106-source capture and behavioral fixtures remain historical in
+`validation.json`. No comparison artifact is rebaselined.
+The [current checkpoint](../authoring_sessions/measured-qpe-v021/checkpoint.md)
+separates producer compaction, checker accounting, component proofs and execution.
+
+The coefficient domains remain separate. Finite matrices use exact
+`Z[ζ8,1/2]`, with four independent dyadics in ordered basis
+`(1, sqrt(2), i, i*sqrt(2))`; entries are row-major, output rows/input columns.
+Register field zero is the low bit. Global phase and zero-width owners matter.
+The experimental word slice uses modulus 256; the paired T case explicitly
+embeds R8 exponent 1 as 32/256. Wider hierarchical dyadic profiles acquire no
+implicit finite embedding.
+
+- `finite/`: H, T, Unit scalar, Toffoli, raw-only QuantumIf on Unit and broad
+  raw compute/use/uncompute with a target. Each has QIRF1/2 bytes and an
+  independently fixed matrix request plus its wrong-global-phase request.
+  Rust tests reject aliases, missing Unit owners, changed axes/token/type/domain
+  and exhausted work. A separate Python oracle evolves complete complex columns
+  and explicitly prepares/uncomputes scratch; it supports only this small slice.
+- `source/`: actual emitted artifacts for the six retained simple corpus
+  additions and Bell/feedback. The report retains original source paths,
+  diagnostics, numerical distributions and ordinary IR decisions. Their
+  `request_checked:false` remains explicit; source preservation is unproved.
+  Four ownership/effect rejections are replayed. Corpus pins, first attempts,
+  notices and the existing 36-case/12-fault report remain intact.
+- `native/`: five word artifact/request pairs with independently computed
+  decisions, including phase, forged claim, domain and count faults.
+- `hierarchy/`: a one-bit H request and phase, zero-repeat leaf and cycle faults.
+  The native pass and Rust host freshly check them together; required Rust finite
+  premises remain. This conditional path issues no production hierarchy evidence.
+
+[validation.json](validation.json) records performed comparisons and binary
+hashes. Full finite/observing Lean replacement is **not implemented**. Parity
+in a component slice is not a composed Soundness theorem. Native packaging was
+reviewed as explicit source build, audited prebuilt binaries or an optional
+bundle; none is selected for production dual checking and Rust-only installation
+is preserved.
+
+Run from the repository root with Python 3.11 or later:
+
+```sh
+cargo build --bin qleisli
+python3 scripts/check_verification_inventory.py
+python3 scripts/test_check_verification_inventory.py
+python3 scripts/test_test_verification_baseline.py
+python3 scripts/test_verification_baseline.py target/debug/qleisli
+# Optional, after separately building/auditing the existing kernel:
+python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel
+```
+
+CI never refreshes snapshots. Explicit capture (`--capture` for source/native/
+hierarchy or `QLEISLI_VM22_CAPTURE=<directory>` for the Rust finite test) is a
+review operation, not acceptance evidence; review independent requests and
+update individual inventory hashes deliberately. Write a new report with
+`--report=<path>`; retain historical records. VM-23 starts arithmetic migration
+against this baseline under the [staged plan](../../../docs/verification-migration-v0.2.md).
+
+Local harness code is Apache-2.0. Katas-derived SWAP/Fredkin artifacts retain
+Copyright (c) Microsoft Corporation and their
+[MIT terms](../../../corpus/upstream/quantum_katas/LICENSE); original translations
+and notices remain in corpus. These local fixtures add no external corpus source.

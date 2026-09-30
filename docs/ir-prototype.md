@@ -79,7 +79,7 @@ Rust APIs; it is not a guarantee against arbitrary external `unsafe` code.
 
 Table-related registers and auxiliary widths are each at most 12 bits, with
 at most 64 nested classical branches, counting each branch before entering
-its arms, including empty arms. The [0.1.6 correction](releases/v0.1.6.md)
+its arms, including empty arms. The [0.1.6 correction](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md)
 repairs erroneous acceptance of a 65th branch with empty arms; it does not
 change the published limit. These are capacity limits of this
 prototype, not mathematical finite-type restrictions. The verifier places no
@@ -171,7 +171,7 @@ all programs. Parser tests check recursion, Boolean-chain AST depth and the
 separate tuple arity/nesting limits.
 Frontend, project, algorithm, and static-operation suites cover their own layers.
 Current commands, totals, and historical milestones are recorded in the
-[conformance record](specification-status.md); old compiler counts are not a
+[conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md); old compiler counts are not a
 current coverage measure.
 
 The source frontend compares exact product trees, then erases them to ordered

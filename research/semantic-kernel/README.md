@@ -8,7 +8,7 @@ meaning/implementation boundary and distinguishes the initial subset from
 production integration. Qleisli's Apache-2.0 license and
 [attribution](../../NOTICE) apply. Copyright 2026 Masahiko G. Yamada.
 
-The [v0.1.5 decision](../../docs/decisions/2026-09-27-v1-path.md) selects a
+The [v0.1.5 decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects a
 bounded M2 continuation, replacing indefinite deferral. The existing prototype
 and regression suite are retained unchanged. Hierarchical IR, schema import,
 source integration and their validation are planned, not implemented here;
@@ -111,7 +111,7 @@ The initial implementation has **43 tests**: 25 kernel and 18 adapter tests.
 They cover exact equations, wrong phase and encoding, invalid adjoint/control,
 zero-count validation, arbitrary-reference frames, shared DAGs, malformed
 graphs, budgets, changed IR, ownership, and layout. The
-[release record](../../docs/releases/v0.1.3.md) records toolchain validation.
+[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.3.md) records toolchain validation.
 
 One permanent differential test covers **5,425 cases**, comparing the new
 adapter's bounded denotation with the existing independent `Circuit::matrix`

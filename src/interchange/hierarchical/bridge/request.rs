@@ -16,6 +16,7 @@ pub(crate) struct BoundDecoded {
     pub pairs: Vec<(usize, usize)>,
     pub bridge: Vec<u8>,
     pub fourier_width: Option<usize>,
+    pub word_count: usize,
 }
 
 /// Propose a dependency order for only the actual outer routing nodes. This
@@ -172,6 +173,7 @@ pub(crate) fn decode_request(payload: &[u8], request: &[u8]) -> Result<BoundDeco
             pairs: vec![],
             bridge: w.bytes,
             fourier_width: Some(width),
+            word_count: w.reads + decoded.word_count,
         });
     }
     let actual = decoded.value.field("meanings")?.array()?;
@@ -242,5 +244,6 @@ pub(crate) fn decode_request(payload: &[u8], request: &[u8]) -> Result<BoundDeco
         pairs: pairs.into_iter().map(|p| (p.actual, p.requested)).collect(),
         bridge: w.bytes,
         fourier_width: None,
+        word_count: w.reads + decoded.word_count,
     })
 }

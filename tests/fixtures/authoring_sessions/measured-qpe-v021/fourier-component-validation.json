@@ -1,0 +1,1348 @@
+{
+  "format": "qleisli.sized-qft-experiment",
+  "version": 1,
+  "status": "passed-experimental-source-path",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "check_source_fourier_contracts",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "scope": "small-system",
+  "kernel_sha256": "16bcf72dc50b225fc1c7ab55b1235e44fa18fdfe932cec4bfb79028af4a0bf2a",
+  "source_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+  "inverse_source_sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+  "measured_components": {
+    "measured-qpe-fourier-1": {
+      "graph_sha256": "bba8fd7b9c5cd206db6f28cfd4173f05091d9f69b12f648c36107c5165136b88",
+      "definitions": 52,
+      "inverse_operand": 14,
+      "retained_definitions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    "measured-qpe-fourier-2": {
+      "graph_sha256": "f2533bfede6592027b34290bb2df6c9725cda28e7f43cb5007c2df52f46a5884",
+      "definitions": 106,
+      "inverse_operand": 87,
+      "retained_definitions": [
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87
+      ]
+    },
+    "measured-qpe-fourier-3": {
+      "graph_sha256": "1723c750b4ebcd159cdac86afd3f3136d7f597072086775cfe758076d7c112b7",
+      "definitions": 157,
+      "inverse_operand": 131,
+      "retained_definitions": [
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        128,
+        129,
+        130,
+        131
+      ]
+    },
+    "measured-qpe-missing-reversal": {
+      "graph_sha256": "42d251d3b529bb864d8667798059e4c1753dd2361dabfd8f8e5da1a04befacef",
+      "definitions": 99,
+      "inverse_operand": 80,
+      "retained_definitions": [
+        6,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80
+      ]
+    },
+    "measured-qpe-missing-phase": {
+      "graph_sha256": "48d76a480d75ea0c28c13db6a1e7b339e10ce9fc2cd84aa8953eefa8d26d572c",
+      "definitions": 93,
+      "inverse_operand": 74,
+      "retained_definitions": [
+        6,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74
+      ]
+    },
+    "measured-qpe-wrong-phase": {
+      "graph_sha256": "051804c06466cd37ef61d297eaa436cb23fd37083bb5e17eabfa7f92965ebf77",
+      "definitions": 99,
+      "inverse_operand": 80,
+      "retained_definitions": [
+        6,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80
+      ]
+    },
+    "measured-qpe-wrong-h": {
+      "graph_sha256": "c177787daf849b5c330d67a4d330d68fdfea889dbdc039580241636c5e3576d2",
+      "definitions": 99,
+      "inverse_operand": 80,
+      "retained_definitions": [
+        6,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80
+      ]
+    }
+  },
+  "measured_source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+    "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+    "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+    "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+  },
+  "implementation_sha256": {
+    "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+    "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+    "scripts/compact_sized_graph.py": "7fe0dd331c0372a94799fdf5ab15f894c3e5612805a6343214662c463aa3909f",
+    "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86"
+  },
+  "source_rejections": [
+    {
+      "case": "zero-width",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "oversized-register",
+      "diagnostic": "register width exceeds the eight-bit register profile"
+    },
+    {
+      "case": "false-premise",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "angle-denominator",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "unnormalized-angle",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "alias-control",
+      "diagnostic": "unknown, captured or already moved quantum value control"
+    },
+    {
+      "case": "unselected-branch-alias",
+      "diagnostic": "unknown, captured or already moved quantum value high"
+    },
+    {
+      "case": "unselected-static-name",
+      "diagnostic": "unbound static natural unknown"
+    },
+    {
+      "case": "unknown-module",
+      "diagnostic": "unsupported or duplicate import fourier::fourier"
+    },
+    {
+      "case": "unknown-imported-declaration",
+      "diagnostic": "unknown imported declaration fourier::fourier"
+    },
+    {
+      "case": "missing-static-argument",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "operation-type-mismatch",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "operation-cycle",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "aggregate-source-work",
+      "diagnostic": "invalid or excessive static fold range"
+    }
+  ],
+  "artifacts": {
+    "qft-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "inverse-1": {
+      "sha256": "ff45e40a3af73ac80bbb71767db1e0bcf3922b2cec085c857dad2911c9fb3b71",
+      "bytes": 17542,
+      "definitions": 18
+    },
+    "qft-2": {
+      "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+      "bytes": 33836,
+      "definitions": 34
+    },
+    "inverse-2": {
+      "sha256": "8cbeb695a6993f5719a98cc6e120aa1626da12b5e8be5da6f1556bb001907969",
+      "bytes": 37388,
+      "definitions": 38
+    },
+    "qft-3": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "inverse-3": {
+      "sha256": "922aed7c75ab278ea5780bed6b57c52c9434628c3df70f55fe6e8d0319542d2c",
+      "bytes": 58141,
+      "definitions": 59
+    },
+    "equivalent-angle": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "wrapped-inverse-3": {
+      "sha256": "606f10185d7c3d5f1756674bc97a7f491ad6a153c0c1679bcaac5c62180bec28",
+      "bytes": 55269,
+      "definitions": 56
+    },
+    "shared-twice-3": {
+      "sha256": "026dfc8418aa32892ce88ef8922a0a77f86c910f042e39cea9c6e084a27d2620",
+      "bytes": 60805,
+      "definitions": 62
+    },
+    "framed-call-2": {
+      "sha256": "15cc605282124bca1eb6464d3e4b01fc8fe35915769ed05aaac8edc98aa50dc2",
+      "bytes": 43272,
+      "definitions": 42
+    },
+    "missing-reversal": {
+      "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "missing-phase": {
+      "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+      "bytes": 28857,
+      "definitions": 25
+    },
+    "wrong-phase": {
+      "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "wrong-h": {
+      "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+      "bytes": 35524,
+      "definitions": 31
+    },
+    "inverse-changed-dependency": {
+      "sha256": "450cef5faca631bd4a27e7234c7e6fcdaa184af16efbdd87e59f381b730c7d16",
+      "bytes": 34999,
+      "definitions": 31
+    },
+    "measured-qpe-fourier-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "measured-qpe-fourier-2": {
+      "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+      "bytes": 33836,
+      "definitions": 34
+    },
+    "measured-qpe-fourier-3": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "measured-qpe-missing-reversal": {
+      "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "measured-qpe-missing-phase": {
+      "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+      "bytes": 28857,
+      "definitions": 25
+    },
+    "measured-qpe-wrong-phase": {
+      "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "measured-qpe-wrong-h": {
+      "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+      "bytes": 35524,
+      "definitions": 31
+    }
+  },
+  "native": [
+    [
+      "qft-1",
+      "inspect",
+      "77268",
+      "67"
+    ],
+    [
+      "qft-1",
+      "ok",
+      "83027",
+      "118"
+    ],
+    [
+      "inverse-1",
+      "inspect",
+      "95795",
+      "67"
+    ],
+    [
+      "qft-2",
+      "inspect",
+      "211873",
+      "134"
+    ],
+    [
+      "qft-2",
+      "ok",
+      "228027",
+      "236"
+    ],
+    [
+      "inverse-2",
+      "inspect",
+      "236156",
+      "134"
+    ],
+    [
+      "qft-3",
+      "inspect",
+      "367196",
+      "201"
+    ],
+    [
+      "qft-3",
+      "ok",
+      "397395",
+      "354"
+    ],
+    [
+      "inverse-3",
+      "inspect",
+      "397875",
+      "201"
+    ],
+    [
+      "equivalent-angle",
+      "inspect",
+      "367196",
+      "201"
+    ],
+    [
+      "equivalent-angle",
+      "ok",
+      "397395",
+      "354"
+    ],
+    [
+      "wrapped-inverse-3",
+      "inspect",
+      "371766",
+      "201"
+    ],
+    [
+      "shared-twice-3",
+      "inspect",
+      "425440",
+      "201"
+    ],
+    [
+      "framed-call-2",
+      "inspect",
+      "300924",
+      "134"
+    ],
+    [
+      "missing-reversal",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "missing-reversal",
+      "contract"
+    ],
+    [
+      "missing-phase",
+      "inspect",
+      "205811",
+      "134"
+    ],
+    [
+      "missing-phase",
+      "contract"
+    ],
+    [
+      "wrong-phase",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "wrong-phase",
+      "contract"
+    ],
+    [
+      "wrong-h",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "wrong-h",
+      "contract"
+    ],
+    [
+      "inverse-changed-dependency",
+      "inspect",
+      "273286",
+      "134"
+    ],
+    [
+      "measured-qpe-fourier-1",
+      "inspect",
+      "77268",
+      "67"
+    ],
+    [
+      "measured-qpe-fourier-1",
+      "ok",
+      "83027",
+      "118"
+    ],
+    [
+      "measured-qpe-fourier-2",
+      "inspect",
+      "211873",
+      "134"
+    ],
+    [
+      "measured-qpe-fourier-2",
+      "ok",
+      "228027",
+      "236"
+    ],
+    [
+      "measured-qpe-fourier-3",
+      "inspect",
+      "367196",
+      "201"
+    ],
+    [
+      "measured-qpe-fourier-3",
+      "ok",
+      "397395",
+      "354"
+    ],
+    [
+      "measured-qpe-missing-reversal",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "measured-qpe-missing-reversal",
+      "contract"
+    ],
+    [
+      "measured-qpe-missing-phase",
+      "inspect",
+      "205811",
+      "134"
+    ],
+    [
+      "measured-qpe-missing-phase",
+      "contract"
+    ],
+    [
+      "measured-qpe-wrong-phase",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "measured-qpe-wrong-phase",
+      "contract"
+    ],
+    [
+      "measured-qpe-wrong-h",
+      "inspect",
+      "276531",
+      "134"
+    ],
+    [
+      "measured-qpe-wrong-h",
+      "contract"
+    ]
+  ],
+  "stdout": "\nrunning 1 test\nSIZED-FOURIER|qft-1|inspect|77268|67\nSIZED-FOURIER|qft-1|ok|83027|118\nSIZED-FOURIER|inverse-1|inspect|95795|67\nSIZED-FOURIER|qft-2|inspect|211873|134\nSIZED-FOURIER|qft-2|ok|228027|236\nSIZED-FOURIER|inverse-2|inspect|236156|134\nSIZED-FOURIER|qft-3|inspect|367196|201\nSIZED-FOURIER|qft-3|ok|397395|354\nSIZED-FOURIER|inverse-3|inspect|397875|201\nSIZED-FOURIER|equivalent-angle|inspect|367196|201\nSIZED-FOURIER|equivalent-angle|ok|397395|354\nSIZED-FOURIER|wrapped-inverse-3|inspect|371766|201\nSIZED-FOURIER|shared-twice-3|inspect|425440|201\nSIZED-FOURIER|framed-call-2|inspect|300924|134\nSIZED-FOURIER|missing-reversal|inspect|276531|134\nSIZED-FOURIER|missing-reversal|contract\nSIZED-FOURIER|missing-phase|inspect|205811|134\nSIZED-FOURIER|missing-phase|contract\nSIZED-FOURIER|wrong-phase|inspect|276531|134\nSIZED-FOURIER|wrong-phase|contract\nSIZED-FOURIER|wrong-h|inspect|276531|134\nSIZED-FOURIER|wrong-h|contract\nSIZED-FOURIER|inverse-changed-dependency|inspect|273286|134\nSIZED-FOURIER|measured-qpe-fourier-1|inspect|77268|67\nSIZED-FOURIER|measured-qpe-fourier-1|ok|83027|118\nSIZED-FOURIER|measured-qpe-fourier-2|inspect|211873|134\nSIZED-FOURIER|measured-qpe-fourier-2|ok|228027|236\nSIZED-FOURIER|measured-qpe-fourier-3|inspect|367196|201\nSIZED-FOURIER|measured-qpe-fourier-3|ok|397395|354\nSIZED-FOURIER|measured-qpe-missing-reversal|inspect|276531|134\nSIZED-FOURIER|measured-qpe-missing-reversal|contract\nSIZED-FOURIER|measured-qpe-missing-phase|inspect|205811|134\nSIZED-FOURIER|measured-qpe-missing-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-phase|inspect|276531|134\nSIZED-FOURIER|measured-qpe-wrong-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-h|inspect|276531|134\nSIZED-FOURIER|measured-qpe-wrong-h|contract\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.54s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+  "forward": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "inverse": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.1443916996305594e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "measured_component_semantics": {
+    "measured-qpe-fourier-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "measured-qpe-fourier-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "measured-qpe-fourier-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "named_qpe_instrument_checked": false,
+  "roundtrip_errors": {
+    "1": 1.2412670766236366e-16,
+    "2": 2.7755575615628914e-16,
+    "3": 2.0014830212433605e-16
+  },
+  "semantic_faults": {
+    "missing-reversal": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 3
+    },
+    "missing-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "wrong-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "wrong-h": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.5204164998665333,
+      "executed_gates": 3
+    },
+    "inverse-changed-dependency": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "measured-qpe-missing-reversal": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 3
+    },
+    "measured-qpe-missing-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "measured-qpe-wrong-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "measured-qpe-wrong-h": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.5204164998665333,
+      "executed_gates": 3
+    }
+  },
+  "shared_call": {
+    "basis_columns": 8,
+    "finite_leaves": 3,
+    "executed_gates": 14
+  },
+  "framed_call": {
+    "basis_columns": 16,
+    "entangled_vectors": 1,
+    "maximum_error": 2.5114115397022025e-16
+  },
+  "continuation_regressions": {
+    "compactor": {
+      "command": [
+        "python3",
+        "scripts/test_compact_sized_graph.py"
+      ],
+      "exit_code": 0,
+      "tests": 7
+    },
+    "instrument": {
+      "format": "qleisli.sized-instrument-validation",
+      "version": 1,
+      "status": "passed-with-open-capacity-gate",
+      "proposals": 22,
+      "components": {
+        "qpe-1-1": {
+          "preparation_work": 12448,
+          "readout_work": 24384,
+          "graph_work": 377986,
+          "exact_work": 67,
+          "aggregate_work": 414885
+        },
+        "qpe-1-2": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 877338,
+          "exact_work": 268,
+          "aggregate_work": 1023046
+        },
+        "qpe-1-3": {
+          "preparation_work": 107104,
+          "readout_work": 302784,
+          "graph_work": 1450245,
+          "exact_work": 402,
+          "aggregate_work": 1860535
+        },
+        "qpe-2-2": {
+          "preparation_work": 47200,
+          "readout_work": 110528,
+          "graph_work": 926876,
+          "exact_work": 268,
+          "aggregate_work": 1084872
+        },
+        "qpe-2-4": {
+          "preparation_work": 237728,
+          "readout_work": 736320
+        },
+        "init-0": {
+          "preparation_work": 224,
+          "readout_work": 0,
+          "graph_work": 1798,
+          "exact_work": 0,
+          "aggregate_work": 2022
+        },
+        "readout-0": {
+          "preparation_work": 1312,
+          "readout_work": 768,
+          "graph_work": 1798,
+          "exact_work": 0,
+          "aggregate_work": 3878
+        },
+        "init-1": {
+          "preparation_work": 4128,
+          "readout_work": 0,
+          "graph_work": 3914,
+          "exact_work": 0,
+          "aggregate_work": 8042
+        },
+        "readout-1": {
+          "preparation_work": 1824,
+          "readout_work": 8896,
+          "graph_work": 3914,
+          "exact_work": 0,
+          "aggregate_work": 14634
+        },
+        "init-2": {
+          "preparation_work": 19360,
+          "readout_work": 0,
+          "graph_work": 46802,
+          "exact_work": 0,
+          "aggregate_work": 66162
+        },
+        "readout-2": {
+          "preparation_work": 2336,
+          "readout_work": 51456,
+          "graph_work": 61868,
+          "exact_work": 0,
+          "aggregate_work": 115660
+        },
+        "init-3": {
+          "preparation_work": 57696,
+          "readout_work": 0,
+          "graph_work": 100521,
+          "exact_work": 0,
+          "aggregate_work": 158217
+        },
+        "readout-3": {
+          "preparation_work": 2848,
+          "readout_work": 180672,
+          "graph_work": 143624,
+          "exact_work": 0,
+          "aggregate_work": 327144
+        },
+        "order": {
+          "preparation_work": 47200,
+          "readout_work": 110528,
+          "graph_work": 994213,
+          "exact_work": 268,
+          "aggregate_work": 1152209
+        },
+        "amplitude-0-3": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 1000983,
+          "exact_work": 335,
+          "aggregate_work": 1146758
+        },
+        "amplitude-1-3": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 1000983,
+          "exact_work": 335,
+          "aggregate_work": 1146758
+        },
+        "amplitude-1-4": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 1000983,
+          "exact_work": 335,
+          "aggregate_work": 1146758
+        },
+        "amplitude-2-2": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 1000983,
+          "exact_work": 335,
+          "aggregate_work": 1146758
+        },
+        "classical-copy-capture": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 877338,
+          "exact_work": 268,
+          "aggregate_work": 1023046
+        },
+        "wrong-zero-helper": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 965187,
+          "exact_work": 402,
+          "aggregate_work": 1111029
+        },
+        "wrong-readout-order": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 877338,
+          "exact_work": 268,
+          "aggregate_work": 1023046
+        },
+        "retiming": {
+          "preparation_work": 24864,
+          "readout_work": 102848,
+          "graph_work": 108640,
+          "exact_work": 67,
+          "aggregate_work": 236419
+        }
+      },
+      "semantics": {
+        "qpe-1-1": {
+          "coefficients": 16,
+          "maximum_error": 1.2412670766236366e-16
+        },
+        "qpe-1-2": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "qpe-1-3": {
+          "coefficients": 64,
+          "maximum_error": 4.652682298944613e-16
+        },
+        "qpe-2-2": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude-0-3": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "amplitude-1-3": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "amplitude-1-4": {
+          "coefficients": 32,
+          "maximum_error": 7.023038222575547e-16
+        },
+        "amplitude-2-2": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "classical-copy-capture": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "semantic_faults": {
+        "wrong-zero-helper": {
+          "coefficients": 32,
+          "maximum_error": 1.0
+        },
+        "wrong-readout-order": {
+          "coefficients": 32,
+          "maximum_error": 0.5
+        }
+      },
+      "normalization": {
+        "qpe-1-1": {
+          "before": 72,
+          "after": 52,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "qpe-1-2": {
+          "before": 130,
+          "after": 106,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "qpe-1-3": {
+          "before": 181,
+          "after": 157,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-2": {
+          "before": 128,
+          "after": 105,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-4": {
+          "before": 231,
+          "after": 207,
+          "columns": 65,
+          "maximum_error": 0.0
+        },
+        "init-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "readout-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "init-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "readout-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "init-2": {
+          "before": 13,
+          "after": 6,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "readout-2": {
+          "before": 14,
+          "after": 7,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "init-3": {
+          "before": 18,
+          "after": 11,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "readout-3": {
+          "before": 20,
+          "after": 13,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "order": {
+          "before": 135,
+          "after": 112,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "amplitude-0-3": {
+          "before": 159,
+          "after": 126,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-3": {
+          "before": 159,
+          "after": 126,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-4": {
+          "before": 159,
+          "after": 126,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-2-2": {
+          "before": 159,
+          "after": 126,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "classical-copy-capture": {
+          "before": 130,
+          "after": 106,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-zero-helper": {
+          "before": 140,
+          "after": 121,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-readout-order": {
+          "before": 130,
+          "after": 106,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "retiming": {
+          "before": 9,
+          "after": 8,
+          "columns": 9,
+          "maximum_error": 0.0
+        }
+      },
+      "source_rejections": [
+        {
+          "case": "unitary-wrapper",
+          "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+        },
+        {
+          "case": "unitary-initializer",
+          "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+        },
+        {
+          "case": "iso-readout",
+          "diagnostic": "iso body cannot perform observe operation measure_z"
+        },
+        {
+          "case": "missing-access",
+          "diagnostic": "operation use requires declared Controlled access"
+        },
+        {
+          "case": "wrong-classical-width",
+          "diagnostic": "return type/tuple shape mismatch"
+        },
+        {
+          "case": "drop-empty-owner",
+          "diagnostic": "unreturned quantum owners: q"
+        },
+        {
+          "case": "consume-nonempty",
+          "diagnostic": "unknown, captured or already moved value q"
+        },
+        {
+          "case": "reuse-measured-bit",
+          "diagnostic": "unknown, captured or already moved value bit"
+        },
+        {
+          "case": "duplicate-classical-pattern",
+          "diagnostic": "duplicate binding in one pattern"
+        },
+        {
+          "case": "wrong-prepend-width",
+          "diagnostic": "prepend_bit requires CBit and exactly CBits<n>, with n < 8"
+        },
+        {
+          "case": "cycle-initializer",
+          "diagnostic": "cyclic or excessive source operation instantiation"
+        },
+        {
+          "case": "unknown-empty-branch",
+          "diagnostic": "unknown or unimported operation missing"
+        },
+        {
+          "case": "runtime-feedback",
+          "diagnostic": "expected 'static', found 'target' at token 82"
+        },
+        {
+          "case": "bad-init-arity",
+          "diagnostic": "operation argument shape/arity mismatch"
+        },
+        {
+          "case": "unknown-static-size",
+          "diagnostic": "unbound static natural missing"
+        }
+      ],
+      "pending": {
+        "qpe-2-4": "limit"
+      },
+      "production_integration": false,
+      "named_instrument_receipt": false,
+      "source_preservation_proved": false,
+      "max_checked_qubits": 4,
+      "unaccepted_small_case_qubits": 6,
+      "kernel_sha256": "16bcf72dc50b225fc1c7ab55b1235e44fa18fdfe932cec4bfb79028af4a0bf2a",
+      "graph_reconstruction": {
+        "command": [
+          "cargo",
+          "test",
+          "--test",
+          "sized_corpus",
+          "inspect_source_produced_corpus",
+          "--",
+          "--ignored",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|377986|67|1\nCORPUS|qpe-1-2|ok|877338|268|4\nCORPUS|qpe-1-3|ok|1450245|402|6\nCORPUS|qpe-2-2|ok|926876|268|4\nCORPUS|qpe-2-4|limit|Lean hierarchy inspection rejected the artifact\nCORPUS|init-0|ok|1798|0|0\nCORPUS|readout-0|ok|1798|0|0\nCORPUS|init-1|ok|3914|0|0\nCORPUS|readout-1|ok|3914|0|0\nCORPUS|init-2|ok|46802|0|0\nCORPUS|readout-2|ok|61868|0|0\nCORPUS|init-3|ok|100521|0|0\nCORPUS|readout-3|ok|143624|0|0\nCORPUS|order|ok|994213|268|4\nCORPUS|amplitude-0-3|ok|1000983|335|5\nCORPUS|amplitude-1-3|ok|1000983|335|5\nCORPUS|amplitude-1-4|ok|1000983|335|5\nCORPUS|amplitude-2-2|ok|1000983|335|5\nCORPUS|classical-copy-capture|ok|877338|268|4\nCORPUS|wrong-zero-helper|ok|965187|402|6\nCORPUS|wrong-readout-order|ok|877338|268|4\nCORPUS|retiming|ok|108640|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.01s\n\n",
+        "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+      },
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "implementation_sha256": {
+        "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+        "scripts/compact_sized_graph.py": "7fe0dd331c0372a94799fdf5ab15f894c3e5612805a6343214662c463aa3909f",
+        "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+        "scripts/test_sized_instrument.py": "c5e1fd93c6249e7e2039724e939c3a3f03cb7372cf78b3a873409d37224e199a"
+      },
+      "command": [
+        "python3",
+        "scripts/test_sized_instrument.py",
+        "--record",
+        "/private/tmp/qleisli-instrument-preserved.json"
+      ]
+    },
+    "source_host": {
+      "cases": 8,
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_instrument_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|1219247|412\nINSTRUMENT|order|ok|1370769|412\nINSTRUMENT|amplitude|ok|1368614|515\nINSTRUMENT|retiming|ok|265806|103\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\nINSTRUMENT|qpe-1-3|limit\nINSTRUMENT|qpe-2-4|limit\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.50s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+      "pending_composed_capacity": {
+        "qpe-1-3": "limit",
+        "qpe-2-4": "limit"
+      },
+      "semantics": {
+        "qpe": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "request_origin": "baseline proposal; mutation regression only",
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "driver": "scripts/test_instrument_host.py:test_source_connection"
+    }
+  }
+}

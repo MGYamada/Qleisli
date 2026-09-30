@@ -1,0 +1,95 @@
+{
+  "format": "qleisli.continuation-documentation-validation",
+  "version": 1,
+  "date": "2026-09-30",
+  "status": "inventory-passed-final-doc-check-awaits-proof-imports",
+  "inventory": {
+    "constructors": 229,
+    "sources": 115,
+    "groups": 34,
+    "boundaries": 14,
+    "capacity_scopes": 22,
+    "new_sources": [
+      "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean",
+      "src/interchange/hierarchical/execution.rs"
+    ],
+    "source_snapshots_reviewed": [
+      "lean-kernel/QleisliKernel.lean",
+      "lean-kernel/QleisliKernel/Hierarchical/Root.lean",
+      "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean",
+      "lean-kernel/QleisliKernel/Hierarchical/Readout.lean",
+      "src/interchange/hierarchical.rs"
+    ],
+    "corrected_array_signature_surfaces": [
+      "src/contract/exact.rs",
+      "src/interchange/hierarchical/execution.rs"
+    ],
+    "behavioral_fixture_capture": false,
+    "authority_changed": false
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "229 constructors, 115 source snapshots, 14 boundaries; Rust authority unchanged"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "tests": 15,
+      "result": "passed; includes hash-updated mutation after array-typed parameter"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "tests": 23,
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 1,
+      "result": "Views regenerated; in-progress Lean modules absent from root import/audit",
+      "pending_modules": [
+        "Qleisli.HierarchicalQpeCircuit",
+        "Qleisli.InstrumentCompleteExamples"
+      ]
+    },
+    {
+      "command": "python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel --report tests/fixtures/authoring_sessions/measured-qpe-v021/continuation-baseline.json",
+      "exit_code": 0,
+      "report": "continuation-baseline.json",
+      "finite_comparisons": 12,
+      "source_decisions": 12,
+      "native_word_decisions": 5,
+      "hierarchy_decisions": 4,
+      "maximum_qubits": 3
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "exit_code": 1,
+      "result": "Generated views are current; later in-progress Lean module absent from root import/audit",
+      "pending_modules": [
+        "Qleisli.CoordinateOperators"
+      ],
+      "commands": [
+        "python3 scripts/check_docs.py --write-status",
+        "python3 scripts/check_docs.py"
+      ]
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "tests": 23,
+      "result": "passed after current completeness/trace status update"
+    }
+  ],
+  "hashes": {
+    "tests/fixtures/verification_v022/inventory.json": "becc768c569a1caee4e3f8e331ba8d5a32f908b62ef4ce96a22c342595c180f7",
+    "scripts/check_verification_inventory.py": "25f3e983bc227a6f2c154b6307a2c61a557bf876b2540a45b5391ff89cd342ba",
+    "scripts/test_check_verification_inventory.py": "becdb69967cd72a001cf2fa542c33b521c3437f63a3c9e6b86f0765510e344f3"
+  },
+  "proof_audit": "Final combined schema/build/audit is separate and parent-owned; this record claims no new audit."
+}

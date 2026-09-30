@@ -4,6 +4,10 @@ import QleisliKernel.LayoutDag
 import QleisliKernel.PhaseLayout
 import QleisliKernel.Hierarchical.Root
 import QleisliKernel.Hierarchical.FourierRoot
+import QleisliKernel.Hierarchical.Readout
+import QleisliKernel.Hierarchical.Preparation
+import QleisliKernel.Hierarchical.Instrument
+import QleisliKernel.Hierarchical.QpeInstrument
 
 /-
 Copyright 2026 Masahiko G. Yamada.
@@ -546,7 +550,8 @@ private def proof : DecodeM Proof := do
 
 /-- Decode complete tables and a proposed schedule, rejecting trailing data.
 This never executes embedded strings and issues no evidence or acceptance. -/
-def parse (input : ByteArray) : Except Protocol.Error (QleisliKernel.Hierarchical.Artifact.Artifact × Array Nat) := do
+private def parseBudget (input : ByteArray) (remaining : Nat) :
+    Except Protocol.Error ((QleisliKernel.Hierarchical.Artifact.Artifact × Array Nat) × Nat) := do
   if input.size > maxBridgeBytes then throw .limit
   if input.size < 4 || input.extract 0 4 != "QLH1".toUTF8 then throw .syntax
   let read : DecodeM (QleisliKernel.Hierarchical.Artifact.Artifact × Array Nat) := do
@@ -557,9 +562,12 @@ def parse (input : ByteArray) : Except Protocol.Error (QleisliKernel.Hierarchica
     let entry : Entry := ⟨← word,← word⟩
     let order ← array word
     return (⟨definitions,meanings,encodings,proofs,entry⟩,order)
-  let (result,final) ← read.run { bytes := input }
+  let (result,final) ← read.run { bytes := input, remaining := remaining }
   if final.position != input.size then throw .syntax
-  return result
+  return (result,final.remaining)
+
+def parse (input : ByteArray) : Except Protocol.Error (QleisliKernel.Hierarchical.Artifact.Artifact × Array Nat) :=
+  (parseBudget input 1000000).map Prod.fst
 
 /-- Separate caller request and untrusted pairing proposal. -/
 structure RootPacket where
@@ -569,14 +577,18 @@ structure RootPacket where
   pairs : Array QleisliKernel.Hierarchical.Root.Pair
   pairOrder : Array Nat
 
-def parseRequest (input : ByteArray) : Except Protocol.Error RootPacket := do
+private def parseRequestBudget (input : ByteArray) (remaining : Nat) (shared : Bool) :
+    Except Protocol.Error (RootPacket × Nat) := do
   if input.size > maxBridgeBytes then throw .limit
   if input.size < 4 || input.extract 0 4 != "QLR1".toUTF8 then throw .syntax
   let read : DecodeM RootPacket := do
     let encoded ← block maxBridgeBytes
-    let (artifact,order) ← match parse encoded with
+    let cursor ← get
+    let allowance := if shared then cursor.remaining else 1000000
+    let ((artifact,order),left) ← match parseBudget encoded allowance with
       | .error e => throw e
       | .ok result => pure result
+    if shared then modify fun cursor => {cursor with remaining := left}
     let kind ← match ← word with
       | 0 => pure Kind.equation
       | 1 => pure Kind.instrument
@@ -591,9 +603,12 @@ def parseRequest (input : ByteArray) : Except Protocol.Error RootPacket := do
     let pairs ← array do
       return (⟨← word,← word,← array word⟩ : QleisliKernel.Hierarchical.Root.Pair)
     return ⟨artifact,order,request,pairs,← array word⟩
-  let (result,final) ← read.run { bytes := input }
+  let (result,final) ← read.run { bytes := input, remaining := remaining }
   if final.position != input.size then throw .syntax
-  return result
+  return (result,final.remaining)
+
+def parseRequest (input : ByteArray) : Except Protocol.Error RootPacket :=
+  (parseRequestBudget input 1000000 false).map Prod.fst
 
 /-- Canonical singleton Fourier request framing. The full independent interface
 is transported twice, as in the external named meaning, and must agree. This
@@ -621,6 +636,112 @@ def parseFourier (input : ByteArray) : Except Protocol.Error FourierPacket := do
     let .qft width := m.body | throw .syntax
     return ⟨artifact,order,⟨width,header⟩,← array word⟩
   let (result,final) ← read.run { bytes := input }
+  if final.position != input.size then throw .syntax
+  return result
+
+/-- Additive internal readout framing. The request is supplied independently
+by the caller; it is never inferred from the proposed measurement nodes. -/
+structure ReadoutPacket where
+  request : QleisliKernel.Hierarchical.Readout.Request
+  packet : QleisliKernel.Hierarchical.Readout.Packet
+  budget : Nat
+
+def parseReadout (input : ByteArray) : Except Protocol.Error ReadoutPacket := do
+  if input.size > maxBridgeBytes then throw .limit
+  if input.size < 4 || input.extract 0 4 != "QLM1".toUTF8 then throw .syntax
+  let read : DecodeM ReadoutPacket := do
+    let request : QleisliKernel.Hierarchical.Readout.Request := ⟨← side, ← array word, ← word⟩
+    let packet : QleisliKernel.Hierarchical.Readout.Packet := ⟨← array definition, ← array word, ← side⟩
+    return ⟨request, packet, ← word⟩
+  let (result, final) ← read.run { bytes := input }
+  if final.position != input.size then throw .syntax
+  return result
+
+structure PreparationPacket where
+  request : QleisliKernel.Hierarchical.Preparation.Request
+  packet : QleisliKernel.Hierarchical.Preparation.Packet
+  budget : Nat
+
+/-- Separate explicit fresh-zero request, actual init nodes and work budget.
+No field is a submitted success flag or an asserted initial quantum state. -/
+def parsePreparation (input : ByteArray) : Except Protocol.Error PreparationPacket := do
+  if input.size > maxBridgeBytes then throw .limit
+  if input.size < 4 || input.extract 0 4 != "QLZ1".toUTF8 then throw .syntax
+  let read : DecodeM PreparationPacket := do
+    let inputs ← side
+    let fresh ← side
+    if !fresh.classical.isEmpty then throw .syntax
+    let request : QleisliKernel.Hierarchical.Preparation.Request := ⟨inputs, fresh.quantum⟩
+    let packet : QleisliKernel.Hierarchical.Preparation.Packet := ⟨← array definition, ← side⟩
+    return ⟨request, packet, ← word⟩
+  let (result, final) ← read.run { bytes := input }
+  if final.position != input.size then throw .syntax
+  return result
+
+structure InstrumentPacket where
+  request : QleisliKernel.Hierarchical.Instrument.Request
+  packet : QleisliKernel.Hierarchical.Instrument.Packet
+
+/-- The new composite frame shares its word allowance with both nested root
+and artifact frames. Existing standalone transports retain their contracts. -/
+def parseInstrument (input : ByteArray) : Except Protocol.Error InstrumentPacket := do
+  if input.size > maxBridgeBytes then throw .limit
+  if input.size < 4 || input.extract 0 4 != "QLI1".toUTF8 then throw .syntax
+  let read : DecodeM InstrumentPacket := do
+    let encoded ← block maxBridgeBytes
+    let (root,left) ← match parseRequestBudget encoded (← get).remaining true with
+      | .error error => throw error
+      | .ok result => pure result
+    modify fun cursor => {cursor with remaining := left}
+    let inputs ← side
+    let fresh ← side
+    if !fresh.classical.isEmpty then throw .syntax
+    let initialization : QleisliKernel.Hierarchical.Preparation.Packet := ⟨← array definition,← side⟩
+    let readoutRequest : QleisliKernel.Hierarchical.Readout.Request := ⟨← side,← array word,← word⟩
+    let readout : QleisliKernel.Hierarchical.Readout.Packet := ⟨← array definition,← array word,← side⟩
+    let request : QleisliKernel.Hierarchical.Instrument.Request :=
+      ⟨⟨inputs,fresh.quantum⟩,root.request,readoutRequest,← side⟩
+    return ⟨request,⟨initialization,root.artifact,root.order,root.pairs,root.pairOrder,readout⟩⟩
+  let (result,final) ← read.run {bytes := input}
+  if final.position != input.size then throw .syntax
+  return result
+
+structure QpeInstrumentPacket where
+  request : QleisliKernel.Hierarchical.QpeInstrument.Request
+  packet : QleisliKernel.Hierarchical.QpeInstrument.Packet
+
+/-- Private named-QPE framing. The nested root carries the independent provider
+request; restore the original circuit entry before fresh whole-artifact checking.
+Every nested frame and candidate field shares the same decoder allowance. -/
+def parseQpeInstrument (input : ByteArray) : Except Protocol.Error QpeInstrumentPacket := do
+  if input.size > maxBridgeBytes then throw .limit
+  if input.size < 4 || input.extract 0 4 != "QLQ1".toUTF8 then throw .syntax
+  let read : DecodeM QpeInstrumentPacket := do
+    let encoded ← block maxBridgeBytes
+    let (provider,left) ← match parseRequestBudget encoded (← get).remaining true with
+      | .error error => throw error
+      | .ok result => pure result
+    modify fun cursor => {cursor with remaining := left}
+    let entry : Entry := ⟨← word,← word⟩
+    let circuit : QleisliKernel.Hierarchical.QpeSchedule.Request :=
+      ⟨← interface,← array word,← array word,← array word,← word⟩
+    let atom : DecodeM QleisliKernel.Hierarchical.CircuitTrace.Atom := do
+      return ⟨← word,← interface⟩
+    let candidate : QleisliKernel.Hierarchical.QpeSchedule.Candidate :=
+      ⟨← array atom,← array atom,← atom,← array word,← array (array word),← array word⟩
+    let root : QleisliKernel.Hierarchical.QpeRoot.Packet :=
+      ⟨{provider.artifact with entry := entry},provider.order,provider.artifact.entry.proof,
+        provider.pairs,provider.pairOrder,candidate⟩
+    let inputs ← side
+    let fresh ← side
+    if !fresh.classical.isEmpty then throw .syntax
+    let initialization : QleisliKernel.Hierarchical.Preparation.Packet := ⟨← array definition,← side⟩
+    let readoutRequest : QleisliKernel.Hierarchical.Readout.Request := ⟨← side,← array word,← word⟩
+    let readout : QleisliKernel.Hierarchical.Readout.Packet := ⟨← array definition,← array word,← side⟩
+    let request : QleisliKernel.Hierarchical.QpeInstrument.Request :=
+      ⟨⟨inputs,fresh.quantum⟩,⟨circuit,provider.request⟩,readoutRequest,← side⟩
+    return ⟨request,⟨initialization,root,readout⟩⟩
+  let (result,final) ← read.run {bytes := input}
   if final.position != input.size then throw .syntax
   return result
 

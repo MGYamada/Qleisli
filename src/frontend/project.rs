@@ -635,12 +635,5 @@ fn check_declarations(module: &SourceModule) -> Result<(), LoadFailure> {
 }
 
 fn sealed_kind(module: &str, name: &str) -> Option<FnKind> {
-    match (module, name) {
-        ("std::quantum", "init0") => Some(FnKind::Iso),
-        ("std::quantum", "h" | "x" | "z" | "t" | "cnot" | "toffoli" | "split" | "join") => {
-            Some(FnKind::Unitary)
-        }
-        ("std::observe", "measure_z" | "reset" | "discard") => Some(FnKind::Observe),
-        _ => None,
-    }
+    super::core::primitive(module, name).map(|item| item.kind)
 }

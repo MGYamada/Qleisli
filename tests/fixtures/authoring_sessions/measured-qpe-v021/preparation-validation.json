@@ -1,0 +1,114 @@
+{
+  "format": "qleisli.preparation-validation",
+  "version": 1,
+  "status": "passed",
+  "cases": 22,
+  "coefficient_probes": 60,
+  "malformed_frames": 5,
+  "max_fresh_qubits": 3,
+  "max_total_qubits": 4,
+  "production_integration": false,
+  "binary_sha256": "b4d5661c05fd9590a087eb1d91b928b92fc9aeed571192007dbc2f87059e58f8",
+  "kernel_sha256": "f92d3a5eba4d24f3ee059e6232c0c36a17228758ef13308ca85ecf001879ce78",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [94/97] Built QleisliKernel:c.o (234ms)\n\u2714 [95/97] Built Main (3.9s)\n\u2714 [96/97] Built Main:c.o (180ms)\n\u2714 [97/97] Built \u00abartifact-test\u00bb:exe (468ms)\nBuild completed successfully (97 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-sor3m76d/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "fresh-0|checked|11232|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2]]\nfresh-1|checked|55840|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0]]\nfresh-2|checked|153760|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0]]\nfresh-3|checked|329056|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0],[8,0,0,0],[8,1,0,0],[9,0,0,0],[9,1,0,0],[10,0,0,0],[10,1,0,0],[11,0,0,0],[11,1,0,0],[12,0,0,0],[12,1,0,0],[13,0,0,0],[13,1,0,0],[14,0,0,0],[14,1,0,0],[15,0,0,0],[15,1,0,0]]\nwrong-required-axis|contract\nwrong-required-owner|contract\nimplicit-bits1|contract\nreordered-request|contract\nmissing-node|contract\nreordered-nodes|contract\nwrong-body|contract\nwrong-effect|contract\naliased-input-axis|contract\naliased-new-owner|contract\nalter-existing-classical|contract\ndrop-empty-owner|contract\ndrop-existing-target|contract\nalter-input-frame|contract\nbroken-chain|contract\nwrong-intermediate-output|contract\nzero-budget|limit\nbudget-excess|limit\n",
+      "stderr": ""
+    }
+  ],
+  "results": {
+    "fresh-0": [
+      "checked",
+      "11232",
+      "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2]]"
+    ],
+    "fresh-1": [
+      "checked",
+      "55840",
+      "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0]]"
+    ],
+    "fresh-2": [
+      "checked",
+      "153760",
+      "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0]]"
+    ],
+    "fresh-3": [
+      "checked",
+      "329056",
+      "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0],[8,0,0,0],[8,1,0,0],[9,0,0,0],[9,1,0,0],[10,0,0,0],[10,1,0,0],[11,0,0,0],[11,1,0,0],[12,0,0,0],[12,1,0,0],[13,0,0,0],[13,1,0,0],[14,0,0,0],[14,1,0,0],[15,0,0,0],[15,1,0,0]]"
+    ],
+    "wrong-required-axis": [
+      "contract"
+    ],
+    "wrong-required-owner": [
+      "contract"
+    ],
+    "implicit-bits1": [
+      "contract"
+    ],
+    "reordered-request": [
+      "contract"
+    ],
+    "missing-node": [
+      "contract"
+    ],
+    "reordered-nodes": [
+      "contract"
+    ],
+    "wrong-body": [
+      "contract"
+    ],
+    "wrong-effect": [
+      "contract"
+    ],
+    "aliased-input-axis": [
+      "contract"
+    ],
+    "aliased-new-owner": [
+      "contract"
+    ],
+    "alter-existing-classical": [
+      "contract"
+    ],
+    "drop-empty-owner": [
+      "contract"
+    ],
+    "drop-existing-target": [
+      "contract"
+    ],
+    "alter-input-frame": [
+      "contract"
+    ],
+    "broken-chain": [
+      "contract"
+    ],
+    "wrong-intermediate-output": [
+      "contract"
+    ],
+    "zero-budget": [
+      "limit"
+    ],
+    "budget-excess": [
+      "limit"
+    ]
+  },
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Semantics/Preparation.lean": "db784406ef6338e1b65cb0ad13af6c6b38ae5f04140b2efbecedf4c2db9201ed",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "f7383a89db61a519155eba3c8117e5912710828122289e28e91828af0f88310f",
+    "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+    "scripts/test_hierarchical_preparation.py": "5545724c743cce2caa20410fce8f267ef7cda217a9be911d5e6b3c67694d3439"
+  }
+}

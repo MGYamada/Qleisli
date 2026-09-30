@@ -94,7 +94,7 @@ writing algorithms. The [protocols](../examples/protocols/README.md),
 The initial observations below led to the user-selected 0.1.8 fixes; the
 [grammar](syntax-v0.md#authoring-forms-added-in-product-018) specifies the
 delivered forms. Unresolved candidates now live in the
-[v0.2.0 backlog](v0.2.0-backlog.md), with stable IDs and acceptance experiments;
+[v0.2.0 backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md), with stable IDs and acceptance experiments;
 this report retains the observations and reasoning that motivated them.
 
 The user also supplied Claude's account of a successful first-attempt
@@ -118,7 +118,7 @@ regressions, not controlled authoring or model-performance measurements.
 The later [0.2.1 reshape attempt](../tests/fixtures/authoring_sessions/reshape-v021/session.json)
 preserves desired `reshape::<(Bit,Bit,Bit)>(q)` source and its real parse failure
 at `::`. This informed draft has no repaired executable successor yet. The
-[Lean experiment](reshape-plan.md) removes enumeration from the canonical
+[Lean experiment](size-expressions.md) removes enumeration from the canonical
 adapter's encoding argument, but does not yet remove handwritten adapters from
 user `.qli` programs. A020-01 retains source production and ergonomic validation
 as open work; this is not a measured authoring-success result.
@@ -131,7 +131,7 @@ zero repairs, while `qleisli test` is still rejected as an unsupported command.
 No QLT assertion was executed. The proposed improvement is removal of repeated
 host harness and diagnostic plumbing, while keeping independent mathematical
 references. Before/after authoring and evaluation costs remain unmeasured;
-[A020-21](v0.2.0-backlog.md#a020-21--mathematical-quantum-tests-require-separate-host-harnesses)
+[A020-21](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-21--mathematical-quantum-tests-require-separate-host-harnesses)
 tracks the future experiment without adding a 0.2.0 release requirement.
 
 The [shared-QPE first source](../tests/fixtures/authoring_sessions/shared-qpe-v020/session.json)
@@ -168,13 +168,13 @@ and bundled library files; [CLI tests](../tests/cli_json.rs) preserve the single
 JSON parse diagnostic at EOF. This is robustness validation, not a new measured
 authoring session or a model benchmark.
 
-[A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors)
+[A020-09](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors)
 retains the future opaque-provider capability design question.
-[A020-10](v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
+[A020-10](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
 is resolved by private shared retention: source bytes are copied/charged once
 across providers and contract pairs, with public identities and exact checking
 preserved. The 100 KB/256-provider and unrelated-comment regressions pass.
-The [0.1.9 record](releases/v0.1.9.md) separates compatible repairs and clarifications from future breaking changes.
+The [0.1.9 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md) separates compatible repairs and clarifications from future breaking changes.
 
 Claude's additional supplied feedback reports ten diagnostic probes and about
 13 seconds for 35,786 mutated-project checks in a release build. These are
@@ -189,6 +189,23 @@ Snapshot-limit messages now expose retained sources. A020-11–13 retain multi-e
 collection, boilerplate and optional numerical presentation as open candidates.
 This is regression work informed by feedback, not a new controlled repair study.
 
+## Simple corpus expansion, 0.2.2
+
+The [six first attempts](../corpus/authoring/v022-simple/session.json) add
+SWAP/Fredkin, constant XOR/bitwise complement, and RX/one-bit phase kickback.
+Every source was saved before checking; all six first checks passed with no
+source repairs. This was informed authoring with known tuple/control/rotation
+workarounds, not a controlled model evaluation.
+
+The simple sources exercise separate obligations: SWAP keeps logical owner
+positions while exchanging amplitudes; Fredkin preserves a coherent control;
+constant XOR makes low-bit ordering explicit; RX still requires its scalar
+under control (existing A020-15). The one-bit kickback explicitly narrows the
+original four-bit secret and returns both owners. No newly discovered syntax
+friction or new language/library API is claimed. Existing phase/host boilerplate
+records remain applicable. Six labelled semantic mutations are separate from
+the successful first-attempt sequence and require independent oracle rejection.
+
 ## Corpus expansion, 0.2.1
 
 The [six new translations](../corpus/authoring/v021-expansion/session.json)
@@ -202,7 +219,7 @@ The additions make two obligations concrete. The overlap author still writes
 exact scalar phases and host-side probability aggregation (A020-15/16). The
 LCU author must choose a full unitary PREP completion, retain selector ownership
 and distinguish its projected block from a deterministic operation or clean
-return. [A020-23](v0.2.0-backlog.md#a020-23--state-preparation-and-projected-blocks-need-distinct-contracts)
+return. [A020-23](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-23--state-preparation-and-projected-blocks-need-distinct-contracts)
 records that new friction and its checking experiment. No language abstraction
 or production evidence rule is added by these translations.
 
@@ -301,7 +318,7 @@ parameters and cross-interface QPE reuse. The
 | 2: tuple arity — addressed in 0.1.8; layout equality remains explicit | The original third-field parse failure is now `accepted/nary_tuple.qli`. `rejected/product_association.qli` still rejects a right-associated input for a left-associated interface; `accepted/product_reassociation.qli` shows the adapter. | Types, expressions and patterns left-fold to existing pairs: `(a,b,c)` means `((a,b),c)`. Evaluation order, Unit factors, ownership, leaf order and depth limits are tested. This removes punctuation but does not equate all product trees. |
 | 3: dropped-owner location — addressed in 0.1.8 | `rejected/dropped_owner.qli` originally pointed to the body opening, line 3 column 27. It now points to binding `b`, line 4 column 9. | Locate the actual parameter/local/computed binder without changing ownership rejection. Regressions include nested patterns, shadowing, UTF-8/CRLF and module paths. |
 
-The remaining observations are tracked as [A020-01–08](v0.2.0-backlog.md#candidates):
+The remaining observations are tracked as [A020-01–08](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#candidates):
 product layout, target-type/size reuse, gate providers, classical result roles,
 cleanup discoverability, QPE angle prerequisites and LLM evaluation. Type/size
 work remains deferred; the backlog does not change R14 or implement a template.
@@ -615,3 +632,18 @@ failures. Nine kernel-checked example theorems exercise these cases through
 π/8. This discharges a proof obligation rather than changing source ergonomics;
 whole-space unitarity, finite reconstruction, remaining schema/rule integration
 and the common QLI source still need implementation and acceptance evidence.
+
+## Published 0.2.1 review follow-up (2026-09-30)
+
+The user-supplied review describes a natural flat Toffoli result pattern and
+TH repetition capacity failure. [Curated minimal sources](../tests/fixtures/review_v021/README.md)
+are preserved before local checks; these are review reproductions, not measured
+LLM first attempts. In 0.2.2, grouped/nested imports eliminate separate-use
+rewrites; serial-copy validation accepts TH 400/512/1000/1024 without computing
+the full product matrix. One-body finite checks, explicit contract/adjoint/qif
+capacities and flat expansion remain. Toffoli's nested public result stays for
+PATCH compatibility, with a checked nested repair and the existing tuple issue
+tracking the v0.3 migration question. The independently authored seeded harness
+exercises exact extraction and numerical X/Y/Z/reference/control/feedback
+statistics; it is not the reviewer's unprovided 6000-case harness or a model
+benchmark. [The review response](releases/v0.2.2.md) separates fixes and open work.

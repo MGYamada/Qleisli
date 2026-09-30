@@ -126,14 +126,6 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
 #[test]
 fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
     let root = SourceRoot::new("use std::quantum::{init0, h};");
-    let error = check_project_diagnostic(&root.0).unwrap_err();
-    assert_eq!(error.code, "parse");
-    assert!(error.message.contains("grouped imports are unsupported"));
-    let imports = "use std::quantum::init0; use std::quantum::h;";
-    assert!(error.message.contains(imports));
-    let location = error.primary.unwrap();
-    assert_eq!((location.span.start, location.span.end), (18, 19));
-    root.write("main.qli", imports);
     check_project(&root.0).unwrap();
 
     for gate in ["h", "x", "z", "t"] {

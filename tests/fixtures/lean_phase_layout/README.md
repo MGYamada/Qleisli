@@ -94,5 +94,5 @@ passes build, reductions, compiled audit, fresh `Main` kernel replay and all
 382 native tests. A subsequent README-only command prerequisite is identified
 separately in that record; compiled sources are unchanged. This is not clean
 Git release-distribution validation. See the
-[release checkpoint](../../../docs/releases/v0.2.0.md#typed-phase-and-layout-checkpoint-2026-09-29)
+[release checkpoint](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md#typed-phase-and-layout-checkpoint-2026-09-29)
 for performed checks and remaining gates.

@@ -53,6 +53,13 @@ def basisWidth (basis : Basis) : Option Nat := do
       (some ([1], 0))
     if (result.1.dropWhile (· == 0)).isEmpty then some result.2 else none
 
+theorem basisWidth_bits (n : Nat) : basisWidth [.bits n] =
+    if n ≤ 8 then some n else none := by
+  by_cases bounded : n ≤ 8
+  · have total : ¬16 < n := by omega
+    simp [basisWidth,typeStep,bounded,total]
+  · simp [basisWidth,typeStep,bounded]
+
 def wires (ports : Interface) : List Nat := ports.flatMap Port.axes
 
 def typeAtoms (layout : Rewire) : Nat :=

@@ -28,6 +28,13 @@ namespace QftTests
 example : Qft.matchCircuit 1 [.hadamard 0] [0] = true := by decide
 example : Qft.matchCircuit 0 [] [] = false := by decide
 example : Qft.matchCircuit 9 [] [] = false := by decide
+example : Qft.matchCompiledCircuit 2
+    [.hadamard 1, .diagonal [⟨[0, 1], 32⟩, ⟨[0, 1], 32⟩], .hadamard 0]
+    [1, 0] = true := by cbv
+example : Qft.matchCompiledCircuit 2
+    [.hadamard 1, .diagonal [⟨[0, 1], 192⟩], .hadamard 0]
+    [1, 0] = false := by cbv
+example : Qft.matchCompiledCircuit 2 (Qft.template 2) [0, 1] = false := by cbv
 #guard Qft.matchCircuit 8 (Qft.template 8) (Qft.finalAxes 8)
 #guard !(Qft.matchCircuit 3 (Qft.template 3) [0, 1, 2])
 #guard !(Qft.matchCircuit 1 [.hadamard 1] [0])

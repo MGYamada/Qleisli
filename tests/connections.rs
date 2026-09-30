@@ -1,4 +1,6 @@
 //! Host transport regressions; Python/QIR-reader cases have a separate runner.
+mod common;
+use common::SourceRoot;
 use std::io::Write;
 use std::process::{Command, Output, Stdio};
 
@@ -63,4 +65,67 @@ fn malformed_options_are_usage_errors_before_reading_input() {
         let result = call(&args, b"");
         assert_eq!(result.status.code(), Some(2), "{args:?}");
     }
+}
+
+#[test]
+fn qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity() {
+    let source = "// λ🦀\r\nOPENQASM 3.0; include \"stdgates.inc\"; qubit q; bit c; reset q; mystery q; c = measure q;";
+    let root = SourceRoot::new("");
+    let file = root.0.join("bad.qasm");
+    std::fs::write(&file, source).unwrap();
+    let start = source.find("mystery").unwrap();
+    for (path, label) in [(file.to_str().unwrap(), "bad.qasm"), ("-", "-")] {
+        let result = call(&["check", path, "--input=qasm"], source.as_bytes());
+        assert_eq!(result.status.code(), Some(1), "{result:?}");
+        let text = String::from_utf8(result.stdout).unwrap();
+        assert!(text.contains("\"code\":\"unsupported\""), "{text}");
+        assert!(text.contains(&format!("\"primary\":{{\"path\":\"{label}\",\"start\":{start},\"end\":{},\"line\":2,\"column\":64}}", start + 7)), "{text}");
+    }
+    for (args, input) in [
+        (vec!["check", "-", "--input=qasm"], &b"\xff"[..]),
+        (
+            vec!["check", "missing-issue-56.qasm", "--input=qasm"],
+            &b""[..],
+        ),
+        (vec!["check", "-", "--input=qir"], &b""[..]),
+    ] {
+        let result = call(&args, input);
+        assert!(!result.status.success());
+        let text = String::from_utf8(result.stdout).unwrap();
+        assert!(text.contains("\"primary\":null,\"related\":[]"), "{text}");
+    }
+}
+
+#[test]
+fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
+    use qleisli::ir::{Effect, RawProgram};
+    let verified = qleisli::verify(RawProgram {
+        quantum_inputs: vec![],
+        classical_inputs: vec![],
+        operations: vec![],
+        quantum_outputs: vec![],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    })
+    .unwrap();
+    let bytes =
+        qleisli::interchange::export(&verified, None, qleisli::interchange::Version::V2).unwrap();
+    let text = String::from_utf8(bytes).unwrap();
+    assert!(text.contains("\"root\":0"), "{text}");
+    let malformed = text.replace("\"root\":0", "\"root\":null");
+    let root = SourceRoot::new("");
+    let file = root.0.join("bad.qirf");
+    std::fs::write(&file, malformed).unwrap();
+    let direct = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["verify-ir", file.to_str().unwrap(), "--format=json"])
+        .output()
+        .unwrap();
+    let interop = call(&["check", file.to_str().unwrap(), "--input=qirf"], b"");
+    assert_eq!(direct.status.code(), Some(1));
+    assert_eq!(interop.status.code(), Some(1));
+    let expected = String::from_utf8(direct.stdout)
+        .unwrap()
+        .replace("\"command\":\"verify-ir\"", "\"command\":\"interop check\"");
+    assert!(expected.contains("json_pointer: /root"), "{expected}");
+    assert_eq!(String::from_utf8(interop.stdout).unwrap(), expected);
 }

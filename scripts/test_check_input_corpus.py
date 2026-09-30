@@ -25,7 +25,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 30)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 36)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -36,6 +36,22 @@ class IntakeTests(unittest.TestCase):
         path = self.root / "sized/qualtran_xor/bitwise.qli"
         path.write_text(path.read_text()+"// changed\n")
         with self.assertRaisesRegex(ValueError, "sized source hash mismatch"):
+            corpus.check_manifest(self.root)
+
+    def test_local_composition_is_pinned_and_cannot_introduce_upstream(self):
+        self.edit_manifest(lambda m: m["sized_local_compositions"][0].update(source="unapproved"))
+        with self.assertRaisesRegex(ValueError, "unknown local composition fields"):
+            corpus.check_manifest(self.root)
+
+    def test_local_composition_changed_source_and_dependency_reject(self):
+        path = self.root / "sized/measured_qpe/initialization.qli"
+        original = path.read_text()
+        path.write_text(original + "// changed\n")
+        with self.assertRaisesRegex(ValueError, "local composition hash mismatch"):
+            corpus.check_manifest(self.root)
+        path.write_text(original)
+        self.edit_manifest(lambda m: m["sized_local_compositions"][0].update(dependencies=["sized/unregistered.qli"]))
+        with self.assertRaisesRegex(ValueError, "unregistered local composition dependency"):
             corpus.check_manifest(self.root)
 
     def test_new_repository_is_rejected(self):
@@ -69,7 +85,8 @@ class IntakeTests(unittest.TestCase):
     def test_old_observations_keep_their_frozen_scope(self):
         old = json.loads((self.root / "authoring/check-initial.json").read_text())
         new = json.loads((self.root / "authoring/v021-expansion/check-initial.json").read_text())
-        self.assertEqual((len(old["results"]), len(new["results"])), (24, 6))
+        simple = json.loads((self.root / "authoring/v022-simple/check-initial.json").read_text())
+        self.assertEqual((len(old["results"]), len(new["results"]), len(simple["results"])), (24, 6, 6))
         corpus.check_manifest(self.root)
 
     def test_duplicate_observation_cannot_hide_a_missing_project(self):
@@ -92,6 +109,18 @@ class IntakeTests(unittest.TestCase):
 
 
 class OracleTests(unittest.TestCase):
+    def test_fredkin_preserves_control_and_leaves_zero_control_unchanged(self):
+        case = {"id": "quantum_katas/fredkin3", "qubits": 3}
+        self.assertEqual(corpus.reference_column(case, 4), [int(i == 4) for i in range(8)])
+        self.assertEqual(corpus.reference_column(case, 5), [int(i == 3) for i in range(8)])
+
+    def test_constant_xor_uses_low_bit_and_kickback_retains_key(self):
+        xor = {"id": "qualtran/xor_constant2", "qubits": 2}
+        kickback = {"id": "pennylane_demos/phase_kickback1", "qubits": 2}
+        self.assertEqual(corpus.reference_column(xor, 2), [0, 0, 0, 1])
+        self.assertEqual(corpus.reference_column(kickback, 0), [1, 0, 0, 0])
+        self.assertEqual(corpus.reference_column(kickback, 2), [0, 0, 0, 1])
+
     def test_lcu_zero_block_is_projector_but_selector_is_not_clean(self):
         case = {"id": "pennylane_demos/lcu_projector", "qubits": 2}
         for x in range(2):

@@ -1,0 +1,134 @@
+{
+  "format": "qleisli.v022-final-compatibility",
+  "version": 1,
+  "date": "2026-09-30",
+  "status": "pass",
+  "environment": {
+    "platform": "macOS aarch64",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "msrv": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+  },
+  "ordinary_all_targets": {
+    "command": "cargo test --all-targets --offline",
+    "suites": 60,
+    "passed": 491,
+    "failed": 0,
+    "ignored": 25
+  },
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": "CARGO_TARGET_DIR=/private/tmp/qleisli-v022-msrv-target rustup run 1.85.0 cargo check --all-targets --offline",
+      "exit_code": 0,
+      "scope": "compile every target, not MSRV test execution"
+    },
+    {
+      "command": "cargo clippy --all-targets --offline -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --offline",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --doc --offline",
+      "exit_code": 0,
+      "passed": 1
+    },
+    {
+      "command": "cargo package --allow-dirty --offline",
+      "exit_code": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_distribution.py"
+      ],
+      "exit_code": 0,
+      "output": ".....................\n----------------------------------------------------------------------\nRan 21 tests in 0.707s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_test_qli_differential.py"
+      ],
+      "exit_code": 0,
+      "output": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.002s\n\nOK\n"
+    }
+  ],
+  "supplemental_reports": [
+    "rust-sized-validation.json",
+    "rust-fourier-validation.json",
+    "source-cli-integration-validation.json",
+    "qpe-host-validation.json",
+    "final-continuation-baseline.json",
+    "package-rehearsal-validation.json",
+    "final-documentation-validation.json",
+    "continuation-integration-validation.json"
+  ],
+  "resolved_failures": [
+    {
+      "check": "all-targets",
+      "cause": "global CLI help gained the additive sized entry; exact usage fixture was stale",
+      "resolution": "updated intentional expected help; all-target rerun passes"
+    },
+    {
+      "check": "authoring records",
+      "cause": "validation reports were listed as command observations and local client records as numbered attempts",
+      "resolution": "retained reports/hashes separately; saved an actual parser replay; authoring checker and all 7 regressions pass"
+    },
+    {
+      "check": "corpus metadata",
+      "cause": "three ordinary measured-QPE composition sources were absent from the sized inventory",
+      "resolution": "registered hashed local compositions and their dependencies; same three upstreams and 36 finite cases; 22 checker regressions pass"
+    }
+  ],
+  "log_sha256": {
+    "all-targets": "8fc3f70453c9bfda291fa6e60caebe0931dc49ff9d2c26361974ceac53c4f6fa",
+    "msrv": "4b96164542c1ab01bed7d554280ec9a14164aa86e3388ff4031e5e7382603611",
+    "clippy": "d39b0016c0df9083bd24b9ce57d3e56460a676a3001462a45ce2cc9bfbb06239",
+    "rustdoc": "19455b95ad03ab9f3e4b2c83ea867c37176ab6b1dd0ee021df171988fb19d79f",
+    "doctest": "92c4b57b5b1e9dbd1d69ee3fe67c6c062adf5765f9295f42db6fc5de94f37343",
+    "package": "db17cfdc96510f593d189ca01d486b5f4e798171d9280a682107f7a66567314f",
+    "extracted-install": "521b1b004e9b73ccb51b852286e5697eadd04b26aee17c294214fc6266a15886",
+    "installed-quickstart": "9378cb141c01015629e75690b88e042f4b03dd7fe6db66aa58e9c58841983ff9"
+  },
+  "deferred": [
+    "exact clean-commit distribution/source-archive check",
+    "same-commit Linux CI and full MSRV test execution",
+    "tag, push, crates.io/docs.rs/GitHub publication",
+    "VM-23 through VM-29",
+    "general source/runtime correspondence and S05 authority transfer"
+  ],
+  "small_system_scope": true,
+  "maximum_corpus_newly_generated": false,
+  "publication_performed": false,
+  "final_metadata_checks": {
+    "docs": "4541 local links, 655 anchors, 143 Rust declarations, 124 Rust tests, 115 Lean roots",
+    "authoring": "14 records, 22 snapshots, 43 observations",
+    "inventory": "232 constructors, 131 sources, 16 boundaries",
+    "corpus": "36 finite cases from 3 sources; three local measured-QPE compositions separately registered",
+    "whitespace": "pass"
+  },
+  "package_rehearsal_sha256": "3d625b30b04649305edca8ac552470011c3f404c77050da13dd755629263c801"
+}

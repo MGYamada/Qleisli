@@ -1,0 +1,88 @@
+[
+  {
+    "source": "tests/fixtures/issues_v022/qir-unnamed.ll",
+    "llvm_valid": true,
+    "text_result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    },
+    "bitcode_result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  },
+  {
+    "source": "tests/fixtures/issues_v022/qasm-unknown.qasm",
+    "exit_code": 1,
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Unsupported: statement or gate outside the terminal subset at bytes 63..70",
+        "primary": {
+          "path": "qasm-unknown.qasm",
+          "start": 63,
+          "end": 70,
+          "line": 1,
+          "column": 64
+        },
+        "related": []
+      }
+    ]
+  },
+  {
+    "source": "same malformed QIRF root (generated)",
+    "checks": [
+      {
+        "command": "verify-ir",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "format",
+            "severity": "error",
+            "message": "expected unsigned integer",
+            "primary": null,
+            "related": [
+              {
+                "message": "json_pointer: /root",
+                "location": null
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "command": "interop",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "format",
+            "severity": "error",
+            "message": "expected unsigned integer",
+            "primary": null,
+            "related": [
+              {
+                "message": "json_pointer: /root",
+                "location": null
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

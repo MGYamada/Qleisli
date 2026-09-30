@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.qpe-instrument-host-validation",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 20,
+  "response_faults": 11,
+  "binary_transport": {
+    "cases": 72,
+    "shared_word_budget": "rejected before semantic checking",
+    "maximum_qubit_corpus_generated": false
+  },
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_qpe_host",
+    "--",
+    "--include-ignored",
+    "--nocapture"
+  ],
+  "stdout": "\nrunning 2 tests\nQPE_HOST|small|ok|889484|472\nQPE_HOST|target2|ok|943981|472\nQPE_HOST|precision3|ok|1479616|708\ntest qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations ... ok\nQPE_HOST|finite-provider|ok|882912|508\ntest native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s\n\n",
+  "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.34s\n     Running tests/hierarchical_qpe_host.rs (target/debug/deps/hierarchical_qpe_host-788cb5f6fd507a62)\n",
+  "exit_code": 0,
+  "request_origin": "provider structure frozen for mutation tests; finite H target independently specified",
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "source_sha256": {
+    "lean-kernel/Protocol.lean": "a82cfe890134ff5cb45569dd817841545103df32c85a33a72d3569362d12720d",
+    "lean-kernel/Main.lean": "4b30a889020c4df940ca96ea4d4f623cea5d21903e5039a2406f19a878f5464b",
+    "src/interchange/hierarchical.rs": "eed2e8a5895b800b87ecc4558e7b0db6b77fa6f98b765dd6f5046cdb0bb400fc",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "scripts/test_qpe_instrument_host.py": "6ba0570287c733d295b54d3840b49b9099bd9cec6c7603e58c0735c1ab495b13",
+    "tests/hierarchical_qpe_host.rs": "b3d53d5f61c05d661cb498514a699a4a6e1a59e9b502a02df61120a6c581b81d"
+  },
+  "source_preservation_proved": false,
+  "production_authority": false,
+  "external_schema_enabled": false
+}

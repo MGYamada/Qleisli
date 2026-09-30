@@ -1,0 +1,849 @@
+{
+  "format": "qleisli.verification-baseline",
+  "version": 1,
+  "packet": "VM-22",
+  "authority": "Rust production; Lean experimental",
+  "rust_test": {
+    "stdout": "\nrunning 3 tests\ntest frozen_raw_inputs_reject_aliases_and_missing_zero_width_owners ... ok\ntest frozen_request_rejects_axis_identity_type_and_domain_changes ... ok\ntest frozen_finite_artifacts_match_independent_phase_exact_requests ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/verification_boundary.rs (target/debug/deps/verification_boundary-6a2fbb37545815a8)\n"
+  },
+  "finite": [
+    {
+      "case": "h",
+      "version": "v1",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "h",
+      "version": "v2",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "t",
+      "version": "v1",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "t",
+      "version": "v2",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "unit_phase",
+      "version": "v1",
+      "qubits": 0,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "unit_phase",
+      "version": "v2",
+      "qubits": 0,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "toffoli",
+      "version": "v1",
+      "qubits": 3,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "toffoli",
+      "version": "v2",
+      "qubits": 3,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "raw_qif_unit",
+      "version": "v1",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "raw_qif_unit",
+      "version": "v2",
+      "qubits": 1,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "raw_computed_target",
+      "version": "v1",
+      "qubits": 2,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    },
+    {
+      "case": "raw_computed_target",
+      "version": "v2",
+      "qubits": 2,
+      "rust_required": true,
+      "oracle_required": true,
+      "rust_wrong_phase": false,
+      "oracle_wrong_phase": false,
+      "lean_finite": "not implemented; VM-23\u201326"
+    }
+  ],
+  "source": [
+    {
+      "project": "corpus/quantum_katas/swap2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_quantum_katas_swap2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/quantum_katas/fredkin3",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_quantum_katas_fredkin3.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/qualtran/xor_constant2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_qualtran_xor_constant2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/qualtran/bitwise_not2",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_qualtran_bitwise_not2.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/pennylane_demos/rx_quarter",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_rx_quarter.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false
+                ],
+                "probability": 0.5000000000000002
+              },
+              {
+                "bits": [
+                  true
+                ],
+                "probability": 0.5000000000000002
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/pennylane_demos/phase_kickback1",
+      "artifact": "tests/fixtures/verification_v022/source/corpus_pennylane_demos_phase_kickback1.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  true,
+                  true
+                ],
+                "probability": 1
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 1
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "examples/bell",
+      "artifact": "tests/fixtures/verification_v022/source/examples_bell.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              },
+              {
+                "bits": [
+                  true,
+                  true
+                ],
+                "probability": 0.5000000000000001
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true,
+            true
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "examples/feedback",
+      "artifact": "tests/fixtures/verification_v022/source/examples_feedback.qirf",
+      "decisions": {
+        "check": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "check",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "verified": true
+          }
+        },
+        "run": {
+          "format": "qleisli.result",
+          "version": 1,
+          "command": "run",
+          "outcome": "ok",
+          "diagnostics": [],
+          "result": {
+            "distribution": [
+              {
+                "bits": [
+                  false,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              },
+              {
+                "bits": [
+                  true,
+                  false
+                ],
+                "probability": 0.5000000000000001
+              }
+            ]
+          }
+        }
+      },
+      "raw_verification": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "verify-ir",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "verified": true,
+          "request_checked": false
+        }
+      },
+      "reference_distribution": [
+        {
+          "bits": [
+            false,
+            false
+          ],
+          "probability": 0.5
+        },
+        {
+          "bits": [
+            true,
+            false
+          ],
+          "probability": 0.5
+        }
+      ],
+      "lean_observing": "not implemented; VM-26"
+    },
+    {
+      "project": "corpus/negative/duplicate_owner",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 299,
+              "end": 300,
+              "line": 9,
+              "column": 24
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/measured_owner",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 299,
+              "end": 300,
+              "line": 9,
+              "column": 20
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/measurement_adjoint",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "effect",
+            "severity": "error",
+            "message": "static operation requires a unitary function",
+            "primary": {
+              "path": "main.qli",
+              "start": 284,
+              "end": 288,
+              "line": 7,
+              "column": 37
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "project": "corpus/negative/dirty_auxiliary",
+      "decision": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking",
+            "primary": {
+              "path": "main.qli",
+              "start": 328,
+              "end": 346,
+              "line": 9,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    }
+  ],
+  "native": [
+    {
+      "case": "t",
+      "decision": {
+        "format": "qleisli.kernel-result",
+        "version": 1,
+        "profile": "phase256-word-v1",
+        "accepted": true,
+        "code": "accepted",
+        "stage": "verification"
+      },
+      "reference_accepted": true,
+      "scope": "experimental word component; R8 phase exponent 1 embeds as 32/256"
+    },
+    {
+      "case": "t_wrong_phase",
+      "decision": {
+        "format": "qleisli.kernel-result",
+        "version": 1,
+        "profile": "phase256-word-v1",
+        "accepted": false,
+        "code": "rejected",
+        "stage": "verification"
+      },
+      "reference_accepted": false,
+      "scope": "experimental word component; R8 phase exponent 1 embeds as 32/256"
+    },
+    {
+      "case": "t_forged_claim",
+      "decision": {
+        "format": "qleisli.kernel-result",
+        "version": 1,
+        "profile": "phase256-word-v1",
+        "accepted": false,
+        "code": "rejected",
+        "stage": "verification"
+      },
+      "reference_accepted": false,
+      "scope": "experimental word component; R8 phase exponent 1 embeds as 32/256"
+    },
+    {
+      "case": "t_wrong_domain",
+      "decision": {
+        "format": "qleisli.kernel-result",
+        "version": 1,
+        "profile": "phase256-word-v1",
+        "accepted": false,
+        "code": "syntax",
+        "stage": "artifact"
+      },
+      "reference_accepted": false,
+      "scope": "experimental word component; R8 phase exponent 1 embeds as 32/256"
+    },
+    {
+      "case": "t_bad_count",
+      "decision": {
+        "format": "qleisli.kernel-result",
+        "version": 1,
+        "profile": "phase256-word-v1",
+        "accepted": false,
+        "code": "limit",
+        "stage": "artifact"
+      },
+      "reference_accepted": false,
+      "scope": "experimental word component; R8 phase exponent 1 embeds as 32/256"
+    }
+  ],
+  "hierarchy": {
+    "stdout": "\nrunning 1 test\ntest vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.12s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4f64e6729d3e7615)\n",
+    "cases": 4,
+    "scope": "Fresh native structural/request checking plus Rust finite reconstruction; conditional, not production Lean evidence",
+    "decisions": {
+      "h": "request checked",
+      "wrong_phase_request": "contract",
+      "wrong_leaf_under_zero_repeat": "contract",
+      "cycle": "invalid_ir"
+    }
+  },
+  "binaries": {
+    "rust": "a58e630bf4a5da370f9ab05dae88e265eabfbcf00b5b2942c765aa6f24a0e43b",
+    "lean": "6dcaad7556dbf14144deab11d1816e1c4b66540e65e2c2d4f54c93803b652a4f"
+  },
+  "maximum_qubits": 3,
+  "claims": "Bounded comparisons and frozen inputs; not a soundness proof or production dual checking.",
+  "performed_checks": [
+    {
+      "command": "cargo test --all-targets",
+      "passed": 449,
+      "ignored": 15,
+      "suites": 55,
+      "outcome": "pass"
+    },
+    {
+      "command": "cargo fmt --check",
+      "outcome": "pass"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "outcome": "pass"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "passed": 14,
+      "outcome": "pass"
+    },
+    {
+      "command": "python3 scripts/test_test_verification_baseline.py",
+      "passed": 8,
+      "outcome": "pass"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "passed": 23,
+      "outcome": "pass"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "outcome": "pass"
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "outcome": "pass"
+    },
+    {
+      "command": "git diff --check",
+      "outcome": "pass"
+    }
+  ],
+  "not_performed": [
+    "VM-23\u2013VM-29 implementation/proofs",
+    "new maximum-size corpus checks",
+    "new full Lean builds/axiom audits (existing audited native binary executed)",
+    "remote CI/MSRV/Linux/distribution/publication"
+  ]
+}

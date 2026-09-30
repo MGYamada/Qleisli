@@ -28,5 +28,5 @@ circuits, unchanged execution/draw budgets, QIRF1/2 round trips with 300,000
 extra source bytes and CLI usage. Internal tests check norm corruption,
 source-sharing identity/order/duplicates and real byte limits. Runtime policy
 regressions reject both eval commands without rejecting comments/plain literals.
-The [response](../../../docs/reviews/v0.2.0.md) lists all nine dispositions;
+The [response](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.2.0.md) lists all nine dispositions;
 [validation](validation.json) records commands actually run for this checkpoint.

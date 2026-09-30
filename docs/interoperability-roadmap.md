@@ -93,6 +93,10 @@ Lean checker. It adds no production `RawOp`, removes no existing acceptance
 rule, and does not close the compatibility debt below. New M2 kernel rules
 will be implemented in Lean with proofs about those actual definitions;
 translation and post-verification execution obligations remain separate.
+The later [0.2.2–0.2.9 verification plan](verification-migration-v0.2.md) assigns
+inventory, raw-IR coverage and production dual integration to bounded packets.
+It preserves the public raw-only forms below; migration to Lean does not itself
+remove compatibility debt or prove legacy desugaring correspondence.
 
 Here the **[desugaring layer](terminology.md#desugaring-layer)** is the
 meaning-preserving producer of already specified core operations from convenient
@@ -155,7 +159,7 @@ this does not reduce the current Rust acceptance base.
 compare emitted circuits with independently extracted verified-IR meanings
 through the existing matrix equation checker. Sharing inversion/basis helpers
 and source-storage accounting does not remove an IR variant or acceptance rule.
-The [review record](reviews/v0.1.9-followup.md) bounds this check to six bits and
+The [review record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.9-followup.md) bounds this check to six bits and
 distinguishes its new capacities from a general source-preservation proof.
 
 This is an initial constructor-family inventory, not a proof of complete
@@ -362,7 +366,7 @@ lowering, equation/encoding binding and execution are open integration debt.
 This adds a necessary ownership conversion rule without changing `rewire`'s
 type-preservation requirement or reducing the existing Rust trusted base.
 
-The 0.2.1 [canonical reshape helper](reshape-plan.md) adds experimental checked
+The 0.2.1 [canonical reshape helper](size-expressions.md) adds experimental checked
 metadata and encoding proofs only. Its producer is the native test harness;
 the preserved `.qli` draft is rejected. It adds no `Body`, `MeaningBody`, rule
 or wire-format variant and cannot issue evidence. Source lowering must emit

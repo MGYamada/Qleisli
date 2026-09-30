@@ -9,7 +9,7 @@ follow it. It adopts the direction evaluated in the
 [semantic-contract review](semantic-contract-proposal-review.md). The first
 [finite checker and source extension](semantic-contracts-v0.1.md) and
 [retained function evidence](function-contracts-v0.1.md) form the completed
-bounded path. The [conformance ledger](specification-status.md) records its
+bounded path. The [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records its
 acceptance evidence, capacity limits, and remaining proof obligations.
 
 The finite core **specification v0**, the development **stages 0–5**, and
@@ -21,18 +21,18 @@ evidence below, not a manifest version or successful fixed-size example.
 The adopted initial product baseline is **0.1.0**. The
 [versioning policy](versioning.md) defines compatibility, synchronized package
 versions, release validation, and immutable Git tags. The
-[changelog](../CHANGELOG.md) and [0.1.0 release notes](releases/v0.1.0.md)
+[changelog](../CHANGELOG.md) and [0.1.0 release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.0.md)
 record its contents and validation scope. The Git tag and GitHub release
 identify the released commit and publication state; registry publication is
 a separate operation.
 
 Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.9 record](releases/v0.1.9.md)
+in the [generated status](current-status.md). The [0.1.9 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md)
 separates compatible review maintenance and local validation from publication;
-the [0.1.8 record](releases/v0.1.8.md) preserves M1/authoring migrations.
+the [0.1.8 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) preserves M1/authoring migrations.
 Compatible features follow the revised PATCH policy.
 The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
-older [release records](releases/v0.1.4.md) retain their historical evidence.
+older [release records](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.4.md) retain their historical evidence.
 The [six initial drafts and requirements](imaginary-v1/README.md), their
 [semantic review](imaginary-v1/review.md), and the English specification
 groundwork are complete as design artifacts. This satisfies the corpus
@@ -48,7 +48,7 @@ The design's G013-S0–S2 gates concern this initial slice; G013-S3 source/entry
 release integration and generalized algorithms remain future work. Public
 feature adoption still requires an extension specification, independently of
 the compatibility-based version increment.
-The [0.1.5 decision dossier](decisions/2026-09-27-v1-path.md) now selects a
+The [0.1.5 decision dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) now selects a
 bounded M2 continuation, replacing indefinite deferral. It does not change
 past release conditions or implement production kernel features. Fixed-width M1
 retains finite checking; size generalization requires R14 and hierarchical IR, and
@@ -57,23 +57,25 @@ synthesis without whole-space truth tables.
 
 ## 0.2.0 foundation and 0.2.1 shared-QPE continuation
 
-**Latest scope revision, 2026-09-30:** the user splits [0.2.1](v0.2.1-plan.md)
+**Latest scope revision, 2026-09-30:** the user splits [0.2.1](v0.2.2-plan.md)
 at the completed corpus/review/experimental-component boundary, adding bounded
 [Python/OpenQASM/QIR connections](connections-v021.md). Heavy implementation,
 production integration and proof work moves to [0.2.2](v0.2.2-plan.md).
 R14/H1–H5 and full instrument/source correspondence are deferred with the
 features, not waived or completed. Existing components remain audited and
 ordinary 0.2.1 compatibility, Rust/docs/corpus/Lean/distribution checks remain
-release gates. The earlier assignment below is historical.
+release gates. The later user request selects [0.2.2 development](releases/v0.2.2.md),
+unreleased; the latest published release remains 0.2.1. Version selection does
+not satisfy these gates. The earlier assignment below is historical.
 
-**User scope revision, 2026-09-29.** The [0.2.0 plan](v0.2.0-plan.md) now
+**User scope revision, 2026-09-29.** The [0.2.0 plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) now
 ships implemented tuple/type and resource-policy changes, finite X2–X6, and
 experimental Lean components with their actual proof limits. Its remaining
 gate is migration/contract/status alignment and final primary/MSRV Rust,
 corpus/docs/examples, pinned Lean build/audit and clean distribution validation.
 Tagging, push and publication remain separately recorded operations.
 
-The [0.2.1 target](v0.2.1-plan.md) carries the four remaining areas: full
+The [0.2.1 target](v0.2.2-plan.md) carries the four remaining areas: full
 hierarchical semantics/evidence, independently bound production verification,
 sized source/shared QPE/QFT, and reference execution with integrated H1–H5.
 The previous multi-size, instrument/reference, phase, mutation, capacity,
@@ -94,12 +96,30 @@ this scheduling revision.
 of the **v0.3.0 breaking-change release**. The
 [detailed plan](v0x-roadmap.md#v030-qleisli-type-system-specification) requires
 explicit rules, checking obligations and migration from the current contracts;
-concrete changes remain to be specified. K1 exact-contract work remains in the
-same release plan. QLT implementation is deferred to **v0.4.0 or later**.
+concrete changes remain to be specified. The later 2026-09-30 instruction moves
+K1/K2 verification implementation to [0.2.2–0.2.9](verification-migration-v0.2.md);
+0.3.0 must adapt those checker rules/proofs to its adopted type changes.
+QLT implementation is deferred to **v0.4.0 or later**.
 
-This selects future work without changing the current 0.2.1 version or its
+This selected future work without changing the then-current 0.2.1 version or its
 compatibility/acceptance criteria. It neither adopts new type rules now nor
 adds QLT completion to the S05/PR theorem gates.
+
+## 0.2.2–0.2.9 verification implementation targets
+
+**User-selected plan, 2026-09-30; implementation pending.** The
+[eight-packet plan](verification-migration-v0.2.md#release-packets-and-dependencies)
+assigns inventory, exact/finite evidence, pure/observing raw IR, hierarchy and
+production dual integration to successive compatible PATCH targets. This
+supersedes the former K1/0.3.0 and K2/0.4.0 scheduling. Preserve the full existing
+public acceptance surface and small-system validation scope. Shared-QPE feature
+packets retain R14/H1–H5 and their source/instrument/integration obligations
+across the continuation; they are not all a first-packet 0.2.2 prerequisite.
+
+0.2.9 targets a complete Lean implementation and selected production dual path,
+not automatic Lean-only acceptance or an already proved general theorem.
+S05-C1–C5 below still govern formal authority transfer at v0.5.0. Documentation,
+component proofs and test parity alone cannot close those gates.
 
 ## Qleisli Soundness Theorem (v0.5.0)
 
@@ -108,6 +128,13 @@ adds QLT completion to the S05/PR theorem gates.
 **Adopted target, 2026-09-29; not yet proved.** Proving the **Qleisli Soundness
 Theorem** is the central v0.5.0 milestone, alongside the K3 transfer of production
 verification to Lean and readiness for broader open-source development.
+
+The [reviewed IR direction](verification-migration-v0.2.md#target-ir-and-reference-semantics-fixed-before-migration)
+covers the complete production profile family: published flat `RawProgram`/QIRF
+compatibility and every hierarchy profile enabled by v0.5. Reuse finite-leaf
+soundness within actual shared-call/repetition and instrument proofs. Freeze
+profiles, domains and independently reviewed denotations before their migration;
+a proof about one experimental projection cannot stand in for that inventory.
 
 For the published v0.5.0 verification profile, let `p : RawIR₀.₅`,
 `C : Contract₀.₅` and `π : Evidence₀.₅`. The target is a Lean theorem about
@@ -298,7 +325,7 @@ parameters are not prerequisites for this first milestone.
 | V01-C3 | Bind evidence to the actual source/function contract and final IR, including parameters, output ordering and dependencies. Check transformations or recheck their results. Preserve existing type, ownership, effect and independent raw-IR validation. | Met: raw `CertifiedCompute` rechecks retained W/u; `FunctionEvidence` independently checks both complete raw functions and binds their frozen source/dependency snapshots. Final contract actions retain this evidence under axis remapping, adjoint, control, and repetition. [Raw evidence regressions](../tests/function_evidence.rs) cover binding and extraction. |
 | V01-C4 | Through the implemented compiler/checker, certify a phase oracle, auxiliary H;H, and the f(x)=x data/auxiliary simultaneous X example using the same evidence rules. Establish exact zero return and separation over all encoded inputs and arbitrary references. | Met: [certified source tests](../tests/certified_source.rs) and [runnable examples](../examples/semantic_contracts/README.md) use the same exact full-column equation; the reference extension follows by tensoring that equation with identity. Numerical reference tests supplement it. |
 | V01-C5 | Publish concrete function contracts that can be reused compositionally. Exchange at least two implementations of one fixed phase-oracle contract while leaving its logical client unchanged. Independently check the resulting IR, including reuse under coherent control and with a correlated reference. Different private auxiliary layouts must be hidden by checked interfaces. | Met: `apply_contract` fixes the client's specification. [One unchanged client](../tests/function_contracts.rs) accepts direct Z and two private-auxiliary implementations, with coherent control and an entangled reference. Calls share immutable evidence; nested composition and static transforms retain it. [Executable example](../examples/function_contracts/README.md). |
-| V01-C6 | Reject auxiliary-only X, incorrect phase/predicate, incompatible encoding or layout, missing entry evidence, invalid inverse/control premises, stale or mismatched certificates, and lost/duplicated ownership. Record exact checks, limits, diagnostics, assumptions, and proof/implementation/test status separately. | Met in the bounded profile: kernel, source, and raw-function rejection tests, changed-source/dependency tests, and finite checking/execution budgets. Exact proof checks and approximate reference results are separately recorded in the [ledger](specification-status.md). |
+| V01-C6 | Reject auxiliary-only X, incorrect phase/predicate, incompatible encoding or layout, missing entry evidence, invalid inverse/control premises, stale or mismatched certificates, and lost/duplicated ownership. Record exact checks, limits, diagnostics, assumptions, and proof/implementation/test status separately. | Met in the bounded profile: kernel, source, and raw-function rejection tests, changed-source/dependency tests, and finite checking/execution budgets. Exact proof checks and approximate reference results are separately recorded in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). |
 
 The existing [39 exact example checks](../scripts/check_semantic_contract_examples.py)
 and current regression tests are supporting evidence. They do not satisfy
@@ -324,7 +351,7 @@ this release gate does not retrospectively mark all of SPEC-4 complete.
 ## v0.1.9 maintenance acceptance boundary
 
 The broader legacy checkpoint was completed for the recorded 0.1.9
-candidate; see the [six-condition completion evidence](reviews/b019-completion.md).
+candidate; see the [six-condition completion evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-completion.md).
 The conditions below remain unchanged, and are distinct from the new 0.2.0 gates.
 
 **Legacy checkpoint, revised by the 0.1.5 review; subsequently completed in 0.1.9.** The
@@ -336,13 +363,13 @@ patch releases. M1 specification can proceed alongside them.
 
 B019-5 no longer accepts a no-go as completion. It requires G020-1 scope and
 specification plus a dated kernel go/no-go decision; a blocker requires dated
-reconsideration. [M0](decisions/2026-09-27-v1-path.md) selects fixed-width M1 and
+reconsideration. [M0](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects fixed-width M1 and
 a bounded M2 kernel path, with a 2026-10-04 JST implementation-readiness checkpoint.
 The [M1 rules](next-minor-spec.md), [external contracts](machine-interface-spec.md)
 and [M2 checker profile](hierarchical-ir-spec.md) complete the selected design
 handoff. The completion record supplies the remaining audit and reproducibility
 evidence. Pending M1/M2 features are separately tracked in the
-[0.2.0 development record](releases/v0.2.0.md).
+[0.2.0 development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
 
 New public APIs, syntax, size generalization and kernel integration require
 specification and validation. Use PATCH for compatible changes in 0.y.z (y > 0)
@@ -420,7 +447,7 @@ and [review](imaginary-v1/review.md) establish this limited prerequisite.
 All code remains imaginary and uncompiled; future specification, implementation,
 validation, and proof are separate.
 
-The [0.1.2 roadmap](releases/v0.1.2.md) records the corpus and requirement
+The [0.1.2 roadmap](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) records the corpus and requirement
 records as documentation deliverables. Completion follows the linked artifacts
 and review, not the plan or version number, and does not fix future syntax/APIs.
 

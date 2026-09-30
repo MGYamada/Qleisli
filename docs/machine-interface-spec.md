@@ -2,7 +2,7 @@
 
 Status: **X1 retained; X2–X6 implemented in the 0.2.0 finite profile**
 (updated 2026-09-29). See the executed checks and publication evidence in the
-[release record](releases/v0.2.0.md). These are independently
+[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). These are independently
 shippable slices of [M1](next-minor-spec.md), versioned by
 [compatibility](versioning.md), with X1 first implemented in 0.1.7. Formats below
 have their own versions; product/package versions never change their meaning.
@@ -111,7 +111,7 @@ Both text and JSON `run` retain every positive computed weight: ideal-zero
 outcomes may appear as roundoff residues (for example about `6.16e-33` for
 `H; T^8; H` on zero). Listing an outcome does not prove it has nonzero ideal
 probability. No automatic display cutoff hides genuinely rare outcomes;
-[A020-13](v0.2.0-backlog.md#a020-13--numerical-zero-outcomes-obscure-ideal-deterministic-examples)
+[A020-13](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-13--numerical-zero-outcomes-obscure-ideal-deterministic-examples)
 tracks a separately specified, optional display summary.
 Simulation capacity errors map to `limit`; other current runtime failures map
 to `simulation`. Existing compiler codes, including contract failures currently
@@ -532,8 +532,8 @@ The original documentation release did not execute these tests. X1 check/run
 now has [Rust CLI regressions](../tests/cli_json.rs),
 [structured location checks](../tests/diagnostics.rs) and an
 [independent JSON decoder suite](../scripts/test_cli_json.py); execution results
-belong in the [0.1.7 record](releases/v0.1.7.md). X2–X6's implementation and
-validation are recorded separately in the [0.2.0 record](releases/v0.2.0.md).
+belong in the [0.1.7 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md). X2–X6's implementation and
+validation are recorded separately in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
 
 ## 0.2.0 host API mapping
 

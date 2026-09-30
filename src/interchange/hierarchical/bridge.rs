@@ -2,6 +2,10 @@
 //! The Lean checker independently validates every proposed reference and rule.
 mod request;
 pub(super) use request::decode_request;
+mod instrument;
+pub(super) use instrument::decode_instrument;
+mod qpe;
+pub(super) use qpe::decode_qpe_instrument;
 
 use std::collections::VecDeque;
 
@@ -12,6 +16,7 @@ pub(super) struct Decoded {
     pub value: Value,
     pub bridge: Vec<u8>,
     pub definition_order: Vec<usize>,
+    pub word_count: usize,
 }
 
 pub(super) fn number(value: &Value) -> Result<u32> {
@@ -530,5 +535,6 @@ pub(super) fn decode(payload: &[u8]) -> Result<Decoded> {
         value,
         bridge: w.bytes,
         definition_order,
+        word_count: w.reads,
     })
 }

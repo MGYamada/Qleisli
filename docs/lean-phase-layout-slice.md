@@ -2,7 +2,7 @@
 
 Status: **implemented with actual-checker proofs**, 2026-09-29. This experimental
 component joins sparse dyadic phases and typed shared layouts. Executed checks
-are in the [release checkpoint](releases/v0.2.0.md#typed-phase-and-layout-checkpoint-2026-09-29).
+are in the [release checkpoint](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md#typed-phase-and-layout-checkpoint-2026-09-29).
 Production Rust verification remains authoritative.
 
 The earlier typed-call component preserves coordinates but cannot express a

@@ -1,0 +1,6691 @@
+{
+  "format": "qleisli.capacity-accounting-continuation",
+  "version": 1,
+  "date": "2026-09-30",
+  "status": "passed-with-open-composed-capacity-gate",
+  "changes": {
+    "producer": [
+      "scripts/compact_sized_graph.py",
+      "scripts/test_compact_sized_graph.py"
+    ],
+    "root_request": [
+      "lean-kernel/QleisliKernel/Hierarchical/Root.lean",
+      "scripts/test_hierarchical_request.py"
+    ],
+    "component_accounting": [
+      "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean",
+      "lean-kernel/QleisliKernel/Hierarchical/Readout.lean",
+      "scripts/test_hierarchical_preparation.py",
+      "scripts/test_hierarchical_readout.py"
+    ]
+  },
+  "implementation_sha256": {
+    "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+    "scripts/test_compact_sized_graph.py": "c242e5468b3da433c24a76bd00b8a425b30babc7b9d86d88780e8ad59d49fee8",
+    "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+    "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+    "scripts/test_hierarchical_request.py": "4c770b8577143444b4d76c22d1475c56da8c3022ca253ece72a70548632d3773",
+    "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
+    "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded"
+  },
+  "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+  "qpe_2_4": {
+    "pure_inspection": 1718740,
+    "pure_request": 1910868,
+    "preparation": 92320,
+    "readout": 175168,
+    "boundary_charge_computed_from_current_definition": 11152,
+    "diagnostic_sum": 2189508,
+    "allowance": 2000000,
+    "actual_composed_result": "limit"
+  },
+  "qpe_1_3": {
+    "actual_composed_result": "ok",
+    "structural_work": 1442442,
+    "exact_work": 618
+  },
+  "named_qpe_instrument_checked": false,
+  "production_integration": false,
+  "source_preservation_proved": false,
+  "producer_only_stage": {
+    "source": {
+      "format": "qleisli.sized-instrument-validation",
+      "version": 1,
+      "status": "passed-with-open-capacity-gate",
+      "proposals": 22,
+      "components": {
+        "qpe-1-1": {
+          "preparation_work": 12448,
+          "readout_work": 24384,
+          "graph_work": 314565,
+          "exact_work": 67,
+          "aggregate_work": 351464
+        },
+        "qpe-1-2": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 860797
+        },
+        "qpe-1-3": {
+          "preparation_work": 107104,
+          "readout_work": 302784,
+          "graph_work": 1154261,
+          "exact_work": 402,
+          "aggregate_work": 1564551
+        },
+        "qpe-2-2": {
+          "preparation_work": 47200,
+          "readout_work": 110528,
+          "graph_work": 747107,
+          "exact_work": 268,
+          "aggregate_work": 905103
+        },
+        "qpe-2-4": {
+          "preparation_work": 237728,
+          "readout_work": 736320,
+          "graph_work": 1718740,
+          "exact_work": 536,
+          "aggregate_work": 2693324
+        },
+        "init-0": {
+          "preparation_work": 224,
+          "readout_work": 0,
+          "graph_work": 1558,
+          "exact_work": 0,
+          "aggregate_work": 1782
+        },
+        "readout-0": {
+          "preparation_work": 1312,
+          "readout_work": 768,
+          "graph_work": 1558,
+          "exact_work": 0,
+          "aggregate_work": 3638
+        },
+        "init-1": {
+          "preparation_work": 4128,
+          "readout_work": 0,
+          "graph_work": 3170,
+          "exact_work": 0,
+          "aggregate_work": 7298
+        },
+        "readout-1": {
+          "preparation_work": 1824,
+          "readout_work": 8896,
+          "graph_work": 3170,
+          "exact_work": 0,
+          "aggregate_work": 13890
+        },
+        "init-2": {
+          "preparation_work": 19360,
+          "readout_work": 0,
+          "graph_work": 39218,
+          "exact_work": 0,
+          "aggregate_work": 58578
+        },
+        "readout-2": {
+          "preparation_work": 2336,
+          "readout_work": 51456,
+          "graph_work": 28155,
+          "exact_work": 0,
+          "aggregate_work": 81947
+        },
+        "init-3": {
+          "preparation_work": 57696,
+          "readout_work": 0,
+          "graph_work": 84482,
+          "exact_work": 0,
+          "aggregate_work": 142178
+        },
+        "readout-3": {
+          "preparation_work": 2848,
+          "readout_work": 180672,
+          "graph_work": 60460,
+          "exact_work": 0,
+          "aggregate_work": 243980
+        },
+        "order": {
+          "preparation_work": 47200,
+          "readout_work": 110528,
+          "graph_work": 804495,
+          "exact_work": 268,
+          "aggregate_work": 962491
+        },
+        "amplitude-0-3": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 970482
+        },
+        "amplitude-1-3": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 970482
+        },
+        "amplitude-1-4": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 970482
+        },
+        "amplitude-2-2": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 970482
+        },
+        "classical-copy-capture": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 860797
+        },
+        "wrong-zero-helper": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 793572,
+          "exact_work": 402,
+          "aggregate_work": 939414
+        },
+        "wrong-readout-order": {
+          "preparation_work": 42592,
+          "readout_work": 102848,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 860797
+        },
+        "retiming": {
+          "preparation_work": 24864,
+          "readout_work": 102848,
+          "graph_work": 86806,
+          "exact_work": 67,
+          "aggregate_work": 214585
+        }
+      },
+      "semantics": {
+        "qpe-1-1": {
+          "coefficients": 16,
+          "maximum_error": 1.2412670766236366e-16
+        },
+        "qpe-1-2": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "qpe-1-3": {
+          "coefficients": 64,
+          "maximum_error": 4.652682298944613e-16
+        },
+        "qpe-2-2": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "qpe-2-4": {
+          "coefficients": 384,
+          "maximum_error": 2.0959882093582513e-15
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude-0-3": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "amplitude-1-3": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "amplitude-1-4": {
+          "coefficients": 32,
+          "maximum_error": 7.023038222575547e-16
+        },
+        "amplitude-2-2": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "classical-copy-capture": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "semantic_faults": {
+        "wrong-zero-helper": {
+          "coefficients": 32,
+          "maximum_error": 1.0
+        },
+        "wrong-readout-order": {
+          "coefficients": 32,
+          "maximum_error": 0.5
+        }
+      },
+      "normalization": {
+        "qpe-1-1": {
+          "before": 72,
+          "after": 52,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "qpe-1-2": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "qpe-1-3": {
+          "before": 181,
+          "after": 153,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-2": {
+          "before": 128,
+          "after": 103,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-4": {
+          "before": 231,
+          "after": 201,
+          "columns": 65,
+          "maximum_error": 0.0
+        },
+        "init-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "readout-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "init-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "readout-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "init-2": {
+          "before": 13,
+          "after": 6,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "readout-2": {
+          "before": 14,
+          "after": 5,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "init-3": {
+          "before": 18,
+          "after": 11,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "readout-3": {
+          "before": 20,
+          "after": 9,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "order": {
+          "before": 135,
+          "after": 110,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "amplitude-0-3": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-3": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-4": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-2-2": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "classical-copy-capture": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-zero-helper": {
+          "before": 140,
+          "after": 119,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-readout-order": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "retiming": {
+          "before": 9,
+          "after": 8,
+          "columns": 9,
+          "maximum_error": 0.0
+        }
+      },
+      "source_rejections": [
+        {
+          "case": "unitary-wrapper",
+          "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+        },
+        {
+          "case": "unitary-initializer",
+          "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+        },
+        {
+          "case": "iso-readout",
+          "diagnostic": "iso body cannot perform observe operation measure_z"
+        },
+        {
+          "case": "missing-access",
+          "diagnostic": "operation use requires declared Controlled access"
+        },
+        {
+          "case": "wrong-classical-width",
+          "diagnostic": "return type/tuple shape mismatch"
+        },
+        {
+          "case": "drop-empty-owner",
+          "diagnostic": "unreturned quantum owners: q"
+        },
+        {
+          "case": "consume-nonempty",
+          "diagnostic": "unknown, captured or already moved value q"
+        },
+        {
+          "case": "reuse-measured-bit",
+          "diagnostic": "unknown, captured or already moved value bit"
+        },
+        {
+          "case": "duplicate-classical-pattern",
+          "diagnostic": "duplicate binding in one pattern"
+        },
+        {
+          "case": "wrong-prepend-width",
+          "diagnostic": "prepend_bit requires CBit and exactly CBits<n>, with n < 8"
+        },
+        {
+          "case": "cycle-initializer",
+          "diagnostic": "cyclic or excessive source operation instantiation"
+        },
+        {
+          "case": "unknown-empty-branch",
+          "diagnostic": "unknown or unimported operation missing"
+        },
+        {
+          "case": "runtime-feedback",
+          "diagnostic": "expected 'static', found 'target' at token 82"
+        },
+        {
+          "case": "bad-init-arity",
+          "diagnostic": "operation argument shape/arity mismatch"
+        },
+        {
+          "case": "unknown-static-size",
+          "diagnostic": "unbound static natural missing"
+        }
+      ],
+      "pending_composed": {
+        "qpe-2-4": "limit"
+      },
+      "production_integration": false,
+      "named_instrument_receipt": false,
+      "source_preservation_proved": false,
+      "max_checked_graph_qubits": 6,
+      "unaccepted_composed_case_qubits": 6,
+      "kernel_sha256": "102308ed1028a85a48ca94d4dcc7580de868adfb0ca61389541c752f315d7296",
+      "graph_reconstruction": {
+        "command": [
+          "/Users/masa/git/Qleisli/target/debug/deps/sized_corpus-15fdacc0fa49f151",
+          "inspect_source_produced_corpus",
+          "--ignored",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|314565|67|1\nCORPUS|qpe-1-2|ok|715089|268|4\nCORPUS|qpe-1-3|ok|1154261|402|6\nCORPUS|qpe-2-2|ok|747107|268|4\nCORPUS|qpe-2-4|ok|1718740|536|8\nCORPUS|init-0|ok|1558|0|0\nCORPUS|readout-0|ok|1558|0|0\nCORPUS|init-1|ok|3170|0|0\nCORPUS|readout-1|ok|3170|0|0\nCORPUS|init-2|ok|39218|0|0\nCORPUS|readout-2|ok|28155|0|0\nCORPUS|init-3|ok|84482|0|0\nCORPUS|readout-3|ok|60460|0|0\nCORPUS|order|ok|804495|268|4\nCORPUS|amplitude-0-3|ok|824707|335|5\nCORPUS|amplitude-1-3|ok|824707|335|5\nCORPUS|amplitude-1-4|ok|824707|335|5\nCORPUS|amplitude-2-2|ok|824707|335|5\nCORPUS|classical-copy-capture|ok|715089|268|4\nCORPUS|wrong-zero-helper|ok|793572|402|6\nCORPUS|wrong-readout-order|ok|715089|268|4\nCORPUS|retiming|ok|86806|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.01s\n\n",
+        "stderr": ""
+      },
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "implementation_sha256": {
+        "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+        "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+        "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+        "scripts/test_sized_instrument.py": "2e648634361d838d2cc1b239242f2b37ae571f7cb80ff211c635271129c44af3"
+      }
+    },
+    "fourier": {
+      "format": "qleisli.sized-qft-experiment",
+      "version": 1,
+      "status": "passed-experimental-source-path",
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/deps/sized_corpus-15fdacc0fa49f151",
+        "check_source_fourier_contracts",
+        "--ignored",
+        "--nocapture"
+      ],
+      "scope": "small-system",
+      "kernel_sha256": "102308ed1028a85a48ca94d4dcc7580de868adfb0ca61389541c752f315d7296",
+      "source_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "inverse_source_sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+      "measured_components": {
+        "measured-qpe-fourier-1": {
+          "graph_sha256": "b93b23063781a9ea970390cd13b518c1e41b72c992afebc96cf8815b8b9c0ede",
+          "definitions": 52,
+          "inverse_operand": 14,
+          "retained_definitions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        "measured-qpe-fourier-2": {
+          "graph_sha256": "4700577f06a298d1736518f24ec0f77f068c6db3e95776c17085d65cea506099",
+          "definitions": 104,
+          "inverse_operand": 82,
+          "retained_definitions": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82
+          ]
+        },
+        "measured-qpe-fourier-3": {
+          "graph_sha256": "37060f90c600aa5476185bcfbce4796c9fecaf9f01b15d975aeddce5d7527843",
+          "definitions": 153,
+          "inverse_operand": 124,
+          "retained_definitions": [
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124
+          ]
+        },
+        "measured-qpe-missing-reversal": {
+          "graph_sha256": "fa8d9010bb8dee596409d2280a31db549eb946e71fdbe91d9db1357f09bf9997",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        },
+        "measured-qpe-missing-phase": {
+          "graph_sha256": "6eca24db2e7b0b99d3ff027aa08424492f1084ae5539fb6c14daa045a6c3cc16",
+          "definitions": 91,
+          "inverse_operand": 69,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69
+          ]
+        },
+        "measured-qpe-wrong-phase": {
+          "graph_sha256": "5c45df9d7ff4f58dff852ef50d32b4d986616b6c661f80d953ddf9ae93e0ab77",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        },
+        "measured-qpe-wrong-h": {
+          "graph_sha256": "077cd0acdfa4386a4a10e722d02c5b4002daf16921db2efd02f224f3379f49d0",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        }
+      },
+      "measured_source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "implementation_sha256": {
+        "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+        "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+        "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86"
+      },
+      "source_rejections": [
+        {
+          "case": "zero-width",
+          "diagnostic": "static entry premise is false"
+        },
+        {
+          "case": "oversized-register",
+          "diagnostic": "register width exceeds the eight-bit register profile"
+        },
+        {
+          "case": "false-premise",
+          "diagnostic": "static entry premise is false"
+        },
+        {
+          "case": "angle-denominator",
+          "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+        },
+        {
+          "case": "unnormalized-angle",
+          "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+        },
+        {
+          "case": "alias-control",
+          "diagnostic": "unknown, captured or already moved quantum value control"
+        },
+        {
+          "case": "unselected-branch-alias",
+          "diagnostic": "unknown, captured or already moved quantum value high"
+        },
+        {
+          "case": "unselected-static-name",
+          "diagnostic": "unbound static natural unknown"
+        },
+        {
+          "case": "unknown-module",
+          "diagnostic": "unsupported or duplicate import fourier::fourier"
+        },
+        {
+          "case": "unknown-imported-declaration",
+          "diagnostic": "unknown imported declaration fourier::fourier"
+        },
+        {
+          "case": "missing-static-argument",
+          "diagnostic": "ordinary operation static argument arity mismatch"
+        },
+        {
+          "case": "operation-type-mismatch",
+          "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+        },
+        {
+          "case": "operation-cycle",
+          "diagnostic": "cyclic or excessive source operation instantiation"
+        },
+        {
+          "case": "aggregate-source-work",
+          "diagnostic": "invalid or excessive static fold range"
+        }
+      ],
+      "artifacts": {
+        "qft-1": {
+          "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+          "bytes": 14042,
+          "definitions": 14
+        },
+        "inverse-1": {
+          "sha256": "ff45e40a3af73ac80bbb71767db1e0bcf3922b2cec085c857dad2911c9fb3b71",
+          "bytes": 17542,
+          "definitions": 18
+        },
+        "qft-2": {
+          "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+          "bytes": 33836,
+          "definitions": 34
+        },
+        "inverse-2": {
+          "sha256": "8cbeb695a6993f5719a98cc6e120aa1626da12b5e8be5da6f1556bb001907969",
+          "bytes": 37388,
+          "definitions": 38
+        },
+        "qft-3": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "inverse-3": {
+          "sha256": "922aed7c75ab278ea5780bed6b57c52c9434628c3df70f55fe6e8d0319542d2c",
+          "bytes": 58141,
+          "definitions": 59
+        },
+        "equivalent-angle": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "wrapped-inverse-3": {
+          "sha256": "606f10185d7c3d5f1756674bc97a7f491ad6a153c0c1679bcaac5c62180bec28",
+          "bytes": 55269,
+          "definitions": 56
+        },
+        "shared-twice-3": {
+          "sha256": "026dfc8418aa32892ce88ef8922a0a77f86c910f042e39cea9c6e084a27d2620",
+          "bytes": 60805,
+          "definitions": 62
+        },
+        "framed-call-2": {
+          "sha256": "15cc605282124bca1eb6464d3e4b01fc8fe35915769ed05aaac8edc98aa50dc2",
+          "bytes": 43272,
+          "definitions": 42
+        },
+        "missing-reversal": {
+          "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "missing-phase": {
+          "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+          "bytes": 28857,
+          "definitions": 25
+        },
+        "wrong-phase": {
+          "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "wrong-h": {
+          "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+          "bytes": 35524,
+          "definitions": 31
+        },
+        "inverse-changed-dependency": {
+          "sha256": "450cef5faca631bd4a27e7234c7e6fcdaa184af16efbdd87e59f381b730c7d16",
+          "bytes": 34999,
+          "definitions": 31
+        },
+        "measured-qpe-fourier-1": {
+          "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+          "bytes": 14042,
+          "definitions": 14
+        },
+        "measured-qpe-fourier-2": {
+          "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+          "bytes": 33836,
+          "definitions": 34
+        },
+        "measured-qpe-fourier-3": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "measured-qpe-missing-reversal": {
+          "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "measured-qpe-missing-phase": {
+          "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+          "bytes": 28857,
+          "definitions": 25
+        },
+        "measured-qpe-wrong-phase": {
+          "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "measured-qpe-wrong-h": {
+          "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+          "bytes": 35524,
+          "definitions": 31
+        }
+      },
+      "native": [
+        [
+          "qft-1",
+          "inspect",
+          "67877",
+          "67"
+        ],
+        [
+          "qft-1",
+          "ok",
+          "73636",
+          "118"
+        ],
+        [
+          "inverse-1",
+          "inspect",
+          "83898",
+          "67"
+        ],
+        [
+          "qft-2",
+          "inspect",
+          "187628",
+          "134"
+        ],
+        [
+          "qft-2",
+          "ok",
+          "203782",
+          "236"
+        ],
+        [
+          "inverse-2",
+          "inspect",
+          "207903",
+          "134"
+        ],
+        [
+          "qft-3",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "qft-3",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "inverse-3",
+          "inspect",
+          "349300",
+          "201"
+        ],
+        [
+          "equivalent-angle",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "equivalent-angle",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "wrapped-inverse-3",
+          "inspect",
+          "329021",
+          "201"
+        ],
+        [
+          "shared-twice-3",
+          "inspect",
+          "371035",
+          "201"
+        ],
+        [
+          "framed-call-2",
+          "inspect",
+          "257545",
+          "134"
+        ],
+        [
+          "missing-reversal",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "missing-reversal",
+          "contract"
+        ],
+        [
+          "missing-phase",
+          "inspect",
+          "177705",
+          "134"
+        ],
+        [
+          "missing-phase",
+          "contract"
+        ],
+        [
+          "wrong-phase",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "wrong-phase",
+          "contract"
+        ],
+        [
+          "wrong-h",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "wrong-h",
+          "contract"
+        ],
+        [
+          "inverse-changed-dependency",
+          "inspect",
+          "234454",
+          "134"
+        ],
+        [
+          "measured-qpe-fourier-1",
+          "inspect",
+          "67877",
+          "67"
+        ],
+        [
+          "measured-qpe-fourier-1",
+          "ok",
+          "73636",
+          "118"
+        ],
+        [
+          "measured-qpe-fourier-2",
+          "inspect",
+          "187628",
+          "134"
+        ],
+        [
+          "measured-qpe-fourier-2",
+          "ok",
+          "203782",
+          "236"
+        ],
+        [
+          "measured-qpe-fourier-3",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "measured-qpe-fourier-3",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "measured-qpe-missing-reversal",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-missing-reversal",
+          "contract"
+        ],
+        [
+          "measured-qpe-missing-phase",
+          "inspect",
+          "177705",
+          "134"
+        ],
+        [
+          "measured-qpe-missing-phase",
+          "contract"
+        ],
+        [
+          "measured-qpe-wrong-phase",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-wrong-phase",
+          "contract"
+        ],
+        [
+          "measured-qpe-wrong-h",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-wrong-h",
+          "contract"
+        ]
+      ],
+      "stdout": "\nrunning 1 test\nSIZED-FOURIER|qft-1|inspect|67877|67\nSIZED-FOURIER|qft-1|ok|73636|118\nSIZED-FOURIER|inverse-1|inspect|83898|67\nSIZED-FOURIER|qft-2|inspect|187628|134\nSIZED-FOURIER|qft-2|ok|203782|236\nSIZED-FOURIER|inverse-2|inspect|207903|134\nSIZED-FOURIER|qft-3|inspect|324451|201\nSIZED-FOURIER|qft-3|ok|354650|354\nSIZED-FOURIER|inverse-3|inspect|349300|201\nSIZED-FOURIER|equivalent-angle|inspect|324451|201\nSIZED-FOURIER|equivalent-angle|ok|354650|354\nSIZED-FOURIER|wrapped-inverse-3|inspect|329021|201\nSIZED-FOURIER|shared-twice-3|inspect|371035|201\nSIZED-FOURIER|framed-call-2|inspect|257545|134\nSIZED-FOURIER|missing-reversal|inspect|235695|134\nSIZED-FOURIER|missing-reversal|contract\nSIZED-FOURIER|missing-phase|inspect|177705|134\nSIZED-FOURIER|missing-phase|contract\nSIZED-FOURIER|wrong-phase|inspect|235695|134\nSIZED-FOURIER|wrong-phase|contract\nSIZED-FOURIER|wrong-h|inspect|235695|134\nSIZED-FOURIER|wrong-h|contract\nSIZED-FOURIER|inverse-changed-dependency|inspect|234454|134\nSIZED-FOURIER|measured-qpe-fourier-1|inspect|67877|67\nSIZED-FOURIER|measured-qpe-fourier-1|ok|73636|118\nSIZED-FOURIER|measured-qpe-fourier-2|inspect|187628|134\nSIZED-FOURIER|measured-qpe-fourier-2|ok|203782|236\nSIZED-FOURIER|measured-qpe-fourier-3|inspect|324451|201\nSIZED-FOURIER|measured-qpe-fourier-3|ok|354650|354\nSIZED-FOURIER|measured-qpe-missing-reversal|inspect|235695|134\nSIZED-FOURIER|measured-qpe-missing-reversal|contract\nSIZED-FOURIER|measured-qpe-missing-phase|inspect|177705|134\nSIZED-FOURIER|measured-qpe-missing-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-phase|inspect|235695|134\nSIZED-FOURIER|measured-qpe-wrong-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-h|inspect|235695|134\nSIZED-FOURIER|measured-qpe-wrong-h|contract\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.55s\n\n",
+      "stderr": "",
+      "forward": {
+        "1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.2412670766236366e-16,
+          "executed_gates": 1
+        },
+        "2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "inverse": {
+        "1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.1443916996305594e-16,
+          "executed_gates": 1
+        },
+        "2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "measured_component_semantics": {
+        "measured-qpe-fourier-1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.2412670766236366e-16,
+          "executed_gates": 1
+        },
+        "measured-qpe-fourier-2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "measured-qpe-fourier-3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "named_qpe_instrument_checked": false,
+      "roundtrip_errors": {
+        "1": 1.2412670766236366e-16,
+        "2": 2.7755575615628914e-16,
+        "3": 2.0014830212433605e-16
+      },
+      "semantic_faults": {
+        "missing-reversal": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 1.0,
+          "executed_gates": 3
+        },
+        "missing-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865475,
+          "executed_gates": 2
+        },
+        "wrong-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "wrong-h": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.5204164998665333,
+          "executed_gates": 3
+        },
+        "inverse-changed-dependency": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "measured-qpe-missing-reversal": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 1.0,
+          "executed_gates": 3
+        },
+        "measured-qpe-missing-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865475,
+          "executed_gates": 2
+        },
+        "measured-qpe-wrong-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "measured-qpe-wrong-h": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.5204164998665333,
+          "executed_gates": 3
+        }
+      },
+      "shared_call": {
+        "basis_columns": 8,
+        "finite_leaves": 3,
+        "executed_gates": 14
+      },
+      "framed_call": {
+        "basis_columns": 16,
+        "entangled_vectors": 1,
+        "maximum_error": 2.5114115397022025e-16
+      }
+    },
+    "source_host": {
+      "cases": 8,
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/deps/sized_corpus-15fdacc0fa49f151",
+        "check_source_instrument_contracts",
+        "--ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|1050433|412\nINSTRUMENT|order|ok|1173718|412\nINSTRUMENT|amplitude|ok|1185773|515\nINSTRUMENT|retiming|ok|243972|103\nINSTRUMENT|qpe-1-3|ok|1869962|618\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\nINSTRUMENT|qpe-2-4|limit\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.50s\n\n",
+      "stderr": "",
+      "pending_composed_capacity": {
+        "qpe-2-4": "limit"
+      },
+      "semantics": {
+        "qpe": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "qpe-1-3": {
+          "coefficients": 64,
+          "maximum_error": 6.667840187510446e-16
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "request_origin": "baseline proposal; mutation regression only",
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "rust_test_executable_sha256": "d28edf061c25f83b69fa6350b5c8da0f255649174488837f8867d0cb4a938d5a",
+      "compactor_sha256": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679"
+    }
+  },
+  "root_cost_stage": {
+    "source_host": {
+      "format": "qleisli.instrument-host-validation",
+      "version": 1,
+      "status": "passed",
+      "binary_cases": 772,
+      "shared_decoder_allowance": {
+        "commands": [
+          {
+            "argv": [
+              "lake",
+              "build"
+            ],
+            "exit_code": 0,
+            "stdout": "\u2714 [91/93] Built Main (380ms)\n\u2714 [92/93] Built Main:c.o (55ms)\n\u2714 [93/93] Built \u00abartifact-test\u00bb:exe (147ms)\nBuild completed successfully (93 jobs).\n",
+            "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+          },
+          {
+            "argv": [
+              "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-xv3revfk/.lake/build/bin/artifact-test"
+            ],
+            "exit_code": 0,
+            "stdout": "shared-word-budget|passed\n",
+            "stderr": ""
+          }
+        ],
+        "binary_sha256": "a66449198d0a12102fe53f9701e1eb31bb328a92f58f3ee78a18b189ae50209e"
+      },
+      "source_connection": {
+        "cases": 8,
+        "command": [
+          "cargo",
+          "test",
+          "--test",
+          "sized_corpus",
+          "check_source_instrument_contracts",
+          "--",
+          "--ignored",
+          "--nocapture"
+        ],
+        "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|954881|412\nINSTRUMENT|order|ok|1064950|412\nINSTRUMENT|amplitude|ok|1078637|515\nINSTRUMENT|retiming|ok|230788|103\nINSTRUMENT|qpe-1-3|ok|1709322|618\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\nINSTRUMENT|qpe-2-4|limit\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.54s\n\n",
+        "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+        "pending_composed_capacity": {
+          "qpe-2-4": "limit"
+        },
+        "semantics": {
+          "qpe": {
+            "coefficients": 32,
+            "maximum_error": 3.3306690738754696e-16
+          },
+          "order": {
+            "coefficients": 96,
+            "maximum_error": 3.3306690738754696e-16
+          },
+          "amplitude": {
+            "coefficients": 32,
+            "maximum_error": 5.23691153334427e-16
+          },
+          "qpe-1-3": {
+            "coefficients": 64,
+            "maximum_error": 6.667840187510446e-16
+          },
+          "retiming": {
+            "coefficients": 48,
+            "maximum_error": 0.0
+          }
+        },
+        "request_origin": "baseline proposal; mutation regression only",
+        "source_sha256": {
+          "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+          "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+          "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+          "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+          "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+          "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+          "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+          "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+          "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+          "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+          "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+          "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+          "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+          "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+          "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+          "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+        }
+      },
+      "host_command": [
+        "cargo",
+        "test",
+        "--test",
+        "hierarchical_host",
+        "instrument",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 3 tests\ntest instrument_codec_rejects_malformed_fields_before_execution ... ok\ntest instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok\ncomposed instrument costs: [(false, 0, 39654, 103), (false, 1, 39654, 103), (false, 3, 39654, 103), (true, 0, 74728, 103), (true, 1, 74728, 103), (true, 3, 74728, 103)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 1.07s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4f64e6729d3e7615)\n",
+      "kernel_sha256": "00539e8706ed8d80400ebf17ffc619159cef7ea845ea7bca4b6d7c2e33b9de2d",
+      "production_integration": false,
+      "named_qpe_binding": false
+    },
+    "qpe_2_4_pure_request_structural": 1910868,
+    "qpe_2_4_pure_request_exact": 824
+  },
+  "final_validation": {
+    "preparation": {
+      "format": "qleisli.preparation-validation",
+      "version": 1,
+      "status": "passed",
+      "cases": 22,
+      "coefficient_probes": 60,
+      "malformed_frames": 5,
+      "max_fresh_qubits": 3,
+      "max_total_qubits": 4,
+      "production_integration": false,
+      "binary_sha256": "cf49a0f66cc8f812a9729ddc1ad695b600d3ebf28075cc01fd59d81068ab5f0c",
+      "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [98/101] Built QleisliKernel:c.o (48ms)\n\u2714 [99/101] Built Main (952ms)\n\u2714 [100/101] Built Main:c.o (220ms)\n\u2714 [101/101] Built \u00abartifact-test\u00bb:exe (146ms)\nBuild completed successfully (101 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-6lxzxvab/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "fresh-0|checked|11232|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2]]|11232\nfresh-1|checked|42144|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0]]|55840\nfresh-2|checked|86688|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0]]|153760\nfresh-3|checked|147424|[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0],[8,0,0,0],[8,1,0,0],[9,0,0,0],[9,1,0,0],[10,0,0,0],[10,1,0,0],[11,0,0,0],[11,1,0,0],[12,0,0,0],[12,1,0,0],[13,0,0,0],[13,1,0,0],[14,0,0,0],[14,1,0,0],[15,0,0,0],[15,1,0,0]]|329056\nwrong-required-axis|contract\nwrong-required-owner|contract\nimplicit-bits1|contract\nreordered-request|contract\nmissing-node|contract\nreordered-nodes|contract\nwrong-body|contract\nwrong-effect|contract\naliased-input-axis|contract\naliased-new-owner|contract\nalter-existing-classical|contract\ndrop-empty-owner|contract\ndrop-existing-target|contract\nalter-input-frame|contract\nbroken-chain|contract\nwrong-intermediate-output|contract\nzero-budget|limit\nbudget-excess|limit\n",
+          "stderr": ""
+        }
+      ],
+      "results": {
+        "fresh-0": [
+          "checked",
+          "11232",
+          "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2]]",
+          "11232"
+        ],
+        "fresh-1": [
+          "checked",
+          "42144",
+          "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0]]",
+          "55840"
+        ],
+        "fresh-2": [
+          "checked",
+          "86688",
+          "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0]]",
+          "153760"
+        ],
+        "fresh-3": [
+          "checked",
+          "147424",
+          "[[0,0,1,0],[0,1,3,-5],[1,0,-2,3],[1,1,-4,-2],[2,0,0,0],[2,1,0,0],[3,0,0,0],[3,1,0,0],[4,0,0,0],[4,1,0,0],[5,0,0,0],[5,1,0,0],[6,0,0,0],[6,1,0,0],[7,0,0,0],[7,1,0,0],[8,0,0,0],[8,1,0,0],[9,0,0,0],[9,1,0,0],[10,0,0,0],[10,1,0,0],[11,0,0,0],[11,1,0,0],[12,0,0,0],[12,1,0,0],[13,0,0,0],[13,1,0,0],[14,0,0,0],[14,1,0,0],[15,0,0,0],[15,1,0,0]]",
+          "329056"
+        ],
+        "wrong-required-axis": [
+          "contract"
+        ],
+        "wrong-required-owner": [
+          "contract"
+        ],
+        "implicit-bits1": [
+          "contract"
+        ],
+        "reordered-request": [
+          "contract"
+        ],
+        "missing-node": [
+          "contract"
+        ],
+        "reordered-nodes": [
+          "contract"
+        ],
+        "wrong-body": [
+          "contract"
+        ],
+        "wrong-effect": [
+          "contract"
+        ],
+        "aliased-input-axis": [
+          "contract"
+        ],
+        "aliased-new-owner": [
+          "contract"
+        ],
+        "alter-existing-classical": [
+          "contract"
+        ],
+        "drop-empty-owner": [
+          "contract"
+        ],
+        "drop-existing-target": [
+          "contract"
+        ],
+        "alter-input-frame": [
+          "contract"
+        ],
+        "broken-chain": [
+          "contract"
+        ],
+        "wrong-intermediate-output": [
+          "contract"
+        ],
+        "zero-budget": [
+          "limit"
+        ],
+        "budget-excess": [
+          "limit"
+        ]
+      },
+      "accounting": [
+        {
+          "case": "fresh-0",
+          "original": 11232,
+          "current": 11232,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "fresh-1",
+          "original": 55840,
+          "current": 42144,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "fresh-2",
+          "original": 153760,
+          "current": 86688,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "fresh-3",
+          "original": 329056,
+          "current": 147424,
+          "exact_threshold_checked": true
+        }
+      ],
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Semantics/Preparation.lean": "db784406ef6338e1b65cb0ad13af6c6b38ae5f04140b2efbecedf4c2db9201ed",
+        "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+        "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+        "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7"
+      }
+    },
+    "readout": {
+      "format": "qleisli.readout-validation",
+      "version": 1,
+      "status": "passed",
+      "cases": 42,
+      "accepted": 10,
+      "coefficient_probes": 236,
+      "max_measured_qubits": 3,
+      "max_total_qubits": 4,
+      "production_integration": false,
+      "qpe_instrument_receipt": false,
+      "component_transport": {
+        "checked": 41,
+        "checked_u32_rejections": 1,
+        "malformed": 6
+      },
+      "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+      "binary_sha256": "32605477e109834cd4d19f8b00096ad057f56b82c231f26f358494b550727154",
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [99/101] Built Main (1.4s)\n\u2714 [100/101] Built Main:c.o (246ms)\n\u2714 [101/101] Built \u00abartifact-test\u00bb:exe (148ms)\nBuild completed successfully (101 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-xtxgjczz/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "width-0-order-()|checked|13824|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,-2,3],[0,1,1,0,-4,-2]]|13824\nwidth-1-order-(0,)|checked|65984|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,3,6],[0,1,1,0,5,1],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-4,9],[1,1,1,1,-6,4]]|98496\nwidth-2-order-(0, 1)|checked|144896|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,5,12],[0,1,1,0,7,7],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-6,15],[1,1,1,1,-8,10],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,7,18],[2,1,1,2,9,13],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-8,21],[3,1,1,3,-10,16]]|326144\nwidth-2-order-(1, 0)|checked|144896|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,5,12],[0,1,1,0,7,7],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,7,18],[1,1,1,1,9,13],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-6,15],[2,1,1,2,-8,10],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-8,21],[3,1,1,3,-10,16]]|326144\nwidth-3-order-(0, 1, 2)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-10,27],[1,1,1,1,-12,22],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,11,30],[2,1,1,2,13,25],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-12,33],[3,1,1,3,-14,28],[4,0,0,4,5,12],[4,0,1,4,7,7],[4,1,0,4,13,36],[4,1,1,4,15,31],[5,0,0,5,-6,15],[5,0,1,5,-8,10],[5,1,0,5,-14,39],[5,1,1,5,-16,34],[6,0,0,6,7,18],[6,0,1,6,9,13],[6,1,0,6,15,42],[6,1,1,6,17,37],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nwidth-3-order-(0, 2, 1)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-10,27],[1,1,1,1,-12,22],[2,0,0,2,5,12],[2,0,1,2,7,7],[2,1,0,2,13,36],[2,1,1,2,15,31],[3,0,0,3,-6,15],[3,0,1,3,-8,10],[3,1,0,3,-14,39],[3,1,1,3,-16,34],[4,0,0,4,3,6],[4,0,1,4,5,1],[4,1,0,4,11,30],[4,1,1,4,13,25],[5,0,0,5,-4,9],[5,0,1,5,-6,4],[5,1,0,5,-12,33],[5,1,1,5,-14,28],[6,0,0,6,7,18],[6,0,1,6,9,13],[6,1,0,6,15,42],[6,1,1,6,17,37],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nwidth-3-order-(1, 0, 2)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,11,30],[1,1,1,1,13,25],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-10,27],[2,1,1,2,-12,22],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-12,33],[3,1,1,3,-14,28],[4,0,0,4,5,12],[4,0,1,4,7,7],[4,1,0,4,13,36],[4,1,1,4,15,31],[5,0,0,5,7,18],[5,0,1,5,9,13],[5,1,0,5,15,42],[5,1,1,5,17,37],[6,0,0,6,-6,15],[6,0,1,6,-8,10],[6,1,0,6,-14,39],[6,1,1,6,-16,34],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nwidth-3-order-(1, 2, 0)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,11,30],[1,1,1,1,13,25],[2,0,0,2,5,12],[2,0,1,2,7,7],[2,1,0,2,13,36],[2,1,1,2,15,31],[3,0,0,3,7,18],[3,0,1,3,9,13],[3,1,0,3,15,42],[3,1,1,3,17,37],[4,0,0,4,-2,3],[4,0,1,4,-4,-2],[4,1,0,4,-10,27],[4,1,1,4,-12,22],[5,0,0,5,-4,9],[5,0,1,5,-6,4],[5,1,0,5,-12,33],[5,1,1,5,-14,28],[6,0,0,6,-6,15],[6,0,1,6,-8,10],[6,1,0,6,-14,39],[6,1,1,6,-16,34],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nwidth-3-order-(2, 0, 1)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,5,12],[1,0,1,1,7,7],[1,1,0,1,13,36],[1,1,1,1,15,31],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-10,27],[2,1,1,2,-12,22],[3,0,0,3,-6,15],[3,0,1,3,-8,10],[3,1,0,3,-14,39],[3,1,1,3,-16,34],[4,0,0,4,3,6],[4,0,1,4,5,1],[4,1,0,4,11,30],[4,1,1,4,13,25],[5,0,0,5,7,18],[5,0,1,5,9,13],[5,1,0,5,15,42],[5,1,1,5,17,37],[6,0,0,6,-4,9],[6,0,1,6,-6,4],[6,1,0,6,-12,33],[6,1,1,6,-14,28],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nwidth-3-order-(2, 1, 0)|checked|256704|[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,5,12],[1,0,1,1,7,7],[1,1,0,1,13,36],[1,1,1,1,15,31],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,11,30],[2,1,1,2,13,25],[3,0,0,3,7,18],[3,0,1,3,9,13],[3,1,0,3,15,42],[3,1,1,3,17,37],[4,0,0,4,-2,3],[4,0,1,4,-4,-2],[4,1,0,4,-10,27],[4,1,1,4,-12,22],[5,0,0,5,-6,15],[5,0,1,5,-8,10],[5,1,0,5,-14,39],[5,1,1,5,-16,34],[6,0,0,6,-4,9],[6,0,1,6,-6,4],[6,1,0,6,-12,33],[6,1,1,6,-14,28],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]|798144\nreversed-pack|contract\nduplicate-pack|contract\nstale-pack|contract\nmissing-pack|contract\nwrong-request-order|contract\nduplicate-request-owner|contract\nunknown-request-owner|contract\nrequest-empty-owner|contract\nresult-alias|contract\nwrong-result-name|contract\nwrong-result-width|contract\nimplicit-bits1|contract\ndiscard-empty-owner|contract\ndiscard-target|contract\nalter-target-axis|contract\nalter-classical-frame|contract\nmissing-measurement|contract\nextra-measurement|contract\nwrong-effect|contract\nwrong-body|contract\nwrong-measured-owner|contract\nwrong-measured-value|contract\nreordered-nodes|contract\nbroken-continuity|contract\naliased-axis|contract\naliased-owner|contract\ninvalid-type-tree|contract\nunbounded-label|contract\nzero-budget|limit\nprofile-budget-excess|limit\noversized-packing-header|limit\nempty-result-must-exist|contract\n",
+          "stderr": ""
+        }
+      ],
+      "results": {
+        "width-0-order-()": [
+          "checked",
+          "13824",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,-2,3],[0,1,1,0,-4,-2]]",
+          "13824"
+        ],
+        "width-1-order-(0,)": [
+          "checked",
+          "65984",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,3,6],[0,1,1,0,5,1],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-4,9],[1,1,1,1,-6,4]]",
+          "98496"
+        ],
+        "width-2-order-(0, 1)": [
+          "checked",
+          "144896",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,5,12],[0,1,1,0,7,7],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-6,15],[1,1,1,1,-8,10],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,7,18],[2,1,1,2,9,13],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-8,21],[3,1,1,3,-10,16]]",
+          "326144"
+        ],
+        "width-2-order-(1, 0)": [
+          "checked",
+          "144896",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,5,12],[0,1,1,0,7,7],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,7,18],[1,1,1,1,9,13],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-6,15],[2,1,1,2,-8,10],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-8,21],[3,1,1,3,-10,16]]",
+          "326144"
+        ],
+        "width-3-order-(0, 1, 2)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-10,27],[1,1,1,1,-12,22],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,11,30],[2,1,1,2,13,25],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-12,33],[3,1,1,3,-14,28],[4,0,0,4,5,12],[4,0,1,4,7,7],[4,1,0,4,13,36],[4,1,1,4,15,31],[5,0,0,5,-6,15],[5,0,1,5,-8,10],[5,1,0,5,-14,39],[5,1,1,5,-16,34],[6,0,0,6,7,18],[6,0,1,6,9,13],[6,1,0,6,15,42],[6,1,1,6,17,37],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "width-3-order-(0, 2, 1)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,-2,3],[1,0,1,1,-4,-2],[1,1,0,1,-10,27],[1,1,1,1,-12,22],[2,0,0,2,5,12],[2,0,1,2,7,7],[2,1,0,2,13,36],[2,1,1,2,15,31],[3,0,0,3,-6,15],[3,0,1,3,-8,10],[3,1,0,3,-14,39],[3,1,1,3,-16,34],[4,0,0,4,3,6],[4,0,1,4,5,1],[4,1,0,4,11,30],[4,1,1,4,13,25],[5,0,0,5,-4,9],[5,0,1,5,-6,4],[5,1,0,5,-12,33],[5,1,1,5,-14,28],[6,0,0,6,7,18],[6,0,1,6,9,13],[6,1,0,6,15,42],[6,1,1,6,17,37],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "width-3-order-(1, 0, 2)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,11,30],[1,1,1,1,13,25],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-10,27],[2,1,1,2,-12,22],[3,0,0,3,-4,9],[3,0,1,3,-6,4],[3,1,0,3,-12,33],[3,1,1,3,-14,28],[4,0,0,4,5,12],[4,0,1,4,7,7],[4,1,0,4,13,36],[4,1,1,4,15,31],[5,0,0,5,7,18],[5,0,1,5,9,13],[5,1,0,5,15,42],[5,1,1,5,17,37],[6,0,0,6,-6,15],[6,0,1,6,-8,10],[6,1,0,6,-14,39],[6,1,1,6,-16,34],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "width-3-order-(1, 2, 0)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,3,6],[1,0,1,1,5,1],[1,1,0,1,11,30],[1,1,1,1,13,25],[2,0,0,2,5,12],[2,0,1,2,7,7],[2,1,0,2,13,36],[2,1,1,2,15,31],[3,0,0,3,7,18],[3,0,1,3,9,13],[3,1,0,3,15,42],[3,1,1,3,17,37],[4,0,0,4,-2,3],[4,0,1,4,-4,-2],[4,1,0,4,-10,27],[4,1,1,4,-12,22],[5,0,0,5,-4,9],[5,0,1,5,-6,4],[5,1,0,5,-12,33],[5,1,1,5,-14,28],[6,0,0,6,-6,15],[6,0,1,6,-8,10],[6,1,0,6,-14,39],[6,1,1,6,-16,34],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "width-3-order-(2, 0, 1)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,5,12],[1,0,1,1,7,7],[1,1,0,1,13,36],[1,1,1,1,15,31],[2,0,0,2,-2,3],[2,0,1,2,-4,-2],[2,1,0,2,-10,27],[2,1,1,2,-12,22],[3,0,0,3,-6,15],[3,0,1,3,-8,10],[3,1,0,3,-14,39],[3,1,1,3,-16,34],[4,0,0,4,3,6],[4,0,1,4,5,1],[4,1,0,4,11,30],[4,1,1,4,13,25],[5,0,0,5,7,18],[5,0,1,5,9,13],[5,1,0,5,15,42],[5,1,1,5,17,37],[6,0,0,6,-4,9],[6,0,1,6,-6,4],[6,1,0,6,-12,33],[6,1,1,6,-14,28],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "width-3-order-(2, 1, 0)": [
+          "checked",
+          "256704",
+          "[[0,0,0,0,1,0],[0,0,1,0,3,-5],[0,1,0,0,9,24],[0,1,1,0,11,19],[1,0,0,1,5,12],[1,0,1,1,7,7],[1,1,0,1,13,36],[1,1,1,1,15,31],[2,0,0,2,3,6],[2,0,1,2,5,1],[2,1,0,2,11,30],[2,1,1,2,13,25],[3,0,0,3,7,18],[3,0,1,3,9,13],[3,1,0,3,15,42],[3,1,1,3,17,37],[4,0,0,4,-2,3],[4,0,1,4,-4,-2],[4,1,0,4,-10,27],[4,1,1,4,-12,22],[5,0,0,5,-6,15],[5,0,1,5,-8,10],[5,1,0,5,-14,39],[5,1,1,5,-16,34],[6,0,0,6,-4,9],[6,0,1,6,-6,4],[6,1,0,6,-12,33],[6,1,1,6,-14,28],[7,0,0,7,-8,21],[7,0,1,7,-10,16],[7,1,0,7,-16,45],[7,1,1,7,-18,40]]",
+          "798144"
+        ],
+        "reversed-pack": [
+          "contract"
+        ],
+        "duplicate-pack": [
+          "contract"
+        ],
+        "stale-pack": [
+          "contract"
+        ],
+        "missing-pack": [
+          "contract"
+        ],
+        "wrong-request-order": [
+          "contract"
+        ],
+        "duplicate-request-owner": [
+          "contract"
+        ],
+        "unknown-request-owner": [
+          "contract"
+        ],
+        "request-empty-owner": [
+          "contract"
+        ],
+        "result-alias": [
+          "contract"
+        ],
+        "wrong-result-name": [
+          "contract"
+        ],
+        "wrong-result-width": [
+          "contract"
+        ],
+        "implicit-bits1": [
+          "contract"
+        ],
+        "discard-empty-owner": [
+          "contract"
+        ],
+        "discard-target": [
+          "contract"
+        ],
+        "alter-target-axis": [
+          "contract"
+        ],
+        "alter-classical-frame": [
+          "contract"
+        ],
+        "missing-measurement": [
+          "contract"
+        ],
+        "extra-measurement": [
+          "contract"
+        ],
+        "wrong-effect": [
+          "contract"
+        ],
+        "wrong-body": [
+          "contract"
+        ],
+        "wrong-measured-owner": [
+          "contract"
+        ],
+        "wrong-measured-value": [
+          "contract"
+        ],
+        "reordered-nodes": [
+          "contract"
+        ],
+        "broken-continuity": [
+          "contract"
+        ],
+        "aliased-axis": [
+          "contract"
+        ],
+        "aliased-owner": [
+          "contract"
+        ],
+        "invalid-type-tree": [
+          "contract"
+        ],
+        "unbounded-label": [
+          "contract"
+        ],
+        "zero-budget": [
+          "limit"
+        ],
+        "profile-budget-excess": [
+          "limit"
+        ],
+        "oversized-packing-header": [
+          "limit"
+        ],
+        "empty-result-must-exist": [
+          "contract"
+        ]
+      },
+      "accounting": [
+        {
+          "case": "width-0-order-()",
+          "original": 13824,
+          "current": 13824,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-1-order-(0,)",
+          "original": 98496,
+          "current": 65984,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-2-order-(0, 1)",
+          "original": 326144,
+          "current": 144896,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-2-order-(1, 0)",
+          "original": 326144,
+          "current": 144896,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(0, 1, 2)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(0, 2, 1)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(1, 0, 2)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(1, 2, 0)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(2, 0, 1)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        },
+        {
+          "case": "width-3-order-(2, 1, 0)",
+          "original": 798144,
+          "current": 256704,
+          "exact_threshold_checked": true
+        }
+      ],
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Semantics/Readout.lean": "0ae67265e9aa8ae355de2c7a711c14ce2b7812a5c256cb2920c7b825e06ec8bc",
+        "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+        "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded"
+      }
+    },
+    "source": {
+      "format": "qleisli.sized-instrument-validation",
+      "version": 1,
+      "status": "passed-with-open-capacity-gate",
+      "proposals": 22,
+      "components": {
+        "qpe-1-1": {
+          "preparation_work": 9504,
+          "readout_work": 16448,
+          "graph_work": 314565,
+          "exact_work": 67,
+          "aggregate_work": 340584
+        },
+        "qpe-1-2": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 784509
+        },
+        "qpe-1-3": {
+          "preparation_work": 49888,
+          "readout_work": 93120,
+          "graph_work": 1154261,
+          "exact_work": 402,
+          "aggregate_work": 1297671
+        },
+        "qpe-2-2": {
+          "preparation_work": 27232,
+          "readout_work": 48064,
+          "graph_work": 747107,
+          "exact_work": 268,
+          "aggregate_work": 822671
+        },
+        "qpe-2-4": {
+          "preparation_work": 92320,
+          "readout_work": 175168,
+          "graph_work": 1718740,
+          "exact_work": 536,
+          "aggregate_work": 1986764
+        },
+        "init-0": {
+          "preparation_work": 224,
+          "readout_work": 0,
+          "graph_work": 1558,
+          "exact_work": 0,
+          "aggregate_work": 1782
+        },
+        "readout-0": {
+          "preparation_work": 1312,
+          "readout_work": 768,
+          "graph_work": 1558,
+          "exact_work": 0,
+          "aggregate_work": 3638
+        },
+        "init-1": {
+          "preparation_work": 3232,
+          "readout_work": 0,
+          "graph_work": 3170,
+          "exact_work": 0,
+          "aggregate_work": 6402
+        },
+        "readout-1": {
+          "preparation_work": 1824,
+          "readout_work": 6080,
+          "graph_work": 3170,
+          "exact_work": 0,
+          "aggregate_work": 11074
+        },
+        "init-2": {
+          "preparation_work": 11680,
+          "readout_work": 0,
+          "graph_work": 39218,
+          "exact_work": 0,
+          "aggregate_work": 50898
+        },
+        "readout-2": {
+          "preparation_work": 2336,
+          "readout_work": 21760,
+          "graph_work": 28155,
+          "exact_work": 0,
+          "aggregate_work": 52251
+        },
+        "init-3": {
+          "preparation_work": 28128,
+          "readout_work": 0,
+          "graph_work": 84482,
+          "exact_work": 0,
+          "aggregate_work": 112610
+        },
+        "readout-3": {
+          "preparation_work": 2848,
+          "readout_work": 53952,
+          "graph_work": 60460,
+          "exact_work": 0,
+          "aggregate_work": 117260
+        },
+        "order": {
+          "preparation_work": 27232,
+          "readout_work": 48064,
+          "graph_work": 804495,
+          "exact_work": 268,
+          "aggregate_work": 880059
+        },
+        "amplitude-0-3": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 894194
+        },
+        "amplitude-1-3": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 894194
+        },
+        "amplitude-1-4": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 894194
+        },
+        "amplitude-2-2": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 824707,
+          "exact_work": 335,
+          "aggregate_work": 894194
+        },
+        "classical-copy-capture": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 784509
+        },
+        "wrong-zero-helper": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 793572,
+          "exact_work": 402,
+          "aggregate_work": 863126
+        },
+        "wrong-readout-order": {
+          "preparation_work": 24672,
+          "readout_work": 44480,
+          "graph_work": 715089,
+          "exact_work": 268,
+          "aggregate_work": 784509
+        },
+        "retiming": {
+          "preparation_work": 18848,
+          "readout_work": 44480,
+          "graph_work": 86806,
+          "exact_work": 67,
+          "aggregate_work": 150201
+        }
+      },
+      "semantics": {
+        "qpe-1-1": {
+          "coefficients": 16,
+          "maximum_error": 1.2412670766236366e-16
+        },
+        "qpe-1-2": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "qpe-1-3": {
+          "coefficients": 64,
+          "maximum_error": 4.652682298944613e-16
+        },
+        "qpe-2-2": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "qpe-2-4": {
+          "coefficients": 384,
+          "maximum_error": 2.0959882093582513e-15
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude-0-3": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "amplitude-1-3": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "amplitude-1-4": {
+          "coefficients": 32,
+          "maximum_error": 7.023038222575547e-16
+        },
+        "amplitude-2-2": {
+          "coefficients": 32,
+          "maximum_error": 9.61165587014318e-16
+        },
+        "classical-copy-capture": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "semantic_faults": {
+        "wrong-zero-helper": {
+          "coefficients": 32,
+          "maximum_error": 1.0
+        },
+        "wrong-readout-order": {
+          "coefficients": 32,
+          "maximum_error": 0.5
+        }
+      },
+      "normalization": {
+        "qpe-1-1": {
+          "before": 72,
+          "after": 52,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "qpe-1-2": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "qpe-1-3": {
+          "before": 181,
+          "after": 153,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-2": {
+          "before": 128,
+          "after": 103,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "qpe-2-4": {
+          "before": 231,
+          "after": 201,
+          "columns": 65,
+          "maximum_error": 0.0
+        },
+        "init-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "readout-0": {
+          "before": 3,
+          "after": 1,
+          "columns": 2,
+          "maximum_error": 0.0
+        },
+        "init-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "readout-1": {
+          "before": 8,
+          "after": 1,
+          "columns": 3,
+          "maximum_error": 0.0
+        },
+        "init-2": {
+          "before": 13,
+          "after": 6,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "readout-2": {
+          "before": 14,
+          "after": 5,
+          "columns": 5,
+          "maximum_error": 0.0
+        },
+        "init-3": {
+          "before": 18,
+          "after": 11,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "readout-3": {
+          "before": 20,
+          "after": 9,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "order": {
+          "before": 135,
+          "after": 110,
+          "columns": 17,
+          "maximum_error": 0.0
+        },
+        "amplitude-0-3": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-3": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-1-4": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "amplitude-2-2": {
+          "before": 159,
+          "after": 124,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "classical-copy-capture": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-zero-helper": {
+          "before": 140,
+          "after": 119,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "wrong-readout-order": {
+          "before": 130,
+          "after": 104,
+          "columns": 9,
+          "maximum_error": 0.0
+        },
+        "retiming": {
+          "before": 9,
+          "after": 8,
+          "columns": 9,
+          "maximum_error": 0.0
+        }
+      },
+      "source_rejections": [
+        {
+          "case": "unitary-wrapper",
+          "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+        },
+        {
+          "case": "unitary-initializer",
+          "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+        },
+        {
+          "case": "iso-readout",
+          "diagnostic": "iso body cannot perform observe operation measure_z"
+        },
+        {
+          "case": "missing-access",
+          "diagnostic": "operation use requires declared Controlled access"
+        },
+        {
+          "case": "wrong-classical-width",
+          "diagnostic": "return type/tuple shape mismatch"
+        },
+        {
+          "case": "drop-empty-owner",
+          "diagnostic": "unreturned quantum owners: q"
+        },
+        {
+          "case": "consume-nonempty",
+          "diagnostic": "unknown, captured or already moved value q"
+        },
+        {
+          "case": "reuse-measured-bit",
+          "diagnostic": "unknown, captured or already moved value bit"
+        },
+        {
+          "case": "duplicate-classical-pattern",
+          "diagnostic": "duplicate binding in one pattern"
+        },
+        {
+          "case": "wrong-prepend-width",
+          "diagnostic": "prepend_bit requires CBit and exactly CBits<n>, with n < 8"
+        },
+        {
+          "case": "cycle-initializer",
+          "diagnostic": "cyclic or excessive source operation instantiation"
+        },
+        {
+          "case": "unknown-empty-branch",
+          "diagnostic": "unknown or unimported operation missing"
+        },
+        {
+          "case": "runtime-feedback",
+          "diagnostic": "expected 'static', found 'target' at token 82"
+        },
+        {
+          "case": "bad-init-arity",
+          "diagnostic": "operation argument shape/arity mismatch"
+        },
+        {
+          "case": "unknown-static-size",
+          "diagnostic": "unbound static natural missing"
+        }
+      ],
+      "pending_composed": {
+        "qpe-2-4": "limit"
+      },
+      "production_integration": false,
+      "named_instrument_receipt": false,
+      "source_preservation_proved": false,
+      "max_checked_graph_qubits": 6,
+      "unaccepted_composed_case_qubits": 6,
+      "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+      "graph_reconstruction": {
+        "command": [
+          "cargo",
+          "test",
+          "--test",
+          "sized_corpus",
+          "inspect_source_produced_corpus",
+          "--",
+          "--ignored",
+          "--nocapture"
+        ],
+        "exit_code": 0,
+        "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|314565|67|1\nCORPUS|qpe-1-2|ok|715089|268|4\nCORPUS|qpe-1-3|ok|1154261|402|6\nCORPUS|qpe-2-2|ok|747107|268|4\nCORPUS|qpe-2-4|ok|1718740|536|8\nCORPUS|init-0|ok|1558|0|0\nCORPUS|readout-0|ok|1558|0|0\nCORPUS|init-1|ok|3170|0|0\nCORPUS|readout-1|ok|3170|0|0\nCORPUS|init-2|ok|39218|0|0\nCORPUS|readout-2|ok|28155|0|0\nCORPUS|init-3|ok|84482|0|0\nCORPUS|readout-3|ok|60460|0|0\nCORPUS|order|ok|804495|268|4\nCORPUS|amplitude-0-3|ok|824707|335|5\nCORPUS|amplitude-1-3|ok|824707|335|5\nCORPUS|amplitude-1-4|ok|824707|335|5\nCORPUS|amplitude-2-2|ok|824707|335|5\nCORPUS|classical-copy-capture|ok|715089|268|4\nCORPUS|wrong-zero-helper|ok|793572|402|6\nCORPUS|wrong-readout-order|ok|715089|268|4\nCORPUS|retiming|ok|86806|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.00s\n\n",
+        "stderr": "    Blocking waiting for file lock on build directory\n   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+      },
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "implementation_sha256": {
+        "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+        "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+        "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+        "scripts/test_sized_instrument.py": "2e648634361d838d2cc1b239242f2b37ae571f7cb80ff211c635271129c44af3"
+      }
+    },
+    "host": {
+      "format": "qleisli.instrument-host-validation",
+      "version": 1,
+      "status": "passed",
+      "binary_cases": 772,
+      "shared_decoder_allowance": {
+        "commands": [
+          {
+            "argv": [
+              "lake",
+              "build"
+            ],
+            "exit_code": 0,
+            "stdout": "\u2714 [91/93] Built Main (2.9s)\n\u2714 [92/93] Built Main:c.o (233ms)\n\u2714 [93/93] Built \u00abartifact-test\u00bb:exe (318ms)\nBuild completed successfully (93 jobs).\n",
+            "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+          },
+          {
+            "argv": [
+              "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-8b10nt7i/.lake/build/bin/artifact-test"
+            ],
+            "exit_code": 0,
+            "stdout": "shared-word-budget|passed\n",
+            "stderr": ""
+          }
+        ],
+        "binary_sha256": "3f1c6f347142ec56aac023ec58efa35d7dd12e868b49a5907aca7fa4b6201ad0"
+      },
+      "source_connection": {
+        "cases": 8,
+        "command": [
+          "cargo",
+          "test",
+          "--test",
+          "sized_corpus",
+          "check_source_instrument_contracts",
+          "--",
+          "--ignored",
+          "--nocapture"
+        ],
+        "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|878593|412\nINSTRUMENT|order|ok|982518|412\nINSTRUMENT|amplitude|ok|1002349|515\nINSTRUMENT|retiming|ok|166404|103\nINSTRUMENT|qpe-1-3|ok|1442442|618\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\nINSTRUMENT|qpe-2-4|limit\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.49s\n\n",
+        "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+        "pending_composed_capacity": {
+          "qpe-2-4": "limit"
+        },
+        "semantics": {
+          "qpe": {
+            "coefficients": 32,
+            "maximum_error": 3.3306690738754696e-16
+          },
+          "order": {
+            "coefficients": 96,
+            "maximum_error": 3.3306690738754696e-16
+          },
+          "amplitude": {
+            "coefficients": 32,
+            "maximum_error": 5.23691153334427e-16
+          },
+          "qpe-1-3": {
+            "coefficients": 64,
+            "maximum_error": 6.667840187510446e-16
+          },
+          "retiming": {
+            "coefficients": 48,
+            "maximum_error": 0.0
+          }
+        },
+        "request_origin": "baseline proposal; mutation regression only",
+        "source_sha256": {
+          "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+          "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+          "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+          "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+          "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+          "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+          "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+          "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+          "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+          "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+          "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+          "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+          "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+          "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+          "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+          "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+        }
+      },
+      "host_command": [
+        "cargo",
+        "test",
+        "--test",
+        "hierarchical_host",
+        "instrument",
+        "--",
+        "--include-ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 3 tests\ntest instrument_codec_rejects_malformed_fields_before_execution ... ok\ntest instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok\ncomposed instrument costs: [(false, 0, 35942, 103), (false, 1, 35942, 103), (false, 3, 35942, 103), (true, 0, 63848, 103), (true, 1, 63848, 103), (true, 3, 63848, 103)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 1.05s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.38s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4f64e6729d3e7615)\n",
+      "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+      "production_integration": false,
+      "named_qpe_binding": false
+    },
+    "request": {
+      "format": "qleisli.hierarchy-root-request-validation",
+      "version": 1,
+      "status": "passed",
+      "cases": 820,
+      "results": [
+        {
+          "case": "phase-match",
+          "result": "pending"
+        },
+        {
+          "case": "magic",
+          "result": "format"
+        },
+        {
+          "case": "trailing",
+          "result": "format"
+        },
+        {
+          "case": "empty",
+          "result": "format"
+        },
+        {
+          "case": "truncated-1",
+          "result": "format"
+        },
+        {
+          "case": "truncated-2",
+          "result": "format"
+        },
+        {
+          "case": "truncated-3",
+          "result": "format"
+        },
+        {
+          "case": "truncated-4",
+          "result": "format"
+        },
+        {
+          "case": "truncated-5",
+          "result": "format"
+        },
+        {
+          "case": "truncated-6",
+          "result": "format"
+        },
+        {
+          "case": "truncated-7",
+          "result": "format"
+        },
+        {
+          "case": "truncated-8",
+          "result": "format"
+        },
+        {
+          "case": "truncated-9",
+          "result": "format"
+        },
+        {
+          "case": "truncated-10",
+          "result": "format"
+        },
+        {
+          "case": "truncated-11",
+          "result": "format"
+        },
+        {
+          "case": "truncated-12",
+          "result": "format"
+        },
+        {
+          "case": "truncated-13",
+          "result": "format"
+        },
+        {
+          "case": "truncated-14",
+          "result": "format"
+        },
+        {
+          "case": "truncated-15",
+          "result": "format"
+        },
+        {
+          "case": "truncated-16",
+          "result": "format"
+        },
+        {
+          "case": "truncated-17",
+          "result": "format"
+        },
+        {
+          "case": "truncated-18",
+          "result": "format"
+        },
+        {
+          "case": "truncated-19",
+          "result": "format"
+        },
+        {
+          "case": "truncated-20",
+          "result": "format"
+        },
+        {
+          "case": "truncated-21",
+          "result": "format"
+        },
+        {
+          "case": "truncated-22",
+          "result": "format"
+        },
+        {
+          "case": "truncated-23",
+          "result": "format"
+        },
+        {
+          "case": "truncated-24",
+          "result": "format"
+        },
+        {
+          "case": "truncated-25",
+          "result": "format"
+        },
+        {
+          "case": "truncated-26",
+          "result": "format"
+        },
+        {
+          "case": "truncated-27",
+          "result": "format"
+        },
+        {
+          "case": "truncated-28",
+          "result": "format"
+        },
+        {
+          "case": "truncated-29",
+          "result": "format"
+        },
+        {
+          "case": "truncated-30",
+          "result": "format"
+        },
+        {
+          "case": "truncated-31",
+          "result": "format"
+        },
+        {
+          "case": "truncated-32",
+          "result": "format"
+        },
+        {
+          "case": "truncated-33",
+          "result": "format"
+        },
+        {
+          "case": "truncated-34",
+          "result": "format"
+        },
+        {
+          "case": "truncated-35",
+          "result": "format"
+        },
+        {
+          "case": "truncated-36",
+          "result": "format"
+        },
+        {
+          "case": "truncated-37",
+          "result": "format"
+        },
+        {
+          "case": "truncated-38",
+          "result": "format"
+        },
+        {
+          "case": "truncated-39",
+          "result": "format"
+        },
+        {
+          "case": "truncated-40",
+          "result": "format"
+        },
+        {
+          "case": "truncated-41",
+          "result": "format"
+        },
+        {
+          "case": "truncated-42",
+          "result": "format"
+        },
+        {
+          "case": "truncated-43",
+          "result": "format"
+        },
+        {
+          "case": "truncated-44",
+          "result": "format"
+        },
+        {
+          "case": "truncated-45",
+          "result": "format"
+        },
+        {
+          "case": "truncated-46",
+          "result": "format"
+        },
+        {
+          "case": "truncated-47",
+          "result": "format"
+        },
+        {
+          "case": "truncated-48",
+          "result": "format"
+        },
+        {
+          "case": "truncated-49",
+          "result": "format"
+        },
+        {
+          "case": "truncated-50",
+          "result": "format"
+        },
+        {
+          "case": "truncated-51",
+          "result": "format"
+        },
+        {
+          "case": "truncated-52",
+          "result": "format"
+        },
+        {
+          "case": "truncated-53",
+          "result": "format"
+        },
+        {
+          "case": "truncated-54",
+          "result": "format"
+        },
+        {
+          "case": "truncated-55",
+          "result": "format"
+        },
+        {
+          "case": "truncated-56",
+          "result": "format"
+        },
+        {
+          "case": "truncated-57",
+          "result": "format"
+        },
+        {
+          "case": "truncated-58",
+          "result": "format"
+        },
+        {
+          "case": "truncated-59",
+          "result": "format"
+        },
+        {
+          "case": "truncated-60",
+          "result": "format"
+        },
+        {
+          "case": "truncated-61",
+          "result": "format"
+        },
+        {
+          "case": "truncated-62",
+          "result": "format"
+        },
+        {
+          "case": "truncated-63",
+          "result": "format"
+        },
+        {
+          "case": "truncated-64",
+          "result": "format"
+        },
+        {
+          "case": "truncated-65",
+          "result": "format"
+        },
+        {
+          "case": "truncated-66",
+          "result": "format"
+        },
+        {
+          "case": "truncated-67",
+          "result": "format"
+        },
+        {
+          "case": "truncated-68",
+          "result": "format"
+        },
+        {
+          "case": "truncated-69",
+          "result": "format"
+        },
+        {
+          "case": "truncated-70",
+          "result": "format"
+        },
+        {
+          "case": "truncated-71",
+          "result": "format"
+        },
+        {
+          "case": "truncated-72",
+          "result": "format"
+        },
+        {
+          "case": "truncated-73",
+          "result": "format"
+        },
+        {
+          "case": "truncated-74",
+          "result": "format"
+        },
+        {
+          "case": "truncated-75",
+          "result": "format"
+        },
+        {
+          "case": "truncated-76",
+          "result": "format"
+        },
+        {
+          "case": "truncated-77",
+          "result": "format"
+        },
+        {
+          "case": "truncated-78",
+          "result": "format"
+        },
+        {
+          "case": "truncated-79",
+          "result": "format"
+        },
+        {
+          "case": "truncated-80",
+          "result": "format"
+        },
+        {
+          "case": "truncated-81",
+          "result": "format"
+        },
+        {
+          "case": "truncated-82",
+          "result": "format"
+        },
+        {
+          "case": "truncated-83",
+          "result": "format"
+        },
+        {
+          "case": "truncated-84",
+          "result": "format"
+        },
+        {
+          "case": "truncated-85",
+          "result": "format"
+        },
+        {
+          "case": "truncated-86",
+          "result": "format"
+        },
+        {
+          "case": "truncated-87",
+          "result": "format"
+        },
+        {
+          "case": "truncated-88",
+          "result": "format"
+        },
+        {
+          "case": "truncated-89",
+          "result": "format"
+        },
+        {
+          "case": "truncated-90",
+          "result": "format"
+        },
+        {
+          "case": "truncated-91",
+          "result": "format"
+        },
+        {
+          "case": "truncated-92",
+          "result": "format"
+        },
+        {
+          "case": "truncated-93",
+          "result": "format"
+        },
+        {
+          "case": "truncated-94",
+          "result": "format"
+        },
+        {
+          "case": "truncated-95",
+          "result": "format"
+        },
+        {
+          "case": "truncated-96",
+          "result": "format"
+        },
+        {
+          "case": "truncated-97",
+          "result": "format"
+        },
+        {
+          "case": "truncated-98",
+          "result": "format"
+        },
+        {
+          "case": "truncated-99",
+          "result": "format"
+        },
+        {
+          "case": "truncated-100",
+          "result": "format"
+        },
+        {
+          "case": "truncated-101",
+          "result": "format"
+        },
+        {
+          "case": "truncated-102",
+          "result": "format"
+        },
+        {
+          "case": "truncated-103",
+          "result": "format"
+        },
+        {
+          "case": "truncated-104",
+          "result": "format"
+        },
+        {
+          "case": "truncated-105",
+          "result": "format"
+        },
+        {
+          "case": "truncated-106",
+          "result": "format"
+        },
+        {
+          "case": "truncated-107",
+          "result": "format"
+        },
+        {
+          "case": "truncated-108",
+          "result": "format"
+        },
+        {
+          "case": "truncated-109",
+          "result": "format"
+        },
+        {
+          "case": "truncated-110",
+          "result": "format"
+        },
+        {
+          "case": "truncated-111",
+          "result": "format"
+        },
+        {
+          "case": "truncated-112",
+          "result": "format"
+        },
+        {
+          "case": "truncated-113",
+          "result": "format"
+        },
+        {
+          "case": "truncated-114",
+          "result": "format"
+        },
+        {
+          "case": "truncated-115",
+          "result": "format"
+        },
+        {
+          "case": "truncated-116",
+          "result": "format"
+        },
+        {
+          "case": "truncated-117",
+          "result": "format"
+        },
+        {
+          "case": "truncated-118",
+          "result": "format"
+        },
+        {
+          "case": "truncated-119",
+          "result": "format"
+        },
+        {
+          "case": "truncated-120",
+          "result": "format"
+        },
+        {
+          "case": "truncated-121",
+          "result": "format"
+        },
+        {
+          "case": "truncated-122",
+          "result": "format"
+        },
+        {
+          "case": "truncated-123",
+          "result": "format"
+        },
+        {
+          "case": "truncated-124",
+          "result": "format"
+        },
+        {
+          "case": "truncated-125",
+          "result": "format"
+        },
+        {
+          "case": "truncated-126",
+          "result": "format"
+        },
+        {
+          "case": "truncated-127",
+          "result": "format"
+        },
+        {
+          "case": "truncated-128",
+          "result": "format"
+        },
+        {
+          "case": "truncated-129",
+          "result": "format"
+        },
+        {
+          "case": "truncated-130",
+          "result": "format"
+        },
+        {
+          "case": "truncated-131",
+          "result": "format"
+        },
+        {
+          "case": "truncated-132",
+          "result": "format"
+        },
+        {
+          "case": "truncated-133",
+          "result": "format"
+        },
+        {
+          "case": "truncated-134",
+          "result": "format"
+        },
+        {
+          "case": "truncated-135",
+          "result": "format"
+        },
+        {
+          "case": "truncated-136",
+          "result": "format"
+        },
+        {
+          "case": "truncated-137",
+          "result": "format"
+        },
+        {
+          "case": "truncated-138",
+          "result": "format"
+        },
+        {
+          "case": "truncated-139",
+          "result": "format"
+        },
+        {
+          "case": "truncated-140",
+          "result": "format"
+        },
+        {
+          "case": "truncated-141",
+          "result": "format"
+        },
+        {
+          "case": "truncated-142",
+          "result": "format"
+        },
+        {
+          "case": "truncated-143",
+          "result": "format"
+        },
+        {
+          "case": "truncated-144",
+          "result": "format"
+        },
+        {
+          "case": "truncated-145",
+          "result": "format"
+        },
+        {
+          "case": "truncated-146",
+          "result": "format"
+        },
+        {
+          "case": "truncated-147",
+          "result": "format"
+        },
+        {
+          "case": "truncated-148",
+          "result": "format"
+        },
+        {
+          "case": "truncated-149",
+          "result": "format"
+        },
+        {
+          "case": "truncated-150",
+          "result": "format"
+        },
+        {
+          "case": "truncated-151",
+          "result": "format"
+        },
+        {
+          "case": "truncated-152",
+          "result": "format"
+        },
+        {
+          "case": "truncated-153",
+          "result": "format"
+        },
+        {
+          "case": "truncated-154",
+          "result": "format"
+        },
+        {
+          "case": "truncated-155",
+          "result": "format"
+        },
+        {
+          "case": "truncated-156",
+          "result": "format"
+        },
+        {
+          "case": "truncated-157",
+          "result": "format"
+        },
+        {
+          "case": "truncated-158",
+          "result": "format"
+        },
+        {
+          "case": "truncated-159",
+          "result": "format"
+        },
+        {
+          "case": "truncated-160",
+          "result": "format"
+        },
+        {
+          "case": "truncated-161",
+          "result": "format"
+        },
+        {
+          "case": "truncated-162",
+          "result": "format"
+        },
+        {
+          "case": "truncated-163",
+          "result": "format"
+        },
+        {
+          "case": "truncated-164",
+          "result": "format"
+        },
+        {
+          "case": "truncated-165",
+          "result": "format"
+        },
+        {
+          "case": "truncated-166",
+          "result": "format"
+        },
+        {
+          "case": "truncated-167",
+          "result": "format"
+        },
+        {
+          "case": "truncated-168",
+          "result": "format"
+        },
+        {
+          "case": "truncated-169",
+          "result": "format"
+        },
+        {
+          "case": "truncated-170",
+          "result": "format"
+        },
+        {
+          "case": "truncated-171",
+          "result": "format"
+        },
+        {
+          "case": "truncated-172",
+          "result": "format"
+        },
+        {
+          "case": "truncated-173",
+          "result": "format"
+        },
+        {
+          "case": "truncated-174",
+          "result": "format"
+        },
+        {
+          "case": "truncated-175",
+          "result": "format"
+        },
+        {
+          "case": "truncated-176",
+          "result": "format"
+        },
+        {
+          "case": "truncated-177",
+          "result": "format"
+        },
+        {
+          "case": "truncated-178",
+          "result": "format"
+        },
+        {
+          "case": "truncated-179",
+          "result": "format"
+        },
+        {
+          "case": "truncated-180",
+          "result": "format"
+        },
+        {
+          "case": "truncated-181",
+          "result": "format"
+        },
+        {
+          "case": "truncated-182",
+          "result": "format"
+        },
+        {
+          "case": "truncated-183",
+          "result": "format"
+        },
+        {
+          "case": "truncated-184",
+          "result": "format"
+        },
+        {
+          "case": "truncated-185",
+          "result": "format"
+        },
+        {
+          "case": "truncated-186",
+          "result": "format"
+        },
+        {
+          "case": "truncated-187",
+          "result": "format"
+        },
+        {
+          "case": "truncated-188",
+          "result": "format"
+        },
+        {
+          "case": "truncated-189",
+          "result": "format"
+        },
+        {
+          "case": "truncated-190",
+          "result": "format"
+        },
+        {
+          "case": "truncated-191",
+          "result": "format"
+        },
+        {
+          "case": "truncated-192",
+          "result": "format"
+        },
+        {
+          "case": "truncated-193",
+          "result": "format"
+        },
+        {
+          "case": "truncated-194",
+          "result": "format"
+        },
+        {
+          "case": "truncated-195",
+          "result": "format"
+        },
+        {
+          "case": "truncated-196",
+          "result": "format"
+        },
+        {
+          "case": "truncated-197",
+          "result": "format"
+        },
+        {
+          "case": "truncated-198",
+          "result": "format"
+        },
+        {
+          "case": "truncated-199",
+          "result": "format"
+        },
+        {
+          "case": "truncated-200",
+          "result": "format"
+        },
+        {
+          "case": "truncated-201",
+          "result": "format"
+        },
+        {
+          "case": "truncated-202",
+          "result": "format"
+        },
+        {
+          "case": "truncated-203",
+          "result": "format"
+        },
+        {
+          "case": "truncated-204",
+          "result": "format"
+        },
+        {
+          "case": "truncated-205",
+          "result": "format"
+        },
+        {
+          "case": "truncated-206",
+          "result": "format"
+        },
+        {
+          "case": "truncated-207",
+          "result": "format"
+        },
+        {
+          "case": "truncated-208",
+          "result": "format"
+        },
+        {
+          "case": "truncated-209",
+          "result": "format"
+        },
+        {
+          "case": "truncated-210",
+          "result": "format"
+        },
+        {
+          "case": "truncated-211",
+          "result": "format"
+        },
+        {
+          "case": "truncated-212",
+          "result": "format"
+        },
+        {
+          "case": "truncated-213",
+          "result": "format"
+        },
+        {
+          "case": "truncated-214",
+          "result": "format"
+        },
+        {
+          "case": "truncated-215",
+          "result": "format"
+        },
+        {
+          "case": "truncated-216",
+          "result": "format"
+        },
+        {
+          "case": "truncated-217",
+          "result": "format"
+        },
+        {
+          "case": "truncated-218",
+          "result": "format"
+        },
+        {
+          "case": "truncated-219",
+          "result": "format"
+        },
+        {
+          "case": "truncated-220",
+          "result": "format"
+        },
+        {
+          "case": "truncated-221",
+          "result": "format"
+        },
+        {
+          "case": "truncated-222",
+          "result": "format"
+        },
+        {
+          "case": "truncated-223",
+          "result": "format"
+        },
+        {
+          "case": "truncated-224",
+          "result": "format"
+        },
+        {
+          "case": "truncated-225",
+          "result": "format"
+        },
+        {
+          "case": "truncated-226",
+          "result": "format"
+        },
+        {
+          "case": "truncated-227",
+          "result": "format"
+        },
+        {
+          "case": "truncated-228",
+          "result": "format"
+        },
+        {
+          "case": "truncated-229",
+          "result": "format"
+        },
+        {
+          "case": "truncated-230",
+          "result": "format"
+        },
+        {
+          "case": "truncated-231",
+          "result": "format"
+        },
+        {
+          "case": "truncated-232",
+          "result": "format"
+        },
+        {
+          "case": "truncated-233",
+          "result": "format"
+        },
+        {
+          "case": "truncated-234",
+          "result": "format"
+        },
+        {
+          "case": "truncated-235",
+          "result": "format"
+        },
+        {
+          "case": "truncated-236",
+          "result": "format"
+        },
+        {
+          "case": "truncated-237",
+          "result": "format"
+        },
+        {
+          "case": "truncated-238",
+          "result": "format"
+        },
+        {
+          "case": "truncated-239",
+          "result": "format"
+        },
+        {
+          "case": "truncated-240",
+          "result": "format"
+        },
+        {
+          "case": "truncated-241",
+          "result": "format"
+        },
+        {
+          "case": "truncated-242",
+          "result": "format"
+        },
+        {
+          "case": "truncated-243",
+          "result": "format"
+        },
+        {
+          "case": "truncated-244",
+          "result": "format"
+        },
+        {
+          "case": "truncated-245",
+          "result": "format"
+        },
+        {
+          "case": "truncated-246",
+          "result": "format"
+        },
+        {
+          "case": "truncated-247",
+          "result": "format"
+        },
+        {
+          "case": "truncated-248",
+          "result": "format"
+        },
+        {
+          "case": "truncated-249",
+          "result": "format"
+        },
+        {
+          "case": "truncated-250",
+          "result": "format"
+        },
+        {
+          "case": "truncated-251",
+          "result": "format"
+        },
+        {
+          "case": "truncated-252",
+          "result": "format"
+        },
+        {
+          "case": "truncated-253",
+          "result": "format"
+        },
+        {
+          "case": "truncated-254",
+          "result": "format"
+        },
+        {
+          "case": "truncated-255",
+          "result": "format"
+        },
+        {
+          "case": "truncated-256",
+          "result": "format"
+        },
+        {
+          "case": "truncated-257",
+          "result": "format"
+        },
+        {
+          "case": "truncated-258",
+          "result": "format"
+        },
+        {
+          "case": "truncated-259",
+          "result": "format"
+        },
+        {
+          "case": "truncated-260",
+          "result": "format"
+        },
+        {
+          "case": "truncated-261",
+          "result": "format"
+        },
+        {
+          "case": "truncated-262",
+          "result": "format"
+        },
+        {
+          "case": "truncated-263",
+          "result": "format"
+        },
+        {
+          "case": "truncated-264",
+          "result": "format"
+        },
+        {
+          "case": "truncated-265",
+          "result": "format"
+        },
+        {
+          "case": "truncated-266",
+          "result": "format"
+        },
+        {
+          "case": "truncated-267",
+          "result": "format"
+        },
+        {
+          "case": "truncated-268",
+          "result": "format"
+        },
+        {
+          "case": "truncated-269",
+          "result": "format"
+        },
+        {
+          "case": "truncated-270",
+          "result": "format"
+        },
+        {
+          "case": "truncated-271",
+          "result": "format"
+        },
+        {
+          "case": "truncated-272",
+          "result": "format"
+        },
+        {
+          "case": "truncated-273",
+          "result": "format"
+        },
+        {
+          "case": "truncated-274",
+          "result": "format"
+        },
+        {
+          "case": "truncated-275",
+          "result": "format"
+        },
+        {
+          "case": "truncated-276",
+          "result": "format"
+        },
+        {
+          "case": "truncated-277",
+          "result": "format"
+        },
+        {
+          "case": "truncated-278",
+          "result": "format"
+        },
+        {
+          "case": "truncated-279",
+          "result": "format"
+        },
+        {
+          "case": "truncated-280",
+          "result": "format"
+        },
+        {
+          "case": "truncated-281",
+          "result": "format"
+        },
+        {
+          "case": "truncated-282",
+          "result": "format"
+        },
+        {
+          "case": "truncated-283",
+          "result": "format"
+        },
+        {
+          "case": "truncated-284",
+          "result": "format"
+        },
+        {
+          "case": "truncated-285",
+          "result": "format"
+        },
+        {
+          "case": "truncated-286",
+          "result": "format"
+        },
+        {
+          "case": "truncated-287",
+          "result": "format"
+        },
+        {
+          "case": "truncated-288",
+          "result": "format"
+        },
+        {
+          "case": "truncated-289",
+          "result": "format"
+        },
+        {
+          "case": "truncated-290",
+          "result": "format"
+        },
+        {
+          "case": "truncated-291",
+          "result": "format"
+        },
+        {
+          "case": "truncated-292",
+          "result": "format"
+        },
+        {
+          "case": "truncated-293",
+          "result": "format"
+        },
+        {
+          "case": "truncated-294",
+          "result": "format"
+        },
+        {
+          "case": "truncated-295",
+          "result": "format"
+        },
+        {
+          "case": "truncated-296",
+          "result": "format"
+        },
+        {
+          "case": "truncated-297",
+          "result": "format"
+        },
+        {
+          "case": "truncated-298",
+          "result": "format"
+        },
+        {
+          "case": "truncated-299",
+          "result": "format"
+        },
+        {
+          "case": "truncated-300",
+          "result": "format"
+        },
+        {
+          "case": "truncated-301",
+          "result": "format"
+        },
+        {
+          "case": "truncated-302",
+          "result": "format"
+        },
+        {
+          "case": "truncated-303",
+          "result": "format"
+        },
+        {
+          "case": "truncated-304",
+          "result": "format"
+        },
+        {
+          "case": "truncated-305",
+          "result": "format"
+        },
+        {
+          "case": "truncated-306",
+          "result": "format"
+        },
+        {
+          "case": "truncated-307",
+          "result": "format"
+        },
+        {
+          "case": "truncated-308",
+          "result": "format"
+        },
+        {
+          "case": "truncated-309",
+          "result": "format"
+        },
+        {
+          "case": "truncated-310",
+          "result": "format"
+        },
+        {
+          "case": "truncated-311",
+          "result": "format"
+        },
+        {
+          "case": "truncated-312",
+          "result": "format"
+        },
+        {
+          "case": "truncated-313",
+          "result": "format"
+        },
+        {
+          "case": "truncated-314",
+          "result": "format"
+        },
+        {
+          "case": "truncated-315",
+          "result": "format"
+        },
+        {
+          "case": "truncated-316",
+          "result": "format"
+        },
+        {
+          "case": "truncated-317",
+          "result": "format"
+        },
+        {
+          "case": "truncated-318",
+          "result": "format"
+        },
+        {
+          "case": "truncated-319",
+          "result": "format"
+        },
+        {
+          "case": "truncated-320",
+          "result": "format"
+        },
+        {
+          "case": "truncated-321",
+          "result": "format"
+        },
+        {
+          "case": "truncated-322",
+          "result": "format"
+        },
+        {
+          "case": "truncated-323",
+          "result": "format"
+        },
+        {
+          "case": "truncated-324",
+          "result": "format"
+        },
+        {
+          "case": "truncated-325",
+          "result": "format"
+        },
+        {
+          "case": "truncated-326",
+          "result": "format"
+        },
+        {
+          "case": "truncated-327",
+          "result": "format"
+        },
+        {
+          "case": "truncated-328",
+          "result": "format"
+        },
+        {
+          "case": "truncated-329",
+          "result": "format"
+        },
+        {
+          "case": "truncated-330",
+          "result": "format"
+        },
+        {
+          "case": "truncated-331",
+          "result": "format"
+        },
+        {
+          "case": "truncated-332",
+          "result": "format"
+        },
+        {
+          "case": "truncated-333",
+          "result": "format"
+        },
+        {
+          "case": "truncated-334",
+          "result": "format"
+        },
+        {
+          "case": "truncated-335",
+          "result": "format"
+        },
+        {
+          "case": "truncated-336",
+          "result": "format"
+        },
+        {
+          "case": "truncated-337",
+          "result": "format"
+        },
+        {
+          "case": "truncated-338",
+          "result": "format"
+        },
+        {
+          "case": "truncated-339",
+          "result": "format"
+        },
+        {
+          "case": "truncated-340",
+          "result": "format"
+        },
+        {
+          "case": "truncated-341",
+          "result": "format"
+        },
+        {
+          "case": "truncated-342",
+          "result": "format"
+        },
+        {
+          "case": "truncated-343",
+          "result": "format"
+        },
+        {
+          "case": "truncated-344",
+          "result": "format"
+        },
+        {
+          "case": "truncated-345",
+          "result": "format"
+        },
+        {
+          "case": "truncated-346",
+          "result": "format"
+        },
+        {
+          "case": "truncated-347",
+          "result": "format"
+        },
+        {
+          "case": "truncated-348",
+          "result": "format"
+        },
+        {
+          "case": "truncated-349",
+          "result": "format"
+        },
+        {
+          "case": "truncated-350",
+          "result": "format"
+        },
+        {
+          "case": "truncated-351",
+          "result": "format"
+        },
+        {
+          "case": "truncated-352",
+          "result": "format"
+        },
+        {
+          "case": "truncated-353",
+          "result": "format"
+        },
+        {
+          "case": "truncated-354",
+          "result": "format"
+        },
+        {
+          "case": "truncated-355",
+          "result": "format"
+        },
+        {
+          "case": "truncated-356",
+          "result": "format"
+        },
+        {
+          "case": "truncated-357",
+          "result": "format"
+        },
+        {
+          "case": "truncated-358",
+          "result": "format"
+        },
+        {
+          "case": "truncated-359",
+          "result": "format"
+        },
+        {
+          "case": "truncated-360",
+          "result": "format"
+        },
+        {
+          "case": "truncated-361",
+          "result": "format"
+        },
+        {
+          "case": "truncated-362",
+          "result": "format"
+        },
+        {
+          "case": "truncated-363",
+          "result": "format"
+        },
+        {
+          "case": "truncated-364",
+          "result": "format"
+        },
+        {
+          "case": "truncated-365",
+          "result": "format"
+        },
+        {
+          "case": "truncated-366",
+          "result": "format"
+        },
+        {
+          "case": "truncated-367",
+          "result": "format"
+        },
+        {
+          "case": "truncated-368",
+          "result": "format"
+        },
+        {
+          "case": "truncated-369",
+          "result": "format"
+        },
+        {
+          "case": "truncated-370",
+          "result": "format"
+        },
+        {
+          "case": "truncated-371",
+          "result": "format"
+        },
+        {
+          "case": "truncated-372",
+          "result": "format"
+        },
+        {
+          "case": "truncated-373",
+          "result": "format"
+        },
+        {
+          "case": "truncated-374",
+          "result": "format"
+        },
+        {
+          "case": "truncated-375",
+          "result": "format"
+        },
+        {
+          "case": "truncated-376",
+          "result": "format"
+        },
+        {
+          "case": "truncated-377",
+          "result": "format"
+        },
+        {
+          "case": "truncated-378",
+          "result": "format"
+        },
+        {
+          "case": "truncated-379",
+          "result": "format"
+        },
+        {
+          "case": "truncated-380",
+          "result": "format"
+        },
+        {
+          "case": "truncated-381",
+          "result": "format"
+        },
+        {
+          "case": "truncated-382",
+          "result": "format"
+        },
+        {
+          "case": "truncated-383",
+          "result": "format"
+        },
+        {
+          "case": "truncated-384",
+          "result": "format"
+        },
+        {
+          "case": "truncated-385",
+          "result": "format"
+        },
+        {
+          "case": "truncated-386",
+          "result": "format"
+        },
+        {
+          "case": "truncated-387",
+          "result": "format"
+        },
+        {
+          "case": "truncated-388",
+          "result": "format"
+        },
+        {
+          "case": "truncated-389",
+          "result": "format"
+        },
+        {
+          "case": "truncated-390",
+          "result": "format"
+        },
+        {
+          "case": "truncated-391",
+          "result": "format"
+        },
+        {
+          "case": "truncated-392",
+          "result": "format"
+        },
+        {
+          "case": "truncated-393",
+          "result": "format"
+        },
+        {
+          "case": "truncated-394",
+          "result": "format"
+        },
+        {
+          "case": "truncated-395",
+          "result": "format"
+        },
+        {
+          "case": "truncated-396",
+          "result": "format"
+        },
+        {
+          "case": "truncated-397",
+          "result": "format"
+        },
+        {
+          "case": "truncated-398",
+          "result": "format"
+        },
+        {
+          "case": "truncated-399",
+          "result": "format"
+        },
+        {
+          "case": "truncated-400",
+          "result": "format"
+        },
+        {
+          "case": "truncated-401",
+          "result": "format"
+        },
+        {
+          "case": "truncated-402",
+          "result": "format"
+        },
+        {
+          "case": "truncated-403",
+          "result": "format"
+        },
+        {
+          "case": "truncated-404",
+          "result": "format"
+        },
+        {
+          "case": "truncated-405",
+          "result": "format"
+        },
+        {
+          "case": "truncated-406",
+          "result": "format"
+        },
+        {
+          "case": "truncated-407",
+          "result": "format"
+        },
+        {
+          "case": "truncated-408",
+          "result": "format"
+        },
+        {
+          "case": "truncated-409",
+          "result": "format"
+        },
+        {
+          "case": "truncated-410",
+          "result": "format"
+        },
+        {
+          "case": "truncated-411",
+          "result": "format"
+        },
+        {
+          "case": "truncated-412",
+          "result": "format"
+        },
+        {
+          "case": "truncated-413",
+          "result": "format"
+        },
+        {
+          "case": "truncated-414",
+          "result": "format"
+        },
+        {
+          "case": "truncated-415",
+          "result": "format"
+        },
+        {
+          "case": "truncated-416",
+          "result": "format"
+        },
+        {
+          "case": "truncated-417",
+          "result": "format"
+        },
+        {
+          "case": "truncated-418",
+          "result": "format"
+        },
+        {
+          "case": "truncated-419",
+          "result": "format"
+        },
+        {
+          "case": "truncated-420",
+          "result": "format"
+        },
+        {
+          "case": "truncated-421",
+          "result": "format"
+        },
+        {
+          "case": "truncated-422",
+          "result": "format"
+        },
+        {
+          "case": "truncated-423",
+          "result": "format"
+        },
+        {
+          "case": "truncated-424",
+          "result": "format"
+        },
+        {
+          "case": "truncated-425",
+          "result": "format"
+        },
+        {
+          "case": "truncated-426",
+          "result": "format"
+        },
+        {
+          "case": "truncated-427",
+          "result": "format"
+        },
+        {
+          "case": "truncated-428",
+          "result": "format"
+        },
+        {
+          "case": "truncated-429",
+          "result": "format"
+        },
+        {
+          "case": "truncated-430",
+          "result": "format"
+        },
+        {
+          "case": "truncated-431",
+          "result": "format"
+        },
+        {
+          "case": "truncated-432",
+          "result": "format"
+        },
+        {
+          "case": "truncated-433",
+          "result": "format"
+        },
+        {
+          "case": "truncated-434",
+          "result": "format"
+        },
+        {
+          "case": "truncated-435",
+          "result": "format"
+        },
+        {
+          "case": "truncated-436",
+          "result": "format"
+        },
+        {
+          "case": "truncated-437",
+          "result": "format"
+        },
+        {
+          "case": "truncated-438",
+          "result": "format"
+        },
+        {
+          "case": "truncated-439",
+          "result": "format"
+        },
+        {
+          "case": "truncated-440",
+          "result": "format"
+        },
+        {
+          "case": "truncated-441",
+          "result": "format"
+        },
+        {
+          "case": "truncated-442",
+          "result": "format"
+        },
+        {
+          "case": "truncated-443",
+          "result": "format"
+        },
+        {
+          "case": "truncated-444",
+          "result": "format"
+        },
+        {
+          "case": "truncated-445",
+          "result": "format"
+        },
+        {
+          "case": "truncated-446",
+          "result": "format"
+        },
+        {
+          "case": "truncated-447",
+          "result": "format"
+        },
+        {
+          "case": "truncated-448",
+          "result": "format"
+        },
+        {
+          "case": "truncated-449",
+          "result": "format"
+        },
+        {
+          "case": "truncated-450",
+          "result": "format"
+        },
+        {
+          "case": "truncated-451",
+          "result": "format"
+        },
+        {
+          "case": "truncated-452",
+          "result": "format"
+        },
+        {
+          "case": "truncated-453",
+          "result": "format"
+        },
+        {
+          "case": "truncated-454",
+          "result": "format"
+        },
+        {
+          "case": "truncated-455",
+          "result": "format"
+        },
+        {
+          "case": "truncated-456",
+          "result": "format"
+        },
+        {
+          "case": "truncated-457",
+          "result": "format"
+        },
+        {
+          "case": "truncated-458",
+          "result": "format"
+        },
+        {
+          "case": "truncated-459",
+          "result": "format"
+        },
+        {
+          "case": "truncated-460",
+          "result": "format"
+        },
+        {
+          "case": "truncated-461",
+          "result": "format"
+        },
+        {
+          "case": "truncated-462",
+          "result": "format"
+        },
+        {
+          "case": "truncated-463",
+          "result": "format"
+        },
+        {
+          "case": "truncated-464",
+          "result": "format"
+        },
+        {
+          "case": "truncated-465",
+          "result": "format"
+        },
+        {
+          "case": "truncated-466",
+          "result": "format"
+        },
+        {
+          "case": "truncated-467",
+          "result": "format"
+        },
+        {
+          "case": "truncated-468",
+          "result": "format"
+        },
+        {
+          "case": "truncated-469",
+          "result": "format"
+        },
+        {
+          "case": "truncated-470",
+          "result": "format"
+        },
+        {
+          "case": "truncated-471",
+          "result": "format"
+        },
+        {
+          "case": "truncated-472",
+          "result": "format"
+        },
+        {
+          "case": "truncated-473",
+          "result": "format"
+        },
+        {
+          "case": "truncated-474",
+          "result": "format"
+        },
+        {
+          "case": "truncated-475",
+          "result": "format"
+        },
+        {
+          "case": "truncated-476",
+          "result": "format"
+        },
+        {
+          "case": "truncated-477",
+          "result": "format"
+        },
+        {
+          "case": "truncated-478",
+          "result": "format"
+        },
+        {
+          "case": "truncated-479",
+          "result": "format"
+        },
+        {
+          "case": "truncated-480",
+          "result": "format"
+        },
+        {
+          "case": "truncated-481",
+          "result": "format"
+        },
+        {
+          "case": "truncated-482",
+          "result": "format"
+        },
+        {
+          "case": "truncated-483",
+          "result": "format"
+        },
+        {
+          "case": "truncated-484",
+          "result": "format"
+        },
+        {
+          "case": "truncated-485",
+          "result": "format"
+        },
+        {
+          "case": "truncated-486",
+          "result": "format"
+        },
+        {
+          "case": "truncated-487",
+          "result": "format"
+        },
+        {
+          "case": "truncated-488",
+          "result": "format"
+        },
+        {
+          "case": "truncated-489",
+          "result": "format"
+        },
+        {
+          "case": "truncated-490",
+          "result": "format"
+        },
+        {
+          "case": "truncated-491",
+          "result": "format"
+        },
+        {
+          "case": "truncated-492",
+          "result": "format"
+        },
+        {
+          "case": "truncated-493",
+          "result": "format"
+        },
+        {
+          "case": "truncated-494",
+          "result": "format"
+        },
+        {
+          "case": "truncated-495",
+          "result": "format"
+        },
+        {
+          "case": "truncated-496",
+          "result": "format"
+        },
+        {
+          "case": "truncated-497",
+          "result": "format"
+        },
+        {
+          "case": "truncated-498",
+          "result": "format"
+        },
+        {
+          "case": "truncated-499",
+          "result": "format"
+        },
+        {
+          "case": "truncated-500",
+          "result": "format"
+        },
+        {
+          "case": "truncated-501",
+          "result": "format"
+        },
+        {
+          "case": "truncated-502",
+          "result": "format"
+        },
+        {
+          "case": "truncated-503",
+          "result": "format"
+        },
+        {
+          "case": "truncated-504",
+          "result": "format"
+        },
+        {
+          "case": "truncated-505",
+          "result": "format"
+        },
+        {
+          "case": "truncated-506",
+          "result": "format"
+        },
+        {
+          "case": "truncated-507",
+          "result": "format"
+        },
+        {
+          "case": "truncated-508",
+          "result": "format"
+        },
+        {
+          "case": "truncated-509",
+          "result": "format"
+        },
+        {
+          "case": "truncated-510",
+          "result": "format"
+        },
+        {
+          "case": "truncated-511",
+          "result": "format"
+        },
+        {
+          "case": "truncated-512",
+          "result": "format"
+        },
+        {
+          "case": "truncated-513",
+          "result": "format"
+        },
+        {
+          "case": "truncated-514",
+          "result": "format"
+        },
+        {
+          "case": "truncated-515",
+          "result": "format"
+        },
+        {
+          "case": "truncated-516",
+          "result": "format"
+        },
+        {
+          "case": "truncated-517",
+          "result": "format"
+        },
+        {
+          "case": "truncated-518",
+          "result": "format"
+        },
+        {
+          "case": "truncated-519",
+          "result": "format"
+        },
+        {
+          "case": "truncated-520",
+          "result": "format"
+        },
+        {
+          "case": "truncated-521",
+          "result": "format"
+        },
+        {
+          "case": "truncated-522",
+          "result": "format"
+        },
+        {
+          "case": "truncated-523",
+          "result": "format"
+        },
+        {
+          "case": "truncated-524",
+          "result": "format"
+        },
+        {
+          "case": "truncated-525",
+          "result": "format"
+        },
+        {
+          "case": "truncated-526",
+          "result": "format"
+        },
+        {
+          "case": "truncated-527",
+          "result": "format"
+        },
+        {
+          "case": "embedded-too-large",
+          "result": "limit"
+        },
+        {
+          "case": "unknown-kind",
+          "result": "format"
+        },
+        {
+          "case": "instrument-kind",
+          "result": "contract"
+        },
+        {
+          "case": "unknown-effect",
+          "result": "format"
+        },
+        {
+          "case": "observe-effect",
+          "result": "contract"
+        },
+        {
+          "case": "header-owner",
+          "result": "contract"
+        },
+        {
+          "case": "header-type",
+          "result": "contract"
+        },
+        {
+          "case": "header-axis",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-owner",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-type",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-axis",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-output-owner",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-output-type",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-output-axis",
+          "result": "contract"
+        },
+        {
+          "case": "phase-exponent",
+          "result": "contract"
+        },
+        {
+          "case": "unknown-constructor",
+          "result": "format"
+        },
+        {
+          "case": "missing-entry",
+          "result": "contract"
+        },
+        {
+          "case": "missing-actual-node",
+          "result": "contract"
+        },
+        {
+          "case": "missing-requested-node",
+          "result": "contract"
+        },
+        {
+          "case": "wrong-order-index",
+          "result": "invalid_ir"
+        },
+        {
+          "case": "huge-meaning-count",
+          "result": "limit"
+        },
+        {
+          "case": "huge-pair-count",
+          "result": "limit"
+        },
+        {
+          "case": "huge-order-count",
+          "result": "limit"
+        },
+        {
+          "case": "independent-phase-0",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-1",
+          "result": "pending"
+        },
+        {
+          "case": "independent-phase-2",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-3",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-4",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-5",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-6",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-7",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-8",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-9",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-10",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-11",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-12",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-13",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-14",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-15",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-16",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-17",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-18",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-19",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-20",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-21",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-22",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-23",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-24",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-25",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-26",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-27",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-28",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-29",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-30",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-31",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-32",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-33",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-34",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-35",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-36",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-37",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-38",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-39",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-40",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-41",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-42",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-43",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-44",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-45",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-46",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-47",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-48",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-49",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-50",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-51",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-52",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-53",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-54",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-55",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-56",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-57",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-58",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-59",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-60",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-61",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-62",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-63",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-64",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-65",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-66",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-67",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-68",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-69",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-70",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-71",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-72",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-73",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-74",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-75",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-76",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-77",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-78",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-79",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-80",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-81",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-82",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-83",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-84",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-85",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-86",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-87",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-88",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-89",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-90",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-91",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-92",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-93",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-94",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-95",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-96",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-97",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-98",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-99",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-100",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-101",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-102",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-103",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-104",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-105",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-106",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-107",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-108",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-109",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-110",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-111",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-112",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-113",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-114",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-115",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-116",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-117",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-118",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-119",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-120",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-121",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-122",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-123",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-124",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-125",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-126",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-127",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-128",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-129",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-130",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-131",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-132",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-133",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-134",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-135",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-136",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-137",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-138",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-139",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-140",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-141",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-142",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-143",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-144",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-145",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-146",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-147",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-148",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-149",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-150",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-151",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-152",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-153",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-154",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-155",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-156",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-157",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-158",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-159",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-160",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-161",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-162",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-163",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-164",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-165",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-166",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-167",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-168",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-169",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-170",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-171",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-172",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-173",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-174",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-175",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-176",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-177",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-178",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-179",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-180",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-181",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-182",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-183",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-184",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-185",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-186",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-187",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-188",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-189",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-190",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-191",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-192",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-193",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-194",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-195",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-196",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-197",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-198",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-199",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-200",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-201",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-202",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-203",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-204",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-205",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-206",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-207",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-208",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-209",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-210",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-211",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-212",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-213",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-214",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-215",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-216",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-217",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-218",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-219",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-220",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-221",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-222",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-223",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-224",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-225",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-226",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-227",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-228",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-229",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-230",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-231",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-232",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-233",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-234",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-235",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-236",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-237",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-238",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-239",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-240",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-241",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-242",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-243",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-244",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-245",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-246",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-247",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-248",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-249",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-250",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-251",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-252",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-253",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-254",
+          "result": "contract"
+        },
+        {
+          "case": "independent-phase-255",
+          "result": "contract"
+        },
+        {
+          "case": "meaning-bit-to-bits",
+          "result": "contract"
+        },
+        {
+          "case": "uncovered-request",
+          "result": "contract"
+        },
+        {
+          "case": "missing-request",
+          "result": "limit"
+        },
+        {
+          "case": "missing-pairs",
+          "result": "limit"
+        },
+        {
+          "case": "pair-cycle",
+          "result": "invalid_ir"
+        },
+        {
+          "case": "missing-child-pair",
+          "result": "invalid_ir"
+        },
+        {
+          "case": "unreachable-pair",
+          "result": "invalid_ir"
+        },
+        {
+          "case": "aggregate-pair-work",
+          "result": "limit"
+        },
+        {
+          "case": "missing-order",
+          "result": "invalid_ir"
+        },
+        {
+          "case": "duplicate-order",
+          "result": "invalid_ir"
+        }
+      ],
+      "row_costs": {
+        "cases": 10,
+        "rows": [
+          [
+            "empty",
+            "125",
+            "125"
+          ],
+          [
+            "bits-0",
+            "669",
+            "477"
+          ],
+          [
+            "bits-1",
+            "925",
+            "541"
+          ],
+          [
+            "bits-2",
+            "1181",
+            "605"
+          ],
+          [
+            "bits-3",
+            "1437",
+            "669"
+          ],
+          [
+            "bits-4",
+            "1693",
+            "733"
+          ],
+          [
+            "bit",
+            "925",
+            "541"
+          ],
+          [
+            "mixed-frame",
+            "5629",
+            "1469"
+          ],
+          [
+            "nested-type",
+            "2461",
+            "1181"
+          ],
+          [
+            "finite-bytes",
+            "pending",
+            "1"
+          ]
+        ],
+        "commands": [
+          {
+            "argv": [
+              "lake",
+              "build"
+            ],
+            "exit_code": 0,
+            "stdout": "\u2714 [57/59] Built Main (408ms)\n\u2714 [58/59] Built Main:c.o (105ms)\n\u2714 [59/59] Built \u00abartifact-test\u00bb:exe (158ms)\nBuild completed successfully (59 jobs).\n",
+            "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+          },
+          {
+            "argv": [
+              "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-8b1aqmyc/.lake/build/bin/artifact-test"
+            ],
+            "exit_code": 0,
+            "stdout": "empty|125|125\nbits-0|669|477\nbits-1|925|541\nbits-2|1181|605\nbits-3|1437|669\nbits-4|1693|733\nbit|925|541\nmixed-frame|5629|1469\nnested-type|2461|1181\nfinite-bytes|pending|1\n",
+            "stderr": ""
+          }
+        ],
+        "binary_sha256": "48e63b35a10378e94d68a2fbbff0d8cae355b2e6fbefb6b2091634fbb172a7d6"
+      },
+      "seconds": 27.276,
+      "binary_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec"
+    },
+    "fourier": {
+      "format": "qleisli.sized-qft-experiment",
+      "version": 1,
+      "status": "passed-experimental-source-path",
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_fourier_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "scope": "small-system",
+      "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+      "source_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "inverse_source_sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+      "measured_components": {
+        "measured-qpe-fourier-1": {
+          "graph_sha256": "b93b23063781a9ea970390cd13b518c1e41b72c992afebc96cf8815b8b9c0ede",
+          "definitions": 52,
+          "inverse_operand": 14,
+          "retained_definitions": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14
+          ]
+        },
+        "measured-qpe-fourier-2": {
+          "graph_sha256": "4700577f06a298d1736518f24ec0f77f068c6db3e95776c17085d65cea506099",
+          "definitions": 104,
+          "inverse_operand": 82,
+          "retained_definitions": [
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82
+          ]
+        },
+        "measured-qpe-fourier-3": {
+          "graph_sha256": "37060f90c600aa5476185bcfbce4796c9fecaf9f01b15d975aeddce5d7527843",
+          "definitions": 153,
+          "inverse_operand": 124,
+          "retained_definitions": [
+            70,
+            71,
+            72,
+            73,
+            74,
+            75,
+            76,
+            77,
+            78,
+            79,
+            80,
+            81,
+            82,
+            83,
+            84,
+            85,
+            86,
+            87,
+            88,
+            89,
+            90,
+            91,
+            92,
+            93,
+            94,
+            95,
+            96,
+            97,
+            98,
+            99,
+            100,
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124
+          ]
+        },
+        "measured-qpe-missing-reversal": {
+          "graph_sha256": "fa8d9010bb8dee596409d2280a31db549eb946e71fdbe91d9db1357f09bf9997",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        },
+        "measured-qpe-missing-phase": {
+          "graph_sha256": "6eca24db2e7b0b99d3ff027aa08424492f1084ae5539fb6c14daa045a6c3cc16",
+          "definitions": 91,
+          "inverse_operand": 69,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69
+          ]
+        },
+        "measured-qpe-wrong-phase": {
+          "graph_sha256": "5c45df9d7ff4f58dff852ef50d32b4d986616b6c661f80d953ddf9ae93e0ab77",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        },
+        "measured-qpe-wrong-h": {
+          "graph_sha256": "077cd0acdfa4386a4a10e722d02c5b4002daf16921db2efd02f224f3379f49d0",
+          "definitions": 97,
+          "inverse_operand": 75,
+          "retained_definitions": [
+            6,
+            49,
+            50,
+            51,
+            52,
+            53,
+            54,
+            55,
+            56,
+            57,
+            58,
+            59,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            68,
+            69,
+            70,
+            71,
+            72,
+            73,
+            74,
+            75
+          ]
+        }
+      },
+      "measured_source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      },
+      "implementation_sha256": {
+        "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+        "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+        "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86"
+      },
+      "source_rejections": [
+        {
+          "case": "zero-width",
+          "diagnostic": "static entry premise is false"
+        },
+        {
+          "case": "oversized-register",
+          "diagnostic": "register width exceeds the eight-bit register profile"
+        },
+        {
+          "case": "false-premise",
+          "diagnostic": "static entry premise is false"
+        },
+        {
+          "case": "angle-denominator",
+          "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+        },
+        {
+          "case": "unnormalized-angle",
+          "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+        },
+        {
+          "case": "alias-control",
+          "diagnostic": "unknown, captured or already moved quantum value control"
+        },
+        {
+          "case": "unselected-branch-alias",
+          "diagnostic": "unknown, captured or already moved quantum value high"
+        },
+        {
+          "case": "unselected-static-name",
+          "diagnostic": "unbound static natural unknown"
+        },
+        {
+          "case": "unknown-module",
+          "diagnostic": "unsupported or duplicate import fourier::fourier"
+        },
+        {
+          "case": "unknown-imported-declaration",
+          "diagnostic": "unknown imported declaration fourier::fourier"
+        },
+        {
+          "case": "missing-static-argument",
+          "diagnostic": "ordinary operation static argument arity mismatch"
+        },
+        {
+          "case": "operation-type-mismatch",
+          "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+        },
+        {
+          "case": "operation-cycle",
+          "diagnostic": "cyclic or excessive source operation instantiation"
+        },
+        {
+          "case": "aggregate-source-work",
+          "diagnostic": "invalid or excessive static fold range"
+        }
+      ],
+      "artifacts": {
+        "qft-1": {
+          "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+          "bytes": 14042,
+          "definitions": 14
+        },
+        "inverse-1": {
+          "sha256": "ff45e40a3af73ac80bbb71767db1e0bcf3922b2cec085c857dad2911c9fb3b71",
+          "bytes": 17542,
+          "definitions": 18
+        },
+        "qft-2": {
+          "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+          "bytes": 33836,
+          "definitions": 34
+        },
+        "inverse-2": {
+          "sha256": "8cbeb695a6993f5719a98cc6e120aa1626da12b5e8be5da6f1556bb001907969",
+          "bytes": 37388,
+          "definitions": 38
+        },
+        "qft-3": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "inverse-3": {
+          "sha256": "922aed7c75ab278ea5780bed6b57c52c9434628c3df70f55fe6e8d0319542d2c",
+          "bytes": 58141,
+          "definitions": 59
+        },
+        "equivalent-angle": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "wrapped-inverse-3": {
+          "sha256": "606f10185d7c3d5f1756674bc97a7f491ad6a153c0c1679bcaac5c62180bec28",
+          "bytes": 55269,
+          "definitions": 56
+        },
+        "shared-twice-3": {
+          "sha256": "026dfc8418aa32892ce88ef8922a0a77f86c910f042e39cea9c6e084a27d2620",
+          "bytes": 60805,
+          "definitions": 62
+        },
+        "framed-call-2": {
+          "sha256": "15cc605282124bca1eb6464d3e4b01fc8fe35915769ed05aaac8edc98aa50dc2",
+          "bytes": 43272,
+          "definitions": 42
+        },
+        "missing-reversal": {
+          "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "missing-phase": {
+          "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+          "bytes": 28857,
+          "definitions": 25
+        },
+        "wrong-phase": {
+          "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "wrong-h": {
+          "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+          "bytes": 35524,
+          "definitions": 31
+        },
+        "inverse-changed-dependency": {
+          "sha256": "450cef5faca631bd4a27e7234c7e6fcdaa184af16efbdd87e59f381b730c7d16",
+          "bytes": 34999,
+          "definitions": 31
+        },
+        "measured-qpe-fourier-1": {
+          "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+          "bytes": 14042,
+          "definitions": 14
+        },
+        "measured-qpe-fourier-2": {
+          "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+          "bytes": 33836,
+          "definitions": 34
+        },
+        "measured-qpe-fourier-3": {
+          "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+          "bytes": 54541,
+          "definitions": 55
+        },
+        "measured-qpe-missing-reversal": {
+          "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "measured-qpe-missing-phase": {
+          "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+          "bytes": 28857,
+          "definitions": 25
+        },
+        "measured-qpe-wrong-phase": {
+          "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+          "bytes": 35526,
+          "definitions": 31
+        },
+        "measured-qpe-wrong-h": {
+          "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+          "bytes": 35524,
+          "definitions": 31
+        }
+      },
+      "native": [
+        [
+          "qft-1",
+          "inspect",
+          "67877",
+          "67"
+        ],
+        [
+          "qft-1",
+          "ok",
+          "73636",
+          "118"
+        ],
+        [
+          "inverse-1",
+          "inspect",
+          "83898",
+          "67"
+        ],
+        [
+          "qft-2",
+          "inspect",
+          "187628",
+          "134"
+        ],
+        [
+          "qft-2",
+          "ok",
+          "203782",
+          "236"
+        ],
+        [
+          "inverse-2",
+          "inspect",
+          "207903",
+          "134"
+        ],
+        [
+          "qft-3",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "qft-3",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "inverse-3",
+          "inspect",
+          "349300",
+          "201"
+        ],
+        [
+          "equivalent-angle",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "equivalent-angle",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "wrapped-inverse-3",
+          "inspect",
+          "329021",
+          "201"
+        ],
+        [
+          "shared-twice-3",
+          "inspect",
+          "371035",
+          "201"
+        ],
+        [
+          "framed-call-2",
+          "inspect",
+          "257545",
+          "134"
+        ],
+        [
+          "missing-reversal",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "missing-reversal",
+          "contract"
+        ],
+        [
+          "missing-phase",
+          "inspect",
+          "177705",
+          "134"
+        ],
+        [
+          "missing-phase",
+          "contract"
+        ],
+        [
+          "wrong-phase",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "wrong-phase",
+          "contract"
+        ],
+        [
+          "wrong-h",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "wrong-h",
+          "contract"
+        ],
+        [
+          "inverse-changed-dependency",
+          "inspect",
+          "234454",
+          "134"
+        ],
+        [
+          "measured-qpe-fourier-1",
+          "inspect",
+          "67877",
+          "67"
+        ],
+        [
+          "measured-qpe-fourier-1",
+          "ok",
+          "73636",
+          "118"
+        ],
+        [
+          "measured-qpe-fourier-2",
+          "inspect",
+          "187628",
+          "134"
+        ],
+        [
+          "measured-qpe-fourier-2",
+          "ok",
+          "203782",
+          "236"
+        ],
+        [
+          "measured-qpe-fourier-3",
+          "inspect",
+          "324451",
+          "201"
+        ],
+        [
+          "measured-qpe-fourier-3",
+          "ok",
+          "354650",
+          "354"
+        ],
+        [
+          "measured-qpe-missing-reversal",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-missing-reversal",
+          "contract"
+        ],
+        [
+          "measured-qpe-missing-phase",
+          "inspect",
+          "177705",
+          "134"
+        ],
+        [
+          "measured-qpe-missing-phase",
+          "contract"
+        ],
+        [
+          "measured-qpe-wrong-phase",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-wrong-phase",
+          "contract"
+        ],
+        [
+          "measured-qpe-wrong-h",
+          "inspect",
+          "235695",
+          "134"
+        ],
+        [
+          "measured-qpe-wrong-h",
+          "contract"
+        ]
+      ],
+      "stdout": "\nrunning 1 test\nSIZED-FOURIER|qft-1|inspect|67877|67\nSIZED-FOURIER|qft-1|ok|73636|118\nSIZED-FOURIER|inverse-1|inspect|83898|67\nSIZED-FOURIER|qft-2|inspect|187628|134\nSIZED-FOURIER|qft-2|ok|203782|236\nSIZED-FOURIER|inverse-2|inspect|207903|134\nSIZED-FOURIER|qft-3|inspect|324451|201\nSIZED-FOURIER|qft-3|ok|354650|354\nSIZED-FOURIER|inverse-3|inspect|349300|201\nSIZED-FOURIER|equivalent-angle|inspect|324451|201\nSIZED-FOURIER|equivalent-angle|ok|354650|354\nSIZED-FOURIER|wrapped-inverse-3|inspect|329021|201\nSIZED-FOURIER|shared-twice-3|inspect|371035|201\nSIZED-FOURIER|framed-call-2|inspect|257545|134\nSIZED-FOURIER|missing-reversal|inspect|235695|134\nSIZED-FOURIER|missing-reversal|contract\nSIZED-FOURIER|missing-phase|inspect|177705|134\nSIZED-FOURIER|missing-phase|contract\nSIZED-FOURIER|wrong-phase|inspect|235695|134\nSIZED-FOURIER|wrong-phase|contract\nSIZED-FOURIER|wrong-h|inspect|235695|134\nSIZED-FOURIER|wrong-h|contract\nSIZED-FOURIER|inverse-changed-dependency|inspect|234454|134\nSIZED-FOURIER|measured-qpe-fourier-1|inspect|67877|67\nSIZED-FOURIER|measured-qpe-fourier-1|ok|73636|118\nSIZED-FOURIER|measured-qpe-fourier-2|inspect|187628|134\nSIZED-FOURIER|measured-qpe-fourier-2|ok|203782|236\nSIZED-FOURIER|measured-qpe-fourier-3|inspect|324451|201\nSIZED-FOURIER|measured-qpe-fourier-3|ok|354650|354\nSIZED-FOURIER|measured-qpe-missing-reversal|inspect|235695|134\nSIZED-FOURIER|measured-qpe-missing-reversal|contract\nSIZED-FOURIER|measured-qpe-missing-phase|inspect|177705|134\nSIZED-FOURIER|measured-qpe-missing-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-phase|inspect|235695|134\nSIZED-FOURIER|measured-qpe-wrong-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-h|inspect|235695|134\nSIZED-FOURIER|measured-qpe-wrong-h|contract\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.55s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.10s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+      "forward": {
+        "1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.2412670766236366e-16,
+          "executed_gates": 1
+        },
+        "2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "inverse": {
+        "1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.1443916996305594e-16,
+          "executed_gates": 1
+        },
+        "2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "measured_component_semantics": {
+        "measured-qpe-fourier-1": {
+          "basis_columns": 2,
+          "reference_columns": 2,
+          "maximum_error": 1.2412670766236366e-16,
+          "executed_gates": 1
+        },
+        "measured-qpe-fourier-2": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 2.5114115397022025e-16,
+          "executed_gates": 3
+        },
+        "measured-qpe-fourier-3": {
+          "basis_columns": 8,
+          "reference_columns": 2,
+          "maximum_error": 1.3743915342634358e-15,
+          "executed_gates": 7
+        }
+      },
+      "named_qpe_instrument_checked": false,
+      "roundtrip_errors": {
+        "1": 1.2412670766236366e-16,
+        "2": 2.7755575615628914e-16,
+        "3": 2.0014830212433605e-16
+      },
+      "semantic_faults": {
+        "missing-reversal": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 1.0,
+          "executed_gates": 3
+        },
+        "missing-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865475,
+          "executed_gates": 2
+        },
+        "wrong-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "wrong-h": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.5204164998665333,
+          "executed_gates": 3
+        },
+        "inverse-changed-dependency": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "measured-qpe-missing-reversal": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 1.0,
+          "executed_gates": 3
+        },
+        "measured-qpe-missing-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865475,
+          "executed_gates": 2
+        },
+        "measured-qpe-wrong-phase": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.7071067811865477,
+          "executed_gates": 3
+        },
+        "measured-qpe-wrong-h": {
+          "basis_columns": 4,
+          "reference_columns": 2,
+          "maximum_error": 0.5204164998665333,
+          "executed_gates": 3
+        }
+      },
+      "shared_call": {
+        "basis_columns": 8,
+        "finite_leaves": 3,
+        "executed_gates": 14
+      },
+      "framed_call": {
+        "basis_columns": 16,
+        "entangled_vectors": 1,
+        "maximum_error": 2.5114115397022025e-16
+      }
+    },
+    "compaction": {
+      "command": [
+        "python3",
+        "scripts/test_compact_sized_graph.py"
+      ],
+      "exit_code": 0,
+      "cases": 11,
+      "stdout_stderr": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.017s\n\nOK\n"
+    },
+    "qpe_2_4_root": {
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_fourier_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "stdout_stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n\nrunning 1 test\nSIZED-FOURIER|qpe24|inspect|1718740|536\nSIZED-FOURIER|qpe24|ok|1910868|824\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.12s\n\n",
+      "request_origin": "frozen baseline proposal; not a named QPE contract",
+      "graph_sha256": "7a89773f37bf7bcdc29ee8df416ec64896636dd4d10d469fdee39e9daf4320fe",
+      "request_sha256": "981a4e0d1b5d667aed30055ebe90fd47710c972771f3cbfa9db8c6ee34128bcb"
+    }
+  },
+  "accounting_review": {
+    "root": "The initial row charge still pays for outer port/reference/body-size traversal before nested length counts are read. equalityFields counts owner/value IDs, array headers, every axis, and a tag plus at most one parameter per basis atom. aligned still performs complete interface/body/child equality. It does not run sideValid or uniqueness, so quadratic sideCharge is not needed for that comparison. The minimum with the old charge retains its budget upper bound, including the empty-frame equality case. Computing both costs adds only length-only outer scans, covered by the initial and conservative factor16 allowances; there is no second semantic matching attempt on fallback.",
+    "preparation": "Keep headerCharge, factor64 and the original (1+fresh.size) multiplier for request/fresh/output comparisons. Each actual definition contributes its complete input/output sideCharge once to the summed steps term; project and step inspect that definition a bounded number of times. All frame typing, uniqueness, disjointness, effect, initialization, ordering and header equality checks still run. Avoid multiplying this already summed per-definition work by all unrelated fresh allocations.",
+    "readout": "Keep headerCharge, factor64 and (1+owners.size+pack.size) on request/output work. That multiplier still covers owner lookup, output membership filtering, owner uniqueness, and ordered pack comparisons. Each definition is projected and checked once by the corresponding pass, with its complete input/output frame validity and uniqueness charged by the summed steps term. Every original valid/step predicate is unchanged.",
+    "budget_compatibility": "Private min-le-original theorems ensure none of these charges exceeds its former value. Native fixtures additionally check the former accepted threshold, exact new threshold and threshold-minus-one. These are conservative checker-work accounting and acceptance-preservation facts, not a CPU-time or Resource Safety Theorem.",
+    "independence": "Producer rewrites remain untrusted and separately tested on all small columns with phase/reference coefficients. Kernel acceptance, independent exact finite obligations and root request checking remain required. The baseline source request is recorded only for mutation regression, not as independent named QPE evidence."
+  },
+  "verification_scope": {
+    "small_system_only": true,
+    "maximum_graph_qubits_checked": 6,
+    "protected_inverse_operands_preserved": true,
+    "budgets_increased": false,
+    "validity_predicates_changed": false,
+    "public_theorem_signatures_changed": false,
+    "external_schemas_enabled": false,
+    "combined_schema_and_baseline_refresh": "performed separately by root task; not claimed by this report"
+  }
+}

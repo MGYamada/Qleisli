@@ -4,6 +4,28 @@ use super::*;
 use crate::contract::MAX_CONTRACT_BITS;
 use crate::contract::exact::{Exact, Matrix};
 
+/// A candidate must be exactly `count` serial copies of the bound body,
+/// including controls, scalar phases, axis order and issued evidence identity.
+/// Checking copies does not depend on the coefficient growth of the product.
+pub(super) fn check_repeated_steps(
+    body: &[CircuitStep],
+    candidate: &[CircuitStep],
+    count: u16,
+) -> Result<(), crate::contract::ContractError> {
+    let copies = usize::from(count);
+    if body.len().checked_mul(copies) != Some(candidate.len()) {
+        return Err(crate::contract::ContractError::EquationMismatch);
+    }
+    if !body.is_empty()
+        && candidate
+            .chunks_exact(body.len())
+            .any(|chunk| chunk != body)
+    {
+        return Err(crate::contract::ContractError::EquationMismatch);
+    }
+    Ok(())
+}
+
 impl Lowerer<'_, '_> {
     pub(super) fn target_meaning(
         &mut self,
@@ -136,5 +158,47 @@ impl Lowerer<'_, '_> {
         Matrix::new(2 * d, 2 * d, entries)
             .map(Some)
             .map_err(|e| self.compiler.op_error(module, span, e.into()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn repeated_candidates_reject_changed_phase_control_axis_and_copy_count() {
+        let body = vec![CircuitStep {
+            controls: vec![BitControl {
+                index: 0,
+                when_one: true,
+            }],
+            action: CircuitAction::Monomial {
+                indices: vec![1],
+                permutation: vec![0, 1],
+                phases: vec![0, 1],
+            },
+        }];
+        let candidate: Vec<_> = (0..3).flat_map(|_| body.iter().cloned()).collect();
+        assert!(check_repeated_steps(&body, &candidate, 3).is_ok());
+        assert!(check_repeated_steps(&body, &candidate, 2).is_err());
+        for fault in 0..3 {
+            let mut bad = candidate.clone();
+            match fault {
+                0 => bad[1].controls[0].when_one = false,
+                1 => {
+                    if let CircuitAction::Monomial { phases, .. } = &mut bad[1].action {
+                        phases[1] = 7;
+                    }
+                }
+                _ => {
+                    if let CircuitAction::Monomial { indices, .. } = &mut bad[1].action {
+                        indices[0] = 2;
+                    }
+                }
+            }
+            assert!(check_repeated_steps(&body, &bad, 3).is_err());
+        }
+        assert!(check_repeated_steps(&body, &[], 0).is_ok());
+        assert!(check_repeated_steps(&[], &[], u16::MAX).is_ok());
+        assert!(check_repeated_steps(&[], &candidate, 0).is_err());
     }
 }

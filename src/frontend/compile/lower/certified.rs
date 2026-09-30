@@ -173,7 +173,13 @@ impl Lowerer<'_, '_> {
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
-        let input = inner.input(&joint, &mut quantum_inputs, &mut classical_inputs);
+        let input = inner.input(
+            &joint,
+            module,
+            body.span,
+            &mut quantum_inputs,
+            &mut classical_inputs,
+        )?;
         let Value::Pair(data, ancilla) =
             inner.sealed(module, body.span, "std::quantum", "split", vec![input])?
         else {

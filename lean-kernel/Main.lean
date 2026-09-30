@@ -391,10 +391,128 @@ def runHierarchyFourier : IO UInt32 := do
     for request in checked.binding.body.requests do IO.println request.leafIndex
     return 0
 
+private def readoutFailure (code : String) : IO UInt32 := do
+  IO.println ("qleisli.readout-result 1\nerror\n" ++ code)
+  return 1
+
+/-- Check only the supplied readout slice. This result cannot stand in for
+verification of a preceding circuit, source, initialization or QPE request. -/
+def runReadout : IO UInt32 := do
+  let input ← try
+      readHierarchyBytes (← IO.getStdin) 1000001 ByteArray.empty
+    catch _ => pure (.error .io)
+  let input ← match input with
+    | .error .limit => return (← readoutFailure "limit")
+    | .error _ => return (← readoutFailure "format")
+    | .ok bytes => pure bytes
+  let packet ← match Protocol.Hierarchical.parseReadout input with
+    | .error .syntax => return (← readoutFailure "format")
+    | .error .limit => return (← readoutFailure "limit")
+    | .ok packet => pure packet
+  match Hierarchical.Readout.check packet.request packet.packet packet.budget with
+  | .error error => readoutFailure (match error with
+      | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
+  | .ok checked =>
+    IO.println "qleisli.readout-result 1\nchecked"
+    IO.println checked.visits
+    return 0
+
+private def preparationFailure (code : String) : IO UInt32 := do
+  IO.println ("qleisli.preparation-result 1\nerror\n" ++ code)
+  return 1
+
+def runPreparation : IO UInt32 := do
+  let input ← try
+      readHierarchyBytes (← IO.getStdin) 1000001 ByteArray.empty
+    catch _ => pure (.error .io)
+  let input ← match input with
+    | .error .limit => return (← preparationFailure "limit")
+    | .error _ => return (← preparationFailure "format")
+    | .ok bytes => pure bytes
+  let packet ← match Protocol.Hierarchical.parsePreparation input with
+    | .error .syntax => return (← preparationFailure "format")
+    | .error .limit => return (← preparationFailure "limit")
+    | .ok packet => pure packet
+  match Hierarchical.Preparation.check packet.request packet.packet packet.budget with
+  | .error error => preparationFailure (match error with
+      | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
+  | .ok checked =>
+    IO.println "qleisli.preparation-result 1\nchecked"
+    IO.println checked.visits
+    return 0
+
+private def instrumentFailure (code : String) : IO UInt32 := do
+  IO.println ("qleisli.instrument-pending 1\nerror\n" ++ code)
+  return 1
+
+/-- Fresh composition of initialization, the independently requested pure root
+and readout. Every finite equation remains a mandatory host obligation. -/
+def runInstrument : IO UInt32 := do
+  let input ← try
+      readHierarchyBytes (← IO.getStdin) 1000001 ByteArray.empty
+    catch _ => pure (.error .io)
+  let input ← match input with
+    | .error .limit => return (← instrumentFailure "limit")
+    | .error _ => return (← instrumentFailure "format")
+    | .ok bytes => pure bytes
+  let packet ← match Protocol.Hierarchical.parseInstrument input with
+    | .error .syntax => return (← instrumentFailure "format")
+    | .error .limit => return (← instrumentFailure "limit")
+    | .ok packet => pure packet
+  match Hierarchical.Instrument.checkAll packet.request packet.packet with
+  | .error error => instrumentFailure (match error.kind with
+      | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
+  | .ok pending =>
+    IO.println "qleisli.instrument-pending 1\npending"
+    IO.println pending.visits
+    IO.println pending.circuit.artifact.state.requests.size
+    for request in pending.circuit.artifact.state.requests do IO.println request.index
+    IO.println pending.circuit.binding.requests.length
+    for index in pending.circuit.binding.requests do IO.println index
+    return 0
+
+private def qpeInstrumentFailure (code : String) : IO UInt32 := do
+  IO.println ("qleisli.qpe-instrument-pending 1\nerror\n" ++ code)
+  return 1
+
+/-- Every pure finite equation, independent provider pair and exact H role is
+returned for fresh host reconstruction. This mode enables no external schema. -/
+def runQpeInstrument : IO UInt32 := do
+  let input ← try
+      readHierarchyBytes (← IO.getStdin) 1000001 ByteArray.empty
+    catch _ => pure (.error .io)
+  let input ← match input with
+    | .error .limit => return (← qpeInstrumentFailure "limit")
+    | .error _ => return (← qpeInstrumentFailure "format")
+    | .ok bytes => pure bytes
+  let packet ← match Protocol.Hierarchical.parseQpeInstrument input with
+    | .error .syntax => return (← qpeInstrumentFailure "format")
+    | .error .limit => return (← qpeInstrumentFailure "limit")
+    | .ok packet => pure packet
+  match Hierarchical.QpeInstrument.checkAll packet.request packet.packet with
+  | .error error => qpeInstrumentFailure (match error.kind with
+      | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
+  | .ok pending =>
+    IO.println "qleisli.qpe-instrument-pending 1\npending"
+    IO.println pending.visits
+    IO.println pending.circuit.artifact.state.requests.size
+    for request in pending.circuit.artifact.state.requests do IO.println request.index
+    IO.println pending.circuit.provider.requests.length
+    for index in pending.circuit.provider.requests do IO.println index
+    let hadamards := ((packet.packet.circuit.candidate.hadamards.toList.map (·.index)) ++
+      pending.circuit.schedule.inverse.fourier.body.requests.map (·.leafIndex)).eraseDups
+    IO.println hadamards.length
+    for index in hadamards do IO.println index
+    return 0
+
 end QleisliKernel.Cli
 
 def main (args : List String) : IO UInt32 :=
   match args with
+  | ["--qpe-instrument-pending"] => QleisliKernel.Cli.runQpeInstrument
+  | ["--instrument-pending"] => QleisliKernel.Cli.runInstrument
+  | ["--readout-check"] => QleisliKernel.Cli.runReadout
+  | ["--preparation-check"] => QleisliKernel.Cli.runPreparation
   | ["--hierarchy-fourier-pending"] => QleisliKernel.Cli.runHierarchyFourier
   | ["--hierarchy-request-pending"] => QleisliKernel.Cli.runHierarchyRequest
   | ["--hierarchy-pending"] => QleisliKernel.Cli.runHierarchy

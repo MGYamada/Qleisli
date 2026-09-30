@@ -8,6 +8,38 @@ This repository is design-first. Before working, read [README](README.md),
 [ROADMAP](ROADMAP.md), and [quantum-language requirements](docs/quantum-language-requirements.md).
 Consult the relevant drafts. The user's latest instructions take precedence.
 
+## docs/ cleanup boundary at v0.3.0
+
+**User decision, 2026-09-30: aggressively retire pre-v0.3.0 material under
+`docs/`, including all v0.2.x and earlier files, and write the v0.3.0
+documentation from scratch.** Keep the active v0.2.x goals and verification
+migration plan usable until that boundary. Do not empty `docs/` while those
+goals are still current.
+
+Delete obsolete plans, completed reports and historical narratives now; do not
+wait for a Reference migration. At v0.3.0, remove the remaining legacy documents
+and write a new account from adopted decisions, actual code, proofs and examples.
+Do not archive the old tree elsewhere or copy it into the new Reference.
+Historical lookup uses Git history and published tags. Repair links and CI
+checks when removing files; do not retain redirect stubs.
+
+The enduring direction is the three theorems and six v1 algorithm goals in
+[README](README.md#project-goals). Keep executable source, counterexamples,
+validation artifacts, proof code and required license/provenance notices outside
+`docs/` intact. Earlier requirements to preserve historical documentation in
+the working tree are superseded. Track cleanup in GitHub Issues; no duplicate
+backlog record is required.
+
+## Current v0.2.x working references
+
+The [0.2.1 review response](docs/releases/v0.2.2.md) records compatible 0.2.2
+repairs and the remaining v0.3 domain/tuple decisions. Keep reference semantics
+independent of acceptance modules, following the
+[dated specification-review policy](TRUST_BOUNDARY.md#reference-specification-review-2026-09-30).
+The generated current overview and detailed rule inventory
+are separate views of `docs/project-status.json`; update the source and regenerate
+both. These temporary v0.2.x views also expire at the cleanup boundary.
+
 **When uncertain about type or ownership discipline, follow Rust.** This is
 the user's adopted default for design decisions, including structural type
 equality, tuple shape, moves, bindings and scopes. Follow the
@@ -18,9 +50,21 @@ in particular, retain quantum linearity, explicit discard and proven clean
 release. Record differences explicitly instead of inventing an implicit rule.
 Rust features become Qleisli APIs only through specified and tested extensions.
 
+**Until v0.5.0, do not expand `stdlib` as a general rule. Add algorithms to
+`corpus`.**
+From v0.5.0, grow `stdlib` as a mathlib-style open-source library effort.
+Follow [STDLIB.md](STDLIB.md) for contribution conventions, the short contract
+template and QFT/adder/phase-oracle reference contracts. Fix composable meaning,
+phase, encoding, ownership, scratch, approximation and resource scope before
+comparing implementations. Keep source checking, tests, actual-IR proofs,
+source preservation and specification review separate. The contract-document
+linter checks form/links only; `qlippy` is a future tooling role, not a current
+executable or semantic authority. General borrowing syntax remains a separate
+type-system decision. Existing library APIs and proof/release gates are unchanged.
+
 When adding algorithm components, read the [corpus](docs/algorithm-corpus.md)
 and [routine contracts](docs/algorithm-routines.md). For standard-library work,
-read the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
+read [STDLIB.md](STDLIB.md), the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
 record each public API's contract, verification state and adoption criteria.
 Follow the [adopted library goal](docs/stdlib-roadmap.md#adopted-library-goal):
 a BLAS/LAPACK-like foundation for quantum computing integrating reusable
@@ -36,7 +80,7 @@ implemented inverse/control/repetition scope. Planned notation is not an API.
 release record. Distinguish version selection, design adoption, implementation,
 validation, proof, tagging and publication. Preserve the finite contract
 foundation and follow the [acceptance criteria](docs/release-milestones.md),
-[conformance history](docs/specification-status.md), [language v0](docs/language-spec.md)
+[conformance history](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md), [language v0](docs/language-spec.md)
 and [grammar](docs/syntax-v0.md). General Rust adequacy and soundness proofs are open.
 
 **North star: make the language people use to think about quantum algorithms
@@ -60,23 +104,41 @@ An authoring exercise is not a measured model benchmark or an algorithm proof.
 For new authoring/repair studies, follow the [session record procedure](tests/fixtures/authoring_sessions/README.md):
 save the first source before checking, append real diagnostics and revisions,
 and distinguish informed/curated work from controlled model evaluation.
-Track unresolved friction in a GitHub Issue or the
-[v0.2.0 backlog](docs/v0.2.0-backlog.md), with concrete source/design evidence,
+Track unresolved friction in a GitHub Issue, with concrete source/design evidence,
 the obligation to remove, and a checking/acceptance experiment. **When a GitHub
 Issue is created or already tracks the work, no backlog entry, backlog update
 or backlog ID is required.** Use the Issue as the tracking record; do not require
-duplicate records. For work tracked only in the backlog, reuse stable IDs and
-retain resolution links. Preserve existing backlog history. Neither tracking
-method selects a release or adopts syntax. The current development version is
-0.2.1. Follow the
-[continuation plan](docs/v0.2.1-plan.md) and
-[development record](docs/releases/v0.2.1.md). The published foundation and its
-validation remain in the [0.2.0 record](docs/releases/v0.2.0.md). The finite B019 closure and
-0.1.9 publication history remain in its [record](docs/releases/v0.1.9.md).
+duplicate records. Do not recreate the retired backlog. An Issue does not
+select a release or adopt syntax. The current development version is
+0.2.2, selected on 2026-09-30. Follow the
+[continuation plan](docs/v0.2.2-plan.md),
+[development record](docs/releases/v0.2.2.md) and
+[release procedure](docs/crates-io-release.md). The latest published release is
+[0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md); selecting the next version does not complete
+feature gates, lift the heavy-work pause or perform publication.
+The published foundation and its
+validation remain in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The finite B019 closure and
+0.1.9 publication history remain in its [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md).
 The 2026-09-30 user decision keeps completed corpus experiments/review fixes
-and bounded Rust/Python/OpenQASM/QIR connections in [0.2.1](docs/v0.2.1-plan.md).
+and bounded Rust/Python/OpenQASM/QIR connections in [0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md).
 Remaining production hierarchy, sized source/shared measured QPE and
 execution/proof/H1–H5 integration move to [0.2.2](docs/v0.2.2-plan.md).
+The later 2026-09-30 user instruction stages verification implementation across
+[0.2.2–0.2.9](docs/verification-migration-v0.2.md), superseding the K1/0.3.0 and
+K2/0.4.0 schedule and the all-in-0.2.2 heavy assignment. Follow VM-22–VM-29:
+inventory/boundary contracts, exact/finite evidence, pure/observing raw IR,
+hierarchy/root closure and production dual integration. Shared-QPE feature work
+retains its dependent source/instrument and R14/H1–H5 gates across the continuation.
+0.2.9 targets complete Lean implementation and explicitly selected dual checking;
+formal Lean-only authority still requires v0.5.0 S05-C1–C5. Preserve current
+Rust-only installation/public APIs in PATCH, Mathlib-free acceptance and
+small-system validation. The user's later 2026-09-30 instruction authorizes VM-22;
+follow its [frozen inventory and comparison baseline](tests/fixtures/verification_v022/README.md).
+The user's subsequent 2026-09-30 request resumes the unfinished v0.2.1 feature
+track: shared measured QPE, sized source, production hierarchy verification and
+execution, and classical-result clients. Complete its independent binding,
+instrument/reference and small-system integration gates; VM-22 completion alone
+does not complete that goal. The staged VM-23–VM-29 replacement remains distinct.
 The original corpus goal is deferred, not completed. Keep those feature gates pending, existing component
 proofs audited and external schemas disabled until their binding gates pass.
 
@@ -100,9 +162,9 @@ do not newly generate or check maximum-size corpus cases. Maximum-size success
 is no longer a completion prerequisite for this continuation. Preserve earlier
 results and failures as history; do not claim untested capacity. Exact evidence,
 phase/reference checks, ownership, compatibility and production integration
-remain required. Follow the [revised scope](docs/v0.2.1-plan.md#remaining-validation-scope-small-qubit-systems-2026-09-30).
+remain required. Follow the [revised scope](docs/v0.2.2-plan.md#remaining-validation-scope-small-qubit-systems-2026-09-30).
 
-Follow the [decision dossier](docs/decisions/2026-09-27-v1-path.md) and
+Follow the adopted decisions in these guidelines and the
 [version-independent M0–M5 plan](docs/v0x-roadmap.md). In 0.y.z with y > 0,
 compatible fixes and features use PATCH; breaking changes use MINOR. An audit
 does not itself require a release. Fixed-width M1 may use existing finite
@@ -233,8 +295,8 @@ uses it. Library availability is not a proof of Qleisli semantics.
 
 Update current state through `docs/project-status.json` and the manifests;
 generate tables with `python3 scripts/check_docs.py --write-status`. Preserve
-historical adoption and validation results. Record design decisions in the
-dossier and executed results in conformance/release records.
+historical results beside their fixtures. Record new design decisions in their
+GitHub Issues; the current release record is a temporary v0.2.x summary.
 
 ## Licensing
 
@@ -261,6 +323,16 @@ dossier and executed results in conformance/release records.
 
 [Versioning](docs/versioning.md) is authoritative.
 
+**Track future breaking changes in a GitHub Issue targeting a `0.x.0` release.**
+Before implementing a breaking change, create or reuse an Issue and state the
+intended `0.x.0` target, affected public contracts, reason for the break,
+migration path and acceptance/validation criteria. Keep these changes out of
+compatible PATCH work. Reuse existing Issues rather than duplicating them.
+**For any work tracked in a GitHub Issue, no backlog entry, backlog update
+or backlog ID is required.** This includes breaking changes. Use the Issue
+as the tracking record; do not require duplicate backlog records. Filing an
+Issue does not adopt the proposed semantics or authorize a release.
+
 The 2026-09-30 user decision names both the first crates.io package and Rust
 import `qleisli`, replacing `qleisli-core` / `qleisli_core` at 0.2.1. This is an
 explicit, narrow pre-registry identity exception; document the
@@ -272,15 +344,15 @@ the registry hold and authorizes `cargo publish` outside the sandbox after
 rechecking. Keep validation, upload success, tagging and hosted releases distinct.
 The verified `v0.2.1` source tag, crates.io package and GitHub Release were
 published on 2026-09-30; registry publication followed account email verification. Follow the
-[publication record](docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30).
+[publication record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30).
 The published tag/artifact are immutable; later result-record commits do not
 replace their source identity.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. The user selected development version 0.1.9 on
-2026-09-28 for compatible review fixes; follow its [record](docs/releases/v0.1.9.md).
+2026-09-28 for compatible review fixes; follow its [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md).
 Preserve the historical 0.1.8 authoring decision and public Rust AST migration
-in the [0.1.8 record](docs/releases/v0.1.8.md). Type/size
+in the [0.1.8 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md). Type/size
 parameters and cross-interface QPE reuse were initially deferred. The user
 subsequently adopted shared QPE over `Bits<n>`, then moved its remaining work
 from 0.2.0 to the 0.2.1 target on 2026-09-29. Preserve compatibility for that
@@ -295,7 +367,7 @@ The user explicitly plans **Qleisli type-system specification in the v0.3.0
 breaking-change release** (2026-09-29); follow the
 [release plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 Concrete rules and public migrations remain to be specified. Current finite
-type rules and compatible 0.2.1 scope stay in force. **QLT implementation is
+type rules and compatible 0.2.2 scope stay in force. **QLT implementation is
 deferred to v0.4.0 or later**, after that type-system work; preserve its existing
 design/source records without treating them as implemented APIs.
 

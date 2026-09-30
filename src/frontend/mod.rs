@@ -5,8 +5,10 @@
 
 pub mod ast;
 pub mod compile;
+pub mod core;
 pub mod diagnostic;
 pub mod documentation;
 pub mod lexer;
 pub mod parser;
 pub mod project;
+pub mod sized;

@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "-c",
+    "import sys\nfrom pathlib import Path\nsys.path.insert(0, 'scripts')\nfrom compile_sized_instrument import InstrumentParser\nroot = Path('tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02')\nfor path in sorted(root.glob('*.qli')):\n    InstrumentParser(path.read_text(), modules=['initialization', 'measurement', 'readout', 'estimation']).parse()\n    print(f'{path.name}: parsed with the current experimental instrument parser')\nprint('Parser replay only; no lowering, native acceptance or source-preservation claim.')\n"
+  ],
+  "recorded_utc": "2026-09-30T08:39:37.134720+00:00",
+  "exit_code": 0,
+  "transcript": "initialization.qli: parsed with the current experimental instrument parser\nmeasurement.qli: parsed with the current experimental instrument parser\nreadout.qli: parsed with the current experimental instrument parser\nParser replay only; no lowering, native acceptance or source-preservation claim.\n"
+}

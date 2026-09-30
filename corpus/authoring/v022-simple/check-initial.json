@@ -1,0 +1,78 @@
+{
+  "recorded_utc": "2026-09-29T19:13:40.910297+00:00",
+  "compiler_sha256": "3b43698f5a1b9562cadac61e31496e4382073d25931155789ebc172d7be33e14",
+  "results": [
+    {
+      "project": "pennylane_demos/phase_kickback1",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/phase_kickback1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rx_quarter",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/rx_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/bitwise_not2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/bitwise_not2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/xor_constant2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/xor_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/fredkin3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/fredkin3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/swap2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/swap2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

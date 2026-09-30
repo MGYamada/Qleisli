@@ -13,7 +13,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 
-from compile_sized_corpus import Circuit, SourceError, adjoint_artifact, compile_source, port, text
+from compile_sized_corpus import Circuit, Operation, Producer, SourceError, adjoint_artifact, compile_source, port, text
+from compact_sized_graph import artifact as circuit_artifact, remap
 from test_hierarchical_qft import side
 from test_sized_corpus import circuit_action, difference
 
@@ -72,6 +73,42 @@ def probes(artifact, width, inverse=False):
     return dict(basis_columns=size, reference_columns=2, maximum_error=worst, executed_gates=gate_count)
 
 
+def measured_inverse_operand(modules, width):
+    """Recheck the actual inverse operand, extracted without rewriting bodies.
+
+    This component test does not certify the surrounding QPE instrument. Its
+    request is the independent Fourier formula, never copied proposed meanings.
+    """
+    from compile_sized_instrument import compile_instrument
+    proposal = compile_instrument(modules,'measurement::qpe',dict(n=1,m=width),
+        {'U':Operation('evolution::evolve',(1,1,3))})
+    graph = proposal['graph']
+    def register(side):
+        return (not side['classical'] and len(side['quantum']) == 1 and
+                side['quantum'][0]['basis'] == [dict(tag='bits',width=width)])
+    inverses = [d['body']['definition'] for d in graph['definitions']
+        if d['body']['tag'] == 'inverse' and all(register(d['interface'][s]) for s in ('inputs','outputs'))]
+    assert len(inverses) == 1, 'this source fixture has exactly one inverse on the complete phase register'
+    entry = inverses[0]
+    live,pending = set(),[entry]
+    while pending:
+        index = pending.pop()
+        if index not in live:
+            live.add(index)
+            pending.extend(graph['proofs'][index]['premises'])
+    c,indices = Producer(),{}
+    for index in sorted(live):
+        definition,proof = graph['definitions'][index],graph['proofs'][index]
+        interface = definition['interface']
+        indices[index] = c.add(interface['inputs']['quantum'],interface['outputs']['quantum'],
+            remap(definition['body'],indices),remap(graph['meanings'][index]['body'],indices),
+            proof['rule']['tag'],[indices[i] for i in proof['premises']])
+    return canonical_boundary(circuit_artifact(c,indices[entry])),dict(
+        graph_sha256=hashlib.sha256(text(graph).encode()).hexdigest(),
+        definitions=len(graph['definitions']),inverse_operand=entry,
+        retained_definitions=sorted(live))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--record', type=Path)
@@ -122,6 +159,22 @@ def main():
         bindings[key] = (2, 'contract')
     artifacts['inverse-changed-dependency'] = compile_source(inverse_source, 'inverse_fourier', {'n': 2},
         modules={'fourier': fault_sources['wrong-phase'], 'inverse': inverse_source})
+
+    # The measured producer uses a second graph-compaction pass. It must keep
+    # the actual inverse operand inspectable, including its recursive base.
+    from test_sized_instrument import sources as measured_sources
+    measured, measured_components = measured_sources(), {}
+    for width in (1,2,3):
+        key = f'measured-qpe-fourier-{width}'
+        artifacts[key],measured_components[key] = measured_inverse_operand(measured,width)
+        bindings[key] = (width,'ok')
+    for name,changed in fault_sources.items():
+        key = 'measured-qpe-'+name
+        artifacts[key],measured_components[key] = measured_inverse_operand(measured | {'fourier':changed},2)
+        bindings[key] = (2,'contract')
+    renamed = measured | {'fourier':source.replace('fn fourier','fn unrelated'),
+        'estimation':measured['estimation'].replace('fourier::fourier','fourier::unrelated').replace('fourier[m]','unrelated[m]')}
+    assert measured_inverse_operand(renamed,2)[0] == artifacts['measured-qpe-fourier-2']
 
     rejects = [
         ('zero-width', source, 0), ('oversized-register', source, 9),
@@ -185,6 +238,11 @@ def main():
         kernel_sha256=hashlib.sha256(kernel.read_bytes()).hexdigest(),
         source_sha256=hashlib.sha256(source.encode()).hexdigest(),
         inverse_source_sha256=hashlib.sha256(inverse_source.encode()).hexdigest(),
+        measured_components=measured_components,
+        measured_source_sha256={name:hashlib.sha256(value.encode()).hexdigest() for name,value in measured.items()},
+        implementation_sha256={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in (
+            'scripts/compile_sized_corpus.py','scripts/compile_sized_instrument.py',
+            'scripts/compact_sized_graph.py','scripts/test_sized_qft.py')},
         source_rejections=source_rejections,
         artifacts={key: dict(sha256=hashlib.sha256(text(a).encode()).hexdigest(),
             bytes=len(text(a).encode()), definitions=len(a['definitions'])) for key, a in artifacts.items()},
@@ -221,6 +279,10 @@ def main():
         print(f'Width {width}: all forward/inverse columns and reference probes passed.', flush=True)
     faults = {key: probes(artifacts[key], 2) for key in fault_sources}
     faults['inverse-changed-dependency'] = probes(artifacts['inverse-changed-dependency'], 2, True)
+    measured_semantics = {f'measured-qpe-fourier-{w}':probes(artifacts[f'measured-qpe-fourier-{w}'],w)
+        for w in (1,2,3)}
+    assert all(row['maximum_error'] < 1e-10 for row in measured_semantics.values())
+    faults.update({'measured-qpe-'+key:probes(artifacts['measured-qpe-'+key],2) for key in fault_sources})
     assert all(row['maximum_error'] > 0.1 for row in faults.values()), faults
     twice, repeated_gates = circuit_action(artifacts[shared_key])
     for label in range(1 << shared_width):
@@ -239,6 +301,7 @@ def main():
     frame_error = max(frame_error, difference(framed(entangled), wanted))
     assert frame_error < 1e-10
     report.update(status='passed-experimental-source-path', forward=semantic, inverse=inverses,
+                  measured_component_semantics=measured_semantics, named_qpe_instrument_checked=False,
                   roundtrip_errors=roundtrips, semantic_faults=faults,
                   shared_call=dict(basis_columns=1 << shared_width, finite_leaves=shared_width, executed_gates=repeated_gates),
                   framed_call=dict(basis_columns=16, entangled_vectors=1, maximum_error=frame_error))

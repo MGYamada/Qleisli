@@ -179,7 +179,15 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
     let source = include_str!("fixtures/review_v020/expansion_limit/main.qli");
     assert!(source[error.span.start..error.span.end].contains("fn main"));
     check_project(&root.join("repeat_300")).unwrap();
-    let error = check_project(&root.join("repeat_1000")).unwrap_err();
+    // Historical repeat failure is repaired by structural copy validation.
+    check_project(&root.join("repeat_1000")).unwrap();
+    let explicit = SourceRoot::new(
+        "use std::quantum::{h,t,init0}; use std::observe::measure_z;
+         unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}
+         unitary fn long(q:Q<Bit>)->Q<Bit>{repeat_static(512,ht,q)}
+         observe fn main()->CBit{measure_z(apply_contract(long,long,init0()))}",
+    );
+    let error = check_project(&explicit.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit);
     assert!(
         error

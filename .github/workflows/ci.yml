@@ -32,6 +32,12 @@ jobs:
       - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
       - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
       - run: python3 scripts/test_cli_json.py target/debug/qleisli
+      - name: Seeded source differential checks with an independent complex oracle
+        run: |
+          python3 scripts/test_test_qli_differential.py
+          python3 scripts/test_qli_differential.py target/debug/qleisli --cases=96
+      - name: Frozen VM-22 finite/source comparison inputs
+        run: python3 scripts/test_verification_baseline.py target/debug/qleisli
       - run: python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
       - run: cargo +1.98.1 clippy --all-targets -- -D warnings
       - run: cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check
@@ -97,8 +103,12 @@ jobs:
         run: python3 scripts/check_schema_registry.py
   lean-kernel:
     runs-on: ubuntu-latest
+    env:
+      RUSTUP_TOOLCHAIN: 1.98.1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install the tested Rust toolchain for native host comparisons
+        run: rustup toolchain install 1.98.1 --profile minimal
       - name: Reject kernel/backend source escape hatches and unaudited imports
         run: python3 scripts/check_lean_kernel.py
       - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
@@ -137,6 +147,8 @@ jobs:
         run: python3 scripts/test_lean_interference.py
       - name: Symbolic QFT paths and independent Fourier coefficients
         run: python3 scripts/test_lean_qft.py
+      - name: Small QFT semantic-path matcher and nonliteral candidates
+        run: python3 scripts/test_lean_qft.py --small --semantic
       - name: Typed QFT graph binding and independent paths
         run: python3 scripts/test_lean_qft_graph.py
       - name: QPE plans and independent residual instruments
@@ -155,8 +167,40 @@ jobs:
         run: python3 scripts/test_hierarchical_structural.py
       - name: Canonical reshape metadata and independent tree encoding
         run: python3 scripts/test_lean_reshape.py
+      - name: Actual readout nodes, classical assembly and residual/reference branches
+        run: python3 scripts/test_hierarchical_readout.py
+      - name: Actual fresh-zero nodes and retained reference coefficients
+        run: python3 scripts/test_hierarchical_preparation.py
+      - name: Composed instrument boundaries and retained finite obligations
+        run: python3 scripts/test_hierarchical_instrument.py
+      - name: Composed instrument transport, finite discharge and small source clients
+        run: python3 scripts/test_instrument_host.py
+      - name: Checked hierarchy execution and full complex measurement branches
+        run: python3 scripts/test_hierarchical_execution.py
+      - name: Source graph compaction preserves phase, sharing and empty owners
+        run: python3 scripts/test_compact_sized_graph.py
+      - name: Ordinary measured QPE and classical-result clients on small systems
+        run: python3 scripts/test_sized_instrument.py
+      - name: Shared QPE source through structural readout on small systems
+        run: python3 scripts/test_sized_qpe_readout.py
       - name: Bind controlled powers to actual bodies and provider obligations
         run: python3 scripts/test_hierarchical_power.py
+      - name: Actual source controlled powers through checked owner renames
+        run: python3 scripts/test_hierarchical_routed_power.py
+      - name: Actual shared circuit routes and ordered phase-sensitive atom traces
+        run: python3 scripts/test_hierarchical_circuit_trace.py
+      - name: Check actual QPE schedule components
+        run: python3 scripts/test_hierarchical_qpe_schedule.py
+      - name: Check QPE root and provider binding
+        run: python3 scripts/test_hierarchical_qpe_root.py
+      - name: Check actual QPE initialization and ordered readout
+        run: python3 scripts/test_hierarchical_qpe_instrument.py
+      - name: Native checking of Rust sized-source proposals
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_source rust_source_proposals -- --ignored
+      - name: Sized-source CLI checking, execution and sampling
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_cli sized_cli_native -- --ignored
+      - name: Rust source to named QPE with independent phase and reference probes
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --lib native_named_qpe_from_rust_source -- --ignored
       - name: Check actual provider derivations from an empty proof cache
         run: python3 scripts/test_hierarchical_derivation.py
       - name: Shared call expansion, typed adapters and independent phase oracle
@@ -167,12 +211,16 @@ jobs:
         run: python3 scripts/test_hierarchical_conditional.py
       - name: Independently requested hierarchy roots and untrusted pair proposals
         run: python3 scripts/test_hierarchical_request.py
-      - name: Install the tested Rust toolchain
-        run: rustup toolchain install 1.98.1 --profile minimal
       - name: Fresh hierarchy transport and finite reconstruction
         env:
           RUSTUP_TOOLCHAIN: 1.98.1
         run: python3 scripts/test_hierarchical_host.py
+      - name: Frozen VM-22 comparisons with the experimental native word component
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: |
+          cargo build --bin qleisli
+          python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel
       - name: One-bit Fourier bases and fresh phase-fixed H reconstruction
         env:
           RUSTUP_TOOLCHAIN: 1.98.1
@@ -199,6 +247,10 @@ jobs:
         env:
           RUSTUP_TOOLCHAIN: 1.98.1
         run: python3 scripts/test_sized_qft.py --small
+      - name: Rust source Fourier factoring with exact traces and fresh native checks
+        env:
+          RUSTUP_TOOLCHAIN: 1.98.1
+        run: python3 scripts/test_rust_fourier_factoring.py
       - name: Small-system coherent QPE source and phase/reference diagnostics
         env:
           RUSTUP_TOOLCHAIN: 1.98.1
@@ -251,6 +303,15 @@ jobs:
       - run: python3 scripts/test_check_schema_registry.py
       - run: python3 scripts/check_schema_registry.py --source-only
       - run: python3 scripts/check_docs.py
+      - name: Verification inventory coverage and independent oracle calibration
+        run: |
+          python3 scripts/test_check_verification_inventory.py
+          python3 scripts/check_verification_inventory.py
+          python3 scripts/test_test_verification_baseline.py
+      - name: Standard-library contract-writing conventions and mutation checks
+        run: |
+          python3 scripts/test_check_stdlib_contract_docs.py
+          python3 scripts/check_stdlib_contract_docs.py
       - run: python3 scripts/test_check_authoring_sessions.py
       - run: python3 scripts/check_authoring_sessions.py
       - run: python3 scripts/test_check_input_corpus.py

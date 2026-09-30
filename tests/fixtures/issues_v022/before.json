@@ -1,0 +1,23 @@
+[
+  {
+    "source": "tests/fixtures/interop/independent.ll",
+    "translated": "OPENQASM 3.0;\ninclude \"stdgates.inc\";\nqubit[2] q;\nbit[2] c;\nreset q;\nx q[0];\nc[0] = measure q[1];\nc[1] = measure q[0];\n"
+  },
+  {
+    "source": "tests/fixtures/issues_v022/qir-unnamed.ll",
+    "error": "cyclic CFG"
+  },
+  {
+    "source": "tests/fixtures/issues_v022/qasm-unknown.qasm",
+    "exit_code": 1,
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "Unsupported: statement or gate outside the terminal subset at bytes 63..70",
+        "primary": null,
+        "related": []
+      }
+    ]
+  }
+]

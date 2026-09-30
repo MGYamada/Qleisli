@@ -749,11 +749,108 @@
         0,
         0
       ]
+    },
+    {
+      "id": "quantum_katas/swap2",
+      "source": "quantum_katas",
+      "upstream_path": "BasicGates/ReferenceImplementation.qs",
+      "symbol": "TwoQubitGate3_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "Map |a,b> to |b,a> with scalar +1 on the entire two-qubit space, preserving arbitrary reference correlations.",
+      "limitations": "Translates the original three-CNOT SWAP on two fixed inputs. Both owners are returned; arrays, device placement and general-size registers are excluded.",
+      "project": "quantum_katas/swap2",
+      "default_input": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "quantum_katas/fredkin3",
+      "source": "quantum_katas",
+      "upstream_path": "BasicGates/ReferenceImplementation.qs",
+      "symbol": "FredkinGate_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "Map |c,a,b> to |c,a,b> for c=0 and |c,b,a> for c=1, with scalar +1 on all eight basis inputs.",
+      "limitations": "Translates Controlled SWAP to coherent qif and an ordinary three-CNOT helper. The control and both targets survive; no classical measurement of the control or general array API is introduced.",
+      "project": "quantum_katas/fredkin3",
+      "default_input": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/xor_constant2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/bitwise.py",
+      "symbol": "XorK",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1, map |x> to |x xor 1> with scalar +1 on all four basis inputs; only the low bit changes.",
+      "limitations": "Specializes XorK(QUInt(2), k=1). First-leaf-low ordering explicitly adapts the upstream register encoding. Signed types, symbolic constants/sizes and imported resource-count claims are excluded.",
+      "project": "qualtran/xor_constant2",
+      "default_input": [
+        1,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/bitwise_not2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/bitwise.py",
+      "symbol": "BitwiseNot",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1, map |x> to |3-x> = |x xor 3> with scalar +1 on all four basis inputs.",
+      "limitations": "Specializes BitwiseNot(QUInt(2)), flipping both bits and returning the same owner shape. General signed/modular types, symbolic sizes and resource estimation are excluded.",
+      "project": "qualtran/bitwise_not2",
+      "default_input": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/rx_quarter",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "Apply RX(pi/2)=(I-iX)/sqrt(2), including the exact scalar phase. On |0>, Z measurement is uniform and <Z>=0.",
+      "limitations": "Specializes params=(pi/2,0), so the original RY is identity. Z expectation is aggregated on the host from the returned distribution. Reuses the known exact rotation decomposition; no optimizer, gradients, continuous angles or upstream framework execution.",
+      "project": "pennylane_demos/rx_quarter",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/phase_kickback1",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_phase_kickback/demo.py",
+      "symbol": "quantum_lock; quantum_locking_mechanism",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "For meter m (first leaf) and one-bit key k, H_m controlled(Z_k) H_m maps |m,k> to |m xor k,k> with scalar +1, retaining both owners and all coherent inputs.",
+      "limitations": "Narrows the original four-bit secret 0111 to one-bit secret 1 with num_wires=2. Preserves the H/controlled-FlipSign/H mechanism. Basis preparation and readout live in main; returns both owners instead of one sampled bit. No shot-noise, interactive guessing game or claim to port the original five-wire configuration.",
+      "project": "pennylane_demos/phase_kickback1",
+      "default_input": [
+        0,
+        1
+      ]
     }
   ],
   "authoring_sessions": [
     "authoring/session.json",
-    "authoring/v021-expansion/session.json"
+    "authoring/v021-expansion/session.json",
+    "authoring/v022-simple/session.json"
   ],
   "sized_experiments": [
     {
@@ -876,7 +973,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Coherent conjunction into the target, with scalar +1; controls and target are retained. Local empty conjunction is true.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d"
     },
     {
@@ -888,7 +985,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed addition by one modulo 2^n, high carry before low-bit updates, no scratch.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f"
     },
     {
@@ -900,7 +997,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed addition by K modulo 2^n through the same shared increment; nK X applications, not efficient general synthesis.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
     },
     {
@@ -912,7 +1009,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed complement of every register bit, preserving the register owner.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3"
     },
     {
@@ -924,8 +1021,44 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed equality into either initial target value; both arbitrary input registers restored coherently, no scratch.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729"
+    }
+  ],
+  "sized_local_compositions": [
+    {
+      "id": "local/measured_qpe/initialization",
+      "origin": "qleisli-authored-local-composition",
+      "file": "sized/measured_qpe/initialization.qli",
+      "license": "Apache-2.0",
+      "sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+      "dependencies": [],
+      "contract": "Construct exactly zero Bits<n>, including an explicit empty owner; preserve caller/reference systems.",
+      "limitations": "Original ordinary Qleisli helper, not an upstream translation or new finite case. Small source/native/phase-reference tests pass; general source/runtime correspondence and wider capacity remain separate."
+    },
+    {
+      "id": "local/measured_qpe/readout",
+      "origin": "qleisli-authored-local-composition",
+      "file": "sized/measured_qpe/readout.qli",
+      "license": "Apache-2.0",
+      "sha256": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+      "dependencies": [],
+      "contract": "Consume every register bit and empty owner, assemble low-bit-first CBits<n>; retain the complete residual/reference instrument.",
+      "limitations": "Original ordinary Qleisli helper, not an upstream translation or new finite case. Small source/native/phase-reference tests pass; general source/runtime correspondence and wider capacity remain separate."
+    },
+    {
+      "id": "local/measured_qpe/measurement",
+      "origin": "qleisli-authored-local-composition",
+      "file": "sized/measured_qpe/measurement.qli",
+      "license": "Apache-2.0",
+      "sha256": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+      "dependencies": [
+        "sized/measured_qpe/initialization.qli",
+        "sized/measured_qpe/readout.qli",
+        "sized/qualtran_qpe/estimation.qli"
+      ],
+      "contract": "Initialize phase bits, call the unchanged shared QPE and consume its phase register; return measured CBits<m> and the retained target.",
+      "limitations": "Original ordinary Qleisli helper, not an upstream translation or new finite case. Small source/native/phase-reference tests pass; general source/runtime correspondence and wider capacity remain separate."
     }
   ]
 }

@@ -132,8 +132,12 @@ def translate(data):
     visited = set()
     instructions = []
     while True:
-        require(block.name not in visited, "cyclic CFG")
-        visited.add(block.name)
+        # PyQIR creates fresh wrappers for successors. Value equality compares
+        # LLVM identity; display names (including "") and Python id do not.
+        index = next((i for i, candidate in enumerate(blocks) if candidate == block), None)
+        require(index is not None, "branch leaves the entry function")
+        require(index not in visited, "cyclic CFG")
+        visited.add(index)
         contents = block.instructions
         require(contents, "empty block")
         instructions.extend(contents[:-1])

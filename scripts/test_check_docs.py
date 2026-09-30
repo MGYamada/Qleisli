@@ -42,8 +42,9 @@ class DocumentationReferences(unittest.TestCase):
             self.write(notice, "fixture attribution\n")
             self.write("python/" + notice, "fixture attribution\n")
         data = {
-            "format": 1,
+            "format": 3,
             "release_state": "selected",
+            "current": [dict(topic="Use", state="finite", detail="current")],
             "milestones": [dict(id=f"M{i}", state="planned", evidence="direction", open="work") for i in range(6)],
             "inventory": [dict(rule="rule", implementation="code", tests="tests", proof="open")],
         }
@@ -64,6 +65,26 @@ class DocumentationReferences(unittest.TestCase):
         self.write("lean/lakefile.toml", 'version = "0.1.4"\n')
         self.assertIn("versions differ", check_status(self.root, write=True)[0])
         self.assertFalse((self.root / "docs/current-status.md").exists())
+
+    def test_current_summary_and_inventory_are_separate_without_history(self):
+        self.status_fixture()
+        self.assertEqual(check_status(self.root, write=True), [])
+        current = (self.root / "docs/current-status.md").read_text()
+        self.assertIn("Where we are now", current)
+        self.assertFalse((self.root / "docs/status-history.md").exists())
+        inventory = (self.root / "docs/rule-inventory.md").read_text()
+        self.assertIn("| rule | code | tests | open |", inventory)
+        self.assertNotIn("| rule | code | tests | open |", current)
+        self.write("docs/rule-inventory.md", "invented proof")
+        self.assertIn("rule-inventory.md is stale", check_status(self.root)[0])
+
+    def test_retired_history_schema_is_rejected_without_recreating_it(self):
+        data = self.status_fixture()
+        data["format"] = 2
+        data["history"] = [dict(title="Old report", paragraphs=["superseded"])]
+        self.write("docs/project-status.json", json.dumps(data))
+        self.assertIn("unsupported", check_status(self.root, write=True)[0])
+        self.assertFalse((self.root / "docs/status-history.md").exists())
 
     def test_status_requires_synchronized_executable_kernel_version(self):
         self.status_fixture()
@@ -95,7 +116,7 @@ class DocumentationReferences(unittest.TestCase):
         self.assertIn("once, in order", check_status(self.root)[0])
 
     def test_status_invalid_format_and_cells_are_diagnosed(self):
-        for bad in ['{"format":', '{"format": 2}', 'null', '[]']:
+        for bad in ['{"format":', '{"format": 3}', 'null', '[]']:
             self.status_fixture()
             self.write("docs/project-status.json", bad)
             self.assertTrue(check_status(self.root))
@@ -109,8 +130,8 @@ class DocumentationReferences(unittest.TestCase):
         data["inventory"][0]["tests"] = "[`deleted_test`](../tests/rules.rs)"
         self.write("docs/project-status.json", json.dumps(data))
         self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
-        self.write("docs/current-status.md", render_status(self.root))
-        errors, _ = check_links(self.root, [self.root / "docs/current-status.md"])
+        self.write("docs/rule-inventory.md", render_status(self.root, inventory_only=True))
+        errors, _ = check_links(self.root, [self.root / "docs/rule-inventory.md"])
         self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
 
     def test_direct_declarations_methods_and_attributed_tests(self):

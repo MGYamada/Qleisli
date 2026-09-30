@@ -30,10 +30,10 @@ impl BasisShape {
 }
 
 /// The claimed function classification. This declaration order is the
-/// verifier's strength order: Unitary < Iso < Observe. It linearizes the
+/// verifier's permitted-effect order: Unitary < Iso < Observe. It linearizes the
 /// pure/observe effect and the Iso/Unitary classification of the formal core.
 /// The verifier derives the minimum required classification from commands and
-/// rejects a stronger claim.
+/// rejects a declaration narrower than the derived effect.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Effect {
     Unitary,
@@ -50,6 +50,13 @@ pub struct QuantumPort {
 
 /// A complete IR function. The final live quantum tokens must be exactly
 /// `quantum_outputs`; classical values may be copied or ignored.
+///
+/// Equality compares fields, including the issued identity of any retained
+/// [`FunctionEvidence`](crate::contract::function::FunctionEvidence). Clones of
+/// one receipt compare equal; separately checked receipts do not, even for
+/// identical bodies and contracts. Consequently `Eq` is neither recursive
+/// structural equality of evidence graphs nor semantic equivalence of programs.
+/// This keeps snapshot comparison bounded for shared evidence dependencies.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RawProgram {
     pub quantum_inputs: Vec<QuantumPort>,

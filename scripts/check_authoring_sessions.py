@@ -11,6 +11,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent / "tests/fixtures/authoring_sessions"
+REPOSITORY = Path(__file__).resolve().parent.parent
 
 
 def local_file(root: Path, name: str) -> Path:
@@ -22,7 +23,14 @@ def local_file(root: Path, name: str) -> Path:
     return path
 
 
-def check_session(manifest: Path) -> tuple[int, int]:
+def check_reports(root: Path, record: dict) -> None:
+    """Linked diagnostics/reports are not timestamped command observations."""
+    for name in record.get("reports", []):
+        if not isinstance(json.loads(local_file(root, name).read_text(encoding="utf-8")), dict):
+            raise ValueError("linked report must be a JSON object")
+
+
+def check_session(manifest: Path, *, repository: Path = REPOSITORY) -> tuple[int, int]:
     root = manifest.parent
     data = json.loads(manifest.read_text(encoding="utf-8"))
     if data["format"] != 1 or data["kind"] not in ("informed_first_attempt", "curated_repair_replay"):
@@ -51,6 +59,7 @@ def check_session(manifest: Path) -> tuple[int, int]:
                 raise ValueError(f"snapshot hash mismatch: {attempt['id']}/{name}")
         if not attempt["observations"]:
             raise ValueError("attempt has no recorded observation")
+        check_reports(root, attempt)
         for name in attempt["observations"]:
             if name in observed:
                 raise ValueError("observation assigned more than once")
@@ -71,6 +80,18 @@ def check_session(manifest: Path) -> tuple[int, int]:
     actual_attempts = {path.name for path in root.glob("attempt-*") if path.is_dir()}
     if actual_attempts != {attempt["id"] for attempt in attempts}:
         raise ValueError("unregistered attempt directory")
+    source_ids = set()
+    for record in data.get("source_records", []):
+        if not record["id"] or record["id"] in source_ids or not record["reason"].strip():
+            raise ValueError("source records need unique IDs and reasons")
+        source_ids.add(record["id"])
+        if not record["sha256"]:
+            raise ValueError("source record has no source hashes")
+        for name, digest in record["sha256"].items():
+            actual = hashlib.sha256(local_file(repository, name).read_bytes()).hexdigest()
+            if digest != actual:
+                raise ValueError(f"source record hash mismatch: {record['id']}/{name}")
+        check_reports(root, record)
     return len(attempts), len(observed)
 
 

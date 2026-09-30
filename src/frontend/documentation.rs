@@ -29,6 +29,9 @@ pub struct DocumentedModule {
     pub import_docs: Vec<Vec<DocComment>>,
 }
 
+const MAX_IMPORT_DOC_COPIES: usize = 65_536;
+const MAX_IMPORT_DOC_BYTES: usize = 1_048_576;
+
 pub(crate) fn attach(
     syntax: Module,
     tokens: &[Token],
@@ -42,12 +45,10 @@ pub(crate) fn attach(
         .enumerate()
         .map(|(index, decl)| (decl.span.start, index))
         .collect();
-    let imports: BTreeMap<_, _> = syntax
-        .uses
-        .iter()
-        .enumerate()
-        .map(|(index, item)| (item.span.start, index))
-        .collect();
+    let mut imports: BTreeMap<_, Vec<usize>> = BTreeMap::new();
+    for (index, item) in syntax.uses.iter().enumerate() {
+        imports.entry(item.span.start).or_default().push(index);
+    }
     let bodies: BTreeMap<_, _> = syntax
         .decls
         .iter()
@@ -70,6 +71,8 @@ pub(crate) fn attach(
         module_docs: vec![],
     };
     let mut seen_outer = false;
+    let mut remaining_import_doc_copies = MAX_IMPORT_DOC_COPIES;
+    let mut remaining_import_doc_bytes = MAX_IMPORT_DOC_BYTES;
     for comment in comments {
         let next = tokens.partition_point(|token| token.span.start < comment.span.end);
         match comment.style {
@@ -78,8 +81,27 @@ pub(crate) fn attach(
                 let position = tokens[next].span.start;
                 if let Some(&index) = declarations.get(&position) {
                     result.declaration_docs[index].push(comment);
-                } else if let Some(&index) = imports.get(&position) {
-                    result.import_docs[index].push(comment);
+                } else if let Some(indices) = imports.get(&position) {
+                    // Move the original comment once; bound the extra copies
+                    // introduced by grouping before cloning any of its text.
+                    let (&first, rest) = indices.split_first().expect("nonempty import group");
+                    remaining_import_doc_copies = remaining_import_doc_copies
+                        .checked_sub(rest.len())
+                        .ok_or_else(|| ParseError {
+                            message: "grouped import documentation exceeds the 65536 comment copies limit".into(),
+                            span: comment.span,
+                        })?;
+                    remaining_import_doc_bytes = comment.text.len()
+                        .checked_mul(rest.len())
+                        .and_then(|bytes| remaining_import_doc_bytes.checked_sub(bytes))
+                        .ok_or_else(|| ParseError {
+                            message: "grouped import documentation exceeds the 1048576 copied comment bytes limit".into(),
+                            span: comment.span,
+                        })?;
+                    for &index in rest {
+                        result.import_docs[index].push(comment.clone());
+                    }
+                    result.import_docs[first].push(comment);
                 } else {
                     return Err(ParseError {
                         message: "outer documentation must precede a function or use item".into(),
@@ -115,11 +137,13 @@ pub fn render_markdown(source: &str) -> Result<String, ParseError> {
         "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n",
     );
     render_comments(&mut output, &documented.module_docs);
+    let mut last_import_span = None;
     for (item, docs) in documented.syntax.uses.iter().zip(&documented.import_docs) {
-        if !docs.is_empty() {
+        if !docs.is_empty() && last_import_span != Some(item.span) {
             output.push_str("## Import\n\n");
             render_source(&mut output, &source[item.span.start..item.span.end]);
             render_comments(&mut output, docs);
+            last_import_span = Some(item.span);
         }
     }
     for (decl, docs) in documented

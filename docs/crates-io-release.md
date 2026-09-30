@@ -1,17 +1,36 @@
-# Preparing and publishing the Rust package
+# Qleisli release procedure
 
-Status: **0.2.1 published to crates.io on 2026-09-30**. The user authorized
-publication after rechecking and verified the account email after the first
-upload was rejected. Retrying the clean, immutable `v0.2.1` checkout succeeded;
-fresh registry installation and hosted documentation were verified. See the
-[result record](releases/v0.2.1.md#successful-registry-publication-2026-09-30).
-The source tag and registry artifact are immutable. PyPI publication remains
-a separate action.
-The matching [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1)
-was subsequently published on the same date with the verified source archives.
+Status: **0.2.2 development selected on 2026-09-30; unreleased**. The latest
+published Rust package and GitHub Release are 0.2.1; their
+[publication evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30)
+and immutable source identity remain intact. This is the reusable procedure
+for subsequent releases, with commands for the selected 0.2.2 version.
 The [versioning policy](versioning.md) remains authoritative for compatibility
 and the complete release gates. Executed results belong in the
-[0.2.1 release record](releases/v0.2.1.md).
+[matching release record](releases/v0.2.2.md), including failures and skipped
+checks. This procedure does not itself perform or authorize publication.
+
+## Release sequence
+
+| Step | Completion evidence |
+| --- | --- |
+| Select development version | Synchronized manifests/runtime version, `Unreleased` changelog, current status and a release record; no publication claim. |
+| Finalize candidate | Compatibility and feature-gate dispositions, release notes/date, a clean commit containing all intended release changes. |
+| Validate exact commit | Required local checks, every applicable CI job and clean distribution report with commit and artifact hashes. |
+| Tag and push source | Annotated `v0.2.2` tag on that verified commit and remote readback; version-pinned README links become available. |
+| Publish Rust package | Successful `cargo publish`, registry availability and matching downloaded `.crate` identity. |
+| Verify installed package/docs | Fresh exact-version registry installation, shipped quickstart, rendered registry README and actual docs.rs build. |
+| Publish GitHub Release | Release on the existing verified tag, prepared notes and verified complete source downloads. |
+| Record results | Dates, URLs, commit/tag identities, artifact hashes, performed/skipped checks and any failures, without moving the published tag. |
+
+The current [CI workflow](../.github/workflows/ci.yml) validates Rust, MSRV,
+interop, Lean proofs, the Lean kernel, distribution and documentation in seven
+jobs. It does not automatically upload to crates.io or create a GitHub Release.
+Read all job outcomes for the exact final source commit; a passing earlier
+commit or pull-request merge preview does not validate a changed release tree.
+PyPI and any future platform binaries have separate preparation and publication
+steps. Cargo distributes the Rust CLI/library, GitHub provides complete tagged
+source, and docs.rs builds the Rust API documentation.
 
 ## Package identity and user documentation
 
@@ -73,7 +92,10 @@ The repository and registry README examples must be executable and agree.
 Both document registry installation and installation from a checkout. The
 registry README uses absolute HTTPS links
 and ordinary Markdown, without GitHub math blocks. GitHub document links are
-pinned to the current release tag, matching the packaged source. Local target
+pinned to the selected candidate tag, matching the packaged source. During
+development, explicitly label registry installation and tag links as pending.
+The repository README can additionally offer the latest published version.
+Local target
 checking does not establish that links are live before the verified source tag
 is pushed; publish that tag before uploading the registry artifact.
 
@@ -84,7 +106,7 @@ must not appear as production APIs or completed guarantees.
 
 ## Distribution contents
 
-Retain Cargo's default file selection for this release, with the repository's
+Retain Cargo's default file selection, with the repository's
 ignore rules. Do not trim the archive solely to reduce its size. Review
 `cargo package --list` and the actual compressed `.crate` for each candidate.
 
@@ -111,10 +133,28 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
 
 ## Prepare and validate without publishing
 
-1. Review changes against shipped 0.2.0 public contracts. Keep compatible changes
-   in 0.2.1 and the deferred heavy integration/proofs in 0.2.2. Retain the current
-   `Unreleased` changelog and pending-publication wording until release selection
-   is finalized. Check all project version metadata, including the Python host.
+1. Review changes against the latest shipped public contracts, currently 0.2.1.
+   Keep 0.2.2 compatible; a necessary public break selects 0.3.0. Resolve the
+   [0.2.2 feature gates](v0.2.2-plan.md) for the selected release scope explicitly;
+   a metadata bump cannot mark shared QPE or H1–H5 complete. Retain `Unreleased`
+   and development wording until the final candidate is selected. Synchronize
+   `Cargo.toml`, `Cargo.lock`, both Lean package manifests, `python/pyproject.toml`
+   and Python `__version__`; do not change dependency versions. Refresh the
+   local lockfile after changing version metadata. `Cargo.lock` is intentionally
+   ignored in this repository; the distribution checker validates the generated
+   package lockfile. After changing Lean manifests, refresh the source-bound
+   registry through its normal build
+   and audit path:
+
+   ```sh
+   python3 scripts/check_schema_registry.py --write
+   python3 scripts/check_docs.py --write-status
+   ```
+
+   Keep all external schema entries disabled until their own binding gates pass.
+   Review the registry diff; a manifest-only change must preserve theorem types,
+   parameters and enablement. Update current summaries and the matching release
+   record without rewriting past validation or publication records.
 2. Build and execute the public documentation:
 
    ```sh
@@ -133,11 +173,11 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
    cargo package --list --allow-dirty --offline
    cargo package --allow-dirty --offline
    qleisli_release_dir="$(mktemp -d)"
-   cargo install --path target/package/qleisli-0.2.1 --offline --locked \
+   cargo install --path target/package/qleisli-0.2.2 --offline --locked \
      --bin qleisli --root "$qleisli_release_dir" \
      --target-dir "$qleisli_release_dir/build"
    python3 scripts/check_installation.py "$qleisli_release_dir/bin/qleisli" \
-     --root target/package/qleisli-0.2.1
+     --root target/package/qleisli-0.2.2
    ```
 
    `check_installation.py` runs in a temporary directory with no helper tools
@@ -153,35 +193,104 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
    After the intended changes are committed, run the clean distribution gate:
 
    ```sh
-   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.1-distribution.json
+   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.2-distribution.json
    ```
 
    Choose a fresh report filename if one already exists. Inspect all CI jobs for
    that same commit, retaining artifact hashes and performed/skipped checks.
-   This preparation turn does not run the clean gate against an older HEAD.
+   Do not run the clean gate against an older HEAD while intended release
+   changes remain uncommitted. The small-system corpus scope does not waive
+   ownership, exact phase/reference, compatibility, proof/audit or distribution
+   checks; newly generating maximum-size corpus cases is not a release prerequisite.
 
-## Publication after explicit authorization
+## Final candidate and publication
 
-The user supplied release authorization on 2026-09-30. Finalize the 0.2.1
-changelog/release date and remove temporary hold wording from both READMEs. Keep
-the distinction between an authorized candidate and a confirmed registry
-upload. Commit those final changes and validate that exact candidate; do not
-publish the earlier dirty-tree rehearsal.
+First finalize release scope, move completed `Unreleased` changes into a dated
+0.2.2 changelog entry, and prepare standalone release notes. State supported
+contracts, migrations, proof coverage and remaining limitations. Finalize
+candidate installation examples and version-pinned links while still recording
+publication as pending. Commit the final tree and run the full checks and clean
+distribution gate above on it. Any subsequent source change requires validation
+of the changed candidate before tagging.
 
 Confirm the crates.io account and package rights through the maintainer's normal
-authenticated setup. Inspect the final `cargo publish --dry-run --locked` result,
-then create the annotated `v0.2.1` tag on the verified commit. Push, hosted
-release creation and `cargo publish --locked` are separate actions whose scope
-must be authorized. Record actual outcomes; a failed upload is not publication.
-Never overwrite a published version or move a published tag.
+authenticated setup, including verified email. Inspect the final dry run from
+the clean candidate:
+
+```sh
+git status --short
+git rev-parse HEAD
+cargo publish --dry-run --locked --registry crates-io
+```
+
+The worktree must be clean and HEAD must equal the validated source commit.
+Once the publication operations are within the user's authorized scope, tag
+that commit and push the tag:
+
+```sh
+git tag -a v0.2.2 -m "Qleisli v0.2.2"
+git show --no-patch v0.2.2
+git push origin refs/tags/v0.2.2
+git ls-remote origin refs/tags/v0.2.2 'refs/tags/v0.2.2^{}'
+```
+
+Verify the annotation and peeled commit locally and remotely. Open the
+version-pinned documentation links before uploading. Publish from the same
+clean source checkout, outside the sandbox when required by the authorized
+release request:
+
+```sh
+cargo publish --locked --registry crates-io
+```
+
+Tag creation, tag push, Rust upload and GitHub publication are separate actions.
+The 0.2.1 authorization/result is historical, not a recorded 0.2.2 upload.
+Record each outcome; a failed upload is not publication. For account/network
+failures, preserve diagnostics and retry the same immutable source after
+resolving the cause. A source correction after tag publication requires a new
+version and validated candidate; never move a published tag or overwrite a
+registry artifact.
 
 After successful upload, install the exact registry version in a fresh environment
-and rerun the quickstart. Verify the crates.io README rendering/links and the
+and rerun the quickstart. With a new empty installation root, Cargo home and
+target directory, run:
+
+```sh
+qleisli_registry_dir="$(mktemp -d)"
+CARGO_HOME="$qleisli_registry_dir/cargo" \
+  cargo install qleisli --version '=0.2.2' --locked --registry crates-io \
+  --root "$qleisli_registry_dir/install" \
+  --target-dir "$qleisli_registry_dir/build"
+```
+
+Run the `scripts/check_installation.py` shipped in the downloaded crate against
+the installed executable and extracted crate root. Compare the downloaded
+`.crate` SHA-256 and retained VCS commit/dirty flag with the validated candidate.
+Verify the crates.io README rendering/links and the
 docs.rs build, recording their URLs and results. A local rustdoc build is not
 evidence that the hosted docs.rs build succeeded. Preserve failures for follow-up;
-any needed package correction takes a new version. PyPI distribution remains
-separate from this Rust release.
+any needed package correction takes a new version.
+
+Then create the GitHub Release on the already pushed tag. Save the reviewed
+Markdown notes in `/tmp/qleisli-0.2.2-release-notes.md` before running:
+
+```sh
+gh release create v0.2.2 --repo MGYamada/Qleisli --verify-tag \
+  --title "Qleisli v0.2.2" --notes-file /tmp/qleisli-0.2.2-release-notes.md
+```
+
+Read back the actual release title, body, tag, published/prerelease status and
+Latest selection. Download GitHub's tag tar.gz and ZIP and compare their
+complete file inventories and bytes with the tag; check executable modes where
+the archive format preserves them. Record observed download hashes separately
+from tagged content identity, since GitHub may regenerate archive containers.
+Custom binary assets are not part of the current distribution method.
+
+Save publication evidence in a later result-record commit if necessary. That
+commit does not replace the immutable tagged source or registry package. PyPI
+distribution remains separate from this Rust release.
 
 Primary references: [Cargo publishing](https://doc.rust-lang.org/cargo/reference/publishing.html),
 [package metadata and file selection](https://doc.rust-lang.org/cargo/reference/manifest.html),
+[GitHub Release management](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository)
 and [docs.rs builds](https://docs.rs/about/builds).

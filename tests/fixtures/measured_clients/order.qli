@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+use measurement::qpe;
+
+/// Shared measured QPE; period candidates must still be validated classically.
+pub observe fn order_readout[static n: Nat, static m: Nat, static U: Op<Bits<n>>](
+    target: Q<Bits<n>>
+) -> (CBits<m>, Q<Bits<n>>)
+requires n >= 2, m >= 1, Controlled(U) {
+    qpe[n,m,U](target)
+}

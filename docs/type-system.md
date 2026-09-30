@@ -4,7 +4,7 @@ Status: **normative for product 0.2.0**, 2026-09-29. This document is
 the consolidated type contract. The [grammar](syntax-v0.md),
 [typing/effect rules](source-typing-rules.md), [ownership rules](source-resource-rules.md)
 and [tuple migration](tuple-shapes.md) refine its syntax, judgments and migration.
-Current implementation evidence is recorded in [conformance](specification-status.md).
+Current implementation evidence is recorded in [conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 This specification is not a claim of a general compiler soundness proof.
 
 **Design default: when uncertain about type or ownership discipline, follow
@@ -147,7 +147,7 @@ Counts include zero-width type nodes. Boundaries are not inferred from width alo
 
 ## Adopted future types
 
-The [0.2.1 common-QPE plan](v0.2.1-plan.md) selects `Bits<n>` as a basis register type
+The [0.2.1 common-QPE plan](v0.2.2-plan.md) selects `Bits<n>` as a basis register type
 and `CBits<m>` as a copyable measured-bit sequence. **Neither is implemented
 source syntax yet.** A future extension must specify static argument formation,
 bounds including zero width, ordering, explicit conversions and evidence binding

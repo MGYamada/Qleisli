@@ -2,12 +2,12 @@
 use super::{Error, Result};
 use std::collections::BTreeMap;
 
-pub(super) const MAX_BYTES: usize = 16 << 20;
+pub(crate) const MAX_BYTES: usize = 16 << 20;
 const MAX_VALUES: usize = 1_000_000;
 const MAX_DEPTH: usize = 128;
 
 #[derive(Clone, Debug, PartialEq)]
-pub(super) enum Value {
+pub(crate) enum Value {
     Null,
     Bool(bool),
     Number(u64),
@@ -268,7 +268,7 @@ impl Parser<'_> {
     }
 }
 
-pub(super) fn parse(bytes: &[u8]) -> Result<Value> {
+pub(crate) fn parse(bytes: &[u8]) -> Result<Value> {
     if bytes.len() > MAX_BYTES {
         return Err(Error::limit("artifact exceeds 16 MiB"));
     }
@@ -286,7 +286,7 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Value> {
     Ok(result)
 }
 
-pub(super) fn encode(value: &Value) -> Result<Vec<u8>> {
+pub(crate) fn encode(value: &Value) -> Result<Vec<u8>> {
     use std::fmt::Write;
     fn quoted(s: &str, out: &mut String) {
         out.push('"');

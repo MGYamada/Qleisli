@@ -78,6 +78,15 @@ pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
     )
 }
 
+pub(super) fn artifact_diagnostic_json(code: &str, message: &str, pointer: &str) -> String {
+    format!(
+        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
+        quoted(code),
+        quoted(message),
+        quoted(&format!("json_pointer: {pointer}"))
+    )
+}
+
 fn failure(code: &'static str, message: impl Into<String>) -> Diagnostic {
     Diagnostic {
         code,
@@ -208,12 +217,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             let status = if error.code == "usage" { 2 } else { 1 };
             let diagnostic = match artifact_pointer {
                 None => diagnostic_json(&root, &error),
-                Some(pointer) => format!(
-                    "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
-                    quoted(error.code),
-                    quoted(&error.message),
-                    quoted(&format!("json_pointer: {pointer}"))
-                ),
+                Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),
             };
             (
                 envelope(command, Some(&diagnostic), "null"),

@@ -2,13 +2,21 @@
 
 # Qleisli finite core language specification v0
 
-Status: **Normative finite core specification, extended with basis parameter patterns and arity-preserving tuples** (2026-09-29). This base specification covers finite types and static operations; the [M1 supplement](next-minor-spec.md) adds fixed-width operation parameters in product 0.1.8. Sized types remain outside this profile. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
+Status: **Normative finite core specification, extended with basis parameter patterns and arity-preserving tuples** (2026-09-29). This base specification covers finite types and static operations; the [M1 supplement](next-minor-spec.md) adds fixed-width operation parameters in product 0.1.8. Sized types remain outside this profile. This document, the [surface grammar](syntax-v0.md), and the [module and sealed API specification](standard-library.md) are normative for v0. Following the [design principles](design-philosophy.md), fixing a specification, implementing it, checking finite examples, and proving general theorems are distinct milestones. The [conformance and proof ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records their correspondence. **Proofs of source-to-IR meaning preservation and implementation soundness remain incomplete.** This English edition is authoritative. The 2026-09-26 review revision adds the language forms described below; historical validation records apply to their recorded version. The [terminology and language policy](terminology.md) identifies supporting Japanese notes.
 
 <a id="1-範囲と規範の扱い"></a>
 
 ## 1. Scope and normative interpretation
 
 v0 is a nonrecursive language with basis types `Unit`, `Bit`, and finite products. It includes injective lifts represented by finite tables, sealed gates, static inverse/control/repetition, restricted auxiliary computation, observation, and classical branching. Finite quantum algorithm examples remain applications of this specification and regression checks.
+
+The additive experimental [bounded sized-source profile](sized-corpus-source.md)
+has a separate Rust API and `qleisli sized` entry point for guarded size
+parameters, concrete recursion and shared operation proposals. Its generated
+hierarchy is independently checked before execution. That profile does not
+extend the finite grammar or normative claims in this document; source
+preservation, native correspondence and full-profile migration remain distinct
+obligations.
 
 Specification v0 is distinct from the [adopted release milestones v0.1 and
 v1](release-milestones.md). The [finite semantic-contract extension](semantic-contracts-v0.1.md)
