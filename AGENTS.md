@@ -114,8 +114,8 @@ select a release or adopt syntax. The current development version is
 [continuation plan](docs/v0.2.2-plan.md),
 [development record](docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md). The latest published release is
-[0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md); selecting the next version does not complete
-feature gates, lift the heavy-work pause or perform publication.
+[0.2.2](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
+Version selection does not complete wider feature gates or perform publication.
 The published foundation and its
 validation remain in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The finite B019 closure and
 0.1.9 publication history remain in its [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md).
@@ -347,6 +347,12 @@ published on 2026-09-30; registry publication followed account email verificatio
 [publication record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30).
 The published tag/artifact are immutable; later result-record commits do not
 replace their source identity.
+The user's later release request authorizes the verified **v0.2.2** tag,
+crates.io package and GitHub Release, published on 2026-09-30. Its
+[publication record](docs/releases/v0.2.2.md#successful-publication-2026-09-30)
+binds the immutable source and artifact to all seven CI jobs, fresh registry
+installation, hosted docs and source-archive comparisons. Later result-record
+commits do not replace the tagged source; PyPI distribution remains separate.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. The user selected development version 0.1.9 on

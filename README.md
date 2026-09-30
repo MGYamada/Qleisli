@@ -15,9 +15,11 @@ Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have separate optional requirements below.
 Sized `Bits<n>` / `CBits<m>` source remains experimental; the three theorem
 pillars below are future proof goals. The
-[0.2.2 development record](docs/releases/v0.2.2.md) and
+[0.2.2 release record](docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md) distinguish version selection,
-validation and publication; [0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) remains published.
+validation and publication. Version 0.2.2 is available on
+[crates.io](https://crates.io/crates/qleisli/0.2.2) and
+[GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.2).
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
@@ -67,7 +69,8 @@ cargo install --path . --locked --bin qleisli
 ```
 
 This checkout and the installation command select the same 0.2.2 version.
-The release record distinguishes a prepared candidate from successful publication.
+The [release record](docs/releases/v0.2.2.md#successful-publication-2026-09-30)
+records the verified tag, registry artifact and installation checks.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)

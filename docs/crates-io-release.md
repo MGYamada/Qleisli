@@ -1,10 +1,9 @@
 # Qleisli release procedure
 
-Status: **0.2.2 development selected on 2026-09-30; unreleased**. The latest
-published Rust package and GitHub Release are 0.2.1; their
-[publication evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md#successful-registry-publication-2026-09-30)
-and immutable source identity remain intact. This is the reusable procedure
-for subsequent releases, with commands for the selected 0.2.2 version.
+Status: **0.2.2 published on 2026-09-30**. The latest Rust package and GitHub
+Release are 0.2.2; their [publication evidence](releases/v0.2.2.md#successful-publication-2026-09-30)
+binds the immutable tag and registry artifact. This reusable procedure illustrates
+the sequence with 0.2.2; subsequent releases use a newly selected version.
 The [versioning policy](versioning.md) remains authoritative for compatibility
 and the complete release gates. Executed results belong in the
 [matching release record](releases/v0.2.2.md), including failures and skipped
