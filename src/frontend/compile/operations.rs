@@ -87,6 +87,24 @@ pub(super) fn control_matrix(m: &Matrix, budget: &mut Budget) -> Result<Matrix, 
     Ok(Matrix::new(2 * d, 2 * d, entries)?)
 }
 impl Compiler<'_> {
+    pub(super) fn narrow_u8(
+        &self,
+        module: &str,
+        span: Span,
+        value: usize,
+        field: &str,
+    ) -> Result<u8, CompileError> {
+        u8::try_from(value).map_err(|_| {
+            self.error(
+                module,
+                span,
+                ErrorCode::Limit,
+                format!(
+                    "{field} {value} exceeds the IR's u8 representation; no truncation is permitted"
+                ),
+            )
+        })
+    }
     pub(super) fn op_error(&self, module: &str, span: Span, error: ContractError) -> CompileError {
         let code = match &error {
             ContractError::Limit(_) | ContractError::Arithmetic(_) => ErrorCode::Limit,
@@ -151,7 +169,10 @@ impl Compiler<'_> {
         } else {
             FiniteMeaning::phase(
                 contract_basis(&basis),
-                f.table.iter().map(|x| *x as u8).collect(),
+                f.table
+                    .iter()
+                    .map(|x| self.narrow_u8(&key.0, function.span, usize::from(*x), "phase label"))
+                    .collect::<Result<_, _>>()?,
             )
         }
         .map_err(|e| self.op_error(&key.0, decl.span, e))?;

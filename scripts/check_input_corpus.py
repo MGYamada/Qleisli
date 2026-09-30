@@ -97,12 +97,12 @@ def check_manifest(corpus=CORPUS):
             if case["source"] == "qualtran":
                 require("Google LLC" in text, "lost Google attribution")
         require((project / "README.md").is_file(), "missing case explanation")
-    # The source policy is closed; the reviewed 0.2.1 intake has ten cases each.
-    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 10 for k in APPROVED}), "reviewed case inventory changed")
+    # The approved sources stay closed; the 0.2.2 simple intake has twelve cases each.
+    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 12 for k in APPROVED}), "reviewed case inventory changed")
     projects = {str(p.parent.relative_to(corpus)) for key in APPROVED for p in (corpus / key).rglob("main.qli")}
     require(projects == {c["project"] for c in manifest["cases"]}, "unrecorded project")
     # Sized authoring experiments reuse the same frozen inputs, with a distinct
-    # execution path; they do not silently increase the 30 production cases.
+    # execution path; they do not silently increase the finite production cases.
     sized = manifest.get("sized_experiments", [])
     sized_sources = set()
     for case in sized:
@@ -124,7 +124,33 @@ def check_manifest(corpus=CORPUS):
                 "translation/modifications" in content, "missing sized license/modification notice")
         require(("Microsoft Corporation" if case["source"] == "quantum_katas" else "Google LLC")
                 in content, "lost sized attribution")
-    require(sized_sources == {p.resolve() for p in (corpus / "sized").rglob("*.qli")},
+    # Original Qleisli wrappers compose the pinned algorithms; they are not a
+    # fourth upstream source or a translation attributed to a different author.
+    compositions = manifest.get("sized_local_compositions", [])
+    local_sources = set()
+    for case in compositions:
+        require(set(case) == {"id", "origin", "file", "license", "sha256",
+                              "dependencies", "contract", "limitations"},
+                "unknown local composition fields")
+        require(case["id"] not in ids, "duplicate local composition")
+        ids.add(case["id"])
+        require(case["origin"] == "qleisli-authored-local-composition" and
+                case["license"] == "Apache-2.0", "invalid local composition origin/license")
+        require(bool(case["contract"]) and bool(case["limitations"]), "missing local composition scope")
+        path = local(corpus, case["file"])
+        require(path.is_relative_to((corpus / "sized").resolve()) and
+                path not in sized_sources | local_sources, "duplicate or misplaced local composition")
+        local_sources.add(path)
+        require(sha256(path) == case["sha256"], "local composition hash mismatch")
+        text = path.read_text()
+        require("SPDX-License-Identifier: Apache-2.0" in text and
+                "Copyright 2026 Masahiko G. Yamada" in text, "missing local composition attribution")
+    for case in compositions:
+        require(isinstance(case["dependencies"], list) and
+                len(set(case["dependencies"])) == len(case["dependencies"]) and
+                all(local(corpus, dep) in sized_sources | local_sources for dep in case["dependencies"]),
+                "unregistered local composition dependency")
+    require(sized_sources | local_sources == {p.resolve() for p in (corpus / "sized").rglob("*.qli")},
             "unrecorded sized source")
     session_paths = manifest["authoring_sessions"]
     require(len(set(session_paths)) == len(session_paths), "duplicate authoring session")
@@ -265,6 +291,11 @@ def reference_column(case, column):
     state = [complex(i == column) for i in range(dim)]
     if name == "global_phase":
         return [-a for a in state]
+    if name == "swap2":
+        return permute(state, lambda i: (i >> 1) | ((i & 1) << 1))
+    if name == "fredkin3":
+        return permute(state, lambda i: ((i & 1) | ((i & 2) << 1) | ((i & 4) >> 1))
+                       if i & 1 else i)
     if name == "ghz3":
         return permute(single(state, 0, H), lambda i: i ^ (6 if i & 1 else 0))
     if name == "bernstein_vazirani":
@@ -291,6 +322,10 @@ def reference_column(case, column):
         return permute(state, lambda i: i ^ (16 if (i & 3) == ((i >> 2) & 3) else 0))
     if name == "xor2":
         return permute(state, lambda i: (i & 3) + (((i >> 2) ^ (i & 3)) << 2))
+    if name == "xor_constant2":
+        return permute(state, lambda i: i ^ 1)
+    if name == "bitwise_not2":
+        return permute(state, lambda i: 3 - i)
     if name == "less_than2":
         return permute(state, lambda i: i ^ (16 if (i & 3) < ((i >> 2) & 3) else 0))
     if name == "qrom2":
@@ -303,6 +338,10 @@ def reference_column(case, column):
         return [a - sum(state) / 2 for a in state]
     if name == "qubit_rotation":
         return single(single(state, 0, RX), 0, RY)
+    if name == "rx_quarter":
+        return single(state, 0, RX)
+    if name == "phase_kickback1":
+        return permute(state, lambda i: i ^ ((i >> 1) & 1))
     if name == "kernel_overlap2":
         # Analytic RX(x1-x2) tensor RX(x1-x2), not the QLI gate decomposition.
         return [(-1j) ** ((row ^ column).bit_count()) / 2 for row in range(4)]

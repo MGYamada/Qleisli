@@ -2,7 +2,7 @@
 
 These are **informed design drafts**, saved during 0.2.0 development on
 2026-09-29 JST. QLT is not implemented. The
-[adopted design](../../../docs/qlt-design.md) now defers its Rust experiment to
+[adopted design](https://github.com/MGYamada/Qleisli/issues/50) now defers its Rust experiment to
 v0.4.0 or later, after the 0.3.0 type-system work, followed by a separate Lean
 migration. This is not a controlled model benchmark, a new external corpus source or evidence that `.qlt` executes today.
 

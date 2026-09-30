@@ -174,7 +174,7 @@ classical restoration, equal-value rebinding and non-revival, mixed/zero-width
 ownership, pending Bell references across calls and branches, and ordinary/
 static name hiding by spent markers. Rejections assert both diagnostic text
 and source spans; probability expectations use a direct Bell correlation.
-Run results are in the [conformance record](specification-status.md).
+Run results are in the [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 The next step is a compositional state relation for inputs, moves, binders,
 and pending/caller holders that establishes the trace and coverage premises

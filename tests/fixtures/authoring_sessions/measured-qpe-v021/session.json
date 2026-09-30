@@ -16,6 +16,88 @@
       "observations": [
         "first-check.json"
       ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Resume the retained wrapper with ordinary recursive initialization/readout modules; saved before extending the source producer",
+      "sha256": {
+        "initialization.qli": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measurement.qli": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "readout.qli": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e"
+      },
+      "observations": [
+        "attempt-02-parser-replay.json"
+      ],
+      "reports": [
+        "attempt-02-first-check.json",
+        "instrument-validation.json",
+        "host-instrument-validation.json",
+        "fourier-component-validation.json",
+        "typing-reuse-validation.json",
+        "capacity-continuation-validation.json",
+        "execution-validation.json",
+        "routed-power-validation.json",
+        "continuation-baseline.json",
+        "prepared-header-validation.json",
+        "sampling-validation.json",
+        "qpe-host-validation.json",
+        "rust-sized-validation.json",
+        "continuation-integration-validation.json",
+        "final-continuation-baseline.json",
+        "source-cli-integration-validation.json",
+        "final-compatibility-validation.json",
+        "package-rehearsal-validation.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "measured-clients-01",
+      "reason": "First measured order/amplitude wrappers saved before running the instrument producer; informed continuation using the same shared QPE source",
+      "sha256": {
+        "tests/fixtures/measured_clients/amplitude.qli": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce",
+        "tests/fixtures/measured_clients/order.qli": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb"
+      },
+      "reports": [
+        "instrument-validation.json",
+        "host-instrument-validation.json",
+        "fourier-component-validation.json",
+        "typing-reuse-validation.json",
+        "capacity-continuation-validation.json",
+        "execution-validation.json",
+        "routed-power-validation.json",
+        "continuation-baseline.json",
+        "prepared-header-validation.json",
+        "sampling-validation.json",
+        "qpe-host-validation.json",
+        "rust-sized-validation.json",
+        "continuation-integration-validation.json",
+        "final-continuation-baseline.json",
+        "source-cli-integration-validation.json"
+      ]
+    },
+    {
+      "id": "retiming-01",
+      "reason": "Disjoint gate and later fresh preparation after an observation; source saved before checking, with entangled input/reference comparison planned",
+      "sha256": {
+        "tests/fixtures/measured_clients/retiming.qli": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621"
+      },
+      "reports": [
+        "instrument-validation.json",
+        "host-instrument-validation.json",
+        "fourier-component-validation.json",
+        "typing-reuse-validation.json",
+        "capacity-continuation-validation.json",
+        "execution-validation.json",
+        "continuation-baseline.json",
+        "prepared-header-validation.json",
+        "sampling-validation.json",
+        "qpe-host-validation.json",
+        "rust-sized-validation.json",
+        "continuation-integration-validation.json",
+        "final-continuation-baseline.json",
+        "source-cli-integration-validation.json"
+      ]
     }
   ]
 }

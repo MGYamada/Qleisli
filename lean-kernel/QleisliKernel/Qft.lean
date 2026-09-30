@@ -55,6 +55,32 @@ theorem matched_paths (width : Nat) (gates : List Interference.Gate) (axes : Lis
   exact (compile_sound width (template width) (expected width)
     (compile_template width positive bounded) input choices).symm
 
+/-- Additive semantic-path matcher. Keep the public literal matcher and its
+theorems for compatibility. This accepts equal normalized symbolic paths,
+including reordered or split diagonal terms, within the same bounded profile.
+It is not complete for arbitrary unitary-equivalent circuits. -/
+def matchCompiledCircuit (width : Nat) (gates : List Interference.Gate)
+    (axes : List Nat) : Bool :=
+  1 ≤ width && width ≤ 8 && gates.length ≤ 36 && axes.length = width &&
+    decide (PathSum.compile width gates = some (expected width)) &&
+    decide (axes = finalAxes width)
+
+theorem matchCompiledCircuit_conditions (width : Nat) (gates : List Interference.Gate)
+    (axes : List Nat) (accepted : matchCompiledCircuit width gates axes = true) :
+    1 ≤ width ∧ width ≤ 8 ∧ PathSum.compile width gates = some (expected width) ∧
+      axes = finalAxes width := by
+  simp only [matchCompiledCircuit, Bool.and_eq_true, decide_eq_true_eq] at accepted
+  exact ⟨accepted.1.1.1.1.1, accepted.1.1.1.1.2, accepted.1.2, accepted.2⟩
+
+/-- The actual accepted candidate, with no template-substitution premise. -/
+theorem compiled_matched_paths (width : Nat) (gates : List Interference.Gate)
+    (axes : List Nat) (accepted : matchCompiledCircuit width gates axes = true)
+    (input choices : Bits) :
+    runFrom gates choices (realize width (initial width) input choices) =
+      realize width (expected width) input choices := by
+  exact (compile_sound width gates (expected width)
+    (matchCompiledCircuit_conditions width gates axes accepted).2.2.1 input choices).symm
+
 /-- Final reversal makes each output bit exactly its corresponding path choice. -/
 theorem output_choice (width axis : Nat) (inside : axis < width) (input choices : Bits) :
     (realize width (expected width) input choices).bits (width - 1 - axis) = choices axis := by
@@ -68,6 +94,14 @@ theorem matched_output (width axis : Nat) (inside : axis < width)
     (runFrom gates choices (realize width (initial width) input choices)).bits
       (width - 1 - axis) = choices axis := by
   rw [matched_paths width gates axes accepted input choices]
+  exact output_choice width axis inside input choices
+
+theorem compiled_matched_output (width axis : Nat) (inside : axis < width)
+    (gates : List Interference.Gate) (axes : List Nat)
+    (accepted : matchCompiledCircuit width gates axes = true) (input choices : Bits) :
+    (runFrom gates choices (realize width (initial width) input choices)).bits
+      (width - 1 - axis) = choices axis := by
+  rw [compiled_matched_paths width gates axes accepted input choices]
   exact output_choice width axis inside input choices
 
 end QleisliKernel.Qft

@@ -32,6 +32,8 @@ RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'in', 'carry', 'yiel
 
 
 class Parser:
+    primitive_imports = IMPORTS
+
     def __init__(self, source, modules=()):
         if len(source.encode()) > 65536:
             raise SourceError('source exceeds 64 KiB')
@@ -103,6 +105,8 @@ class Parser:
 
     def ty(self):
         if self.eat('('):
+            if self.eat(')'):
+                return ('tuple', ())
             children = [self.ty()]
             self.need(',')
             children.append(self.ty())
@@ -124,6 +128,8 @@ class Parser:
 
     def pattern(self):
         if self.eat('('):
+            if self.eat(')'):
+                return ()
             children = [self.pattern()]
             self.need(',')
             children.append(self.pattern())
@@ -188,6 +194,8 @@ class Parser:
             initial = self.expr()
             return ('fold', variable, lo, hi, carry, initial, self.block(True))
         if self.eat('('):
+            if self.eat(')'):
+                return ('tuple', [])
             first = self.expr()
             if not self.eat(','):
                 self.need(')')
@@ -202,9 +210,11 @@ class Parser:
         if self.peek() == '[':
             sizes = self.static_arguments()
         if self.eat('('):
-            args = [self.expr()]
-            while self.eat(','):
+            args = []
+            if self.peek() != ')':
                 args.append(self.expr())
+                while self.eat(','):
+                    args.append(self.expr())
             self.need(')')
             if name not in self.imports:
                 raise SourceError(f'unknown or unimported operation {name}')
@@ -259,6 +269,9 @@ class Parser:
         self.need('}')
         return bindings, result
 
+    def function_effect(self):
+        self.need('unitary')
+
     def parse(self):
         while self.eat('use'):
             parts = [self.name()]
@@ -267,11 +280,11 @@ class Parser:
             self.need(';')
             path = '::'.join(parts)
             ordinary = len(parts) == 2 and parts[0] != 'std' and parts[0] in self.modules
-            if (path not in IMPORTS and not ordinary) or parts[-1] in self.imports:
+            if (path not in self.primitive_imports and not ordinary) or parts[-1] in self.imports:
                 raise SourceError(f'unsupported or duplicate import {path}')
-            self.imports[parts[-1]] = IMPORTS.get(path, path)
+            self.imports[parts[-1]] = self.primitive_imports.get(path, path)
         self.need('pub')
-        self.need('unitary')
+        self.function_effect()
         self.need('fn')
         name = self.name()
         self.need('[')
@@ -299,7 +312,7 @@ class Parser:
             raise SourceError('duplicate static parameter')
         self.need('(')
         parameters = []
-        while True:
+        while self.peek() != ')':
             parameter = self.name()
             if parameter in static_names:
                 raise SourceError('quantum parameter shadows a static parameter')
@@ -704,13 +717,15 @@ class Producer(Circuit):
         # A closed target boundary is required by coherent control.
         return self.sequence([leaf, self.rewire([output.port], [target.port])])
 
-    def import_artifact(self, artifact):
+    def import_artifact(self, artifact, *, preserve=()):
         """Merge exact source-produced graph entries with structural sharing.
 
         This internal producer format has aligned tables, identity encodings
         and a topological order. Rebuild those same equations through add(),
         deduplicating complete bodies/headers/bytes rather than function names.
         No externally supplied artifact or evidence receipt is accepted here.
+        `preserve` keeps selected internal nodes out of subclass normalization;
+        their bodies, endpoints and exact bytes are still imported and checked.
         """
         if not len(artifact['definitions']) == len(artifact['meanings']) == len(artifact['proofs']):
             raise SourceError('source artifact table alignment')
@@ -747,7 +762,8 @@ class Producer(Circuit):
                     raise SourceError('source equation requires complete identity encodings')
             if header['inputs']['classical'] or header['outputs']['classical']:
                 raise SourceError('source import requires quantum-only endpoints')
-            translated.append(self.add(copy.deepcopy(header['inputs']['quantum']),
+            add = Producer.add.__get__(self) if index in preserve else self.add
+            translated.append(add(copy.deepcopy(header['inputs']['quantum']),
                 copy.deepcopy(header['outputs']['quantum']), body(definition['body']),
                 body(meaning['body'], True), proof['rule']['tag'],
                 [reference(i) for i in proof['premises']]))

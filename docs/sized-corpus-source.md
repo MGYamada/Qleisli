@@ -4,7 +4,8 @@ The 2026-09-29 user instruction puts corpus implementation before further
 general proof infrastructure. This bounded experiment connects actual source
 to the existing hierarchical IR and fresh independent inspection. It does not
 change the production `qleisli check/run` grammar or assert source adequacy.
-Its compiler is an untrusted development tool, like the existing QFT producer.
+The Python compiler remains an untrusted development tool; the additive Rust
+source API and CLI continuation are specified below.
 
 ## Source contract
 
@@ -163,9 +164,9 @@ controlled powers were tested without preparation or QFT. The 2026-09-30 user
 decision limits remaining validation to small qubit systems and removes further
 maximum-size checks from completion requirements; the old failure stays recorded.
 Initializing the
-phase register, measuring it into `CBits<m>`, independent named QPE binding
-and production execution remain open; diagnostic branch vectors do not close
-these gates.
+phase register and measuring it into `CBits<m>` are now exercised by the
+initializing/observing continuation below. Independent named QPE binding and
+production execution remain open; diagnostic branch vectors do not close them.
 
 ## Arithmetic-driven extension
 
@@ -256,15 +257,223 @@ plus a phase-sensitive nested-provider cache case. No measurement, certified
 classical probability evaluation, named order/amplitude contract proof or
 production frontend transfer is claimed by those numerical diagnostics.
 
+## Initializing and observing source continuation
+
+The resumed measured-source experiment adds a separate untrusted
+`compile_sized_instrument.py` producer. It parses `iso` and `observe` ordinary
+functions, empty runtime argument lists, classical `CBit`/`CBits<e>` types and
+the classical unit value/pattern `()`. Quantum values and mixed tuples still
+move; classical values/tuples may be copied or left unused. Both static branches
+and empty folds receive name, shape, move and effect checks. Selected concrete
+instantiations also check exact widths. Effect ordering is Unit­ary < Iso <
+Observe; a false branch cannot hide a stronger effect. Pure source and operation
+providers continue through the existing unitary producer and shared definitions.
+
+The retained [second source attempt](../tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/measurement.qli)
+calls ordinary recursive initialization/readout helpers around the same QPE body.
+The experimental adapters below are producer intrinsics, not additions to the
+bundled stdlib or production grammar:
+
+- `std::quantum::init0()` is the existing sealed one-bit zero preparation,
+  with Iso effect and a fresh owner/axis. `std::observe::measure_z(bit)` is the
+  existing consuming Z measurement with Observe effect, returning `CBit`.
+- `std::registers::empty()` and `consume_empty(q)` explicitly create/consume
+  `Q<Bits<0>>` through the existing structural rules; they neither allocate a
+  physical qubit nor authorize release of a nonempty register.
+- `std::classical::empty_bits()` constructs `CBits<0>`;
+  `prepend_bit[n] (bit,tail)` constructs `CBits<n+1>` from `CBit` and `CBits<n>`.
+  These are ordinary classical data-construction adapters with no quantum effect.
+  The first bit occupies position zero. They emit an explicit pack proposal,
+  whose order is checked separately; naming the helper is not semantic evidence.
+
+The resulting proposal has an initialization prefix, a coherent segment and a
+readout suffix. Source operations may interleave: the untrusted producer hoists
+fresh independent zero preparations and postpones measurements across operations
+on other logical owners. This uses disjoint local actions, not a product-state
+assumption: arbitrary entanglement with the retained target/reference must
+survive. Classical outcomes can only be copied/assembled in this source slice;
+runtime classical branches or outcome-dependent quantum actions remain
+unsupported and must not be silently retimed. Structural conversions remain explicit
+checked nodes. No measured owner can be reused in
+source. The result proposal keeps initialization nodes, the shared pure graph,
+measurement nodes and classical packing separate, with complete matching frames.
+Each boundary still needs independent checking and composition; this producer
+does not itself issue a receipt or prove source/retiming preservation. Source
+allocation uses distinct axes, with a sixteen-axis aggregate cap even when an
+earlier owner has been measured; it does not silently reuse a physical wire. The selected
+small-system validation and existing aggregate source limits remain in force.
+
+Each ordinary helper retains its local quantum frame so recursive initialization
+and readout do not repeat the caller's complete frame at every operation.
+The untrusted compactor composes adjacent rewires, removes exact identities,
+flattens single-use sequence wrappers and retains shared inverse/control/repeat
+bodies, including zero-count children. A wire-only Bit/Bits(1) conversion with
+a balanced internal empty-register lifecycle can use the existing explicit
+conversion rule; an empty input/output owner cannot be erased by that rewrite.
+Complete endpoint types/ports and before/after phases are regression-checked.
+This is producer optimization, not a new checker rule or preservation theorem.
+
+The [measured-source results](../tests/fixtures/authoring_sessions/measured-qpe-v021/instrument-validation.json)
+cover ordinary initialized QPE, order/amplitude CBits clients and an interleaved
+measurement/local-gate/fresh-preparation example with reference columns. The
+small `(2,4)` wrapper still exceeds the unchanged structural budget. That report invokes preparation, pure graph and readout separately. The later
+[host connection](../tests/fixtures/authoring_sessions/measured-qpe-v021/host-instrument-validation.json)
+checks four small source clients together through `Kernel::check_instrument`,
+including all finite obligations. Its baseline-derived requests are mutation
+regressions, not independent named QPE evidence or production source integration.
+
 ## Acceptance and limits
 
 The native Lean checker inspects the generated artifact and Rust reconstructs
 all actual finite equations. The diagnostic executor then evaluates that same
 artifact against independent algorithm formulas, including complex reference
 columns. Numerical comparisons are tests, not acceptance evidence for an
-independently named algorithm contract. Production integration, universal
-source preservation, remaining operation constructors, measured `CBits` clients, and the
-remaining R14/H1–H5 gates are separate outstanding obligations.
+independently named algorithm contract. These Python experiment results do not
+establish production integration, source preservation or named `CBits` client
+contracts. The Rust continuation below records its own coverage; universal
+source preservation, remaining operation constructors and R14/H1–H5 gates
+remain separate obligations.
 
 This experiment changes the development order, not the trusted boundary or
 release criteria. Preserve fixed translations and historical failed sources.
+
+## Additive Rust source pipeline
+
+The resumed continuation adds `frontend::sized` as an **untrusted source
+preparation API**, separate from the finite frontend. It retains complete source
+text and byte positions in an opaque parsed program; its syntax representation
+is private. Sized identifiers and keywords are contextual to this entry point,
+so the existing public AST, lexer, loader, compiler and CLI keep their contracts.
+Parsing and elaboration produce no hierarchy seal. The bounded lowering and
+separately checked `qleisli sized` entry point below build on these source values.
+
+This bounded profile starts with the existing measured-QPE modules: one ordinary
+function per module, explicit imports, natural/operation parameters, Bit/Bits and
+CBit/CBits types, tuples, linear bindings, static branches/folds and transparent
+calls. Generic checking must inspect both branches and empty fold bodies for
+names, capabilities, effects and linear ownership. Subtraction and register
+indices require implications from natural-number assumptions, declared premises
+and branch/fold guards; checking one convenient size is insufficient. Solver
+exhaustion or an unsupported obligation rejects without issuing evidence.
+`ParsedProgram::parse` checks an explicit module/text map; `load` reads an explicit
+module/file map using the existing regular-file loader. `instantiate` records
+concrete `u32` entry naturals and transparent providers after checking their
+signature types and premises. It does **not** elaborate calls/folds, check every
+concrete phase/repetition capacity, or generate executable IR. Parameter Apply
+and Adjoint forms can be prepared when their access is declared; this adds no
+execution support to the experimental Python producer. Body elaboration is a
+separate step; source preservation and independent acceptance remain obligations.
+
+Preparation limits are 64 modules, 64 KiB per module, 1 MiB total, 10,000 tokens
+per module, syntax nesting 64, natural-expression depth 128 and tuple arity 64.
+Inferred types have depth at most 64 and 4,096 cells; a scope retains at most
+16,384 type cells, including copyable classical values. These checks also bound
+flat source that repeatedly doubles a nested tuple.
+Linear implication uses checked `i128` arithmetic and a rational relaxation:
+at most 32 variables, 64 assumption alternatives, 4,096 generated constraints
+and 50,000 elimination pairs per query. Only a proved contradiction discharges
+an obligation; failure or incompleteness rejects. All sizes remain natural, with
+guarded subtraction; nonlinear symbolic products and general predicates reject.
+These are preparation budgets, not runtime/resource-safety guarantees.
+Preparation does not adopt the complete G020-1 grammar or prove frontend adequacy.
+
+`Instantiation::elaborate` is the next additive preparation step. It produces an
+opaque, untrusted source-order program with shared concrete function definitions,
+ordered operation steps, original spans, exact type trees and explicit quantum
+owner/classical-value identities. Calls and operation repetitions retain references
+to shared definitions; only static folds elaborate their concrete iterations.
+Initialization, observation and classical packing retain source order. Every
+supplied operation provider is elaborated even if its parameter is unused, and
+zero repetitions still validate their child. Unselected static branches retain
+their generic checks; they do not execute or acquire artificial concrete size
+premises. Concrete guards, phase parameters and repetition capacities are checked
+on the selected bodies and all supplied providers. This intermediate form has no
+interchange schema, IR seal, execution API or preservation theorem.
+
+Elaboration permits eight-bit registers/classical sequences and at most 16 live
+quantum wires, including suspended caller owners during a child call. It retains
+the existing dyadic bounds (`k <= 8`, `j < 2^k`) and repetition counts/products
+through 256. Construction budgets are 1,024 specialization requests (cache hits
+included), 1,024 concretized fold iterations across newly built definitions,
+call depth 16, 10,000 retained source steps and 100,000 retained value-tree cells.
+The combined active function, block, expression and static-provider traversal
+depth is also limited to 64, so nested syntax cannot multiply the call allowance.
+Each concrete value is limited to 4,096 cells (including its stored type trees),
+and each scope to 16,384 value cells before lexical scope copying.
+Shared calls and repetitions are not expanded into gate lists; these budgets and
+the reported source peak are diagnostics, not certified execution-work bounds.
+
+`ElaboratedProgram::lower` emits an opaque `HierarchyProposal` in the existing
+hierarchical/instrument transport, retaining its complete source-order elaboration.
+Its payload, pure graph and proposal-derived comparison request are **untrusted**.
+Pure calls and operation providers share graph bodies; only H/X primitive leaves
+use exact finite matrices. Structural register/owner transitions determine explicit
+axes and remain recorded in the source proposal. Gates and initialization after
+observation reject. Fresh `init0` may move before preceding unitary steps only
+through the explicit stable-extraction certificate below. Structural views of
+remaining owners and classical packing may follow observations; their boundary
+representation remains distinct from general source preservation. Output is
+quantum-only for pure roots, or one chronological `CBits` result with residual
+quantum owners for measured roots; classical entry values are unsupported.
+Fresh native reconstruction remains mandatory. A generated comparison request
+describes the proposal itself; it is not an independent named-QPE specification,
+source-preservation proof, production seal or external-schema enablement.
+Proposal construction is bounded by 10,000 definitions, 16 MiB retained graph
+descriptor/cache text and 16 MiB per serialized payload/request/precursor, with
+1,024 observing call visits and depth 16. H/X leaves are shared and independently reconstructed.
+Small native regressions cover QFT widths 1–3, arbitrary coherent QPE inputs,
+measured QPE `(n,m) = (1,1),(1,2),(1,3),(2,2)`, order readout, zero-width owners and
+the phase-sensitive Grover provider and amplitude readout `(1,2)` including its
+preparation prefix. These cases pass the unchanged native checking budget.
+Fourier factoring compares complete phase-sensitive traces before constructing a
+canonical candidate. Export compacts reachable definitions and remaps source-event
+references; `lowering_precursor` retains the original source-derived table.
+Fixed-seed shots from both actual source clients feed validated modular-order
+candidates and finite-grid amplitude estimates, with independent branch/residual
+checks. The [validation record](../tests/fixtures/authoring_sessions/measured-qpe-v021/rust-sized-validation.json)
+records this bounded coverage.
+
+Initialization extraction retains a complete source-event trace: original concrete
+definition/step/call path and span, selected values, full quantum frames including
+zero-width owners, initialization, observation and classical packing. Each move
+lists exactly the preceding pure events crossed. An independent Rust structural
+validator replays source bindings, parses actual graph headers/effects, checks
+freshness and complete untouched frames, and matches the root's exact ordered
+operations and readout; it rejects omitted events, aliasing, changed packing and
+extra operations. Candidate generation runs this scan. The public
+`validate_initialization_moves` additionally requires a fresh `CheckedInstrument`
+with byte-identical payload before reporting this pass as validated. Trace storage
+is limited to 10,000 events and 100,000 frame/operand accounting cells.
+
+The checker-free `Qleisli.Semantics.FreshInitialization.commute` equation preserves
+full complex amplitudes and arbitrary reference correlations when appending fresh
+zero coordinates across an operator on the old coordinates. This equation is
+proved; the Rust structural pass is tested, not itself a Lean-proved executable
+transform. Source-to-unitary translation and broader source preservation remain
+separate obligations. The amplitude client's meaning is `K_m(G) A`, including the
+actual preparation prefix; it is not a bare-QPE claim about the original input.
+
+
+### CLI entry point
+
+`qleisli sized check|run|sample|emit-proposal` requires `--entry=module::function`
+and repeated `--module=name=PATH` declarations for the complete dependency closure.
+Static bindings use repeated `--nat=name=N`, `--operation=name=module::function`
+and `--operation-nat=name.parameter=N`. `check`, `run` and `sample` require an
+explicit `--kernel=PATH`; instruments also pass initialization validation.
+The optional `--request=PATH` supplies an independent contract. Alternatively,
+`--qpe-provider=PATH` supplies the independent provider request for named QPE
+checking. The default compares the proposal's own meaning and makes no named-QPE
+claim. These two request options are mutually exclusive.
+
+`run` returns all complex state/branch coefficients from `--basis=N` (default 0).
+`sample` is observing-only and requires `--shots=1..1024` and `--seed=N`.
+`emit-proposal` requires `--output=PATH` and no kernel; its JSON is untrusted.
+The existing finite commands retain their contracts. This bounded Rust route does
+not complete general source preservation or the remaining R14/H1–H5 gates.
+
+```sh
+qleisli sized run --entry=fourier::fourier \
+  --module=fourier=corpus/sized/qualtran_qft/fourier.qli --nat=n=2 \
+  --kernel=lean-kernel/.lake/build/bin/qleisli-kernel --basis=1
+```

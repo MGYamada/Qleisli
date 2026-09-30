@@ -198,6 +198,101 @@ this additive result has no production `VerifiedProgram` conversion and enables
 no external schema. The older `inspect` API continues to report artifact-only
 consistency without claiming independent request binding.
 
+`Kernel::check_instrument(payload, request)` adds the explicit
+[`initialize-unitary-readout-v1` contract](../tests/fixtures/authoring_sessions/measured-qpe-v021/preparation-packet.md#host-connection-contract).
+It binds actual initialization, a caller-selected unitary equation, ordered
+measurement and final outputs in one fresh native check, then reconstructs
+every finite obligation in Rust. Its sealed `CheckedInstrument` retains both
+documents. Nested `QLI1`/`QLR1`/`QLH1` frames share one million decoded words;
+the 64 MiB framing and two-million structural work limits remain. This additive
+experimental report has no production conversion or named QPE guarantee.
+The [actual instrument bridge](../lean/Qleisli/HierarchicalInstrument.lean)
+proves full branch and residual/reference density equality under the same
+finite reconstruction equations, plus actual CBit packing. Its reference
+definition is separate from checking. The actual coordinate/completeness bridge
+also proves branch columns and trace preservation under explicit finite-leaf
+unitarity and independent meaning premises.
+
+### Experimental named QPE instrument
+
+`Kernel::check_qpe_instrument(payload, request, candidate)` checks the retained
+instrument against a separate `qleisli.qpe-instrument-request` and untrusted
+`qleisli.qpe-instrument-candidate`, both version 1, profile `qpe-dyadic8-v1`.
+The request contains full preparation/circuit/readout/output interfaces and an
+independently supplied ordinary hierarchy provider request. The candidate gives
+actual provider-proof, H/power/inverse-Fourier indices and traversal schedules.
+Neither candidate indices nor a proposal-derived comparison confer evidence.
+
+The private `QLQ1` frame embeds the provider's `QLR1` request and the original
+entry, schedule, preparation and readout. All nested frames share one million
+decoded words and 64 MiB; checking shares the unchanged two-million structural
+allowance. `--qpe-instrument-pending` returns all finite proof indices, provider
+finite-pair indices, and the deduplicated union of phase/Fourier H indices.
+Rust independently requires every obligation exactly once and reconstructs
+the full equations, including the phase-fixed mathematical H, under one exact
+budget. The 60-second process deadline and 2,200,000-byte response ceiling apply.
+
+The privately constructed `CheckedQpeInstrument` retains candidate bytes and exposes its
+`CheckedInstrument` for bounded execution. Actual
+[`checkAll_kraus`, `checkAll_reference`, `checkAll_classical`](../lean/Qleisli/HierarchicalQpeInstrument.lean)
+bind the checked artifact to QPE for the independently interpreted provider,
+including arbitrary-reference branch maps, completeness and classical packing.
+Exact finite/H equations and the independent provider interpretation remain
+explicit theorem premises; native/decoder/Rust correspondence remains a trust
+obligation. This additive API enables no external schema or production
+`VerifiedProgram` conversion and proves no general source-preservation theorem.
+
+### Experimental checked reference execution
+
+The additive `CheckedRequest::execute` and `CheckedInstrument::execute` adapters
+in `hierarchical::execution` interpret retained **actual definitions**, using
+finite matrices bound to their checked implementation indices. They accept
+finite, possibly unnormalized `[real, imaginary]` coefficients and an explicit
+positive reference dimension. Flatten actual quantum ports in declared order,
+with the first axis as the least significant bit; coefficient index is
+`reference * 2^quantum_bits + basis`. The reference undergoes the identity.
+
+Execution supports finite leaves, sequence, tensor, inverse, control, repeat,
+rewiring, structural conversions and dyadic phases. Capability checking includes
+children of zero repeats and inactive controls. Classical circuit inputs and
+other constructors reject as `unsupported`. An instrument applies actual fresh
+zero preparation, the pure circuit and actual ordered measurements. Its result
+contains every unnormalized residual/reference vector; branch indices follow
+the actual low-bit-first classical pack order, including zero-probability branches.
+
+`ExecutionLimits` supplies aggregate amplitude-cell and work limits. The former
+covers both state/work buffers or the state plus all returned branches; input
+storage owned by the caller is excluded. Work counts preparation/readout cells,
+definition visits, permutation/phase cells and finite matrix multiply-adds,
+including actual repeated bodies regardless of amplitude or control values.
+Pending task metadata is reserved only when its guaranteed future definition
+visits fit the remaining work budget; a wide sequence cannot allocate an
+unchecked task stack. Parsed graph metadata retains the existing bounded
+artifact framing limits and is separate from the amplitude-cell allowance.
+Overflow, invalid dimensions, nonfinite coefficients and exhausted limits reject;
+no partial result or silent normalization is returned. Execution traverses the
+DAG without expanding repetitions or constructing a whole-graph dense matrix.
+These `f64` results are reference diagnostics outside acceptance authority.
+The additive sized CLI uses the same adapter; execution itself proves neither
+named meaning nor source preservation.
+
+`CheckedInstrument::sample_normalized_shots` explicitly normalizes finite,
+positive-norm input and reports its original norm. Each shot executes afresh
+from that joint input/reference state, samples the actual complete branch
+weights using one high-53-bit uniform draw from `RandomSource`, and returns
+the packed outcome plus normalized conditional residual/reference amplitudes.
+Independent uniform random words are a caller premise. Repeated execution is
+charged even when the circuit and input are identical.
+
+`SamplingLimits` bounds positive shot count before allocation and shares total
+work/output storage across the batch. The mass-drift guard is
+`min(2^-20, 2^-40 + 16 * f64::EPSILON * actual_steps)`; it is an explicit runtime
+tolerance, not a certified numerical error bound. Zero/nonfinite norm, excessive
+drift, overflow, exhausted limits and RNG failure return an error without a
+partial batch. `execute` keeps its unnormalized contract unchanged.
+
+### Definition nodes
+
 | Node | Fields and meaning |
 | --- | --- |
 | `leaf` | `program`: complete bounded finite raw program; checked by the existing independent verifier and, when used as a semantic leaf, the exact checker |

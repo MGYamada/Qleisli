@@ -51,12 +51,15 @@ impl Lowerer<'_, '_> {
         name: &str,
         mut args: Vec<Value>,
     ) -> Result<Value, CompileError> {
-        let arity = match name {
-            "init0" => 0,
-            "cnot" | "join" => 2,
-            "toffoli" => 3,
-            _ => 1,
-        };
+        let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
+            self.error(
+                module,
+                span,
+                ErrorCode::UnknownName,
+                "unknown sealed primitive",
+            )
+        })?;
+        let arity = declaration.arity;
         if args.len() != arity {
             return Err(self.error(
                 module,
@@ -65,12 +68,18 @@ impl Lowerer<'_, '_> {
                 format!("{name} requires {arity} arguments"),
             ));
         }
-        if namespace == "std::observe" {
-            self.add_effect(module, span, Effect::Observe);
-        }
+        self.add_effect(
+            module,
+            span,
+            match declaration.kind {
+                crate::frontend::ast::FnKind::Unitary => Effect::Unitary,
+                crate::frontend::ast::FnKind::Iso => Effect::Iso,
+                crate::frontend::ast::FnKind::Observe => Effect::Observe,
+                _ => unreachable!("sealed quantum declaration"),
+            },
+        );
         match name {
             "init0" => {
-                self.add_effect(module, span, Effect::Iso);
                 let wire = self.wire();
                 let value = self.register(Ty::Bit, vec![wire]);
                 let slot = self.quantum(module, span, &value, true)?;
@@ -168,7 +177,9 @@ impl Lowerer<'_, '_> {
                     input: reg.token,
                     left: self.registers[&left_slot].token,
                     right: self.registers[&right_slot].token,
-                    left_bits: width as u8,
+                    left_bits: self
+                        .compiler
+                        .narrow_u8(module, span, width, "split width")?,
                 });
                 Ok(Value::pair(left, right))
             }

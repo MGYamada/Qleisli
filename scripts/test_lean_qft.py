@@ -51,7 +51,7 @@ def symbolic_path(result, width, input_value, choices):
     return bits, phase, result["hadamards"]
 
 
-def native(cases, log):
+def native(cases, log, semantic=False):
     with tempfile.TemporaryDirectory(prefix="qleisli-qft-native-") as directory:
         project = Path(directory)
         (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
@@ -60,7 +60,7 @@ def native(cases, log):
             '[[require]]\nname = "qleisli_kernel"\npath = ' + json.dumps(str(ROOT / "lean-kernel")) +
             '\n[[lean_exe]]\nname = "qft-test"\nroot = "Main"\n')
         rows = [f"({width}, {literal(word)}, {json.dumps(axes)})" for width, word, axes in cases]
-        (project / "Main.lean").write_text('''import QleisliKernel.Qft
+        source = '''import QleisliKernel.Qft
 open QleisliKernel
 set_option maxRecDepth 10000
 set_option maxHeartbeats 4000000
@@ -77,7 +77,10 @@ def main : IO Unit := do
         toString term.ticks ++ ":" ++ numbers term.axes)
       IO.println (matched ++ "#" ++ toString result.hadamards ++ "#" ++
         numbers result.wires ++ "#" ++ phases)
-''')
+'''
+        if semantic:
+            source = source.replace("Qft.matchCircuit", "Qft.matchCompiledCircuit")
+        (project / "Main.lean").write_text(source)
         build = subprocess.run(["lake", "build"], cwd=project, capture_output=True, text=True, timeout=180)
         log.append(dict(command=["lake", "build"], cwd="temporary native QFT harness",
                         exit=build.returncode, stdout=build.stdout, stderr=build.stderr))
@@ -133,6 +136,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", type=Path)
     parser.add_argument("--record", type=Path)
+    parser.add_argument("--small", action="store_true", help="generate only widths 1–4")
+    parser.add_argument("--semantic", action="store_true", help="test the additive symbolic-path matcher")
     args = parser.parse_args()
     log, report = [], {}
     if args.source_only:
@@ -140,10 +145,11 @@ def main():
         report["source_round_trip"] = True
         report["wrong_reversal_outcomes"] = 8
     else:
-        cases = [(m, template(m), list(reversed(range(m)))) for m in range(1, 9)]
+        upper = 4 if args.small else 8
+        cases = [(m, template(m), list(reversed(range(m)))) for m in range(1, upper + 1)]
         expected = [True] * len(cases)
         # Template mutations, all still well-formed primitive circuits except explicit bounds below.
-        for width in range(2, 9):
+        for width in range(2, upper + 1):
             original, axes = template(width), list(reversed(range(width)))
             wrong_phase = list(original)
             ticks, controls = wrong_phase[1][1][0]
@@ -152,6 +158,16 @@ def main():
             for word, output in [(wrong_phase, axes), (reordered, axes), (original[1:], axes),
                                  (original, list(range(width))), (original + [h(0)], axes)]:
                 cases.append((width, word, output)); expected.append(False)
+        if args.semantic:
+            # Equal phase polynomials with changed literal syntax.
+            for width in range(2, upper + 1):
+                word = template(width)
+                ticks, axes = word[1][1][0]
+                changed = [word[0], p([(ticks // 2, axes), (ticks // 2, axes)]), *word[2:]]
+                cases.append((width, changed, list(reversed(range(width))))); expected.append(True)
+            word = template(3)
+            word[1], word[2] = word[2], word[1]  # Adjacent diagonal phases commute.
+            cases.append((3, word, [2, 1, 0])); expected.append(True)
         invalid_start = len(cases)
         for width, word, axes in [(1, [h(1)], [0]), (1, [p([(256, [0])])], [0]),
                                  (1, [p([(16, [1])])], [0])]:
@@ -170,7 +186,7 @@ def main():
                                    for _ in range(rng.randrange(5))]))
             # Deliberately invalid final layout makes this a path-compiler-only case.
             cases.append((width, word, [])); expected.append(False)
-        outputs = native(cases, log)
+        outputs = native(cases, log, semantic=args.semantic)
         path_checks = phase_checks = 0
         for index, ((width, word, _), (matched, result)) in enumerate(zip(cases, outputs)):
             assert matched == expected[index], index
@@ -182,7 +198,7 @@ def main():
                 choices = rng.randrange(1 << result["hadamards"])
                 assert symbolic_path(result, width, input_value, choices) == direct_path(word, width, input_value, choices)
                 path_checks += 1
-            if index < 8:
+            if expected[index]:
                 assert result["hadamards"] == width
                 assert list(reversed(result["wires"])) == list(range(width, 2 * width))
                 assert len(result["phases"]) == width * (width + 1) // 2
@@ -214,6 +230,8 @@ def main():
                       modular_fourier_comparisons=phase_checks, complex_matrix_entries=matrix_entries,
                       joint_reference_cases=9, max_error=max_error, kernel_dense_dimension=0,
                       largest_dense_oracle_dimension=8)
+        report.update(matcher="compiled-symbolic-path" if args.semantic else "literal-template",
+                      maximum_generated_fourier_width=upper)
     report["commands"] = log
     report["source_sha256"] = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in [ROOT / "lean-kernel/QleisliKernel/PathSum.lean", ROOT / "lean-kernel/QleisliKernel/Qft.lean",

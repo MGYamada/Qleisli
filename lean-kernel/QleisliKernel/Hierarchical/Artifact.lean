@@ -413,37 +413,154 @@ def add (artifact : Artifact) (atNode : Ref) (state : Projection) (referenceCoun
   let some edges := flattenRefs artifact (refs ()) | throw ⟨.invalidIr, some atNode⟩
   return ⟨state.nodes.push edges, visits, payloadBytes⟩
 
+/-- A total row iterator keeps the original table/index order and shared
+budget. It allocates no auxiliary list and does not expand bodies. -/
+private def projectRows (step : Projection → Nat → Except Failure Projection)
+    (count first : Nat) (state : Projection) : Except Failure Projection :=
+  Nat.rec (motive := fun _ => Nat → Projection → Except Failure Projection)
+    (fun _ state => .ok state)
+    (fun _ rest first state => do
+      let next ← step state first
+      rest (first + 1) next) count first state
+
+private def projectDefinition (artifact : Artifact) (state : Projection) (i : Nat) :
+    Except Failure Projection := do
+  let some definition := artifact.definitions[i]? | throw ⟨.invalidIr, some ⟨.definition, i⟩⟩
+  let bytes := match definition.body with | .leaf program => program.size | _ => 0
+  add artifact ⟨.definition, i⟩ state definition.body.referenceCount definition.interface.scan bytes
+    (fun _ => definition.interface.charge + definition.body.charge) (fun _ => definition.body.references)
+    (fun _ => definition.interface.valid && definition.body.bounded)
+
+private def projectMeaning (artifact : Artifact) (state : Projection) (i : Nat) :
+    Except Failure Projection := do
+  let some meaning := artifact.meanings[i]? | throw ⟨.invalidIr, some ⟨.meaning, i⟩⟩
+  let bytes := match meaning.body with | .finite description => description.size | _ => 0
+  add artifact ⟨.meaning, i⟩ state meaning.body.referenceCount meaning.interface.scan bytes
+    (fun _ => meaning.interface.charge + meaning.body.charge) (fun _ => meaning.body.references)
+    (fun _ => meaning.interface.valid && meaning.body.bounded)
+
+private def projectEncoding (artifact : Artifact) (state : Projection) (i : Nat) :
+    Except Failure Projection := do
+  let some encoding := artifact.encodings[i]? | throw ⟨.invalidIr, some ⟨.encoding, i⟩⟩
+  add artifact ⟨.encoding, i⟩ state encoding.body.referenceCount
+    (sideScan encoding.logical + sideScan encoding.physical) 0
+    (fun _ => sideCharge encoding.logical + sideCharge encoding.physical + encoding.body.charge)
+    (fun _ => encoding.body.references)
+    (fun _ => sideValid encoding.logical && sideValid encoding.physical && encoding.body.bounded)
+
+private def projectProof (artifact : Artifact) (state : Projection) (i : Nat) :
+    Except Failure Projection := do
+  let some proof := artifact.proofs[i]? | throw ⟨.invalidIr, some ⟨.proof, i⟩⟩
+  let state ← add artifact ⟨.proof, i⟩ state proof.referenceCount (endpointCost sideScan artifact proof) 0
+    (fun _ => 1 + proof.witness.parameters.size + endpointCost sideCharge artifact proof)
+    (fun _ => proof.references) (fun _ => proof.bounded)
+  if !endpoints artifact proof then throw ⟨.contract, some ⟨.proof, i⟩⟩
+  return state
+
 /-- Projection reads all node constructors and proof fields itself. Definitions
 inside count-zero repeats and all finite bytes remain present for later checks. -/
 def project (artifact : Artifact) : Except Failure Projection := do
   if totalNodes artifact = 0 || totalNodes artifact > 100000 then throw ⟨.limit, none⟩
-  let mut state : Projection := {}
-  for i in [:artifact.definitions.size] do
-    let some definition := artifact.definitions[i]? | throw ⟨.invalidIr, some ⟨.definition, i⟩⟩
-    let bytes := match definition.body with | .leaf program => program.size | _ => 0
-    state ← add artifact ⟨.definition, i⟩ state definition.body.referenceCount definition.interface.scan bytes
-      (fun _ => definition.interface.charge + definition.body.charge) (fun _ => definition.body.references)
-      (fun _ => definition.interface.valid && definition.body.bounded)
-  for i in [:artifact.meanings.size] do
-    let some meaning := artifact.meanings[i]? | throw ⟨.invalidIr, some ⟨.meaning, i⟩⟩
-    let bytes := match meaning.body with | .finite description => description.size | _ => 0
-    state ← add artifact ⟨.meaning, i⟩ state meaning.body.referenceCount meaning.interface.scan bytes
-      (fun _ => meaning.interface.charge + meaning.body.charge) (fun _ => meaning.body.references)
-      (fun _ => meaning.interface.valid && meaning.body.bounded)
-  for i in [:artifact.encodings.size] do
-    let some encoding := artifact.encodings[i]? | throw ⟨.invalidIr, some ⟨.encoding, i⟩⟩
-    state ← add artifact ⟨.encoding, i⟩ state encoding.body.referenceCount
-      (sideScan encoding.logical + sideScan encoding.physical) 0
-      (fun _ => sideCharge encoding.logical + sideCharge encoding.physical + encoding.body.charge)
-      (fun _ => encoding.body.references)
-      (fun _ => sideValid encoding.logical && sideValid encoding.physical && encoding.body.bounded)
-  for i in [:artifact.proofs.size] do
-    let some proof := artifact.proofs[i]? | throw ⟨.invalidIr, some ⟨.proof, i⟩⟩
-    state ← add artifact ⟨.proof, i⟩ state proof.referenceCount (endpointCost sideScan artifact proof) 0
-      (fun _ => 1 + proof.witness.parameters.size + endpointCost sideCharge artifact proof)
-      (fun _ => proof.references) (fun _ => proof.bounded)
-    if !endpoints artifact proof then throw ⟨.contract, some ⟨.proof, i⟩⟩
-  return state
+  let state ← projectRows (projectDefinition artifact) artifact.definitions.size 0 {}
+  let state ← projectRows (projectMeaning artifact) artifact.meanings.size 0 state
+  let state ← projectRows (projectEncoding artifact) artifact.encodings.size 0 state
+  projectRows (projectProof artifact) artifact.proofs.size 0 state
+
+/-- Facts reconstructed by this invocation on the complete immutable artifact.
+This is a proposition, never a producer-supplied flag or serialized cache. -/
+def Headers (artifact : Artifact) : Prop :=
+  (∀ (i : Nat) (d : Definition), artifact.definitions[i]? = some d → d.interface.valid = true) ∧
+  (∀ (i : Nat) (m : Meaning), artifact.meanings[i]? = some m → m.interface.valid = true) ∧
+  (∀ (i : Nat) (e : Encoding), artifact.encodings[i]? = some e →
+    sideValid e.logical = true ∧ sideValid e.physical = true)
+
+private theorem add_valid (artifact : Artifact) (atNode : Ref) (state next : Projection)
+    (referenceCount scan bytes : Nat) (charge : Unit → Nat)
+    (refs : Unit → Array Ref) (valid : Unit → Bool)
+    (accepted : add artifact atNode state referenceCount scan bytes charge refs valid = .ok next) :
+    valid () = true := by
+  by_cases checked : valid () = true
+  · exact checked
+  · have rejected : valid () = false := by cases h : valid () <;> simp_all
+    simp [add, rejected, bind, Except.bind, pure, Except.pure] at accepted
+    split at accepted <;> simp_all
+    split at accepted <;> simp_all
+
+private theorem projectRows_conditions
+    (step : Projection → Nat → Except Failure Projection) (condition : Nat → Prop)
+    (sound : ∀ state index next, step state index = .ok next → condition index)
+    (count first : Nat) (state next : Projection)
+    (accepted : projectRows step count first state = .ok next) :
+    ∀ i, first ≤ i → i < first + count → condition i := by
+  induction count generalizing first state with
+  | zero => intro i lower upper; omega
+  | succ count ih =>
+    cases hs : step state first with
+    | error failure => simp [projectRows, hs, bind, Except.bind] at accepted
+    | ok middle =>
+      have rest : projectRows step count (first + 1) middle = .ok next := by
+        simpa [projectRows, hs] using accepted
+      intro i lower upper
+      by_cases equal : i = first
+      · subst i; exact sound state first middle hs
+      · exact ih (first+1) middle rest i (by omega) (by omega)
+
+private theorem projectDefinition_headers (artifact : Artifact) (state next : Projection) (i : Nat)
+    (accepted : projectDefinition artifact state i = .ok next) :
+    ∀ d, artifact.definitions[i]? = some d → d.interface.valid = true := by
+  intro d found
+  have checked := add_valid artifact ⟨.definition,i⟩ state next _ _ _ _ _ _
+    (by simpa [projectDefinition, found] using accepted)
+  simp only [Bool.and_eq_true] at checked
+  exact checked.1
+
+private theorem projectMeaning_headers (artifact : Artifact) (state next : Projection) (i : Nat)
+    (accepted : projectMeaning artifact state i = .ok next) :
+    ∀ m, artifact.meanings[i]? = some m → m.interface.valid = true := by
+  intro m found
+  have checked := add_valid artifact ⟨.meaning,i⟩ state next _ _ _ _ _ _
+    (by simpa [projectMeaning, found] using accepted)
+  simp only [Bool.and_eq_true] at checked
+  exact checked.1
+
+private theorem projectEncoding_headers (artifact : Artifact) (state next : Projection) (i : Nat)
+    (accepted : projectEncoding artifact state i = .ok next) :
+    ∀ e, artifact.encodings[i]? = some e →
+      sideValid e.logical = true ∧ sideValid e.physical = true := by
+  intro e found
+  have checked := add_valid artifact ⟨.encoding,i⟩ state next _ _ _ _ _ _
+    (by simpa [projectEncoding, found] using accepted)
+  simp only [Bool.and_eq_true] at checked
+  exact checked.1
+
+theorem project_headers (artifact : Artifact) (projected : Projection)
+    (accepted : project artifact = .ok projected) : Headers artifact := by
+  unfold project at accepted
+  split at accepted
+  next invalid => simp [bind, Except.bind] at accepted
+  next bounded =>
+    simp only [bind, Except.bind, pure, Except.pure] at accepted
+    cases hd : projectRows (projectDefinition artifact) artifact.definitions.size 0 {} with
+    | error failure => simp [hd] at accepted
+    | ok definitions =>
+      simp only [hd] at accepted
+      cases hm : projectRows (projectMeaning artifact) artifact.meanings.size 0 definitions with
+      | error failure => simp [hm] at accepted
+      | ok meanings =>
+        simp only [hm] at accepted
+        cases he : projectRows (projectEncoding artifact) artifact.encodings.size 0 meanings with
+        | error failure => simp [he] at accepted
+        | ok encodings =>
+          refine ⟨?_,?_,?_⟩
+          · intro i d found
+            exact projectRows_conditions _ _ (fun state i next => projectDefinition_headers artifact state next i) _ _ _ _ hd i
+              (Nat.zero_le _) (by simpa using (Array.getElem?_eq_some_iff.mp found).1) d found
+          · intro i m found
+            exact projectRows_conditions _ _ (fun state i next => projectMeaning_headers artifact state next i) _ _ _ _ hm i
+              (Nat.zero_le _) (by simpa using (Array.getElem?_eq_some_iff.mp found).1) m found
+          · intro i e found
+            exact projectRows_conditions _ _ (fun state i next => projectEncoding_headers artifact state next i) _ _ _ _ he i
+              (Nat.zero_le _) (by simpa using (Array.getElem?_eq_some_iff.mp found).1) e found
 
 structure Prepared where
   projection : Projection
@@ -520,6 +637,11 @@ theorem prepare_conditions (artifact : Artifact) (order : Array Nat) (prepared :
     have h := finish_conditions artifact projected order prepared (by simpa [hp] using accepted)
     rw [h.1]
     exact ⟨rfl, h.2⟩
+
+theorem prepare_headers (artifact : Artifact) (order : Array Nat) (prepared : Prepared)
+    (accepted : prepare artifact order = .ok prepared) : Headers artifact :=
+  project_headers artifact prepared.projection
+    (prepare_conditions artifact order prepared accepted).1
 
 /-- The checked graph is the projection of this artifact, not a supplied list.
 Typed reference bounds and the remaining shared budget precede scheduling. -/

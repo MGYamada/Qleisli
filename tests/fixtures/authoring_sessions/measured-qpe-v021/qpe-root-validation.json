@@ -1,0 +1,86 @@
+{
+  "format": "qleisli.qpe-root-validation",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 12,
+  "results": {
+    "small": [
+      "pending",
+      "809644",
+      "612753",
+      "4656",
+      "191755",
+      "4"
+    ],
+    "target2": [
+      "pending",
+      "856813",
+      "640387",
+      "5120",
+      "210698",
+      "4"
+    ],
+    "precision3": [
+      "pending",
+      "1321024",
+      "980661",
+      "4656",
+      "335227",
+      "6"
+    ],
+    "target2precision4": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "changed-provider": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-provider-proof": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-provider-proof": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-provider-pair": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "wrong-phase-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-provider-effect": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-provider-kind": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "incomplete-artifact": [
+      "QleisliKernel.Hierarchical.Artifact.Error.invalidIr"
+    ]
+  },
+  "source_sha256": "1e152a4127556534041ea93726cf2d57f4ff9009fb81306d7f81d1508ee4b65d",
+  "binary_sha256": "877d294ab442d7480e83e705f8c84f6651b4004ab5413b863aa6e7f9bfb26c41",
+  "kernel_source_sha256": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+  "script_sha256": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [81/83] Built Main (10s)\n\u2714 [82/83] Built Main:c.o (1.1s)\n\u2714 [83/83] Built \u00abartifact-test\u00bb:exe (161ms)\nBuild completed successfully (83 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-e6iujyzm/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "small|pending|809644|612753|4656|191755|4\ntarget2|pending|856813|640387|5120|210698|4\nprecision3|pending|1321024|980661|4656|335227|6\ntarget2precision4|QleisliKernel.Hierarchical.Artifact.Error.limit\nchanged-provider|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-provider-proof|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-provider-proof|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-provider-pair|QleisliKernel.Hierarchical.Artifact.Error.limit\nwrong-phase-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-provider-effect|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-provider-kind|QleisliKernel.Hierarchical.Artifact.Error.contract\nincomplete-artifact|QleisliKernel.Hierarchical.Artifact.Error.invalidIr\n",
+      "stderr": ""
+    }
+  ],
+  "provider_request_origin": "frozen baseline mutation fixture",
+  "finite_equations_discharged": false,
+  "named_qpe_instrument": false,
+  "production_integration": false
+}

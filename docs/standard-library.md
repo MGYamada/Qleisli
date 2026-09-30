@@ -32,6 +32,14 @@ no implicit flattening or new sealed operation is introduced.
 
 <a id="qli-が表すもの"></a>
 
+The executable [sealed declaration inventory](../src/frontend/core.rs) exposes
+all current primitive signatures, effects and arities separately from ordinary
+bundled `.qli` source. Resolution and primitive lowering use that inventory;
+independent verification still checks emitted IR. `A`/`B` in its signature text
+are specification metavariables. This adds neither generic source declarations
+nor a `core::` import path, and source cannot replace a sealed implementation.
+[Signature regressions](../tests/review_v021.rs) instantiate every declaration.
+
 ## What a `.qli` file represents
 
 A `.qli` file is UTF-8 **Qleisli source**, not quantum-state data, a circuit

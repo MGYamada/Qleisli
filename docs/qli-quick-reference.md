@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented finite source, Qleisli 0.2.0.** Start here and copy a complete program
+**Implemented finite source, Qleisli 0.2.2.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite
@@ -35,7 +35,8 @@ not a supported alias. The complete programs below use implemented finite types.
 
 ## Ownership and ordinary feedback
 
-Import each operation explicitly. `Q<Bit>` is one owned qubit; using it consumes
+Import each operation explicitly; grouped imports such as
+`use std::quantum::{h,x};` are also supported. `Q<Bit>` is one owned qubit; using it consumes
 that binding. An operation may return its successor under the same name.
 `measure_z` consumes its qubit and returns `CBit`. `if` branches on a classical
 bit and both arms must return compatible ownership. `false`/`true` are `CBit`;
@@ -117,7 +118,7 @@ type variable. Declare each access separately: `Apply(U)`, `Adjoint(U)`,
 also derive Apply/Adjoint for `controlled_op(U)` and Controlled for
 `inverse_op(U)` from `Controlled(U)`, using checked transparent circuits.
 This does not extend to future opaque providers; see
-[A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors).
+[A020-09](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors).
 `adjoint(U,q)` is inverse application;
 `qif(c,q) { 0 => f, 1 => U }` coherently applies branch operations and returns
 `(control,target)`, preserving phase. `qif` is not classical `if`.

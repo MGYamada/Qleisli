@@ -101,6 +101,8 @@ impl RetainedIdentity {
 /// All fields are private. Cloning evidence preserves its checked raw snapshots
 /// and dependency graph. A function call may reuse `meaning` without evaluating
 /// the function body again. Identity includes global phase and output ordering.
+/// `Eq` compares issued proof identities: clones are equal, independently
+/// checked receipts are distinct even when their snapshots are identical.
 #[derive(Clone)]
 pub struct FunctionEvidence {
     signature: BasisType,

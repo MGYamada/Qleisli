@@ -53,6 +53,8 @@ pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseEr
         tokens,
         pos: 0,
         nesting: 0,
+        remaining_import_prefix_identifiers: MAX_IMPORT_PREFIX_IDENTIFIERS,
+        remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
     };
     let syntax = parser.module(source.len())?;
     attach(syntax, &parser.tokens, comments)
@@ -61,11 +63,17 @@ pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseEr
 /// An implementation limit on recursive syntax and left-associated expression ASTs.
 const MAX_NESTING: usize = 64;
 const MAX_TUPLE_FIELDS: usize = 64;
+// Only group-induced prefix copies spend these module-wide budgets. Original
+// path tokens remain linear in the input, including long ungrouped imports.
+const MAX_IMPORT_PREFIX_IDENTIFIERS: usize = 65_536;
+const MAX_IMPORT_PREFIX_BYTES: usize = 1_048_576;
 
 struct Parser {
     tokens: Vec<Token>,
     pos: usize,
     nesting: usize,
+    remaining_import_prefix_identifiers: usize,
+    remaining_import_prefix_bytes: usize,
 }
 
 impl Parser {
@@ -87,7 +95,7 @@ impl Parser {
         let mut decls = Vec::new();
         while !self.at(&TokenKind::Eof) {
             if self.at(&TokenKind::Use) {
-                uses.push(self.use_decl()?);
+                uses.extend(self.use_decl()?);
             } else if self.at(&TokenKind::Pub)
                 || self.at(&TokenKind::Basis)
                 || self.at(&TokenKind::Iso)
@@ -107,47 +115,91 @@ impl Parser {
         })
     }
 
-    fn use_decl(&mut self) -> Result<UseDecl, ParseError> {
+    fn use_decl(&mut self) -> Result<Vec<UseDecl>, ParseError> {
         let start = self.expect(&TokenKind::Use)?.span.start;
-        let first = self.ident()?;
-        let is_std = first.text == "std";
-        let mut path = vec![first];
-        self.expect(&TokenKind::DoubleColon)?;
-        // `basis` and `observe` are declaration keywords, but also the names
-        // of compiler-owned std modules. Only that path position admits them.
-        if is_std && matches!(self.current().kind, TokenKind::Basis | TokenKind::Observe) {
-            let token = self.bump();
-            let text = match token.kind {
-                TokenKind::Basis => "basis",
-                TokenKind::Observe => "observe",
-                _ => unreachable!("checked std module keyword"),
-            };
-            path.push(Ident {
-                text: text.to_owned(),
-                span: token.span,
-            });
-            self.expect(&TokenKind::DoubleColon)?;
-            path.push(self.import_ident()?);
-        } else {
-            path.push(self.import_ident()?);
-        }
-        while self.consume(&TokenKind::DoubleColon).is_some() {
-            path.push(self.import_ident()?);
-        }
+        let paths = self.use_tree(&[])?;
         let end = self.expect(&TokenKind::Semicolon)?.span.end;
-        Ok(UseDecl {
-            path,
-            span: Span::new(start, end),
-        })
+        Ok(paths
+            .into_iter()
+            .map(|path| UseDecl {
+                path,
+                span: Span::new(start, end),
+            })
+            .collect())
     }
 
-    fn import_ident(&mut self) -> Result<Ident, ParseError> {
+    // Grouping expands to the existing leaf AST, without changing resolution.
+    fn use_tree(&mut self, prefix: &[Ident]) -> Result<Vec<Vec<Ident>>, ParseError> {
         if self.at(&TokenKind::LBrace) {
-            return Err(self.error(
-                "grouped imports are unsupported; write one name per `use`, for example `use std::quantum::init0; use std::quantum::h;`",
-            ));
+            return self.nested(|parser| {
+                parser.bump();
+                if parser.at(&TokenKind::RBrace) {
+                    return Err(parser.error("import groups must contain at least one name"));
+                }
+                let mut paths = Vec::new();
+                loop {
+                    paths.extend(parser.use_tree(prefix)?);
+                    if parser.consume(&TokenKind::Comma).is_none() || parser.at(&TokenKind::RBrace)
+                    {
+                        break;
+                    }
+                }
+                parser.expect(&TokenKind::RBrace)?;
+                Ok(paths)
+            });
         }
-        self.ident()
+        let mut path = self.clone_import_prefix(prefix)?;
+        loop {
+            // Declaration keywords are admitted only in the std module position.
+            let name = if path.len() == 1
+                && path[0].text == "std"
+                && matches!(self.current().kind, TokenKind::Basis | TokenKind::Observe)
+            {
+                let token = self.bump();
+                Ident {
+                    text: if token.kind == TokenKind::Basis {
+                        "basis"
+                    } else {
+                        "observe"
+                    }
+                    .into(),
+                    span: token.span,
+                }
+            } else {
+                self.ident()?
+            };
+            path.push(name);
+            if self.consume(&TokenKind::DoubleColon).is_none() {
+                return if path.len() < 2 {
+                    Err(self.error("imports require a module path and a name"))
+                } else {
+                    Ok(vec![path])
+                };
+            }
+            if self.at(&TokenKind::LBrace) {
+                return self.use_tree(&path);
+            }
+        }
+    }
+
+    fn clone_import_prefix(&mut self, prefix: &[Ident]) -> Result<Vec<Ident>, ParseError> {
+        let identifiers = self
+            .remaining_import_prefix_identifiers
+            .checked_sub(prefix.len())
+            .ok_or_else(|| {
+                self.error("grouped import expansion exceeds the 65536 copied identifiers limit")
+            })?;
+        let bytes = prefix
+            .iter()
+            .try_fold(self.remaining_import_prefix_bytes, |remaining, name| {
+                remaining.checked_sub(name.text.len())
+            })
+            .ok_or_else(|| {
+                self.error("grouped import expansion exceeds the 1048576 copied name bytes limit")
+            })?;
+        self.remaining_import_prefix_identifiers = identifiers;
+        self.remaining_import_prefix_bytes = bytes;
+        Ok(prefix.to_vec())
     }
 
     fn decl(&mut self) -> Result<Decl, ParseError> {

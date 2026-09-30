@@ -68,4 +68,4 @@ The [isolated package record](clean-build-record.json) uses a fresh copy without
 build, reductions, compiled audit, fresh `Main` replay and all native typed-call
 tests. It does not constitute clean Git release-distribution validation.
 Remaining gates and performed checks are in the
-[release checkpoint](../../../docs/releases/v0.2.0.md#shared-typed-layout-checkpoint-2026-09-29).
+[release checkpoint](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md#shared-typed-layout-checkpoint-2026-09-29).

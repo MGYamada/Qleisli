@@ -41,6 +41,6 @@ algorithms in v1. Executable Shor, QPE, and Grover remain the acceptance target.
 
 The requirement index is a design ledger, not a list of adopted features.
 Unresolved contracts are allowed when explicit. An initial draft may change
-after a counterexample. The [conformance record](../specification-status.md)
+after a counterexample. The [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md)
 records prerequisite completion separately from any future implementation,
 validation of compiled programs, proof, or release publication.

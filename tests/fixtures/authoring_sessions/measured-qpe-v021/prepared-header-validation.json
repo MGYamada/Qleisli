@@ -1,0 +1,5104 @@
+{
+  "format": "qleisli.prepared-header-continuation",
+  "version": 1,
+  "status": "validated-components-final-integration-audit-separate",
+  "scope": "small systems; fresh immutable-artifact header reuse, no authority or limit change",
+  "mechanism": "Actual preparation proves every definition/meaning/encoding header valid. Private prepared checks omit only these repeated predicates; equivalence lemmas recover original public conditions. Standalone checks remain unchanged.",
+  "cost_contract": "Current-row repeated quadratic header charge is replaced by conservative linear full-field work with the same factor16 and capped by the old charge. Referenced-header/map/freshness costs remain. Failed mirrored hints compare before scanning both equal headers. These bounds do not prove Resource Safety.",
+  "typing": {
+    "cases": 104,
+    "same_decisions": true,
+    "lower_whole_cost_cases": 13,
+    "changed_costs": {
+      "whole-base": {
+        "before": [
+          "typed",
+          "5201"
+        ],
+        "current": [
+          "typed",
+          "4049"
+        ]
+      },
+      "whole-zero": {
+        "before": [
+          "typed",
+          "3755"
+        ],
+        "current": [
+          "typed",
+          "2987"
+        ]
+      },
+      "whole-phase-still-needs-proof": {
+        "before": [
+          "typed",
+          "1671"
+        ],
+        "current": [
+          "typed",
+          "1095"
+        ]
+      },
+      "reuse-identical-rewire-0": {
+        "before": [
+          "typed",
+          "2487",
+          "1825"
+        ],
+        "current": [
+          "typed",
+          "2391",
+          "1633"
+        ]
+      },
+      "reuse-identical-rewire-1": {
+        "before": [
+          "typed",
+          "3955",
+          "2702"
+        ],
+        "current": [
+          "typed",
+          "3763",
+          "2318"
+        ]
+      },
+      "reuse-identical-rewire-2": {
+        "before": [
+          "typed",
+          "5743",
+          "3739"
+        ],
+        "current": [
+          "typed",
+          "5455",
+          "3163"
+        ]
+      },
+      "reuse-identical-rewire-3": {
+        "before": [
+          "typed",
+          "7851",
+          "4936"
+        ],
+        "current": [
+          "typed",
+          "7467",
+          "4168"
+        ]
+      },
+      "reuse-identical-rewire-4": {
+        "before": [
+          "typed",
+          "10279",
+          "6293"
+        ],
+        "current": [
+          "typed",
+          "9799",
+          "5333"
+        ]
+      },
+      "reuse-structural": {
+        "before": [
+          "typed",
+          "6203",
+          "4619"
+        ],
+        "current": [
+          "typed",
+          "5739",
+          "3227"
+        ]
+      },
+      "fallback-different-valid-map": {
+        "before": [
+          "typed",
+          "10861",
+          "10861"
+        ],
+        "current": [
+          "typed",
+          "10221",
+          "8941"
+        ]
+      },
+      "fallback-different-header": {
+        "before": [
+          "typed",
+          "8768",
+          "8768"
+        ],
+        "current": [
+          "typed",
+          "8480",
+          "7616"
+        ]
+      },
+      "fallback-unequal-header-sizes": {
+        "before": [
+          "typed",
+          "249630",
+          "248377"
+        ],
+        "current": [
+          "typed",
+          "176478",
+          "174841"
+        ]
+      },
+      "fallback-finite-obligation": {
+        "before": [
+          "typed",
+          "2813",
+          "2813"
+        ],
+        "current": [
+          "typed",
+          "2621",
+          "2237"
+        ]
+      }
+    },
+    "previous_results": {
+      "identity-0": [
+        "typed",
+        "326"
+      ],
+      "finite-0": [
+        "typed",
+        "326"
+      ],
+      "qft-0": [
+        "invalid_ir"
+      ],
+      "identity-1": [
+        "typed",
+        "454"
+      ],
+      "finite-1": [
+        "typed",
+        "454"
+      ],
+      "qft-1": [
+        "typed",
+        "454"
+      ],
+      "identity-2": [
+        "typed",
+        "582"
+      ],
+      "finite-2": [
+        "typed",
+        "582"
+      ],
+      "qft-2": [
+        "typed",
+        "582"
+      ],
+      "identity-3": [
+        "typed",
+        "710"
+      ],
+      "finite-3": [
+        "typed",
+        "710"
+      ],
+      "qft-3": [
+        "typed",
+        "710"
+      ],
+      "finite-empty": [
+        "invalid_ir"
+      ],
+      "pure-no-classical": [
+        "invalid_ir"
+      ],
+      "identity-exact-owners": [
+        "invalid_ir"
+      ],
+      "qft-no-product-substitution": [
+        "invalid_ir"
+      ],
+      "qft-no-Bit-substitution": [
+        "invalid_ir"
+      ],
+      "qft-axis-order": [
+        "invalid_ir"
+      ],
+      "phase-Bit": [
+        "typed",
+        "454"
+      ],
+      "phase-not-Bits1": [
+        "invalid_ir"
+      ],
+      "phase-not-multiple-owners": [
+        "invalid_ir"
+      ],
+      "phase-outside-domain": [
+        "invalid_ir"
+      ],
+      "sequence": [
+        "typed",
+        "1360"
+      ],
+      "sequence-empty": [
+        "invalid_ir"
+      ],
+      "sequence-dangling": [
+        "invalid_ir"
+      ],
+      "tensor": [
+        "typed",
+        "1970"
+      ],
+      "tensor-owner-alias": [
+        "invalid_ir"
+      ],
+      "tensor-axis-alias": [
+        "invalid_ir"
+      ],
+      "inverse": [
+        "typed",
+        "890"
+      ],
+      "inverse-rectangular": [
+        "invalid_ir"
+      ],
+      "control-renamed-same-type": [
+        "typed",
+        "1534"
+      ],
+      "control-forbids-implicit-conversion": [
+        "invalid_ir"
+      ],
+      "power-0": [
+        "typed",
+        "890"
+      ],
+      "power-1": [
+        "typed",
+        "890"
+      ],
+      "power-4096": [
+        "typed",
+        "890"
+      ],
+      "power-outside-domain": [
+        "invalid_ir"
+      ],
+      "power-not-closed": [
+        "invalid_ir"
+      ],
+      "rewire": [
+        "typed",
+        "4575"
+      ],
+      "rewire-missing-owner": [
+        "invalid_ir"
+      ],
+      "qpe-header-1-1": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-1-2": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-1-3": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-2-1": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-2-2": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-2-3": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-3-1": [
+        "typed",
+        "1660"
+      ],
+      "qpe-header-3-2": [
+        "typed",
+        "1660"
+      ],
+      "qpe-header-3-3": [
+        "typed",
+        "1660"
+      ],
+      "qpe-target-zero": [
+        "invalid_ir"
+      ],
+      "qpe-precision-zero": [
+        "invalid_ir"
+      ],
+      "qpe-wrong-provider-type": [
+        "invalid_ir"
+      ],
+      "qpe-wrong-precision-type": [
+        "invalid_ir"
+      ],
+      "qpe-cannot-drop-target": [
+        "invalid_ir"
+      ],
+      "qpe-cannot-measure-target": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-inverse": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-power": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-sequence": [
+        "invalid_ir"
+      ],
+      "encoding-identity-0": [
+        "typed",
+        "326"
+      ],
+      "encoding-identity-1": [
+        "typed",
+        "454"
+      ],
+      "encoding-identity-2": [
+        "typed",
+        "582"
+      ],
+      "encoding-identity-3": [
+        "typed",
+        "710"
+      ],
+      "encoding-classical-identity": [
+        "typed",
+        "842"
+      ],
+      "encoding-identity-wrong-name": [
+        "invalid_ir"
+      ],
+      "encoding-identity-wrong-type": [
+        "invalid_ir"
+      ],
+      "encoding-tensor": [
+        "typed",
+        "1970"
+      ],
+      "encoding-tensor-alias": [
+        "invalid_ir"
+      ],
+      "encoding-rewire": [
+        "typed",
+        "5653"
+      ],
+      "encoding-rewire-changes-logical": [
+        "invalid_ir"
+      ],
+      "scratch-one": [
+        "typed",
+        "1854"
+      ],
+      "scratch-zero-owner": [
+        "typed",
+        "1662"
+      ],
+      "scratch-unit-owner": [
+        "typed",
+        "1662"
+      ],
+      "scratch-count-understated": [
+        "invalid_ir"
+      ],
+      "scratch-count-overstated": [
+        "invalid_ir"
+      ],
+      "scratch-axis-capture": [
+        "invalid_ir"
+      ],
+      "scratch-compute-not-unitary": [
+        "invalid_ir"
+      ],
+      "scratch-prefix-not-dimension": [
+        "invalid_ir"
+      ],
+      "scratch-logical-type-change": [
+        "invalid_ir"
+      ],
+      "wrong-reference-table": [
+        "invalid_ir"
+      ],
+      "missing-reference": [
+        "invalid_ir"
+      ],
+      "zero-budget": [
+        "limit"
+      ],
+      "too-large-budget": [
+        "limit"
+      ],
+      "oversized-meaning": [
+        "limit"
+      ],
+      "control-definition-conversion": [
+        "invalid_ir"
+      ],
+      "whole-base": [
+        "typed",
+        "5201"
+      ],
+      "whole-zero": [
+        "typed",
+        "3755"
+      ],
+      "whole-hidden-meaning": [
+        "invalid_ir"
+      ],
+      "whole-false-scratch": [
+        "invalid_ir"
+      ],
+      "whole-budget": [
+        "limit"
+      ],
+      "whole-phase-still-needs-proof": [
+        "typed",
+        "1671"
+      ],
+      "reuse-identical-rewire-0": [
+        "typed",
+        "2487",
+        "1825"
+      ],
+      "reuse-identical-rewire-1": [
+        "typed",
+        "3955",
+        "2702"
+      ],
+      "reuse-identical-rewire-2": [
+        "typed",
+        "5743",
+        "3739"
+      ],
+      "reuse-identical-rewire-3": [
+        "typed",
+        "7851",
+        "4936"
+      ],
+      "reuse-identical-rewire-4": [
+        "typed",
+        "10279",
+        "6293"
+      ],
+      "reuse-structural": [
+        "typed",
+        "6203",
+        "4619"
+      ],
+      "fallback-different-valid-map": [
+        "typed",
+        "10861",
+        "10861"
+      ],
+      "fallback-different-header": [
+        "typed",
+        "8768",
+        "8768"
+      ],
+      "fallback-unequal-header-sizes": [
+        "typed",
+        "249630",
+        "248377"
+      ],
+      "fallback-finite-obligation": [
+        "typed",
+        "2813",
+        "2813"
+      ],
+      "reuse-bad-actual-map": [
+        "invalid_ir"
+      ],
+      "reuse-bad-meaning-map": [
+        "invalid_ir"
+      ],
+      "reuse-bad-structural": [
+        "invalid_ir"
+      ],
+      "reuse-rejects-classical-meaning": [
+        "invalid_ir"
+      ],
+      "reuse-bad-meaning-type": [
+        "contract"
+      ]
+    },
+    "current_results": {
+      "identity-0": [
+        "typed",
+        "326"
+      ],
+      "finite-0": [
+        "typed",
+        "326"
+      ],
+      "qft-0": [
+        "invalid_ir"
+      ],
+      "identity-1": [
+        "typed",
+        "454"
+      ],
+      "finite-1": [
+        "typed",
+        "454"
+      ],
+      "qft-1": [
+        "typed",
+        "454"
+      ],
+      "identity-2": [
+        "typed",
+        "582"
+      ],
+      "finite-2": [
+        "typed",
+        "582"
+      ],
+      "qft-2": [
+        "typed",
+        "582"
+      ],
+      "identity-3": [
+        "typed",
+        "710"
+      ],
+      "finite-3": [
+        "typed",
+        "710"
+      ],
+      "qft-3": [
+        "typed",
+        "710"
+      ],
+      "finite-empty": [
+        "invalid_ir"
+      ],
+      "pure-no-classical": [
+        "invalid_ir"
+      ],
+      "identity-exact-owners": [
+        "invalid_ir"
+      ],
+      "qft-no-product-substitution": [
+        "invalid_ir"
+      ],
+      "qft-no-Bit-substitution": [
+        "invalid_ir"
+      ],
+      "qft-axis-order": [
+        "invalid_ir"
+      ],
+      "phase-Bit": [
+        "typed",
+        "454"
+      ],
+      "phase-not-Bits1": [
+        "invalid_ir"
+      ],
+      "phase-not-multiple-owners": [
+        "invalid_ir"
+      ],
+      "phase-outside-domain": [
+        "invalid_ir"
+      ],
+      "sequence": [
+        "typed",
+        "1360"
+      ],
+      "sequence-empty": [
+        "invalid_ir"
+      ],
+      "sequence-dangling": [
+        "invalid_ir"
+      ],
+      "tensor": [
+        "typed",
+        "1970"
+      ],
+      "tensor-owner-alias": [
+        "invalid_ir"
+      ],
+      "tensor-axis-alias": [
+        "invalid_ir"
+      ],
+      "inverse": [
+        "typed",
+        "890"
+      ],
+      "inverse-rectangular": [
+        "invalid_ir"
+      ],
+      "control-renamed-same-type": [
+        "typed",
+        "1534"
+      ],
+      "control-forbids-implicit-conversion": [
+        "invalid_ir"
+      ],
+      "power-0": [
+        "typed",
+        "890"
+      ],
+      "power-1": [
+        "typed",
+        "890"
+      ],
+      "power-4096": [
+        "typed",
+        "890"
+      ],
+      "power-outside-domain": [
+        "invalid_ir"
+      ],
+      "power-not-closed": [
+        "invalid_ir"
+      ],
+      "rewire": [
+        "typed",
+        "4575"
+      ],
+      "rewire-missing-owner": [
+        "invalid_ir"
+      ],
+      "qpe-header-1-1": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-1-2": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-1-3": [
+        "typed",
+        "1148"
+      ],
+      "qpe-header-2-1": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-2-2": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-2-3": [
+        "typed",
+        "1404"
+      ],
+      "qpe-header-3-1": [
+        "typed",
+        "1660"
+      ],
+      "qpe-header-3-2": [
+        "typed",
+        "1660"
+      ],
+      "qpe-header-3-3": [
+        "typed",
+        "1660"
+      ],
+      "qpe-target-zero": [
+        "invalid_ir"
+      ],
+      "qpe-precision-zero": [
+        "invalid_ir"
+      ],
+      "qpe-wrong-provider-type": [
+        "invalid_ir"
+      ],
+      "qpe-wrong-precision-type": [
+        "invalid_ir"
+      ],
+      "qpe-cannot-drop-target": [
+        "invalid_ir"
+      ],
+      "qpe-cannot-measure-target": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-inverse": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-power": [
+        "invalid_ir"
+      ],
+      "instrument-not-pure-sequence": [
+        "invalid_ir"
+      ],
+      "encoding-identity-0": [
+        "typed",
+        "326"
+      ],
+      "encoding-identity-1": [
+        "typed",
+        "454"
+      ],
+      "encoding-identity-2": [
+        "typed",
+        "582"
+      ],
+      "encoding-identity-3": [
+        "typed",
+        "710"
+      ],
+      "encoding-classical-identity": [
+        "typed",
+        "842"
+      ],
+      "encoding-identity-wrong-name": [
+        "invalid_ir"
+      ],
+      "encoding-identity-wrong-type": [
+        "invalid_ir"
+      ],
+      "encoding-tensor": [
+        "typed",
+        "1970"
+      ],
+      "encoding-tensor-alias": [
+        "invalid_ir"
+      ],
+      "encoding-rewire": [
+        "typed",
+        "5653"
+      ],
+      "encoding-rewire-changes-logical": [
+        "invalid_ir"
+      ],
+      "scratch-one": [
+        "typed",
+        "1854"
+      ],
+      "scratch-zero-owner": [
+        "typed",
+        "1662"
+      ],
+      "scratch-unit-owner": [
+        "typed",
+        "1662"
+      ],
+      "scratch-count-understated": [
+        "invalid_ir"
+      ],
+      "scratch-count-overstated": [
+        "invalid_ir"
+      ],
+      "scratch-axis-capture": [
+        "invalid_ir"
+      ],
+      "scratch-compute-not-unitary": [
+        "invalid_ir"
+      ],
+      "scratch-prefix-not-dimension": [
+        "invalid_ir"
+      ],
+      "scratch-logical-type-change": [
+        "invalid_ir"
+      ],
+      "wrong-reference-table": [
+        "invalid_ir"
+      ],
+      "missing-reference": [
+        "invalid_ir"
+      ],
+      "zero-budget": [
+        "limit"
+      ],
+      "too-large-budget": [
+        "limit"
+      ],
+      "oversized-meaning": [
+        "limit"
+      ],
+      "control-definition-conversion": [
+        "invalid_ir"
+      ],
+      "whole-base": [
+        "typed",
+        "4049"
+      ],
+      "whole-zero": [
+        "typed",
+        "2987"
+      ],
+      "whole-hidden-meaning": [
+        "invalid_ir"
+      ],
+      "whole-false-scratch": [
+        "invalid_ir"
+      ],
+      "whole-budget": [
+        "limit"
+      ],
+      "whole-phase-still-needs-proof": [
+        "typed",
+        "1095"
+      ],
+      "reuse-identical-rewire-0": [
+        "typed",
+        "2391",
+        "1633"
+      ],
+      "reuse-identical-rewire-1": [
+        "typed",
+        "3763",
+        "2318"
+      ],
+      "reuse-identical-rewire-2": [
+        "typed",
+        "5455",
+        "3163"
+      ],
+      "reuse-identical-rewire-3": [
+        "typed",
+        "7467",
+        "4168"
+      ],
+      "reuse-identical-rewire-4": [
+        "typed",
+        "9799",
+        "5333"
+      ],
+      "reuse-structural": [
+        "typed",
+        "5739",
+        "3227"
+      ],
+      "fallback-different-valid-map": [
+        "typed",
+        "10221",
+        "8941"
+      ],
+      "fallback-different-header": [
+        "typed",
+        "8480",
+        "7616"
+      ],
+      "fallback-unequal-header-sizes": [
+        "typed",
+        "176478",
+        "174841"
+      ],
+      "fallback-finite-obligation": [
+        "typed",
+        "2621",
+        "2237"
+      ],
+      "reuse-bad-actual-map": [
+        "invalid_ir"
+      ],
+      "reuse-bad-meaning-map": [
+        "invalid_ir"
+      ],
+      "reuse-bad-structural": [
+        "invalid_ir"
+      ],
+      "reuse-rejects-classical-meaning": [
+        "invalid_ir"
+      ],
+      "reuse-bad-meaning-type": [
+        "contract"
+      ]
+    },
+    "before_source_sha256": {
+      "Artifact": "639cfbd448fec0c496f105168faf7fefa0463951e5574770d147e72c59227046",
+      "NodeTyping": "df66a1c9b76a835091ad2fa57c976ac54aec77505e2e6f8104b85581e5dca7e4",
+      "ContractTyping": "ce1150afbbc99b4b4b7f51bb3e61efe46dace471af7676e496672d32b9d1c21f"
+    },
+    "current_source_sha256": {
+      "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "a57866a54d1709c37445625829dbe3425be4e71ac4021a759b446657d7e3313a",
+      "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+      "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc",
+      "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+      "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "af909f47f285eeb643f2ec80f6fd0b06210a93145559fd4d6d42ea37e2033170",
+      "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "4f189e4b14568da1e3f7c2362afa3dff774c5fd1ccbbb66d5c54588f862a1fe9",
+      "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "2299e8cbae37857b5b0d3ffe2ce5093274a949c699939f48c16eee3436763ed9",
+      "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean": "6878ed9cc6a65de22e0ad66f990df17a1f06360f8e9d4ed4e6d72a9362245fe1",
+      "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean": "be713a65e4a191e4f5d2d055223a1ca40e7cd1231a93238a91d90739c99a7497",
+      "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean": "c6c178f2b48042c0b0aefa0497164603db7dd1620a5496d874454f4be0979004",
+      "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "bebadb3fe717b5e3cd5085eb0649d49c60c64dc95af760177b85935396ac4064",
+      "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean": "2b661cbd7ab0de55401727918247a88e71062032a0c1eb52b26791ddbce73032",
+      "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean": "c4e4fbc0da917a1d4a50f465495763af032958f6132188ab5f6f437674186822",
+      "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+      "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean": "7536ba1bd23d10e451d8903d787f832e01c2979ff24fe8ced4ecc0246dc764e2",
+      "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean": "defa2c3b8d48373c9a841c81702fa282a957a7af42f2f83cef9992d39e1b6065",
+      "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "33eb6bff842c32b4a5c81526e1b414064f1f1bef6fea35e21fbca2f0941e9e05",
+      "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+      "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "ae3e22c8c0c81021da690f3ddc0e06bf24d1281cb5d84b13cf2a566d49603838",
+      "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+      "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "a07b8dd52cfb4458d1d852208022a75a784cef3196a5b480139976af907e7262",
+      "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+      "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "0a654aab5e7113e5c1ae2b1fe4612101fad01d88ce0f22b87f50c9ecbb2e25aa",
+      "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+      "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+      "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "204ba5ba2cc42ff834628d34be9a2f5e2bda1c7ad5e41408bb02a3baec5e5d0e",
+      "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "879463bd57d6d3a940aec16e06224f393e6b7f5680c92a21f643ae37c0e55a34",
+      "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+      "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": "f94edf4ef31545a8ff5957a950618281ffa077c827573120f51248e25264c39e",
+      "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean": "d87d4317c39ec42d770db065aaf8c4943b9e219ea7b7a0c3e7e32824baf5469b",
+      "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e",
+      "scripts/test_hierarchical_typing.py": "469cf88986327c4c2a92567c66427c0a632f123c64d7ca55ac6b094ad883daf0",
+      "scripts/test_hierarchical_contract_typing.py": "1c4bc5213f62e11ed85f97e5a13abf1f882db436daaed707907298ba1c8d7392"
+    },
+    "harness_sha256": "306fb14e02f3f9a9153193df212b1a15c5ef7fe9ec9afd34cb070aacddf6cc5e",
+    "before_native": [
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "exit_code": 0,
+        "stdout": "\u2714 [17/19] Built Main (1.3s)\n\u2714 [18/19] Built Main:c.o (689ms)\n\u2714 [19/19] Built \u00abartifact-test\u00bb:exe (277ms)\nBuild completed successfully (19 jobs).\n",
+        "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+      },
+      {
+        "argv": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-q5z9rpul/.lake/build/bin/artifact-test"
+        ],
+        "exit_code": 0,
+        "stdout": "identity-0|typed|326\nfinite-0|typed|326\nqft-0|invalid_ir\nidentity-1|typed|454\nfinite-1|typed|454\nqft-1|typed|454\nidentity-2|typed|582\nfinite-2|typed|582\nqft-2|typed|582\nidentity-3|typed|710\nfinite-3|typed|710\nqft-3|typed|710\nfinite-empty|invalid_ir\npure-no-classical|invalid_ir\nidentity-exact-owners|invalid_ir\nqft-no-product-substitution|invalid_ir\nqft-no-Bit-substitution|invalid_ir\nqft-axis-order|invalid_ir\nphase-Bit|typed|454\nphase-not-Bits1|invalid_ir\nphase-not-multiple-owners|invalid_ir\nphase-outside-domain|invalid_ir\nsequence|typed|1360\nsequence-empty|invalid_ir\nsequence-dangling|invalid_ir\ntensor|typed|1970\ntensor-owner-alias|invalid_ir\ntensor-axis-alias|invalid_ir\ninverse|typed|890\ninverse-rectangular|invalid_ir\ncontrol-renamed-same-type|typed|1534\ncontrol-forbids-implicit-conversion|invalid_ir\npower-0|typed|890\npower-1|typed|890\npower-4096|typed|890\npower-outside-domain|invalid_ir\npower-not-closed|invalid_ir\nrewire|typed|4575\nrewire-missing-owner|invalid_ir\nqpe-header-1-1|typed|1148\nqpe-header-1-2|typed|1148\nqpe-header-1-3|typed|1148\nqpe-header-2-1|typed|1404\nqpe-header-2-2|typed|1404\nqpe-header-2-3|typed|1404\nqpe-header-3-1|typed|1660\nqpe-header-3-2|typed|1660\nqpe-header-3-3|typed|1660\nqpe-target-zero|invalid_ir\nqpe-precision-zero|invalid_ir\nqpe-wrong-provider-type|invalid_ir\nqpe-wrong-precision-type|invalid_ir\nqpe-cannot-drop-target|invalid_ir\nqpe-cannot-measure-target|invalid_ir\ninstrument-not-pure-inverse|invalid_ir\ninstrument-not-pure-power|invalid_ir\ninstrument-not-pure-sequence|invalid_ir\nencoding-identity-0|typed|326\nencoding-identity-1|typed|454\nencoding-identity-2|typed|582\nencoding-identity-3|typed|710\nencoding-classical-identity|typed|842\nencoding-identity-wrong-name|invalid_ir\nencoding-identity-wrong-type|invalid_ir\nencoding-tensor|typed|1970\nencoding-tensor-alias|invalid_ir\nencoding-rewire|typed|5653\nencoding-rewire-changes-logical|invalid_ir\nscratch-one|typed|1854\nscratch-zero-owner|typed|1662\nscratch-unit-owner|typed|1662\nscratch-count-understated|invalid_ir\nscratch-count-overstated|invalid_ir\nscratch-axis-capture|invalid_ir\nscratch-compute-not-unitary|invalid_ir\nscratch-prefix-not-dimension|invalid_ir\nscratch-logical-type-change|invalid_ir\nwrong-reference-table|invalid_ir\nmissing-reference|invalid_ir\nzero-budget|limit\ntoo-large-budget|limit\noversized-meaning|limit\ncontrol-definition-conversion|invalid_ir\nwhole-base|typed|5201\nwhole-zero|typed|3755\nwhole-hidden-meaning|invalid_ir\nwhole-false-scratch|invalid_ir\nwhole-budget|limit\nwhole-phase-still-needs-proof|typed|1671\nreuse-identical-rewire-0|typed|2487|1825\nreuse-identical-rewire-1|typed|3955|2702\nreuse-identical-rewire-2|typed|5743|3739\nreuse-identical-rewire-3|typed|7851|4936\nreuse-identical-rewire-4|typed|10279|6293\nreuse-structural|typed|6203|4619\nfallback-different-valid-map|typed|10861|10861\nfallback-different-header|typed|8768|8768\nfallback-unequal-header-sizes|typed|249630|248377\nfallback-finite-obligation|typed|2813|2813\nreuse-bad-actual-map|invalid_ir\nreuse-bad-meaning-map|invalid_ir\nreuse-bad-structural|invalid_ir\nreuse-rejects-classical-meaning|invalid_ir\nreuse-bad-meaning-type|contract\n",
+        "stderr": ""
+      }
+    ],
+    "current_native": [
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "exit_code": 0,
+        "stdout": "\u2714 [17/19] Built Main (1.3s)\n\u2714 [18/19] Built Main:c.o (716ms)\n\u2714 [19/19] Built \u00abartifact-test\u00bb:exe (283ms)\nBuild completed successfully (19 jobs).\n",
+        "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+      },
+      {
+        "argv": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-ey31vjbr/.lake/build/bin/artifact-test"
+        ],
+        "exit_code": 0,
+        "stdout": "identity-0|typed|326\nfinite-0|typed|326\nqft-0|invalid_ir\nidentity-1|typed|454\nfinite-1|typed|454\nqft-1|typed|454\nidentity-2|typed|582\nfinite-2|typed|582\nqft-2|typed|582\nidentity-3|typed|710\nfinite-3|typed|710\nqft-3|typed|710\nfinite-empty|invalid_ir\npure-no-classical|invalid_ir\nidentity-exact-owners|invalid_ir\nqft-no-product-substitution|invalid_ir\nqft-no-Bit-substitution|invalid_ir\nqft-axis-order|invalid_ir\nphase-Bit|typed|454\nphase-not-Bits1|invalid_ir\nphase-not-multiple-owners|invalid_ir\nphase-outside-domain|invalid_ir\nsequence|typed|1360\nsequence-empty|invalid_ir\nsequence-dangling|invalid_ir\ntensor|typed|1970\ntensor-owner-alias|invalid_ir\ntensor-axis-alias|invalid_ir\ninverse|typed|890\ninverse-rectangular|invalid_ir\ncontrol-renamed-same-type|typed|1534\ncontrol-forbids-implicit-conversion|invalid_ir\npower-0|typed|890\npower-1|typed|890\npower-4096|typed|890\npower-outside-domain|invalid_ir\npower-not-closed|invalid_ir\nrewire|typed|4575\nrewire-missing-owner|invalid_ir\nqpe-header-1-1|typed|1148\nqpe-header-1-2|typed|1148\nqpe-header-1-3|typed|1148\nqpe-header-2-1|typed|1404\nqpe-header-2-2|typed|1404\nqpe-header-2-3|typed|1404\nqpe-header-3-1|typed|1660\nqpe-header-3-2|typed|1660\nqpe-header-3-3|typed|1660\nqpe-target-zero|invalid_ir\nqpe-precision-zero|invalid_ir\nqpe-wrong-provider-type|invalid_ir\nqpe-wrong-precision-type|invalid_ir\nqpe-cannot-drop-target|invalid_ir\nqpe-cannot-measure-target|invalid_ir\ninstrument-not-pure-inverse|invalid_ir\ninstrument-not-pure-power|invalid_ir\ninstrument-not-pure-sequence|invalid_ir\nencoding-identity-0|typed|326\nencoding-identity-1|typed|454\nencoding-identity-2|typed|582\nencoding-identity-3|typed|710\nencoding-classical-identity|typed|842\nencoding-identity-wrong-name|invalid_ir\nencoding-identity-wrong-type|invalid_ir\nencoding-tensor|typed|1970\nencoding-tensor-alias|invalid_ir\nencoding-rewire|typed|5653\nencoding-rewire-changes-logical|invalid_ir\nscratch-one|typed|1854\nscratch-zero-owner|typed|1662\nscratch-unit-owner|typed|1662\nscratch-count-understated|invalid_ir\nscratch-count-overstated|invalid_ir\nscratch-axis-capture|invalid_ir\nscratch-compute-not-unitary|invalid_ir\nscratch-prefix-not-dimension|invalid_ir\nscratch-logical-type-change|invalid_ir\nwrong-reference-table|invalid_ir\nmissing-reference|invalid_ir\nzero-budget|limit\ntoo-large-budget|limit\noversized-meaning|limit\ncontrol-definition-conversion|invalid_ir\nwhole-base|typed|4049\nwhole-zero|typed|2987\nwhole-hidden-meaning|invalid_ir\nwhole-false-scratch|invalid_ir\nwhole-budget|limit\nwhole-phase-still-needs-proof|typed|1095\nreuse-identical-rewire-0|typed|2391|1633\nreuse-identical-rewire-1|typed|3763|2318\nreuse-identical-rewire-2|typed|5455|3163\nreuse-identical-rewire-3|typed|7467|4168\nreuse-identical-rewire-4|typed|9799|5333\nreuse-structural|typed|5739|3227\nfallback-different-valid-map|typed|10221|8941\nfallback-different-header|typed|8480|7616\nfallback-unequal-header-sizes|typed|176478|174841\nfallback-finite-obligation|typed|2621|2237\nreuse-bad-actual-map|invalid_ir\nreuse-bad-meaning-map|invalid_ir\nreuse-bad-structural|invalid_ir\nreuse-rejects-classical-meaning|invalid_ir\nreuse-bad-meaning-type|contract\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "generic_source": {
+    "format": "qleisli.sized-instrument-validation",
+    "version": 1,
+    "status": "passed",
+    "proposals": 22,
+    "components": {
+      "qpe-1-1": {
+        "preparation_work": 9504,
+        "readout_work": 16448,
+        "graph_work": 272389,
+        "exact_work": 67,
+        "aggregate_work": 298408
+      },
+      "qpe-1-2": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 612753,
+        "exact_work": 268,
+        "aggregate_work": 682173
+      },
+      "qpe-1-3": {
+        "preparation_work": 49888,
+        "readout_work": 93120,
+        "graph_work": 980661,
+        "exact_work": 402,
+        "aggregate_work": 1124071
+      },
+      "qpe-2-2": {
+        "preparation_work": 27232,
+        "readout_work": 48064,
+        "graph_work": 640387,
+        "exact_work": 268,
+        "aggregate_work": 715951
+      },
+      "qpe-2-4": {
+        "preparation_work": 92320,
+        "readout_work": 175168,
+        "graph_work": 1449748,
+        "exact_work": 536,
+        "aggregate_work": 1717772
+      },
+      "init-0": {
+        "preparation_work": 224,
+        "readout_work": 0,
+        "graph_work": 1414,
+        "exact_work": 0,
+        "aggregate_work": 1638
+      },
+      "readout-0": {
+        "preparation_work": 1312,
+        "readout_work": 768,
+        "graph_work": 1414,
+        "exact_work": 0,
+        "aggregate_work": 3494
+      },
+      "init-1": {
+        "preparation_work": 3232,
+        "readout_work": 0,
+        "graph_work": 2594,
+        "exact_work": 0,
+        "aggregate_work": 5826
+      },
+      "readout-1": {
+        "preparation_work": 1824,
+        "readout_work": 6080,
+        "graph_work": 2594,
+        "exact_work": 0,
+        "aggregate_work": 10498
+      },
+      "init-2": {
+        "preparation_work": 11680,
+        "readout_work": 0,
+        "graph_work": 32738,
+        "exact_work": 0,
+        "aggregate_work": 44418
+      },
+      "readout-2": {
+        "preparation_work": 2336,
+        "readout_work": 21760,
+        "graph_work": 22955,
+        "exact_work": 0,
+        "aggregate_work": 47051
+      },
+      "init-3": {
+        "preparation_work": 28128,
+        "readout_work": 0,
+        "graph_work": 69314,
+        "exact_work": 0,
+        "aggregate_work": 97442
+      },
+      "readout-3": {
+        "preparation_work": 2848,
+        "readout_work": 53952,
+        "graph_work": 48044,
+        "exact_work": 0,
+        "aggregate_work": 104844
+      },
+      "order": {
+        "preparation_work": 27232,
+        "readout_work": 48064,
+        "graph_work": 688671,
+        "exact_work": 268,
+        "aggregate_work": 764235
+      },
+      "amplitude-0-3": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 710851,
+        "exact_work": 335,
+        "aggregate_work": 780338
+      },
+      "amplitude-1-3": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 710851,
+        "exact_work": 335,
+        "aggregate_work": 780338
+      },
+      "amplitude-1-4": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 710851,
+        "exact_work": 335,
+        "aggregate_work": 780338
+      },
+      "amplitude-2-2": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 710851,
+        "exact_work": 335,
+        "aggregate_work": 780338
+      },
+      "classical-copy-capture": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 612753,
+        "exact_work": 268,
+        "aggregate_work": 682173
+      },
+      "wrong-zero-helper": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 683012,
+        "exact_work": 402,
+        "aggregate_work": 752566
+      },
+      "wrong-readout-order": {
+        "preparation_work": 24672,
+        "readout_work": 44480,
+        "graph_work": 612753,
+        "exact_work": 268,
+        "aggregate_work": 682173
+      },
+      "retiming": {
+        "preparation_work": 18848,
+        "readout_work": 44480,
+        "graph_work": 72086,
+        "exact_work": 67,
+        "aggregate_work": 135481
+      }
+    },
+    "semantics": {
+      "qpe-1-1": {
+        "coefficients": 16,
+        "maximum_error": 1.2412670766236366e-16
+      },
+      "qpe-1-2": {
+        "coefficients": 32,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "qpe-1-3": {
+        "coefficients": 64,
+        "maximum_error": 4.652682298944613e-16
+      },
+      "qpe-2-2": {
+        "coefficients": 96,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "qpe-2-4": {
+        "coefficients": 384,
+        "maximum_error": 2.0959882093582513e-15
+      },
+      "order": {
+        "coefficients": 96,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "amplitude-0-3": {
+        "coefficients": 32,
+        "maximum_error": 9.61165587014318e-16
+      },
+      "amplitude-1-3": {
+        "coefficients": 32,
+        "maximum_error": 5.23691153334427e-16
+      },
+      "amplitude-1-4": {
+        "coefficients": 32,
+        "maximum_error": 7.023038222575547e-16
+      },
+      "amplitude-2-2": {
+        "coefficients": 32,
+        "maximum_error": 9.61165587014318e-16
+      },
+      "classical-copy-capture": {
+        "coefficients": 32,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "retiming": {
+        "coefficients": 48,
+        "maximum_error": 0.0
+      }
+    },
+    "semantic_faults": {
+      "wrong-zero-helper": {
+        "coefficients": 32,
+        "maximum_error": 1.0
+      },
+      "wrong-readout-order": {
+        "coefficients": 32,
+        "maximum_error": 0.5
+      }
+    },
+    "normalization": {
+      "qpe-1-1": {
+        "before": 72,
+        "after": 52,
+        "columns": 5,
+        "maximum_error": 0.0
+      },
+      "qpe-1-2": {
+        "before": 130,
+        "after": 104,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "qpe-1-3": {
+        "before": 181,
+        "after": 153,
+        "columns": 17,
+        "maximum_error": 0.0
+      },
+      "qpe-2-2": {
+        "before": 128,
+        "after": 103,
+        "columns": 17,
+        "maximum_error": 0.0
+      },
+      "qpe-2-4": {
+        "before": 231,
+        "after": 201,
+        "columns": 65,
+        "maximum_error": 0.0
+      },
+      "init-0": {
+        "before": 3,
+        "after": 1,
+        "columns": 2,
+        "maximum_error": 0.0
+      },
+      "readout-0": {
+        "before": 3,
+        "after": 1,
+        "columns": 2,
+        "maximum_error": 0.0
+      },
+      "init-1": {
+        "before": 8,
+        "after": 1,
+        "columns": 3,
+        "maximum_error": 0.0
+      },
+      "readout-1": {
+        "before": 8,
+        "after": 1,
+        "columns": 3,
+        "maximum_error": 0.0
+      },
+      "init-2": {
+        "before": 13,
+        "after": 6,
+        "columns": 5,
+        "maximum_error": 0.0
+      },
+      "readout-2": {
+        "before": 14,
+        "after": 5,
+        "columns": 5,
+        "maximum_error": 0.0
+      },
+      "init-3": {
+        "before": 18,
+        "after": 11,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "readout-3": {
+        "before": 20,
+        "after": 9,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "order": {
+        "before": 135,
+        "after": 110,
+        "columns": 17,
+        "maximum_error": 0.0
+      },
+      "amplitude-0-3": {
+        "before": 159,
+        "after": 124,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "amplitude-1-3": {
+        "before": 159,
+        "after": 124,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "amplitude-1-4": {
+        "before": 159,
+        "after": 124,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "amplitude-2-2": {
+        "before": 159,
+        "after": 124,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "classical-copy-capture": {
+        "before": 130,
+        "after": 104,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "wrong-zero-helper": {
+        "before": 140,
+        "after": 119,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "wrong-readout-order": {
+        "before": 130,
+        "after": 104,
+        "columns": 9,
+        "maximum_error": 0.0
+      },
+      "retiming": {
+        "before": 9,
+        "after": 8,
+        "columns": 9,
+        "maximum_error": 0.0
+      }
+    },
+    "source_rejections": [
+      {
+        "case": "unitary-wrapper",
+        "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+      },
+      {
+        "case": "unitary-initializer",
+        "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+      },
+      {
+        "case": "iso-readout",
+        "diagnostic": "iso body cannot perform observe operation measure_z"
+      },
+      {
+        "case": "missing-access",
+        "diagnostic": "operation use requires declared Controlled access"
+      },
+      {
+        "case": "wrong-classical-width",
+        "diagnostic": "return type/tuple shape mismatch"
+      },
+      {
+        "case": "drop-empty-owner",
+        "diagnostic": "unreturned quantum owners: q"
+      },
+      {
+        "case": "consume-nonempty",
+        "diagnostic": "unknown, captured or already moved value q"
+      },
+      {
+        "case": "reuse-measured-bit",
+        "diagnostic": "unknown, captured or already moved value bit"
+      },
+      {
+        "case": "duplicate-classical-pattern",
+        "diagnostic": "duplicate binding in one pattern"
+      },
+      {
+        "case": "wrong-prepend-width",
+        "diagnostic": "prepend_bit requires CBit and exactly CBits<n>, with n < 8"
+      },
+      {
+        "case": "cycle-initializer",
+        "diagnostic": "cyclic or excessive source operation instantiation"
+      },
+      {
+        "case": "unknown-empty-branch",
+        "diagnostic": "unknown or unimported operation missing"
+      },
+      {
+        "case": "runtime-feedback",
+        "diagnostic": "expected 'static', found 'target' at token 82"
+      },
+      {
+        "case": "bad-init-arity",
+        "diagnostic": "operation argument shape/arity mismatch"
+      },
+      {
+        "case": "unknown-static-size",
+        "diagnostic": "unbound static natural missing"
+      }
+    ],
+    "pending_composed": {},
+    "production_integration": false,
+    "named_instrument_receipt": false,
+    "source_preservation_proved": false,
+    "max_checked_graph_qubits": 6,
+    "unaccepted_composed_case_qubits": null,
+    "kernel_sha256": "c9935d2567ef0d73f25909b9643785bf36b30f1608d5620f69123b0c7e1bbd5b",
+    "graph_reconstruction": {
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "inspect_source_produced_corpus",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|272389|67|1\nCORPUS|qpe-1-2|ok|612753|268|4\nCORPUS|qpe-1-3|ok|980661|402|6\nCORPUS|qpe-2-2|ok|640387|268|4\nCORPUS|qpe-2-4|ok|1449748|536|8\nCORPUS|init-0|ok|1414|0|0\nCORPUS|readout-0|ok|1414|0|0\nCORPUS|init-1|ok|2594|0|0\nCORPUS|readout-1|ok|2594|0|0\nCORPUS|init-2|ok|32738|0|0\nCORPUS|readout-2|ok|22955|0|0\nCORPUS|init-3|ok|69314|0|0\nCORPUS|readout-3|ok|48044|0|0\nCORPUS|order|ok|688671|268|4\nCORPUS|amplitude-0-3|ok|710851|335|5\nCORPUS|amplitude-1-3|ok|710851|335|5\nCORPUS|amplitude-1-4|ok|710851|335|5\nCORPUS|amplitude-2-2|ok|710851|335|5\nCORPUS|classical-copy-capture|ok|612753|268|4\nCORPUS|wrong-zero-helper|ok|683012|402|6\nCORPUS|wrong-readout-order|ok|612753|268|4\nCORPUS|retiming|ok|72086|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.00s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.36s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+    },
+    "source_sha256": {
+      "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+      "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+      "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+      "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+      "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+      "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+      "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+      "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+      "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+    },
+    "implementation_sha256": {
+      "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+      "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+      "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+      "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+      "scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41"
+    }
+  },
+  "generic_host": {
+    "format": "qleisli.instrument-host-validation",
+    "version": 1,
+    "status": "passed",
+    "binary_cases": 772,
+    "shared_decoder_allowance": {
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [91/93] Built Main (356ms)\n\u2714 [92/93] Built Main:c.o (58ms)\n\u2714 [93/93] Built \u00abartifact-test\u00bb:exe (142ms)\nBuild completed successfully (93 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-vhy66kuz/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "shared-word-budget|passed\n",
+          "stderr": ""
+        }
+      ],
+      "binary_sha256": "eb62d0441e4c1a235d78f44bd4fc80b2f96ba597a88f949de9cec10b72d9de7c"
+    },
+    "source_connection": {
+      "cases": 8,
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_instrument_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|776257|412\nINSTRUMENT|order|ok|866694|412\nINSTRUMENT|amplitude|ok|888493|515\nINSTRUMENT|retiming|ok|151684|103\nINSTRUMENT|qpe-1-3|ok|1268842|618\nINSTRUMENT|qpe-2-4|ok|1920516|824\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.49s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.02s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+      "pending_composed_capacity": {},
+      "semantics": {
+        "qpe": {
+          "coefficients": 32,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "order": {
+          "coefficients": 96,
+          "maximum_error": 3.3306690738754696e-16
+        },
+        "amplitude": {
+          "coefficients": 32,
+          "maximum_error": 5.23691153334427e-16
+        },
+        "qpe-1-3": {
+          "coefficients": 64,
+          "maximum_error": 6.667840187510446e-16
+        },
+        "qpe-2-4": {
+          "coefficients": 384,
+          "maximum_error": 2.0959882093582513e-15
+        },
+        "retiming": {
+          "coefficients": 48,
+          "maximum_error": 0.0
+        }
+      },
+      "request_origin": "baseline proposal; mutation regression only",
+      "source_sha256": {
+        "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+        "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+        "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+        "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+        "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+        "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+        "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+        "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+        "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+        "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+        "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+        "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+        "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+        "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+        "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+        "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+      }
+    },
+    "host_command": [
+      "cargo",
+      "test",
+      "--test",
+      "hierarchical_host",
+      "instrument",
+      "--",
+      "--include-ignored",
+      "--nocapture"
+    ],
+    "stdout": "\nrunning 3 tests\ntest instrument_codec_rejects_malformed_fields_before_execution ... ok\ntest instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok\ncomposed instrument costs: [(false, 0, 32870, 103), (false, 1, 32870, 103), (false, 3, 32870, 103), (true, 0, 58216, 103), (true, 1, 58216, 103), (true, 3, 58216, 103)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 1.05s\n\n",
+    "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4f64e6729d3e7615)\n",
+    "kernel_sha256": "516b2106fe5e6674341680d86e00495c362d9f7b2899af0ee5519fb224c53e72",
+    "production_integration": false,
+    "named_qpe_binding": false
+  },
+  "root_request": {
+    "format": "qleisli.hierarchy-root-request-validation",
+    "version": 1,
+    "status": "passed",
+    "cases": 820,
+    "results": [
+      {
+        "case": "phase-match",
+        "result": "pending"
+      },
+      {
+        "case": "magic",
+        "result": "format"
+      },
+      {
+        "case": "trailing",
+        "result": "format"
+      },
+      {
+        "case": "empty",
+        "result": "format"
+      },
+      {
+        "case": "truncated-1",
+        "result": "format"
+      },
+      {
+        "case": "truncated-2",
+        "result": "format"
+      },
+      {
+        "case": "truncated-3",
+        "result": "format"
+      },
+      {
+        "case": "truncated-4",
+        "result": "format"
+      },
+      {
+        "case": "truncated-5",
+        "result": "format"
+      },
+      {
+        "case": "truncated-6",
+        "result": "format"
+      },
+      {
+        "case": "truncated-7",
+        "result": "format"
+      },
+      {
+        "case": "truncated-8",
+        "result": "format"
+      },
+      {
+        "case": "truncated-9",
+        "result": "format"
+      },
+      {
+        "case": "truncated-10",
+        "result": "format"
+      },
+      {
+        "case": "truncated-11",
+        "result": "format"
+      },
+      {
+        "case": "truncated-12",
+        "result": "format"
+      },
+      {
+        "case": "truncated-13",
+        "result": "format"
+      },
+      {
+        "case": "truncated-14",
+        "result": "format"
+      },
+      {
+        "case": "truncated-15",
+        "result": "format"
+      },
+      {
+        "case": "truncated-16",
+        "result": "format"
+      },
+      {
+        "case": "truncated-17",
+        "result": "format"
+      },
+      {
+        "case": "truncated-18",
+        "result": "format"
+      },
+      {
+        "case": "truncated-19",
+        "result": "format"
+      },
+      {
+        "case": "truncated-20",
+        "result": "format"
+      },
+      {
+        "case": "truncated-21",
+        "result": "format"
+      },
+      {
+        "case": "truncated-22",
+        "result": "format"
+      },
+      {
+        "case": "truncated-23",
+        "result": "format"
+      },
+      {
+        "case": "truncated-24",
+        "result": "format"
+      },
+      {
+        "case": "truncated-25",
+        "result": "format"
+      },
+      {
+        "case": "truncated-26",
+        "result": "format"
+      },
+      {
+        "case": "truncated-27",
+        "result": "format"
+      },
+      {
+        "case": "truncated-28",
+        "result": "format"
+      },
+      {
+        "case": "truncated-29",
+        "result": "format"
+      },
+      {
+        "case": "truncated-30",
+        "result": "format"
+      },
+      {
+        "case": "truncated-31",
+        "result": "format"
+      },
+      {
+        "case": "truncated-32",
+        "result": "format"
+      },
+      {
+        "case": "truncated-33",
+        "result": "format"
+      },
+      {
+        "case": "truncated-34",
+        "result": "format"
+      },
+      {
+        "case": "truncated-35",
+        "result": "format"
+      },
+      {
+        "case": "truncated-36",
+        "result": "format"
+      },
+      {
+        "case": "truncated-37",
+        "result": "format"
+      },
+      {
+        "case": "truncated-38",
+        "result": "format"
+      },
+      {
+        "case": "truncated-39",
+        "result": "format"
+      },
+      {
+        "case": "truncated-40",
+        "result": "format"
+      },
+      {
+        "case": "truncated-41",
+        "result": "format"
+      },
+      {
+        "case": "truncated-42",
+        "result": "format"
+      },
+      {
+        "case": "truncated-43",
+        "result": "format"
+      },
+      {
+        "case": "truncated-44",
+        "result": "format"
+      },
+      {
+        "case": "truncated-45",
+        "result": "format"
+      },
+      {
+        "case": "truncated-46",
+        "result": "format"
+      },
+      {
+        "case": "truncated-47",
+        "result": "format"
+      },
+      {
+        "case": "truncated-48",
+        "result": "format"
+      },
+      {
+        "case": "truncated-49",
+        "result": "format"
+      },
+      {
+        "case": "truncated-50",
+        "result": "format"
+      },
+      {
+        "case": "truncated-51",
+        "result": "format"
+      },
+      {
+        "case": "truncated-52",
+        "result": "format"
+      },
+      {
+        "case": "truncated-53",
+        "result": "format"
+      },
+      {
+        "case": "truncated-54",
+        "result": "format"
+      },
+      {
+        "case": "truncated-55",
+        "result": "format"
+      },
+      {
+        "case": "truncated-56",
+        "result": "format"
+      },
+      {
+        "case": "truncated-57",
+        "result": "format"
+      },
+      {
+        "case": "truncated-58",
+        "result": "format"
+      },
+      {
+        "case": "truncated-59",
+        "result": "format"
+      },
+      {
+        "case": "truncated-60",
+        "result": "format"
+      },
+      {
+        "case": "truncated-61",
+        "result": "format"
+      },
+      {
+        "case": "truncated-62",
+        "result": "format"
+      },
+      {
+        "case": "truncated-63",
+        "result": "format"
+      },
+      {
+        "case": "truncated-64",
+        "result": "format"
+      },
+      {
+        "case": "truncated-65",
+        "result": "format"
+      },
+      {
+        "case": "truncated-66",
+        "result": "format"
+      },
+      {
+        "case": "truncated-67",
+        "result": "format"
+      },
+      {
+        "case": "truncated-68",
+        "result": "format"
+      },
+      {
+        "case": "truncated-69",
+        "result": "format"
+      },
+      {
+        "case": "truncated-70",
+        "result": "format"
+      },
+      {
+        "case": "truncated-71",
+        "result": "format"
+      },
+      {
+        "case": "truncated-72",
+        "result": "format"
+      },
+      {
+        "case": "truncated-73",
+        "result": "format"
+      },
+      {
+        "case": "truncated-74",
+        "result": "format"
+      },
+      {
+        "case": "truncated-75",
+        "result": "format"
+      },
+      {
+        "case": "truncated-76",
+        "result": "format"
+      },
+      {
+        "case": "truncated-77",
+        "result": "format"
+      },
+      {
+        "case": "truncated-78",
+        "result": "format"
+      },
+      {
+        "case": "truncated-79",
+        "result": "format"
+      },
+      {
+        "case": "truncated-80",
+        "result": "format"
+      },
+      {
+        "case": "truncated-81",
+        "result": "format"
+      },
+      {
+        "case": "truncated-82",
+        "result": "format"
+      },
+      {
+        "case": "truncated-83",
+        "result": "format"
+      },
+      {
+        "case": "truncated-84",
+        "result": "format"
+      },
+      {
+        "case": "truncated-85",
+        "result": "format"
+      },
+      {
+        "case": "truncated-86",
+        "result": "format"
+      },
+      {
+        "case": "truncated-87",
+        "result": "format"
+      },
+      {
+        "case": "truncated-88",
+        "result": "format"
+      },
+      {
+        "case": "truncated-89",
+        "result": "format"
+      },
+      {
+        "case": "truncated-90",
+        "result": "format"
+      },
+      {
+        "case": "truncated-91",
+        "result": "format"
+      },
+      {
+        "case": "truncated-92",
+        "result": "format"
+      },
+      {
+        "case": "truncated-93",
+        "result": "format"
+      },
+      {
+        "case": "truncated-94",
+        "result": "format"
+      },
+      {
+        "case": "truncated-95",
+        "result": "format"
+      },
+      {
+        "case": "truncated-96",
+        "result": "format"
+      },
+      {
+        "case": "truncated-97",
+        "result": "format"
+      },
+      {
+        "case": "truncated-98",
+        "result": "format"
+      },
+      {
+        "case": "truncated-99",
+        "result": "format"
+      },
+      {
+        "case": "truncated-100",
+        "result": "format"
+      },
+      {
+        "case": "truncated-101",
+        "result": "format"
+      },
+      {
+        "case": "truncated-102",
+        "result": "format"
+      },
+      {
+        "case": "truncated-103",
+        "result": "format"
+      },
+      {
+        "case": "truncated-104",
+        "result": "format"
+      },
+      {
+        "case": "truncated-105",
+        "result": "format"
+      },
+      {
+        "case": "truncated-106",
+        "result": "format"
+      },
+      {
+        "case": "truncated-107",
+        "result": "format"
+      },
+      {
+        "case": "truncated-108",
+        "result": "format"
+      },
+      {
+        "case": "truncated-109",
+        "result": "format"
+      },
+      {
+        "case": "truncated-110",
+        "result": "format"
+      },
+      {
+        "case": "truncated-111",
+        "result": "format"
+      },
+      {
+        "case": "truncated-112",
+        "result": "format"
+      },
+      {
+        "case": "truncated-113",
+        "result": "format"
+      },
+      {
+        "case": "truncated-114",
+        "result": "format"
+      },
+      {
+        "case": "truncated-115",
+        "result": "format"
+      },
+      {
+        "case": "truncated-116",
+        "result": "format"
+      },
+      {
+        "case": "truncated-117",
+        "result": "format"
+      },
+      {
+        "case": "truncated-118",
+        "result": "format"
+      },
+      {
+        "case": "truncated-119",
+        "result": "format"
+      },
+      {
+        "case": "truncated-120",
+        "result": "format"
+      },
+      {
+        "case": "truncated-121",
+        "result": "format"
+      },
+      {
+        "case": "truncated-122",
+        "result": "format"
+      },
+      {
+        "case": "truncated-123",
+        "result": "format"
+      },
+      {
+        "case": "truncated-124",
+        "result": "format"
+      },
+      {
+        "case": "truncated-125",
+        "result": "format"
+      },
+      {
+        "case": "truncated-126",
+        "result": "format"
+      },
+      {
+        "case": "truncated-127",
+        "result": "format"
+      },
+      {
+        "case": "truncated-128",
+        "result": "format"
+      },
+      {
+        "case": "truncated-129",
+        "result": "format"
+      },
+      {
+        "case": "truncated-130",
+        "result": "format"
+      },
+      {
+        "case": "truncated-131",
+        "result": "format"
+      },
+      {
+        "case": "truncated-132",
+        "result": "format"
+      },
+      {
+        "case": "truncated-133",
+        "result": "format"
+      },
+      {
+        "case": "truncated-134",
+        "result": "format"
+      },
+      {
+        "case": "truncated-135",
+        "result": "format"
+      },
+      {
+        "case": "truncated-136",
+        "result": "format"
+      },
+      {
+        "case": "truncated-137",
+        "result": "format"
+      },
+      {
+        "case": "truncated-138",
+        "result": "format"
+      },
+      {
+        "case": "truncated-139",
+        "result": "format"
+      },
+      {
+        "case": "truncated-140",
+        "result": "format"
+      },
+      {
+        "case": "truncated-141",
+        "result": "format"
+      },
+      {
+        "case": "truncated-142",
+        "result": "format"
+      },
+      {
+        "case": "truncated-143",
+        "result": "format"
+      },
+      {
+        "case": "truncated-144",
+        "result": "format"
+      },
+      {
+        "case": "truncated-145",
+        "result": "format"
+      },
+      {
+        "case": "truncated-146",
+        "result": "format"
+      },
+      {
+        "case": "truncated-147",
+        "result": "format"
+      },
+      {
+        "case": "truncated-148",
+        "result": "format"
+      },
+      {
+        "case": "truncated-149",
+        "result": "format"
+      },
+      {
+        "case": "truncated-150",
+        "result": "format"
+      },
+      {
+        "case": "truncated-151",
+        "result": "format"
+      },
+      {
+        "case": "truncated-152",
+        "result": "format"
+      },
+      {
+        "case": "truncated-153",
+        "result": "format"
+      },
+      {
+        "case": "truncated-154",
+        "result": "format"
+      },
+      {
+        "case": "truncated-155",
+        "result": "format"
+      },
+      {
+        "case": "truncated-156",
+        "result": "format"
+      },
+      {
+        "case": "truncated-157",
+        "result": "format"
+      },
+      {
+        "case": "truncated-158",
+        "result": "format"
+      },
+      {
+        "case": "truncated-159",
+        "result": "format"
+      },
+      {
+        "case": "truncated-160",
+        "result": "format"
+      },
+      {
+        "case": "truncated-161",
+        "result": "format"
+      },
+      {
+        "case": "truncated-162",
+        "result": "format"
+      },
+      {
+        "case": "truncated-163",
+        "result": "format"
+      },
+      {
+        "case": "truncated-164",
+        "result": "format"
+      },
+      {
+        "case": "truncated-165",
+        "result": "format"
+      },
+      {
+        "case": "truncated-166",
+        "result": "format"
+      },
+      {
+        "case": "truncated-167",
+        "result": "format"
+      },
+      {
+        "case": "truncated-168",
+        "result": "format"
+      },
+      {
+        "case": "truncated-169",
+        "result": "format"
+      },
+      {
+        "case": "truncated-170",
+        "result": "format"
+      },
+      {
+        "case": "truncated-171",
+        "result": "format"
+      },
+      {
+        "case": "truncated-172",
+        "result": "format"
+      },
+      {
+        "case": "truncated-173",
+        "result": "format"
+      },
+      {
+        "case": "truncated-174",
+        "result": "format"
+      },
+      {
+        "case": "truncated-175",
+        "result": "format"
+      },
+      {
+        "case": "truncated-176",
+        "result": "format"
+      },
+      {
+        "case": "truncated-177",
+        "result": "format"
+      },
+      {
+        "case": "truncated-178",
+        "result": "format"
+      },
+      {
+        "case": "truncated-179",
+        "result": "format"
+      },
+      {
+        "case": "truncated-180",
+        "result": "format"
+      },
+      {
+        "case": "truncated-181",
+        "result": "format"
+      },
+      {
+        "case": "truncated-182",
+        "result": "format"
+      },
+      {
+        "case": "truncated-183",
+        "result": "format"
+      },
+      {
+        "case": "truncated-184",
+        "result": "format"
+      },
+      {
+        "case": "truncated-185",
+        "result": "format"
+      },
+      {
+        "case": "truncated-186",
+        "result": "format"
+      },
+      {
+        "case": "truncated-187",
+        "result": "format"
+      },
+      {
+        "case": "truncated-188",
+        "result": "format"
+      },
+      {
+        "case": "truncated-189",
+        "result": "format"
+      },
+      {
+        "case": "truncated-190",
+        "result": "format"
+      },
+      {
+        "case": "truncated-191",
+        "result": "format"
+      },
+      {
+        "case": "truncated-192",
+        "result": "format"
+      },
+      {
+        "case": "truncated-193",
+        "result": "format"
+      },
+      {
+        "case": "truncated-194",
+        "result": "format"
+      },
+      {
+        "case": "truncated-195",
+        "result": "format"
+      },
+      {
+        "case": "truncated-196",
+        "result": "format"
+      },
+      {
+        "case": "truncated-197",
+        "result": "format"
+      },
+      {
+        "case": "truncated-198",
+        "result": "format"
+      },
+      {
+        "case": "truncated-199",
+        "result": "format"
+      },
+      {
+        "case": "truncated-200",
+        "result": "format"
+      },
+      {
+        "case": "truncated-201",
+        "result": "format"
+      },
+      {
+        "case": "truncated-202",
+        "result": "format"
+      },
+      {
+        "case": "truncated-203",
+        "result": "format"
+      },
+      {
+        "case": "truncated-204",
+        "result": "format"
+      },
+      {
+        "case": "truncated-205",
+        "result": "format"
+      },
+      {
+        "case": "truncated-206",
+        "result": "format"
+      },
+      {
+        "case": "truncated-207",
+        "result": "format"
+      },
+      {
+        "case": "truncated-208",
+        "result": "format"
+      },
+      {
+        "case": "truncated-209",
+        "result": "format"
+      },
+      {
+        "case": "truncated-210",
+        "result": "format"
+      },
+      {
+        "case": "truncated-211",
+        "result": "format"
+      },
+      {
+        "case": "truncated-212",
+        "result": "format"
+      },
+      {
+        "case": "truncated-213",
+        "result": "format"
+      },
+      {
+        "case": "truncated-214",
+        "result": "format"
+      },
+      {
+        "case": "truncated-215",
+        "result": "format"
+      },
+      {
+        "case": "truncated-216",
+        "result": "format"
+      },
+      {
+        "case": "truncated-217",
+        "result": "format"
+      },
+      {
+        "case": "truncated-218",
+        "result": "format"
+      },
+      {
+        "case": "truncated-219",
+        "result": "format"
+      },
+      {
+        "case": "truncated-220",
+        "result": "format"
+      },
+      {
+        "case": "truncated-221",
+        "result": "format"
+      },
+      {
+        "case": "truncated-222",
+        "result": "format"
+      },
+      {
+        "case": "truncated-223",
+        "result": "format"
+      },
+      {
+        "case": "truncated-224",
+        "result": "format"
+      },
+      {
+        "case": "truncated-225",
+        "result": "format"
+      },
+      {
+        "case": "truncated-226",
+        "result": "format"
+      },
+      {
+        "case": "truncated-227",
+        "result": "format"
+      },
+      {
+        "case": "truncated-228",
+        "result": "format"
+      },
+      {
+        "case": "truncated-229",
+        "result": "format"
+      },
+      {
+        "case": "truncated-230",
+        "result": "format"
+      },
+      {
+        "case": "truncated-231",
+        "result": "format"
+      },
+      {
+        "case": "truncated-232",
+        "result": "format"
+      },
+      {
+        "case": "truncated-233",
+        "result": "format"
+      },
+      {
+        "case": "truncated-234",
+        "result": "format"
+      },
+      {
+        "case": "truncated-235",
+        "result": "format"
+      },
+      {
+        "case": "truncated-236",
+        "result": "format"
+      },
+      {
+        "case": "truncated-237",
+        "result": "format"
+      },
+      {
+        "case": "truncated-238",
+        "result": "format"
+      },
+      {
+        "case": "truncated-239",
+        "result": "format"
+      },
+      {
+        "case": "truncated-240",
+        "result": "format"
+      },
+      {
+        "case": "truncated-241",
+        "result": "format"
+      },
+      {
+        "case": "truncated-242",
+        "result": "format"
+      },
+      {
+        "case": "truncated-243",
+        "result": "format"
+      },
+      {
+        "case": "truncated-244",
+        "result": "format"
+      },
+      {
+        "case": "truncated-245",
+        "result": "format"
+      },
+      {
+        "case": "truncated-246",
+        "result": "format"
+      },
+      {
+        "case": "truncated-247",
+        "result": "format"
+      },
+      {
+        "case": "truncated-248",
+        "result": "format"
+      },
+      {
+        "case": "truncated-249",
+        "result": "format"
+      },
+      {
+        "case": "truncated-250",
+        "result": "format"
+      },
+      {
+        "case": "truncated-251",
+        "result": "format"
+      },
+      {
+        "case": "truncated-252",
+        "result": "format"
+      },
+      {
+        "case": "truncated-253",
+        "result": "format"
+      },
+      {
+        "case": "truncated-254",
+        "result": "format"
+      },
+      {
+        "case": "truncated-255",
+        "result": "format"
+      },
+      {
+        "case": "truncated-256",
+        "result": "format"
+      },
+      {
+        "case": "truncated-257",
+        "result": "format"
+      },
+      {
+        "case": "truncated-258",
+        "result": "format"
+      },
+      {
+        "case": "truncated-259",
+        "result": "format"
+      },
+      {
+        "case": "truncated-260",
+        "result": "format"
+      },
+      {
+        "case": "truncated-261",
+        "result": "format"
+      },
+      {
+        "case": "truncated-262",
+        "result": "format"
+      },
+      {
+        "case": "truncated-263",
+        "result": "format"
+      },
+      {
+        "case": "truncated-264",
+        "result": "format"
+      },
+      {
+        "case": "truncated-265",
+        "result": "format"
+      },
+      {
+        "case": "truncated-266",
+        "result": "format"
+      },
+      {
+        "case": "truncated-267",
+        "result": "format"
+      },
+      {
+        "case": "truncated-268",
+        "result": "format"
+      },
+      {
+        "case": "truncated-269",
+        "result": "format"
+      },
+      {
+        "case": "truncated-270",
+        "result": "format"
+      },
+      {
+        "case": "truncated-271",
+        "result": "format"
+      },
+      {
+        "case": "truncated-272",
+        "result": "format"
+      },
+      {
+        "case": "truncated-273",
+        "result": "format"
+      },
+      {
+        "case": "truncated-274",
+        "result": "format"
+      },
+      {
+        "case": "truncated-275",
+        "result": "format"
+      },
+      {
+        "case": "truncated-276",
+        "result": "format"
+      },
+      {
+        "case": "truncated-277",
+        "result": "format"
+      },
+      {
+        "case": "truncated-278",
+        "result": "format"
+      },
+      {
+        "case": "truncated-279",
+        "result": "format"
+      },
+      {
+        "case": "truncated-280",
+        "result": "format"
+      },
+      {
+        "case": "truncated-281",
+        "result": "format"
+      },
+      {
+        "case": "truncated-282",
+        "result": "format"
+      },
+      {
+        "case": "truncated-283",
+        "result": "format"
+      },
+      {
+        "case": "truncated-284",
+        "result": "format"
+      },
+      {
+        "case": "truncated-285",
+        "result": "format"
+      },
+      {
+        "case": "truncated-286",
+        "result": "format"
+      },
+      {
+        "case": "truncated-287",
+        "result": "format"
+      },
+      {
+        "case": "truncated-288",
+        "result": "format"
+      },
+      {
+        "case": "truncated-289",
+        "result": "format"
+      },
+      {
+        "case": "truncated-290",
+        "result": "format"
+      },
+      {
+        "case": "truncated-291",
+        "result": "format"
+      },
+      {
+        "case": "truncated-292",
+        "result": "format"
+      },
+      {
+        "case": "truncated-293",
+        "result": "format"
+      },
+      {
+        "case": "truncated-294",
+        "result": "format"
+      },
+      {
+        "case": "truncated-295",
+        "result": "format"
+      },
+      {
+        "case": "truncated-296",
+        "result": "format"
+      },
+      {
+        "case": "truncated-297",
+        "result": "format"
+      },
+      {
+        "case": "truncated-298",
+        "result": "format"
+      },
+      {
+        "case": "truncated-299",
+        "result": "format"
+      },
+      {
+        "case": "truncated-300",
+        "result": "format"
+      },
+      {
+        "case": "truncated-301",
+        "result": "format"
+      },
+      {
+        "case": "truncated-302",
+        "result": "format"
+      },
+      {
+        "case": "truncated-303",
+        "result": "format"
+      },
+      {
+        "case": "truncated-304",
+        "result": "format"
+      },
+      {
+        "case": "truncated-305",
+        "result": "format"
+      },
+      {
+        "case": "truncated-306",
+        "result": "format"
+      },
+      {
+        "case": "truncated-307",
+        "result": "format"
+      },
+      {
+        "case": "truncated-308",
+        "result": "format"
+      },
+      {
+        "case": "truncated-309",
+        "result": "format"
+      },
+      {
+        "case": "truncated-310",
+        "result": "format"
+      },
+      {
+        "case": "truncated-311",
+        "result": "format"
+      },
+      {
+        "case": "truncated-312",
+        "result": "format"
+      },
+      {
+        "case": "truncated-313",
+        "result": "format"
+      },
+      {
+        "case": "truncated-314",
+        "result": "format"
+      },
+      {
+        "case": "truncated-315",
+        "result": "format"
+      },
+      {
+        "case": "truncated-316",
+        "result": "format"
+      },
+      {
+        "case": "truncated-317",
+        "result": "format"
+      },
+      {
+        "case": "truncated-318",
+        "result": "format"
+      },
+      {
+        "case": "truncated-319",
+        "result": "format"
+      },
+      {
+        "case": "truncated-320",
+        "result": "format"
+      },
+      {
+        "case": "truncated-321",
+        "result": "format"
+      },
+      {
+        "case": "truncated-322",
+        "result": "format"
+      },
+      {
+        "case": "truncated-323",
+        "result": "format"
+      },
+      {
+        "case": "truncated-324",
+        "result": "format"
+      },
+      {
+        "case": "truncated-325",
+        "result": "format"
+      },
+      {
+        "case": "truncated-326",
+        "result": "format"
+      },
+      {
+        "case": "truncated-327",
+        "result": "format"
+      },
+      {
+        "case": "truncated-328",
+        "result": "format"
+      },
+      {
+        "case": "truncated-329",
+        "result": "format"
+      },
+      {
+        "case": "truncated-330",
+        "result": "format"
+      },
+      {
+        "case": "truncated-331",
+        "result": "format"
+      },
+      {
+        "case": "truncated-332",
+        "result": "format"
+      },
+      {
+        "case": "truncated-333",
+        "result": "format"
+      },
+      {
+        "case": "truncated-334",
+        "result": "format"
+      },
+      {
+        "case": "truncated-335",
+        "result": "format"
+      },
+      {
+        "case": "truncated-336",
+        "result": "format"
+      },
+      {
+        "case": "truncated-337",
+        "result": "format"
+      },
+      {
+        "case": "truncated-338",
+        "result": "format"
+      },
+      {
+        "case": "truncated-339",
+        "result": "format"
+      },
+      {
+        "case": "truncated-340",
+        "result": "format"
+      },
+      {
+        "case": "truncated-341",
+        "result": "format"
+      },
+      {
+        "case": "truncated-342",
+        "result": "format"
+      },
+      {
+        "case": "truncated-343",
+        "result": "format"
+      },
+      {
+        "case": "truncated-344",
+        "result": "format"
+      },
+      {
+        "case": "truncated-345",
+        "result": "format"
+      },
+      {
+        "case": "truncated-346",
+        "result": "format"
+      },
+      {
+        "case": "truncated-347",
+        "result": "format"
+      },
+      {
+        "case": "truncated-348",
+        "result": "format"
+      },
+      {
+        "case": "truncated-349",
+        "result": "format"
+      },
+      {
+        "case": "truncated-350",
+        "result": "format"
+      },
+      {
+        "case": "truncated-351",
+        "result": "format"
+      },
+      {
+        "case": "truncated-352",
+        "result": "format"
+      },
+      {
+        "case": "truncated-353",
+        "result": "format"
+      },
+      {
+        "case": "truncated-354",
+        "result": "format"
+      },
+      {
+        "case": "truncated-355",
+        "result": "format"
+      },
+      {
+        "case": "truncated-356",
+        "result": "format"
+      },
+      {
+        "case": "truncated-357",
+        "result": "format"
+      },
+      {
+        "case": "truncated-358",
+        "result": "format"
+      },
+      {
+        "case": "truncated-359",
+        "result": "format"
+      },
+      {
+        "case": "truncated-360",
+        "result": "format"
+      },
+      {
+        "case": "truncated-361",
+        "result": "format"
+      },
+      {
+        "case": "truncated-362",
+        "result": "format"
+      },
+      {
+        "case": "truncated-363",
+        "result": "format"
+      },
+      {
+        "case": "truncated-364",
+        "result": "format"
+      },
+      {
+        "case": "truncated-365",
+        "result": "format"
+      },
+      {
+        "case": "truncated-366",
+        "result": "format"
+      },
+      {
+        "case": "truncated-367",
+        "result": "format"
+      },
+      {
+        "case": "truncated-368",
+        "result": "format"
+      },
+      {
+        "case": "truncated-369",
+        "result": "format"
+      },
+      {
+        "case": "truncated-370",
+        "result": "format"
+      },
+      {
+        "case": "truncated-371",
+        "result": "format"
+      },
+      {
+        "case": "truncated-372",
+        "result": "format"
+      },
+      {
+        "case": "truncated-373",
+        "result": "format"
+      },
+      {
+        "case": "truncated-374",
+        "result": "format"
+      },
+      {
+        "case": "truncated-375",
+        "result": "format"
+      },
+      {
+        "case": "truncated-376",
+        "result": "format"
+      },
+      {
+        "case": "truncated-377",
+        "result": "format"
+      },
+      {
+        "case": "truncated-378",
+        "result": "format"
+      },
+      {
+        "case": "truncated-379",
+        "result": "format"
+      },
+      {
+        "case": "truncated-380",
+        "result": "format"
+      },
+      {
+        "case": "truncated-381",
+        "result": "format"
+      },
+      {
+        "case": "truncated-382",
+        "result": "format"
+      },
+      {
+        "case": "truncated-383",
+        "result": "format"
+      },
+      {
+        "case": "truncated-384",
+        "result": "format"
+      },
+      {
+        "case": "truncated-385",
+        "result": "format"
+      },
+      {
+        "case": "truncated-386",
+        "result": "format"
+      },
+      {
+        "case": "truncated-387",
+        "result": "format"
+      },
+      {
+        "case": "truncated-388",
+        "result": "format"
+      },
+      {
+        "case": "truncated-389",
+        "result": "format"
+      },
+      {
+        "case": "truncated-390",
+        "result": "format"
+      },
+      {
+        "case": "truncated-391",
+        "result": "format"
+      },
+      {
+        "case": "truncated-392",
+        "result": "format"
+      },
+      {
+        "case": "truncated-393",
+        "result": "format"
+      },
+      {
+        "case": "truncated-394",
+        "result": "format"
+      },
+      {
+        "case": "truncated-395",
+        "result": "format"
+      },
+      {
+        "case": "truncated-396",
+        "result": "format"
+      },
+      {
+        "case": "truncated-397",
+        "result": "format"
+      },
+      {
+        "case": "truncated-398",
+        "result": "format"
+      },
+      {
+        "case": "truncated-399",
+        "result": "format"
+      },
+      {
+        "case": "truncated-400",
+        "result": "format"
+      },
+      {
+        "case": "truncated-401",
+        "result": "format"
+      },
+      {
+        "case": "truncated-402",
+        "result": "format"
+      },
+      {
+        "case": "truncated-403",
+        "result": "format"
+      },
+      {
+        "case": "truncated-404",
+        "result": "format"
+      },
+      {
+        "case": "truncated-405",
+        "result": "format"
+      },
+      {
+        "case": "truncated-406",
+        "result": "format"
+      },
+      {
+        "case": "truncated-407",
+        "result": "format"
+      },
+      {
+        "case": "truncated-408",
+        "result": "format"
+      },
+      {
+        "case": "truncated-409",
+        "result": "format"
+      },
+      {
+        "case": "truncated-410",
+        "result": "format"
+      },
+      {
+        "case": "truncated-411",
+        "result": "format"
+      },
+      {
+        "case": "truncated-412",
+        "result": "format"
+      },
+      {
+        "case": "truncated-413",
+        "result": "format"
+      },
+      {
+        "case": "truncated-414",
+        "result": "format"
+      },
+      {
+        "case": "truncated-415",
+        "result": "format"
+      },
+      {
+        "case": "truncated-416",
+        "result": "format"
+      },
+      {
+        "case": "truncated-417",
+        "result": "format"
+      },
+      {
+        "case": "truncated-418",
+        "result": "format"
+      },
+      {
+        "case": "truncated-419",
+        "result": "format"
+      },
+      {
+        "case": "truncated-420",
+        "result": "format"
+      },
+      {
+        "case": "truncated-421",
+        "result": "format"
+      },
+      {
+        "case": "truncated-422",
+        "result": "format"
+      },
+      {
+        "case": "truncated-423",
+        "result": "format"
+      },
+      {
+        "case": "truncated-424",
+        "result": "format"
+      },
+      {
+        "case": "truncated-425",
+        "result": "format"
+      },
+      {
+        "case": "truncated-426",
+        "result": "format"
+      },
+      {
+        "case": "truncated-427",
+        "result": "format"
+      },
+      {
+        "case": "truncated-428",
+        "result": "format"
+      },
+      {
+        "case": "truncated-429",
+        "result": "format"
+      },
+      {
+        "case": "truncated-430",
+        "result": "format"
+      },
+      {
+        "case": "truncated-431",
+        "result": "format"
+      },
+      {
+        "case": "truncated-432",
+        "result": "format"
+      },
+      {
+        "case": "truncated-433",
+        "result": "format"
+      },
+      {
+        "case": "truncated-434",
+        "result": "format"
+      },
+      {
+        "case": "truncated-435",
+        "result": "format"
+      },
+      {
+        "case": "truncated-436",
+        "result": "format"
+      },
+      {
+        "case": "truncated-437",
+        "result": "format"
+      },
+      {
+        "case": "truncated-438",
+        "result": "format"
+      },
+      {
+        "case": "truncated-439",
+        "result": "format"
+      },
+      {
+        "case": "truncated-440",
+        "result": "format"
+      },
+      {
+        "case": "truncated-441",
+        "result": "format"
+      },
+      {
+        "case": "truncated-442",
+        "result": "format"
+      },
+      {
+        "case": "truncated-443",
+        "result": "format"
+      },
+      {
+        "case": "truncated-444",
+        "result": "format"
+      },
+      {
+        "case": "truncated-445",
+        "result": "format"
+      },
+      {
+        "case": "truncated-446",
+        "result": "format"
+      },
+      {
+        "case": "truncated-447",
+        "result": "format"
+      },
+      {
+        "case": "truncated-448",
+        "result": "format"
+      },
+      {
+        "case": "truncated-449",
+        "result": "format"
+      },
+      {
+        "case": "truncated-450",
+        "result": "format"
+      },
+      {
+        "case": "truncated-451",
+        "result": "format"
+      },
+      {
+        "case": "truncated-452",
+        "result": "format"
+      },
+      {
+        "case": "truncated-453",
+        "result": "format"
+      },
+      {
+        "case": "truncated-454",
+        "result": "format"
+      },
+      {
+        "case": "truncated-455",
+        "result": "format"
+      },
+      {
+        "case": "truncated-456",
+        "result": "format"
+      },
+      {
+        "case": "truncated-457",
+        "result": "format"
+      },
+      {
+        "case": "truncated-458",
+        "result": "format"
+      },
+      {
+        "case": "truncated-459",
+        "result": "format"
+      },
+      {
+        "case": "truncated-460",
+        "result": "format"
+      },
+      {
+        "case": "truncated-461",
+        "result": "format"
+      },
+      {
+        "case": "truncated-462",
+        "result": "format"
+      },
+      {
+        "case": "truncated-463",
+        "result": "format"
+      },
+      {
+        "case": "truncated-464",
+        "result": "format"
+      },
+      {
+        "case": "truncated-465",
+        "result": "format"
+      },
+      {
+        "case": "truncated-466",
+        "result": "format"
+      },
+      {
+        "case": "truncated-467",
+        "result": "format"
+      },
+      {
+        "case": "truncated-468",
+        "result": "format"
+      },
+      {
+        "case": "truncated-469",
+        "result": "format"
+      },
+      {
+        "case": "truncated-470",
+        "result": "format"
+      },
+      {
+        "case": "truncated-471",
+        "result": "format"
+      },
+      {
+        "case": "truncated-472",
+        "result": "format"
+      },
+      {
+        "case": "truncated-473",
+        "result": "format"
+      },
+      {
+        "case": "truncated-474",
+        "result": "format"
+      },
+      {
+        "case": "truncated-475",
+        "result": "format"
+      },
+      {
+        "case": "truncated-476",
+        "result": "format"
+      },
+      {
+        "case": "truncated-477",
+        "result": "format"
+      },
+      {
+        "case": "truncated-478",
+        "result": "format"
+      },
+      {
+        "case": "truncated-479",
+        "result": "format"
+      },
+      {
+        "case": "truncated-480",
+        "result": "format"
+      },
+      {
+        "case": "truncated-481",
+        "result": "format"
+      },
+      {
+        "case": "truncated-482",
+        "result": "format"
+      },
+      {
+        "case": "truncated-483",
+        "result": "format"
+      },
+      {
+        "case": "truncated-484",
+        "result": "format"
+      },
+      {
+        "case": "truncated-485",
+        "result": "format"
+      },
+      {
+        "case": "truncated-486",
+        "result": "format"
+      },
+      {
+        "case": "truncated-487",
+        "result": "format"
+      },
+      {
+        "case": "truncated-488",
+        "result": "format"
+      },
+      {
+        "case": "truncated-489",
+        "result": "format"
+      },
+      {
+        "case": "truncated-490",
+        "result": "format"
+      },
+      {
+        "case": "truncated-491",
+        "result": "format"
+      },
+      {
+        "case": "truncated-492",
+        "result": "format"
+      },
+      {
+        "case": "truncated-493",
+        "result": "format"
+      },
+      {
+        "case": "truncated-494",
+        "result": "format"
+      },
+      {
+        "case": "truncated-495",
+        "result": "format"
+      },
+      {
+        "case": "truncated-496",
+        "result": "format"
+      },
+      {
+        "case": "truncated-497",
+        "result": "format"
+      },
+      {
+        "case": "truncated-498",
+        "result": "format"
+      },
+      {
+        "case": "truncated-499",
+        "result": "format"
+      },
+      {
+        "case": "truncated-500",
+        "result": "format"
+      },
+      {
+        "case": "truncated-501",
+        "result": "format"
+      },
+      {
+        "case": "truncated-502",
+        "result": "format"
+      },
+      {
+        "case": "truncated-503",
+        "result": "format"
+      },
+      {
+        "case": "truncated-504",
+        "result": "format"
+      },
+      {
+        "case": "truncated-505",
+        "result": "format"
+      },
+      {
+        "case": "truncated-506",
+        "result": "format"
+      },
+      {
+        "case": "truncated-507",
+        "result": "format"
+      },
+      {
+        "case": "truncated-508",
+        "result": "format"
+      },
+      {
+        "case": "truncated-509",
+        "result": "format"
+      },
+      {
+        "case": "truncated-510",
+        "result": "format"
+      },
+      {
+        "case": "truncated-511",
+        "result": "format"
+      },
+      {
+        "case": "truncated-512",
+        "result": "format"
+      },
+      {
+        "case": "truncated-513",
+        "result": "format"
+      },
+      {
+        "case": "truncated-514",
+        "result": "format"
+      },
+      {
+        "case": "truncated-515",
+        "result": "format"
+      },
+      {
+        "case": "truncated-516",
+        "result": "format"
+      },
+      {
+        "case": "truncated-517",
+        "result": "format"
+      },
+      {
+        "case": "truncated-518",
+        "result": "format"
+      },
+      {
+        "case": "truncated-519",
+        "result": "format"
+      },
+      {
+        "case": "truncated-520",
+        "result": "format"
+      },
+      {
+        "case": "truncated-521",
+        "result": "format"
+      },
+      {
+        "case": "truncated-522",
+        "result": "format"
+      },
+      {
+        "case": "truncated-523",
+        "result": "format"
+      },
+      {
+        "case": "truncated-524",
+        "result": "format"
+      },
+      {
+        "case": "truncated-525",
+        "result": "format"
+      },
+      {
+        "case": "truncated-526",
+        "result": "format"
+      },
+      {
+        "case": "truncated-527",
+        "result": "format"
+      },
+      {
+        "case": "embedded-too-large",
+        "result": "limit"
+      },
+      {
+        "case": "unknown-kind",
+        "result": "format"
+      },
+      {
+        "case": "instrument-kind",
+        "result": "contract"
+      },
+      {
+        "case": "unknown-effect",
+        "result": "format"
+      },
+      {
+        "case": "observe-effect",
+        "result": "contract"
+      },
+      {
+        "case": "header-owner",
+        "result": "contract"
+      },
+      {
+        "case": "header-type",
+        "result": "contract"
+      },
+      {
+        "case": "header-axis",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-owner",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-type",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-axis",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-output-owner",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-output-type",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-output-axis",
+        "result": "contract"
+      },
+      {
+        "case": "phase-exponent",
+        "result": "contract"
+      },
+      {
+        "case": "unknown-constructor",
+        "result": "format"
+      },
+      {
+        "case": "missing-entry",
+        "result": "contract"
+      },
+      {
+        "case": "missing-actual-node",
+        "result": "contract"
+      },
+      {
+        "case": "missing-requested-node",
+        "result": "contract"
+      },
+      {
+        "case": "wrong-order-index",
+        "result": "invalid_ir"
+      },
+      {
+        "case": "huge-meaning-count",
+        "result": "limit"
+      },
+      {
+        "case": "huge-pair-count",
+        "result": "limit"
+      },
+      {
+        "case": "huge-order-count",
+        "result": "limit"
+      },
+      {
+        "case": "independent-phase-0",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-1",
+        "result": "pending"
+      },
+      {
+        "case": "independent-phase-2",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-3",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-4",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-5",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-6",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-7",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-8",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-9",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-10",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-11",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-12",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-13",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-14",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-15",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-16",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-17",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-18",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-19",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-20",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-21",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-22",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-23",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-24",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-25",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-26",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-27",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-28",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-29",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-30",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-31",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-32",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-33",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-34",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-35",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-36",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-37",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-38",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-39",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-40",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-41",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-42",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-43",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-44",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-45",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-46",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-47",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-48",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-49",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-50",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-51",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-52",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-53",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-54",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-55",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-56",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-57",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-58",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-59",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-60",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-61",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-62",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-63",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-64",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-65",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-66",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-67",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-68",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-69",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-70",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-71",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-72",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-73",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-74",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-75",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-76",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-77",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-78",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-79",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-80",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-81",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-82",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-83",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-84",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-85",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-86",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-87",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-88",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-89",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-90",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-91",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-92",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-93",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-94",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-95",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-96",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-97",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-98",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-99",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-100",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-101",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-102",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-103",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-104",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-105",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-106",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-107",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-108",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-109",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-110",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-111",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-112",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-113",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-114",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-115",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-116",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-117",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-118",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-119",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-120",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-121",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-122",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-123",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-124",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-125",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-126",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-127",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-128",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-129",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-130",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-131",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-132",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-133",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-134",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-135",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-136",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-137",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-138",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-139",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-140",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-141",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-142",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-143",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-144",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-145",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-146",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-147",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-148",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-149",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-150",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-151",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-152",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-153",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-154",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-155",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-156",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-157",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-158",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-159",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-160",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-161",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-162",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-163",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-164",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-165",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-166",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-167",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-168",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-169",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-170",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-171",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-172",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-173",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-174",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-175",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-176",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-177",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-178",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-179",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-180",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-181",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-182",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-183",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-184",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-185",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-186",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-187",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-188",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-189",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-190",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-191",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-192",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-193",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-194",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-195",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-196",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-197",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-198",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-199",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-200",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-201",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-202",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-203",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-204",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-205",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-206",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-207",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-208",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-209",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-210",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-211",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-212",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-213",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-214",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-215",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-216",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-217",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-218",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-219",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-220",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-221",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-222",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-223",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-224",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-225",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-226",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-227",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-228",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-229",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-230",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-231",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-232",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-233",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-234",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-235",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-236",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-237",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-238",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-239",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-240",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-241",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-242",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-243",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-244",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-245",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-246",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-247",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-248",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-249",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-250",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-251",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-252",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-253",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-254",
+        "result": "contract"
+      },
+      {
+        "case": "independent-phase-255",
+        "result": "contract"
+      },
+      {
+        "case": "meaning-bit-to-bits",
+        "result": "contract"
+      },
+      {
+        "case": "uncovered-request",
+        "result": "contract"
+      },
+      {
+        "case": "missing-request",
+        "result": "limit"
+      },
+      {
+        "case": "missing-pairs",
+        "result": "limit"
+      },
+      {
+        "case": "pair-cycle",
+        "result": "invalid_ir"
+      },
+      {
+        "case": "missing-child-pair",
+        "result": "invalid_ir"
+      },
+      {
+        "case": "unreachable-pair",
+        "result": "invalid_ir"
+      },
+      {
+        "case": "aggregate-pair-work",
+        "result": "limit"
+      },
+      {
+        "case": "missing-order",
+        "result": "invalid_ir"
+      },
+      {
+        "case": "duplicate-order",
+        "result": "invalid_ir"
+      }
+    ],
+    "row_costs": {
+      "cases": 10,
+      "rows": [
+        [
+          "empty",
+          "125",
+          "125"
+        ],
+        [
+          "bits-0",
+          "669",
+          "477"
+        ],
+        [
+          "bits-1",
+          "925",
+          "541"
+        ],
+        [
+          "bits-2",
+          "1181",
+          "605"
+        ],
+        [
+          "bits-3",
+          "1437",
+          "669"
+        ],
+        [
+          "bits-4",
+          "1693",
+          "733"
+        ],
+        [
+          "bit",
+          "925",
+          "541"
+        ],
+        [
+          "mixed-frame",
+          "5629",
+          "1469"
+        ],
+        [
+          "nested-type",
+          "2461",
+          "1181"
+        ],
+        [
+          "finite-bytes",
+          "pending",
+          "1"
+        ]
+      ],
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [57/59] Built Main (490ms)\n\u2714 [58/59] Built Main:c.o (107ms)\n\u2714 [59/59] Built \u00abartifact-test\u00bb:exe (134ms)\nBuild completed successfully (59 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-eznxr1ck/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "empty|125|125\nbits-0|669|477\nbits-1|925|541\nbits-2|1181|605\nbits-3|1437|669\nbits-4|1693|733\nbit|925|541\nmixed-frame|5629|1469\nnested-type|2461|1181\nfinite-bytes|pending|1\n",
+          "stderr": ""
+        }
+      ],
+      "binary_sha256": "816e4f96b70954b8b7f23f5153139fe1cf519260edcc98757c463bba15cbe242"
+    },
+    "seconds": 25.804,
+    "binary_sha256": "c9935d2567ef0d73f25909b9643785bf36b30f1608d5620f69123b0c7e1bbd5b"
+  },
+  "composed_boundaries": {
+    "format": "qleisli.composed-instrument-validation",
+    "version": 1,
+    "status": "passed",
+    "cases": 14,
+    "results": {
+      "independent-request": {
+        "status": "pending",
+        "work": 43154,
+        "finite_implementation_obligations": 0,
+        "finite_meaning_obligations": 0
+      },
+      "finite-obligations-remain": {
+        "status": "pending",
+        "work": 47838,
+        "finite_implementation_obligations": 1,
+        "finite_meaning_obligations": 1
+      },
+      "wrong-pure-phase": {
+        "status": "contract"
+      },
+      "changed-root-request": {
+        "status": "contract"
+      },
+      "forged-initialization": {
+        "status": "contract"
+      },
+      "init-changes-target": {
+        "status": "contract"
+      },
+      "wrong-preparation-boundary": {
+        "status": "contract"
+      },
+      "wrong-readout-boundary": {
+        "status": "contract"
+      },
+      "wrong-readout-owner": {
+        "status": "contract"
+      },
+      "lost-target": {
+        "status": "contract"
+      },
+      "wrong-pack": {
+        "status": "contract"
+      },
+      "changed-public-result": {
+        "status": "contract"
+      },
+      "forged-readout-effect": {
+        "status": "contract"
+      },
+      "oversized-boundary": {
+        "status": "limit"
+      }
+    },
+    "binary_sha256": "11c5728006f53643ddd06719a759bfe3796900f4abf4548e60f6144e00466281",
+    "commands": [
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "exit_code": 0,
+        "stdout": "\u2714 [67/69] Built Main (438ms)\n\u2714 [68/69] Built Main:c.o (278ms)\n\u2714 [69/69] Built \u00abartifact-test\u00bb:exe (309ms)\nBuild completed successfully (69 jobs).\n",
+        "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+      },
+      {
+        "argv": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-ye82yrwi/.lake/build/bin/artifact-test"
+        ],
+        "exit_code": 0,
+        "stdout": "independent-request|pending|43154|0|0\nfinite-obligations-remain|pending|47838|1|1\nwrong-pure-phase|QleisliKernel.Hierarchical.Artifact.Error.contract\nchanged-root-request|QleisliKernel.Hierarchical.Artifact.Error.contract\nforged-initialization|QleisliKernel.Hierarchical.Artifact.Error.contract\ninit-changes-target|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-preparation-boundary|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-readout-boundary|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-readout-owner|QleisliKernel.Hierarchical.Artifact.Error.contract\nlost-target|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-pack|QleisliKernel.Hierarchical.Artifact.Error.contract\nchanged-public-result|QleisliKernel.Hierarchical.Artifact.Error.contract\nforged-readout-effect|QleisliKernel.Hierarchical.Artifact.Error.contract\noversized-boundary|QleisliKernel.Hierarchical.Artifact.Error.limit\n",
+        "stderr": ""
+      }
+    ],
+    "production_integration": false,
+    "named_qpe_binding": false,
+    "source_preservation_proved": false
+  },
+  "producer_diagnostic": {
+    "report": "capacity-producer-probe.json",
+    "current": {
+      "format": "qleisli.prepared-header-producer-probe",
+      "version": 1,
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [81/83] Built Main (7.3s)\n\u2714 [82/83] Built Main:c.o (807ms)\n\u2714 [83/83] Built \u00abartifact-test\u00bb:exe (319ms)\nBuild completed successfully (83 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-l7_lcnh0/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "original|QleisliKernel.Hierarchical.Artifact.Error.limit\nPROFILE|original|1449748|608|5120|570684|13260|48962|477614|2026160\ncandidate|pending|1762525|1264591|5120|492206|8\nPROFILE|candidate|1264591|608|5120|492206|13132|48930|399296|1762525\n",
+          "stderr": ""
+        }
+      ],
+      "binary_sha256": "3406da4c771b0305bcdf792a30a36a4ed763ae97762d5e02efde1c63227d2a3b",
+      "graphs": [
+        {
+          "name": "original",
+          "definitions": 201,
+          "graph_sha256": "1e708a8f8753985b0405ed3161ca9bfc6038510c913010ff687a65355fe031b3"
+        },
+        {
+          "name": "candidate",
+          "definitions": 169,
+          "graph_sha256": "d2648b5691bd389424f4219ca8d173a1750a2326c7b3e3346a8ad3c22f2c792a"
+        }
+      ],
+      "source_sha256": "270f3e501e3ba56c65c6fd63583e960937794e60f6abacb6e9596fd0e661b7d1",
+      "kernel_source_sha256": {
+        "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "a57866a54d1709c37445625829dbe3425be4e71ac4021a759b446657d7e3313a",
+        "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+        "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc",
+        "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+        "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "4d4057a23c3b64a3150ef8c21466c52ab1d95318151e44d2330a815127d86c08",
+        "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "4f189e4b14568da1e3f7c2362afa3dff774c5fd1ccbbb66d5c54588f862a1fe9",
+        "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "2299e8cbae37857b5b0d3ffe2ce5093274a949c699939f48c16eee3436763ed9",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean": "6878ed9cc6a65de22e0ad66f990df17a1f06360f8e9d4ed4e6d72a9362245fe1",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean": "be713a65e4a191e4f5d2d055223a1ca40e7cd1231a93238a91d90739c99a7497",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean": "c6c178f2b48042c0b0aefa0497164603db7dd1620a5496d874454f4be0979004",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "bebadb3fe717b5e3cd5085eb0649d49c60c64dc95af760177b85935396ac4064",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean": "2b661cbd7ab0de55401727918247a88e71062032a0c1eb52b26791ddbce73032",
+        "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean": "c4e4fbc0da917a1d4a50f465495763af032958f6132188ab5f6f437674186822",
+        "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+        "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean": "7536ba1bd23d10e451d8903d787f832e01c2979ff24fe8ced4ecc0246dc764e2",
+        "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean": "defa2c3b8d48373c9a841c81702fa282a957a7af42f2f83cef9992d39e1b6065",
+        "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "33eb6bff842c32b4a5c81526e1b414064f1f1bef6fea35e21fbca2f0941e9e05",
+        "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+        "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "ae3e22c8c0c81021da690f3ddc0e06bf24d1281cb5d84b13cf2a566d49603838",
+        "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "a07b8dd52cfb4458d1d852208022a75a784cef3196a5b480139976af907e7262",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "0a654aab5e7113e5c1ae2b1fe4612101fad01d88ce0f22b87f50c9ecbb2e25aa",
+        "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+        "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+        "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "204ba5ba2cc42ff834628d34be9a2f5e2bda1c7ad5e41408bb02a3baec5e5d0e",
+        "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "879463bd57d6d3a940aec16e06224f393e6b7f5680c92a21f643ae37c0e55a34",
+        "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+        "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": "f94edf4ef31545a8ff5957a950618281ffa077c827573120f51248e25264c39e",
+        "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean": "d87d4317c39ec42d770db065aaf8c4943b9e219ea7b7a0c3e7e32824baf5469b"
+      },
+      "integrated_producer": false,
+      "provider_request_origin": "frozen baseline mutation fixture",
+      "finite_equations_discharged": false,
+      "named_instrument_receipt": false
+    },
+    "integrated": false,
+    "original_named_root_diagnostic": 2026160,
+    "candidate_named_root_diagnostic": 1762525,
+    "candidate_instrument_lower_bound": 2041165,
+    "remaining": "Hand-selected probe is not a general rewrite. Named composed capacity remains separate; no optimizer was integrated."
+  },
+  "policy_tests": {
+    "command": [
+      "python3",
+      "scripts/test_check_lean_kernel.py",
+      "--compiled"
+    ],
+    "exit_code": 0,
+    "stdout": ".........................\n----------------------------------------------------------------------\nRan 25 tests in 22.657s\n\nOK\n"
+  },
+  "compiled_audit": "Final combined kernel/transport audit tracked separately after named-QPE integration; generated QpeSchedule helper repair belongs to that continuation.",
+  "old_behavior_fixtures_regenerated": false,
+  "external_schemas_enabled": false,
+  "production_authority": "Rust",
+  "source_preservation_proved": false
+}

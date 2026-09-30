@@ -1,0 +1,157 @@
+{
+  "format": "qleisli.review-validation",
+  "version": 1,
+  "date_jst": "2026-09-30",
+  "project_version": "0.2.2",
+  "published_source": "v0.2.1 unchanged",
+  "platform": "local macOS",
+  "compiler_sha256": "1ccd14020d4ad3c33aa67a6616f686683f87488b3e63e9e3c7043a93bca1607c",
+  "source_sha256": {
+    "src/frontend/parser.rs": "f724386037a7a210864387fce597353d7e91b4958f77affe291d9a71677f648f",
+    "src/frontend/core.rs": "7c6f26c2bf40d7d93b43bdb531734428c49d3eee65c472c03422cdeda4475cbd",
+    "src/frontend/project.rs": "07d7d60769bd88e0fc7429182506f5d44624c2d3ee5f7812ba46907b153829b3",
+    "src/frontend/documentation.rs": "1d4924e2e1081e3aeb225a8790ac9662574dfea46484212b417226f062080306",
+    "src/frontend/compile/operations.rs": "d40f5ed926e7b796bbad093b3a513cab40b6cc6ce68a7a10a3a2b75cb4b05567",
+    "src/frontend/compile/mod.rs": "5d76aba23f1322689afec3291a93f76e136f0a6dee84138f01b30381ad3fddfa",
+    "src/frontend/compile/lower/mod.rs": "7b8a1639f3c1d92dc2351e15ac60ec5e3e1576db5b275badc78abe63b5770e19",
+    "src/frontend/compile/lower/transforms.rs": "663ba2cc2cefc59f9bc20bc5a234a036407a239c60cf34590e6e3a5af1ac0079",
+    "src/frontend/compile/lower/primitives.rs": "e5c90d0fa821dc2b6a7fbd8166b6f82313f4e5a80d648d183e78f1ae184990ad",
+    "src/frontend/compile/lower/certified.rs": "1d6b0442a9f0fc8965d08878e928315ff4151f87c40e46eb06110efae2b48343",
+    "src/frontend/compile/lower/function_contract.rs": "f82c5a20478a1d5bfd46770f8d44734f62e0c4603c87ea212de32308d581e88e",
+    "src/ir.rs": "6a4b3b7cea817dc7be4adecbe69025dc14be5944bf655c1881c246e9130e3818",
+    "src/verify.rs": "3a2dd1b99fad87d962ca09a011f3008e01c9e0be033b095b2062c7d33ff44114",
+    "src/contract/function.rs": "ea9c78e83ce1682ae9acba5c8e1ca901d6f1175a3aca67accf462250391962c9",
+    "tests/review_v021.rs": "89da14f169db251bb033d9bbcc20622be0b6de41574db699f56ecb302be44ac5",
+    "scripts/check_docs.py": "badf945f4a755c1af7bf98cd30a3e81c92c40e891b89978e47d0b70fc604d26d",
+    "scripts/check_lean_kernel.py": "96e97f8835d63b299401a4a6f1ac4b3f117031dce8ec73d00ab5c4cdbdd711eb",
+    "scripts/test_qli_differential.py": "5fe3fce52d11edba95a638642e8d00ac1e4d4bf8608e0bbc28390fdd9508ec94",
+    "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
+    "lean-kernel/QleisliKernel/PhaseWord.lean": "c084d5d13440121cd2f72e219f479fe762e9125c08c94a55d3eb48e234092926",
+    "lean-kernel/QleisliKernel/Qft.lean": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+    "lean/Qleisli/Qft.lean": "a82e1bd2d17b1c74ae38571199865a4f5dde6b1d633329abfa7413d9094c2dbf",
+    "lean-kernel/Tests.lean": "7663f5edcc24c730d8e7e8ea8dbbce39a97396022e851167b84c1a6410dd94f6",
+    "README.md": "092aaf25d9517a2f7bb6b44100ae360084ea5e479d4601c3e8fc4155bfcaf642",
+    "docs/project-status.json": "0996a039a104c0fb9522845375e81cc0351edbbc8b0d39ef1d4bc2e5cb5286be",
+    "docs/current-status.md": "16ddc6b158b32eeb249157858fdea2d9415d84b746096bb20aaabfff715f7287",
+    "docs/status-history.md": "8d85b23310cab16cfc5c956c98881af06eda5c5ed6dab899554e32b431cdc355",
+    "docs/rule-inventory.md": "5fcbf8cfff0a2b92957fcb350b03b133f3ba156c2035b815a6911ca7d9e78b2e",
+    "docs/reviews/v0.2.1.md": "0ff81ea37b23e3050985c2a9346bebc7d15ce23948aac14474ea52f4f11ae199",
+    "docs/releases/v0.2.2.md": "ead10d3a65e8f65619c49af3cfdbf1168cbfb59028dbcba020d6265bed8a83f0"
+  },
+  "checks": [
+    {
+      "command": "cargo test --all-targets",
+      "status": "passed",
+      "suites": 54,
+      "passed": 444,
+      "ignored": 14,
+      "output_sha256": "420fcae1737293ec30c174c8528462a10537b38570e52befbd0e8547f643cb14"
+    },
+    {
+      "command": "cargo fmt --check",
+      "status": "passed"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test --doc",
+      "status": "passed",
+      "tests": 1
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --no-deps",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_installation.py target/debug/qleisli",
+      "status": "passed",
+      "output_sha256": "39935094f468362a37f15acc948eb5b4d89bfa5351bcd0a4e4760caa1009655a"
+    },
+    {
+      "command": "PYTHONPATH=scripts python3 -m unittest scripts.test_check_docs scripts.test_check_stdlib_contract_docs scripts.test_check_schema_registry scripts.test_test_qli_differential scripts.test_check_input_corpus",
+      "status": "passed",
+      "tests": 68,
+      "counts": {
+        "documents": 23,
+        "stdlib_contract_documents": 11,
+        "registry": 11,
+        "differential_oracle_calibrations": 3,
+        "corpus": 20
+      }
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "status": "passed",
+      "tests": 24,
+      "output_sha256": "a105fc1773dbff0710bc003c986429fd7fc0ffe3f39c18722e2cdee46d294368"
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true Tests.lean",
+      "cwd": "lean-kernel",
+      "status": "passed"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "status": "passed"
+    },
+    {
+      "command": "cargo run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test",
+      "status": "passed",
+      "native_decisions": 1307,
+      "independent_rust_matrix_oracles": 341,
+      "dyadic_scalar_phases": 256,
+      "output_sha256": "3b59ea8b2d33818545e26bccce287f7b282b801cacd3b70ace7be717102bd623"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "status": "passed",
+      "local_links": 4864,
+      "markdown_anchors": 753,
+      "rust_declarations": 143,
+      "rust_tests": 124,
+      "lean_root_modules": 81
+    }
+  ],
+  "reports": {
+    "reproductions.json": "61556327a32a4b645f943e39590342b2d3465f683b1fa7b0b65feb869824065e",
+    "differential-validation.json": "7f8d561ef6cda74f4b5a97011cfe132fffe8bbe070aff05d9c5992d299f89259",
+    "qft-semantic-validation.json": "82b6f372a04f8136cdeb90f0e57d63d9d28b3269ef6cee26776c35a6bcaad8fe",
+    "registry-validation.json": "81ffbe231362c7793378b58a7623f223b65780fe1d6f664f611e519ce484bd15",
+    "corpus-validation.json": "ab1b091b3767b6b88dae39bde07b91e8fcfaf2a881ecb3f58383e670a5e52bfc"
+  },
+  "skipped": [
+    "remote CI and Linux",
+    "separate MSRV run",
+    "full native hierarchy suite",
+    "research-package suite",
+    "new maximum-size corpus generation/validation",
+    "optional external interop framework/LLVM suite",
+    "clean extracted-package and registry install",
+    "tagging, commit, push and publication"
+  ],
+  "scope_limits": [
+    "production verification remains Rust-authoritative; all external schemas disabled",
+    "not source preservation, whole-language soundness, all-width QFT or H1-H5 completion",
+    "the reviewer's unprovided 6000-case numpy harness and Rust fuzz were not replayed",
+    "numeric tolerances are regression checks, not evidence issuance or approximation authority"
+  ]
+}

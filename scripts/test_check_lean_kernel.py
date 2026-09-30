@@ -44,6 +44,14 @@ class RuntimeSourcePolicy(unittest.TestCase):
     def test_separate_transport_imports_are_allowed(self):
         self.assertEqual(check_kernel(self.root), ([], 4))
 
+    def test_reference_semantics_cannot_depend_on_checkers(self):
+        self.write("QleisliKernel/Check.lean", "import QleisliKernel.Semantics.Word\ndef check := true\n")
+        self.write("QleisliKernel/Semantics/Word.lean", "import Std\ndef meaning := true\n")
+        self.assertEqual(self.errors(), [])
+        self.write("QleisliKernel/Semantics/Word.lean", "import QleisliKernel.Other\ndef meaning := true\n")
+        self.write("QleisliKernel/Other.lean", "import Std\ndef other := true\n")
+        self.assertTrue(any("reference semantics imports checker" in e for e in self.errors()))
+
     def test_comments_and_plain_raw_literals_do_not_trigger_tokens(self):
         source = '''/- extern /- unsafe -/ partial -/
 -- native_decide
@@ -55,6 +63,21 @@ def apostrophe' := true
 '''
         self.assertEqual(source_errors(source), [])
         self.assertEqual(lean_code(source).count("\n"), source.count("\n"))
+
+    def test_complex_reference_models_have_one_way_dependencies(self):
+        directory = self.root / "lean/Qleisli/Semantics"
+        directory.mkdir(parents=True)
+        path = directory / "Instrument.lean"
+        path.write_text("import Mathlib.Data.Complex.Basic\nimport QleisliKernel.Semantics.Readout\n")
+        self.assertEqual(self.errors(), [])
+        for module in ["Qleisli.HierarchicalRoot", "QleisliKernel.Hierarchical.Readout", "Protocol", "Main"]:
+            with self.subTest(module=module):
+                path.write_text(f"import {module}\n")
+                self.assertTrue(any("complex reference semantics imports checker" in e for e in self.errors()))
+        # A reference helper cannot hide the forbidden edge from the scan.
+        path.write_text("import Qleisli.Semantics.Helper\n")
+        (directory / "Helper.lean").write_text("import Qleisli.HierarchicalRoot\n")
+        self.assertTrue(any("Helper.lean" in e for e in self.errors()))
 
     def test_tokens_cannot_hide_behind_comments_or_quoted_names(self):
         for source in ["partial /- note -/ def loop := loop", "@[ /- note -/ extern \"f\"] def f := 0",

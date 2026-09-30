@@ -1,0 +1,95 @@
+{
+  "format": "qleisli.instrument-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_cases": 772,
+  "shared_decoder_allowance": {
+    "commands": [
+      {
+        "argv": [
+          "lake",
+          "build"
+        ],
+        "exit_code": 0,
+        "stdout": "\u2714 [91/93] Built Main (1.1s)\n\u2714 [92/93] Built Main:c.o (436ms)\n\u2714 [93/93] Built \u00abartifact-test\u00bb:exe (363ms)\nBuild completed successfully (93 jobs).\n",
+        "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+      },
+      {
+        "argv": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-obbv_ikz/.lake/build/bin/artifact-test"
+        ],
+        "exit_code": 0,
+        "stdout": "shared-word-budget|passed\n",
+        "stderr": ""
+      }
+    ],
+    "binary_sha256": "54b9a6ffe204c59491db0df2df8a2f67bfd993264fe691444679778e2920ffac"
+  },
+  "source_connection": {
+    "cases": 6,
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "sized_corpus",
+      "check_source_instrument_contracts",
+      "--",
+      "--ignored",
+      "--nocapture"
+    ],
+    "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|1169959|412\nINSTRUMENT|order|ok|1295199|412\nINSTRUMENT|amplitude|ok|1310954|515\nINSTRUMENT|retiming|ok|265806|103\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.33s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n",
+    "semantics": {
+      "qpe": {
+        "coefficients": 32,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "order": {
+        "coefficients": 96,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "amplitude": {
+        "coefficients": 32,
+        "maximum_error": 5.23691153334427e-16
+      },
+      "retiming": {
+        "coefficients": 48,
+        "maximum_error": 0.0
+      }
+    },
+    "request_origin": "baseline proposal; mutation regression only",
+    "source_sha256": {
+      "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+      "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+      "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+      "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+      "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+      "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+      "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+      "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+      "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+    }
+  },
+  "host_command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "instrument",
+    "--",
+    "--include-ignored",
+    "--nocapture"
+  ],
+  "stdout": "\nrunning 3 tests\ntest instrument_codec_rejects_malformed_fields_before_execution ... ok\ntest instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok\ncomposed instrument costs: [(false, 0, 41190, 103), (false, 1, 41190, 103), (false, 3, 41190, 103), (true, 0, 77544, 103), (true, 1, 77544, 103), (true, 3, 77544, 103)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 1.05s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4f64e6729d3e7615)\n",
+  "kernel_sha256": "16bcf72dc50b225fc1c7ab55b1235e44fa18fdfe932cec4bfb79028af4a0bf2a",
+  "production_integration": false,
+  "named_qpe_binding": false
+}

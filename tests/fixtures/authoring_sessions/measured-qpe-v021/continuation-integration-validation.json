@@ -1,0 +1,592 @@
+{
+  "format": "qleisli.continuation-integration-validation",
+  "version": 1,
+  "status": "passed",
+  "scopes": {
+    "production_authority": "Rust unchanged",
+    "external_schemas_enabled": false,
+    "maximum_qubit_cases_generated": false,
+    "general_source_preservation_proved": false
+  },
+  "kernel_audit": {
+    "command": "lake build qleisli-kernel QleisliKernel; lake env lean Audit.lean",
+    "exit_code": 0,
+    "declarations": 7112,
+    "pure_import_modules": 1085,
+    "executable_import_modules": 1083,
+    "axioms": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "stdout": "Audited 7112 kernel/transport declarations, 1085 pure import modules and 1083 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n"
+  },
+  "kernel_policy": {
+    "commands": [
+      "python3 scripts/check_lean_kernel.py",
+      "python3 scripts/test_check_lean_kernel.py --compiled"
+    ],
+    "source_modules": 54,
+    "tests": 25,
+    "exit_code": 0
+  },
+  "projection_total_recursor": {
+    "description": "Explicit Nat.rec preserves the proved row equations, order and charges; generated partial helper removed.",
+    "validation": {
+      "format": "qleisli.hierarchical-contract-typing-validation",
+      "version": 1,
+      "status": "passed",
+      "cases": 104,
+      "typed": 52,
+      "qpe_header_cases": 9,
+      "dense_dimension": 0,
+      "small_systems_only": true,
+      "semantic_evidence_issued": false,
+      "binary_sha256": "cf1e291c667e233c4b562964630a0247fb245210c42cc0a48ca1fe02d23a2ca4",
+      "harness_sha256": "306fb14e02f3f9a9153193df212b1a15c5ef7fe9ec9afd34cb070aacddf6cc5e",
+      "results": {
+        "identity-0": [
+          "typed",
+          "326"
+        ],
+        "finite-0": [
+          "typed",
+          "326"
+        ],
+        "qft-0": [
+          "invalid_ir"
+        ],
+        "identity-1": [
+          "typed",
+          "454"
+        ],
+        "finite-1": [
+          "typed",
+          "454"
+        ],
+        "qft-1": [
+          "typed",
+          "454"
+        ],
+        "identity-2": [
+          "typed",
+          "582"
+        ],
+        "finite-2": [
+          "typed",
+          "582"
+        ],
+        "qft-2": [
+          "typed",
+          "582"
+        ],
+        "identity-3": [
+          "typed",
+          "710"
+        ],
+        "finite-3": [
+          "typed",
+          "710"
+        ],
+        "qft-3": [
+          "typed",
+          "710"
+        ],
+        "finite-empty": [
+          "invalid_ir"
+        ],
+        "pure-no-classical": [
+          "invalid_ir"
+        ],
+        "identity-exact-owners": [
+          "invalid_ir"
+        ],
+        "qft-no-product-substitution": [
+          "invalid_ir"
+        ],
+        "qft-no-Bit-substitution": [
+          "invalid_ir"
+        ],
+        "qft-axis-order": [
+          "invalid_ir"
+        ],
+        "phase-Bit": [
+          "typed",
+          "454"
+        ],
+        "phase-not-Bits1": [
+          "invalid_ir"
+        ],
+        "phase-not-multiple-owners": [
+          "invalid_ir"
+        ],
+        "phase-outside-domain": [
+          "invalid_ir"
+        ],
+        "sequence": [
+          "typed",
+          "1360"
+        ],
+        "sequence-empty": [
+          "invalid_ir"
+        ],
+        "sequence-dangling": [
+          "invalid_ir"
+        ],
+        "tensor": [
+          "typed",
+          "1970"
+        ],
+        "tensor-owner-alias": [
+          "invalid_ir"
+        ],
+        "tensor-axis-alias": [
+          "invalid_ir"
+        ],
+        "inverse": [
+          "typed",
+          "890"
+        ],
+        "inverse-rectangular": [
+          "invalid_ir"
+        ],
+        "control-renamed-same-type": [
+          "typed",
+          "1534"
+        ],
+        "control-forbids-implicit-conversion": [
+          "invalid_ir"
+        ],
+        "power-0": [
+          "typed",
+          "890"
+        ],
+        "power-1": [
+          "typed",
+          "890"
+        ],
+        "power-4096": [
+          "typed",
+          "890"
+        ],
+        "power-outside-domain": [
+          "invalid_ir"
+        ],
+        "power-not-closed": [
+          "invalid_ir"
+        ],
+        "rewire": [
+          "typed",
+          "4575"
+        ],
+        "rewire-missing-owner": [
+          "invalid_ir"
+        ],
+        "qpe-header-1-1": [
+          "typed",
+          "1148"
+        ],
+        "qpe-header-1-2": [
+          "typed",
+          "1148"
+        ],
+        "qpe-header-1-3": [
+          "typed",
+          "1148"
+        ],
+        "qpe-header-2-1": [
+          "typed",
+          "1404"
+        ],
+        "qpe-header-2-2": [
+          "typed",
+          "1404"
+        ],
+        "qpe-header-2-3": [
+          "typed",
+          "1404"
+        ],
+        "qpe-header-3-1": [
+          "typed",
+          "1660"
+        ],
+        "qpe-header-3-2": [
+          "typed",
+          "1660"
+        ],
+        "qpe-header-3-3": [
+          "typed",
+          "1660"
+        ],
+        "qpe-target-zero": [
+          "invalid_ir"
+        ],
+        "qpe-precision-zero": [
+          "invalid_ir"
+        ],
+        "qpe-wrong-provider-type": [
+          "invalid_ir"
+        ],
+        "qpe-wrong-precision-type": [
+          "invalid_ir"
+        ],
+        "qpe-cannot-drop-target": [
+          "invalid_ir"
+        ],
+        "qpe-cannot-measure-target": [
+          "invalid_ir"
+        ],
+        "instrument-not-pure-inverse": [
+          "invalid_ir"
+        ],
+        "instrument-not-pure-power": [
+          "invalid_ir"
+        ],
+        "instrument-not-pure-sequence": [
+          "invalid_ir"
+        ],
+        "encoding-identity-0": [
+          "typed",
+          "326"
+        ],
+        "encoding-identity-1": [
+          "typed",
+          "454"
+        ],
+        "encoding-identity-2": [
+          "typed",
+          "582"
+        ],
+        "encoding-identity-3": [
+          "typed",
+          "710"
+        ],
+        "encoding-classical-identity": [
+          "typed",
+          "842"
+        ],
+        "encoding-identity-wrong-name": [
+          "invalid_ir"
+        ],
+        "encoding-identity-wrong-type": [
+          "invalid_ir"
+        ],
+        "encoding-tensor": [
+          "typed",
+          "1970"
+        ],
+        "encoding-tensor-alias": [
+          "invalid_ir"
+        ],
+        "encoding-rewire": [
+          "typed",
+          "5653"
+        ],
+        "encoding-rewire-changes-logical": [
+          "invalid_ir"
+        ],
+        "scratch-one": [
+          "typed",
+          "1854"
+        ],
+        "scratch-zero-owner": [
+          "typed",
+          "1662"
+        ],
+        "scratch-unit-owner": [
+          "typed",
+          "1662"
+        ],
+        "scratch-count-understated": [
+          "invalid_ir"
+        ],
+        "scratch-count-overstated": [
+          "invalid_ir"
+        ],
+        "scratch-axis-capture": [
+          "invalid_ir"
+        ],
+        "scratch-compute-not-unitary": [
+          "invalid_ir"
+        ],
+        "scratch-prefix-not-dimension": [
+          "invalid_ir"
+        ],
+        "scratch-logical-type-change": [
+          "invalid_ir"
+        ],
+        "wrong-reference-table": [
+          "invalid_ir"
+        ],
+        "missing-reference": [
+          "invalid_ir"
+        ],
+        "zero-budget": [
+          "limit"
+        ],
+        "too-large-budget": [
+          "limit"
+        ],
+        "oversized-meaning": [
+          "limit"
+        ],
+        "control-definition-conversion": [
+          "invalid_ir"
+        ],
+        "whole-base": [
+          "typed",
+          "4049"
+        ],
+        "whole-zero": [
+          "typed",
+          "2987"
+        ],
+        "whole-hidden-meaning": [
+          "invalid_ir"
+        ],
+        "whole-false-scratch": [
+          "invalid_ir"
+        ],
+        "whole-budget": [
+          "limit"
+        ],
+        "whole-phase-still-needs-proof": [
+          "typed",
+          "1095"
+        ],
+        "reuse-identical-rewire-0": [
+          "typed",
+          "2391",
+          "1633"
+        ],
+        "reuse-identical-rewire-1": [
+          "typed",
+          "3763",
+          "2318"
+        ],
+        "reuse-identical-rewire-2": [
+          "typed",
+          "5455",
+          "3163"
+        ],
+        "reuse-identical-rewire-3": [
+          "typed",
+          "7467",
+          "4168"
+        ],
+        "reuse-identical-rewire-4": [
+          "typed",
+          "9799",
+          "5333"
+        ],
+        "reuse-structural": [
+          "typed",
+          "5739",
+          "3227"
+        ],
+        "fallback-different-valid-map": [
+          "typed",
+          "10221",
+          "8941"
+        ],
+        "fallback-different-header": [
+          "typed",
+          "8480",
+          "7616"
+        ],
+        "fallback-unequal-header-sizes": [
+          "typed",
+          "176478",
+          "174841"
+        ],
+        "fallback-finite-obligation": [
+          "typed",
+          "2621",
+          "2237"
+        ],
+        "reuse-bad-actual-map": [
+          "invalid_ir"
+        ],
+        "reuse-bad-meaning-map": [
+          "invalid_ir"
+        ],
+        "reuse-bad-structural": [
+          "invalid_ir"
+        ],
+        "reuse-rejects-classical-meaning": [
+          "invalid_ir"
+        ],
+        "reuse-bad-meaning-type": [
+          "contract"
+        ]
+      },
+      "commands": [
+        {
+          "argv": [
+            "lake",
+            "build"
+          ],
+          "exit_code": 0,
+          "stdout": "\u2714 [17/19] Built Main (665ms)\n\u2714 [18/19] Built Main:c.o (647ms)\n\u2714 [19/19] Built \u00abartifact-test\u00bb:exe (272ms)\nBuild completed successfully (19 jobs).\n",
+          "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+        },
+        {
+          "argv": [
+            "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-w1v1c2us/.lake/build/bin/artifact-test"
+          ],
+          "exit_code": 0,
+          "stdout": "identity-0|typed|326\nfinite-0|typed|326\nqft-0|invalid_ir\nidentity-1|typed|454\nfinite-1|typed|454\nqft-1|typed|454\nidentity-2|typed|582\nfinite-2|typed|582\nqft-2|typed|582\nidentity-3|typed|710\nfinite-3|typed|710\nqft-3|typed|710\nfinite-empty|invalid_ir\npure-no-classical|invalid_ir\nidentity-exact-owners|invalid_ir\nqft-no-product-substitution|invalid_ir\nqft-no-Bit-substitution|invalid_ir\nqft-axis-order|invalid_ir\nphase-Bit|typed|454\nphase-not-Bits1|invalid_ir\nphase-not-multiple-owners|invalid_ir\nphase-outside-domain|invalid_ir\nsequence|typed|1360\nsequence-empty|invalid_ir\nsequence-dangling|invalid_ir\ntensor|typed|1970\ntensor-owner-alias|invalid_ir\ntensor-axis-alias|invalid_ir\ninverse|typed|890\ninverse-rectangular|invalid_ir\ncontrol-renamed-same-type|typed|1534\ncontrol-forbids-implicit-conversion|invalid_ir\npower-0|typed|890\npower-1|typed|890\npower-4096|typed|890\npower-outside-domain|invalid_ir\npower-not-closed|invalid_ir\nrewire|typed|4575\nrewire-missing-owner|invalid_ir\nqpe-header-1-1|typed|1148\nqpe-header-1-2|typed|1148\nqpe-header-1-3|typed|1148\nqpe-header-2-1|typed|1404\nqpe-header-2-2|typed|1404\nqpe-header-2-3|typed|1404\nqpe-header-3-1|typed|1660\nqpe-header-3-2|typed|1660\nqpe-header-3-3|typed|1660\nqpe-target-zero|invalid_ir\nqpe-precision-zero|invalid_ir\nqpe-wrong-provider-type|invalid_ir\nqpe-wrong-precision-type|invalid_ir\nqpe-cannot-drop-target|invalid_ir\nqpe-cannot-measure-target|invalid_ir\ninstrument-not-pure-inverse|invalid_ir\ninstrument-not-pure-power|invalid_ir\ninstrument-not-pure-sequence|invalid_ir\nencoding-identity-0|typed|326\nencoding-identity-1|typed|454\nencoding-identity-2|typed|582\nencoding-identity-3|typed|710\nencoding-classical-identity|typed|842\nencoding-identity-wrong-name|invalid_ir\nencoding-identity-wrong-type|invalid_ir\nencoding-tensor|typed|1970\nencoding-tensor-alias|invalid_ir\nencoding-rewire|typed|5653\nencoding-rewire-changes-logical|invalid_ir\nscratch-one|typed|1854\nscratch-zero-owner|typed|1662\nscratch-unit-owner|typed|1662\nscratch-count-understated|invalid_ir\nscratch-count-overstated|invalid_ir\nscratch-axis-capture|invalid_ir\nscratch-compute-not-unitary|invalid_ir\nscratch-prefix-not-dimension|invalid_ir\nscratch-logical-type-change|invalid_ir\nwrong-reference-table|invalid_ir\nmissing-reference|invalid_ir\nzero-budget|limit\ntoo-large-budget|limit\noversized-meaning|limit\ncontrol-definition-conversion|invalid_ir\nwhole-base|typed|4049\nwhole-zero|typed|2987\nwhole-hidden-meaning|invalid_ir\nwhole-false-scratch|invalid_ir\nwhole-budget|limit\nwhole-phase-still-needs-proof|typed|1095\nreuse-identical-rewire-0|typed|2391|1633\nreuse-identical-rewire-1|typed|3763|2318\nreuse-identical-rewire-2|typed|5455|3163\nreuse-identical-rewire-3|typed|7467|4168\nreuse-identical-rewire-4|typed|9799|5333\nreuse-structural|typed|5739|3227\nfallback-different-valid-map|typed|10221|8941\nfallback-different-header|typed|8480|7616\nfallback-unequal-header-sizes|typed|176478|174841\nfallback-finite-obligation|typed|2621|2237\nreuse-bad-actual-map|invalid_ir\nreuse-bad-meaning-map|invalid_ir\nreuse-bad-structural|invalid_ir\nreuse-rejects-classical-meaning|invalid_ir\nreuse-bad-meaning-type|contract\n",
+          "stderr": ""
+        }
+      ],
+      "source_sha256": {
+        "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "d4173ff1ca7a2db5941433ceed32a829b748b316e049e1348ae924e937444e95",
+        "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+        "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc",
+        "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+        "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "af909f47f285eeb643f2ec80f6fd0b06210a93145559fd4d6d42ea37e2033170",
+        "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "4f189e4b14568da1e3f7c2362afa3dff774c5fd1ccbbb66d5c54588f862a1fe9",
+        "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "2299e8cbae37857b5b0d3ffe2ce5093274a949c699939f48c16eee3436763ed9",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean": "6878ed9cc6a65de22e0ad66f990df17a1f06360f8e9d4ed4e6d72a9362245fe1",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean": "be713a65e4a191e4f5d2d055223a1ca40e7cd1231a93238a91d90739c99a7497",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean": "c6c178f2b48042c0b0aefa0497164603db7dd1620a5496d874454f4be0979004",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "bebadb3fe717b5e3cd5085eb0649d49c60c64dc95af760177b85935396ac4064",
+        "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean": "2b661cbd7ab0de55401727918247a88e71062032a0c1eb52b26791ddbce73032",
+        "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean": "c4e4fbc0da917a1d4a50f465495763af032958f6132188ab5f6f437674186822",
+        "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "5afee44654b03de33adf2ff6714cd7c9f81efd20efa84e9f0705317e10cf4c7f",
+        "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean": "7536ba1bd23d10e451d8903d787f832e01c2979ff24fe8ced4ecc0246dc764e2",
+        "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean": "defa2c3b8d48373c9a841c81702fa282a957a7af42f2f83cef9992d39e1b6065",
+        "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "33eb6bff842c32b4a5c81526e1b414064f1f1bef6fea35e21fbca2f0941e9e05",
+        "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "1922ea17c9647b446e898f9dfa4531fcbb645cb9f9dcab6d29d4073249f080c0",
+        "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "ae3e22c8c0c81021da690f3ddc0e06bf24d1281cb5d84b13cf2a566d49603838",
+        "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "a07b8dd52cfb4458d1d852208022a75a784cef3196a5b480139976af907e7262",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+        "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "e71c395de4aaf128322d1cfea94b34708bd2c15ed85eae2b89866a250bd2253a",
+        "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+        "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+        "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "204ba5ba2cc42ff834628d34be9a2f5e2bda1c7ad5e41408bb02a3baec5e5d0e",
+        "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "879463bd57d6d3a940aec16e06224f393e6b7f5680c92a21f643ae37c0e55a34",
+        "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "b1863cbce96cc82851e95218547b0397b5e4e39ffb907608d9a6c9e92280e6b2",
+        "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": "f94edf4ef31545a8ff5957a950618281ffa077c827573120f51248e25264c39e",
+        "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean": "d87d4317c39ec42d770db065aaf8c4943b9e219ea7b7a0c3e7e32824baf5469b",
+        "scripts/test_hierarchical_artifact.py": "0be27604cb0821165f9bfacf72dbe6f74088da5b6f294ad8fe59aeafd771967e",
+        "scripts/test_hierarchical_typing.py": "469cf88986327c4c2a92567c66427c0a632f123c64d7ca55ac6b094ad883daf0",
+        "scripts/test_hierarchical_contract_typing.py": "1c4bc5213f62e11ed85f97e5a13abf1f882db436daaed707907298ba1c8d7392"
+      }
+    }
+  },
+  "native_host_report": "qpe-host-validation.json",
+  "previous_prepared_header_report": "prepared-header-validation.json",
+  "previous_sampling_report": "sampling-validation.json",
+  "schema_audit": {
+    "command": "python3 scripts/check_schema_registry.py --write",
+    "exit_code": 0,
+    "result": {
+      "entries": 3,
+      "externally_enabled": 0,
+      "format": "qleisli.schema-registry-validation",
+      "manifest_sha256": "839aeec65190f9bbf6d5ffdb4db9ac82f581452846184206cc0bdd0a922dbb54",
+      "mode": "rebuilt-types-and-audits",
+      "source_revision": "dedf344102045beddbbce84ece6826b390081b9597187d0c39bfbf1939b7397f",
+      "status": "passed",
+      "version": 1
+    },
+    "stages": [
+      "runtime source policy",
+      "lean-kernel build and compiled-declaration/axiom audit",
+      "lean build and declaration/axiom audit",
+      "leanchecker --fresh QleisliKernel",
+      "rebuilt SchemaExport.lean theorem types"
+    ],
+    "source_only_recheck": "passed",
+    "registry_mutation_tests": 11
+  },
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "d4173ff1ca7a2db5941433ceed32a829b748b316e049e1348ae924e937444e95",
+    "lean-kernel/Protocol.lean": "a82cfe890134ff5cb45569dd817841545103df32c85a33a72d3569362d12720d",
+    "lean-kernel/Main.lean": "4b30a889020c4df940ca96ea4d4f623cea5d21903e5039a2406f19a878f5464b",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "src/interchange/hierarchical.rs": "eed2e8a5895b800b87ecc4558e7b0db6b77fa6f98b765dd6f5046cdb0bb400fc"
+  },
+  "rust_sized_report": "rust-sized-validation.json",
+  "documentation": {
+    "commands": [
+      "python3 scripts/check_docs.py --write-status",
+      "python3 scripts/test_check_docs.py",
+      "git diff --check"
+    ],
+    "exit_code": 0,
+    "links": 4529,
+    "anchors": 655,
+    "rust_declarations": 143,
+    "rust_tests": 124,
+    "lean_root_modules": 115,
+    "tests": 23
+  },
+  "inventory": {
+    "commands": [
+      "python3 scripts/check_verification_inventory.py",
+      "python3 scripts/test_check_verification_inventory.py",
+      "python3 scripts/test_test_verification_baseline.py"
+    ],
+    "exit_code": 0,
+    "constructors": 232,
+    "source_snapshots": 131,
+    "groups": 36,
+    "boundaries": 16,
+    "capacities": 25,
+    "mutation_tests": 15,
+    "oracle_calibration_tests": 8,
+    "historical_behavior_fixtures_recaptured": false
+  },
+  "baseline_report": "final-continuation-baseline.json",
+  "source_cli_report": "source-cli-integration-validation.json",
+  "parent_reported_compatibility": {
+    "rust_all_target_passed": 491,
+    "rust_all_target_ignored": 25,
+    "suites": 60,
+    "ignored_tests_executed_by_all_target_run": false,
+    "native_tests": "explicit separate reports",
+    "rust_1_85_all_targets": "cargo check --all-targets passed; tests/Clippy not rerun with MSRV",
+    "clippy": "passed",
+    "rustdoc": "passed",
+    "doctest": "passed",
+    "primary_toolchain": "Rust1.98"
+  },
+  "scope": "Bounded small-system continuation, audited named transport and compatibility/package rehearsal; not clean-commit CI, full-profile migration or publication.",
+  "package_report": "package-rehearsal-validation.json",
+  "remaining": [
+    "named (2,4) remains limit-rejected under unchanged 2M allowance",
+    "general source/native/Rust execution correspondence is not proved",
+    "same-commit clean distribution and Linux CI",
+    "publication and future VM-23\u2013VM-29/S05/full-profile gates"
+  ],
+  "compatibility_report": "final-compatibility-validation.json",
+  "metadata_integrity": {
+    "corpus": {
+      "command": [
+        "python3",
+        "scripts/check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "finite_cases": 36,
+      "upstream_sources": 3,
+      "original_local_compositions": 3,
+      "regression_tests": 22,
+      "maximum_cases_rerun": false,
+      "change": "Registered existing Qleisli-authored measured wrappers separately from upstream translations; pinned hashes/dependencies; no source bytes or historical semantic reports changed."
+    },
+    "authoring": {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "records": 14,
+      "snapshots": 22,
+      "observations": 43,
+      "historical_report_bytes_changed": false
+    }
+  }
+}

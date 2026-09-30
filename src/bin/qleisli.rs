@@ -17,6 +17,8 @@ mod json;
 mod options;
 #[path = "qleisli/samples.rs"]
 mod samples;
+#[path = "qleisli/sized.rs"]
+mod sized;
 
 fn report(root: &std::path::Path, error: Diagnostic) {
     if let Some(p) = error.primary {
@@ -35,6 +37,9 @@ fn report(root: &std::path::Path, error: Diagnostic) {
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    if args.first().is_some_and(|arg| arg == "sized") {
+        return sized::run(&args[1..]);
+    }
     if args.first().is_some_and(|arg| arg == "interop") {
         return interop::run(&args[1..]);
     }

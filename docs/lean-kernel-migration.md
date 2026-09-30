@@ -2,13 +2,18 @@
 
 Status: **staged migration adopted; experimental phase-word, phase-DAG, typed-layout, typed-call and combined phase/layout
 slices implemented; production verification remains in Rust**. The user selected this
-direction during 2026-09-28–29 JST. The development version is 0.2.1, currently
-unreleased; see its [record](releases/v0.2.1.md). Foundation publication evidence
-remains in the [0.2.0 record](releases/v0.2.0.md). The [0.2.0 foundation scope](v0.2.0-plan.md) retains
-the implemented components. The 2026-09-30 [0.2.1 boundary](v0.2.1-plan.md)
+direction during 2026-09-28–29 JST. The development version is 0.2.2, currently
+unreleased; see its [record](releases/v0.2.2.md). The latest published release is
+[0.2.1](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md). Foundation publication evidence
+remains in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The [0.2.0 foundation scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains
+the implemented components. The 2026-09-30 [0.2.1 boundary](v0.2.2-plan.md)
 retains completed experiments and bounded connections; heavy production
 hierarchy/common-QPE integration and proofs move to [0.2.2](v0.2.2-plan.md),
-with M0–M5 and H1–H5 intact.
+with M0–M5 and H1–H5 intact. The later 2026-09-30 user instruction assigns
+verification implementation to [eight packets through 0.2.2–0.2.9](verification-migration-v0.2.md),
+superseding the K1/0.3.0 and K2/0.4.0 schedule. Shared-QPE feature integration
+retains its dependencies and gates across that continuation; it is no longer
+all assigned to the first 0.2.2 packet. Production authority is unchanged.
 The 2026-09-29 refinement makes proof of the
 [Qleisli Soundness Theorem](release-milestones.md#qleisli-soundness-theorem-v050)
 the central v0.5.0 milestone, with broader community development from v0.5 onward.
@@ -42,7 +47,7 @@ using Lean alone proves correctness. Auxiliary CLI/interop/simulator migration
 can continue beyond v1; the v1 gate is the actual supported synthesis and
 emission path with its correspondence proofs.
 
-The separate [QLT plan](qlt-design.md) deliberately starts its experimental
+The separate [QLT plan](https://github.com/MGYamada/Qleisli/issues/50) deliberately starts its experimental
 mathematical test evaluator in Rust from v0.4.0 onward, after the
 [0.3.0 type-system work](v0x-roadmap.md#v030-qleisli-type-system-specification), then migrates evaluation and
 cost definitions to Lean from 0.5 onward. It issues no production acceptance
@@ -84,7 +89,7 @@ and emission must use the very artifact checked, or a separately validated
 meaning-preserving transformation. Full IR validity does not establish source
 translation, optimization or backend preservation.
 
-The future [Lean-assisted debugger](lean-debugger-plan.md) uses this checking
+The future [Lean-assisted debugger](https://github.com/MGYamada/Qleisli/issues/51) uses this checking
 boundary to report mathematical obligations and independently replayable
 mismatch witnesses, with later K4 source/backend tracing. The presentation and
 repair layer remains untrusted. Its witness-checking correctness is a separate
@@ -236,18 +241,24 @@ ship as PATCH under [versioning](versioning.md); a stage number does not itself
 justify a MINOR. Public acceptance/capacity/format or authority changes get an
 explicit compatibility and migration review.
 
+**Schedule revision, 2026-09-30:** the user selects 0.2.2–0.2.9 for verification
+implementation migration. The [packet plan](verification-migration-v0.2.md)
+provides the inventory, exact/finite, pure/observing IR, hierarchy and transport
+sequence. K1/K2 implementation moves earlier; the v0.3.0 type-system target,
+v0.4.x review preparation and v0.5.0 theorem/authority gates remain.
+
 | Stage and intended boundary | Implementation | Gate before advancing |
 | --- | --- | --- |
-| **K0 / 0.2.x: establish the executable boundary** | 0.2.0 ships the separate Mathlib-free package, actual checker component theorems, bounded experimental protocols, Rust launcher, compiled audits and independent tests. Complete the production M2 hierarchy/schema checker in the 0.2.2 continuation. | The shipped components are reproducible without Mathlib. Every later M2 rule remains disabled until its theorem, binding tests and H1–H5 obligations are satisfied. Remaining common QPE/QFT and production sized source move to 0.2.2; their public API must remain compatible or select the next MINOR. Shipping 0.2.0 alone does not close full K0/M2. |
-| **K1 / 0.3.0: exact meanings and contracts** | Canonical exact scalars, bounded matrices/leaves, contract equations and evidence reconstruction; separate complex interpretation proofs over the same definitions. | Canonical equality and operations agree with the mathematical interpretation; phase and type/axis/source mutations reject. Differential agreement with Rust includes overflow/capacity boundaries. Arbitrary-precision integers still have explicit bit/work limits. |
-| **K2 / 0.4.0: complete raw IR checking** | Ownership, effects, SSA, complete phi/frame coverage, zero-width owners, cleanup and portable finite/hierarchical evidence. Use the existing Resource/Phi models as specifications. | Resource/effect and individual-rule proofs cover all implemented variants; keep an explicit ledger of remaining composition/interpretation obligations for the v0.5.0 theorem. Two checkers run on the same immutable artifact and request; disagreement or either failure rejects. Native cost and adversarial corpus gates pass. |
+| **K0 / shipped 0.2.0 foundation, 0.2.2 inventory** | Reuse the separate Mathlib-free package, actual component theorems, experimental protocols, Rust launcher and audits. VM-22 inventories every existing acceptance path and fixes the next boundary contracts. | Shipped components remain reproducible. New M2 rules stay disabled until actual-checker proofs, binding and H1–H5 pass; hierarchy closure is assigned to VM-27, not inferred from K0 or the 0.2.2 version. |
+| **K1 / 0.2.3–0.2.4: exact meanings and contracts** | VM-23/24 migrate canonical exact scalars, bounded matrices/leaves, contract equations and evidence reconstruction, with separate complex interpretation proofs over the same definitions. | Equality and operations agree with interpretation; phase/type/axis/source mutations reject. Preserve public arithmetic/capacity failure behavior and aggregate work limits. Raw-program evidence also requires K2 extraction. |
+| **K2 / 0.2.5–0.2.9: complete checking and dual integration** | VM-25/26 migrate pure/observing raw IR, ownership, effects, SSA, complete phi/frames and cleanup. VM-27 closes supported hierarchy/finite/root obligations; VM-28/29 integrate and audit the complete opt-in dual path. | Individual-rule proofs cover every migrated variant with no substitute Rust-checker premise. Both checkers receive the same immutable artifact/request; either failure or disagreement rejects that path. Complete native/adversarial/platform checks and record remaining full-theorem/review obligations for S05. Preserve compatible Rust-only installation and APIs in 0.2.x. |
 | **K3 / 0.5.0: Qleisli Soundness Theorem and production authority** | Prove the named theorem for the complete declared production IR profile, integrating K1/K2 results. Transfer acceptance to Lean after fresh serialized reconstruction; Rust becomes a producer/oracle. Prepare the community development foundation. | Complete [S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050), including independent review, proof reproduction, full coverage and artifact binding. Package the audited kernel on supported platforms; validate failures, parity and capacity migration. No unproved Rust-checker premise or silent fallback. |
 | **K4 / 0.6.0 onward, through v1: translations, realizability and resource preservation** | Validate Rust source lowering; implement correctness-critical backend lowering, optimization, gate-realization checking and emission in Lean with proofs about those actual definitions; retain external synthesis search behind the proved `LeafRealizer` checker. Derive CPTP semantics from soundness, construct its isometric dilation and synthesize it for the target profile. Retire duplicated Rust acceptance code through versioned migration, with broader contributors and reviewers. | Preserve S05-C1–C5 and complete [PR-C1–C4](release-milestones.md#physical-realizability-theorem-v1) and [RS-C1–C5](release-milestones.md#resource-safety-theorem-v1) by v1 alongside V1-C1–C5. Bind emitted artifacts to checked meanings and resource contracts under explicit cost models; distinguish exact synthesis, certified approximation and device assumptions. Retain reproducible audits, native compiler/runtime assumptions, diagnostics and migrations. |
 
-K1 and K2 migrate the remaining existing finite acceptance surface; they do
-not postpone proofs required by an M2 rule enabled in the 0.2.2 continuation.
-K0's full M2 work must already provide the executable checking and semantic interpretation
-needed for its selected QFT/QPE schemas. A Rust-checked finite leaf must be
+K1 and K2 migrate the remaining existing finite acceptance surface during the
+0.2.2–0.2.9 continuation; they do not postpone proofs required by an enabled
+M2 rule. Full M2 integration must provide the executable checking and semantic
+interpretation needed for its selected QFT/QPE schemas. A Rust-checked finite leaf must be
 reconstructed from the same bound data by the explicit transitional boundary;
 a serialized Rust success flag or handle cannot become Lean evidence. Any
 remaining Rust leaf premise stays visible in the theorem and production trust
@@ -399,6 +410,6 @@ The audit is itself tested with compiled negative fixtures. In this initial
 work it caught compiler-generated partial recursion helpers behind ordinary
 `def` declarations; the definitions were rewritten with standard recursors and
 folds. A source keyword scan alone would not have caught that condition.
-Tests and audit results are recorded in the [0.2.0 record](releases/v0.2.0.md).
+Tests and audit results are recorded in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
 No finite differential suite proves equivalence of the two implementations or
 closes the full source-to-execution theorem.

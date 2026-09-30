@@ -3,7 +3,7 @@
 Status: **selected on 2026-09-27; fixed-width language slice implemented in
 0.1.8 on 2026-09-28**. This is the normative
 M1 supplement to [current v0](language-spec.md); the finite grammar and older
-special forms retain their contracts. The [implementation/release record](releases/v0.1.8.md)
+special forms retain their contracts. The [implementation/release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md)
 records executed validation and migration. Separate [machine interfaces](machine-interface-spec.md)
 and the [M2 profile](hierarchical-ir-spec.md) retain their own open gates.
 This implementation completes neither M1 as a whole nor G020-3's release gates.
@@ -56,7 +56,7 @@ independently checked for every receipt. Per-pair raw/name work under
 [FC-CACHE](function-contracts-v0.1.md), per-receipt exact checking, specialization
 limits and all other work charges remain. Public identity inspection keeps its
 owned API through a bounded lazy compatibility view. The
-[F2 resolution](reviews/b019-f2-resolution.md) records the compatible repair,
+[F2 resolution](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-f2-resolution.md) records the compatible repair,
 source/dependency binding and the 100 KB/256-provider experiment. These finite
 limits still apply together; 256 is a specialization cap, not an unconditional
 capacity promise for arbitrary programs.
@@ -175,7 +175,7 @@ or `adjoint(U,q)`. The constructor table below separately derives
 Apply/Adjoint/Controlled for `controlled_op(U)` and Controlled for
 `inverse_op(U)` from `Controlled(U)`. A helper can therefore use a derived
 controlled inverse with its control in `|1>` to apply u†. This is accepted M1
-behavior, recorded by [A020-09](v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors),
+behavior, recorded by [A020-09](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors),
 not independence under arbitrary constructor composition.
 M1 transparent providers can supply all three after independent
 extraction and verification of the derived circuits; that does not prove that
@@ -304,7 +304,7 @@ and the independent verifier checks its binding. The proposed new core action
 is unnecessary: no irreducible obligation requires a new acceptance rule.
 Existing raw-IR/evidence consumers need no migration or adapter replacement.
 The public AST, tokens and frontend diagnostic variants do require the
-[documented migration](releases/v0.1.8.md#compatibility-and-migration).
+[documented migration](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md#compatibility-and-migration).
 Portable interchange remains unimplemented under its separate specification.
 
 Each generic body is checked with abstract operations and only declared access.

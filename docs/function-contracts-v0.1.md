@@ -7,7 +7,7 @@ to ordinary source-function boundaries. It supplies the V01-C3 and
 V01-C5 path in the [release milestones](release-milestones.md), whose acceptance
 audit combines this path with the SC kernel and source extension. Implementation
 and regression results are recorded in the
-[conformance ledger](specification-status.md).
+[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 The purpose is to let a client name the operation it requires separately
 from the implementation selected to perform it. Checked evidence binds those

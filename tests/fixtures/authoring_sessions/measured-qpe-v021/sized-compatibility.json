@@ -1,0 +1,44 @@
+[
+  {
+    "name": "corpus",
+    "command": [
+      "python3",
+      "scripts/test_sized_corpus.py",
+      "--small"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "qft",
+    "command": [
+      "python3",
+      "scripts/test_sized_qft.py",
+      "--small"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "qpe",
+    "command": [
+      "python3",
+      "scripts/test_sized_qpe.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "arithmetic",
+    "command": [
+      "python3",
+      "scripts/test_sized_arithmetic.py"
+    ],
+    "exit_code": 0
+  },
+  {
+    "name": "clients",
+    "command": [
+      "python3",
+      "scripts/test_sized_qpe_clients.py"
+    ],
+    "exit_code": 0
+  }
+]

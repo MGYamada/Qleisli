@@ -1,0 +1,89 @@
+{
+  "format": "qleisli.source-cli-integration-validation",
+  "version": 1,
+  "date": "2026-09-30",
+  "status": "pass",
+  "environment": {
+    "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "checks": [
+    {
+      "command": "cargo test --offline --lib native_named_qpe_from_rust_source -- --ignored",
+      "exit_code": 0,
+      "elapsed_seconds": 0.859,
+      "results": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 55 filtered out; finished in 0.83s"
+      ]
+    },
+    {
+      "command": "cargo test --offline --test sized_cli -- --include-ignored",
+      "exit_code": 0,
+      "elapsed_seconds": 0.736,
+      "results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s"
+      ]
+    }
+  ],
+  "named_qpe": {
+    "profiles": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "complex_reference_coefficients": 56,
+    "changed_provider_rejections": 3,
+    "absolute_tolerance": 1e-12,
+    "provider_fixture": "frozen baseline mutation oracle; separate independent analytical complex branch oracle"
+  },
+  "cli": {
+    "tests": 3,
+    "entry": "measurement::qpe",
+    "fixed_seed": 42,
+    "shots": 8,
+    "expected_outcome": 1,
+    "check_contracts": [
+      "composition",
+      "requested-composition",
+      "qpe"
+    ],
+    "named_provider_integration": [
+      {
+        "provider_j": 1,
+        "exit_code": 0,
+        "stdout": "{\"status\":\"checked\",\"profile\":\"sized-instrument\",\"contract\":\"qpe\"}",
+        "stderr": ""
+      },
+      {
+        "provider_j": 2,
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "contract: Lean hierarchy inspection rejected the artifact"
+      }
+    ]
+  },
+  "scope": {
+    "general_source_preservation_proved": false,
+    "numerical_execution_proved": false,
+    "external_schemas_enabled": false,
+    "production_authority_transferred": false
+  },
+  "implementation_sha256": {
+    "src/frontend/sized/qpe.rs": "0d2d0c1b5b6826fd7b5b75e87276b062e6257a649ada5b82496897896b37137a",
+    "src/bin/qleisli/sized.rs": "f359234d06e8c83971f11c52501d0bb9bc465a9c04022da54419eca4e20741ea",
+    "src/bin/qleisli/options.rs": "378f70393842196cb4885afc5278a07bf457178fdb43cfd559ebf287493a19f9",
+    "src/bin/qleisli.rs": "ccf29d7755917f06c6b2c4c2c91c87ffe35c3d7094d3e67cd2dc9f3eeb34c881",
+    "tests/sized_cli.rs": "f4e4103f71bf2edfae77d7d0f5ffe27054f5722a37e47b84e337e7b255171925",
+    "tests/fixtures/review_v020/usage.txt": "8f679f5ce601a8b621acea93768c5a58b1fa3c4087300d90a58390f5efb51da8",
+    ".github/workflows/ci.yml": "7e470b0dd943503bdaaf6572a14fac82437c4a2c4c65217b3d86ff09d9af7ca5"
+  }
+}

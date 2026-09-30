@@ -159,6 +159,11 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
             errors.append(f"pure kernel imports transport module: {name}")
             return
         for dependency in lean_imports(sources[name].read_text(encoding="utf-8")):
+            if name.startswith("QleisliKernel.Semantics.") and not (
+                    dependency == "Init" or dependency.startswith("Init.") or
+                    dependency == "Std" or dependency.startswith("Std.") or
+                    dependency.startswith("QleisliKernel.Semantics.")):
+                errors.append(f"reference semantics imports checker/transport: {name} -> {dependency}")
             visit(dependency, transport, stack | {name})
 
     for name in ["QleisliKernel", "Main"]:
@@ -185,6 +190,15 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
             errors.append("executable kernel manifest must contain zero external packages")
     except (OSError, ValueError) as error:
         errors.append(f"kernel package metadata: {error}")
+    # The separate complex reference models may use Mathlib, but must obey
+    # the same direction of dependence: acceptance imports specification.
+    for path in sorted((root / "lean/Qleisli/Semantics").rglob("*.lean")):
+        for dependency in lean_imports(path.read_text(encoding="utf-8")):
+            if not (dependency in {"Init", "Std", "Mathlib"} or
+                    dependency.startswith(("Init.", "Std.", "Mathlib.",
+                        "Qleisli.Semantics.", "QleisliKernel.Semantics."))):
+                errors.append(f"complex reference semantics imports checker/transport: "
+                              f"{path.relative_to(root)} -> {dependency}")
     return errors, len(sources)
 
 

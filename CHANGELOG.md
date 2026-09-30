@@ -6,11 +6,111 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+## 0.2.2 — 2026-09-30
+
+Compatible corpus, verification preparation and bounded source/QPE additions.
+Publication results are recorded separately in the [release record](docs/releases/v0.2.2.md).
+
+- Bound grouped-import prefix copying per module before allocation, including
+  nested groups and separate `use` items. Check both identifier count and name
+  bytes, and bound repeated documentation before cloning. Render each documented
+  group once, preserving existing ungrouped paths; add amplification,
+  exact-boundary, diagnostic-span and compatibility regressions.
+
+- Adopt **docs/ cleanup boundary at v0.3.0**: retain active v0.2.x goals and
+  migration plans, aggressively retire obsolete documentation now, and write
+  v0.3.0 documentation from scratch after removing the remaining legacy files.
+  Delete old release/review/decision/conformance pages, the backlog and generated
+  status history; use Git history for lookup. Executable evidence stays intact.
+
+- Resume the deferred measured-QPE feature track with fresh-zero/readout
+  checkers, recursive corpus helpers, measured clients and a composed Lean/Rust
+  host that discharges exact finite obligations. Prove conditional full branch
+  matching, actual zero-input branch columns and instrument completeness/reference
+  trace preservation under finite-leaf unitarity and meaning premises using
+  independent reference modules. Add actual routed controlled-power matching
+  with an explicit provider equation premise.
+- Preserve inverse subgraphs and phase/owner structure in untrusted compaction.
+  Reuse checked typing and remove repeated root/component work charges without
+  changing acceptance predicates or increasing limits. Composed QPE `(1,3)`
+  passes at 1,268,842 structural units and `(2,4)` at 1,920,516 through
+  the Python-produced generic composition. Named QPE checks retain a separate
+  `(2,4)` limit rejection under the unchanged 2,000,000 allowance.
+- Add checked hierarchy reference execution with explicit memory/work limits,
+  actual finite leaves and complete measurement branches. Fresh-shot sampling
+  explicitly normalizes input, charges each execution and returns conditional
+  residual/reference states; seeded order/amplitude clients use actual outcomes.
+  Add bounded Rust sized-source preparation/lowering and an additive sized CLI.
+  Named QPE checking binds an independent provider request, actual circuit trace
+  and measurement order, with exact finite/provider/H discharge. Actual Kraus,
+  reference and classical-result theorems retain explicit correspondence and
+  specification premises. Small source/CLI and measured-client checks pass;
+  general source/runtime correspondence and release gates remain separate.
+
+- Implement VM-22: freeze acceptance constructors/APIs, boundary requests,
+  coefficient interpretations and capacities; retain simple corpus additions.
+  Add small phase-sensitive finite/source/native/hierarchy comparison fixtures,
+  independent complex/word oracles and CI drift/mutation checks. Preserve Rust
+  authority and Rust-only installation; later Lean replacement remains pending.
+
+- Fix #55: use LLVM block identity for optional QIR import, accepting unnamed
+  and mixed acyclic chains while retaining cycle/unvisited-block rejection.
+- Fix #56: retain QIRF diagnostic pointers and OpenQASM source spans in interop
+  JSON, consistently through Python; add text/bitcode and location regressions.
+- Reduce docs before Reference consolidation (#48): delete five superseded
+  plans, compress repeated roadmap/backlog/status reports and retain unique
+  contracts, source evidence, validation and publication records. Plan document
+  roles, authority, lifecycle and CI discipline for v0.3.0.
+
+
+- Address the published 0.2.1 review in the 0.2.2 tree: checked width/phase
+  narrowing; compiler-owned sealed signature inventory; grouped imports with
+  stable AST/spans/docs; explicit receipt-identity equality and clearer effect
+  diagnostics; one-body plus serial-copy repeat_static validation, avoiding
+  product-matrix overflow for TH 512/1000/1024 while retaining other capacities.
+- Add fixed-seed exact-extractor/source-CLI differential CI checks; compatible
+  QFT symbolic-path matching and complex Fourier/reference proofs; separate
+  cyclic reference semantics and enforce one-way imports. Preserve old Lean
+  theorem APIs, production Rust authority and disabled external schemas.
+- Put examples/installation first in README and generate separate current,
+  historical and detailed-inventory status pages. Record v0.3 domain/Toffoli
+  migration questions and retain corpus-first library growth until v0.5.0.
+
+
+- Establish `STDLIB.md` for mathlib-style open-source library growth from v0.5.0,
+  keeping new algorithms in corpus before then as a general rule. Add a short
+  composable contract template and QFT2/Add2/AND-phase pilots over existing code;
+  separate source checks, tests, actual-IR proofs, source preservation and
+  specification review. Add CI documentation linting and mutation regressions,
+  without a new bundled API, borrowing syntax or implemented `qlippy` executable.
+
+- Plan verification migration through 0.2.2–0.2.9: acceptance inventory,
+  exact arithmetic/finite evidence, pure and observing raw IR, hierarchical
+  root binding, then native/production dual integration and coverage audit.
+  Move K1/K2 implementation earlier while preserving compatibility,
+  small-system validation and the v0.5.0 theorem/authority gates. This is a
+  schedule/documentation change, with no new checker or enabled schema.
+
+- Add six simple finite corpus translations from the existing pinned sources:
+  SWAP/Fredkin, constant XOR/bitwise complement and exact RX/one-bit phase
+  kickback. Grow the production CLI corpus from 30 to 36 cases, retain untouched
+  first sources and source-specific notices, and add six type-correct semantic
+  faults with independent phase/order checks. Heavy sized-QPE gates remain pending.
+
+- Select development version 0.2.2 after the published 0.2.1 release;
+  synchronize Rust, both Lean packages and the Python host. Keep shared-QPE
+  integration and proof gates pending, preserve small-system validation scope,
+  and distinguish development installation from published packages.
+- Organize the reusable release procedure: exact-commit validation and clean
+  distribution checks, annotated source tag, crates.io publication, fresh
+  registry/hosted-doc verification and GitHub Release source verification.
+  Preserve immutable 0.2.1 publication records and separate Python distribution.
+
 ## 0.2.1 — 2026-09-30
 
 Published as `qleisli` on crates.io and as the
 [v0.2.1 GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.1).
-Validation and publication evidence are recorded in the [release record](docs/releases/v0.2.1.md).
+Validation and publication evidence are recorded in the [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md).
 
 - **Rust package/import migration:** adopt `qleisli` for the first crates.io
   release at the user's explicit request. Earlier Git/path users must rename
@@ -208,7 +308,7 @@ Validation and publication evidence are recorded in the [release record](docs/re
   remaining full-profile rules and sized source remain pending. Correct the
   remaining current-design `CWord` table entry to `CBits`.
 
-- Address the [0.2.0 review](docs/reviews/v0.2.0.md): prevent roundoff drift from
+- Address the [0.2.0 review](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.2.0.md): prevent roundoff drift from
   rejecting long samples; count shared source snapshots once in QIRF and reuse
   imported storage; remove empty error locations; list all CLI commands/options;
   reject Lean `#eval`/`#eval!` in runtime source policy. Clarify numerical residues,
@@ -234,7 +334,7 @@ Validation and publication evidence are recorded in the [release record](docs/re
   general algorithm support is claimed.
 
 - Select development version 0.2.1, synchronizing Rust and both Lean packages
-  with the [continuation record](docs/releases/v0.2.1.md). Shared sized QPE,
+  with the [continuation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md). Shared sized QPE,
   production hierarchy and H1–H5 remain pending under the existing plan.
 - Fix the README soundness formula for GitHub rendering by replacing
   `\operatorname` and specialized double-bracket macros with basic TeX notation.
@@ -243,7 +343,7 @@ Validation and publication evidence are recorded in the [release record](docs/re
 
 Finite machine interfaces, sampling and trials, arity-preserving tuples,
 resource-policy review fixes and the experimental Lean kernel/proof foundation.
-See the [migration and validation record](docs/releases/v0.2.0.md) and
+See the [migration and validation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) and
 [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.0).
 Production finite verification remains Rust-authoritative; common sized QPE
 and the remaining production hierarchy/H1–H5 work target 0.2.1.
@@ -377,7 +477,7 @@ and the remaining production hierarchy/H1–H5 work target 0.2.1.
 - Preserve first QPE/Grover attempts and real baseline diagnostics. Hierarchy,
   external schema binding and sized source are still pending; component proofs
   are included in the experimental Lean foundation.
-- Address the [v0.1.9 follow-up review](docs/reviews/v0.1.9-followup.md): share
+- Address the [v0.1.9 follow-up review](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.9-followup.md): share
   exact work across compilation, use repeated squaring, compare finite closed
   transforms independently, and reject bare CR throughout source. Aggregate
   checking capacities and the CR restriction are breaking 0.2.0 changes.
@@ -388,7 +488,7 @@ and the remaining production hierarchy/H1–H5 work target 0.2.1.
 ## 0.1.9 — 2026-09-28
 
 Compatible review fixes, the completed finite B019 foundation and preparation
-for code-driven development. See the [release record](docs/releases/v0.1.9.md)
+for code-driven development. See the [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md)
 and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.9).
 
 ### Added
@@ -406,10 +506,10 @@ and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/t
   start with quantum programs as they ought to be expressed, then develop the
   language with AI. Record current-source friction as A020-14–16 without
   adopting syntax, new checker rules or continuous-angle APIs.
-- A dated [B019 boundary check](docs/reviews/b019-2026-09-28.md), with a local F2
+- A dated [B019 boundary check](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-2026-09-28.md), with a local F2
   reproduction, finite revalidation and explicit audit/candidate closure work.
   Preserve it as the initial assessment; subsequent closure has separate records.
-- Completed [B019 finite foundation](docs/reviews/b019-completion.md), with
+- Completed [B019 finite foundation](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-completion.md), with
   frontend/trusted-boundary review dispositions, an independent 4,608-case exact
   phase/layout/control/adjoint sweep, successful exact-commit Linux CI and clean
   package/complete-source-archive checks. Publication remains separate.
@@ -432,7 +532,7 @@ and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/t
   tree, so a clean checkout no longer turns the check into an empty comparison.
 - Share a single bounded immutable source snapshot across static-provider and
   function-contract receipts, charging source bytes once before copying.
-  [F2/A020-10](docs/reviews/b019-f2-resolution.md) is resolved without changing
+  [F2/A020-10](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-f2-resolution.md) is resolved without changing
   public owned identities, source/raw binding, exact checks or existing limits.
   The 100 KB/256-provider case and an additional 25 KB comment module now pass.
 
@@ -459,7 +559,7 @@ snapshot work is removed. The 0.1.8 migrations remain historical.
 
 Fixed-width operation contracts and executable authoring improvements, with
 version **0.1.8** retained at the user's request. See the
-[implementation/migration record](docs/releases/v0.1.8.md) and
+[implementation/migration record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) and
 [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.8).
 Historical entries retain the version policy used at the time; the revised
 policy below governs new changes.
@@ -520,14 +620,14 @@ policy below governs new changes.
   without increasing stack requirements. Keep old IR, toolchains and limits.
 
 QIR import, remaining machine interfaces, type/size generalization and M2 remain
-separate work. The [v0.2.0 backlog](docs/v0.2.0-backlog.md) includes reconsidering
+separate work. The [v0.2.0 backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md) includes reconsidering
 the tuple layout itself; 0.1.8 retains explicit binary trees and left-folded sugar.
 
 ## 0.1.7 — 2026-09-28
 
 Start M1 with JSON results and bounded OpenQASM 3/QIR connections, under the
 user's explicit feature-release exception. This is new functionality, not
-compatible-maintenance-only work. The [release record](docs/releases/v0.1.7.md)
+compatible-maintenance-only work. The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md)
 and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.7)
 separate implementation, validation and publication.
 
@@ -575,7 +675,7 @@ separate implementation, validation and publication.
 
 IR/evidence maintenance plus the user's explicit version-policy exception for
 the comment/docstring extension. Rust and Lean project versions remain at
-0.1.6. The [implementation and validation record](docs/releases/v0.1.6.md)
+0.1.6. The [implementation and validation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md)
 separates local checks from exact-commit CI, tagging and publication in the
 [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6).
 
@@ -646,13 +746,13 @@ unchanged; no original M1/M2 slice or general proof is implemented.
 ## 0.1.5 — 2026-09-27
 
 Compatible review/design maintenance release. Rust and Lean versions are
-synchronized at 0.1.5. The [release record](docs/releases/v0.1.5.md) separates
+synchronized at 0.1.5. The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.5.md) separates
 local validation from the exact commit, CI, tagging and publication recorded
 in the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5).
 
 ### Changed
 
-- Reflect the [v0.1.4 review](docs/reviews/v0.1.4.md) with a concrete next-scope
+- Reflect the [v0.1.4 review](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.4.md) with a concrete next-scope
   dossier and version-independent M0–M5 milestones. Fixed-width M1 may retain
   existing finite checking; bounded kernel continuation and hierarchical IR
   gate M2 size generalization. Replace indefinite deferral and no-go completion
@@ -689,7 +789,7 @@ in the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.5)
 ### Validation
 
 Add five document-checker regressions and six phase-sensitive conjugation
-convention fixtures. The [validation record](docs/releases/v0.1.5.md#local-validation)
+convention fixtures. The [validation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.5.md#local-validation)
 states actual local checks and remaining publication gates. Numerical fixtures
 do not establish general theorems or execute imaginary source.
 
@@ -701,7 +801,7 @@ QuantumInfo directly must declare their own Physlib dependency.
 ## 0.1.4 — 2026-09-27
 
 Compatible documentation/plan maintenance release. Rust and Lean project
-versions are synchronized at 0.1.4. The [release record](docs/releases/v0.1.4.md)
+versions are synchronized at 0.1.4. The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.4.md)
 records validation scope; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.4)
 identifies the exact commit, CI, tag and published source distribution.
 
@@ -731,14 +831,14 @@ Fresh local candidate checks pass on macOS with Rust 1.98.1 and 1.85.0:
 for both packages. Pinned Lean builds and separate audits pass for 577 Qleisli
 and eight Physlib declarations. All 43 Python tests, 52 mathematical checks,
 39 exact assertions and all ten CLI projects and Shor pass. The
-[P014 record](docs/releases/v0.1.4.md#local-candidate-validation) separates
+[P014 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.4.md#local-candidate-validation) separates
 candidate distribution checks, clean-commit CI and publication. These results
 do not complete later maintenance audits or new language features.
 
 ## 0.1.3 — 2026-09-27
 
 Compatible maintenance and mathematical-research release. The Rust and Lean
-packages remain aligned at 0.1.3. The [release record](docs/releases/v0.1.3.md)
+packages remain aligned at 0.1.3. The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.3.md)
 states validation scope; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
 identifies the exact commit, CI, tag and published source distribution.
 
@@ -798,7 +898,7 @@ these checks do not establish general compiler soundness.
 ## 0.1.2 — 2026-09-27
 
 Documentation/design maintenance release. Both project manifests are
-synchronized at 0.1.2. The [release notes](docs/releases/v0.1.2.md) record scope
+synchronized at 0.1.2. The [release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) record scope
 and validation; the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2)
 identifies the tagged commit, required CI, source archives, and publication.
 
@@ -841,21 +941,21 @@ and clean-release-commit packaging are publication gates; their final results
 belong in the GitHub release record. Subsequent
 English translation passed independent fidelity review, document checks and
 14 checker tests, the 39/52 mathematical fixtures, and updated 156-file
-packaging/rebuild, recorded [separately](docs/releases/v0.1.2.md#english-documentation-consolidation).
+packaging/rebuild, recorded [separately](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md#english-documentation-consolidation).
 It does not claim to rerun Rust execution tests, Clippy, or Lean suites.
 
 The initial design-corpus prerequisite before 0.2.0 is met by the recorded
 artifacts and review. All imaginary source remains uncompiled; no new language
 forms, standard APIs or general proof guarantees are delivered. The
-[release record](docs/releases/v0.1.2.md) and
-[conformance ledger](docs/specification-status.md) distinguish local candidate
+[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) and
+[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) distinguish local candidate
 validation from clean-commit CI, tagging and publication. The compiler fixes
 and historical results of 0.1.1 remain recorded under 0.1.1.
 
 ## 0.1.1 — 2026-09-27
 
 Compatible maintenance release. Both project manifests are synchronized at
-0.1.1. See the [release notes](docs/releases/v0.1.1.md) for scope and checks;
+0.1.1. See the [release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.1.md) for scope and checks;
 the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1)
 identifies the published commit and its CI evidence.
 
@@ -901,12 +1001,12 @@ identifies the published commit and its CI evidence.
   positive amplitude, and unchanged projected amplitude bits.
 - Add deterministic generated comparisons of exact circuit matrices with
   numerical execution, adjoints, controls, and retained physical auxiliary
-  implementations. See the [review disposition](docs/reviews/claude-v0.1.0.md)
+  implementations. See the [review disposition](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/claude-v0.1.0.md)
   for checked findings, deferred design changes, and validation results.
 
 ## 0.1.0 — 2026-09-27
 
-Initial source release. See the [release notes](docs/releases/v0.1.0.md)
+Initial source release. See the [release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.0.md)
 for usage, verification scope, and known limits. The annotated `v0.1.0` tag
 identifies the release commit; the GitHub release records publication.
 
@@ -933,7 +1033,7 @@ identifies the release commit; the GitHub release records publication.
 
 ### Verification and limits
 
-The [release validation record](docs/specification-status.md) reports the local
+The [release validation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) reports the local
 245 Rust tests, 14 documentation-checker tests, 39 exact mathematical example
 assertions, Lean build and 527-declaration axiom audit, and package validation.
 Those are implementation/model checks, not a general proof of the Rust compiler

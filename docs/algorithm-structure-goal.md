@@ -94,7 +94,7 @@ incorrect phases/predicates/encodings/layouts, evidence left over after its
 target circuit changes, and release without zero return. H;H and simultaneous
 X use the new three-argument `with_computed(q,f,u)` to check the exact relation.
 The original two-argument form remains restricted to Z/T sequences. Distinguish
-the [current validation scope](specification-status.md) from the complete
+the [current validation scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) from the complete
 release criteria.
 
 For v1, expose the following structures and conditions. Terms in this table

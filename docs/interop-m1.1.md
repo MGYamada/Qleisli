@@ -5,7 +5,7 @@ submilestone of M1, not a product version or completion of interoperability.
 The user requested this additional slice during 0.1.7 feature development.
 Future additions use the [compatibility-based version policy](versioning.md).
 Implementation and validation are recorded separately in the
-[0.1.7 record](releases/v0.1.7.md). The additive 0.2.1
+[0.1.7 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md). The additive 0.2.1
 [connection contract](connections-v021.md) now covers Python orchestration,
 structured CLI commands and a pinned PyQIR terminal-input subset. The historical
 future-reader discussion below is superseded for that subset only. Adaptive

@@ -2,7 +2,7 @@
 
 Status: **implemented extension specification; validation recorded separately**
 (2026-09-28). Rust-style comments/documentation shipped in **0.1.6**. Its
-[release record](releases/v0.1.6.md) retains the version decision under the former
+[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md) retains the version decision under the former
 policy and the source/API migration. The later [policy revision](versioning.md)
 allows compatible feature additions in PATCH; it does not erase those migrations.
 
@@ -12,7 +12,7 @@ Follow the [Rust Reference's comment distinctions](https://doc.rust-lang.org/ref
 for the spellings below. `.qli` does not implement Rust attributes, item syntax,
 rustdoc link resolution, doctest execution or the complete Rust language.
 
-The later [QLT design](qlt-design.md#cli-and-doctests) plans external execution
+The later [QLT design](https://github.com/MGYamada/Qleisli/issues/50) plans external execution
 of `qlt` fences in the Rust experiment deferred to v0.4.0 or later. That runner
 is unimplemented; current comment extraction/rendering still treats every code fence as text.
 QLT test attributes will belong to the separate test language, not `.qli`.

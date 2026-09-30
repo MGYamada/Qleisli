@@ -62,13 +62,13 @@ continues to test the shipped finite profile.
 
 ## Decisions still open and order of work
 
-The [0.1.5 dossier](../decisions/2026-09-27-v1-path.md) selects fixed-width
+The [0.1.5 dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects fixed-width
 static operation parameters, access evidence and bounded basis-derived meanings
 for M1. Sizes and hierarchical IR with symbolic checking belong to M2;
 predicate/arithmetic synthesis without truth tables belongs to M3/M4. This
 replaces the earlier combined size/operation candidate and indefinite kernel
 deferral. The [M1 specification](../next-minor-spec.md) defines the fixed-width
-grammar implemented and validated in [0.1.8](../releases/v0.1.8.md).
+grammar implemented and validated in [0.1.8](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md).
 The [machine contracts](../machine-interface-spec.md) specify the host boundary;
 X1 is implemented, while X2–X6 remain pending. These finite implementations do
 not adopt the imaginary drafts' sized notation or general operation builders.
@@ -84,9 +84,9 @@ constraints; general operation-returning builders remain deferred. The selected
 that M1 G020-1 decision; it does not adopt the drafts' sized notation. `ControlledAccess<U>`, a `requires` predicate and
 `with_binary_powers` respectively suggest a wrapper, a constraint and an
 evidence producer for the same underlying access judgment; none grants control
-from unitarity alone. See the [representation decision](../decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation).
+from unitarity alone. See the [representation decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation).
 
-The [conjugation rule](../decisions/2026-09-27-v1-path.md#control-through-conjugation)
+The [conjugation rule](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#control-through-conjugation)
 derives controlled `V W V†` from V/inverse and controlled W. It is phase exact
 and avoids requiring controlled state preparation. The fixed-width constructor
 `controlled_op(conjugate_op(V,W))` implements this derivation, with
@@ -122,7 +122,7 @@ The current bounded checker already has soundness arguments for composition
 and implemented constructors. However, `CheckedContract::then` computes the
 logical matrix product; tensor, adjoint and control also construct dense
 logical matrices, and encodings are matrices. This finite profile remains
-supported throughout compatible 0.1.x maintenance and is permitted for fixed-width M1. See the [review verification](../reviews/v0.1.2.md).
+supported throughout compatible 0.1.x maintenance and is permitted for fixed-width M1. See the [review verification](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.2.md).
 The `apply_contract` function-evidence checker also constructs and compares
 whole implementation/specification matrices; its acceptance path must be
 generalized along with composition.
@@ -168,7 +168,7 @@ circuits. Require **hierarchical calls, loops and parameterized families with
 joint evidence binding** before M2 size generalization. Require **reversible
 circuit synthesis without whole-space truth tables** for M3 predicates and M4
 arithmetic. Keep bounded tables as reference cases, not the general algorithm.
-The [joint design and MINOR migration](../decisions/2026-09-27-v1-path.md#three-scaling-gates-and-joint-irevidence-design)
+The [joint design and MINOR migration](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#three-scaling-gates-and-joint-irevidence-design)
 cover public IR changes, proof/definition sharing, costs, whole-space arithmetic
 and exact scratch cleanup. No gate is discharged by a compact proof over a
 fully expanded implementation.
@@ -188,7 +188,7 @@ available gate set lead to different evidence obligations. Select and document
 the approach before claiming generalized QPE support. Approximate operator
 accuracy and sampling failure remain separate from exact auxiliary zero
 return. The 0.1.3 review originally left that choice open. The
-[0.1.5 dossier](../decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
+[0.1.5 dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
 selects ideal exact symbolic dyadic phases for M2 and puts approximate synthesis
 at the backend boundary. The [bounded M2 profile](../hierarchical-ir-spec.md)
 now fixes widths 1–8, denominator exponent at most eight, budgets, schema

@@ -21,7 +21,7 @@ fn all_thirty_corpus_projects_compile_verify_and_execute() {
             assert!(distribution.values().all(|p| p.is_finite() && *p >= 0.0));
             count += 1;
         }
-        assert_eq!(count, 10, "reviewed inventory for {source}");
+        assert_eq!(count, 12, "reviewed inventory for {source}");
     }
 }
 

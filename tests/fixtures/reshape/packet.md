@@ -1,7 +1,7 @@
 # Canonical reshape experiment
 
 Prepared before implementation checking, 2026-09-29. See the
-[contract and adoption boundary](../../../docs/reshape-plan.md).
+[contract and adoption boundary](../../../docs/size-expressions.md).
 
 1. Preserve a desired explicitly typed `.qli` first attempt and its actual
    compiler diagnostic. Do not describe the draft as an implemented API.

@@ -85,13 +85,34 @@ def finitePair (artifact : Artifact) (request : Request) (pairs : Array Pair)
 def obligations (artifact : Artifact) (request : Request) (pairs : Array Pair) : List Nat :=
   (List.range pairs.size).filter fun i => (finitePair artifact request pairs i).isSome
 
+/-- Complete equality fields, not type validation or permutation search.
+Each basis atom has a constructor tag and at most one numeric parameter.
+Port-array lengths are prepaid by `rowCharge` before this outer-array scan;
+reading a nested array's length does not traverse its elements. -/
+private def equalityFields (side : Side) : Nat :=
+  1 + side.quantum.foldl (fun n p => n + 3 + 2*p.basis.size + p.axes.size) 0 +
+    side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0
+
+/-- `aligned` compares complete headers but does not rerun their quadratic
+uniqueness checks. Keep the old charge as an upper bound: the additional
+length-only scan is covered by its allowance, including the fallback case.
+No requested header is assumed valid merely because its field count fits. -/
+private def equalityCharge (actual required : Interface) : Nat :=
+  min (16 * (actual.charge + required.charge))
+    (16 * (equalityFields actual.inputs + equalityFields actual.outputs +
+      equalityFields required.inputs + equalityFields required.outputs))
+
+private theorem equalityCharge_le_original (actual required : Interface) :
+    equalityCharge actual required ≤ 16 * (actual.charge + required.charge) :=
+  Nat.min_le_left _ _
+
 def rowCharge (artifact : Artifact) (request : Request) (limit used : Nat) (pair : Pair) : Except Error Nat := do
   let some a := artifact.meanings[pair.actual]? | throw .contract
   let some r := request.meanings[pair.requested]? | throw .contract
   let initial := used + 32 + 8 * (pair.children.size + a.body.charge + r.body.charge +
     a.interface.scan + r.interface.scan)
   if initial > limit then throw .limit
-  let total := initial + 16 * (a.interface.charge + r.interface.charge)
+  let total := initial + equalityCharge a.interface r.interface
   if total > limit then throw .limit
   return total
 

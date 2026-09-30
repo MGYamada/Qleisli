@@ -91,7 +91,7 @@ standard vocabulary then support v1 programs on that verification foundation.
 The [bounded exact checker and three-argument auxiliary form](semantic-contracts-v0.1.md)
 have been connected to [public function contracts and final-IR evidence](function-contracts-v0.1.md),
 implementing and checking v0.1's declared finite profile. v1 remains unmet.
-Current validation results belong in the [conformance ledger](specification-status.md).
+Current validation results belong in the [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 Neither AI explanations nor successful finite examples replace a general
 soundness proof.
 

@@ -51,7 +51,7 @@ lake build Qleisli
 lake env lean -DwarningAsError=true Audit.lean
 ```
 
-The [v0.1.5 record](releases/v0.1.5.md) records dependency-removal validation.
+The [v0.1.5 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.5.md) records dependency-removal validation.
 Qleisli does not re-export QuantumInfo, so no public Qleisli Lean declaration
 is removed. A downstream experiment importing QuantumInfo directly must declare
 its own Physlib dependency instead of relying on Qleisli's former environment.
@@ -95,7 +95,7 @@ The checks below validate the version actually installed in Qleisli.
 No supported toolchain requirement, Qleisli public declaration, Rust dependency,
 or language feature changes in this step. Under the [version policy](versioning.md),
 this was recorded as compatible environment maintenance under `Unreleased` and
-then included in [0.1.3](releases/v0.1.3.md), without selecting a new product version.
+then included in [0.1.3](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.3.md), without selecting a new product version.
 A future move of the supported baseline to
 Lean 4.34.1 would require a separate compatibility and release decision.
 
@@ -135,7 +135,7 @@ replace Qleisli's existing matrix definitions, or establish a source/IR
 correspondence theorem. Physlib's POVM chooses a square-root/Lüders instrument;
 arbitrary instruments and phase-sensitive coherent operators remain distinct
 contract-design obligations. The first selected use from the
-[0.1.5 dossier](decisions/2026-09-27-v1-path.md#proof-priority-and-first-physlib-use)
+[0.1.5 dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#proof-priority-and-first-physlib-use)
 is a finite IR instrument bridge: measurement/discard/reset Kraus branches and
 their classical–quantum CPTP map, with explicit coordinate/reference conventions.
 That bridge is planned and has not been implemented or proved. The current

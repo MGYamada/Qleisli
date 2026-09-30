@@ -1,0 +1,125 @@
+{
+  "format": "qleisli.qpe-schedule-validation",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 24,
+  "results": {
+    "small": [
+      "pending",
+      "191755",
+      "2",
+      "2"
+    ],
+    "target2": [
+      "pending",
+      "210698",
+      "2",
+      "2"
+    ],
+    "precision3": [
+      "pending",
+      "335227",
+      "3",
+      "3"
+    ],
+    "target2precision4": [
+      "pending",
+      "570684",
+      "4",
+      "4"
+    ],
+    "wrong-phase-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-result-route": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "duplicate-coordinate": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-provider": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-power-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-h-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-h": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-power-route": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-fourier-route": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-trace": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-power-count": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-control-polarity": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "forward-for-inverse": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "hidden-phase": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "wrong-target-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "zero-budget": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "reset-budget": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "unresolved-finite-bytes": [
+      "pending",
+      "191755",
+      "2",
+      "2"
+    ],
+    "exact-budget": [
+      "pending",
+      "191755",
+      "2",
+      "2"
+    ],
+    "short-budget": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ]
+  },
+  "source_sha256": "3e87b533f947e2635840d85196554568ec4a1544f229e9955f82cf1ef8e440ed",
+  "binary_sha256": "57dab32087408e9cae10f040133667928059a27be1b2c40f2e7762e57a96e9f9",
+  "kernel_source_sha256": "75aacf0e7f3c28fc1c45afd94dec900a52adef7fd5d302be791abcb6a506e3d9",
+  "script_sha256": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
+  "commands": [
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [76/79] Built QleisliKernel.Hierarchical.QpeSchedule:c.o (559ms)\n\u2714 [77/79] Built Main (5.8s)\n\u2714 [78/79] Built Main:c.o (527ms)\n\u2714 [79/79] Built \u00abartifact-test\u00bb:exe (289ms)\nBuild completed successfully (79 jobs).\n",
+      "stderr": "info: artifact_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-dd78oh_s/.lake/build/bin/artifact-test"
+      ],
+      "exit_code": 0,
+      "stdout": "small|pending|191755|2|2\ntarget2|pending|210698|2|2\nprecision3|pending|335227|3|3\ntarget2precision4|pending|570684|4|4\nwrong-phase-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-result-route|QleisliKernel.Hierarchical.Artifact.Error.contract\nduplicate-coordinate|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-provider|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-power-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-h-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-h|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-power-route|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-fourier-route|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-trace|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-power-count|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-control-polarity|QleisliKernel.Hierarchical.Artifact.Error.contract\nforward-for-inverse|QleisliKernel.Hierarchical.Artifact.Error.contract\nhidden-phase|QleisliKernel.Hierarchical.Artifact.Error.contract\nwrong-target-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nzero-budget|QleisliKernel.Hierarchical.Artifact.Error.limit\nreset-budget|QleisliKernel.Hierarchical.Artifact.Error.limit\nunresolved-finite-bytes|pending|191755|2|2\nexact-budget|pending|191755|2|2\nshort-budget|QleisliKernel.Hierarchical.Artifact.Error.limit\n",
+      "stderr": ""
+    }
+  ],
+  "finite_h_equations_discharged": false,
+  "independent_provider_bound": false,
+  "named_qpe_instrument": false,
+  "production_integration": false
+}

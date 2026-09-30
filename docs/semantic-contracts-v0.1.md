@@ -7,7 +7,7 @@ English document specifies the first finite evidence boundary for the adopted
 audit combines this kernel with the function boundary and regression evidence.
 The Rust checker is not formally verified, and general source/compiler
 correctness remains open. Implementation and regression results belong in
-the [conformance ledger](specification-status.md).
+the [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 The [proposal review](semantic-contract-proposal-review.md) gives the motivation
 and counterexamples. The present document fixes a bounded exact fragment and
@@ -449,7 +449,7 @@ checked certificate behind.
 
 The checker, source path, and [function boundary](function-contracts-v0.1.md)
 are implemented and tested as recorded in the
-[conformance ledger](specification-status.md). The release table records the
+[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). The release table records the
 joint V01-C1–C6 audit; no single example establishes that entire milestone.
 The source/Rust adequacy, compiler meaning preservation, arithmetic kernel
 implementation correctness, and final IR checker correctness remain explicit

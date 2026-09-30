@@ -37,8 +37,15 @@ third-party material.
 When creating a GitHub Issue, a local backlog entry is unnecessary. An existing
 GitHub Issue also suffices: no duplicate entry, backlog update or A020 ID is
 required. Use the Issue to track the problem, relevant evidence, acceptance
-criteria and resolution. The [local backlog](docs/v0.2.0-backlog.md) remains an
-option for work without a GitHub Issue; preserve its existing history.
+criteria and resolution. The legacy backlog is retired; use Issues for new work.
+
+## Documentation cleanup
+
+Follow **docs/ cleanup boundary at v0.3.0** in
+[AGENTS.md](AGENTS.md#docs-cleanup-boundary-at-v030). Delete obsolete documents
+actively, while retaining the active v0.2.x goals and migration plan. Retire the
+remaining legacy files by v0.3.0 and write the new documentation from scratch;
+do not migrate or archive the old tree.
 
 ## Recording changes
 
@@ -83,3 +90,23 @@ kernel, source tooling, algorithms, examples and documentation through those
 processes. These are planned deliverables; no additional maintainer roles or
 completed external reviews are claimed. Existing licensing and corpus policy
 continue to apply.
+
+## Standard-library contributions
+
+Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
+`corpus` under its existing source/license policy. From v0.5.0, grow the library
+as a mathlib-style open-source effort with shared mathematical conventions and
+reviewed contributions. Read [STDLIB.md](STDLIB.md), start from its
+[contract template](docs/stdlib-contract-template.md), and compare the
+[three filled contracts](STDLIB.md#template-and-reference-implementations)
+with their actual source and existing evidence.
+
+Specify the meaning/phase, encoding, owner transitions, entry/access premises,
+scratch return, approximation and resource model before selecting an optimized
+implementation. Show source checks, semantic tests, actual-IR proofs, source
+preservation and specification review as distinct scoped results. Keep general
+borrow syntax and final parameterized APIs in the language specification process.
+The initial `check_stdlib_contract_docs.py` CI step checks documentation form
+and links only; planned `qlippy` tooling issues no semantic acceptance evidence.
+Follow the existing reuse/adoption and compatibility rules rather than treating
+corpus frequency or a successful linter as standard adoption.

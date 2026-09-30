@@ -120,7 +120,7 @@ incorrect sign convention, not results of executing the proposed source.
 The builder needs A apply/inverse access and exact predicate/zero-reflection
 implementations. This client additionally needs a phase-fixed controlled G and
 its finite controlled powers. Use the selected
-[conjugation derivation](../decisions/2026-09-27-v1-path.md#control-through-conjugation):
+[conjugation derivation](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#control-through-conjugation):
 controlled `A R0 A†` needs A and A† access plus controlled R0, not controlled A.
 The phase oracle can likewise control its central Z while computing/uncomputing
 its predicate unconditionally with checked exact cleanup. Fixed-width

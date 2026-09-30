@@ -67,14 +67,60 @@ def reportComplete (name : String) (a : Artifact) (order : Array Nat) : IO Unit 
   match ContractTyping.checkAll a order with
   | .error e => IO.println s!"{name}|{code e}"
   | .ok checked => IO.println s!"{name}|typed|{checked.totalVisits}"
+def mirror (width : Nat) : Artifact :=
+  changeMeaning (base width) fun m => {m with body := .rewire (identityMap width)}
+def pairMirror : Artifact :=
+  let header : Interface := ⟨bitPair,bitPair⟩
+  let map : PortMap := ⟨#[0,1],#[0,1],#[]⟩
+  {base 2 with
+    definitions := #[⟨header,.unitary,.rewire map⟩],
+    meanings := #[⟨header,.rewire map⟩],encodings := #[identityE bitPair]}
+def structuralMirror : Artifact :=
+  let target : Side := ⟨#[⟨1,#[.bit],#[1]⟩,⟨2,#[.bits 1],#[0]⟩],#[]⟩
+  let header : Interface := ⟨side 2,target⟩
+  {base 2 with
+    definitions := #[⟨header,.unitary,.structural (.takeBit 2 1)⟩],
+    meanings := #[⟨header,.structural (.takeBit 2 1)⟩],
+    encodings := #[identityE (side 2),identityE target],
+    proofs := #[{proof with outputEncoding := 1}]}
+def classicalMirror : Artifact :=
+  let header : Interface := ⟨classicalSide,classicalSide⟩
+  let map : PortMap := ⟨#[],#[],#[0,1]⟩
+  {base 1 with
+    definitions := #[⟨header,.unitary,.rewire map⟩],
+    meanings := #[⟨header,.rewire map⟩],encodings := #[identityE classicalSide]}
+def differentHeader : Artifact :=
+  let renamed : Side := ⟨#[⟨10,#[.bits 2],#[7,8]⟩],#[]⟩
+  {mirror 2 with
+    meanings := #[pureM renamed (.rewire (identityMap 2))],
+    encodings := #[identityE renamed,⟨renamed,side 2,.rewire 0 (identityMap 2)⟩],
+    proofs := #[{proof with inputEncoding := 1,outputEncoding := 1}]}
+def unequalHeaderSizes : Artifact :=
+  let large : Side := ⟨(Array.range 24).map (fun i => ⟨i,#[.bits 0],#[]⟩),#[]⟩
+  let map : PortMap := ⟨Array.range 24,#[],#[]⟩
+  {mirror 1 with
+    definitions := (mirror 1).definitions.push ⟨⟨large,large⟩,.unitary,.rewire map⟩,
+    meanings := (mirror 1).meanings.push (pureM (side 1) .identity),
+    proofs := #[{proof with witness := {witness with references := #[⟨.definition,1⟩,⟨.meaning,1⟩]}}]}
+def reportReuse (name : String) (a : Artifact) (saves : Bool) : IO Unit := do
+  let schedule := Array.range (totalNodes a)
+  let nodes ← match NodeTyping.checkAll a schedule with
+    | .error e => throw (IO.userError s!"{name}: node precondition {repr e}")
+    | .ok nodes => pure nodes
+  let start := nodes.totalVisits + 6 * (a.meanings.size+a.encodings.size)
+  let .ok old := ContractTyping.scan a (ContractTyping.subjects a) start | throw (IO.userError s!"{name}: baseline typing")
+  let .ok current := ContractTyping.checkAll a schedule | throw (IO.userError "reused typing")
+  if current.totalVisits > old || (saves && current.totalVisits >= old) then throw (IO.userError "unexpected typing work")
+  IO.println s!"{name}|typed|{old}|{current.totalVisits}"
 '''
 
 
-def cases():
+def cases(small=False):
     rows=[]
+    widths=range(4) if small else range(9)
     def add(name,expression,status='typed',index=0,table='meaning',budget=2000000):
         rows.append((name,f'reportContract {json.dumps(name)} ({expression}) ⟨.{table},{index}⟩ {budget}',status))
-    for n in range(9):
+    for n in widths:
         add(f'identity-{n}',f'mone (side {n}) .identity')
         add(f'finite-{n}',f'mone (side {n}) (.finite (bytes 1))','typed' if n<=6 else 'limit')
         add(f'qft-{n}',f'mone (side {n}) (.qft {n})','typed' if n else 'invalid_ir')
@@ -103,8 +149,8 @@ def cases():
     add('power-not-closed','withMeanings #[⟨⟨bside 0 0,bside 1 0⟩,.finite (bytes 1)⟩,⟨⟨bside 0 0,bside 1 0⟩,.power 0 0⟩]','invalid_ir',index=1)
     add('rewire','mone bitPair (.rewire ⟨#[1,0],#[1,0],#[]⟩)')
     add('rewire-missing-owner','mone bitPair (.rewire ⟨#[0],#[0,1],#[]⟩)','invalid_ir')
-    for n in range(1,9):
-        for m in range(1,9): add(f'qpe-header-{n}-{m}',f'qpeM {n} {m}',index=1)
+    for n in (range(1,4) if small else range(1,9)):
+        for m in (range(1,4) if small else range(1,9)): add(f'qpe-header-{n}-{m}',f'qpeM {n} {m}',index=1)
     add('qpe-target-zero','qpeM 0 1','invalid_ir',index=1)
     add('qpe-precision-zero','qpeM 1 0','invalid_ir',index=1)
     add('qpe-wrong-provider-type','{qpeM 1 3 with meanings := (qpeM 1 3).meanings.mapIdx (fun i m => if i==0 then pureM (bside 0 0) .identity else m)}','invalid_ir',index=1)
@@ -113,7 +159,7 @@ def cases():
     add('qpe-cannot-measure-target','qpeChanged 1 3 (fun m => {m with interface := {m.interface with outputs := ⟨#[],#[⟨9,#[.bits 4]⟩]⟩}})','invalid_ir',index=1)
     for op in ['.inverse 1','.power 1 0','.sequence #[1]']:
         add('instrument-not-pure-'+op.split()[0][1:],f'{{qpeM 1 1 with meanings := (qpeM 1 1).meanings.push (pureM (side 1) ({op}))}}','invalid_ir',index=2)
-    for n in range(9): add(f'encoding-identity-{n}',f'eone (side {n})',table='encoding')
+    for n in widths: add(f'encoding-identity-{n}',f'eone (side {n})',table='encoding')
     add('encoding-classical-identity','eone classicalSide',table='encoding')
     add('encoding-identity-wrong-name','withEncodings #[⟨bside 0 0,bside 1 0,.identity⟩]','invalid_ir',table='encoding')
     add('encoding-identity-wrong-type','withEncodings #[⟨side 1,bside 0 0,.identity⟩]','invalid_ir',table='encoding')
@@ -136,19 +182,41 @@ def cases():
     add('too-large-budget','base 1','limit',budget=2000001)
     add('oversized-meaning','changeMeaning (base 1) (fun m => {m with body := .sequence (Array.replicate 1000001 0)})','limit')
     rows.append(('control-definition-conversion', 'reportNode "control-definition-conversion" controlDefinition 1 2000000','invalid_ir'))
-    whole=[('whole-base','base 8','order','typed'),('whole-zero','repeated 0','#[0,1,2,3,4]','typed'),
+    whole=[('whole-base','base 3' if small else 'base 8','order','typed'),('whole-zero','repeated 0','#[0,1,2,3,4]','typed'),
            ('whole-hidden-meaning','hiddenMeaning','#[0,1,2,3,4,5]','invalid_ir'),
            ('whole-false-scratch','falseScratch','order','invalid_ir'),
            ('whole-budget','proofStar 4986','Array.range 4989','limit'),
            ('whole-phase-still-needs-proof','changeDef (typed #[.bit] 1) (fun d => {d with body := .dyadicPhase 0 1 3})','order','typed')]
     rows += [(name,f'reportComplete {json.dumps(name)} ({artifact}) ({order})',status) for name,artifact,order,status in whole]
+    for width in (0,1,2,3,4):
+        name=f'reuse-identical-rewire-{width}'
+        rows.append((name,f'reportReuse {json.dumps(name)} (mirror {width}) true','typed'))
+    for name,artifact,saves in [
+        ('reuse-structural','structuralMirror',True),
+        ('fallback-different-valid-map','changeMeaning pairMirror (fun m => {m with body := .rewire ⟨#[1,0],#[1,0],#[]⟩})',False),
+        ('fallback-different-header','differentHeader',False),
+        ('fallback-unequal-header-sizes','unequalHeaderSizes',False),
+        ('fallback-finite-obligation','changeMeaning (mirror 1) (fun m => {m with body := .finite (bytes 1)})',False),
+    ]:
+        rows.append((name,f'reportReuse {json.dumps(name)} ({artifact}) {str(saves).lower()}','typed'))
+    for name,artifact in [
+        ('reuse-bad-actual-map','changeDef (mirror 2) (fun d => {d with body := .rewire ⟨#[0],#[0,0],#[]⟩})'),
+        ('reuse-bad-meaning-map','changeMeaning (mirror 2) (fun m => {m with body := .rewire ⟨#[0],#[0,0],#[]⟩})'),
+        ('reuse-bad-structural','changeMeaning structuralMirror (fun m => {m with body := .structural (.takeBit 2 0)})'),
+        ('reuse-rejects-classical-meaning','classicalMirror'),
+    ]:
+        rows.append((name,f'reportComplete {json.dumps(name)} ({artifact}) (Array.range (totalNodes ({artifact})))','invalid_ir'))
+    rows.append(('reuse-bad-meaning-type',
+        'reportComplete "reuse-bad-meaning-type" (changeMeaning (mirror 2) (fun m => {m with interface := ⟨side 1,side 2⟩})) order',
+        'contract'))
     return rows
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--record',type=Path)
-    args=parser.parse_args();rows=cases()
+    parser.add_argument('--small',action='store_true',help='Use small register/QPE headers; retain malformed/budget cases.')
+    args=parser.parse_args();rows=cases(args.small)
     source=PRELUDE+'\n'+'\n'.join(f'def case{i} : IO Unit := {call}' for i,(_,call,_) in enumerate(rows))+'\n'
     groups=list(range(0,len(rows),16))
     for first in groups:
@@ -161,7 +229,7 @@ def main():
     assert len(results)==len(rows)
     for name,_,expected in rows: assert results[name][0]==expected,(name,results[name],expected)
     report=dict(format='qleisli.hierarchical-contract-typing-validation',version=1,status='passed',cases=len(rows),
-                typed=sum(status=='typed' for _,_,status in rows),qpe_header_cases=64,dense_dimension=0,
+                typed=sum(status=='typed' for _,_,status in rows),qpe_header_cases=9 if args.small else 64,dense_dimension=0,small_systems_only=args.small,
                 semantic_evidence_issued=False,binary_sha256=binary,harness_sha256=hashlib.sha256(source.encode()).hexdigest(),
                 results=results,commands=commands,source_sha256={str(path.relative_to(ROOT)):hashlib.sha256(path.read_bytes()).hexdigest()
                 for path in [*sorted((ROOT/'lean-kernel/QleisliKernel/Hierarchical').glob('*.lean')),

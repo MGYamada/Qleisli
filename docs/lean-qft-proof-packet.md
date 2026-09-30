@@ -67,6 +67,26 @@ structures, not by matrix or basis enumeration. `matched_paths` and
 `cbv` produces ordinary checked proofs; no native proof evaluation or project
 axiom was used. Its elaboration budget does not change runtime input capacities.
 
+**Compatible review extension, 2026-09-30:** `matchCompiledCircuit` compares
+`PathSum.compile width gates` to `some (expected width)`, with the same width,
+gate and reversal limits. `compiled_matched_paths` follows directly from the
+actual `compile_sound` theorem for the candidate. Phase-term splitting and
+commuting diagonal-gate reorderings can now match without literal-template
+identity. The new `compiled_matched_phase/weight/coefficient/fourier/reference`
+complex theorems establish the corresponding Fourier and joint-reference
+meaning. The original matcher and theorem types remain available; the existing
+typed graph/schema path continues to use them for PATCH compatibility.
+
+This is equality of normalized symbolic paths, not complete unitary equivalence.
+For example, inserting two H gates introduces extra path choices even though
+H squared is identity. Widths remain 1–8 because the component phase model is
+modulo 256. The original bounded QFT/Fourier theorems are real conditional
+coefficient theorems, beyond just the `cbv` reductions, but neither they nor this
+extension establish general-width QFT. That needs the
+[size-dependent domain work](coefficient-domains.md#review-inventory-and-v03-decision).
+The new native regressions generate only widths 1–4 and reject phase, reversal,
+invalid-axis and capacity faults; external schemas remain disabled.
+
 The separate [complex proof](../lean/Qleisli/Qft.lean) establishes:
 
 | Theorem | Scope |

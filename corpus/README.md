@@ -3,8 +3,8 @@
 The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
-inputs and have a separate development execution path. The 30 finite CLI cases
-below remain unchanged; production sized-source integration is still open.
+inputs and have a separate development execution path. The 36 finite CLI cases
+below use the production frontend; production sized-source integration is still open.
 The [coherent QPE continuation](sized/qualtran_qpe/README.md) now passes its
 small selected configurations with static operation providers and full-state
 diagnostics. Further maximum-size checks are deferred by the 2026-09-30 user
@@ -13,15 +13,16 @@ The [shared AddK/Equals continuation](sized/qualtran_arithmetic/README.md) now
 passes widths 0–3, using coherent recursive controls and shared XOR/complement
 to restore input registers. Its independent arithmetic oracles cover all small
 basis inputs and reference columns, including incorrect carry and restoration.
-These experiments do not add to the thirty production CLI translations.
+These experiments do not add to the finite production CLI translation count.
 The [local order/amplitude integration clients](../tests/fixtures/sized_clients/README.md)
 now reuse the same coherent QPE at small sizes, with explicit operation
 forwarding and independent phase/reference formulas. They are local verification
 material under the existing policy, not a fourth external corpus. Their
 initialization/measurement and production integration remain open.
 
-**30 finite translations, ten per approved source**, including six additions
-for 0.2.1 on 2026-09-29. The original 24-case intake was selected for 0.1.9
+**36 finite translations, twelve per approved source**, including six simple
+1–3-qubit additions for 0.2.2 on 2026-09-30 and six additions for 0.2.1 on
+2026-09-29. The original 24-case intake was selected for 0.1.9
 on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
 QuantumKatas, Qualtran Bloqs and PennyLane Demos and fixes their license handling.
 The [manifest](manifest.json) pins commits, original paths, file hashes, symbols,
@@ -47,6 +48,14 @@ PennyLane demo files and their author metadata were reviewed at that same
 commit; their repository-wide Apache-2.0 terms apply and neither file declares
 an exception. No imported library implementation, image, dataset or model is
 copied. Original 24-case snapshots and validation reports remain unchanged.
+
+The [0.2.2 simple session](authoring/v022-simple/session.json) adds SWAP and
+Fredkin, constant XOR and bitwise complement, and exact RX/phase kickback.
+It reuses only frozen files at the existing commits; upstream hashes, license
+reviews and author notices remain intact. All six first checks passed without
+source repair. One-bit phase kickback explicitly narrows the original four-bit
+key; RX fixes the original two rotation parameters to `(pi/2,0)`. These are
+small finite translations, not completion of the shared-QPE integration goal.
 
 ## Use and layout
 
@@ -123,6 +132,12 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | pennylane_demos | [phase_lock](pennylane_demos/phase_lock/README.md) | The first wire is a lock meter. H, controlled FlipSign(0111), H XORs the predicate [key=0111] into that meter and preserves the four-wire key. |
 | pennylane_demos | [lcu_projector](pennylane_demos/lcu_projector/README.md) | PREP–SELECT–PREP† with an explicit H completion; zero-selector block (I+Z)/2. Both quantum owners are returned. |
 | pennylane_demos | [kernel_overlap2](pennylane_demos/kernel_overlap2/README.md) | Two-feature RX embedding followed by the adjoint embedding; exact phase and all-zero overlap probability 1/4. |
+| quantum_katas | [swap2](quantum_katas/swap2/README.md) | Three-CNOT SWAP on arbitrary two-qubit inputs, with scalar +1. |
+| quantum_katas | [fredkin3](quantum_katas/fredkin3/README.md) | Coherently swap two targets iff the retained control is 1; scalar +1 on all inputs. |
+| qualtran | [xor_constant2](qualtran/xor_constant2/README.md) | XOR constant 1 into a two-bit register, changing only its low bit. |
+| qualtran | [bitwise_not2](qualtran/bitwise_not2/README.md) | Complement both register bits, mapping x to 3-x modulo 4 with scalar +1. |
+| pennylane_demos | [rx_quarter](pennylane_demos/rx_quarter/README.md) | RX(pi/2)=(I-iX)/sqrt(2), preserving the scalar required under coherent control. |
+| pennylane_demos | [phase_kickback1](pennylane_demos/phase_kickback1/README.md) | A one-bit secret 1 XORs the retained key into the meter through H/controlled-Z/H. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -134,7 +149,14 @@ these boundaries before it can count as a port.
 
 ## What was validated
 
-[Current 0.2.1 results](validation-v0.2.1.json): **30 shipped examples, 11,849
+[Current 0.2.2 results](validation-v0.2.2.json): **36 shipped examples, 12,139
+semantic probes and four rejection cases** pass with the local 0.2.2 binary.
+All **twelve type-correct semantic faults** are detected. The
+[six new cases](authoring/v022-simple/semantic-validation.json) account for
+290 semantic probes covering every complex entry and six detected faults. No upstream files or
+prior reports are overwritten; all added kernels use only 1–3 qubits.
+
+[Historical 0.2.1 results](validation-v0.2.1.json): **30 shipped examples, 11,849
 semantic probes and four rejection cases** passed with Rust 1.98.1 on macOS.
 All **six type-correct semantic faults** were detected by the independent
 oracle after successful source checking. The report additionally pins the
@@ -146,7 +168,7 @@ probes and four rejection cases** passed with the Rust 1.98.1 compiler on macOS.
 The report binds the manifest, final QLI files, oracle script and compiler by
 SHA-256. It is a reproducibility record, not a signed attestation.
 
-- For each of the 25 current unitary kernels, enumerate every computational input and
+- For each of the 31 current unitary kernels, enumerate every computational input and
   compare its output distribution with an independent mathematical reference.
   Then measure every complex matrix entry using controlled X/Y interference.
   The reference branch maps the input basis vector to the selected output row;
@@ -170,10 +192,12 @@ SHA-256. It is a reproducibility record, not a signed attestation.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
-- Six [type-correct semantic faults](semantic_faults/README.md) must pass source
+- Twelve [type-correct semantic faults](semantic_faults/README.md) must pass source
   checking and then fail the mathematical oracle. They test majority/parity,
   Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
-  A compiler or harness failure cannot count as semantic detection.
+  The six 0.2.2 faults additionally test incomplete SWAP, unconditional Fredkin,
+  constant-XOR bit order, partial complement, missing RX scalar and a wrong
+  phase-kickback secret. A compiler or harness failure cannot count as detection.
 
 References use elementary complex arithmetic and mathematical equations in
 [the runner](../scripts/check_input_corpus.py), without calling QLI or upstream
@@ -209,7 +233,7 @@ session covers the six additions. Their latest snapshots together must cover
 every current source, so growth cannot silently omit authoring records.
 
 The [authoring report](../docs/qli-authoring-feedback.md) and
-[backlog](../docs/v0.2.0-backlog.md) retain these gaps, phase-preserving rotation
+[backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md) retain these gaps, phase-preserving rotation
 boilerplate and the boundary around continuous parameters/host optimization.
 Preserve the real attempts as language-design evidence instead of treating
 these finite adaptations as the final desired notation.

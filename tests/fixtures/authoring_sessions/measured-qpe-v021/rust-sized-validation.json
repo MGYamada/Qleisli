@@ -1,0 +1,120 @@
+{
+  "format": "qleisli.rust-sized-source-validation",
+  "version": 1,
+  "date": "2026-09-30",
+  "status": "pass",
+  "environment": {
+    "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "kernel_unchanged_during_checks": true,
+  "checks": [
+    {
+      "command": "cargo test --test sized_source --test sized_linear_seeded --test sized_cli -- --include-ignored",
+      "exit_code": 0,
+      "results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s",
+        "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.73s"
+      ],
+      "elapsed_seconds": 6.644
+    },
+    {
+      "command": "cargo test --lib initialization_certificate",
+      "exit_code": 0,
+      "results": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 53 filtered out; finished in 0.03s"
+      ],
+      "elapsed_seconds": 0.052
+    }
+  ],
+  "source_tests": 22,
+  "linear_seeded": {
+    "seed": 42,
+    "generated": 512,
+    "accepted": 44,
+    "concrete_environments": 226
+  },
+  "cli_tests": 3,
+  "initialization_certificate": {
+    "tests": 3,
+    "rejected_mutations": 15,
+    "checked_payload_mismatch_rejected": true
+  },
+  "native_semantics": {
+    "profiles": 13,
+    "complex_coefficients": 298,
+    "absolute_tolerance": 1e-10,
+    "cases": [
+      "Fourier widths 1,2,3, all columns",
+      "coherent QPE n1 m2, all dirty-phase columns",
+      "Grover n1 j1 d3 with reference",
+      "zero-width consume/recreate",
+      "measured QPE (n,m)=(1,1),(1,2),(1,3),(2,2), j1 d3",
+      "measured QPE n1 m1 j1 d1",
+      "order readout n2 m2",
+      "amplitude readout n1 m2 j1 d3, K_m(G) A"
+    ]
+  },
+  "source_sampling": {
+    "order": {
+      "shots": 64,
+      "seed": 42,
+      "client": "dyadic denominator candidate validated by 2^r mod 3 = 1"
+    },
+    "amplitude": {
+      "shots": 64,
+      "seed": 43,
+      "client": "sin(pi*outcome/2^m)^2 finite grid estimate"
+    },
+    "normalized_complex_coefficients": 512,
+    "independent_probabilities_and_residual_reference_vectors": true
+  },
+  "scope": {
+    "fresh_native_generic_meaning_checks": true,
+    "source_initialization_structural_validation": true,
+    "named_qpe_claim_from_this_suite": false,
+    "general_source_preservation_proved": false,
+    "rust_initialization_validator_proved_in_lean": false,
+    "cli_additive": true,
+    "external_schemas_enabled": false
+  },
+  "implementation_sha256": {
+    "src/frontend/mod.rs": "4cfb1798df3ebf9e3136b3f3cab866e881cc46a312a6f0d2d0e5bd168497bfbd",
+    "src/frontend/sized.rs": "652d33bfebdc800f070cc94160d004e36938601e57832ecb1a88ab41d105636c",
+    "src/frontend/sized/ast.rs": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+    "src/frontend/sized/check.rs": "796a9b05d960d400ffa7ace310fed7727f28c2500f8d5840899e419fe47f40aa",
+    "src/frontend/sized/elaborate.rs": "5c8058f2d6cd003892398c9c2928a414495157277e5a3a90ac87bc3ff3be99ba",
+    "src/frontend/sized/fourier.rs": "438f5f55e4d022a83eebb52bbc42c52080e49f29811edc279a8980703ed9cfcd",
+    "src/frontend/sized/linear.rs": "5a042897355a117ade85900318b748c686070306a4cfee58be87f832169a59d5",
+    "src/frontend/sized/lower/preservation.rs": "a5454257a8cc801426e8e7ba5bd9af3b8a12a60ac3e3b8479c1a908fc17478a0",
+    "src/frontend/sized/lower.rs": "fe1b84aabf6fe90f189fe2d75dc743a1d9222d696834a76ac8c94c48a9ce5f31",
+    "src/frontend/sized/parser.rs": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13",
+    "src/frontend/sized/qpe.rs": "393c873044210991f790dd4b4ad511198584213d6c80fab3a43b35fef1552403",
+    "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+    "src/interchange/mod.rs": "eed1c2cb85f88c456bc690f4d3bab28572fac5eb6ac72eb947a5978e1648b715",
+    "src/interchange/hierarchical.rs": "eed2e8a5895b800b87ecc4558e7b0db6b77fa6f98b765dd6f5046cdb0bb400fc",
+    "src/interchange/hierarchical/execution.rs": "b02390e8e3985872f9e736a0cf29c490bf78cace731c2c21929bb18ba1bdcb59",
+    "tests/sized_source.rs": "39f86891503777906075d746eb19ac2fe0748c37ab6df09174595c8d1fbcc422",
+    "tests/sized_linear_seeded.rs": "8f919e72e226fbfd2b3f9b485ed4299e6a8a9a27025378dcdd4850668a99d5c2",
+    "tests/sized_cli.rs": "f4e4103f71bf2edfae77d7d0f5ffe27054f5722a37e47b84e337e7b255171925",
+    "src/bin/qleisli/sized.rs": "af353b3c23021336d76e8f2c4ad9b67c1f6e870883c9cdd87fc254610b097299",
+    "lean/Qleisli/Semantics/FreshInitialization.lean": "fe8ab4ba59f282514d34ecb1aee367b61abe0d98e2cc3e6fd514752176cf2af1"
+  },
+  "source_sha256": {
+    "corpus/sized/measured_qpe/measurement.qli": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "corpus/sized/measured_qpe/initialization.qli": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "corpus/sized/measured_qpe/readout.qli": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+    "corpus/sized/qualtran_qpe/estimation.qli": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "corpus/sized/qualtran_qpe/preparation.qli": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "corpus/sized/qualtran_qpe/evolution.qli": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "corpus/sized/qualtran_qft/fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "tests/fixtures/measured_clients/order.qli": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+    "tests/fixtures/measured_clients/amplitude.qli": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce",
+    "tests/fixtures/measured_clients/retiming.qli": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+    "tests/fixtures/sized_clients/rotation.qli": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "tests/fixtures/sized_clients/reflection.qli": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "tests/fixtures/sized_clients/amplification.qli": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "tests/fixtures/sized_clients/modular.qli": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177"
+  }
+}

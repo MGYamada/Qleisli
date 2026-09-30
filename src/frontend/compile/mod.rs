@@ -864,6 +864,29 @@ mod snapshot_tests {
     }
 
     #[test]
+    fn ir_narrowing_reports_overflow_at_the_original_source_without_wrapping() {
+        let project = project(0);
+        let compiler = compiler(&project);
+        let span = Span::new(10, 12);
+        for field in ["input width", "split width", "phase label"] {
+            for value in [256, 65536, usize::MAX] {
+                let error = compiler.narrow_u8("main", span, value, field).unwrap_err();
+                assert_eq!(error.code, ErrorCode::Limit);
+                assert_eq!(error.span, span);
+                assert!(error.message.contains(field));
+                assert!(error.message.contains(&value.to_string()));
+                assert!(error.message.contains("no truncation"));
+            }
+            for value in [0, 12, 255] {
+                assert_eq!(
+                    usize::from(compiler.narrow_u8("main", span, value, field).unwrap()),
+                    value
+                );
+            }
+        }
+    }
+
+    #[test]
     fn retained_source_bytes_are_charged_once_for_256_receipts() {
         for extra in [0, 25_003] {
             let project = project(extra);

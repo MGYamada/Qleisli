@@ -1,0 +1,152 @@
+{
+  "format": 1,
+  "created_utc": "2026-09-29T19:16:45.614719+00:00",
+  "project_version": "0.2.2",
+  "compiler_sha256": "3b43698f5a1b9562cadac61e31496e4382073d25931155789ebc172d7be33e14",
+  "oracle_script_sha256": "d42b7cd5db2e13ac69d6f2d34f77800c1f433a548cf82ae26d7e222e96a08b01",
+  "manifest_sha256": "63e7e5b919fd045bdc12b05e3af2fc432ae5b184f902bfbaf4bb10965ddfa906",
+  "source_sha256": {
+    "quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
+    "quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+    "quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
+    "quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+    "qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
+    "qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+    "qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
+    "qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+    "pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
+    "pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3"
+  },
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "cases": [
+    {
+      "id": "quantum_katas/swap2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/fredkin3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/xor_constant2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/bitwise_not2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/rx_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/phase_kickback1",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1
+      }
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "effect",
+      "exit_code": 1
+    },
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "incomplete_swap",
+      "reference": "quantum_katas/swap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/swap2 column 2: (True, False): 0 != 1.0"
+    },
+    {
+      "id": "unconditional_fredkin",
+      "reference": "quantum_katas/fredkin3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/fredkin3 column 2: (False, True, False): 0 != 1.0"
+    },
+    {
+      "id": "xor_constant_wrong_bit",
+      "reference": "qualtran/xor_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/xor_constant2 column 0: (False, True): 1 != 0.0"
+    },
+    {
+      "id": "partial_bitwise_not",
+      "reference": "qualtran/bitwise_not2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/bitwise_not2 column 0: (True, False): 1 != 0.0"
+    },
+    {
+      "id": "rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "kickback_wrong_secret",
+      "reference": "pennylane_demos/phase_kickback1",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/phase_kickback1 column 0: (True, False): 1 != 0.0"
+    }
+  ],
+  "semantic_fault_manifest_sha256": "6f8564810fba9b7e8ab012868022d993b1b4393c27ce035db500b454a809ef89",
+  "semantic_fault_source_sha256": {
+    "semantic_faults/incomplete_swap/kernel.qli": "eabd4424976075585bf57fa5fadf83e712743352d535678062553fa0cb4c0c44",
+    "semantic_faults/incomplete_swap/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+    "semantic_faults/unconditional_fredkin/kernel.qli": "5710ed89d9d534dbcc48a14167fa423b231bab4f36a3b87db740a442f53b085b",
+    "semantic_faults/unconditional_fredkin/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+    "semantic_faults/xor_constant_wrong_bit/kernel.qli": "e062d5d9dc4d97cd16b042abf62dc25df4f8c5b17531e00881662ab9d6f8566c",
+    "semantic_faults/xor_constant_wrong_bit/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+    "semantic_faults/partial_bitwise_not/kernel.qli": "e3b7f2a5968744457ab08d26f3bd0784cffa79700176c12897509fe4d0b2a0d7",
+    "semantic_faults/partial_bitwise_not/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+    "semantic_faults/rx_missing_scalar/kernel.qli": "3f8a24387c68ebddae05041f23be2ce27ff54040d16c3ed7186650fd0f189014",
+    "semantic_faults/rx_missing_scalar/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "semantic_faults/kickback_wrong_secret/kernel.qli": "afcf3f847b32a26121b6f61f2c2b6a887d7c5bdb37f683d12ad2e5d533cf2b55",
+    "semantic_faults/kickback_wrong_secret/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3"
+  },
+  "complete_corpus_report": "../../validation-v0.2.2.json",
+  "validation_command": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "target/debug/qleisli",
+    "--exhaustive",
+    "--report",
+    "corpus/validation-v0.2.2.json"
+  ],
+  "selection_note": "This six-case view is extracted from the actual complete 36-case run; four rejection fixtures were checked once for that run."
+}

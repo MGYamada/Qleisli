@@ -1,0 +1,460 @@
+{
+  "format": "qleisli.sized-instrument-validation",
+  "version": 1,
+  "status": "passed-with-open-capacity-gate",
+  "proposals": 22,
+  "components": {
+    "qpe-1-1": {
+      "preparation_work": 12448,
+      "readout_work": 24384,
+      "graph_work": 356466,
+      "exact_work": 67,
+      "aggregate_work": 393365
+    },
+    "qpe-1-2": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 837920,
+      "exact_work": 268,
+      "aggregate_work": 983628
+    },
+    "qpe-1-3": {
+      "preparation_work": 107104,
+      "readout_work": 302784,
+      "graph_work": 1409451,
+      "exact_work": 402,
+      "aggregate_work": 1819741
+    },
+    "qpe-2-2": {
+      "preparation_work": 47200,
+      "readout_work": 110528,
+      "graph_work": 887458,
+      "exact_work": 268,
+      "aggregate_work": 1045454
+    },
+    "qpe-2-4": {
+      "preparation_work": 237728,
+      "readout_work": 736320
+    },
+    "init-0": {
+      "preparation_work": 224,
+      "readout_work": 0,
+      "graph_work": 1798,
+      "exact_work": 0,
+      "aggregate_work": 2022
+    },
+    "readout-0": {
+      "preparation_work": 1312,
+      "readout_work": 768,
+      "graph_work": 1798,
+      "exact_work": 0,
+      "aggregate_work": 3878
+    },
+    "init-1": {
+      "preparation_work": 4128,
+      "readout_work": 0,
+      "graph_work": 3914,
+      "exact_work": 0,
+      "aggregate_work": 8042
+    },
+    "readout-1": {
+      "preparation_work": 1824,
+      "readout_work": 8896,
+      "graph_work": 3914,
+      "exact_work": 0,
+      "aggregate_work": 14634
+    },
+    "init-2": {
+      "preparation_work": 19360,
+      "readout_work": 0,
+      "graph_work": 46802,
+      "exact_work": 0,
+      "aggregate_work": 66162
+    },
+    "readout-2": {
+      "preparation_work": 2336,
+      "readout_work": 51456,
+      "graph_work": 61868,
+      "exact_work": 0,
+      "aggregate_work": 115660
+    },
+    "init-3": {
+      "preparation_work": 57696,
+      "readout_work": 0,
+      "graph_work": 100521,
+      "exact_work": 0,
+      "aggregate_work": 158217
+    },
+    "readout-3": {
+      "preparation_work": 2848,
+      "readout_work": 180672,
+      "graph_work": 143624,
+      "exact_work": 0,
+      "aggregate_work": 327144
+    },
+    "order": {
+      "preparation_work": 47200,
+      "readout_work": 110528,
+      "graph_work": 933821,
+      "exact_work": 268,
+      "aggregate_work": 1091817
+    },
+    "amplitude-0-3": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 955159,
+      "exact_work": 335,
+      "aggregate_work": 1100934
+    },
+    "amplitude-1-3": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 955159,
+      "exact_work": 335,
+      "aggregate_work": 1100934
+    },
+    "amplitude-1-4": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 955159,
+      "exact_work": 335,
+      "aggregate_work": 1100934
+    },
+    "amplitude-2-2": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 955159,
+      "exact_work": 335,
+      "aggregate_work": 1100934
+    },
+    "classical-copy-capture": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 837920,
+      "exact_work": 268,
+      "aggregate_work": 983628
+    },
+    "wrong-zero-helper": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 925769,
+      "exact_work": 402,
+      "aggregate_work": 1071611
+    },
+    "wrong-readout-order": {
+      "preparation_work": 42592,
+      "readout_work": 102848,
+      "graph_work": 837920,
+      "exact_work": 268,
+      "aggregate_work": 983628
+    },
+    "retiming": {
+      "preparation_work": 24864,
+      "readout_work": 102848,
+      "graph_work": 108640,
+      "exact_work": 67,
+      "aggregate_work": 236419
+    }
+  },
+  "semantics": {
+    "qpe-1-1": {
+      "coefficients": 16,
+      "maximum_error": 1.2412670766236366e-16
+    },
+    "qpe-1-2": {
+      "coefficients": 32,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "qpe-1-3": {
+      "coefficients": 64,
+      "maximum_error": 4.652682298944613e-16
+    },
+    "qpe-2-2": {
+      "coefficients": 96,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "order": {
+      "coefficients": 96,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "amplitude-0-3": {
+      "coefficients": 32,
+      "maximum_error": 9.61165587014318e-16
+    },
+    "amplitude-1-3": {
+      "coefficients": 32,
+      "maximum_error": 5.23691153334427e-16
+    },
+    "amplitude-1-4": {
+      "coefficients": 32,
+      "maximum_error": 7.023038222575547e-16
+    },
+    "amplitude-2-2": {
+      "coefficients": 32,
+      "maximum_error": 9.61165587014318e-16
+    },
+    "classical-copy-capture": {
+      "coefficients": 32,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "retiming": {
+      "coefficients": 48,
+      "maximum_error": 0.0
+    }
+  },
+  "semantic_faults": {
+    "wrong-zero-helper": {
+      "coefficients": 32,
+      "maximum_error": 1.0
+    },
+    "wrong-readout-order": {
+      "coefficients": 32,
+      "maximum_error": 0.5
+    }
+  },
+  "normalization": {
+    "qpe-1-1": {
+      "before": 72,
+      "after": 48,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "qpe-1-2": {
+      "before": 130,
+      "after": 99,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "qpe-1-3": {
+      "before": 181,
+      "after": 150,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "qpe-2-2": {
+      "before": 128,
+      "after": 98,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "qpe-2-4": {
+      "before": 231,
+      "after": 200,
+      "columns": 65,
+      "maximum_error": 0.0
+    },
+    "init-0": {
+      "before": 3,
+      "after": 1,
+      "columns": 2,
+      "maximum_error": 0.0
+    },
+    "readout-0": {
+      "before": 3,
+      "after": 1,
+      "columns": 2,
+      "maximum_error": 0.0
+    },
+    "init-1": {
+      "before": 8,
+      "after": 1,
+      "columns": 3,
+      "maximum_error": 0.0
+    },
+    "readout-1": {
+      "before": 8,
+      "after": 1,
+      "columns": 3,
+      "maximum_error": 0.0
+    },
+    "init-2": {
+      "before": 13,
+      "after": 6,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "readout-2": {
+      "before": 14,
+      "after": 7,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "init-3": {
+      "before": 18,
+      "after": 11,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "readout-3": {
+      "before": 20,
+      "after": 13,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "order": {
+      "before": 135,
+      "after": 101,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "amplitude-0-3": {
+      "before": 159,
+      "after": 117,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-1-3": {
+      "before": 159,
+      "after": 117,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-1-4": {
+      "before": 159,
+      "after": 117,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-2-2": {
+      "before": 159,
+      "after": 117,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "classical-copy-capture": {
+      "before": 130,
+      "after": 99,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "wrong-zero-helper": {
+      "before": 140,
+      "after": 114,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "wrong-readout-order": {
+      "before": 130,
+      "after": 99,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "retiming": {
+      "before": 9,
+      "after": 8,
+      "columns": 9,
+      "maximum_error": 0.0
+    }
+  },
+  "source_rejections": [
+    {
+      "case": "unitary-wrapper",
+      "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+    },
+    {
+      "case": "unitary-initializer",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "iso-readout",
+      "diagnostic": "iso body cannot perform observe operation measure_z"
+    },
+    {
+      "case": "missing-access",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "wrong-classical-width",
+      "diagnostic": "return type/tuple shape mismatch"
+    },
+    {
+      "case": "drop-empty-owner",
+      "diagnostic": "unreturned quantum owners: q"
+    },
+    {
+      "case": "consume-nonempty",
+      "diagnostic": "unknown, captured or already moved value q"
+    },
+    {
+      "case": "reuse-measured-bit",
+      "diagnostic": "unknown, captured or already moved value bit"
+    },
+    {
+      "case": "duplicate-classical-pattern",
+      "diagnostic": "duplicate binding in one pattern"
+    },
+    {
+      "case": "wrong-prepend-width",
+      "diagnostic": "prepend_bit requires CBit and exactly CBits<n>, with n < 8"
+    },
+    {
+      "case": "cycle-initializer",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "unknown-empty-branch",
+      "diagnostic": "unknown or unimported operation missing"
+    },
+    {
+      "case": "runtime-feedback",
+      "diagnostic": "expected 'static', found 'target' at token 82"
+    },
+    {
+      "case": "bad-init-arity",
+      "diagnostic": "operation argument shape/arity mismatch"
+    },
+    {
+      "case": "unknown-static-size",
+      "diagnostic": "unbound static natural missing"
+    }
+  ],
+  "pending": {
+    "qpe-2-4": "limit"
+  },
+  "production_integration": false,
+  "named_instrument_receipt": false,
+  "source_preservation_proved": false,
+  "max_checked_qubits": 4,
+  "unaccepted_small_case_qubits": 6,
+  "kernel_sha256": "f92d3a5eba4d24f3ee059e6232c0c36a17228758ef13308ca85ecf001879ce78",
+  "graph_reconstruction": {
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "sized_corpus",
+      "inspect_source_produced_corpus",
+      "--",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|356466|67|1\nCORPUS|qpe-1-2|ok|837920|268|4\nCORPUS|qpe-1-3|ok|1409451|402|6\nCORPUS|qpe-2-2|ok|887458|268|4\nCORPUS|qpe-2-4|limit|Lean hierarchy inspection rejected the artifact\nCORPUS|init-0|ok|1798|0|0\nCORPUS|readout-0|ok|1798|0|0\nCORPUS|init-1|ok|3914|0|0\nCORPUS|readout-1|ok|3914|0|0\nCORPUS|init-2|ok|46802|0|0\nCORPUS|readout-2|ok|61868|0|0\nCORPUS|init-3|ok|100521|0|0\nCORPUS|readout-3|ok|143624|0|0\nCORPUS|order|ok|933821|268|4\nCORPUS|amplitude-0-3|ok|955159|335|5\nCORPUS|amplitude-1-3|ok|955159|335|5\nCORPUS|amplitude-1-4|ok|955159|335|5\nCORPUS|amplitude-2-2|ok|955159|335|5\nCORPUS|classical-copy-capture|ok|837920|268|4\nCORPUS|wrong-zero-helper|ok|925769|402|6\nCORPUS|wrong-readout-order|ok|837920|268|4\nCORPUS|retiming|ok|108640|67|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 1.00s\n\n",
+    "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.11s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+  },
+  "source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+    "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+    "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+    "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+  },
+  "implementation_sha256": {
+    "scripts/compile_sized_corpus.py": "72f9c32c2d3f7e0baf703ba9975677f4fb1f5e2741acd081fef4e8d18beb53e6",
+    "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+    "scripts/compact_sized_graph.py": "1204dc35d336ec4674cb889299421ec26fbe15bb3cd46ee4a95d7c4c8ee80a9d",
+    "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+    "scripts/test_sized_instrument.py": "c5e1fd93c6249e7e2039724e939c3a3f03cb7372cf78b3a873409d37224e199a"
+  }
+}

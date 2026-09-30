@@ -134,6 +134,52 @@ fn native() -> Kernel {
 }
 
 #[test]
+#[ignore = "VM-22 optional comparison requires the separately built Lean runtime"]
+fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
+    let k = native();
+    let frozen = |name: &str, bytes: Vec<u8>| {
+        let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v022/hierarchy");
+        if let Some(capture) = std::env::var_os("QLEISLI_VM22_HIERARCHY_CAPTURE") {
+            let capture = std::path::PathBuf::from(capture);
+            std::fs::create_dir_all(&capture).unwrap();
+            std::fs::write(capture.join(name), &bytes).unwrap();
+        } else {
+            assert_eq!(std::fs::read(directory.join(name)).unwrap(), bytes);
+        }
+        bytes
+    };
+    let a = frozen("h.qirh", family(1, 1, false, false));
+    let r = frozen("h.request.json", power_request(1, false, false, false));
+    let checked = k.check_against(&a, &r).unwrap();
+    assert_eq!(checked.request(), r);
+    assert_eq!(checked.reconstruction().leaves().len(), 1);
+    let wrong_request = frozen(
+        "h.wrong-phase.request.json",
+        power_request(1, true, false, false),
+    );
+    assert_eq!(
+        k.check_against(&a, &wrong_request).unwrap_err().code,
+        "contract"
+    );
+    let zero = frozen("zero-repeat.wrong-leaf.qirh", family(0, 0, true, false));
+    let identity = frozen(
+        "zero-repeat.request.json",
+        power_request(0, false, false, false),
+    );
+    assert_eq!(
+        k.check_against(&zero, &identity).unwrap_err().code,
+        "contract"
+    );
+    let cycle =
+        String::from_utf8(a)
+            .unwrap()
+            .replacen("\"children\":[0,1]", "\"children\":[0,2]", 1);
+    let cycle = frozen("cycle.qirh", cycle.into_bytes());
+    assert_eq!(k.check_against(&cycle, &r).unwrap_err().code, "invalid_ir");
+}
+
+#[test]
 fn strict_json_rejects_before_starting_an_executable() {
     let k = Kernel::new("/nonexistent/qleisli-kernel");
     let good = String::from_utf8(family(3, 3, false, false)).unwrap();
@@ -602,4 +648,212 @@ fn native_request_permits_different_sharing_in_both_directions() {
         k.check_against(&leaf, &unused).unwrap_err().code,
         "contract"
     );
+}
+
+// Independently authored initialization/readout request around an exact H
+// circuit. The optional control is an arbitrary retained quantum input.
+fn instrument_inputs(controlled: bool) -> String {
+    let quantum = if controlled {
+        r#"{"owner":99,"basis":[{"tag":"bit"}],"axes":[11]}"#
+    } else {
+        ""
+    };
+    format!(r#"{{"quantum":[{quantum}],"classical":[]}}"#)
+}
+
+fn instrument_outputs(controlled: bool) -> String {
+    instrument_inputs(controlled).replace(
+        r#""classical":[]"#,
+        r#""classical":[{"value":900,"basis":[{"tag":"bits","width":1}]}]"#,
+    )
+}
+
+fn instrument_payload(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
+    let before = instrument_inputs(controlled);
+    let prepared = side(0, controlled);
+    let observed = instrument_inputs(controlled).replace(
+        r#""classical":[]"#,
+        r#""classical":[{"value":20,"basis":[{"tag":"bit"}]}]"#,
+    );
+    let final_side = instrument_outputs(controlled);
+    let circuit = String::from_utf8(family(count, count, negative, controlled)).unwrap();
+    format!(r#"{{"format":"qleisli.instrument-ir","version":1,"profile":"initialize-unitary-readout-v1","preparation":{{"initializations":[{{"interface":{{"inputs":{before},"outputs":{prepared}}},"effect":"iso","body":{{"tag":"init0","output":0}}}}],"outputs":{prepared}}},"circuit":{circuit},"readout":{{"measurements":[{{"interface":{{"inputs":{prepared},"outputs":{observed}}},"effect":"observe","body":{{"tag":"observe_z","input":0,"output":20}}}}],"pack":[20],"outputs":{final_side}}}}}"#).into_bytes()
+}
+
+fn instrument_request(count: u32, negative: bool, controlled: bool) -> Vec<u8> {
+    let input = instrument_inputs(controlled);
+    let readout_input = side(0, controlled);
+    let output = instrument_outputs(controlled);
+    let circuit = String::from_utf8(power_request(count, negative, controlled, true)).unwrap();
+    format!(r#"{{"format":"qleisli.instrument-request","version":1,"profile":"initialize-unitary-readout-v1","preparation":{{"inputs":{input},"fresh":[{{"owner":0,"basis":[{{"tag":"bit"}}],"axes":[7]}}]}},"circuit":{circuit},"readout":{{"inputs":{readout_input},"owners":[0],"result":900}},"outputs":{output}}}"#).into_bytes()
+}
+
+#[test]
+fn instrument_codec_rejects_malformed_fields_before_execution() {
+    let k = Kernel::new("/nonexistent/qleisli-kernel");
+    let good = String::from_utf8(instrument_payload(1, false, true)).unwrap();
+    let request = String::from_utf8(instrument_request(1, false, true)).unwrap();
+    for bad in [
+        good.replacen(r#""version":1"#, r#""version":2"#, 1),
+        good.replacen(r#""version":1"#, r#""version":1,"checked":true"#, 1),
+        good.replacen(r#""pack":[20]"#, r#""pack":[20],"pack":[20]"#, 1),
+        good.replacen(
+            r#""initializations":["#,
+            r#""initializations":null,"unknown":["#,
+            1,
+        ),
+    ] {
+        assert_eq!(
+            k.check_instrument(bad.as_bytes(), request.as_bytes())
+                .unwrap_err()
+                .code,
+            "format"
+        );
+    }
+    for bad in [
+        request.replacen(r#""result":900"#, r#""result":900,"checked":true"#, 1),
+        request.replacen(
+            "initialize-unitary-readout-v1",
+            "initialize-unitary-readout-v2",
+            1,
+        ),
+        request.replacen(r#""outputs":{"#, r#""outputs":null,"outputs":{"#, 1),
+    ] {
+        assert_eq!(
+            k.check_instrument(good.as_bytes(), bad.as_bytes())
+                .unwrap_err()
+                .code,
+            "format"
+        );
+    }
+    let too_large = request.replacen(r#""owners":[0]"#, r#""owners":[4294967296]"#, 1);
+    assert_eq!(
+        k.check_instrument(good.as_bytes(), too_large.as_bytes())
+            .unwrap_err()
+            .code,
+        "limit"
+    );
+    // A well-formed message reaches the selected runtime instead of being
+    // accepted locally or rejected by this negative-only harness.
+    assert_eq!(
+        k.check_instrument(good.as_bytes(), request.as_bytes())
+            .unwrap_err()
+            .code,
+        "io"
+    );
+}
+
+#[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_instrument_binds_all_stages_and_reconstructs_finite_obligations() {
+    let k = native();
+    let mut costs = Vec::new();
+    for controlled in [false, true] {
+        for count in [0, 1, 3] {
+            let a = instrument_payload(count, false, controlled);
+            let r = instrument_request(count, false, controlled);
+            let checked = k.check_instrument(&a, &r).unwrap();
+            assert_eq!(checked.request(), r);
+            assert_eq!(checked.reconstruction().payload(), a);
+            assert_eq!(checked.reconstruction().leaves().len(), 1);
+            assert_eq!(
+                checked.reconstruction().leaves()[0].1.leaf().meaning(),
+                &h_matrix(false)
+            );
+            costs.push((
+                controlled,
+                count,
+                checked.reconstruction().structural_work(),
+                checked.reconstruction().exact_work(),
+            ));
+            // Zero repeat cannot hide an invalid actual leaf or requested
+            // finite equation, even though its overall action is identity.
+            let bad = instrument_payload(count, true, controlled);
+            assert_eq!(k.check_instrument(&bad, &r).unwrap_err().code, "contract");
+            let wrong = instrument_request(count, true, controlled);
+            assert_eq!(k.check_instrument(&a, &wrong).unwrap_err().code, "contract");
+        }
+    }
+    println!("composed instrument costs: {costs:?}");
+    let a = String::from_utf8(instrument_payload(1, false, true)).unwrap();
+    let r = String::from_utf8(instrument_request(1, false, true)).unwrap();
+    for bad in [
+        a.replacen(r#""effect":"iso""#, r#""effect":"unitary""#, 1),
+        a.replacen(
+            r#""tag":"init0","output":0"#,
+            r#""tag":"init0","output":99"#,
+            1,
+        ),
+        a.replacen(
+            r#""tag":"observe_z","input":0"#,
+            r#""tag":"observe_z","input":99"#,
+            1,
+        ),
+        a.replacen(r#""pack":[20]"#, r#""pack":[21]"#, 1),
+        a.replacen(r#""value":900"#, r#""value":901"#, 1),
+    ] {
+        assert_eq!(
+            k.check_instrument(bad.as_bytes(), r.as_bytes())
+                .unwrap_err()
+                .code,
+            "contract"
+        );
+    }
+    for bad in [
+        r.replacen(r#""owners":[0]"#, r#""owners":[99]"#, 1),
+        r.replacen(r#""result":900"#, r#""result":901"#, 1),
+        r.replacen(r#""axes":[7]"#, r#""axes":[8]"#, 1),
+        r.replacen(r#""value":900"#, r#""value":901"#, 1),
+    ] {
+        assert_eq!(
+            k.check_instrument(a.as_bytes(), bad.as_bytes())
+                .unwrap_err()
+                .code,
+            "contract"
+        );
+    }
+}
+
+#[test]
+#[cfg(unix)]
+fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations() {
+    use std::os::unix::fs::PermissionsExt;
+    struct Scratch(std::path::PathBuf);
+    impl Drop for Scratch {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+    let stamp = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let scratch = Scratch(std::env::temp_dir().join(format!(
+        "qleisli-instrument-response-{}-{stamp}",
+        std::process::id()
+    )));
+    std::fs::create_dir(&scratch.0).unwrap();
+    let executable = scratch.0.join("runtime");
+    let payload = instrument_payload(1, false, false);
+    let request = instrument_request(1, false, false);
+    for body in [
+        "pending\n0\n0\n0\n",              // omitted actual finite proof
+        "pending\n0\n2\n0\n0\n0\n",        // duplicated actual proof
+        "pending\n0\n1\n0\n0\n",           // omitted requested finite equation
+        "pending\n0\n1\n0\n2\n2\n2\n",     // duplicated equation
+        "pending\n0\n1\n0\n1\n99\n",       // unknown equation
+        "pending\n0\n1\n0\n1\n2\nextra\n", // trailing response data
+        "pending\n01\n0\n0\n",             // noncanonical counter
+        "checked\n0\n0\n0\n",              // a claimed final result is not the protocol
+    ] {
+        let script = format!(
+            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 1\n{body}'\n"
+        );
+        std::fs::write(&executable, script).unwrap();
+        std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
+        let error = Kernel::new(&executable)
+            .check_instrument(&payload, &request)
+            .unwrap_err();
+        assert_eq!(error.code, "format", "{body}: {error}");
+    }
 }

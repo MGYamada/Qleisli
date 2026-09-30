@@ -130,10 +130,12 @@ impl Lowerer<'_, '_> {
     fn input(
         &mut self,
         ty: &Ty,
+        module: &str,
+        span: Span,
         quantum: &mut Vec<QuantumPort>,
         classical: &mut Vec<ClassicalId>,
-    ) -> Value {
-        match ty {
+    ) -> Result<Value, CompileError> {
+        Ok(match ty {
             Ty::Unit => Value::Unit,
             Ty::CBit => {
                 let id = self.classical();
@@ -153,24 +155,29 @@ impl Lowerer<'_, '_> {
                     token: reg.token,
                     wires: reg.wires.clone(),
                     shape: BasisShape {
-                        bits: reg.wires.len() as u8,
+                        bits: self.compiler.narrow_u8(
+                            module,
+                            span,
+                            reg.wires.len(),
+                            "input width",
+                        )?,
                     },
                 });
                 value
             }
             Ty::Pair(a, b) => {
-                let a = self.input(a, quantum, classical);
-                let b = self.input(b, quantum, classical);
+                let a = self.input(a, module, span, quantum, classical)?;
+                let b = self.input(b, module, span, quantum, classical)?;
                 Value::pair(a, b)
             }
             Ty::Tuple(fields) => Value::Tuple(
                 fields
                     .iter()
-                    .map(|field| self.input(field, quantum, classical))
-                    .collect(),
+                    .map(|field| self.input(field, module, span, quantum, classical))
+                    .collect::<Result<_, _>>()?,
             ),
             Ty::Bit => unreachable!("ordinary signature"),
-        }
+        })
     }
 
     fn call_user(
@@ -532,17 +539,20 @@ impl Lowerer<'_, '_> {
                                 "operation repetition exceeds 1024 steps",
                             ));
                         }
-                        steps = (0..*count).flat_map(|_| steps.iter().cloned()).collect();
-                        expected = expected
-                            .map(|m| {
-                                super::operations::matrix_power(
-                                    &m,
-                                    *count,
-                                    &mut self.compiler.exact_work,
-                                )
-                            })
-                            .transpose()
+                        // Bind one body to its independently extracted meaning.
+                        // Validate serial copies structurally, without constructing U^n.
+                        self.check_transformed(
+                            module,
+                            expr.span,
+                            &basis,
+                            &steps,
+                            expected.as_ref(),
+                        )?;
+                        let body = steps;
+                        steps = (0..*count).flat_map(|_| body.iter().cloned()).collect();
+                        transforms::check_repeated_steps(&body, &steps, *count)
                             .map_err(|e| self.compiler.op_error(module, expr.span, e))?;
+                        expected = None;
                     }
                     _ => unreachable!(),
                 }
@@ -961,7 +971,13 @@ impl Lowerer<'_, '_> {
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
-        let arg = inner.input(&ty, &mut quantum_inputs, &mut classical_inputs);
+        let arg = inner.input(
+            &ty,
+            module,
+            name.span,
+            &mut quantum_inputs,
+            &mut classical_inputs,
+        )?;
         let result = match target {
             Callee::User(key) => inner.call_bound(&key, vec![arg], None, BTreeMap::new())?,
             Callee::Sealed(namespace, gate) => {
@@ -1251,8 +1267,16 @@ fn lower_function_inner(
     )?;
     let args = params
         .iter()
-        .map(|ty| lower.input(ty, &mut quantum_inputs, &mut classical_inputs))
-        .collect();
+        .map(|ty| {
+            lower.input(
+                ty,
+                &key.0,
+                decl.span,
+                &mut quantum_inputs,
+                &mut classical_inputs,
+            )
+        })
+        .collect::<Result<_, _>>()?;
     let result = lower.call_user(key, args, None)?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();

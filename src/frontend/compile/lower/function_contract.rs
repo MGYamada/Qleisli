@@ -96,7 +96,10 @@ impl Lowerer<'_, '_> {
                     } else {
                         ErrorCode::InvalidIr
                     },
-                    format!("function semantic contract: {error}"),
+                    format!("function semantic contract: {error}{}", if matches!(error.error,
+                        crate::contract::ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)) {
+                        " (bounded i128 coefficients or dyadic denominator exponent above 126); no approximate fallback is used"
+                    } else { "" }),
                 )
             })?;
             let evidence = Arc::new(evidence);

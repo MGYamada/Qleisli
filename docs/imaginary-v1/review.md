@@ -2,7 +2,7 @@
 
 Status: **initial design review completed; implementation and general proofs
 remain open** (2026-09-27). This records P012-4 of the
-[0.1.2 plan](../releases/v0.1.2.md). The [six drafts](README.md) and
+[0.1.2 plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md). The [six drafts](README.md) and
 [shared requirements](requirements.md) are reviewable design artifacts.
 They have not been parsed, compiled, or executed as Qleisli source.
 
@@ -69,7 +69,7 @@ records, classifications, open questions, shared index and review now exist.
 This satisfies the **initial design-corpus prerequisite** as specified in
 [release milestones](../release-milestones.md#pre-v020-imaginary-v1-code).
 It does not satisfy V1-C1–C5, adopt the imaginary grammar, or implement 0.2.0.
-The [conformance ledger](../specification-status.md) records this limited result.
+The [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records this limited result.
 
 Open decisions include static type/capability inference, scalable retained
 evidence, exact versus approximate rotations, independent interval/phase

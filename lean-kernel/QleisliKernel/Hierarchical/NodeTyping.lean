@@ -163,6 +163,87 @@ def conditions (artifact : Artifact) (definition : Definition) : Bool :=
   | .observeZ input output => observe definition input output
   | .init0 output => initializeZero definition output
 
+/-- These private predicates omit only validity already established on the
+same immutable artifact by preparation. Full maps, freshness and shape remain. -/
+private def portsAfterHeaders (source destination : Side) (map : PortMap) : Bool :=
+  Layout.structureValid (Ports.layout source destination map) (Ports.witness source map) &&
+    decide (Ports.ClassicalMatch source destination map)
+
+private theorem portsAfterHeaders_eq (source destination : Side) (map : PortMap)
+    (before : sideValid source = true) (after : sideValid destination = true) :
+    portsAfterHeaders source destination map = Ports.shapeValid source destination map := by
+  simp [portsAfterHeaders, Ports.shapeValid, before, after]
+
+private def structureAfterHeaders (operation : StructuralOp) (interface : Interface) : Bool :=
+  operation.bounded && interface.inputs.classical.isEmpty && interface.outputs.classical.isEmpty &&
+    Structural.fresh interface && Structural.shape operation interface &&
+    decide (Layout.Permutation (wires interface.inputs).size
+      (Structural.axisMap interface) (Structural.inverseAxes interface))
+
+private theorem structureAfterHeaders_eq (operation : StructuralOp) (interface : Interface)
+    (header : interface.valid = true) :
+    structureAfterHeaders operation interface = Structural.valid operation interface := by
+  simp [structureAfterHeaders, Structural.valid, header]
+
+private def preparedConditions (artifact : Artifact) (definition : Definition) : Bool :=
+  definition.body.bounded && match definition.body with
+  | .leaf _ => true
+  | .sequence children =>
+    sequence artifact children == some (definition.interface, definition.effect)
+  | .tensor left right =>
+    (do
+      let a ← artifact.definitions[left]?
+      let b ← artifact.definitions[right]?
+      return disjointFrames a.interface b.interface && definition.effect == join a.effect b.effect &&
+        definition.interface == (⟨append a.interface.inputs b.interface.inputs,
+          append a.interface.outputs b.interface.outputs⟩ : Interface)).getD false
+  | .call child input output =>
+    (do
+      let callee ← artifact.definitions[child]?
+      return definition.effect == callee.effect &&
+        portsAfterHeaders definition.interface.inputs callee.interface.inputs input &&
+        portsAfterHeaders callee.interface.outputs definition.interface.outputs output &&
+        renamed definition.interface callee.interface input output).getD false
+  | .repeatOp _ child =>
+    (do
+      let body ← artifact.definitions[child]?
+      return closed body && definition.effect == Effect.unitary && definition.interface == body.interface).getD false
+  | .inverse child =>
+    (do
+      let body ← artifact.definitions[child]?
+      return definition.effect == Effect.unitary && body.effect == Effect.unitary && quantumOnly body.interface &&
+        definition.interface == (⟨body.interface.outputs, body.interface.inputs⟩ : Interface)).getD false
+  | .control child _ => (artifact.definitions[child]?.map (controlled definition)).getD false
+  | .rewire map => definition.effect == Effect.unitary &&
+    portsAfterHeaders definition.interface.inputs definition.interface.outputs map
+  | .structural operation => definition.effect == Effect.unitary &&
+    structureAfterHeaders operation definition.interface
+  | .dyadicPhase target _ _ => phase definition target
+  | .computed c w u e => computed artifact definition c w u e
+  | .observeZ input output => observe definition input output
+  | .init0 output => initializeZero definition output
+
+private theorem preparedConditions_eq (artifact : Artifact) (headers : Headers artifact)
+    (definition : Definition) (valid : definition.interface.valid = true) :
+    preparedConditions artifact definition = conditions artifact definition := by
+  have sides : sideValid definition.interface.inputs = true ∧
+      sideValid definition.interface.outputs = true := by
+    simpa only [Interface.valid, Bool.and_eq_true] using valid
+  cases hb : definition.body <;>
+    simp only [preparedConditions, conditions, hb, valid, Bool.true_and]
+  case call child input output =>
+    cases hc : artifact.definitions[child]? with
+    | none => simp
+    | some callee =>
+      have other := headers.1 child callee hc
+      have otherSides : sideValid callee.interface.inputs = true ∧
+          sideValid callee.interface.outputs = true := by
+        simpa only [Interface.valid, Bool.and_eq_true] using other
+      simp only [bind, Option.bind, portsAfterHeaders_eq _ _ _ sides.1 otherSides.1,
+        portsAfterHeaders_eq _ _ _ otherSides.2 sides.2]
+  case rewire map => rw [portsAfterHeaders_eq _ _ _ sides.1 sides.2]
+  case structural operation => rw [structureAfterHeaders_eq _ _ valid]
+
 /-- Header cost includes every actual referenced definition/meaning/encoding,
 including shared endpoints. Proof references cannot occur in a body. -/
 def refCost (cost : Side → Nat) (artifact : Artifact) (ref : Ref) : Nat :=
@@ -238,6 +319,100 @@ theorem check_conditions (artifact : Artifact) (index remaining : Nat) (checked 
               exact ⟨Nat.le_of_not_gt charged, Nat.le_of_not_gt limit, definition, rfl,
                 by simpa using valid⟩
 
+/-- Linear own-header equality still occurs in body checks. Referenced
+headers and map/freshness costs retain their original conservative charges. -/
+private def equalityFields (side : Side) : Nat :=
+  1 + side.quantum.foldl (fun n p => n + 3 + 2*p.basis.size + p.axes.size) 0 +
+    side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0
+
+private def preparedCharge (original : Nat) (interface : Interface) : Nat :=
+  min original (original - 16 * interface.charge +
+    16 * (equalityFields interface.inputs + equalityFields interface.outputs))
+
+private theorem preparedCharge_le (original : Nat) (interface : Interface) :
+    preparedCharge original interface ≤ original := Nat.min_le_left _ _
+
+private def preparedCheck (artifact : Artifact) (index remaining : Nat) : Except Error Checked :=
+  if remaining > 2000000 then .error .limit else
+  match artifact.definitions[index]? with
+  | none => .error .invalidIr
+  | some definition =>
+    let initial := 1 + definition.body.referenceCount + definition.body.charge + definition.interface.scan
+    if initial > remaining then .error .limit else
+    let scan := initial + headerCost sideScan artifact definition
+    if scan > remaining then .error .limit else
+    let original := scan + 16 * (1 + definition.body.charge + headerCost sideCharge artifact definition) +
+      mapsCost artifact definition
+    let charge := preparedCharge original definition.interface
+    if charge > remaining then .error .limit else
+    if !preparedConditions artifact definition then .error .invalidIr else .ok ⟨charge⟩
+
+private theorem preparedCheck_conditions (artifact : Artifact) (headers : Headers artifact)
+    (index remaining : Nat) (checked : Checked)
+    (accepted : preparedCheck artifact index remaining = .ok checked) :
+    checked.visits ≤ remaining ∧ remaining ≤ 2000000 ∧
+    ∃ definition, artifact.definitions[index]? = some definition ∧ conditions artifact definition = true := by
+  unfold preparedCheck at accepted
+  split at accepted
+  next invalid => contradiction
+  next limit =>
+    cases hd : artifact.definitions[index]? with
+    | none => simp [hd] at accepted
+    | some definition =>
+      simp only [hd] at accepted
+      split at accepted
+      next invalid => contradiction
+      next initial =>
+        split at accepted
+        next invalid => contradiction
+        next scanned =>
+          split at accepted
+          next invalid => contradiction
+          next charged =>
+            split at accepted
+            next invalid => contradiction
+            next valid =>
+              cases Except.ok.inj accepted
+              refine ⟨Nat.le_of_not_gt charged, Nat.le_of_not_gt limit, definition, rfl, ?_⟩
+              have checked : preparedConditions artifact definition = true := by simpa using valid
+              simpa only [preparedConditions_eq artifact headers definition (headers.1 index definition hd)] using checked
+
+private def preparedStep (artifact : Artifact) (used index : Nat) : Except Failure Nat :=
+  match preparedCheck artifact index (2000000 - used) with
+  | .error kind => .error ⟨kind, some ⟨.definition,index⟩⟩
+  | .ok checked =>
+    if used + checked.visits > 2000000 then .error ⟨.limit, some ⟨.definition,index⟩⟩
+    else .ok (used + checked.visits)
+
+private def preparedScan (artifact : Artifact) (indices : List Nat) (used : Nat) : Except Failure Nat :=
+  indices.foldlM (preparedStep artifact) used
+
+private theorem preparedScan_conditions (artifact : Artifact) (headers : Headers artifact)
+    (indices : List Nat) (used total : Nat) (bounded : used ≤ 2000000)
+    (accepted : preparedScan artifact indices used = .ok total) :
+    used ≤ total ∧ total ≤ 2000000 ∧ ∀ index ∈ indices,
+      ∃ definition, artifact.definitions[index]? = some definition ∧ conditions artifact definition = true := by
+  induction indices generalizing used with
+  | nil =>
+    have same : used = total := by simpa [preparedScan, pure, Except.pure] using accepted
+    subst total
+    exact ⟨Nat.le_refl _, bounded, by simp⟩
+  | cons index rest ih =>
+    cases hc : preparedCheck artifact index (2000000-used) with
+    | error e => simp [preparedScan,preparedStep,hc,bind,Except.bind] at accepted
+    | ok checked =>
+      have facts := preparedCheck_conditions artifact headers index _ checked hc
+      by_cases exceeded : used + checked.visits > 2000000
+      · simp [preparedScan,preparedStep,hc,exceeded,bind,Except.bind] at accepted
+      · have tail : preparedScan artifact rest (used+checked.visits) = .ok total := by
+          simpa [preparedScan,preparedStep,hc,exceeded] using accepted
+        have all := ih _ (by omega) tail
+        refine ⟨by omega,all.2.1,?_⟩
+        intro entry member
+        rcases List.mem_cons.mp member with equal | following
+        · subst entry; exact facts.2.2
+        · exact all.2.2 entry following
+
 /-- Charge each shared definition once, including bodies used zero times. -/
 def step (artifact : Artifact) (used index : Nat) : Except Failure Nat :=
   match check artifact index (2000000 - used) with
@@ -300,7 +475,7 @@ def checkAll (artifact : Artifact) (order : Array Nat) : Except Failure Typed :=
   | .ok prepared =>
     let start := prepared.totalVisits + 3 * artifact.definitions.size
     if start > 2000000 then .error ⟨.limit,none⟩ else
-      match scan artifact (List.range artifact.definitions.size) start with
+      match preparedScan artifact (List.range artifact.definitions.size) start with
       | .error failure => .error failure
       | .ok total => .ok ⟨prepared,total⟩
 
@@ -318,13 +493,13 @@ theorem checkAll_conditions (artifact : Artifact) (order : Array Nat) (typed : T
     split at accepted
     next invalid => contradiction
     next bounded =>
-      cases hs : scan artifact (List.range artifact.definitions.size)
+      cases hs : preparedScan artifact (List.range artifact.definitions.size)
           (prepared.totalVisits + 3 * artifact.definitions.size) with
       | error failure => simp [hs] at accepted
       | ok total =>
         simp only [hs] at accepted
         cases Except.ok.inj accepted
-        have h := scan_conditions artifact _ _ total (Nat.le_of_not_gt bounded) hs
+        have h := preparedScan_conditions artifact (prepare_headers artifact order prepared hp) _ _ total (Nat.le_of_not_gt bounded) hs
         exact ⟨rfl, Nat.le_trans (Nat.le_add_right _ _) h.1, h.2.1,
           fun index inside => h.2.2 index (List.mem_range.mpr inside)⟩
 

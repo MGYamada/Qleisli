@@ -37,6 +37,12 @@ changes in this working tree, not a version bump. First observations were
 captured before modifying Rust diagnostics. No failed attempt was invented
 for the initially successful QPE source.
 
+An attempt may also link `reports`: retained JSON diagnostics or validation
+summaries whose original metadata differs from command observations. Related
+clients may use separate `source_records` with repository-relative source hashes
+and reports; they are not numbered repair attempts. The checker validates these
+links and hashes without inventing missing commands, exit codes or timestamps.
+
 For the next session:
 
 1. Record the task, available context and author/model information **before**
@@ -48,12 +54,12 @@ For the next session:
 4. Link semantic oracles, not just compilation. State context differences when
    comparing attempts; no model success-rate claim follows from these records.
 5. Track newly exposed friction in a GitHub Issue or the
-   [backlog](../../../docs/v0.2.0-backlog.md). A GitHub Issue needs no duplicate
+   [backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md). A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
 `python3 scripts/check_authoring_sessions.py` checks hashes, source inventories,
 context/observation presence and consistent recorded exits. It does not replay
-commands, authenticate provenance or certify program meaning. Five checker
+commands, authenticate provenance or certify program meaning. Seven checker
 tests protect against lost/edited snapshots and contradictory records. Both
 commands run in the docs CI job; Rust tests replay the QPE snapshot and repair
 regressions. Existing records are retained even when diagnostics evolve.
@@ -103,6 +109,7 @@ new upstream translations or a measured `CBits` implementation.
 
 The [measured QPE first attempt](measured-qpe-v021/session.json) preserves the
 desired initialization/readout wrapper and its actual missing-import failure.
-The register helpers and classical word assembly are not implemented. The
-[checkpoint](measured-qpe-v021/checkpoint.md) records the source/IR gap and the
-user-requested stopping point before new checker or proof implementation.
+Its second snapshot retains the recursive helpers and classical word assembly;
+the [checkpoint](measured-qpe-v021/checkpoint.md) separates later implementation
+and validation from the original failure and stopping point. A current parser
+replay is recorded separately from the retained historical diagnostic reports.

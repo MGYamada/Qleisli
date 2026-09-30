@@ -1,0 +1,6 @@
+{
+  "kind": "informed-source-replay",
+  "command": "Parser(initialization.qli, modules=[initialization]).parse()",
+  "diagnostic": "unsupported or duplicate import std::quantum::init0",
+  "status": "rejected-before-implementation"
+}

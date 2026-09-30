@@ -43,6 +43,6 @@ Supplying an observe operation or missing controlled access must reject under
 the existing operation rules. Reusing a measured meter violates ownership.
 Before stdlib adoption, settle generalized types/precision, result roles and
 the applicable exact-angle/evidence profile. The Bit-only interface and three
-unrolled rounds retain the [A020-02/03 limitations](../../docs/v0.2.0-backlog.md).
+unrolled rounds retain the [A020-02/03 limitations](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md).
 The [preserved authoring session](../../tests/fixtures/authoring_sessions/README.md)
 records the informed first attempt and its actual observations.

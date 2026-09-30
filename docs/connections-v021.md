@@ -1,7 +1,7 @@
 # 0.2.1 bounded Python, OpenQASM 3 and QIR connections
 
 Status: **implemented and locally validated on 2026-09-30; selected for 0.2.1**.
-See the [release record](releases/v0.2.1.md) for publication status; the Python
+See the [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) for publication status; the Python
 wheel's registry distribution is separate from the Rust crate. This additive host layer
 uses the existing Rust finite verifier. It adds no `.qli` form, quantum primitive,
 proof authority or production hierarchical acceptance rule. Heavy shared-QPE
@@ -29,6 +29,17 @@ source spans or artifact pointers when supplied. Configure the installed
 `qleisli` executable explicitly or through PATH; a source-built executable is
 supported without pretending it is a bundled native wheel.
 
+### Structured diagnostics
+
+Artifact import/export failures preserve the original JSON pointer in
+`related`, using the same `json_pointer: /…` entry as `verify-ir`. Available
+OpenQASM input spans appear in `primary` with original UTF-8 byte offsets and
+one-based line/Unicode-column coordinates, treating CRLF as one newline.
+File-backed input uses its filename; standard input uses `-`. Python retains
+the diagnostic array. Usage, I/O and unlocated errors keep `primary: null`;
+exports do not invent source spans. These compatible 0.2.2 repairs are covered
+by [#56](https://github.com/MGYamada/Qleisli/issues/56).
+
 ## QIR input profile
 
 Use the [M1.1-A terminal profile](interop-m1.1.md), exact twelve-gate vocabulary,
@@ -40,7 +51,7 @@ remain free of LLVM/Python dependencies. Unsupported wheel platforms must use
 QASM/QIRF or a separately supported reader environment.
 
 Accept one closed zero-input entry, static resource counts at most twelve,
-one acyclic unconditional block chain, direct calls to the specified QIS/runtime
+one acyclic unconditional block chain (named, unnamed or mixed blocks), direct calls to the specified QIS/runtime
 symbols, terminal Z measurements and one ordered result array. Validate all
 declarations and signatures, module/profile flags, measurement attributes,
 pointer IDs, initialization placement, measurement/result uniqueness and output
@@ -49,6 +60,8 @@ unvisited blocks, conditional branches, custom QIS bodies, post-measurement
 gates, reused measured wires/results and unsupported output structures. Module
 assembly, mutable globals and unrecognized semantic attributes are unsupported.
 Parsing is capped at 1 MiB, with bounded functions, blocks and instructions.
+CFG traversal uses actual LLVM identity; block display names are not identities
+([#55](https://github.com/MGYamada/Qleisli/issues/55)).
 
 The reader translates only the validated terminal slice to canonical QASM with
 explicit initial reset and output order; Rust reconstructs logical ownership

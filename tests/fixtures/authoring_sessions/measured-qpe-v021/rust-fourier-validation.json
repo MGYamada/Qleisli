@@ -1,0 +1,111 @@
+{
+  "format": "qleisli.rust-fourier-factoring-validation",
+  "version": 1,
+  "status": "pass",
+  "widths": [
+    1,
+    2,
+    3
+  ],
+  "phase_sensitive": true,
+  "frontend_adequacy_proved": false,
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "implementation_sha256": {
+    "src/frontend/sized/fourier.rs": "438f5f55e4d022a83eebb52bbc42c52080e49f29811edc279a8980703ed9cfcd",
+    "src/frontend/sized/lower.rs": "fe1b84aabf6fe90f189fe2d75dc743a1d9222d696834a76ac8c94c48a9ce5f31",
+    "corpus/sized/qualtran_qft/fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "scripts/test_rust_fourier_factoring.py": "b3403ec94b473009c1b1b085d81e822c94234ec6fde78b8b1fa4a9f4306d39b0"
+  },
+  "artifacts": {
+    "original-1": {
+      "sha256": "d7a07f460f21204011afb901e4e568cfc2e059eff042b165819368dfb5534c09",
+      "definitions": 12
+    },
+    "candidate-1": {
+      "sha256": "334de85a477889f273d2622dd109eb475963e73cb2f95cca7da1211c6e8a0520",
+      "definitions": 14
+    },
+    "original-2": {
+      "sha256": "dd9fef2dbdf256f2ffc45a199d4fabf6117a3300a321fa018794661f32491b73",
+      "definitions": 46
+    },
+    "candidate-2": {
+      "sha256": "5a85c6f46b9be88b6fc736e122765db7b55b9caf27adb3cc81c232c50f6d02fe",
+      "definitions": 34
+    },
+    "original-3": {
+      "sha256": "fde3ab44f22153b6e0e11ea4693c93aba458930019e03d7080cd2f49370d7737",
+      "definitions": 82
+    },
+    "candidate-3": {
+      "sha256": "d1086f1339e69cd12fef65a4f00a4d14c9c5894cf9c6087325a7a71871b47bd4",
+      "definitions": 55
+    }
+  },
+  "semantic": {
+    "original-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "candidate-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "original-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "candidate-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "original-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3947004136484323e-15,
+      "executed_gates": 6
+    },
+    "candidate-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "actual_source_fourier_factoring",
+        "--",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 2 tests\ntest frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok\ntest frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 54 filtered out; finished in 0.16s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.67s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-6a479cb322e413ed)\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_fourier_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 1 test\nSIZED-FOURIER|original-1|inspect|51898|67\nSIZED-FOURIER|candidate-1|inspect|60965|67\nSIZED-FOURIER|candidate-1|ok|66724|118\nSIZED-FOURIER|original-2|inspect|296930|67\nSIZED-FOURIER|candidate-2|inspect|165804|134\nSIZED-FOURIER|candidate-2|ok|181958|236\nSIZED-FOURIER|original-3|inspect|607717|67\nSIZED-FOURIER|candidate-3|inspect|284739|201\nSIZED-FOURIER|candidate-3|ok|314938|354\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.36s\n\n",
+      "stderr": "   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.88s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-15fdacc0fa49f151)\n"
+    }
+  ]
+}

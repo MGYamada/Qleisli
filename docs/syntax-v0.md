@@ -7,7 +7,7 @@ specifies the lexical rules, grammar, names, and scopes of the
 [v0 language specification](language-spec.md). Read it with the
 [module rules](standard-library.md). Syntactic acceptance, acceptance of types,
 effects and evidence, and execution within implementation limits are distinct.
-The [conformance record](specification-status.md) tracks their status separately.
+The [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) tracks their status separately.
 This English edition is authoritative and replaces the earlier Japanese edition.
 This revision extends v0 with patterned coherent-lift binders and runtime
 `CBit` literals and Boolean expressions. It reserves `true` and `false`, a source
@@ -32,6 +32,35 @@ sealed gates. Their complete normative productions and reserved words are in
 that supplement; they extend the base EBNF below. Follow its source/Rust
 migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
 accept eligible static parameter names with the corresponding declared access.
+
+## Grouped imports added in product 0.2.2
+
+`use std::quantum::{h,x};` and nested groups such as
+`use std::{quantum::{h,x,},observe::measure_z};` expand in source order to
+ordinary single-name imports. Every leaf must include a module and a name.
+Groups are nonempty, allow a trailing comma and obey the 64-level group nesting
+limit. Before each prefix copy, the parser checks a shared per-module expansion
+budget of 65,536 copied identifiers and 1,048,576 copied UTF-8 name bytes.
+Copies within nested groups and separate `use` items spend the same budget;
+excess rejects with a located parse error before allocation. Original path
+tokens do not spend this budget. Ungrouped path length retains its existing
+iterative parsing behavior.
+The `basis` and `observe` keywords are admitted only directly after `std` as
+module components, including within a group. Aliases, glob imports and `self`
+imports remain unsupported. Existing visibility, duplicate-name, cycle and
+reserved-module checks apply to every expanded leaf.
+
+This is a language form with no runtime inputs, outputs, owners or effects;
+it emits the existing `UseDecl` leaves and no IR operation. The public AST
+shape stays unchanged. Each leaf retains the full original use-item span and
+its own identifier spans; documentation preceding a group attaches to every
+leaf. Additional documentation copies have separate per-module budgets of
+65,536 comments and 1,048,576 UTF-8 text bytes, checked before cloning.
+Ungrouped documentation moves without copying. Malformed, empty and duplicate
+groups reject with located diagnostics. Markdown renders each original `use`
+item once rather than repeating the group for every expanded leaf.
+[Parser/resolver regressions](../tests/review_v021.rs) also check nested groups,
+private-name rejection, documentation and ungrouped-path compatibility.
 
 ## Authoring forms added in product 0.1.8
 
@@ -164,7 +193,10 @@ lists, argument lists, tuples, and `qif` branches do not permit trailing commas.
 
 ```ebnf
 Module       ::= (Use | Decl)*
-Use          ::= "use" Path "::" Ident ";"
+Use          ::= "use" UseTree ";"
+UseTree      ::= ImportName ("::" UseTree)?
+               | "{" UseTree ("," UseTree)* ","? "}"
+ImportName   ::= Ident | "basis" | "observe"
 Path         ::= Ident ("::" Ident)*
                | "std" "::" ("basis" | "observe") ("::" Ident)*
 Decl         ::= "pub"? (BasisDecl | QuantumDecl)
@@ -436,7 +468,7 @@ check these import and Unicode boundaries. Additional parser tests check
 and [`classical_operator_chains_and_basis_patterns_obey_depth_limits`](../tests/parser.rs).
 Parsing these cases does not establish successful module resolution, typing,
 or execution; the compilation and execution regressions are recorded in the
-[conformance ledger](specification-status.md).
+[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 <a id="構文を保留する項目"></a>
 
@@ -462,7 +494,7 @@ for v0. The [resource calculus](source-resource-rules.md) and
 [Q1–Q3](source-soundness.md) establishes paper ideal soundness for those
 mathematical derivations. Their adequacy for every Rust acceptance path and
 general source-to-IR meaning preservation remain
-[Stage 1 obligations](specification-status.md). General preservation effects
+[Stage 1 obligations](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). General preservation effects
 passed through signatures or evidence belong to later specifications;
 the two-argument `with_computed` continues to use its restricted structural
 certificate. The three-argument extension has the separately specified

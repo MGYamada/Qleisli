@@ -1,0 +1,242 @@
+{
+  "format": "qleisli.hierarchical-execution-validation",
+  "version": 1,
+  "status": "failed",
+  "scope": "small checked reference execution; no source or named QPE proof",
+  "cases": [
+    {
+      "name": "fourier-1-False",
+      "kind": "pure",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 0,
+      "coefficients": 8,
+      "artifact_sha256": "0678a6dc0eddb9d9ead354a430f5d5e8a608759f1b9c8e97857db9d8a948d811"
+    },
+    {
+      "name": "fourier-1-True",
+      "kind": "pure",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 0,
+      "coefficients": 8,
+      "artifact_sha256": "12b9b3e1cd6432847e64c1a5c8e3489459903ba75515a7eafceb8a8c39ea7065"
+    },
+    {
+      "name": "fourier-2-False",
+      "kind": "pure",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 2,
+      "measured_bits": 0,
+      "coefficients": 24,
+      "artifact_sha256": "ada66301e8e28da527a0fa5ccd63282f72e2e59697910ec42cbf8b4938bda33e"
+    },
+    {
+      "name": "fourier-2-True",
+      "kind": "pure",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 2,
+      "measured_bits": 0,
+      "coefficients": 24,
+      "artifact_sha256": "fb60d9eb4fe3d669ff32fc38632e2741823dfd675868bb351611417c15899657"
+    },
+    {
+      "name": "fourier-3-False",
+      "kind": "pure",
+      "reference_dimension": 10,
+      "input_qubits": 3,
+      "output_qubits": 3,
+      "measured_bits": 0,
+      "coefficients": 80,
+      "artifact_sha256": "82e3f699a137cfd9f950e07529fc021999964925c5eb9929796663e29a6345ad"
+    },
+    {
+      "name": "fourier-3-True",
+      "kind": "pure",
+      "reference_dimension": 10,
+      "input_qubits": 3,
+      "output_qubits": 3,
+      "measured_bits": 0,
+      "coefficients": 80,
+      "artifact_sha256": "855a8707236993e00e1e14563e334bdc2881a1d9020fd52c52594b2b8f7c2d80"
+    },
+    {
+      "name": "qpe-1-2",
+      "kind": "instrument",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 32,
+      "artifact_sha256": "ef5d108dd9bc3684a796eb591a6debf1050edbcf1df61f7bca7baf5c852e57d2"
+    },
+    {
+      "name": "qpe-1-3",
+      "kind": "instrument",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 3,
+      "coefficients": 64,
+      "artifact_sha256": "20702ea7dbc57fa63dac305d44f0e23ac0e85c122d1df2722eda2250ff09f914"
+    },
+    {
+      "name": "qpe-2-2",
+      "kind": "instrument",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 2,
+      "measured_bits": 2,
+      "coefficients": 96,
+      "artifact_sha256": "71b3cc013eb731a7dde6274d96638e1aa81713450c3e30788b239f5b60635fb1"
+    },
+    {
+      "name": "order",
+      "kind": "instrument",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 2,
+      "measured_bits": 2,
+      "coefficients": 96,
+      "artifact_sha256": "a3ac5bb7e0b8dac482f756a7215049d2f38771bab407ca60a70436577ca3b5bf"
+    },
+    {
+      "name": "amplitude",
+      "kind": "instrument",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 32,
+      "artifact_sha256": "6600964a7451ab87d5730c663d09b46959cce3bb5b3f3c73e7eed950953709b9"
+    },
+    {
+      "name": "retiming",
+      "kind": "instrument",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 48,
+      "artifact_sha256": "e46f5ee0446947a9c7a90402110f310fd92664f076e830874929c012ec42a2e3"
+    },
+    {
+      "name": "reordered-readout",
+      "kind": "instrument",
+      "reference_dimension": 6,
+      "input_qubits": 2,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 48,
+      "artifact_sha256": "0d417e0f4c28e087ad9cf8fc1909ae09b660b9fefcbe838be7aeb4c23c24e5b9"
+    },
+    {
+      "name": "qpe-global",
+      "kind": "instrument",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 32,
+      "artifact_sha256": "8233c49360159b36028a4764ef2997c7cb6b19ade61621f5afd200e3dd7599fe"
+    },
+    {
+      "name": "qpe-conjugated",
+      "kind": "instrument",
+      "reference_dimension": 4,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 32,
+      "artifact_sha256": "b507d67ae8cc62a14ba88582565878670d57813c1d0726d8d412be29a23ceb83"
+    }
+  ],
+  "sampling_cases": [
+    {
+      "name": "sample-qpe-1-2",
+      "kind": "instrument",
+      "reference_dimension": 2,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 16,
+      "artifact_sha256": "ef5d108dd9bc3684a796eb591a6debf1050edbcf1df61f7bca7baf5c852e57d2",
+      "shots": 256,
+      "seed": 42,
+      "client": "qpe"
+    },
+    {
+      "name": "sample-order",
+      "kind": "instrument",
+      "reference_dimension": 1,
+      "input_qubits": 2,
+      "output_qubits": 2,
+      "measured_bits": 2,
+      "coefficients": 16,
+      "artifact_sha256": "a3ac5bb7e0b8dac482f756a7215049d2f38771bab407ca60a70436577ca3b5bf",
+      "shots": 256,
+      "seed": 42,
+      "client": "order"
+    },
+    {
+      "name": "sample-amplitude",
+      "kind": "instrument",
+      "reference_dimension": 1,
+      "input_qubits": 1,
+      "output_qubits": 1,
+      "measured_bits": 2,
+      "coefficients": 8,
+      "artifact_sha256": "6600964a7451ab87d5730c663d09b46959cce3bb5b3f3c73e7eed950953709b9",
+      "shots": 256,
+      "seed": 42,
+      "client": "amplitude"
+    }
+  ],
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_execution",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 101,
+  "stdout": "",
+  "stderr": "    Blocking waiting for file lock on build directory\n   Compiling qleisli v0.2.2 (/Users/masa/git/Qleisli)\nerror[E0027]: pattern does not mention field `depth`\n   --> src/frontend/sized/check.rs:459:31\n    |\n459 |               Argument::Natural(Natural {\n    |  _______________________________^\n460 | |                 kind: NatKind::Name(name),\n461 | |                 span,\n462 | |             }) => self.provider(name, &[], scope, *span),\n    | |_____________^ missing field `depth`\n    |\nhelp: include the missing field in the pattern\n    |\n461 -                 span,\n462 -             }) => self.provider(name, &[], scope, *span),\n461 +                 span, depth }) => self.provider(name, &[], scope, *span),\n    |\nhelp: if you don't care about this missing field, you can explicitly ignore it\n    |\n461 -                 span,\n462 -             }) => self.provider(name, &[], scope, *span),\n461 +                 span, depth: _ }) => self.provider(name, &[], scope, *span),\n    |\nhelp: or always ignore missing fields here\n    |\n461 -                 span,\n462 -             }) => self.provider(name, &[], scope, *span),\n461 +                 span, .. }) => self.provider(name, &[], scope, *span),\n    |\n\nerror[E0063]: missing field `depth` in initializer of `sized::ast::Natural`\n   --> src/frontend/sized/parser.rs:336:17\n    |\n336 |             a = Natural {\n    |                 ^^^^^^^ missing `depth`\n\nerror[E0063]: missing field `depth` in initializer of `sized::ast::Natural`\n   --> src/frontend/sized/parser.rs:352:17\n    |\n352 |             a = Natural {\n    |                 ^^^^^^^ missing `depth`\n\nerror[E0063]: missing field `depth` in initializer of `sized::ast::Natural`\n   --> src/frontend/sized/parser.rs:377:20\n    |\n377 |                 Ok(Natural {\n    |                    ^^^^^^^ missing `depth`\n\nerror[E0063]: missing field `depth` in initializer of `sized::ast::Natural`\n   --> src/frontend/sized/parser.rs:383:20\n    |\n383 |                 Ok(Natural {\n    |                    ^^^^^^^ missing `depth`\n\nSome errors have detailed explanations: E0027, E0063.\nFor more information about an error, try `rustc --explain E0027`.\nerror: could not compile `qleisli` (lib) due to 5 previous errors\n",
+  "kernel_sha256": "67e9f4eda05a8e24f7365347105d4a56606ea6ec9c9916be20924407d9bd69ec",
+  "source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+    "measurement": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "initialization": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "measured_order": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+    "measured_retiming": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+    "measured_amplitude": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce"
+  },
+  "implementation_sha256": {
+    "src/interchange/hierarchical/execution.rs": "6c005ffece5c07c6b3f3c27fa5e9e386669aa39d0a6fac442298d13c3ac1474f",
+    "tests/hierarchical_execution.rs": "c053f2549f307da24ed48ac5d77208c91659559f7a6b5ca22e67f96acb66dc21",
+    "scripts/test_hierarchical_execution.py": "7c6757074e3f7ae0aabf67920f0bf4dd0084b90fc036fb319624b0f38eaf6ec6",
+    "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+    "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+    "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+    "scripts/test_instrument_host.py": "1ad2f223a8055efe7732ebaac6e43dc210d686915c0345c5cce1c0675682364d",
+    "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
+    "scripts/test_sized_qpe.py": "dc17db165cc8efa07f255cd3dcd553b1e035c5f31c90d77d0085d76fbcffb7d8",
+    "scripts/test_sized_qpe_clients.py": "ab7ee07579b60d05e1606c5cee123b05e6f5ceec197b946aea5ac84e4d06a017"
+  }
+}

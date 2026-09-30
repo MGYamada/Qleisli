@@ -1,0 +1,159 @@
+{
+  "format": "qleisli.final-documentation-validation",
+  "version": 1,
+  "recorded_utc": "2026-09-30T08:42:42.811053+00:00",
+  "status": "passed",
+  "scope": "Executed non-Cargo documentation, contract, authoring-record and kernel source-policy checks. Recording existing results; no check rerun when writing this report.",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 23
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_stdlib_contract_docs.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 11
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_stdlib_contract_docs.py"
+      ],
+      "exit_code": 0,
+      "contract_template": 1,
+      "pilot_contracts": 3,
+      "scope": "structure and links only"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 7
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "records": 14,
+      "snapshots": 22,
+      "command_observations": 43,
+      "recorded_commands_executed": false
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_semantic_contract_examples.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 11
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_semantic_contract_examples.py"
+      ],
+      "exit_code": 0,
+      "exact_rational_algebraic_assertions": 39
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_imaginary_v1_examples.py"
+      ],
+      "exit_code": 0,
+      "tests_passed": 18
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_imaginary_v1_examples.py"
+      ],
+      "exit_code": 0,
+      "finite_mathematical_assertions": 58,
+      "imaginary_source_compiled": false
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_lean_kernel.py"
+      ],
+      "exit_code": 0,
+      "executable_modules": 54,
+      "external_lake_dependencies": 0
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py"
+      ],
+      "exit_code": 0,
+      "tests_total": 25,
+      "tests_passed": 18,
+      "tests_skipped": 7,
+      "skip_reason": "Compiled policy cases are opt-in; this invocation did not pass --compiled."
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "whitespace_errors": 0
+    }
+  ],
+  "authoring_repair": {
+    "initial_failure": "The measured-QPE continuation registered reports without command-observation metadata and related client source records as numbered repair attempts.",
+    "historical_reports_modified": false,
+    "changes": [
+      "Retained every historical diagnostic/validation report and its original metadata; linked these through reports rather than command observations.",
+      "Retained related client identifiers, reasons and repository-relative source hashes in source_records, separate from numbered immutable attempt directories.",
+      "Added local JSON-report link and related-source hash checks, with two additional regressions.",
+      "Recorded a freshly executed parser replay of all three attempt-02 snapshot modules without fabricating historical commands, exit codes or timestamps."
+    ],
+    "current_parser_observation": "attempt-02-parser-replay.json",
+    "parser_replay_scope": "Parsing only; no native acceptance, lowering or source-preservation claim."
+  },
+  "documentation_review": {
+    "files": [
+      "docs/sized-corpus-source.md",
+      "src/frontend/sized/qpe.rs",
+      "src/bin/qleisli/sized.rs"
+    ],
+    "result": "Proposal-derived composition requests, caller-supplied requests and independent-provider named-QPE checking remain distinct. Amplitude source retains its K_m(G) A preparation prefix. General source preservation and remaining R14/H1-H5 obligations are not claimed complete. Clarified the preceding Python-only experiment status."
+  },
+  "separate_compiled_policy_audit": {
+    "record": "continuation-integration-validation.json",
+    "sections": [
+      "kernel_policy",
+      "kernel_audit"
+    ],
+    "reported_tests_passed": 25,
+    "reported_kernel_declarations": 7112,
+    "executed_by": "capacity agent",
+    "not_rerun_here": true
+  },
+  "coordination": {
+    "generated_status_and_verification_inventory": "capacity agent",
+    "Cargo_native_MSRV_package": "root agent"
+  },
+  "source_sha256": {
+    "scripts/check_authoring_sessions.py": "66a985798e65c90ed1e6e6f8cac51e076d40fa1186667d5a793f45ec3dc4523b",
+    "scripts/test_check_authoring_sessions.py": "ff1176f937a4304ad2284720538348da9d1702964c1b5abcbe006ef3d7c93989",
+    "tests/fixtures/authoring_sessions/README.md": "6ef018f52e114de5acd9df1989522e3e0aa4a19f11c2f3800adac7a3a86b166b",
+    "docs/sized-corpus-source.md": "16718550cc4da490afca2519c0959e497a45cf243d5bf5b71d618a0b7bd241eb",
+    "tests/fixtures/authoring_sessions/measured-qpe-v021/session.json": "44162602848547efdc740047c08e603ab0c730dc98ef839235d173140ddad1b7",
+    "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02-parser-replay.json": "bb2eb74e1ef2cf7fa4b409d30664952d6ec60b8e8fa1b83dab26d34bc6b675a0"
+  }
+}

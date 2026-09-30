@@ -236,4 +236,88 @@ theorem matched_reference (width : Nat) (gates : List QleisliKernel.Interference
   intro input _
   rw [matched_fourier width gates axes accepted input output]
 
+/- Positive Fourier meaning for symbolic-path equality. No literal-template
+premise is required; the phase profile remains bounded by eight qubits. -/
+theorem compiled_matched_phase (width : Nat) (gates : List QleisliKernel.Interference.Gate)
+    (axes : List Nat) (accepted : QleisliKernel.Qft.matchCompiledCircuit width gates axes = true)
+    (input choices : Bits) :
+    (runFrom gates choices (realize width (initial width) input choices)).phase =
+      (2 ^ (8 - width) * value width input * value width choices) % 256 := by
+  rw [QleisliKernel.Qft.compiled_matched_paths width gates axes accepted input choices]
+  simp only [realize, QleisliKernel.Qft.expected, PhasePolynomial.normalize_sound]
+  exact fourier_phase width (QleisliKernel.Qft.matchCompiledCircuit_conditions width gates axes accepted).2.1
+    input choices
+
+theorem compiled_matched_weight (width : Nat) (gates : List QleisliKernel.Interference.Gate)
+    (axes : List Nat) (accepted : QleisliKernel.Qft.matchCompiledCircuit width gates axes = true)
+    (input choices : Bits) :
+    pathWeight (runFrom gates choices (realize width (initial width) input choices)) =
+      complexModel.halfRoot ^ width *
+        Complex.exp (2 * Real.pi * Complex.I * value width input * value width choices /
+          (2 : ℂ) ^ width) := by
+  have bounded := (QleisliKernel.Qft.matchCompiledCircuit_conditions width gates axes accepted).2.1
+  have count : (runFrom gates choices (realize width (initial width) input choices)).hadamards = width := by
+    rw [QleisliKernel.Qft.compiled_matched_paths width gates axes accepted input choices]
+    rfl
+  rw [pathWeight, count, compiled_matched_phase width gates axes accepted input choices, root_mod, root_phase]
+  congr 2
+  simp only [Nat.cast_mul, Nat.cast_pow, Nat.cast_ofNat]
+  have powers : (2 : ℂ) ^ (8 - width) * 2 ^ width = 256 := by
+    rw [← pow_add, Nat.sub_add_cancel bounded]
+    norm_num
+  apply (eq_div_iff (pow_ne_zero width (by norm_num : (2 : ℂ) ≠ 0))).mpr
+  calc
+    (2 * Real.pi * Complex.I * (2 ^ (8 - width) * value width input * value width choices) / 256) *
+        2 ^ width =
+      (2 ^ (8 - width) * 2 ^ width) *
+        (2 * Real.pi * Complex.I * value width input * value width choices) / 256 := by ring
+    _ = _ := by rw [powers]; ring
+
+theorem compiled_matched_coefficient (width : Nat) (gates : List QleisliKernel.Interference.Gate)
+    (axes : List Nat) (accepted : QleisliKernel.Qft.matchCompiledCircuit width gates axes = true)
+    (input output : Fin width → Bool) :
+    coefficient width gates input output = complexModel.halfRoot ^ width *
+      Complex.exp (2 * Real.pi * Complex.I * value width (finiteBits input) *
+        value width (finiteBits output) / (2 : ℂ) ^ width) := by
+  classical
+  have endpoints (choices : Fin width → Bool) :
+      (fun i : Fin width => (runFrom gates (finiteBits choices)
+        (realize width (initial width) (finiteBits input) (finiteBits choices))).bits
+        (width - 1 - i)) = choices := by
+    funext i
+    rw [QleisliKernel.Qft.compiled_matched_output width i i.isLt gates axes accepted]
+    exact finiteBits_inside choices i
+  simp only [coefficient, endpoints]
+  simp only [Finset.sum_ite_eq', Finset.mem_univ, if_true]
+  have product := pathProduct_weight (finiteBits output) gates
+    (realize width (initial width) (finiteBits input) (finiteBits output))
+  have initialWeight : pathWeight
+      (realize width (initial width) (finiteBits input) (finiteBits output)) = 1 := by
+    simp [pathWeight, realize, initial, PhasePolynomial.evaluate]
+  rw [initialWeight, one_mul] at product
+  rw [← product]
+  exact compiled_matched_weight width gates axes accepted (finiteBits input) (finiteBits output)
+
+theorem compiled_matched_fourier (width : Nat) (gates : List QleisliKernel.Interference.Gate)
+    (axes : List Nat) (accepted : QleisliKernel.Qft.matchCompiledCircuit width gates axes = true)
+    (input output : Fin width → Bool) :
+    coefficient width gates input output =
+      Complex.exp (2 * Real.pi * Complex.I * value width (finiteBits input) *
+        value width (finiteBits output) / (2 : ℂ) ^ width) /
+      (Real.sqrt ((2 : ℝ) ^ width) : ℂ) := by
+  rw [compiled_matched_coefficient width gates axes accepted input output, halfRoot_power]
+  ring
+
+theorem compiled_matched_reference (width : Nat) (gates : List QleisliKernel.Interference.Gate)
+    (axes : List Nat) (accepted : QleisliKernel.Qft.matchCompiledCircuit width gates axes = true)
+    {R : Type} (joint : (Fin width → Bool) → R → ℂ) (reference : R)
+    (output : Fin width → Bool) :
+    (∑ input, coefficient width gates input output * joint input reference) =
+      ∑ input, (Complex.exp (2 * Real.pi * Complex.I * value width (finiteBits input) *
+        value width (finiteBits output) / (2 : ℂ) ^ width) /
+        (Real.sqrt ((2 : ℝ) ^ width) : ℂ)) * joint input reference := by
+  apply Finset.sum_congr rfl
+  intro input _
+  rw [compiled_matched_fourier width gates axes accepted input output]
+
 end Qleisli.Qft

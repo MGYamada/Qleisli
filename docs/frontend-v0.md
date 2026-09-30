@@ -13,7 +13,7 @@ static parameters/arguments, independent access constraints, basis-derived
 meanings and checked composition. Generic bodies are source-checked before
 specialization; abstract checking produces no `VerifiedProgram` or cleanup
 evidence. Each concrete expansion passes the existing independent checker.
-The [release record](releases/v0.1.8.md) gives public AST/error and reserved-word
+The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) gives public AST/error and reserved-word
 migration, executed validation and remaining gates.
 
 The 0.1.8 authoring extension added product patterns to basis parameters.
@@ -79,7 +79,7 @@ cargo run --bin qleisli -- run examples/feedback
 ## Checks and lowering
 
 These implementation correspondences are separate from general mathematical
-proofs. The [conformance record](specification-status.md) distinguishes the
+proofs. The [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) distinguishes the
 normative rules, capacity profile, finite tests, and open obligations.
 
 | Form and classification | Type, ownership, and effect | IR correspondence |
@@ -178,11 +178,11 @@ In 0.1.9, function-effect failures locate a cause of the strongest derived
 effect and name both derived and declared effects. Declared callee effects
 remain binding even for an empty body; callers point to their own call site,
 and both classical arms are checked. This provenance is diagnostic metadata,
-not a new acceptance rule. Unsupported grouped imports show separate `use`
-examples, and static `h/x/z/t` arguments show a closed unary wrapper. The
+not a new acceptance rule. Grouped imports are supported in 0.2.2 by expansion to existing import leaves.
+Static `h/x/z/t` arguments still show a closed unary wrapper. The
 [repair tests](../tests/repair_diagnostics.rs) check those rewrites.
 The frontend still reports one error per invocation; collection/recovery is
-[A020-11](v0.2.0-backlog.md#a020-11--independent-errors-require-repeated-checking-rounds).
+[A020-11](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-11--independent-errors-require-repeated-checking-rounds).
 
 Module-import cycle detection uses an explicit DFS stack. Import-chain depth
 does not consume the Rust call stack; cycles still report the importing file,
@@ -210,7 +210,7 @@ evidence profile and exact-check budget. Distinct contract pairs still charge
 their copied raw representations and pair names under
 [FC-CACHE](function-contracts-v0.1.md). No source byte is multiplied by receipt
 count in the shared lowering budget. This resolves
-[A020-10](v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
+[A020-10](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-10--source-snapshot-copies-exhaust-the-shared-lowering-budget)
 without changing the public owned identity API or increasing a limit. Explicit
 public identity inspection may materialize one bounded owned compatibility view
 per receipt; compilation, checking and execution do not require that copy.
@@ -219,7 +219,7 @@ at each use; the 1,000,000-unit budget is shared by the whole loaded project.
 A shallow doubling call graph can therefore exhaust it. The limit diagnostic
 now locates the declaration being checked and names the inner location where
 the next charge failed, with used/requested work. It does not attribute all
-project cost to that inner expression. The [review reproduction](reviews/v0.2.0.md)
+project cost to that inner expression. The [review reproduction](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.2.0.md)
 retains this finite limit; hierarchical sharing remains pending under A020-03.
 
 These checks bound exponential nonrecursive expansion and classical
@@ -245,7 +245,7 @@ is required and failure does not fall back to following links. Opened sources
 must be regular files; nonblocking acquisition avoids hanging on a substituted
 FIFO. Other targets retain the old filesystem trust assumption. This is not a
 filesystem sandbox, nor does it freeze files against concurrent in-place writes.
-See the [review disposition and platform validation](reviews/v0.1.9-followup.md).
+See the [review disposition and platform validation](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.9-followup.md).
 
 <a id="確認した結果と残件"></a>
 
@@ -278,7 +278,7 @@ arguments. Existing non-UTF-8 source directories are also tested on Linux.
 
 Historical milestones were 92 Rust tests at A2 and 108 when v0 was fixed. These
 are not current totals; subsequent runs are recorded in the
-[conformance record](specification-status.md). The A2 static-operation suite
+[conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). The A2 static-operation suite
 covers phase distributions, reflection signs, references, inverses, rejection,
 malformed raw IR, and expansion limits. Algorithm suites independently check
 Grover/BV inputs, bit-flip assumptions and correlations, parity coherence, and

@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "project_version": "0.2.2",
+  "scope": "curated user-supplied review reproductions, not a model benchmark",
+  "compiler_sha256": "1ccd14020d4ad3c33aa67a6616f686683f87488b3e63e9e3c7043a93bca1607c",
+  "checks": [
+    {
+      "fixture": "tests/fixtures/review_v021/repeat_512/main.qli",
+      "source_sha256": "dfbb46f42322c721ce663f229701669b78634a2165c59a20071ca9b5234207c2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v021/repeat_512",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "fixture": "tests/fixtures/review_v021/repeat_512/main.qli",
+      "source_sha256": "dfbb46f42322c721ce663f229701669b78634a2165c59a20071ca9b5234207c2",
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/review_v021/repeat_512",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5819667427573455},{\"bits\":[true],\"probability\":0.4180332572427431}]}}\n",
+      "stderr": ""
+    },
+    {
+      "fixture": "tests/fixtures/review_v021/toffoli_flat/main.qli",
+      "source_sha256": "35081d8bcbf6ad764f0fb7cc389eff0234094498194db4811b0c608880878e39",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "tests/fixtures/review_v021/toffoli_flat",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"tuple pattern requires a tuple value with the same immediate arity\",\"primary\":{\"path\":\"main.qli\",\"start\":252,\"end\":259,\"line\":5,\"column\":9},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

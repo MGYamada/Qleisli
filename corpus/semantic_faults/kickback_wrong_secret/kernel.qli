@@ -1,0 +1,21 @@
+// Deliberate type-correct semantic fault; local verification fixture.
+// Upstream authors (repository usernames): Dan. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_phase_kickback/demo.py
+// Selected symbol(s): quantum_lock; quantum_locking_mechanism
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::z;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn lock(q: Q<Bit>) -> Q<Bit> { x(z(x(q))) }
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (meter, key) = split(q);
+    let (meter, key) = qif(h(meter), key) { 0 => identity, 1 => lock };
+    join(h(meter), key)
+}

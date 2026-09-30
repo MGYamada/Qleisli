@@ -1,10 +1,43 @@
 # Linear size expressions and explicit register reshape
 
 Status: **adopted design direction for the 0.2.1 continuation, 2026-09-29**.
-This extends the [canonical reshape plan](reshape-plan.md) and the G020-1
-sized-source specification packet. Source grammar, a production size solver,
+This extends the intact-atom helper below and the G020-1 sized-source
+specification packet; the remaining continuation is [0.2.2](v0.2.2-plan.md). Source grammar, a production size solver,
 array types and sized reshape lowering are not implemented by this decision.
 The existing concrete profile, compatibility policy and R14/H1–H5 gates remain.
+
+## Existing intact-atom helper
+
+The Mathlib-free [Reshape checker](../lean-kernel/QleisliKernel/Reshape.lean)
+checks canonical single-owner adapter metadata, not arbitrary circuit bodies.
+For ordered prefix types A/B, remove tuple constructors and Unit factors to
+obtain L(A)/L(B); accept only equal sequences of complete atomic types.
+Bit, Bits(1) and Bits(0) remain distinct atoms, and Bits(k) is never split into
+Bit leaves. The request consumes one Q<A> and returns one fresh Q<B> with
+identical ordered physical axes, no classical ports, measurement, physical
+allocation, gate or phase parameters. Unit factors may change within that
+basis tree; the owner remains, including at width zero. This does not erase
+ordinary products of owners, merge owners or drop a frame.
+
+Its operator is exactly `|x:A⟩ → |x:B⟩`, with coefficient +1 and unchanged
+encoded labels under the first-field-low-axis convention, extended by identity
+on every reference. Equal endpoint leaves cannot certify an arbitrary X, SWAP
+or scalar phase. Reject malformed trees, atom/axis changes, reused owners,
+mismatched independently requested endpoints and capacity excess. Type-leaf
+comparison is linear in type storage; existing well-formedness/uniqueness work
+retains conservative quadratic charging, without a claim about whole-compiler
+complexity.
+
+The [saved first source](../tests/fixtures/authoring_sessions/reshape-v021/session.json)
+and [native differential tests](../scripts/test_lean_reshape.py) retain the
+experiment and mutations. These metadata proofs issue no production evidence
+or new hierarchy rule. A future untrusted producer must emit existing explicit
+split/join, Unit pack/unpack and checked tensor/sequence operations; independently
+check their complete endpoints and actual artifact. Source grammar, effects,
+diagnostics, execution, compatibility and H1–H5 integration remain open.
+The inverse exchanges A/B; the existing same-type adjoint restriction and
+opaque-operation capability requirements remain unchanged. The following
+bit-segment design is a separate extension, not a broadened Reshape.check.
 
 ## Size arithmetic and equality
 

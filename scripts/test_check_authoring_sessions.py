@@ -63,6 +63,30 @@ class AuthoringRecords(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unregistered attempt"):
             self.check()
 
+    def test_reports_preserve_diagnostics_without_fabricated_command_metadata(self):
+        (self.root / "report.json").write_text(json.dumps({"diagnostic": "historical error"}))
+        self.data["attempts"][0]["reports"] = ["report.json"]
+        self.save()
+        self.assertEqual(self.check(), (1, 1))
+        (self.root / "report.json").unlink()
+        with self.assertRaisesRegex(ValueError, "missing"):
+            self.check()
+
+    def test_related_sources_have_independent_hashes_and_local_paths(self):
+        source = self.root / "client.qli"
+        source.write_bytes(b"client")
+        record = dict(id="client-01", reason="related client", sha256={"client.qli": hashlib.sha256(b"client").hexdigest()})
+        self.data["source_records"] = [record]
+        self.save()
+        self.assertEqual(check_session(self.root / "session.json", repository=self.root), (1, 1))
+        source.write_bytes(b"changed")
+        with self.assertRaisesRegex(ValueError, "source record hash mismatch"):
+            check_session(self.root / "session.json", repository=self.root)
+        record["sha256"] = {"../client.qli": "0" * 64}
+        self.save()
+        with self.assertRaisesRegex(ValueError, "relative path"):
+            check_session(self.root / "session.json", repository=self.root)
+
 
 if __name__ == "__main__":
     unittest.main()

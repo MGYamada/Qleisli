@@ -73,3 +73,35 @@ fn check_source_fourier_contracts() {
         }
     }
 }
+
+#[test]
+#[ignore = "run through scripts/test_instrument_host.py with an audited native kernel"]
+fn check_source_instrument_contracts() {
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap());
+    let directory = std::path::PathBuf::from(std::env::var_os("QLEISLI_SIZED_INSTRUMENT").unwrap());
+    let manifest = std::fs::read_to_string(directory.join("cases.txt")).unwrap();
+    for line in manifest.lines() {
+        let fields: Vec<_> = line.split('|').collect();
+        let [name, expected] = fields.as_slice() else {
+            panic!("invalid instrument source case")
+        };
+        let payload = std::fs::read(directory.join(format!("{name}.json"))).unwrap();
+        let request = std::fs::read(directory.join(format!("{name}.request.json"))).unwrap();
+        match kernel.check_instrument(&payload, &request) {
+            Ok(checked) => {
+                assert_eq!(*expected, "ok", "{name}");
+                assert_eq!(checked.reconstruction().payload(), payload);
+                assert_eq!(checked.request(), request);
+                println!(
+                    "INSTRUMENT|{name}|ok|{}|{}",
+                    checked.reconstruction().structural_work(),
+                    checked.reconstruction().exact_work(),
+                );
+            }
+            Err(error) => {
+                assert_eq!(error.code, *expected, "{name}: {error}");
+                println!("INSTRUMENT|{name}|{}", error.code);
+            }
+        }
+    }
+}

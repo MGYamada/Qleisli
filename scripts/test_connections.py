@@ -36,6 +36,59 @@ class Connections(unittest.TestCase):
             "ptr inttoptr (i64 1 to ptr), ptr @second", "ptr null, ptr @second")
         self.assertEqual(self.client.from_qir(changed).run()["distribution"][0]["bits"], [True, False])
 
+    def test_unnamed_and_mixed_block_identity_text_and_bitcode(self):
+        expected = self.client.from_qir(self.qir).run()
+        unnamed = self.qir.replace("start:", "0:").replace("readout:", "1:").replace("label %readout", "label %1")
+        three = self.qir.replace("start:", "0:").replace("readout:", "2:").replace("label %readout", "label %1")
+        three = three.replace("2:\n", "1:\n  br label %2\n2:\n")
+        variants = [unnamed, three, self.qir.replace("start:", "0:"),
+                    self.qir.replace("readout:", "0:").replace("label %readout", "label %0")]
+        for source in variants:
+            module = pyqir.Module.from_ir(pyqir.Context(), source)
+            self.assertIsNone(module.verify())
+            for encoded in [source, module.bitcode]:
+                with self.subTest(source=source[:80], bitcode=isinstance(encoded, bytes)):
+                    self.assertEqual(self.client.from_qir(encoded).run(), expected)
+        for source, reason in [(three.replace("ret void", "br label %1"), "cyclic CFG"),
+                               (unnamed.replace("ret void\n}", "ret void\n2:\n  ret void\n}"), "unvisited blocks")]:
+            module = pyqir.Module.from_ir(pyqir.Context(), source)
+            self.assertIsNone(module.verify())
+            for encoded in [source, module.bitcode]:
+                with self.subTest(reason=reason), self.assertRaises(QleisliError) as error:
+                    self.client.from_qir(encoded)
+                self.assertIn(reason, str(error.exception))
+
+    def test_artifact_pointers_and_qasm_source_locations_are_preserved(self):
+        artifact = json.loads(self.client.from_openqasm("OPENQASM 3.0;").artifact)
+        artifact["root"] = None
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "bad.qirf"
+            path.write_text(json.dumps(artifact))
+            diagnostics = []
+            for args in [["verify-ir", str(path), "--format=json"],
+                         ["interop", "check", str(path), "--input=qirf"]]:
+                result = subprocess.run([EXE, *args], capture_output=True)
+                self.assertEqual(result.returncode, 1)
+                diagnostics.append(json.loads(result.stdout)["diagnostics"])
+            self.assertEqual(diagnostics[0], diagnostics[1])
+            self.assertEqual(diagnostics[0][0]["related"], [{"message": "json_pointer: /root", "location": None}])
+            source = '// λ🦀\r\nOPENQASM 3.0; include "stdgates.inc"; qubit q; bit c; reset q; mystery q; c = measure q;'
+            qasm = Path(directory) / "bad.qasm"
+            qasm.write_bytes(source.encode())
+            result = subprocess.run([EXE, "interop", "check", str(qasm), "--input=qasm"], capture_output=True)
+            direct = json.loads(result.stdout)["diagnostics"]
+            location = direct[0]["primary"]
+            start = source.encode().index(b"mystery")
+            self.assertEqual(location, {"path": "bad.qasm", "start": start, "end": start + 7,
+                                        "line": 2, "column": 64})
+            # Python retains the complete structured envelope; no message parsing.
+            result = subprocess.run([EXE, "interop", "emit-ir", "-", "--input=qasm"], input=source.encode(), capture_output=True)
+            direct_stdin = json.loads(result.stdout)["diagnostics"]
+            with self.assertRaises(QleisliError) as error:
+                self.client.from_openqasm(source)
+            self.assertEqual(error.exception.diagnostics, direct_stdin)
+            self.assertEqual(direct_stdin[0]["primary"]["path"], "-")
+
     def test_bell_sampling_and_all_gates(self):
         for name in ["bell", "gates"]:
             program = self.client.from_openqasm((FIXTURES / f"{name}.qasm").read_text())

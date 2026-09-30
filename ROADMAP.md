@@ -6,16 +6,45 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Historical entries below retain the scope, dates, and counts of their original checks; English translation does not rerun those checks or adopt future syntax. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
+## v0.2.2–v0.2.9: staged verification migration
+
+**User-selected plan, 2026-09-30:** move verification implementation from Rust
+to Lean through [eight bounded packets](docs/verification-migration-v0.2.md).
+0.2.2's [VM-22 acceptance/boundary freeze and comparison fixtures](tests/fixtures/verification_v022/README.md)
+are implemented; 0.2.3–0.2.4 migrate exact arithmetic
+and finite evidence; 0.2.5–0.2.6 cover pure/observing raw IR; 0.2.7 closes selected
+hierarchy/root obligations; 0.2.8–0.2.9 integrate and audit production dual
+checking. Each packet requires actual-definition proofs, independent small-system
+comparisons and preserved public compatibility. Current production authority
+remains in Rust; Lean-only transfer still requires the v0.5.0 S05 gates.
+
+This revises the former K1/0.3.0 and K2/0.4.0 schedule, not the theorem goals.
+The user subsequently resumed the unfinished shared measured-QPE feature track
+in 0.2.2. The [current checkpoint](tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md)
+records bounded Rust sized source, named provider/instrument proofs, native
+checking, execution and measured clients, with scoped R14/H1–H5 evidence.
+Remaining validation uses small qubit systems; maximum cases are waived rather
+than claimed passed. General source/runtime correspondence and full-profile
+migration remain separate. No external schema is enabled; VM-23–VM-29 remain
+pending and 0.2.2 remains unpublished.
+
 ## v0.3.0: Qleisli type-system specification
+
+**docs/ cleanup boundary at v0.3.0:** retain the active v0.2.x goals during
+their implementation, aggressively delete obsolete documentation now, and
+retire all remaining pre-v0.3.0 `docs/` files at the boundary. Write the v0.3.0
+documentation from scratch; Reference migration does not gate deletion.
+The [cleanup policy](AGENTS.md#docs-cleanup-boundary-at-v030) supersedes earlier
+requirements to keep historical pages in the working tree.
 
 **User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
 of the v0.3.0 breaking-change release. Specify concrete rules, checking
 obligations and public migrations before implementation; the
 [current finite contract](docs/type-system.md) remains in force. This target
-coexists with K1 exact meanings/contracts in the
+builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development remains 0.2.1; this decision changes the future plan only.
+Current development is 0.2.2; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
@@ -26,8 +55,9 @@ require actual-checker soundness, complete coverage, reproducible proof/audit,
 artifact binding and independent review. The theorem remains unproved; the
 current phase-word theorem is an initial component.
 
-The existing 0.2.0–0.4.x sequence builds the executable kernel, exact contracts
-and full IR checker toward this milestone. During 0.4.x, prepare contributor
+The revised 0.2.2–0.2.9 sequence migrates verification implementation and
+selected dual integration; later type-system changes and full-profile proof
+composition feed this milestone. During 0.4.x, prepare contributor
 onboarding, review responsibilities and maintenance/release procedures.
 **From v0.5 onward, expand individual development into a full-scale,
 community-oriented open-source project** on that verified foundation.
@@ -68,9 +98,9 @@ For v1, Shor, QPE, and Grover must be readable in their textbook quantum-algorit
 | v0.1 | Compose finite semantic contracts and evidence for `U E_in = E_out u`, reuse them at function boundaries, and independently check implementation correspondence through final IR. Substitute multiple implementations of the same phase-oracle contract without changing the client. Preserve phase, ownership, and exact auxiliary zero return. | V01-C1–C6 implemented and tested in the declared finite profile: public function contracts, dependency/final-IR evidence, and implementation substitution are connected. |
 | v0.1.1 | Collect compatible review fixes, diagnostics, and regressions while preserving finite-core public contracts. | Implementation and local candidate validation remain recorded. Actual commit, Linux CI, and publication are identified by the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.1). |
 | v0.1.2 | A design/documentation maintenance release with six imaginary-v1 initial drafts, a requirements index, and semantic review. | Released with Rust/Lean versions 0.1.2. The English specification framework, drafts, index, and review are complete. Subsequent English documentation consolidation, candidate checks, and publication are distinguished below. |
-| v0.1.3 | Repair auxiliary matrix-checker shapes and nonfinite comparisons, verify the v0.1.2 review, retain independent semantic research, and add a compatible Physlib environment. | The [release notes](docs/releases/v0.1.3.md) record scope and validation; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) identifies the commit, CI and publication. The later M2 continuation decision does not change this historical release. |
-| v0.1.4 | Adopt the original finite maintenance plan. | [Historical release record](docs/releases/v0.1.4.md); its release evidence is preserved. |
-| v0.1.5 | Complete compatible review maintenance, the selected M1 specifications and bounded M2 checker design; validate and package the local candidate. | **Local roadmap complete; publication pending.** [Completion evidence](docs/releases/v0.1.5.md#roadmap-completion-evidence) distinguishes delivered artifacts and validation from exact-commit CI, tagging and publication. M1/M2 feature implementations remain open. |
+| v0.1.3 | Repair auxiliary matrix-checker shapes and nonfinite comparisons, verify the v0.1.2 review, retain independent semantic research, and add a compatible Physlib environment. | The [release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.3.md) record scope and validation; the [GitHub release](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3) identifies the commit, CI and publication. The later M2 continuation decision does not change this historical release. |
+| v0.1.4 | Adopt the original finite maintenance plan. | [Historical release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.4.md); its release evidence is preserved. |
+| v0.1.5 | Complete compatible review maintenance, the selected M1 specifications and bounded M2 checker design; validate and package the local candidate. | **Local roadmap complete; publication pending.** [Completion evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.5.md#roadmap-completion-evidence) distinguishes delivered artifacts and validation from exact-commit CI, tagging and publication. M1/M2 feature implementations remain open. |
 | Before v0.2.0 | First write ideal imaginary Qleisli 1.0 code for QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT; record contracts, capabilities, and open questions. Compilation is not required. | The [six drafts and index](docs/imaginary-v1/README.md), with their [review](docs/imaginary-v1/review.md), satisfy the initial-code and requirement-record prerequisite. The code remains uncompiled. |
 | v1 | Express textbook Shor, QPE, and Grover in actual source with shared components, size/operation parameters, and checkable contracts. Shor reuses shared QPE and exposes classical period validation, factor extraction, failure, and retry. Also prove Physical Realizability under PR-C1–C4 and Resource Safety under RS-C1–C5 for their complete declared profiles. | Concrete acceptance target for the north star; not achieved. Fixed examples or pseudocode alone do not suffice. |
 
@@ -89,21 +119,28 @@ Detailed V01-C1–C6, B019, V1-C1–C5, PR-C1–C4 and RS-C1–C5 criteria are i
 
 ## v0.2.0 foundation and subsequent release boundaries
 
-**Latest user decision, 2026-09-30:** [0.2.1](docs/v0.2.1-plan.md) packages
+**Earlier release split, 2026-09-30:** [0.2.1](docs/v0.2.2-plan.md) packages
 completed corpus/source experiments, review fixes, component proofs and the
 [bounded Python/OpenQASM/QIR connection layer](docs/connections-v021.md).
 Remaining heavy measured-QPE implementation, production integration and proofs
-move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates. The following
+initially move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates; the later
+[eight-packet migration plan](docs/verification-migration-v0.2.md) stages this
+continuation. The following
 account preserves the earlier split; it is superseded for release assignment.
 
-**Current release: 0.2.1, published to crates.io and GitHub on 2026-09-30.** The
-[development record](docs/releases/v0.2.1.md) records version selection on
+**Current development: 0.2.2, selected on 2026-09-30; unreleased.** See its
+[record](docs/releases/v0.2.2.md) and the
+[release procedure](docs/crates-io-release.md#release-sequence). Version selection
+alone did not resume feature work; the later explicit resumption is recorded
+above with its current implementation and validation scope.
+**Latest published release: 0.2.1, published to crates.io and GitHub on 2026-09-30.** The
+[development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) records version selection on
 2026-09-29, validation and both publications. The earlier 2026-09-29
-[scope split](docs/v0.2.0-plan.md) retains implemented finite interfaces,
+[scope split](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains implemented finite interfaces,
 sampling/trials, review fixes and the experimental Lean kernel/proof foundation
-in 0.2.0. The [release record](docs/releases/v0.2.0.md) records migration,
+in 0.2.0. The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) records migration,
 validation and the separate publication evidence.
-The original 2026-09-28 shared-QPE target continues in [0.2.1](docs/v0.2.1-plan.md):
+The original 2026-09-28 shared-QPE target continues in [0.2.1](docs/v0.2.2-plan.md):
 complete hierarchical semantics and independent external binding, sized
 `Bits<n>`/`CBits<m>` source and ordinary QPE/QFT, then reference execution and
 integrated H1–H5. Preserve every feature gate; moving it does not mark it passed.
@@ -119,7 +156,7 @@ with explicit nesting/conversions. Type and ownership decisions follow the
 with quantum-specific differences stated explicitly. First establish the
 hierarchical meaning/encoding/evidence boundary; source size generalization
 cannot precede that gate. Current implementation and tests are in the
-[0.2.0 record](docs/releases/v0.2.0.md), without claiming completed M2.
+[0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md), without claiming completed M2.
 
 CD-3 now also has a [typed layout checker](docs/lean-layout-slice.md) for
 multiple owners and up to 16 axes, preserving exact tuple shape and zero-width
@@ -164,7 +201,7 @@ semantic gates; compatible features use PATCH and breaking changes MINOR.
 
 ## Future QLT test language
 
-The [QLT design](docs/qlt-design.md) is adopted as a separate mathematical test
+The [QLT design](https://github.com/MGYamada/Qleisli/issues/50) is adopted as a separate mathematical test
 language with Rust-style source and a one-way dependency on public `.qli`
 definitions. The current deliverable is the English design and
 [preserved sources/counterexamples](tests/fixtures/qlt_design/README.md).
@@ -181,7 +218,7 @@ implemented by this design record; choose release versions by compatibility.
 
 ## Future 0.x.0: Lean-assisted mathematical debugging
 
-The [debugger plan](docs/lean-debugger-plan.md), adopted on 2026-09-29, connects
+The [debugger plan](https://github.com/MGYamada/Qleisli/issues/51), adopted on 2026-09-29, connects
 Lean proof obligations, actual IR and source provenance to mathematical
 diagnostics. Explain phase/order, contract/cleanup and residual/reference
 failures with independently checked witnesses where available. Distinguish
@@ -199,7 +236,7 @@ Repair static-argument EOF panics, locate effect violations at their cause and
 provide checked import/provider rewrite hints. Preserve current capability
 derivations and snapshot accounting, documenting the open issues as A020-09/10.
 Clarify iterative QPE numerical output and check the entire committed tree for
-whitespace in CI. The [record](docs/releases/v0.1.9.md) distinguishes local
+whitespace in CI. The [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md) distinguishes local
 validation from tagging/publication and from the broader legacy B019 checkpoint.
 Multiple-error collection and remaining authoring conveniences are backlog
 candidates; existing APIs, finite semantics and M2/R14 gates remain intact.
@@ -210,16 +247,16 @@ candidates; existing APIs, finite semantics and M2/R14 gates remain intact.
 Priorities 1–3 are implemented: product patterns in basis parameters,
 left-associated n-ary tuples, and ownership diagnostics at bindings. The
 public Rust `Param` change remains incompatible; see the
-[migration and validation record](docs/releases/v0.1.8.md#authoring-ergonomics-continuation).
+[migration and validation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md#authoring-ergonomics-continuation).
 These conveniences reuse binary core operations and existing finite checks.
 Continue discovering language requirements through actual `.qli` algorithms
 and semantic tests, with particular attention to LLM authoring ergonomics.
 Priority 4, type/size parameters and cross-interface QPE reuse, remains future
 work; this change neither adopts finite templates nor revises R14.
 Accumulate unresolved issues and acceptance experiments in the
-[v0.2.0 backlog](docs/v0.2.0-backlog.md), established during 0.1.8 development;
+[v0.2.0 backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md), established during 0.1.8 development;
 its candidates are not a committed release scope. The subsequent
-[iterative QPE and repair continuation](docs/releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
+[iterative QPE and repair continuation](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md#iterative-qpe-diagnostic-repair-and-recorded-authoring)
 adds fixed-width feedback source, actionable diagnostics and preserved authoring
 records; type/size abstraction remains future work.
 
@@ -230,7 +267,7 @@ migration are recorded separately. Implemented the [M1 language supplement](docs
 phase-fixed meanings, explicit operation arguments/access and checked
 composition through existing retained finite evidence. One generic body can
 accept two checked providers of the same meaning. The
-[implementation/migration record](docs/releases/v0.1.8.md) separates local
+[implementation/migration record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) separates local
 validation from release gates. QIR input, X2–X6 and M2 remain pending; this
 slice does not establish general-size algorithms or V1-C1–C5.
 
@@ -242,7 +279,7 @@ The first implemented slice is [X1 check/run JSON](docs/machine-interface-spec.m
 versioned success/error envelopes, original-source locations and structured
 frontend diagnostics through the existing checks. This is new functionality;
 it changes neither core acceptance rules nor the finite evidence boundary.
-The [implementation record](docs/releases/v0.1.7.md) separates local validation
+The [implementation record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md) separates local validation
 from release gates. N1–N6, X2–X6 and M2 were still open at that release;
 subsequent operation-parameter work is recorded under 0.1.8 above.
 
@@ -276,7 +313,7 @@ The **[desugaring layer](docs/terminology.md#desugaring-layer)** is the
 meaning-preserving translation of convenience representations into already
 specified core operations, with untrusted output for independent checks and
 no new primitive meanings or checker rules.
-The [release record](docs/releases/v0.1.6.md) distinguishes reproduction,
+The [release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md) distinguishes reproduction,
 implementation and local validation from exact-commit CI, tagging and publication
 in the [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.6).
 
@@ -287,7 +324,7 @@ the documentation extension's added syntax/API and migration are listed above.
 
 ## v0.1.5 maintenance roadmap
 
-**Previous maintenance version: v0.1.5.** The [release completion record](docs/releases/v0.1.5.md#roadmap-completion-evidence)
+**Previous maintenance version: v0.1.5.** The [release completion record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.5.md#roadmap-completion-evidence)
 accounts for each required result: synchronized version/records, all sixteen
 review dispositions, selected future specifications, the generated fourteen-group
 rule inventory, compatible checker regressions, local validation and candidate
@@ -327,7 +364,7 @@ The [M0–M5 plan](docs/v0x-roadmap.md) replaces version-assigned themes.
 M0 selects fixed-width M1 operation/access/meaning interfaces and an explicit
 bounded M2 kernel continuation. M2 combines hierarchical IR, checked schemas,
 static sizes and multi-width QPE; M3/M4 deliver Grover and Shor; M5 evaluates
-all executable V1-C1–C5. The [decision dossier](docs/decisions/2026-09-27-v1-path.md)
+all executable V1-C1–C5. The [decision dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md)
 records scope and the **2026-10-04 JST** follow-up checkpoint.
 
 Continuous audits and compatible corrections need no prescribed sequence of
@@ -342,9 +379,9 @@ rule/implementation/test/proof inventory are [generated](docs/current-status.md)
 
 ## v0.1.3 maintenance release
 
-The [0.1.3 record](docs/releases/v0.1.3.md) collects the matrix-helper repair,
+The [0.1.3 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.3.md) collects the matrix-helper repair,
 regressions, version synchronization and candidate checks. The
-[v0.1.2 review verification](docs/reviews/v0.1.2.md) confirms the supplied
+[v0.1.2 review verification](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.2.md) confirms the supplied
 findings against the tagged source and CI. The declared finite profile and
 public contracts remain unchanged. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.3)
 identifies the verified commit, tag and publication separately from candidate
@@ -364,7 +401,7 @@ M2 scope decision below. The current finite compiler is unchanged.
 
 ## Future work: symbolic semantic kernel
 
-The [v0.1.5 decision](docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
+The [v0.1.5 decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
 replaces indefinite deferral with a **go for a bounded M2 profile**. Retain the
 existing research implementation and regressions. The selected
 [hierarchical IR and proof-binding profile](docs/hierarchical-ir-spec.md)
@@ -383,7 +420,7 @@ binding without whole dense matrices. Shared proofs and shared implementation
 IR must both remain compact. Reversible predicate/arithmetic synthesis without
 truth-table expansion is the complementary M3/M4 gate. The finite M1 profile
 may use existing bounded dense checks; it does not claim size generalization.
-The [scope checkpoint](docs/decisions/2026-09-27-v1-path.md#scope-decision-and-dated-follow-up)
+The [scope checkpoint](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#scope-decision-and-dated-follow-up)
 has a date and disposition rule, not a promised release date or automatic task.
 These features require their own specification, implementation, validation
 and compatibility records. Their version increment follows the current policy;
@@ -404,12 +441,12 @@ versions and a scoped external audit; library availability is not source/IR proo
 
 ## v0.1.2 release roadmap
 
-**0.1.2 is the design/documentation maintenance release dated 2026-09-27 (JST).** The [authoritative release record](docs/releases/v0.1.2.md) defines scope and artifact-level criteria. This release targets the six imaginary drafts and their requirements while preserving the current finite-core specification, public APIs, dependencies, capacities, and minimum toolchain. Implementing imaginary syntax/APIs belongs to a subsequent minor release. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) identifies the actual tagged commit, CI, and publication; the date alone is not evidence of completion.
+**0.1.2 is the design/documentation maintenance release dated 2026-09-27 (JST).** The [authoritative release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) defines scope and artifact-level criteria. This release targets the six imaginary drafts and their requirements while preserving the current finite-core specification, public APIs, dependencies, capacities, and minimum toolchain. Implementing imaginary syntax/APIs belongs to a subsequent minor release. The [GitHub release record](https://github.com/MGYamada/Qleisli/releases/tag/v0.1.2) identifies the actual tagged commit, CI, and publication; the date alone is not evidence of completion.
 
 | Step | Completion condition | Current state |
 | --- | --- | --- |
 | P012-0: English specification groundwork | First establish a framework separating current English norms from future design notation and recording types, ownership, effects, semantic contracts, and IR correspondence. | Complete: [English design framework](docs/language-evolution.md) and corrected stale status summaries. No new syntax is adopted or implemented. |
-| P012-1: version and plan | Synchronize Rust/Lean at 0.1.2, changelog, current-version summaries, English release plan, and conformance record. Check metadata, documents, and candidate package listing. | Complete. Metadata, fmt, document checks, 14 checker tests, and package-list inspection are in the [conformance record](docs/specification-status.md). |
+| P012-1: version and plan | Synchronize Rust/Lean at 0.1.2, changelog, current-version summaries, English release plan, and conformance record. Check metadata, documents, and candidate package listing. | Complete. Metadata, fmt, document checks, 14 checker tests, and package-list inspection are in the [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). |
 | P012-2: six ideal-code drafts | Show mathematical stages, parameters, and component composition in each of QPE, Grover, amplitude estimation, Shor, quantum walk, and QSVT. Label all code imaginary and uncompiled. | Complete: [six initial drafts](docs/imaginary-v1/README.md); Shor and amplitude estimation reuse shared QPE. |
 | P012-3: contracts and requirements index | Record input/output, meaning, capabilities, ownership, effects, phase, exact cleanup, accuracy, success/failure, and classical processing; trace shared requirements to uses. | Complete: [R01–R14](docs/imaginary-v1/requirements.md) and per-draft contracts, classifications, IR plans, and open questions. |
 | P012-4: semantic review | Cross-check contracts and composition, incorporate counterexamples and ambiguities, expose remaining questions, and record artifact links and prerequisite evidence. | Complete: [semantic review](docs/imaginary-v1/review.md) and 52 independent finite mathematical checks; these do not execute imaginary code. |
@@ -431,8 +468,8 @@ The selected fixed-width M1 profile is distinct from M2 size generalization.
 | Step | Required evidence | State |
 | --- | --- | --- |
 | G020-1: extension specification | M0 scope selection followed by English grammar/types, capabilities, ownership/effects, meanings, positive/negative cases, IR binding, budgets and migration. M1 retains bounded dense checking; M2 must discharge R14/hierarchical-IR and exact dyadic-angle decisions. | Complete for fixed-width M1: [language rules](docs/next-minor-spec.md) and [machine interfaces](docs/machine-interface-spec.md). [M2 IR/checker profile](docs/hierarchical-ir-spec.md) selected; its sized source grammar is a separate extension gate. |
-| G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Implemented for fixed-width N1–N6 in [0.1.8](docs/releases/v0.1.8.md), and X1/M1.1-A in [0.1.7](docs/releases/v0.1.7.md). Other M1 slices and M2 production integration remain pending. |
-| G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | The implemented fixed-width N1–N6, X1 and M1.1-A profiles have validation and release records above. The [B019 check](docs/reviews/b019-2026-09-28.md) records current local revalidation and remaining audit/candidate gates. Remaining M1 slices, M2 and V1 are not validated; imaginary source is not execution evidence. |
+| G020-2: implementation | Connect the selected source and contract rules to independently checked actual IR, preserving substitution, phase and exact cleanup. | Implemented for fixed-width N1–N6 in [0.1.8](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md), and X1/M1.1-A in [0.1.7](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md). Other M1 slices and M2 production integration remain pending. |
+| G020-3: validation and release | Demonstrate distinct operations at fixed widths for M1; multiple sizes/precisions for M2. Check references, phases, failures, rejected access/evidence and migration under the release policy. | The implemented fixed-width N1–N6, X1 and M1.1-A profiles have validation and release records above. The [B019 check](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-2026-09-28.md) records current local revalidation and remaining audit/candidate gates. Remaining M1 slices, M2 and V1 are not validated; imaginary source is not execution evidence. |
 | V1 | Actual Shor/QPE/Grover satisfy V1-C1–C5; Shor reuses shared QPE. The Lean backend meets PR-C1–C4; the Resource Safety Theorem and RS-C1–C5 cover static bounds and compilation preservation. | Not achieved. |
 
 Algorithmic approximation error/success probability and exact auxiliary zero return are separate contracts. The amplitude-estimation, walk, and QSVT drafts evaluate abstractions without expanding the three executable v1 targets to six. Finite-core regressions and the open general proofs in SPEC-3/4 continue alongside design work.
@@ -443,17 +480,17 @@ Algorithmic approximation error/success probability and exact auxiliary zero ret
 
 ## v0.1.1 release roadmap (historical)
 
-**0.1.1 was selected for compatible fixes.** Its [authoritative release notes](docs/releases/v0.1.1.md) define scope and gates. This table records local preparation and publication conditions; the GitHub release record identifies actual commits, CI, tags, and publication. Public syntax, APIs, IR, capacities, and minimum Rust were preserved; imaginary-v1 code was treated as a pre-v0.2.0 prerequisite.
+**0.1.1 was selected for compatible fixes.** Its [authoritative release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.1.md) define scope and gates. This table records local preparation and publication conditions; the GitHub release record identifies actual commits, CI, tags, and publication. Public syntax, APIs, IR, capacities, and minimum Rust were preserved; imaginary-v1 code was treated as a pre-v0.2.0 prerequisite.
 
 | Step | Completion condition | Recorded state |
 | --- | --- | --- |
-| P011-1: compatible fixes | Fix contract reuse, source-location/exact-counterexample diagnostics, auxiliary leakage detection, and exact-arithmetic boundaries; add regressions. | Implemented and reviewed; see the [response record](docs/reviews/claude-v0.1.0.md). |
-| P011-2: version and records | Align Rust/Lean versions, changelog, current summaries, and roadmap; check metadata and documents. | Complete at 0.1.1; metadata, package listing, fmt, document checks, and 14 checker tests recorded in the [ledger](docs/specification-status.md). |
+| P011-1: compatible fixes | Fix contract reuse, source-location/exact-counterexample diagnostics, auxiliary leakage detection, and exact-arithmetic boundaries; add regressions. | Implemented and reviewed; see the [response record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/claude-v0.1.0.md). |
+| P011-2: version and records | Align Rust/Lean versions, changelog, current summaries, and roadmap; check metadata and documents. | Complete at 0.1.1; metadata, package listing, fmt, document checks, and 14 checker tests recorded in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). |
 | P011-3: final candidate checks | Check Rust all-target tests/fmt/Clippy, documents/exact examples, Lean build/audit, CLI/Shor examples, package, and attribution. | Locally complete: after leakage-warning underflow repair, 258 tests and Clippy on each of Rust 1.98.1/1.85.0, all ten examples and Shor, package generation/rebuild. Retained the preceding successful audit of 527 unchanged Lean declarations. Uncommitted candidate checks were distinct from the next step. |
 | P011-4: commit, package, CI | Commit all changes including date/final notes; package/rebuild a clean candidate; record Linux Rust 1.98.1/1.85.0, document, and Lean CI success. | Required for publication; actual commit and CI belong in the GitHub release record. |
 | P011-5: publication | Annotated v0.1.1 tag on the verified commit including final docs; separately record tag push and GitHub source release. | Publication is confirmed by the annotated tag and GitHub release record. Registry distribution is separate. |
 
-Implementation and local candidate validation were completed. The [ledger](docs/specification-status.md) distinguishes version-selection, review, and candidate-check results. The recorded main ruleset requires a PR, four required checks, resolved conversations, and an up-to-date base. Updates/deletions of v* tags are prohibited, so the merged main commit's CI must be checked before tagging. These are separate from general implementation-correspondence and soundness proofs.
+Implementation and local candidate validation were completed. The [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) distinguishes version-selection, review, and candidate-check results. The recorded main ruleset requires a PR, four required checks, resolved conversations, and an up-to-date base. Updates/deletions of v* tags are prohibited, so the merged main commit's CI must be checked before tagging. These are separate from general implementation-correspondence and soundness proofs.
 
 <a id="現在の優先工程-段階1へ戻る"></a>
 <a id="現在の優先工程-v01の有限契約基盤"></a>
@@ -475,7 +512,7 @@ Retaining the finite-core priority of 2026-09-26, the 2026-09-27 goal connects *
 | --- | --- | --- |
 | SPEC-0: fix scope | Complete | Include finite basis types, static operations, and restricted auxiliary evidence in v0; defer generalization. |
 | SPEC-1: normative documents | Complete | Align types, effects, ownership, accepted/rejected cases, and IR correspondence in [v0](docs/language-spec.md), [grammar](docs/syntax-v0.md), and [sealed APIs](docs/standard-library.md). |
-| SPEC-2: implementation comparison | Complete for finite conformance cases | Record capacities, evidence restrictions, and checks in the [ledger](docs/specification-status.md); add specification-boundary regressions. |
+| SPEC-2: implementation comparison | Complete for finite conformance cases | Record capacities, evidence restrictions, and checks in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md); add specification-boundary regressions. |
 | SPEC-3: formal system and proofs | **Ideal soundness Q1–Q3 proved on paper for the stated rules** | Connect [pure operations and instruments](docs/source-soundness.md) by induction over all syntax. [Lean](docs/lean-resource-proof.md) covers local ownership/Kraus-composition lemmas. Correspondence to every accepted Rust path remains open. |
 | SPEC-4: translation/verifier correspondence | Conditional preservation C1–C5; scope projection extracted and locally modeled in Lean | [Translation contracts](docs/source-ir-correspondence.md) and [state refinement](docs/lowering-state-refinement.md) documented. Adequacy for all successful Rust paths and formal verification of the implemented verifier remain open. |
 
@@ -494,7 +531,7 @@ SPEC-1 specification adoption and SPEC-2 finite tests do not complete Stage 1. I
 
 Follow the [authoritative conditions](docs/release-milestones.md#v01-minimum-semantic-contracts). Complete this finite path with explicit correspondence evidence and trust boundaries, without claiming machine verification of the whole Rust implementation.
 
-**v0.1 result:** the finite path connects public function requirements, implementations, and dependencies, retaining immutable evidence through final IR. The [ledger](docs/specification-status.md) records V01-C1–C6 and checks. **Next design target:** with the [six imaginary drafts and requirements](docs/imaginary-v1/README.md) in place, select a minimal specification for sizes, operation parameters, access capabilities, and semantic contracts that preserves this boundary. Specify English rules and IR evidence before implementing generalization and connecting shared Grover/QPE/Shor structure. General SPEC-4 implementation correspondence remains open, separately from the history below.
+**v0.1 result:** the finite path connects public function requirements, implementations, and dependencies, retaining immutable evidence through final IR. The [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records V01-C1–C6 and checks. **Next design target:** with the [six imaginary drafts and requirements](docs/imaginary-v1/README.md) in place, select a minimal specification for sizes, operation parameters, access capabilities, and semantic contracts that preserves this boundary. Specify English rules and IR evidence before implementing generalization and connecting shared Grover/QPE/Shor structure. General SPEC-4 implementation correspondence remains open, separately from the history below.
 
 The [QPE → amplitude amplification → Shor proposal](docs/quantum-bookkeeping.md) suggests an evaluation order for deepening implementation and contracts after initial drafting. It is a supporting design note testing the quantum-bookkeeping principle through algorithm descriptions; formal release criteria remain in the release milestones.
 
@@ -558,7 +595,7 @@ As a needed Lean extension, [Kraus.lean](lean/Qleisli/Kraus.lean) checked five e
 
 [Translation contracts C1–C5](docs/source-ir-correspondence.md) specify type-tree encoding/decoding, left-associated multiargument Pack, all-input table generation, primitive/observation Kraus actions, auxiliary Z/T token chains, and complete φ using result positions and surviving slots. Intermediate boundaries retain every classical record readable by the continuation; histories move into common coordinates before CP maps are summed. Induction on dependency rank and syntax composes S1–S4 and F1–F5 to show conditional preservation of pure operators including phase and observation instruments for this mathematical translation.
 
-[Six regressions](tests/source_ir_correspondence.rs) check 401 accepted cases, two rejected cases, and one case of valid IR with meaning different from the source. Independent sparse-state formulas and the Born rule supply expectations for type trees containing Unit, width extension/references, observation weights, auxiliary phase, and complete φ. Results are in the [ledger](docs/specification-status.md). Proofs that all Rust executions implement this translation, that the verifier implementation is correct, and that floating-point execution has an error guarantee remain open. SPEC-4 is not complete.
+[Six regressions](tests/source_ir_correspondence.rs) check 401 accepted cases, two rejected cases, and one case of valid IR with meaning different from the source. Independent sparse-state formulas and the Born rule supply expectations for type trees containing Unit, width extension/references, observation weights, auxiliary phase, and complete φ. Results are in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). Proofs that all Rust executions implement this translation, that the verifier implementation is correct, and that floating-point execution has an error guarantee remain open. SPEC-4 is not complete.
 
 <a id="スコープ射影の実装対応と局所証明2026-09-27"></a>
 
@@ -568,7 +605,7 @@ As a needed Lean extension, [Kraus.lean](lean/Qleisli/Kraus.lean) checked five e
 
 The [Lean Scope model](lean/Qleisli/Scope.lean) distinguishes absent, consumed, and live names. It proves restoration of classical bindings and the entry name set, non-resurrection of consumed bindings, rejection of escaping local quantum ownership, and preservation of quantum-owner lists on success. Correct snapshots/rebinding on every Rust path and full frame coverage remain premises; SPEC-4 is not complete.
 
-A comparison with an independent binding-ID model covers 7,225 cases, alongside [three source regressions](tests/source_scope.rs). All 169 Rust tests, 14 document-checker tests, fmt, Clippy, reference checks, Lean build, and the audit of 527 declarations passed. Scope and results are in the [ledger](docs/specification-status.md).
+A comparison with an independent binding-ID model covers 7,225 cases, alongside [three source regressions](tests/source_scope.rs). All 169 Rust tests, 14 document-checker tests, fmt, Clippy, reference checks, Lean build, and the audit of 527 declarations passed. Scope and results are in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
 <a id="実装の保守基盤2026-09-26"></a>
 
@@ -586,7 +623,7 @@ This supports Stage 1 maintenance without extending language forms, standard API
 
 To resolve A1/A4, product patterns in `do` and ordinary `CBit` constants/Boolean operations were implemented as a specification revision. `true` and `false` became reserved words, requiring older same-named identifiers to be renamed. Whole-input injectivity, `Q<Unit>` linearity, and full left-to-right classical-operand evaluation were preserved. Static adjoints/control/repetition resolve closed classical branches while preserving all φ ownership, phase, and output-axis order.
 
-The [normative specification](docs/language-spec.md), [grammar](docs/syntax-v0.md), inference rules, semantics, and IR correspondence were updated together. Basis-context/private-auxiliary-binding shadowing, nested classical products in `main`, Unicode lexing, and diagnostics were clarified. The twelve-public-definition ledger, examples matching actual files, and the relationship between English authority and Japanese supporting material were aligned; the [review-item record](docs/specification-status.md) collects traceability links.
+The [normative specification](docs/language-spec.md), [grammar](docs/syntax-v0.md), inference rules, semantics, and IR correspondence were updated together. Basis-context/private-auxiliary-binding shadowing, nested classical products in `main`, Unicode lexing, and diagnostics were clarified. The twelve-public-definition ledger, examples matching actual files, and the relationship between English authority and Japanese supporting material were aligned; the [review-item record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) collects traceability links.
 
 All 153 Rust tests, fmt, Clippy, nine document-checker tests, and reference checks passed. Seven exact-matrix static-semantics tests cover classical branches and product patterns under adjoints/control. Relevant paper-proof cases were updated; Lean scope was unchanged. Correspondence to all accepted Rust paths and general semantic preservation remain SPEC-4 work.
 
@@ -594,7 +631,7 @@ All 153 Rust tests, fmt, Clippy, nine document-checker tests, and reference chec
 
 ## Code-review boundary fixes (2026-09-27)
 
-Import-cycle detection moved to an explicit DFS stack to avoid stack overflow on long dependency chains. Lean-audit reachability ignores imports inside comments/strings. CLI handling of non-UTF-8 OS arguments no longer panics. Reproducers, regressions, and platform-specific coverage are in the [ledger](docs/specification-status.md). Language rules and Lean proof scope were unchanged.
+Import-cycle detection moved to an explicit DFS stack to avoid stack overflow on long dependency chains. Lean-audit reachability ignores imports inside comments/strings. CLI handling of non-UTF-8 OS arguments no longer panics. Reproducers, regressions, and platform-specific coverage are in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). Language rules and Lean proof scope were unchanged.
 
 <a id="第2目標の進め方"></a>
 
@@ -613,6 +650,14 @@ Reproducing existing examples and discovering new algorithms are separate achiev
 <a id="第3層の将来計画-標準ライブラリ"></a>
 
 ## Future layer 3: standard library
+
+The 2026-09-30 user direction generally holds library expansion until v0.5.0
+and places new algorithms in corpus. From v0.5.0, begin mathlib-style open-source
+library growth under [STDLIB.md](STDLIB.md): shared contracts and conventions,
+reference source, distinct proof/status dimensions and reviewed adoption.
+The template, three existing-source pilots and CI documentation linter prepare
+that work now; no new bundled definition, borrow syntax or general proof is
+introduced by the conventions.
 
 The user fixed the [library goal](docs/stdlib-roadmap.md#adopted-library-goal)
 on 2026-09-29: a BLAS/LAPACK-like quantum-computing foundation integrating a
@@ -652,7 +697,7 @@ Stage 0 organization is selected in the [standard-library specification](docs/st
 
 ## 1. Language specification
 
-The [finite-core v0 specification](docs/language-spec.md) and [normative grammar](docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
+The [finite-core v0 specification](docs/language-spec.md) and [normative grammar](docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
 
 - Formalize effectful transformations of classical values and quantum resources from the [design philosophy](docs/design-philosophy.md) using input/output contexts and composition. Investigate the precise structure of Kleisli-inspired composition and its relationship/limits with free-vector-space `bind`.
 - Specify grammar and name resolution for all examples.

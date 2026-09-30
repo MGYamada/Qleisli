@@ -82,4 +82,4 @@ Keep **proposed**, **specified**, **implemented**, **tested on finite cases**,
 **proved on paper**, and **machine checked** distinct. Record the target model,
 assumptions, and remaining implementation correspondence whenever citing a proof.
 Historical test totals identify their milestone; current validation totals belong
-in the [conformance record](specification-status.md), with the command and scope.
+in the [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md), with the command and scope.
