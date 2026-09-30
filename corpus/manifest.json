@@ -987,7 +987,7 @@
       "status": "experimental-source-path",
       "contract": "H on axis zero then CNOT to each other axis. The all-zero premise gives a GHZ state; tests also cover every general input.",
       "limitations": "Untrusted development source producer and independently inspected hierarchy; production CLI, general source adequacy and named algorithm acceptance remain open.",
-      "sha256": "67b958139f21cc2a35a5f3d18d2c8685d604e504cf82ffaf5acd77a95ad74af6"
+      "sha256": "756cad0efe7200c37082be1682e54cb85abaa0cde50f47c54cfe10712f89bfc6"
     },
     {
       "id": "sized/qualtran_qft",
