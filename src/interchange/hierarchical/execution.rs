@@ -685,7 +685,9 @@ impl CheckedInstrument {
             let prepared = input_positions
                 .iter()
                 .enumerate()
-                .fold(0, |out, (j, position)| out | ((basis >> j) & 1) << position);
+                .fold(0, |out, (j, position)| {
+                    out | (((basis >> j) & 1) << position)
+                });
             state[(i / input_dimension) * dimensions + prepared] = *coefficient;
         }
         program.apply(&mut state, &mut work)?;
@@ -737,7 +739,7 @@ impl CheckedInstrument {
                 positions
                     .iter()
                     .enumerate()
-                    .fold(0, |out, (j, position)| out | ((i >> position) & 1) << j)
+                    .fold(0, |out, (j, position)| out | (((i >> position) & 1) << j))
             };
             let outcome = select(&outcome_positions);
             let residual = select(&residual_positions);

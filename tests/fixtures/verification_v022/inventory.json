@@ -2854,7 +2854,7 @@
     },
     {
       "path": "src/frontend/sized/linear.rs",
-      "sha256": "5a042897355a117ade85900318b748c686070306a4cfee58be87f832169a59d5",
+      "sha256": "4396d9a0c0eda67a53b398850d1f0960506c0c5ca09f5c0c61d20733a7cd7002",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3123,7 +3123,7 @@
     },
     {
       "path": "src/interchange/hierarchical/execution.rs",
-      "sha256": "b02390e8e3985872f9e736a0cf29c490bf78cace731c2c21929bb18ba1bdcb59",
+      "sha256": "c7f016cc1cfb4046c7e65435ef192107deb4d22ac90b3a36ca92865b41dc559e",
       "group": "hierarchical-execution",
       "surface": {
         "declarations": [

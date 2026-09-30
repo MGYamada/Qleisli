@@ -214,12 +214,12 @@ fn unsatisfiable(mut constraints: Vec<Linear>) -> Result<bool> {
         let mut retained = BTreeSet::new();
         for mut c in constraints {
             let n = c.terms.remove(&name).unwrap_or(0);
-            if n > 0 {
-                positive.push((n, c));
-            } else if n < 0 {
-                negative.push((n, c));
-            } else {
-                retained.insert(normalized(c)?);
+            match n.cmp(&0) {
+                std::cmp::Ordering::Greater => positive.push((n, c)),
+                std::cmp::Ordering::Less => negative.push((n, c)),
+                std::cmp::Ordering::Equal => {
+                    retained.insert(normalized(c)?);
+                }
             }
         }
         for (p, a) in &positive {
