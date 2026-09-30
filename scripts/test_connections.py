@@ -183,6 +183,7 @@ class Connections(unittest.TestCase):
     def test_relative_project_diagnostic_keeps_source_location(self):
         with tempfile.TemporaryDirectory(dir=ROOT / "target") as directory:
             root = Path(directory)
+            (root / "Qargo.toml").write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
             (root / "main.qli").write_text("observe fn main() -> CBit { missing() }\n")
             result = subprocess.run([EXE, "interop", "check", str(root.relative_to(ROOT)),
                                      "--input=qli"], cwd=ROOT, capture_output=True)
