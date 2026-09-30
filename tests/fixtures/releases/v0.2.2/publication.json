@@ -1,0 +1,163 @@
+{
+  "format": "qleisli.release-publication",
+  "version": 1,
+  "release": "0.2.2",
+  "recorded_utc": "2026-09-30T12:40:13.199972+00:00",
+  "status": "published and verified",
+  "authorization": "User requested crates.io and GitHub Release publication on 2026-09-30.",
+  "source": {
+    "clean": true,
+    "commit": "8e39b32b932d8e11d5d83ca4a5991f212381e519",
+    "tree": "09816e91c8b5d7131dd4a757e0c77d6d96d0b2cc",
+    "tag": "v0.2.2",
+    "annotated_tag_object": "5e0e2dbc444c89a5e8715cc36d99c6c1a216e40b",
+    "local_and_remote_peeled_commit_match": true,
+    "pull_request": "https://github.com/MGYamada/Qleisli/pull/90",
+    "merge_commit": "f4771065330273d770b1c139c83d0914ca7ac8dc",
+    "result_record_is_after_tag": true
+  },
+  "ci": {
+    "candidate_run": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047",
+    "pull_request_run": "https://github.com/MGYamada/Qleisli/actions/runs/36712747736",
+    "both_runs_all_seven_passed": true,
+    "candidate_jobs": [
+      {
+        "name": "interop",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179457"
+      },
+      {
+        "name": "rust",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179492"
+      },
+      {
+        "name": "distribution",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179523"
+      },
+      {
+        "name": "lean-kernel",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179571"
+      },
+      {
+        "name": "docs",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179681"
+      },
+      {
+        "name": "lean",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179799"
+      },
+      {
+        "name": "rust-msrv",
+        "conclusion": "success",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36712741047/job/109878179824"
+      }
+    ]
+  },
+  "local_distribution": {
+    "command": "python3 scripts/check_distribution.py --report <fresh-report.json>",
+    "status": "passed",
+    "finished_utc": "2026-09-30T12:09:34.658045+00:00",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "clean_candidate": true,
+    "crate_files": 1900,
+    "source_files": 1905,
+    "source_tar_sha256": "41ae680823c0e341133e0431cb261c6574bb83bc5e9d83f9a5a5fc1f022d60a6",
+    "checks": [
+      "Cargo package verification",
+      "Offline locked extracted metadata and installation",
+      "Packaged and complete-source license/provenance",
+      "Warning-free rustdoc and doctest",
+      "Complete-source Rust all-target and nested research tests",
+      "Shipped quickstart with empty helper-tool PATH"
+    ],
+    "rust_all_target_tests": {
+      "passed": 498,
+      "failed": 0,
+      "ignored": 25
+    },
+    "ignored_test_scope": "Opt-in native/integration tests have separate local reports and explicit CI steps.",
+    "dry_run": "cargo publish --dry-run --locked --registry crates-io --target-dir <isolated-target> passed before upload"
+  },
+  "registry": {
+    "url": "https://crates.io/crates/qleisli/0.2.2",
+    "created_at": "2026-09-30T12:26:17.123076Z",
+    "sha256": "5e73c1765cfe13b94af60c5db55bcec1933f50b86e99fad46ace767f9c157a01",
+    "vcs": {
+      "git": {
+        "sha1": "8e39b32b932d8e11d5d83ca4a5991f212381e519"
+      },
+      "path_in_vcs": ""
+    },
+    "license": "Apache-2.0",
+    "rust_version": "1.85",
+    "yanked": false,
+    "matches_clean_validated_crate": true,
+    "publish_command": "cargo publish --locked --registry crates-io --target-dir <isolated-target>",
+    "publish_result": "Uploaded and Published qleisli v0.2.2; exit 0",
+    "fresh_install": {
+      "command": "CARGO_HOME=<empty-cargo-home> cargo install qleisli --version '=0.2.2' --locked --registry crates-io --root <empty-install-root> --target-dir <empty-target>",
+      "result": "passed",
+      "shipped_check_installation_py": "passed against the downloaded crate and installed executable",
+      "checks": [
+        "Bell text/JSON check/run/sample",
+        "embedded QFT2",
+        "reject measured-owner reuse"
+      ],
+      "helper_tool_path": "empty during quickstart"
+    },
+    "readme": "Browser confirmed matching version, Bell source, installation command and absolute pinned links.",
+    "pinned_readme_targets": "All six GitHub targets are available at v0.2.2."
+  },
+  "docs_rs": {
+    "url": "https://docs.rs/qleisli/0.2.2/qleisli/",
+    "build_url": "https://docs.rs/crate/qleisli/0.2.2/builds/4655275",
+    "build_status": "All builds succeeded, verified in browser",
+    "rustc": "1.101.0-nightly (5c543b0b8 2026-09-29)",
+    "docsrs_revision": "e27fd1f70e332c2829c999e34093fbf6d81b009d",
+    "duration_seconds": 31,
+    "rendered_api_version": "0.2.2"
+  },
+  "github_release": {
+    "id": 400022736,
+    "html_url": "https://github.com/MGYamada/Qleisli/releases/tag/v0.2.2",
+    "tag_name": "v0.2.2",
+    "name": "Qleisli v0.2.2",
+    "published_at": "2026-09-30T12:28:40Z",
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "notes_readback_matches": true,
+    "notes_sha256": "59e2116011e16e478de6193ac5b651a413ab88c4a37e36996a0b2ced1418223f",
+    "custom_assets": 0,
+    "archives": {
+      "commit": "8e39b32b932d8e11d5d83ca4a5991f212381e519",
+      "files": 1905,
+      "tar_sha256": "0133065e0d7e5ab99bad8f23b2a6e9730cc9e9906bdbdb4276e180d4c8b9c287",
+      "zip_sha256": "3646a190ce09f7706245933cf21d4a8cb35c356ad7e95f50fe7f88753b307c56",
+      "tar_bytes": "matched",
+      "tar_git_executable_modes": "matched",
+      "tar_permissions": "GitHub emits 0664 for the tracked 100644 files; strict normalized-0644 comparison initially rejected this archive-container difference. Bytes and Git executable modes match.",
+      "zip_bytes": "matched"
+    }
+  },
+  "observed_failures_and_resolution": [
+    "Direct main push was rejected by branch protection. PR #90 passed required checks and merged without bypass.",
+    "Earlier MSRV Clippy precedence/comparison/string-generation warnings were repaired without semantic changes; the changed test-source hash was then repinned. Final exact-commit CI passes.",
+    "Initial metadata curl returned 403; an identifying User-Agent succeeded.",
+    "Initial docs.rs missing-version/build-in-progress states resolved to a successful actual hosted build.",
+    "Strict normalized tar permissions initially rejected GitHub 0664 versus local 0644. All bytes and Git executable modes match; only the archive group-write convention differs."
+  ],
+  "not_performed": [
+    "PyPI publication",
+    "Custom platform binary publication",
+    "New maximum-size corpus generation/validation",
+    "Transfer of production acceptance authority to Lean"
+  ],
+  "immutability": "The tag and registry artifact are fixed. This later result record does not replace their source commit."
+}

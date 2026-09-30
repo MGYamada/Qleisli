@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Release candidate; publication pending. Latest published release: **0.2.1**.",
+  "release_state": "Published on crates.io and GitHub on 2026-09-30. Latest published release: **0.2.2**.",
   "current": [
     {
       "topic": "Use today",
@@ -13,9 +13,9 @@
       "detail": "Retain active v0.2.x goals and migration plans; delete obsolete documentation now. Retire the remaining legacy files by v0.3.0 and write from scratch. [Three theorems and six v1 goals](../README.md#project-goals) remain the enduring direction."
     },
     {
-      "topic": "This release candidate",
-      "state": "0.2.2, publication pending",
-      "detail": "Corpus: 36 finite cases. [The 0.2.1 review response](releases/v0.2.2.md) records compatible 0.2.2 fixes, new seeded differential checks and remaining limits; [the development record](releases/v0.2.2.md) separates validation from publication."
+      "topic": "Latest release",
+      "state": "0.2.2, published",
+      "detail": "Corpus: 36 finite cases. [The release record](releases/v0.2.2.md#successful-publication-2026-09-30) binds all seven CI jobs, clean distribution, fresh registry installation, hosted docs and GitHub source downloads to the immutable tag/package. Compatible review fixes and remaining limits are recorded separately."
     },
     {
       "topic": "Verification migration",
@@ -24,8 +24,8 @@
     },
     {
       "topic": "Deferred v0.2.1 feature track",
-      "state": "Bounded shared measured-QPE slice implemented and locally validated",
-      "detail": "The [checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md) records Rust sized source/CLI, named QPE/provider proofs, exact native checking and fresh-shot measured clients. Small semantic, compatibility and package-rehearsal checks pass. Named (2,4) remains limit-rejected; maximum-size checks are waived. General correspondence, full-profile migration and same-commit release gates remain separate."
+      "state": "Bounded shared measured-QPE slice included in 0.2.2",
+      "detail": "The [checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md) records Rust sized source/CLI, named QPE/provider proofs, exact native checking and fresh-shot measured clients. Small semantic, compatibility and exact-commit distribution/CI checks pass. Named (2,4) remains limit-rejected; maximum-size checks are waived. General correspondence and full-profile migration remain pending."
     },
     {
       "topic": "Lean evidence",
@@ -51,9 +51,9 @@
   "milestones": [
     {
       "id": "M0",
-      "state": "Finite foundation retained; compatible 0.2.2 release candidate finalized",
+      "state": "Finite foundation retained; compatible 0.2.2 published",
       "evidence": "[0.2.2 record](releases/v0.2.2.md); [review response](releases/v0.2.2.md)",
-      "open": "Same-commit clean distribution/Linux CI and publication; local package/extracted-install rehearsal passed. Later verification packets remain pending."
+      "open": "Later verification packets remain pending. Exact-commit clean distribution/Linux CI, crates.io/GitHub publication, fresh registry installation and hosted docs pass for 0.2.2."
     },
     {
       "id": "M1",

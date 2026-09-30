@@ -41,7 +41,9 @@ retains completed experiments/review fixes and bounded host connections in
 0.2.1; remaining heavy implementation/integration/proofs target [0.2.2](v0.2.2-plan.md).
 The later 2026-09-30 user request selects **0.2.2 development**, synchronizing
 Rust, both Lean packages and the Python host; see the
-[0.2.2 record](releases/v0.2.2.md). The latest published version remains 0.2.1.
+[0.2.2 record](releases/v0.2.2.md). The user's later publication request was
+completed on 2026-09-30: the latest published version is **0.2.2**, with
+[tag, registry, hosted docs and GitHub evidence](releases/v0.2.2.md#successful-publication-2026-09-30).
 Version selection does not complete feature gates or perform tagging/upload.
 Neither target grants an incompatible PATCH
 exception: preserve existing public interfaces with additive successor APIs
