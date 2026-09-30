@@ -1,0 +1,77 @@
+{
+  "format": 1,
+  "cases": [
+    {
+      "id": "majority_replaced_by_parity",
+      "reference": "quantum_katas/deutsch_jozsa3",
+      "project": "semantic_faults/majority_replaced_by_parity",
+      "reason": "Substitute parity for the balanced majority oracle; both are well typed but have different Fourier spectra."
+    },
+    {
+      "id": "swapped_bell_labels",
+      "reference": "quantum_katas/bell_measure",
+      "project": "semantic_faults/swapped_bell_labels",
+      "reason": "Exchange phase and parity; the 00 shipped example alone cannot detect this."
+    },
+    {
+      "id": "missing_add_two",
+      "reference": "qualtran/add_constant3",
+      "project": "semantic_faults/missing_add_two",
+      "reason": "Keep the +1 carry circuit but omit +2, violating the +3 modular contract."
+    },
+    {
+      "id": "low_bit_equality_only",
+      "reference": "qualtran/equals2",
+      "project": "semantic_faults/low_bit_equality_only",
+      "reason": "Compare only the low bits; equal low bits with distinct high bits must be rejected by the oracle."
+    },
+    {
+      "id": "missing_lcu_unprepare",
+      "reference": "pennylane_demos/lcu_projector",
+      "project": "semantic_faults/missing_lcu_unprepare",
+      "reason": "Omit PREP dagger; the projected block and full operator are wrong."
+    },
+    {
+      "id": "erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "project": "semantic_faults/erased_rotation_scalar",
+      "reason": "Erase exact rotation scalars; ordinary output probabilities and kernel overlap remain unchanged, but coherent control detects the phase."
+    },
+    {
+      "id": "incomplete_swap",
+      "reference": "quantum_katas/swap2",
+      "project": "semantic_faults/incomplete_swap",
+      "reason": "Omit the final CNOT: the owners still typecheck but the basis permutation is not SWAP."
+    },
+    {
+      "id": "unconditional_fredkin",
+      "reference": "quantum_katas/fredkin3",
+      "project": "semantic_faults/unconditional_fredkin",
+      "reason": "Swap for both control values, violating the identity block at control zero."
+    },
+    {
+      "id": "xor_constant_wrong_bit",
+      "reference": "qualtran/xor_constant2",
+      "project": "semantic_faults/xor_constant_wrong_bit",
+      "reason": "Flip the high bit instead of the low bit; catches register-order confusion."
+    },
+    {
+      "id": "partial_bitwise_not",
+      "reference": "qualtran/bitwise_not2",
+      "project": "semantic_faults/partial_bitwise_not",
+      "reason": "Leave the high bit unchanged instead of complementing both bits."
+    },
+    {
+      "id": "rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "project": "semantic_faults/rx_missing_scalar",
+      "reason": "Erase exp(-i*pi/4); ordinary Z probabilities agree, but X/Y coherent interference must detect the absolute-phase error."
+    },
+    {
+      "id": "kickback_wrong_secret",
+      "reference": "pennylane_demos/phase_kickback1",
+      "project": "semantic_faults/kickback_wrong_secret",
+      "reason": "Mark key zero instead of one; both owners survive but the wrong key opens the meter."
+    }
+  ]
+}

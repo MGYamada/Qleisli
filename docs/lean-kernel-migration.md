@@ -58,7 +58,7 @@ retains the same Mathlib-free boundary and separately imported proof bridge.
 The executable package [lean-kernel](../lean-kernel/README.md) depends only on
 Lean's `Init`/`Std` libraries, pinned to **Lean 4.30.0**. Its manifest has no
 external packages. Existing [lean](../lean/README.md) models and mathematical
-proofs retain Mathlib 4.30.0. The [first complex bridge](lean-interference-slice.md)
+proofs retain Mathlib 4.30.0. The [first complex bridge](../lean/Qleisli/Interference.lean)
 imports the actual executable H/diagonal definitions and the phase/layout
 checker's theorem through a local dependency. The executable package must
 never import that bridge or Mathlib. Full hierarchical/instrument interpretation
@@ -275,20 +275,20 @@ implementation a kernel satisfies neither theorem. The existing
 the v0.5 proof milestone; preparation begins during 0.4.x. It does not change
 the existing Apache-2.0 license, algorithm gates or then-current 0.2.0 version.
 
-The subsequent [typed layout component](lean-layout-slice.md) checks multi-owner
+The subsequent [typed layout component](../lean-kernel/QleisliKernel/Layout.lean) checks multi-owner
 interfaces, structural types and exact axis maps, with proved finite permutation
-and reference reindexing laws. [Shared typed calls](lean-layout-dag-slice.md) now
+and reference reindexing laws. [Shared typed calls](../lean-kernel/QleisliKernel/LayoutDag.lean) now
 compose these layouts with checked input/output adapters and prove actual
 acceptance against direct graph semantics. The [combined phase/layout
-checker](lean-phase-layout-slice.md) adds sparse controlled dyadic phases to typed
+checker](../lean-kernel/QleisliKernel/PhaseLayout.lean) adds sparse controlled dyadic phases to typed
 shared calls, with normalization/remapping and actual cyclic-action proofs.
-The [interference foundation](lean-interference-slice.md) proves local H
+The [interference foundation](../lean/Qleisli/Interference.lean) proves local H
 cancellation and diagonal normalization on arbitrary joint amplitudes, with
-a complex instantiation. The [QFT circuit proof](lean-qft-proof-packet.md) now
+a complex instantiation. The [QFT circuit proof](../lean/Qleisli/Qft.lean) now
 derives the matched width-1–8 circuit's normalized Fourier coefficients and
 reference extension, without runtime matrix enumeration. The [typed graph
-projection](lean-qft-graph-packet.md) extends that theorem to actual cached
-graph checking and literal operational coefficients. The [QPE component](lean-qpe-instrument-packet.md)
+projection](../lean/Qleisli/QftGraph.lean) extends that theorem to actual cached
+graph checking and literal operational coefficients. The [QPE component](../lean/Qleisli/Qpe.lean)
 adds actual branch/reference equations and conditional completeness/trace preservation. External schema binding,
 general non-diagonal graph acceptance,
 transforms/encodings, complete instruments and production integration remain open.
@@ -300,7 +300,7 @@ The first contract is deliberately small: **one-bit words of X and ideal
 selected dyadic-angle work without adding an unproved QFT/QPE schema or a
 second production Rust M2 checker. This first word profile does not implement
 Hadamard, multi-bit ports, controlled calls, repetition/DAG evidence, ownership
-or measurement. The subsequent [CD-3 slice](lean-hierarchy-slice.md) adds shared
+or measurement. The subsequent [CD-3 slice](../lean-kernel/QleisliKernel/Hierarchy.lean) adds shared
 calls, sequences and closed powers under a separate experimental profile with
 its own actual-checker theorem; full M2 integration remains pending.
 

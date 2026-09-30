@@ -1,7 +1,7 @@
 # Interference foundation: retained development record
 
 This is informed code-driven development on 2026-09-29, not a controlled model
-benchmark. The [packet contract](../../../docs/lean-interference-slice.md) was
+benchmark. The [packet contract](../../../lean/Qleisli/Interference.lean) was
 written before the new runtime definitions. No external input source was added.
 
 ## Before

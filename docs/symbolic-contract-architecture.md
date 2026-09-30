@@ -192,7 +192,7 @@ claim. General semantic equivalence is not delegated to an implicit simplifier.
 | Finite repetition | Same exact interface/encoding at every iteration, static `u64` count, validated body even at count zero. Retain count and a derivation rather than unrolling during proof checking. Execution/circuit generation may have a different cost. |
 
 The sequence argument is substitution plus associativity, not a new numerical
-test. The [Lean rule ledger](lean-resource-proof.md) records the separately
+test. The [Lean rule ledger](../lean/README.md) records the separately
 mechanized mathematical statements. Those statements do not verify the Rust
 implementation of this arena, leaf interpreter, adapter or proof checker.
 

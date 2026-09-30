@@ -74,7 +74,7 @@ policy continue to apply.
 | M4: Shor | M2 plus reversible whole-space modular arithmetic; may proceed alongside M3. | Shared QPE, clean scratch, controlled powers, samples, period/factor checks and explicit retries meet V1-C1–C5. |
 | M5: costs/stability | M3/M4 and all executable v1 evidence. | Separate generation/checking/execution/oracle/classical costs, public migrations and stable contracts. |
 
-Walk and QSVT remain stress tests, not extra executable v1 gates. [Bounded connections](connections-v021.md)
+Walk and QSVT remain stress tests, not extra executable v1 gates. [Bounded connections](interop-m1.1.md#structured-cli-and-python)
 are shipped finite slices, without a general adaptive or hierarchical guarantee.
 Maintain the [verifier/kernel-first proof order](formal-core.md#4-theorem-status-and-proof-work),
 axiom/runtime-policy audits and independent checking throughout [pipeline migration](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary).

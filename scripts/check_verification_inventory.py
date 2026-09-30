@@ -205,6 +205,18 @@ def check(root=ROOT, data=None):
         for path,sha in corpus['pinned_files'].items():
             if digest(root/path) != sha:
                 raise ValueError('corpus baseline changed: ' + path)
+        # Current corpus additions do not rewrite the original VM-22 census.
+        frozen_corpus = root/Path(INVENTORY).parent
+        baseline = json.loads((frozen_corpus/'corpus-manifest.json').read_text())
+        current = json.loads((root/'corpus/manifest.json').read_text())
+        if (baseline['sources'] != current['sources'] or
+                baseline['policy'] != current['policy'] or
+                current['cases'][:36] != baseline['cases']):
+            raise ValueError('original corpus census changed')
+        baseline_faults = json.loads((frozen_corpus/'corpus-semantic-faults.json').read_text())
+        current_faults = json.loads((root/'corpus/semantic_faults/manifest.json').read_text())
+        if current_faults['cases'][:12] != baseline_faults['cases']:
+            raise ValueError('original corpus fault census changed')
         registry = json.loads((root/'lean/schema-registry.json').read_text())
         entries = registry['schemas'] if 'schemas' in registry else registry['entries']
         if not entries or any(e.get('external_enabled') is not False for e in entries):

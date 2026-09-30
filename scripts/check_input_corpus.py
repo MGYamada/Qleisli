@@ -97,8 +97,8 @@ def check_manifest(corpus=CORPUS):
             if case["source"] == "qualtran":
                 require("Google LLC" in text, "lost Google attribution")
         require((project / "README.md").is_file(), "missing case explanation")
-    # The approved sources stay closed; the 0.2.2 simple intake has twelve cases each.
-    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 12 for k in APPROVED}), "reviewed case inventory changed")
+    # The 0.2.3 small-system extension reuses the reviewed frozen inputs.
+    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 14 for k in APPROVED}), "reviewed case inventory changed")
     projects = {str(p.parent.relative_to(corpus)) for key in APPROVED for p in (corpus / key).rglob("main.qli")}
     require(projects == {c["project"] for c in manifest["cases"]}, "unrecorded project")
     # Sized authoring experiments reuse the same frozen inputs, with a distinct
@@ -298,6 +298,15 @@ def reference_column(case, column):
                        if i & 1 else i)
     if name == "ghz3":
         return permute(single(state, 0, H), lambda i: i ^ (6 if i & 1 else 0))
+    if name == "odd_parity3":
+        # Closed signed coefficients of the recursive parity preparation.
+        return [((-1) ** (((column & 3) & (row & 3)).bit_count()) / 2
+                 if (row >> 2) == ((column >> 2) ^ (row & 3).bit_count() % 2 ^ 1)
+                 else 0) for row in range(8)]
+    if name == "bell_singlet2":
+        return [((-1) ** ((column & 1) * (row & 1) + ((row >> 1) ^ 1)) / math.sqrt(2)
+                 if ((row >> 1) ^ 1) == ((column >> 1) ^ (row & 1)) else 0)
+                for row in range(4)]
     if name == "bernstein_vazirani":
         return permute(state, lambda i: i ^ 3)
     if name == "deutsch_jozsa3":
@@ -320,6 +329,10 @@ def reference_column(case, column):
         return permute(state, lambda i: (i + 3) % 8)
     if name == "equals2":
         return permute(state, lambda i: i ^ (16 if (i & 3) == ((i >> 2) & 3) else 0))
+    if name == "less_than_constant2":
+        return permute(state, lambda i: i ^ (4 if (i & 3) < 3 else 0))
+    if name == "equals_constant2":
+        return permute(state, lambda i: i ^ (4 if (i & 3) == 1 else 0))
     if name == "xor2":
         return permute(state, lambda i: (i & 3) + (((i >> 2) ^ (i & 3)) << 2))
     if name == "xor_constant2":
@@ -340,6 +353,11 @@ def reference_column(case, column):
         return single(single(state, 0, RX), 0, RY)
     if name == "rx_quarter":
         return single(state, 0, RX)
+    if name == "ry_quarter":
+        return single(state, 0, RY)
+    if name == "ising_zz_quarter2":
+        return [a * cmath.exp(-1j * math.pi / 4 * (-1) ** i.bit_count())
+                for i, a in enumerate(state)]
     if name == "phase_kickback1":
         return permute(state, lambda i: i ^ ((i >> 1) & 1))
     if name == "kernel_overlap2":
@@ -495,6 +513,7 @@ def check_case(case, binary, exhaustive, project=None):
     probes = 0
     with tempfile.TemporaryDirectory(prefix="qleisli-corpus-") as temp:
         temp = Path(temp)
+        shutil.copyfile(CORPUS / "Qargo.toml", temp / "Qargo.toml")
         shutil.copyfile(project / "kernel.qli", temp / "kernel.qli")
         def execute(source, expected, label):
             nonlocal probes

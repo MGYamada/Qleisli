@@ -1,0 +1,58 @@
+{
+  "kind": "informed original authoring, not a measured benchmark",
+  "sources": {
+    "first_source": {
+      "sha256_before_check": "b4b188436a66af361e3600ae83a2cc9ffc95c6cb4130c0f7c6672925c872cf38"
+    },
+    "wrong_scalar": {
+      "sha256_before_check": "3d38b61b58caf8069a3f6e9357d8da1427ec9d5904a2f10c0400a72f82662618"
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v023/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v023/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v023/wrong_scalar",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v023/wrong_scalar",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    }
+  ],
+  "compiler_sha256": "d6e921f434e9d10000144cf1dbb9665ed4340e226a6e1860c7c91cefb4c1507f"
+}

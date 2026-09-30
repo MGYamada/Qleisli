@@ -4,6 +4,18 @@ use super::ast::{Compare, NatKind, Natural, Predicate};
 use super::{Error, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
+/// Attach parser provenance at an obligation boundary, keeping the algebraic
+/// representation and elimination procedure independent of source locations.
+pub(super) fn at<T>(result: Result<T>, span: Span, obligation: &str) -> Result<T> {
+    result.map_err(|mut error| {
+        if error.span == Span::default() {
+            error.span = span;
+            error.message = format!("{obligation}: {}", error.message);
+        }
+        error
+    })
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct Linear {
     pub constant: i128,
@@ -87,7 +99,21 @@ impl Context {
                 .collect(),
         }
     }
-    pub fn compare(&self, left: Linear, op: Compare, right: Linear, truth: bool) -> Result<Self> {
+    pub fn compare(
+        &self,
+        left: Linear,
+        op: Compare,
+        right: Linear,
+        truth: bool,
+        span: Span,
+    ) -> Result<Self> {
+        at(
+            self.compare_inner(left, op, right, truth),
+            span,
+            "while checking static comparison",
+        )
+    }
+    fn compare_inner(&self, left: Linear, op: Compare, right: Linear, truth: bool) -> Result<Self> {
         let difference = left.sub(&right)?;
         let neg = difference.scale(-1)?;
         let one = Linear::constant(1);
@@ -130,7 +156,10 @@ impl Context {
                 .collect(),
         })
     }
-    pub fn proves_le(&self, a: &Linear, b: &Linear) -> Result<bool> {
+    pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool> {
+        at(self.proves_le_inner(a, b), span, obligation)
+    }
+    fn proves_le_inner(&self, a: &Linear, b: &Linear) -> Result<bool> {
         let counterexample = b.sub(a)?.add(&Linear::constant(1))?;
         for context in &self.alternatives {
             let mut constraints = context.clone();
@@ -141,7 +170,10 @@ impl Context {
         }
         Ok(true)
     }
-    pub fn feasible(&self) -> Result<bool> {
+    pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool> {
+        at(self.feasible_inner(), span, obligation)
+    }
+    fn feasible_inner(&self) -> Result<bool> {
         for a in &self.alternatives {
             if !unsatisfiable(a.clone())? {
                 return Ok(true);
@@ -248,6 +280,17 @@ pub(super) fn natural(
     names: &BTreeMap<String, Linear>,
     context: &Context,
 ) -> Result<Linear> {
+    at(
+        natural_inner(expr, names, context),
+        expr.span,
+        "while normalizing size expression",
+    )
+}
+fn natural_inner(
+    expr: &Natural,
+    names: &BTreeMap<String, Linear>,
+    context: &Context,
+) -> Result<Linear> {
     let result = match &expr.kind {
         NatKind::Number(n) => Linear::constant(*n),
         NatKind::Name(name) => names.get(name).cloned().ok_or_else(|| {
@@ -257,7 +300,7 @@ pub(super) fn natural(
         NatKind::Sub(a, b) => {
             let a = natural(a, names, context)?;
             let b = natural(b, names, context)?;
-            if !context.proves_le(&b, &a)? {
+            if !context.proves_le(&b, &a, expr.span, "while proving subtraction nonnegative")? {
                 return Err(Error::new(
                     "size",
                     expr.span,
@@ -295,5 +338,9 @@ pub(super) fn predicate(
         p.comparison,
         natural(&p.right, names, context)?,
         truth,
+        Span {
+            start: p.left.span.start,
+            end: p.right.span.end,
+        },
     )
 }

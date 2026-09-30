@@ -69,6 +69,10 @@ fn err(path: &[usize], message: impl Into<String>) -> ValidationError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+// State::insert_token admits every live register with at most MAX_REGISTER_BITS
+// ordered, distinct wires (currently 12). consume only returns admitted live
+// registers. This bounds the u8 shape conversion and the finite basis shifts
+// used by operation checks; newly built registers are checked before insertion.
 struct Register {
     wires: Vec<WireId>,
 }
@@ -416,7 +420,7 @@ impl State {
                 if output_width < input_width || !output_wires.starts_with(&reg.wires) {
                     return Err(err(
                         path,
-                        "lift must preserve its ordered input wires and may append fresh wires",
+                        "lift must preserve its ordered input wire identities and may append fresh wires",
                     ));
                 }
                 check_table(table, input_width, output_width, true, path)?;

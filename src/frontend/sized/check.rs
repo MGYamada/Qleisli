@@ -1,6 +1,7 @@
 //! Generic preparation checks. No value here crosses the verified IR boundary.
 use super::ast::*;
 use super::linear::{self, Context, Linear};
+use super::primitive::{Guard, Primitive, Size, TypeShape};
 use super::{Error, OperationBinding, ParsedProgram, Result, Span};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -45,6 +46,13 @@ impl Ty {
             _ => false,
         }
     }
+    fn quantum_group(&self) -> bool {
+        match self {
+            Self::Bit | Self::Bits(_) => true,
+            Self::Tuple(fields) => !fields.is_empty() && fields.iter().all(Self::quantum_group),
+            Self::CBit | Self::CBits(_) => false,
+        }
+    }
 }
 #[derive(Clone)]
 struct Operation {
@@ -69,6 +77,20 @@ struct Binding {
 fn err(code: &'static str, span: Span, message: impl Into<String>) -> Error {
     Error::new(code, span, message)
 }
+// Callee syntax uses the caller's substituted sizes. A capacity failure here
+// belongs to the caller's application, not a byte offset in another module.
+fn call_capacity<T>(result: Result<T>, span: Span) -> Result<T> {
+    result.map_err(|mut error| {
+        if error.code == "limit" {
+            error.span = span;
+            error.message = format!(
+                "while checking substituted callee obligation: {}",
+                error.message
+            );
+        }
+        error
+    })
+}
 fn all_access() -> BTreeSet<String> {
     ["Apply", "Adjoint", "Controlled"].map(String::from).into()
 }
@@ -78,26 +100,31 @@ fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
         Basis::Bits(n) => Ty::Bits(linear::natural(n, &scope.naturals, &scope.context)?),
     })
 }
-fn ty(t: &Type, scope: &Scope) -> Result<Ty> {
+fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
     let result = match t {
         Type::Quantum(b) => basis(b, scope)?,
         Type::CBit => Ty::CBit,
         Type::CBits(n) => Ty::CBits(linear::natural(n, &scope.naturals, &scope.context)?),
-        Type::Tuple(xs) => Ty::Tuple(xs.iter().map(|x| ty(x, scope)).collect::<Result<_>>()?),
+        Type::Tuple(xs) => Ty::Tuple(
+            xs.iter()
+                .map(|x| ty(x, scope, span))
+                .collect::<Result<_>>()?,
+        ),
     };
-    result.bounded(Span::default())?;
+    result.bounded(span)?;
     Ok(result)
 }
-fn equivalent(a: &Ty, b: &Ty, context: &Context) -> Result<bool> {
+fn equivalent(a: &Ty, b: &Ty, context: &Context, span: Span) -> Result<bool> {
     Ok(match (a, b) {
         (Ty::Bit, Ty::Bit) | (Ty::CBit, Ty::CBit) => true,
         (Ty::Bits(a), Ty::Bits(b)) | (Ty::CBits(a), Ty::CBits(b)) => {
-            context.proves_le(a, b)? && context.proves_le(b, a)?
+            context.proves_le(a, b, span, "while checking type size equality")?
+                && context.proves_le(b, a, span, "while checking type size equality")?
         }
         (Ty::Tuple(a), Ty::Tuple(b)) if a.len() == b.len() => {
             let mut equal = true;
             for (a, b) in a.iter().zip(b) {
-                equal &= equivalent(a, b, context)?;
+                equal &= equivalent(a, b, context, span)?;
             }
             equal
         }
@@ -105,7 +132,7 @@ fn equivalent(a: &Ty, b: &Ty, context: &Context) -> Result<bool> {
     })
 }
 fn expect(actual: &Ty, expected: &Ty, context: &Context, span: Span) -> Result<()> {
-    if equivalent(actual, expected, context)? {
+    if equivalent(actual, expected, context, span)? {
         Ok(())
     } else {
         Err(err(
@@ -116,7 +143,7 @@ fn expect(actual: &Ty, expected: &Ty, context: &Context, span: Span) -> Result<(
     }
 }
 fn prove(context: &Context, a: &Linear, b: &Linear, span: Span, message: &str) -> Result<()> {
-    if context.proves_le(a, b)? {
+    if context.proves_le(a, b, span, message)? {
         Ok(())
     } else {
         Err(err("size", span, message))
@@ -155,7 +182,10 @@ fn declaration(f: &Function) -> Result<Scope> {
             scope.context = linear::predicate(p, &scope.naturals, &scope.context, true)?;
         }
     }
-    if !scope.context.feasible()? {
+    if !scope
+        .context
+        .feasible(f.span, "while checking declared natural premises")?
+    {
         return Err(err(
             "size",
             f.span,
@@ -196,9 +226,9 @@ fn declaration(f: &Function) -> Result<Scope> {
         if !arguments.insert(name) {
             return Err(err("name", *span, "duplicate runtime parameter"));
         }
-        bind_name(name, ty(t, &scope)?, *span, &mut scope)?;
+        bind_name(name, ty(t, &scope, *span)?, *span, &mut scope)?;
     }
-    let _ = ty(&f.result, &scope)?;
+    let _ = ty(&f.result, &scope, f.span)?;
     Ok(scope)
 }
 fn bind_name(name: &str, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
@@ -293,29 +323,11 @@ fn definition<'a>(
     }
     Ok((module, &parsed.function))
 }
-fn primitive(path: &str) -> Option<&str> {
-    match path {
-        "std::quantum::h"
-        | "std::quantum::x"
-        | "std::quantum::cnot"
-        | "std::quantum::phase"
-        | "std::quantum::controlled_phase"
-        | "std::quantum::init0"
-        | "std::observe::measure_z"
-        | "std::registers::take_bit"
-        | "std::registers::put_bit"
-        | "std::registers::empty"
-        | "std::registers::consume_empty"
-        | "std::classical::empty_bits"
-        | "std::classical::prepend_bit" => path.rsplit("::").next(),
-        _ => None,
-    }
-}
 fn imports(program: &ParsedProgram, module: &str) -> Result<BTreeMap<String, String>> {
     let source = &program.modules[module];
     let mut result = BTreeMap::new();
     for (path, span) in &source.imports {
-        if primitive(path).is_none() {
+        if Primitive::lookup(path).is_none() {
             let (owner, f) = definition(program, path, *span)?;
             if owner != module && !f.public {
                 return Err(err(
@@ -349,7 +361,7 @@ pub(super) fn program(program: &ParsedProgram) -> Result<()> {
         let result = (|| {
             let names = imports(program, module)?;
             let mut scope = declaration(&parsed.function)?;
-            let expected = ty(&parsed.function.result, &scope)?;
+            let expected = ty(&parsed.function.result, &scope, parsed.function.span)?;
             let mut checker = Checker {
                 program,
                 module,
@@ -436,7 +448,7 @@ impl Checker<'_> {
             .get(name)
             .cloned()
             .ok_or_else(|| err("name", span, format!("unresolved function {name}")))?;
-        if primitive(&path).is_none() {
+        if Primitive::lookup(&path).is_none() {
             self.edges
                 .insert(definition(self.program, &path, span)?.0.into());
         }
@@ -477,11 +489,16 @@ impl Checker<'_> {
         for (p, a) in f.parameters.iter().zip(args) {
             if let Parameter::Operation(name, b) = p {
                 let op = self.operation(a, scope, span)?;
-                expect(&op.ty, &basis(b, &target)?, &scope.context, span)?;
+                expect(
+                    &op.ty,
+                    &call_capacity(basis(b, &target), span)?,
+                    &scope.context,
+                    span,
+                )?;
                 target.operations.insert(name.clone(), op);
             }
         }
-        requirements(f, &target, span)?;
+        call_capacity(requirements(f, &target, span), span)?;
         if recursion && path == format!("{}::{}", self.module, self.function.name) {
             let mut decreases = false;
             for p in &f.parameters {
@@ -495,9 +512,16 @@ impl Checker<'_> {
                         span,
                         "self-recursion must not increase any natural parameter",
                     )?;
-                    decreases |= scope
-                        .context
-                        .proves_le(&new.add(&Linear::constant(1))?, old)?;
+                    decreases |= scope.context.proves_le(
+                        &linear::at(
+                            new.add(&Linear::constant(1)),
+                            span,
+                            "while checking recursive decrease",
+                        )?,
+                        old,
+                        span,
+                        "while checking recursive decrease",
+                    )?;
                 }
             }
             if !decreases {
@@ -511,9 +535,9 @@ impl Checker<'_> {
         Ok((
             f.arguments
                 .iter()
-                .map(|(_, t, _)| ty(t, &target))
+                .map(|(_, t, _)| call_capacity(ty(t, &target, span), span))
                 .collect::<Result<_>>()?,
-            ty(&f.result, &target)?,
+            call_capacity(ty(&f.result, &target, span), span)?,
             f.effect,
         ))
     }
@@ -553,7 +577,7 @@ impl Checker<'_> {
         span: Span,
     ) -> Result<Operation> {
         let path = self.resolve(name, scope, span)?;
-        if primitive(&path).is_some() {
+        if Primitive::lookup(&path).is_some() {
             return Err(err(
                 "unsupported",
                 span,
@@ -561,17 +585,18 @@ impl Checker<'_> {
             ));
         }
         let (inputs, result, effect) = self.specialize(&path, args, scope, span, true)?;
-        if effect != Effect::Unitary
-            || inputs.len() != 1
-            || !matches!(result, Ty::Bit | Ty::Bits(_))
-        {
+        let group = match inputs.as_slice() {
+            [input] => input.clone(),
+            _ => Ty::Tuple(inputs.clone()),
+        };
+        if effect != Effect::Unitary || inputs.is_empty() || !group.quantum_group() {
             return Err(err(
                 "type",
                 span,
-                "operation provider must be unitary with one quantum input and identical output",
+                "operation provider must be unitary and preserve its complete quantum input group",
             ));
         }
-        expect(&inputs[0], &result, &scope.context, span)?;
+        expect(&group, &result, &scope.context, span)?;
         Ok(Operation {
             ty: result,
             access: all_access(),
@@ -670,7 +695,7 @@ impl Checker<'_> {
                     op.ty
                 } else {
                     let path = self.resolve(name, scope, span)?;
-                    let (inputs, result, effect) = if let Some(name) = primitive(&path) {
+                    let (inputs, result, effect) = if let Some(name) = Primitive::lookup(&path) {
                         primitive_signature(name, args, scope, span)?
                     } else {
                         self.specialize(&path, args, scope, span, true)?
@@ -761,8 +786,12 @@ impl Checker<'_> {
                 inner.values.retain(|_, binding| !binding.ty.linear());
                 let i = Linear::variable(index);
                 inner.context = inner.context.push(&[
-                    start.sub(&i)?,
-                    i.add(&Linear::constant(1))?.sub(&end)?,
+                    linear::at(start.sub(&i), span, "while checking fold bound")?,
+                    linear::at(
+                        i.add(&Linear::constant(1)).and_then(|n| n.sub(&end)),
+                        span,
+                        "while checking fold bound",
+                    )?,
                     i.scale(-1)?,
                 ]);
                 inner.naturals.insert(index.clone(), i);
@@ -808,7 +837,7 @@ fn requirements(f: &Function, scope: &Scope, span: Span) -> Result<()> {
             )?,
             Requirement::Predicate(p) => {
                 let counterexample = linear::predicate(p, &scope.naturals, &scope.context, false)?;
-                if counterexample.feasible()? {
+                if counterexample.feasible(span, "while checking callee natural premise")? {
                     return Err(err(
                         "size",
                         span,
@@ -821,17 +850,13 @@ fn requirements(f: &Function, scope: &Scope, span: Span) -> Result<()> {
     Ok(())
 }
 fn primitive_signature(
-    name: &str,
+    primitive: Primitive,
     args: &[Argument],
     scope: &Scope,
     span: Span,
 ) -> Result<(Vec<Ty>, Ty, Effect)> {
-    let arity = match name {
-        "phase" | "controlled_phase" | "take_bit" | "put_bit" => 2,
-        "prepend_bit" => 1,
-        _ => 0,
-    };
-    if args.len() != arity {
+    let signature = primitive.signature();
+    if args.len() != signature.natural_arity {
         return Err(err(
             "static",
             span,
@@ -847,51 +872,53 @@ fn primitive_signature(
             linear::natural(n, &scope.naturals, &scope.context)
         })
         .collect::<Result<_>>()?;
-    let unitary = Effect::Unitary;
-    Ok(match name {
-        "h" | "x" | "phase" => (vec![Ty::Bit], Ty::Bit, unitary),
-        "cnot" | "controlled_phase" => (
-            vec![Ty::Bit, Ty::Bit],
-            Ty::Tuple(vec![Ty::Bit, Ty::Bit]),
-            unitary,
-        ),
-        "take_bit" | "put_bit" => {
-            let n = &ns[0];
-            let k = &ns[1];
-            prove(
-                &scope.context,
-                &k.add(&Linear::constant(1))?,
-                n,
+    match signature.guard {
+        Guard::None => {}
+        Guard::RegisterIndex => prove(
+            &scope.context,
+            &linear::at(
+                ns[1].add(&Linear::constant(1)),
                 span,
-                "register index needs k < n",
-            )?;
-            let rest = Ty::Bits(n.sub(&Linear::constant(1))?);
-            if name == "take_bit" {
-                (
-                    vec![Ty::Bits(n.clone())],
-                    Ty::Tuple(vec![Ty::Bit, rest]),
-                    unitary,
-                )
-            } else {
-                (vec![Ty::Bit, rest], Ty::Bits(n.clone()), unitary)
-            }
+                "while checking register index",
+            )?,
+            &ns[0],
+            span,
+            "register index needs k < n",
+        )?,
+    }
+    fn size(size: Size, ns: &[Linear], span: Span) -> Result<Linear> {
+        match size {
+            Size::Constant(n) => Ok(Linear::constant(i128::from(n))),
+            Size::Argument(index, offset) => linear::at(
+                ns[index].add(&Linear::constant(i128::from(offset))),
+                span,
+                "while checking primitive register size",
+            ),
         }
-        "empty" => (vec![], Ty::Bits(Linear::constant(0)), unitary),
-        "consume_empty" => (
-            vec![Ty::Bits(Linear::constant(0))],
-            Ty::Tuple(vec![]),
-            unitary,
-        ),
-        "init0" => (vec![], Ty::Bit, Effect::Iso),
-        "measure_z" => (vec![Ty::Bit], Ty::CBit, Effect::Observe),
-        "empty_bits" => (vec![], Ty::CBits(Linear::constant(0)), unitary),
-        "prepend_bit" => (
-            vec![Ty::CBit, Ty::CBits(ns[0].clone())],
-            Ty::CBits(ns[0].add(&Linear::constant(1))?),
-            unitary,
-        ),
-        _ => return Err(err("unsupported", span, "unsupported primitive")),
-    })
+    }
+    fn shape(t: TypeShape, ns: &[Linear], span: Span) -> Result<Ty> {
+        Ok(match t {
+            TypeShape::Bit => Ty::Bit,
+            TypeShape::CBit => Ty::CBit,
+            TypeShape::Bits(n) => Ty::Bits(size(n, ns, span)?),
+            TypeShape::CBits(n) => Ty::CBits(size(n, ns, span)?),
+            TypeShape::Tuple(fields) => Ty::Tuple(
+                fields
+                    .iter()
+                    .map(|t| shape(*t, ns, span))
+                    .collect::<Result<_>>()?,
+            ),
+        })
+    }
+    Ok((
+        signature
+            .inputs
+            .iter()
+            .map(|t| shape(*t, &ns, span))
+            .collect::<Result<_>>()?,
+        shape(signature.output, &ns, span)?,
+        signature.effect,
+    ))
 }
 
 fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>) -> Result<Scope> {
@@ -973,7 +1000,7 @@ pub(super) fn instantiate(
                 }
                 let provider_scope = concrete_scope(provider, &binding.naturals)?;
                 requirements(provider, &provider_scope, f.span)?;
-                let output = ty(&provider.result, &provider_scope)?;
+                let output = ty(&provider.result, &provider_scope, provider.span)?;
                 if provider.effect != Effect::Unitary
                     || provider.arguments.len() != 1
                     || !matches!(output, Ty::Bit | Ty::Bits(_))
@@ -985,7 +1012,11 @@ pub(super) fn instantiate(
                     ));
                 }
                 expect(
-                    &ty(&provider.arguments[0].1, &provider_scope)?,
+                    &ty(
+                        &provider.arguments[0].1,
+                        &provider_scope,
+                        provider.arguments[0].2,
+                    )?,
                     &output,
                     &scope.context,
                     f.span,
@@ -1002,9 +1033,9 @@ pub(super) fn instantiate(
         }
         requirements(f, &scope, f.span)?;
         for (_, t, _) in &f.arguments {
-            let _ = ty(t, &scope)?;
+            let _ = ty(t, &scope, f.span)?;
         }
-        let _ = ty(&f.result, &scope)?;
+        let _ = ty(&f.result, &scope, f.span)?;
         Ok(())
     })();
     result.map_err(|e| e.in_module(module))

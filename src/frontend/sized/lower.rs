@@ -1,4 +1,5 @@
 //! Bounded untrusted proposal generation. Native reconstruction is still required.
+use super::primitive::Primitive;
 use super::{
     ElaboratedProgram, Error, Result, SourceDefinition, SourceOperation, SourceStep, SourceType,
     SourceValue, Span,
@@ -609,15 +610,22 @@ impl Lower<'_> {
         }
         let mut found = false;
         for step in self.source.definitions()[id].steps() {
-            found |= if let Some(name) = step.primitive() {
-                matches!(
-                    name,
-                    "std::quantum::h"
-                        | "std::quantum::x"
-                        | "std::quantum::phase"
-                        | "std::quantum::cnot"
-                        | "std::quantum::controlled_phase"
-                )
+            found |= if let Some(name) = step.primitive_kind() {
+                match name {
+                    Primitive::H
+                    | Primitive::X
+                    | Primitive::Phase
+                    | Primitive::Cnot
+                    | Primitive::ControlledPhase => true,
+                    Primitive::Init0
+                    | Primitive::MeasureZ
+                    | Primitive::TakeBit
+                    | Primitive::PutBit
+                    | Primitive::Empty
+                    | Primitive::ConsumeEmpty
+                    | Primitive::EmptyBits
+                    | Primitive::PrependBit => false,
+                }
             } else if let Some(child) = step.called_definition() {
                 self.gate_present(child)
             } else {
@@ -895,11 +903,11 @@ impl Lower<'_> {
             return Ok((self.graph.sequence(vec![node, rename])?, after));
         }
         let name = step
-            .primitive()
+            .primitive_kind()
             .ok_or_else(|| fail("unsupported source step"))?;
         let ns = step.natural_arguments();
         match name {
-            "std::registers::take_bit" => {
+            Primitive::TakeBit => {
                 let mut rest = before[0].axes.clone();
                 let bit = rest.remove(ns[1] as usize);
                 let after = self.output_ports(step.output(), vec![vec![bit], rest])?;
@@ -908,7 +916,7 @@ impl Lower<'_> {
                     .structural(before, after.clone(), "take_bit", ns)?;
                 Ok((node, after))
             }
-            "std::registers::put_bit" => {
+            Primitive::PutBit => {
                 let mut wires = before[1].axes.clone();
                 wires.insert(ns[1] as usize, before[0].axes[0]);
                 let after = self.output_ports(step.output(), vec![wires])?;
@@ -917,23 +925,23 @@ impl Lower<'_> {
                     .structural(before, after.clone(), "put_bit", ns)?;
                 Ok((node, after))
             }
-            "std::registers::empty" => {
+            Primitive::Empty => {
                 let after = self.output_ports(step.output(), vec![vec![]])?;
                 let node = self
                     .graph
                     .structural(before, after.clone(), "pack_empty_bits", &[])?;
                 Ok((node, after))
             }
-            "std::registers::consume_empty" => {
+            Primitive::ConsumeEmpty => {
                 let node = self
                     .graph
                     .structural(before, vec![], "unpack_empty_bits", &[])?;
                 Ok((node, vec![]))
             }
-            "std::quantum::h" | "std::quantum::x" => {
+            Primitive::H | Primitive::X => {
                 let after = self.output_ports(step.output(), vec![before[0].axes.clone()])?;
                 let node = self.gate(
-                    if name.ends_with("::h") {
+                    if name == Primitive::H {
                         SingleGate::H
                     } else {
                         SingleGate::X
@@ -943,10 +951,10 @@ impl Lower<'_> {
                 )?;
                 Ok((node, after))
             }
-            "std::quantum::phase" | "std::quantum::controlled_phase" | "std::quantum::cnot" => {
-                let controlled = name != "std::quantum::phase";
+            Primitive::Phase | Primitive::ControlledPhase | Primitive::Cnot => {
+                let controlled = name != Primitive::Phase;
                 let target = &before[usize::from(controlled)];
-                let child = if name == "std::quantum::cnot" {
+                let child = if name == Primitive::Cnot {
                     self.closed_gate(SingleGate::X, target)?
                 } else {
                     self.phase(target, ns)?
@@ -963,7 +971,12 @@ impl Lower<'_> {
                 let rename = self.graph.rename(before, after.clone())?;
                 Ok((self.graph.sequence(vec![node, rename])?, after))
             }
-            _ => Err(fail("non-pure or unsupported primitive in pure proposal")),
+            Primitive::Init0
+            | Primitive::MeasureZ
+            | Primitive::EmptyBits
+            | Primitive::PrependBit => {
+                Err(fail("non-pure or unsupported primitive in pure proposal"))
+            }
         }
     }
 }
@@ -1028,8 +1041,8 @@ impl Lower<'_> {
                     output
                 }
             } else {
-                match step.primitive() {
-                    Some("std::quantum::init0") => {
+                match step.primitive_kind() {
+                    Some(Primitive::Init0) => {
                         if !instrument.measured.is_empty() {
                             return Err(Error::new(
                                 "unsupported",
@@ -1054,7 +1067,7 @@ impl Lower<'_> {
                         instrument.fresh.push(p.clone());
                         vec![Item::Quantum(p)]
                     }
-                    Some("std::observe::measure_z") => {
+                    Some(Primitive::MeasureZ) => {
                         let Item::Quantum(p) = &items[0] else {
                             return Err(fail("measure operand is not quantum"));
                         };
@@ -1064,8 +1077,8 @@ impl Lower<'_> {
                             .push((p.clone(), instrument.next_classical));
                         vec![Item::Classical(vec![instrument.next_classical])]
                     }
-                    Some("std::classical::empty_bits") => vec![Item::Classical(vec![])],
-                    Some("std::classical::prepend_bit") => {
+                    Some(Primitive::EmptyBits) => vec![Item::Classical(vec![])],
+                    Some(Primitive::PrependBit) => {
                         let (Item::Classical(first), Item::Classical(rest)) =
                             (&items[0], &items[1])
                         else {
@@ -1073,7 +1086,18 @@ impl Lower<'_> {
                         };
                         vec![Item::Classical([first.clone(), rest.clone()].concat())]
                     }
-                    _ => {
+                    Some(
+                        Primitive::H
+                        | Primitive::X
+                        | Primitive::Cnot
+                        | Primitive::Phase
+                        | Primitive::ControlledPhase
+                        | Primitive::TakeBit
+                        | Primitive::PutBit
+                        | Primitive::Empty
+                        | Primitive::ConsumeEmpty,
+                    )
+                    | None => {
                         let (output, reference) =
                             self.instrument_pure_step(step, items, instrument)?;
                         node = Some(reference);
@@ -1102,14 +1126,19 @@ impl Lower<'_> {
         items: Vec<Item>,
         instrument: &mut Instrument,
     ) -> Result<(Vec<Item>, usize)> {
-        let structural = step.primitive().is_some_and(|name| {
-            matches!(
-                name,
-                "std::registers::take_bit"
-                    | "std::registers::put_bit"
-                    | "std::registers::empty"
-                    | "std::registers::consume_empty"
-            )
+        let structural = step.primitive_kind().is_some_and(|name| match name {
+            Primitive::TakeBit | Primitive::PutBit | Primitive::Empty | Primitive::ConsumeEmpty => {
+                true
+            }
+            Primitive::H
+            | Primitive::X
+            | Primitive::Cnot
+            | Primitive::Phase
+            | Primitive::ControlledPhase
+            | Primitive::Init0
+            | Primitive::MeasureZ
+            | Primitive::EmptyBits
+            | Primitive::PrependBit => false,
         });
         if !structural && !instrument.measured.is_empty() {
             return Err(Error::new(
@@ -1128,7 +1157,58 @@ impl Lower<'_> {
     }
 }
 
+/// Check root signature/effect admission to the selected transport profile
+/// without narrowing generic source typing. Body lowering still checks each
+/// operation and its concrete capability requirements.
+pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+    let root = &source.definitions()[source.root()];
+    let unsupported = |message: &str| {
+        Error::new("unsupported", root.span(), message).in_module(
+            root.path()
+                .rsplit_once("::")
+                .map_or(root.path(), |(module, _)| module),
+        )
+    };
+    if root
+        .inputs()
+        .iter()
+        .flat_map(leaves)
+        .any(|input| !input.ty().is_quantum())
+    {
+        return Err(unsupported(
+            "selected sized lowering profile requires quantum entry values; classical entry values are unsupported",
+        ));
+    }
+    if root.effect() == "iso" {
+        return Err(unsupported(
+            "selected sized lowering profile supports unitary roots and initialize/unitary/readout observe roots; iso roots are unsupported",
+        ));
+    }
+    if root.effect() == "unitary"
+        && leaves(root.output())
+            .iter()
+            .any(|output| !output.ty().is_quantum())
+    {
+        return Err(unsupported(
+            "selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported",
+        ));
+    }
+    if root.effect() == "observe" {
+        let classical: Vec<_> = leaves(root.output())
+            .into_iter()
+            .filter(|output| !output.ty().is_quantum())
+            .collect();
+        if classical.len() != 1 || classical[0].ty().kind() != "cbits" {
+            return Err(unsupported(
+                "selected sized lowering profile requires an observe root returning exactly one CBits value",
+            ));
+        }
+    }
+    Ok(())
+}
+
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
+    check_profile(source)?;
     let mut lower = Lower {
         source,
         graph: Graph::new(),
@@ -1141,16 +1221,16 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
     // Shared primitive proposals precede composite definitions. This is transport
     // sharing only: source steps, finite bytes and every reconstruction remain.
     for (name, gate, key) in [
-        ("std::quantum::h", SingleGate::H, 0),
-        ("std::quantum::x", SingleGate::X, 1),
+        (Primitive::H, SingleGate::H, 0),
+        (Primitive::X, SingleGate::X, 1),
     ] {
         let needed = source
             .definitions()
             .iter()
             .flat_map(|d| d.steps())
             .any(|s| {
-                s.primitive() == Some(name)
-                    || (key == 1 && s.primitive() == Some("std::quantum::cnot"))
+                s.primitive_kind() == Some(name)
+                    || (key == 1 && s.primitive_kind() == Some(Primitive::Cnot))
             });
         if needed {
             let input = Port {
@@ -1172,6 +1252,7 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
     let precursor;
     let (payload, comparison, graph, instrument) = if root.effect() == "unitary" {
         let id = lower.pure_definition(source.root())?;
+        let id = lower.factor_fourier(id)?;
         precursor = lower.graph.artifact(id);
         let (compact, id, _) = lower.graph.compact_export(id)?;
         let graph = compact.artifact(id);

@@ -1,5 +1,6 @@
 //! Additive CLI checks, including independently executed small source programs.
 use std::{path::PathBuf, process::Command};
+mod common;
 fn command() -> Command {
     Command::new(env!("CARGO_BIN_EXE_qleisli"))
 }
@@ -118,6 +119,15 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
             String::from_utf8_lossy(&output.stderr)
         );
         let text = String::from_utf8(output.stdout).unwrap();
+        assert!(
+            text.contains("\"scope\":\"producer-consistency\""),
+            "{text}"
+        );
+        assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
+        assert!(
+            text.contains("\"execution_authority\":\"checked-produced-ir\""),
+            "{text}"
+        );
         match action {
             "check" => assert!(text.contains("\"checked\"")),
             "run" => {
@@ -129,6 +139,81 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
                 "{text}"
             ),
             _ => unreachable!(),
+        }
+    }
+}
+
+#[test]
+#[ignore = "requires freshly built Lean kernel; CI runs explicitly"]
+fn sized_cli_separates_producer_consistency_from_independent_requests() {
+    use qleisli::frontend::sized::ParsedProgram;
+    use std::collections::BTreeMap;
+    let kernel = PathBuf::from(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+    let h = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
+    let x = "use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { x(q) }";
+    let h_proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), h.into())]))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap();
+    let files = common::SourceRoot::new(h);
+    std::fs::write(
+        files.0.join("h.request.json"),
+        h_proposal.comparison_request(),
+    )
+    .unwrap();
+    for (source, caller, success) in [
+        (h, false, true),
+        (h, true, true),
+        (x, false, true),
+        (x, true, false),
+    ] {
+        files.write("main.qli", source);
+        for action in ["check", "run"] {
+            let mut cmd = command();
+            cmd.args(["sized", action, "--entry=main::f"])
+                .arg(format!(
+                    "--module=main={}",
+                    files.0.join("main.qli").display()
+                ))
+                .arg(format!("--kernel={}", kernel.display()));
+            if caller {
+                cmd.arg(format!(
+                    "--request={}",
+                    files.0.join("h.request.json").display()
+                ));
+            }
+            let output = cmd.output().unwrap();
+            assert_eq!(
+                output.status.success(),
+                success,
+                "{action}: {}",
+                String::from_utf8_lossy(&output.stderr)
+            );
+            if success {
+                let text = String::from_utf8(output.stdout).unwrap();
+                let scope = if caller {
+                    "caller-composition"
+                } else {
+                    "producer-consistency"
+                };
+                let authority = if caller {
+                    "checked-ir-against-caller-request"
+                } else {
+                    "checked-produced-ir"
+                };
+                assert!(text.contains(&format!("\"scope\":\"{scope}\"")), "{text}");
+                assert!(
+                    text.contains(&format!("\"execution_authority\":\"{authority}\"")),
+                    "{text}"
+                );
+                assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
+            } else {
+                assert!(output.stdout.is_empty());
+            }
         }
     }
 }

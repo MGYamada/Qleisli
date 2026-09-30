@@ -17,6 +17,14 @@ and [adoption criteria](docs/stdlib-roadmap.md#5-標準への採用とaiから�
 
 ## Shared decisions before individual implementations
 
+**The standard library is a qrate now, named `std`**, declared by
+[stdlib/Qargo.toml](stdlib/Qargo.toml) using qargo schema 2, Qleisli edition
+`"2026"` and the compiler's release version. Its `src`, `tests` and `docs` roots
+exist; see the [qrate guide](stdlib/docs/README.md). `stdlib/` is the directory
+name; `std` is the qrate name and public `std::` namespace. Other source trees
+currently declare only their edition and will all migrate to qrate management
+in the future. Library adoption and semantic/proof gates remain in force.
+
 The purpose is to reduce decisions each author must make again. Fix a component
 family's independently requested mathematical meaning and conventions before
 comparing implementations. A proof of implementation conformance does not show
@@ -152,6 +160,13 @@ in extracting the abstraction. Review specification intent and implementation/
 proof correspondence as distinct responsibilities, with independent review
 recorded where available and blockers resolved before adoption. Keep `pending`
 visible; do not claim a generalized theorem for a bounded tested API.
+
+For future sized QFT/QPE adoption, implement the public algorithm in ordinary
+`.qli`, check it through the shared verification path, and let callers reuse
+its bound contract evidence. Exercise equivalent commuting schedules and calls
+under unrelated function names. Compiler recognizers remain untrusted proposal
+optimizations; library adoption requires reusable contracts and independent
+checking of the actual implementation.
 
 Semantics-changing conventions require an explicit versioned migration.
 Refining an explanation does not renumber a historical contract or rerun its

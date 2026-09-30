@@ -34,6 +34,9 @@ impl BasisShape {
 /// pure/observe effect and the Iso/Unitary classification of the formal core.
 /// The verifier derives the minimum required classification from commands and
 /// rejects a declaration narrower than the derived effect.
+/// With classical inputs, `Unitary` denotes a family U_c, one unitary quantum
+/// map for each fixed classical input c. Classical branching selects a member
+/// of that family; copying or ignoring classical values need not be reversible.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Effect {
     Unitary,
@@ -50,6 +53,9 @@ pub struct QuantumPort {
 
 /// A complete IR function. The final live quantum tokens must be exactly
 /// `quantum_outputs`; classical values may be copied or ignored.
+/// A `Unitary` declaration permits classical input and deterministic classical
+/// control. It classifies the quantum action at each fixed classical input,
+/// rather than the joint classical/quantum computation as a reversible map.
 ///
 /// Equality compares fields, including the issued identity of any retained
 /// [`FunctionEvidence`](crate::contract::function::FunctionEvidence). Clones of
@@ -264,9 +270,12 @@ pub enum RawOp {
         right: TokenId,
         output: TokenId,
     },
-    /// `table[x] = f(x)`, with one entry for every input basis label. The
-    /// output wire list starts with all input wires in their original order;
-    /// any additional wires must be globally fresh.
+    /// The isometry |x> -> |f(x)>, where `table[x] = f(x)` is injective and
+    /// has one entry for every input basis label. The output wire list starts
+    /// with all input wire identities in their original order; any additional
+    /// wires must be globally fresh. This preserves wire identities, not their
+    /// computational-basis values: the low input-width bits of f(x) may differ
+    /// from x. At equal width, any permutation of basis labels is permitted.
     LiftBasis {
         input: TokenId,
         output: TokenId,

@@ -1,0 +1,94 @@
+{
+  "format": "qleisli.v023-bugfix-validation",
+  "version": 1,
+  "date": "2026-10-01",
+  "status": "passed",
+  "working_branch": "codex/v0.2.3-edition-2026",
+  "committed": false,
+  "published": false,
+  "issues": {
+    "92": "implemented: explicit producer/caller/named-QPE request scope and execution authority; legacy fields preserved",
+    "93": "implemented: private primitive declaration catalog and exhaustive lowering/preservation; omission detected at compilation",
+    "95": "implemented: five symbolic capacity/substitution regressions retain source obligations and causes",
+    "99": "partial: complete scalar meaning/canonicality and compositional work/precharge proofs; general matrix and runtime correspondence open"
+  },
+  "rust_all_targets": {
+    "passed": 511,
+    "ignored": 26,
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--target-dir",
+      "/private/tmp/qleisli-bugfix-target",
+      "--all-targets"
+    ]
+  },
+  "rust_185_all_targets": {
+    "passed": 511,
+    "ignored": 26,
+    "compiler": "1.85.0"
+  },
+  "native_source_tests": {
+    "passed": 4,
+    "scope": "two sized CLI tests, named QPE provider/reference mutation test and small source differential test; explicitly run with fresh audited kernel"
+  },
+  "fmt": "passed",
+  "clippy": "passed",
+  "doctests": {
+    "passed": 1
+  },
+  "docs": {
+    "local_links": 3334,
+    "checker_tests": 24
+  },
+  "inventory": {
+    "constructors": 232,
+    "source_snapshots": 135,
+    "boundaries": 17,
+    "mutation_tests": 17
+  },
+  "kernel_policy_tests": {
+    "passed": 25,
+    "compiled_counterexamples": 7
+  },
+  "registry_mutation_tests": 11,
+  "exact_native_record": "bugfix-native-validation.json",
+  "rebuilt_registry_record": "bugfix-registry-validation.json",
+  "primitive_omission_record": "primitive-omission-validation.json",
+  "frozen_comparisons": {
+    "finite": 12,
+    "source": 12,
+    "native_components": 5,
+    "max_qubits": 3,
+    "fixtures_changed": false
+  },
+  "source_sha256": {
+    "README.md": "a34e4fab89cc66520f991c12508ce6a8117a69f9f8d03dbf1561a80fe2146709",
+    "src/bin/qleisli/sized.rs": "9eba1ef412199e98422781da4c5e873882b426fd4dafa5566cb65fe4be77afd9",
+    "src/frontend/sized.rs": "5c42c8e42997a8aa5cd8c9620391f8ba35ebda4539be4df3bea14693e077f9ac",
+    "src/frontend/sized/primitive.rs": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+    "src/frontend/sized/check.rs": "9b980793a2f963e4d5f6125be96fa4a7bff41ceff59be601e59359bbc07ce92b",
+    "src/frontend/sized/elaborate.rs": "13cc74b44541128ecfb917cd9b35d63b52b38eaa547e10847ef3b05b78b404c3",
+    "src/frontend/sized/linear.rs": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
+    "src/frontend/sized/lower.rs": "28fe74835cf2a06d4cb570111ff56770a7f0a2a1a69190c162b4ee9deda53dba",
+    "src/frontend/sized/lower/preservation.rs": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+    "tests/sized_source.rs": "2c1daa9460cfcc49ad5e251378067fb32efc35c60680a776e46a5995bbedc05e",
+    "tests/sized_cli.rs": "2a40c090af36ac1da8571797d9436c612f4c41c54628903b2fa24ac85a3507a6",
+    "tests/input_corpus.rs": "c80d116f919e87c3debe3b89944c24c665a9be3a41a4f11df46052a7c5f63451",
+    "scripts/test_sized_primitive_catalog.py": "8790c19e690fd587f8cc7226c2b314990904f147a742638dcef7f0541a509620",
+    "lean-kernel/QleisliKernel/Exact.lean": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+    "lean/Qleisli/Exact.lean": "59e54250a35fe43874b0e91b7468ea1901a117df2f9e2fa6bf2771486ff72b16",
+    "lean/Qleisli/Semantics/Exact.lean": "b379cab6e9b5b1cdb20e7362d04b9f8255d41e2554611ed7b02ce7937e4c282b"
+  },
+  "production_authority": "Rust",
+  "external_schemas_enabled": false,
+  "full_vm23_complete": false,
+  "source_preservation_proved": false,
+  "github_issue_records_updated": [
+    92,
+    93,
+    95,
+    99
+  ]
+}

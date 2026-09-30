@@ -1,7 +1,7 @@
 # QPE residual-instrument development record
 
 This informed 2026-09-29 packet continues the active full-v0.2.0 goal under the
-[selected contract](../../../docs/lean-qpe-instrument-packet.md). It is not a
+[selected contract](../../../lean/Qleisli/Qpe.lean). It is not a
 controlled model benchmark, an external schema importer or a completed release.
 
 ## Preserved programs and independent discrimination
@@ -160,7 +160,7 @@ build-time command. Runtime source policy is unchanged. The shipped
 and a source content revision; all three entries remain externally disabled.
 `registry-checks.json` records package builds, both audits, fresh kernel replay
 and the current export. The source-only check is deliberately weaker and does
-not certify theorem types. See the [packet](../../../docs/lean-qpe-instrument-packet.md#shipped-type-and-source-manifest).
+not certify theorem types. See the [packet](../../../lean/README.md#component-registry-review).
 
 
 ## Coherent controlled-power completion

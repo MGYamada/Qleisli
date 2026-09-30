@@ -412,6 +412,15 @@ enum Mode {
     QpeInstrument,
 }
 impl Mode {
+    fn description(self) -> &'static str {
+        match self {
+            Self::Inspect => "artifact inspection",
+            Self::Request => "composition-request checking",
+            Self::Fourier => "independent Fourier-request checking",
+            Self::Instrument => "composition-instrument checking",
+            Self::QpeInstrument => "named-QPE instrument checking",
+        }
+    }
     fn argument(self) -> &'static str {
         match self {
             Self::Inspect => "--hierarchy-pending",
@@ -531,9 +540,14 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
             {
                 return Err(Error::format("trailing QPE runtime failure data"));
             }
+            let detail = if code == "limit" {
+                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000; required work is unavailable in the native failure reply"
+            } else {
+                "the native checker rejected the artifact or request"
+            };
             return Err(Error::new(
                 code,
-                "Lean hierarchy inspection rejected the artifact",
+                format!("Lean {}: {detail}", mode.description()),
             ));
         }
         _ => return Err(Error::format("unknown runtime response status")),
@@ -649,4 +663,34 @@ fn invoke(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Vec<u8>> {
     }
     written.map_err(|e| Error::new("io", format!("runtime input failed: {e}")))?;
     Ok(output)
+}
+
+#[cfg(test)]
+mod response_diagnostics_tests {
+    use super::{Mode, response_indices};
+
+    #[test]
+    fn capacity_failure_identifies_the_selected_native_check_without_a_work_claim() {
+        for mode in [
+            Mode::Inspect,
+            Mode::Request,
+            Mode::Fourier,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            let reply = format!("{}\nerror\nlimit\n", mode.header());
+            let error = match response_indices(reply.as_bytes(), mode) {
+                Err(error) => error,
+                Ok(_) => panic!("capacity rejection must not produce a check report"),
+            };
+            assert_eq!(error.code, "limit");
+            assert!(error.message.contains(mode.description()));
+            assert!(error.message.contains("2000000"));
+            assert!(error.message.contains("required work is unavailable"));
+        }
+        let reply = b"qleisli.qpe-instrument-pending 1\nerror\ncontract\n";
+        let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
+        assert_eq!(error.code, "contract");
+        assert!(!error.message.contains("capacity"));
+    }
 }

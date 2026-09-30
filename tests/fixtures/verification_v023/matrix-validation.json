@@ -1,0 +1,130 @@
+{
+  "format": "qleisli.vm23-matrix-validation",
+  "version": 1,
+  "date": "2026-10-01",
+  "status": "passed",
+  "scope": "general actual-definition matrix proof extension and bounded runtime/capacity experiments",
+  "proofs": [
+    {
+      "path": "lean-kernel/QleisliKernel/ExactCapacity.lean",
+      "scope": "canonical admission, normalization termination and machine capacities",
+      "theorem_declarations": 22
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/ExactMatrix.lean",
+      "scope": "canonical matrix storage and exact aggregate/failure-stage work",
+      "theorem_declarations": 53
+    },
+    {
+      "path": "lean/Qleisli/ExactMatrix.lean",
+      "scope": "general entries/actions, tensor order, accepted isometry and reference inner products/joint norms",
+      "theorem_declarations": 23
+    }
+  ],
+  "checks": [
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "status": "passed",
+      "tests": 25,
+      "log_sha256": "3b6b36e595934f4bf12753a45db50b10c6dd272bcbeba09c2525cb3deac3c5db"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "status": "passed",
+      "tests": 17,
+      "log_sha256": "00334e125d3c30ff65910ef4fc5e5e9522b1952f92f38e4122859cf565d9011b"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "status": "passed",
+      "tests": 24,
+      "log_sha256": "a8b2f292114c2684591a3214dd477cd6145406261e26141ea9d23ce45c88de74"
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "status": "passed",
+      "tests": 11,
+      "log_sha256": "b655f948c2d378651232529339a83eb188cdc0ae26baf6ea75745ee59ea3cacd"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report tests/fixtures/verification_v023/matrix-registry-validation.json",
+      "status": "passed",
+      "record": "matrix-registry-validation.json",
+      "covers": [
+        "both package builds",
+        "both compiled audits",
+        "Mathlib-free source/runtime policy",
+        "fresh Lean kernel replay",
+        "actual theorem-type export"
+      ]
+    },
+    {
+      "command": "python3 scripts/test_lean_exact.py --record tests/fixtures/verification_v023/runtime-capacity-contract.json",
+      "status": "passed",
+      "record": "runtime-capacity-contract.json",
+      "native_comparisons": 815,
+      "independent_rational": 551,
+      "independent_matrix": 75,
+      "detected_mutations": 7
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed",
+      "diagnostics": "Checked 3350 local links, 408 Markdown anchors, 136 Rust declarations, 105 Rust tests, and 122 Lean root modules."
+    }
+  ],
+  "audit_repair": {
+    "detected": "QleisliKernel.Exact.ListRel._unsafe_rec: partial project declaration",
+    "repair": "Explicit structural List.rec; theorem interfaces unchanged; no audit allowlist added",
+    "final_compiled_audits": "passed"
+  },
+  "unchanged_registry_entries": true,
+  "production_authority": "Rust",
+  "external_schemas_enabled": false,
+  "committed": false,
+  "published": false,
+  "full_vm23_complete": false,
+  "remaining": [
+    "General Rust implementation refinement",
+    "Bound production transport/platform correspondence",
+    "Rust Dimension/EntryCount error payload correspondence",
+    "Rust source-storage allocation accounting is outside arithmetic WorkM"
+  ],
+  "not_rerun": [
+    "Production Rust all-target/Clippy/MSRV: no Rust executable or API source changed in this continuation; prior 511-test record is bugfix-validation.json",
+    "Maximum-size corpus validation remains waived"
+  ],
+  "historical_reports_sha256": {
+    "native-validation.json": "4d8c033d2dc3ed53ce20db631d26f367f4ab30b1fd95c182a9df86a7e364725a",
+    "source-validation.json": "4087457cd6e709bdce3db241738e933083ecea9dcdbdcace2ac18f8f5c0b2759",
+    "bugfix-native-validation.json": "329cf18d0edb1336408c252e217cd4f8fb4f53f1fc9eb1818f8ac474f8a9b581",
+    "registry-validation.json": "a1304c128d85e7041588f7cf2e346d8f502d33e0aabdab2b512c6389abcce502",
+    "bugfix-registry-validation.json": "caf15a54a500abb49b198ee035600c6844e35999f719106ad2cc6dea25114b5b",
+    "bugfix-validation.json": "2f230a7a7be4570a7604764d37dc049800da13b9556607318734e9bebcb1793a"
+  },
+  "source_sha256": {
+    "docs/project-status.json": "2f23dfb5372e5101cc32e93d69775ccf3ae814be5028a6b5aa6321d730c0cf99",
+    "lean-kernel/QleisliKernel.lean": "3be31bb7abf4d9fc6c9b938f9f84e370c6dd12ff3ce13ff138cc8358ca062a68",
+    "lean-kernel/QleisliKernel/Exact.lean": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+    "lean-kernel/QleisliKernel/ExactCapacity.lean": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+    "lean-kernel/QleisliKernel/ExactMatrix.lean": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+    "lean-kernel/QleisliKernel/Semantics/Exact.lean": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303",
+    "lean/Qleisli.lean": "6e91d39923c0d47a9d5ad8b7b484799ce3997f458e23c73a471dc43c8f842354",
+    "lean/Qleisli/Exact.lean": "59e54250a35fe43874b0e91b7468ea1901a117df2f9e2fa6bf2771486ff72b16",
+    "lean/Qleisli/ExactMatrix.lean": "e3a665bf86f96c159507b4c6f1817a9a452a166ab12dc7a7721c40bb17afcc64",
+    "lean/Qleisli/Semantics/Exact.lean": "b379cab6e9b5b1cdb20e7362d04b9f8255d41e2554611ed7b02ce7937e4c282b",
+    "scripts/test_lean_exact.py": "53081fd767bad7ea695926bff277d9dccbc1a2eeb3f266cb2d38b1537589f693",
+    "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+    "tests/fixtures/verification_v022/inventory.json": "3630b6ad35f03facb4fde0fef7c3825e11e32dbf346d8811e9d1588703d5cda5",
+    "tests/fixtures/verification_v023/README.md": "82c958affcdf0f0010fb319bce34325ddcc7dcfd5291b37a9be1b91f2350195f"
+  },
+  "github_issue": {
+    "number": 99,
+    "url": "https://github.com/MGYamada/Qleisli/issues/99",
+    "state": "OPEN",
+    "updated_at": "2026-09-30T23:00:49Z",
+    "body_readback_matches": true,
+    "completed_acceptance_checkboxes": 4,
+    "remaining_runtime_correspondence": true
+  }
+}

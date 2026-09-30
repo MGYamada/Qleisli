@@ -5,7 +5,7 @@ use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path};
 
 #[test]
-fn all_thirty_corpus_projects_compile_verify_and_execute() {
+fn all_reviewed_corpus_projects_compile_verify_and_execute() {
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("corpus");
     for source in ["quantum_katas", "qualtran", "pennylane_demos"] {
         let mut count = 0;
@@ -21,7 +21,7 @@ fn all_thirty_corpus_projects_compile_verify_and_execute() {
             assert!(distribution.values().all(|p| p.is_finite() && *p >= 0.0));
             count += 1;
         }
-        assert_eq!(count, 12, "reviewed inventory for {source}");
+        assert_eq!(count, 14, "reviewed inventory for {source}");
     }
 }
 

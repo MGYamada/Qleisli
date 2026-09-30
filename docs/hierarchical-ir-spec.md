@@ -11,24 +11,24 @@ implement the complete profile or enable production acceptance.
 The subsequent [Lean kernel migration](lean-kernel-migration.md) selects Lean 4
 without Mathlib runtime dependencies for this new executable checker. Separate
 proof modules may use Mathlib to interpret those same executable definitions.
-The [phase-word and shared-DAG checkers](lean-hierarchy-slice.md) are limited
+The [phase-word and shared-DAG checkers](../lean-kernel/QleisliKernel/Hierarchy.lean) are limited
 precursors. The latter proves composition and actual acceptance for bounded
 cyclic phase actions, with explicit owner ports and zero-repeat dependencies;
 it does not implement this full hierarchy, schema registry or QPE instrument.
-The [typed layout component](lean-layout-slice.md) additionally checks complete
+The [typed layout component](../lean-kernel/QleisliKernel/Layout.lean) additionally checks complete
 owner/axis permutations, zero-width slots and structural types. Its bounded
 reindexing proofs are now connected to [shared typed calls and ordered
-composition](lean-layout-dag-slice.md), with actual-checker soundness for phase-free
-coordinate graphs. The [combined phase/layout component](lean-phase-layout-slice.md)
+composition](../lean-kernel/QleisliKernel/LayoutDag.lean), with actual-checker soundness for phase-free
+coordinate graphs. The [combined phase/layout component](../lean-kernel/QleisliKernel/PhaseLayout.lean)
 now checks controlled dyadic phases and typed call composition through sparse
 polynomials. Non-diagonal graph integration, general transforms/encodings,
-complete schemas and H1–H5 remain open. The [interference continuation](lean-interference-slice.md)
+complete schemas and H1–H5 remain open. The [interference continuation](../lean/Qleisli/Interference.lean)
 now supplies local H/diagonal amplitude laws and a complex interpretation
-bridge. The [QFT circuit proof](lean-qft-proof-packet.md) establishes the actual
+bridge. The [QFT circuit proof](../lean/Qleisli/Qft.lean) establishes the actual
 matched template's Fourier coefficients and arbitrary reference extension.
-The [typed QFT graph projection](lean-qft-graph-packet.md) now binds exact
+The [typed QFT graph projection](../lean/Qleisli/QftGraph.lean) now binds exact
 interfaces, effects and shared dependencies to those coefficients. The
-[QPE component](lean-qpe-instrument-packet.md) proves actual schedule and
+[QPE component](../lean/Qleisli/Qpe.lean) proves actual schedule and
 branch/reference equations, plus conditional completeness and total trace
 preservation. Its unitary-provider premise must be independently established.
 The typed four-table preparation, definition-node and meaning/encoding typing
@@ -37,7 +37,7 @@ actual local rules and every provider premise from an empty cache. Constructed
 actual-body denotations now give exact complex operator/reference equations for
 the supported accepted rules. Whole-space unitarity, general encoded
 derivations, finite reconstruction and external hierarchy import remain open.
-The [component type/source manifest](lean-qpe-instrument-packet.md#shipped-type-and-source-manifest)
+The [component type/source manifest](../lean/README.md#component-registry-review)
 now pins the proved internal declarations; all external entries remain disabled.
 Current finite acceptance remains
 in Rust until the explicit migration gates transfer each covered boundary.
@@ -1058,9 +1058,9 @@ below, not only successful eigenstate outcomes.
 
 The complete external schema declarations and executable acceptance theorems remain
 **implementation obligations**. The QFT circuit component now has the
-[proved Fourier/reference theorem](lean-qft-proof-packet.md), but its typed
+[proved Fourier/reference theorem](../lean/Qleisli/Qft.lean), but its typed
 hierarchical importer and full binding tests remain open. The
-[closed component dispatcher](lean-qpe-instrument-packet.md#closed-component-dispatch)
+[closed component dispatcher](../lean-kernel/QleisliKernel/Schema.lean)
 now checks fixed IDs, versions and independent parameters against typed
 QFT, single controlled-power and QPE witnesses. Its acceptance-to-semantics
 theorems do not establish the external projection or provider premises.

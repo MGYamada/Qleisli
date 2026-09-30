@@ -1,7 +1,7 @@
 # First shared-hierarchy development record
 
 This is the informed, local CD-3 experiment for the
-[experimental phase DAG](../../../docs/lean-hierarchy-slice.md). It is not a
+[experimental phase DAG](../../../lean-kernel/QleisliKernel/Hierarchy.lean). It is not a
 controlled model benchmark or a new external input corpus. All files are
 Apache-2.0, Copyright 2026 Masahiko G. Yamada.
 

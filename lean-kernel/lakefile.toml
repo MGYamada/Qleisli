@@ -1,5 +1,5 @@
 name = "qleisli_kernel"
-version = "0.2.2"
+version = "0.2.3"
 defaultTargets = ["QleisliKernel", "qleisli-kernel"]
 
 [leanOptions]

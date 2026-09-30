@@ -14,6 +14,7 @@ use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
 use super::lexer::keyword_kind;
 use super::parser::parse_module;
 
+mod edition;
 mod source_file;
 
 const BUNDLED_SOURCES: &[(&str, &str)] = &[
@@ -150,6 +151,8 @@ pub fn read_source_file(path: &Path, policy: SourcePolicy) -> Result<String, Dia
         .join(path.file_name().ok_or_else(|| {
             error(path, Span::default(), "source path has no file name").into_diagnostic()
         })?);
+    edition::check_directory(resolved.parent().expect("resolved file has a parent"))
+        .map_err(LoadFailure::into_diagnostic)?;
     SourceBudget { policy, used: 0 }
         .read(&resolved)
         .map_err(LoadFailure::into_diagnostic)
@@ -304,12 +307,18 @@ impl Project {
                 "source root is not a directory",
             ));
         }
+        edition::check_directory(&root)?;
+        edition::check_manifest(
+            Path::new("<bundled>/std/Qargo.toml"),
+            include_str!("../../stdlib/Qargo.toml"),
+        )?;
         let mut files = Vec::new();
         collect_qli_files(&root, &mut files)?;
         files.sort();
 
         let mut modules = BTreeMap::new();
         for path in files {
+            edition::check_directory(path.parent().expect("source has a parent"))?;
             let name = local_module_name(&root, &path)?;
             let source = budget.read(&path)?;
             let module = parse_source(name.clone(), path, ModuleOrigin::Local, source)?;
@@ -538,6 +547,10 @@ fn collect_qli_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), L
             collect_qli_files(&path, files)?;
         } else if kind.is_file() && path.extension().is_some_and(|extension| extension == "qli") {
             files.push(path);
+        } else if kind.is_file() && path.extension().is_some_and(|extension| extension == "qlt") {
+            // QLT execution is deferred, but every file still declares its
+            // language edition through the same enclosing manifest.
+            edition::check_directory(path.parent().expect("source has a parent"))?;
         }
     }
     Ok(())

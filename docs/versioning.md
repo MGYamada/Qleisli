@@ -9,6 +9,19 @@ supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 
 ## Version identity
 
+**Explicit edition-declaration exception, 2026-09-30:** the user selected
+v0.2.3 to adopt Qleisli edition `"2026"` and require `Qargo.toml` for every
+filesystem `.qli`/`.qlt` source tree. Formerly manifest-free projects must add
+an [edition declaration](language-editions.md); this is a narrow incompatible
+requirement selected for this PATCH, not a bug fix or a general exception.
+The `std` standard-library qrate is already managed in `stdlib/`; all other
+source trees are to migrate to qrate management later. No repository-root
+Qargo manifest is used. Product versions and language editions are independent;
+Rust's Cargo edition remains `"2024"`. Other API/source meanings retain their
+compatibility obligations. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
+and the [0.2.3 development record](releases/v0.2.3.md). Version 0.2.2 remains the
+latest published release; this selection does not perform publication.
+
 **Explicit pre-registry identity exception, 2026-09-30:** the user selected
 `qleisli` for both the package and Rust import name in the first planned
 crates.io release, 0.2.1, replacing `qleisli-core` / `qleisli_core`. Existing
@@ -54,7 +67,7 @@ or publication follows from this scope selection.
 The subsequent 2026-09-29 user decision explicitly plans
 [Qleisli type-system specification in the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification),
 with QLT implementation deferred to v0.4.0 or later. Concrete type changes and
-migrations remain to be specified. The current manifests select 0.2.2, and
+migrations remain to be specified. The current manifests select 0.2.3, and
 this future boundary does not permit incompatible changes in that PATCH.
 
 The historical finite baseline and release state are in [current status](current-status.md)
@@ -75,7 +88,8 @@ patches 6–9 first, and later maintenance may use 0.1.10.
 versions in [lean/lakefile.toml](../lean/lakefile.toml),
 [lean-kernel/lakefile.toml](../lean-kernel/lakefile.toml),
 [python/pyproject.toml](../python/pyproject.toml) and Python `__version__`
-synchronized; refresh the Cargo lockfile as well. Compiler,
+synchronized; refresh the Cargo lockfile and synchronize the
+[std qrate version](../stdlib/Qargo.toml) as well. Compiler,
 bundled standard library, examples, and proof development currently share
 one release version; this does not imply that their verification is complete.
 

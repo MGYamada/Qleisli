@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.vm23-scope-review",
+  "version": 1,
+  "date": "2026-10-01",
+  "status": "reviewed",
+  "scope_basis": "The adopted VM-23 plan requires actual Lean arithmetic/equality against independent complex semantics, bounded intermediates/shared work and compatibility comparison; it does not require a general formal correctness/refinement proof of the old Rust arithmetic.",
+  "general_rust_refinement_required_for_vm23": false,
+  "general_rust_correctness_claimed": false,
+  "vm23_gate_assessment": "satisfied in the working tree",
+  "production_authority": "Rust",
+  "production_integration_complete": false,
+  "external_schemas_enabled": false,
+  "committed": false,
+  "published": false,
+  "adopted_gate_references": [
+    "docs/verification-migration-v0.2.md#vm-23-exact-meanings-without-a-domain-change",
+    "docs/lean-kernel-migration.md#staged-migration",
+    "docs/release-milestones.md#qleisli-soundness-theorem-v050"
+  ],
+  "required_evidence": {
+    "actual_lean_meaning_and_equality": "proved",
+    "canonicality_and_full_phase_reference_semantics": "proved",
+    "capacity_and_exact_failure_shared_work": "proved",
+    "source_policy_compiled_audits_fresh_replay": "passed; matrix-registry-validation.json",
+    "reviewed_rust_compatibility_comparison": "passed; 815 native comparisons and reviewed common domain in runtime-capacity-contract.json"
+  },
+  "later_packets": {
+    "VM-24": "Serialized finite circuit/encoding/evidence reconstruction",
+    "VM-28/VM-29": "Bound immutable artifact/request, checked execution and audited supported-platform native/transport integration"
+  },
+  "separate_obligations": [
+    "Source-to-IR meaning preservation or independent translation validation",
+    "Formal soundness of the Rust checker itself, only if that separate guarantee is claimed"
+  ],
+  "native_compiler_runtime_assumptions": "Retained under docs/lean-kernel-migration.md#audit-and-remaining-trust; not claimed proved",
+  "superseded_assessments": {
+    "matrix-validation.json#full_vm23_complete": "Its false value arose from the overly broad general-Rust-proof gate; execution/proof facts and the original file are preserved.",
+    "runtime-capacity-contract.json#runtime_capacity_contract": "Unproved Rust refinement and unimplemented production transport are scope disclosures, not extra VM-23 arithmetic proof prerequisites."
+  },
+  "preserved_report_sha256": {
+    "matrix-validation.json": "70ed0d2dfef7b478526eb5bcc1c2a5bab2618b3a2f735c9c8b231c9139d3d4cd",
+    "matrix-registry-validation.json": "1851667fd5129554c34c85b7d4b1afcc5035044980e801a990529ce2c78b718f",
+    "runtime-capacity-contract.json": "ef16c4f0ff0160ad0a8e23d1393797fc42b16422057b4bb43b8f0fca58256f7f",
+    "bugfix-validation.json": "2f230a7a7be4570a7604764d37dc049800da13b9556607318734e9bebcb1793a"
+  },
+  "proof_registry_source_revision": "62a82bf199c53039007bd68ba2ee738d5a01c26b6fcdf4f7abb2e09eacbe8697",
+  "checks_this_review": [
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed",
+      "local_links": 3359,
+      "lean_root_modules": 122
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "status": "passed",
+      "tests": 24
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "status": "passed",
+      "source_revision": "62a82bf199c53039007bd68ba2ee738d5a01c26b6fcdf4f7abb2e09eacbe8697"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "source_sha256": {
+    "docs/verification-migration-v0.2.md": "f49f98702e951ae4c068370901d8969bb83454d9eea2066b018253570e1f40c8",
+    "tests/fixtures/verification_v023/README.md": "dc814c9ff1a61f0efc09abcc09fc02b39442569c0e9b87125ce0699c9b250b70",
+    "docs/project-status.json": "7a7e34efe36fdd4539d1a4778ed8c048cb5e4681b87b8672d5f2f1af07e0bf78"
+  },
+  "github_issue": {
+    "number": 99,
+    "state": "OPEN",
+    "updated_at": "2026-09-30T23:08:18Z",
+    "body_readback_matches": true,
+    "arithmetic_proof_criteria_completed": 4,
+    "pending": "Commit/integration; general Rust correspondence is not a VM-23 blocker"
+  },
+  "checks_not_repeated": "No proof or executable source changed during the scope review; prior Lean/Rust builds, audits and native comparison results are preserved."
+}

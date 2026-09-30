@@ -24,6 +24,33 @@ impl Event {
             Self::Controlled(a, b, j, k) => Self::Controlled(*route.get(a)?, *route.get(b)?, j, k),
         })
     }
+    fn canonical(&self) -> Self {
+        match *self {
+            Self::H(a) => Self::H(a),
+            Self::Phase(a, j, k) => {
+                let (j, k) = fraction(j, k);
+                Self::Phase(a, j, k)
+            }
+            Self::Controlled(a, b, j, k) => {
+                let (j, k) = fraction(j, k);
+                Self::Controlled(a.min(b), a.max(b), j, k)
+            }
+        }
+    }
+    fn touches(&self, axis: usize) -> bool {
+        match *self {
+            Self::H(a) | Self::Phase(a, _, _) => a == axis,
+            Self::Controlled(a, b, _, _) => a == axis || b == axis,
+        }
+    }
+    // Every non-H event is computational-basis diagonal. H can cross only
+    // events on disjoint axes; this deliberately retains all H barriers.
+    fn commutes(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::H(axis), event) | (event, Self::H(axis)) => !event.touches(*axis),
+            _ => true,
+        }
+    }
 }
 #[derive(Clone, Debug)]
 struct Trace {
@@ -390,26 +417,36 @@ fn staircase(trace: &Trace, width: usize) -> bool {
     if !(1..=8).contains(&width) || trace.route != (0..width).rev().collect::<Vec<_>>() {
         return false;
     }
-    let mut index = 0;
+    let mut expected = vec![];
     for target in (0..width).rev() {
-        if trace.events.get(index) != Some(&Event::H(target)) {
-            return false;
-        }
-        index += 1;
-        let mut found = vec![];
-        while let Some(Event::Controlled(a, b, j, k)) = trace.events.get(index) {
-            found.push(((*a).min(*b), (*a).max(*b), fraction(*j, *k)));
-            index += 1;
-        }
-        found.sort_unstable();
-        let expected: Vec<_> = (0..target)
-            .map(|control| (control, target, (1, (target - control + 1) as u32)))
-            .collect();
-        if found != expected {
-            return false;
-        }
+        expected.push(Event::H(target));
+        expected.extend(
+            (0..target).map(|control| {
+                Event::Controlled(control, target, 1, (target - control + 1) as u32)
+            }),
+        );
     }
-    index == trace.events.len()
+    // This bounded trace-monoid comparison performs only adjacent swaps of
+    // commuting gates. Removing each expected gate is valid exactly when it
+    // can cross every preceding remaining gate. The complete gate count and
+    // exact normalized phases must match, so no source operation is omitted.
+    if trace.events.len() != expected.len() {
+        return false;
+    }
+    let mut pending: Vec<_> = trace.events.iter().map(Event::canonical).collect();
+    for event in expected {
+        let Some(index) = pending.iter().position(|candidate| candidate == &event) else {
+            return false;
+        };
+        if pending[..index]
+            .iter()
+            .any(|before| !event.commutes(before))
+        {
+            return false;
+        }
+        pending.remove(index);
+    }
+    pending.is_empty()
 }
 
 struct Builder<'a, 'b> {
@@ -551,10 +588,16 @@ impl Builder<'_, '_> {
 impl Lower<'_> {
     pub(super) fn factor_fourier(&mut self, original: usize) -> Result<usize> {
         let node = &self.graph.nodes[original];
-        if node.before != node.after || node.before.len() != 1 || node.before[0].bit {
+        if node.before.len() != 1
+            || node.after.len() != 1
+            || node.before[0].bit
+            || node.after[0].bit
+            || node.before[0].axes.len() != node.after[0].axes.len()
+        {
             return Ok(original);
         }
         let outer = node.before[0].clone();
+        let output = node.after[0].clone();
         let width = outer.axes.len();
         let Some(original_trace) = trace(&self.graph, original) else {
             return Ok(original);
@@ -591,12 +634,16 @@ impl Lower<'_> {
                 .rename(vec![outer.clone()], vec![inner.clone()])?;
             let body = b.recursive(width)?;
             let leave = b.lower.graph.rename(vec![inner], vec![outer.clone()])?;
-            let reverse = b.reversal(outer)?;
-            let candidate = b.lower.graph.sequence(vec![enter, body, leave, reverse])?;
+            let reverse = b.reversal(outer.clone())?;
+            let mut children = vec![enter, body, leave, reverse];
+            if outer != output {
+                children.push(b.lower.graph.rename(vec![outer], vec![output])?);
+            }
+            let candidate = b.lower.graph.sequence(children)?;
             let candidate_trace = trace(&b.lower.graph, candidate)
                 .ok_or_else(|| limit("Fourier candidate trace exceeded its bounded profile"))?;
             // Both complete traces normalize to exactly the same positive-sign
-            // staircase, with only diagonal gates within an H stage commuted.
+            // staircase using only diagonal/disjoint-support commutations.
             if !staircase(&candidate_trace, width)
                 || b.lower.graph.nodes[candidate].before != b.lower.graph.nodes[original].before
                 || b.lower.graph.nodes[candidate].after != b.lower.graph.nodes[original].after
@@ -866,6 +913,38 @@ mod tests {
         );
     }
     #[test]
+    fn actual_source_fourier_factoring_commuting_variant_preserves_complete_trace() {
+        let delayed = include_str!("../../../tests/fixtures/sized_clients/delayed_fourier.qli");
+        for width in 1..=3 {
+            let source = source(delayed, width);
+            let (lower, original, candidate) = factor(&source);
+            assert_ne!(original, candidate);
+            assert!(staircase(
+                &trace(&lower.graph, original).unwrap(),
+                width as usize
+            ));
+            assert!(staircase(
+                &trace(&lower.graph, candidate).unwrap(),
+                width as usize
+            ));
+            if let Some(directory) = std::env::var_os("QLEISLI_FOURIER_PROPOSALS") {
+                let path = std::path::PathBuf::from(directory);
+                std::fs::create_dir_all(&path).unwrap();
+                for (name, entry) in [
+                    ("delayed-original", original),
+                    ("delayed-candidate", candidate),
+                ] {
+                    let (compact, entry, _) = lower.graph.compact_export(entry).unwrap();
+                    std::fs::write(
+                        path.join(format!("{name}-{width}.json")),
+                        compact.artifact(entry),
+                    )
+                    .unwrap();
+                }
+            }
+        }
+    }
+    #[test]
     fn actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes() {
         for changed in [
             SOURCE.replace(
@@ -895,5 +974,44 @@ mod tests {
         t.events.swap(0, 1);
         t.events.insert(2, Event::Phase(1, 1, 1));
         assert!(!staircase(&t, 2));
+    }
+    #[test]
+    fn fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates() {
+        let original = Trace {
+            route: vec![2, 1, 0],
+            events: vec![
+                Event::H(2),
+                Event::Controlled(0, 2, 1, 3),
+                Event::Controlled(1, 2, 1, 2),
+                Event::H(1),
+                Event::Controlled(0, 1, 1, 2),
+                Event::H(0),
+            ],
+        };
+        assert!(staircase(&original, 3));
+        let mut delayed = original.clone();
+        let gate = delayed.events.remove(1);
+        delayed.events.insert(4, gate);
+        assert!(staircase(&delayed, 3), "C(0,2) may cross H(1)");
+        delayed.events.swap(3, 4);
+        assert!(staircase(&delayed, 3), "overlapping diagonal gates commute");
+        let gate = delayed.events.remove(3);
+        delayed.events.push(gate);
+        assert!(!staircase(&delayed, 3), "C(0,2) must not cross H(0)");
+        let mut altered = original.clone();
+        altered.events.swap(0, 1);
+        assert!(!staircase(&altered, 3), "C(0,2) must not cross H(2)");
+
+        // Exercise many linear extensions without admitting a changed gate.
+        let mut state = 0x37_921a_u64;
+        let mut equivalent = original;
+        for _ in 0..512 {
+            state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+            let index = (state as usize) % (equivalent.events.len() - 1);
+            if equivalent.events[index].commutes(&equivalent.events[index + 1]) {
+                equivalent.events.swap(index, index + 1);
+            }
+            assert!(staircase(&equivalent, 3));
+        }
     }
 }

@@ -10,7 +10,7 @@ use std::registers::put_bit;
 /// H on the low bit followed by a fanout of coherent controlled X operations.
 /// On all-zero input this prepares (|0...0> + |1...1>)/sqrt(2).
 /// On general inputs it remains this full unitary, with no zero-input promise.
-pub unitary fn ghz[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {
+pub unitary fn ghz[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 {
     let (head,tail) = take_bit[n,0](q);
     let head = h(head);
     let (head,tail) = for static k in 0..n-1 carry pair = (head,tail) {

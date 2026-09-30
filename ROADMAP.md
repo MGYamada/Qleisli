@@ -6,6 +6,18 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Historical entries below retain the scope, dates, and counts of their original checks; English translation does not rerun those checks or adopt future syntax. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
+## v0.2.3: Qleisli edition 2026
+
+The user selected v0.2.3 on 2026-09-30 for [explicit language editions](docs/language-editions.md).
+All current `.qli` sources and `.qlt` drafts use `"2026"`, declared in each
+source tree's `Qargo.toml`. The `std` qrate lives in `stdlib/`; other source trees
+will all migrate to qrate management in the future. No repository-root manifest
+is used. The [first VM-23 arithmetic/equality and H/T slice](tests/fixtures/verification_v023/README.md)
+now satisfies its arithmetic proof/comparison gates, with general scalar/matrix
+meaning, canonicality and exact work/capacity proofs. Later evidence and native
+production integration remain pending. This selection does not perform publication; the
+[development record](docs/releases/v0.2.3.md) records the separate scope.
+
 ## v0.2.2–v0.2.9: staged verification migration
 
 **User-selected plan, 2026-09-30:** move verification implementation from Rust
@@ -25,8 +37,8 @@ records bounded Rust sized source, named provider/instrument proofs, native
 checking, execution and measured clients, with scoped R14/H1–H5 evidence.
 Remaining validation uses small qubit systems; maximum cases are waived rather
 than claimed passed. General source/runtime correspondence and full-profile
-migration remain separate. No external schema is enabled; VM-23–VM-29 remain
-pending. The bounded 0.2.2 scope is now
+migration remain separate. No external schema is enabled;
+VM-24–VM-29 gates remain open. The bounded 0.2.2 scope is now
 [published and verified](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
 ## v0.3.0: Qleisli type-system specification
@@ -45,7 +57,7 @@ obligations and public migrations before implementation; the
 builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development is 0.2.2; the type-system decision remains future work.
+Current development is 0.2.3; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
@@ -122,7 +134,7 @@ Detailed V01-C1–C6, B019, V1-C1–C5, PR-C1–C4 and RS-C1–C5 criteria are i
 
 **Earlier release split, 2026-09-30:** [0.2.1](docs/v0.2.2-plan.md) packages
 completed corpus/source experiments, review fixes, component proofs and the
-[bounded Python/OpenQASM/QIR connection layer](docs/connections-v021.md).
+[bounded Python/OpenQASM/QIR connection layer](docs/interop-m1.1.md#structured-cli-and-python).
 Remaining heavy measured-QPE implementation, production integration and proofs
 initially move to [0.2.2](docs/v0.2.2-plan.md), with their unmet gates; the later
 [eight-packet migration plan](docs/verification-migration-v0.2.md) stages this
@@ -160,16 +172,16 @@ hierarchical meaning/encoding/evidence boundary; source size generalization
 cannot precede that gate. Current implementation and tests are in the
 [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md), without claiming completed M2.
 
-CD-3 now also has a [typed layout checker](docs/lean-layout-slice.md) for
+CD-3 now also has a [typed layout checker](lean-kernel/QleisliKernel/Layout.lean) for
 multiple owners and up to 16 axes, preserving exact tuple shape and zero-width
 ownership. Its permutation/reference proofs and independent request tests are
-component evidence. [Shared typed calls and ordered composition](docs/lean-layout-dag-slice.md)
+component evidence. [Shared typed calls and ordered composition](lean-kernel/QleisliKernel/LayoutDag.lean)
 now connect layouts to actual dependency semantics. The [combined sparse-phase
-profile](docs/lean-phase-layout-slice.md) adds controlled dyadic phases and proves
+profile](lean-kernel/QleisliKernel/PhaseLayout.lean) adds controlled dyadic phases and proves
 actual composition without dense matrices. Local H/diagonal semantics and the
-[QFT circuit's Fourier coefficients](docs/lean-qft-proof-packet.md) are proved.
-An [internal typed QFT graph projection](docs/lean-qft-graph-packet.md) is also proved.
-The [QPE component theorem](docs/lean-qpe-instrument-packet.md) now establishes
+[QFT circuit's Fourier coefficients](lean/Qleisli/Qft.lean) are proved.
+An [internal typed QFT graph projection](lean/Qleisli/QftGraph.lean) is also proved.
+The [QPE component theorem](lean/Qleisli/Qpe.lean) now establishes
 full branch/reference equations and, under the provider-isometry premise,
 completeness and total trace preservation. General non-diagonal graphs,
 transforms/encodings and external provider/schema binding remain pending.
@@ -515,7 +527,7 @@ Retaining the finite-core priority of 2026-09-26, the 2026-09-27 goal connects *
 | SPEC-0: fix scope | Complete | Include finite basis types, static operations, and restricted auxiliary evidence in v0; defer generalization. |
 | SPEC-1: normative documents | Complete | Align types, effects, ownership, accepted/rejected cases, and IR correspondence in [v0](docs/language-spec.md), [grammar](docs/syntax-v0.md), and [sealed APIs](docs/standard-library.md). |
 | SPEC-2: implementation comparison | Complete for finite conformance cases | Record capacities, evidence restrictions, and checks in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md); add specification-boundary regressions. |
-| SPEC-3: formal system and proofs | **Ideal soundness Q1–Q3 proved on paper for the stated rules** | Connect [pure operations and instruments](docs/source-soundness.md) by induction over all syntax. [Lean](docs/lean-resource-proof.md) covers local ownership/Kraus-composition lemmas. Correspondence to every accepted Rust path remains open. |
+| SPEC-3: formal system and proofs | **Ideal soundness Q1–Q3 proved on paper for the stated rules** | Connect [pure operations and instruments](docs/source-soundness.md) by induction over all syntax. [Lean](lean/README.md) covers local ownership/Kraus-composition lemmas. Correspondence to every accepted Rust path remains open. |
 | SPEC-4: translation/verifier correspondence | Conditional preservation C1–C5; scope projection extracted and locally modeled in Lean | [Translation contracts](docs/source-ir-correspondence.md) and [state refinement](docs/lowering-state-refinement.md) documented. Adequacy for all successful Rust paths and formal verification of the implemented verifier remain open. |
 
 SPEC-1 specification adoption and SPEC-2 finite tests do not complete Stage 1. Its proof-bearing completion conditions below remain in force. The order is source-to-IR contract boundaries → finite v0.1 evidence/independent checking/substitution → **imaginary-v1 code and requirements before v0.2.0** → sized types and operation parameters → the three v1 algorithm structures and required standard APIs. Consider effects on norms, conformance examples, and proofs before each step.
@@ -549,7 +561,7 @@ The implementation audit added seven regressions for mixed arguments and partial
 
 ### Resource-model verification foundation (2026-09-26)
 
-Lean 4/Mathlib 4.30.0 checked ownership counts for mixed values and `Q<Unit>`, local resource transitions, frames, complete ownership-covering φ, and composition. Thirteen boundary lemmas, axiom auditing, and Lean/Rust/document CI definitions were added. [Coverage and omissions](docs/lean-resource-proof.md) are recorded separately. This does not machine-check all of paper R1, the Rust implementation, or quantum semantics.
+Lean 4/Mathlib 4.30.0 checked ownership counts for mixed values and `Q<Unit>`, local resource transitions, frames, complete ownership-covering φ, and composition. Thirteen boundary lemmas, axiom auditing, and Lean/Rust/document CI definitions were added. [Coverage and omissions](lean/README.md) are recorded separately. This does not machine-check all of paper R1, the Rust implementation, or quantum semantics.
 
 <a id="ソース意味論と構造的なir対応2026-09-26"></a>
 

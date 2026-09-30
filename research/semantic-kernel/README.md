@@ -101,7 +101,7 @@ cargo clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -
 Run the production Rust regressions separately with `cargo test --all-targets`.
 The primary and MSRV CI jobs run both packages. The Lean build and axiom audit
 include [SemanticContract.lean](../../lean/Qleisli/SemanticContract.lean);
-the [theorem ledger](../../docs/lean-resource-proof.md) states its premises and
+the [theorem ledger](../../lean/README.md) states its premises and
 scope. Rule-level Lean proofs are not a mechanized refinement proof of this
 Rust implementation.
 

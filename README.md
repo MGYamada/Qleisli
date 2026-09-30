@@ -8,21 +8,43 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Version: 0.2.2.** See the [release record](docs/releases/v0.2.2.md) for
-validation and publication status.
-The Rust CLI and library need no Lean, Python or LLVM installation.
+**Development version: 0.2.3. Qleisli language edition: `"2026"`.**
+All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
+explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
+and the [0.2.3 development record](docs/releases/v0.2.3.md).
+The Rust CLI and library run with Rust alone.
 Start with [installation and a Bell-pair program](#try-it).
-Python connections and QIR input have separate optional requirements below.
-Sized `Bits<n>` / `CBits<m>` source remains experimental; the three theorem
-pillars below are future proof goals. The
-[0.2.2 release record](docs/releases/v0.2.2.md) and
-[release procedure](docs/crates-io-release.md) distinguish version selection,
-validation and publication. Version 0.2.2 is available on
+Python connections and QIR input have optional requirements below.
+The experimental sized-source pipeline uses an explicitly selected Lean kernel;
+its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
+describes the supported checking and lowering profiles.
+The three theorem pillars below are project goals. Current implementation and
+proof status are recorded in the [status ledger](docs/current-status.md).
+The published version, 0.2.2, is available on
 [crates.io](https://crates.io/crates/qleisli/0.2.2) and
 [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.2).
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
+
+## Language edition and qrate management
+
+The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
+each source. Compiler version `0.2.3`, Qleisli edition `"2026"` and the Rust
+implementation's Cargo edition `"2024"` are independent. See the
+[edition contract](docs/language-editions.md) for manifest validation and migration.
+
+There is no `Qargo.toml` in the repository top-level directory. The
+[corpus](corpus/Qargo.toml) and [standard library](stdlib/Qargo.toml) have their
+own manifests; each example and the test trees declare their edition too.
+**The standard library is already a qrate named `std` in `stdlib/`**, with a
+complete schema-2 manifest following
+[qargo](https://github.com/MGYamada/qargo), including its name, version and
+source/test/documentation roots. Other trees currently use edition-only
+manifests and are not qrates. **All source trees will migrate to qrate management
+in the future.** See the [edition and migration contract](docs/language-editions.md)
+for current checking, compatibility and remaining design work. QLT execution
+remains deferred to v0.4.0 or later.
 
 ## A small example
 
@@ -50,31 +72,44 @@ copying a quantum value, reusing a consumed value, or silently dropping one.
 
 ## Try it
 
-Install **Rust 1.85 or later**. The core crate has no external Rust dependencies.
+Install **Rust 1.85 or later**. Cargo builds the Rust implementation and its TOML reader;
+the installed CLI requires no helper runtime.
 The package is named `qleisli`, its executable is `qleisli`, and its Rust
 library is imported as `qleisli`.
 Earlier Git/path users of `qleisli-core` / `qleisli_core` should follow the
 [name migration](docs/crates-io-release.md#name-migration-from-github-releases-through-020).
 
-Install the matching executable from crates.io:
-
-```sh
-cargo install qleisli --version 0.2.2 --locked
-```
-
-Alternatively, install from this checkout:
+Install this development version from the checkout:
 
 ```sh
 cargo install --path . --locked --bin qleisli
 ```
 
-This checkout and the installation command select the same 0.2.2 version.
-The [release record](docs/releases/v0.2.2.md#successful-publication-2026-09-30)
-records the verified tag, registry artifact and installation checks.
+After 0.2.3 is published, the matching registry command is:
+
+```sh
+cargo install qleisli --version 0.2.3 --locked
+```
+
+Version 0.2.3 is selected for development; it has not been tagged or published.
+The latest published version remains 0.2.2, with its
+[immutable publication record](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)
-as `bell/main.qli`. From its parent directory, run:
+as `bell/main.qli`. Also create `bell/Qargo.toml`:
+
+<!-- quickstart:manifest -->
+```toml
+schema-version = 2
+
+[qrate]
+edition = "2026"
+```
+<!-- /quickstart:manifest -->
+
+This edition-only form also applies to standalone projects that are not qrates.
+From the parent of `bell`, run:
 
 ```sh
 qleisli check bell
@@ -111,8 +146,9 @@ and no external Lean dependencies. Its README includes the native checker,
 Rust launcher and independent differential test commands. Development checks
 require Python 3.11 or later; the kernel executable does not require Python.
 
-To try your own program, save it as `main.qli` in a directory and pass that
-directory to `check` or `run`. `run` prints an exhaustive reference distribution,
+To try your own program, put `main.qli` and the explicit edition manifest above
+in its top-level directory and pass that directory to `check` or `run`.
+`run` prints an exhaustive reference distribution,
 not hardware results or sampled shots. Bit strings follow the returned tuple
 from left to right; probabilities are floating-point approximations. Even an
 ideally impossible outcome may appear with a tiny positive rounding residue
@@ -148,7 +184,7 @@ cargo run --example interop -- qasm-to-qir tests/fixtures/interop/bell.qasm
 cargo run --example interop -- qli-to-qasm tests/fixtures/interop/terminal
 ```
 
-The [Python and CLI connection layer](docs/connections-v021.md) adds structured
+The [Python and CLI connection layer](docs/interop-m1.1.md#structured-cli-and-python) adds structured
 import/check/run/sample/export commands and optional QIR text/bitcode input:
 
 ```sh
@@ -170,14 +206,15 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-This version is **0.2.2**; the [release record](docs/releases/v0.2.2.md)
-identifies its validation and publication results. The active
+This development version is **0.2.3**, introducing explicit edition-2026
+configuration; the [development record](docs/releases/v0.2.3.md) distinguishes
+validation from publication. The active
 [0.2.2 plan](docs/v0.2.2-plan.md) and [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain the current work targets. [Current status](docs/current-status.md) records
 bounded sized-source/QPE integration and the remaining checking/proof scope.
 Rust remains the production acceptance authority; external schemas are disabled.
 
-The [development record](docs/releases/v0.2.2.md) records local validation and
+The [development record](docs/releases/v0.2.3.md) records local validation and
 [release preparation](docs/crates-io-release.md). Future type-system breaks use
 v0.3.0; QLT implementation remains deferred to v0.4.0 or later. These schedules
 do not establish the three general theorems or completion of the v1 algorithms.
@@ -291,6 +328,11 @@ defines the 0.1.x foundation, concrete obstacles and acceptance experiments for
 the user-selected continuation from 0.2.0 onward.
 
 ## Develop and contribute
+
+On GitHub, **Issues track implementation. Discussions determine the language.**
+Use [Issues](https://github.com/MGYamada/Qleisli/issues) for implementation tasks
+and bugs, and [Discussions](https://github.com/MGYamada/Qleisli/discussions) for
+language proposals and decisions. This policy is limited to GitHub operations.
 
 Start with [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
 

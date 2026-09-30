@@ -1,9 +1,11 @@
 //! Mixed values, lexical bindings, and the current ownership representation.
 //!
 //! A quantum value owns a slot even when its basis has zero wires (`Q<Unit>`).
-//! `None` in Env is a consumed binding: retain its name until scope exit so it
-//! continues to hide a function. Registers track operation rights, not whether
-//! the corresponding quantum subsystems are independent or entangled.
+//! Consumed and hidden bindings retain their names until scope exit so they
+//! continue to hide functions. A hidden binding belongs to an outer frame and
+//! cannot be captured by a computed body; it has not thereby been consumed.
+//! Registers track operation rights, not whether the corresponding quantum
+//! subsystems are independent or entangled.
 
 use std::collections::BTreeMap;
 
@@ -11,7 +13,42 @@ use super::super::{TreeSize, Ty, total_size};
 use crate::ir::{ClassicalId, TokenId, WireId};
 
 pub(super) type Slot = u32;
-pub(super) type Env = BTreeMap<String, Option<Value>>;
+pub(super) type Env = BTreeMap<String, Binding>;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(super) enum Binding {
+    Live(Value),
+    Consumed,
+    Hidden { quantum: bool },
+}
+
+impl Binding {
+    pub(super) fn as_ref(&self) -> Option<&Value> {
+        match self {
+            Self::Live(value) => Some(value),
+            Self::Consumed | Self::Hidden { .. } => None,
+        }
+    }
+
+    pub(super) fn take(&mut self) -> Option<Value> {
+        match self {
+            Self::Live(_) => match std::mem::replace(self, Self::Consumed) {
+                Self::Live(value) => Some(value),
+                _ => unreachable!("live binding"),
+            },
+            Self::Consumed | Self::Hidden { .. } => None,
+        }
+    }
+
+    pub(super) fn hidden(&self) -> Self {
+        match self {
+            Self::Live(value) => Self::Hidden {
+                quantum: value.owns_quantum(),
+            },
+            Self::Consumed | Self::Hidden { .. } => self.clone(),
+        }
+    }
+}
 
 pub(super) fn env_size(env: &Env) -> usize {
     total_size(

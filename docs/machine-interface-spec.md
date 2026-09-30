@@ -11,7 +11,8 @@ Current `check`/`run`, Rust IR and exhaustive reference simulation stay intact.
 The later [interoperability direction](interoperability-roadmap.md) adds future
 Python, OpenQASM 3 and QIR entry points. The bounded OpenQASM input/output
 and QIR output now have a separate [M1.1-A contract and implementation](interop-m1.1.md);
-Python, QIR input and adaptive extensions remain pending. They do not change X1–X6 below. In particular, this document's **QIRF**
+Python orchestration and optional terminal QIR input are implemented there;
+adaptive extensions remain pending. They do not change X1–X6 below. This document's **QIRF**
 is Qleisli's JSON interchange, not QIR Alliance LLVM IR.
 
 The [Lean migration](lean-kernel-migration.md) adds a separate experimental

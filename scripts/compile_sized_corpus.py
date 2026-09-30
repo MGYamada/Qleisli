@@ -27,7 +27,7 @@ IMPORTS = {
     'std::registers::take_bit': 'take_bit',
     'std::registers::put_bit': 'put_bit',
 }
-TOKEN = re.compile(r'\s+|//[^\n]*|::|->|\.\.|>=|<=|==|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[][(){}<>,:;=+\-^]')
+TOKEN = re.compile(r'\s+|//[^\n]*|::|->|\.\.|>=|<=|==|!=|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[][(){}<>,:;=+\-^]')
 RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'in', 'carry', 'yield', 'use', 'requires', 'if', 'else', 'adjoint', 'controlled', 'repeat_op'}
 
 
@@ -38,7 +38,7 @@ class Parser:
         if len(source.encode()) > 65536:
             raise SourceError('source exceeds 64 KiB')
         self.tokens = []
-        offset, depth = 0, 0
+        offset, delimiters = 0, []
         while offset < len(source):
             match = TOKEN.match(source, offset)
             if match is None:
@@ -48,10 +48,18 @@ class Parser:
             if token.isspace() or token.startswith('//'):
                 continue
             self.tokens.append(token)
-            depth += (token in ('(', '[', '{', '<')) - (token in (')', ']', '}', '>'))
-            if depth < 0 or depth > 64 or len(self.tokens) > 10000:
+            # The type parser checks angle brackets; these tokens also denote
+            # comparisons. Keep even contextual names such as `Q < n` out of
+            # lexical delimiter accounting. Valid type angles have depth two;
+            # recursive type structure uses the bounded tuple parentheses.
+            if token in ('(', '[', '{'):
+                delimiters.append(token)
+            elif token in (')', ']', '}'):
+                if not delimiters or delimiters.pop() != {')': '(', ']': '[', '}': '{'}[token]:
+                    raise SourceError('unbalanced source delimiters')
+            if len(delimiters) > 64 or len(self.tokens) > 10000:
                 raise SourceError('unbalanced or excessive source nesting/tokens')
-        if depth:
+        if delimiters:
             raise SourceError('unbalanced source delimiters')
         self.tokens.append('<eof>')
         self.index = 0
@@ -247,8 +255,8 @@ class Parser:
     def predicate(self):
         left = self.nat()
         comparison = self.peek()
-        if comparison not in ('>=', '<=', '=='):
-            raise SourceError('expected static >=, <= or == comparison')
+        if comparison not in ('>=', '<=', '==', '!=', '<', '>'):
+            raise SourceError('expected a static comparison')
         self.index += 1
         return comparison, left, self.nat()
 
@@ -287,10 +295,10 @@ class Parser:
         self.function_effect()
         self.need('fn')
         name = self.name()
-        self.need('[')
         sizes = []
         static_names = []
-        while True:
+        has_static = self.eat('[')
+        while has_static and self.peek() != ']':
             self.need('static')
             parameter = self.name()
             static_names.append(parameter)
@@ -307,7 +315,8 @@ class Parser:
                 self.need('>')
             if not self.eat(','):
                 break
-        self.need(']')
+        if has_static:
+            self.need(']')
         if len(set(static_names)) != len(static_names):
             raise SourceError('duplicate static parameter')
         self.need('(')
@@ -381,7 +390,8 @@ def instantiate(ty, sizes):
 def predicate_holds(predicate, sizes):
     comparison, left, right = predicate
     left, right = natural(left, sizes), natural(right, sizes)
-    return {'>=': left >= right, '<=': left <= right, '==': left == right}[comparison]
+    return {'>=': left >= right, '<=': left <= right, '==': left == right,
+            '!=': left != right, '<': left < right, '>': left > right}[comparison]
 
 
 def check_static_names(body, names, access=None, declarations=None):

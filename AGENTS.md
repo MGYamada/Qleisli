@@ -110,7 +110,15 @@ Issue is created or already tracks the work, no backlog entry, backlog update
 or backlog ID is required.** Use the Issue as the tracking record; do not require
 duplicate records. Do not recreate the retired backlog. An Issue does not
 select a release or adopt syntax. The current development version is
-0.2.2, selected on 2026-09-30. Follow the
+0.2.3, selected on 2026-09-30 for explicit Qleisli edition 2026. See the
+[edition contract](docs/language-editions.md) and [development record](docs/releases/v0.2.3.md).
+Require explicit schema-2 `[qrate].edition = "2026"` in each source tree's
+`Qargo.toml`; keep manifests in `corpus/`, `stdlib/`, individual examples and
+test trees, with no repository-root manifest. The `std` qrate in `stdlib/` has
+a complete qargo-compatible manifest; other source trees will all migrate to
+qrate management in the future. The user selected a narrow v0.2.3 compatibility
+exception for the new manifest requirement; other PATCH obligations remain.
+Follow the
 [continuation plan](docs/v0.2.2-plan.md),
 [development record](docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md). The latest published release is
@@ -387,7 +395,7 @@ and focused theorem guards. Array notation remains a separately specified future
 
 - `Cargo.toml`'s `package.version` is authoritative; synchronize Qleisli's own
   `lean/lakefile.toml`, `lean-kernel/lakefile.toml`, `python/pyproject.toml` and
-  Python's `__version__`. Compiler, Python host, bundled library and proofs currently share a
+  Python's `__version__` and `stdlib/Qargo.toml`'s qrate version. Compiler, Python host, bundled library and proofs currently share a
   release. Do not synchronize dependency versions with the project version.
 - Use `MAJOR.MINOR.PATCH` and annotated Git tags `vMAJOR.MINOR.PATCH`.
   Accumulate unreleased work in [CHANGELOG](CHANGELOG.md); do not bump per task

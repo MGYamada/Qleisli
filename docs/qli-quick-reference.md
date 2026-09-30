@@ -9,6 +9,18 @@ page are complete programs compiled and executed by
 [`every_quick_reference_program_compiles_and_executes`](../tests/qli_corpus.rs)
 in the existing all-target Rust CI jobs. Other documents may contain proposals.
 
+Every filesystem source tree needs a top-level `Qargo.toml`, even if it is not
+a qrate. All current `.qli` and `.qlt` files use Qleisli edition `"2026"`:
+
+```toml
+schema-version = 2
+
+[qrate]
+edition = "2026"
+```
+
+See the [edition and qrate migration contract](language-editions.md).
+
 ## Fresh samples and portable verification
 
 From the repository root, these commands exercise the implemented finite APIs:

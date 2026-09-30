@@ -58,9 +58,9 @@
 //! clients must migrate dependency/import names or use a Cargo dependency alias.
 //! This explicit identity exception leaves other 0.2.x contracts compatible;
 //! the planned 0.3.0 type-system work is a separate breaking-change boundary.
-//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/qli-quick-reference.md),
-//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.2.2/TRUST_BOUNDARY.md)
-//! and [versioning policy](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/versioning.md).
+//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/qli-quick-reference.md),
+//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.2.3/TRUST_BOUNDARY.md)
+//! and [versioning policy](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/versioning.md).
 
 pub mod contract;
 pub mod frontend;

@@ -6,6 +6,47 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+## 0.2.3 — development selected 2026-09-30
+
+- Introduce Qleisli edition `"2026"`, declared explicitly in each source tree's
+  schema-2 `Qargo.toml`. Filesystem source loading diagnoses missing, invalid
+  and unsupported editions. The README quickstarts include the migration form.
+- Give the `std` qrate in `stdlib/` its complete qargo-compatible manifest;
+  put edition-only manifests in corpus, examples and test trees. All source
+  trees will migrate to qrate management. [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
+  records the user's narrow PATCH exception for the manifest requirement.
+- Synchronize the compiler, Python package, both Lean packages and bundled
+  library to development 0.2.3.
+- Expand the finite corpus to 42 cases, fourteen per approved source, with
+  phase/order checks and six new semantic counterexamples on small systems.
+- Retire eleven completed reports from `docs/` and shorten authoring feedback.
+  Current goals and verification plans remain available until the v0.3 rewrite.
+- Complete VM-23's actual Lean scalar/matrix meaning, canonicality, reference,
+  capacity and aggregate-work proofs, with 815 native compatibility comparisons.
+  The [packet](tests/fixtures/verification_v023/README.md) records the exact scope.
+- Report the verification request and execution authority on every sized CLI
+  result (#92). Use one sized primitive signature catalog (#93) and retain
+  source spans on arithmetic and solver-limit diagnostics (#95).
+- Recognize QFT traces across commuting gate reorderings and factor root
+  definitions, preserving original source, phase, axes and output ports.
+- Diagnose forbidden `with_computed` captures separately from consumed owners,
+  with a concrete `join`/data-binder repair hint.
+- Preflight sized lowering root signatures with an additive API and precise
+  diagnostics. Support complete multiple-input transparent quantum providers,
+  including the arithmetic corpus; require GHZ's positive-width premise.
+- Compare Rust/Python sized sources in CI, repair static comparison parsing,
+  and retain the explicit generic-versus-concrete size-checking scopes.
+- Fix the interop test harness's stdin race. Add 4,000 deterministic finite/sized
+  ownership comparisons and independent small-system corpus/QFT regressions.
+- Clarify LiftBasis wire identity, classical-indexed Unitary semantics and finite
+  register invariants. Native failure diagnostics name the selected check and
+  capacity allowance.
+- State the GitHub policy: **Issues track implementation. Discussions determine
+  the language.**
+
+The [development record](docs/releases/v0.2.3.md) and
+[status ledger](docs/current-status.md) hold validation and proof status.
+
 ## 0.2.2 — 2026-09-30
 
 Compatible corpus, verification preparation and bounded source/QPE additions.

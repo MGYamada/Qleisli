@@ -1,6 +1,6 @@
 # Deliberate semantic counterexamples
 
-These twelve local mutations are **expected to compile and verify** under the
+These eighteen local mutations are **expected to compile and verify** under the
 language's type/resource rules, then disagree with the independently stated
 algorithm contract. They are curated semantic tests, not external translations,
 failed first attempts or a fourth input source. Upstream-derived source retains
@@ -18,3 +18,9 @@ flip the wrong constant-XOR bit, complement only one bit, erase RX's scalar,
 and mark the wrong phase-kickback key. Each names its finite reference contract
 in the manifest. Missing RX scalar leaves ordinary Z probabilities unchanged,
 so its phase-sensitive detection is required separately from the quickstart.
+
+The six 0.2.3 mutations prepare even parity instead of odd, exchange singlet Z/X
+order, invert threshold polarity, reverse constant bit order, replace RY by H,
+and erase the ZZ scalar. Singlet and ZZ probability distributions remain
+unchanged for all basis inputs; RY/H and the equality fault also agree on the
+zero-input quickstart. Nonzero columns and complex interference are required.

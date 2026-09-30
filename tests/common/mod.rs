@@ -26,6 +26,7 @@ impl SourceRoot {
             }
         };
         // Own the directory before writing so a failed write still cleans up.
+        root.write("Qargo.toml", include_str!("../Qargo.toml"));
         root.write("main.qli", source);
         root
     }

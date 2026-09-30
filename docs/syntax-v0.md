@@ -33,6 +33,10 @@ that supplement; they extend the base EBNF below. Follow its source/Rust
 migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
 accept eligible static parameter names with the corresponding declared access.
 
+This is the current **Qleisli edition 2026** grammar. Edition selection is
+source-tree configuration in [Qargo.toml](language-editions.md), not a new
+`.qli` language form, built-in operation or ordinary definition.
+
 ## Grouped imports added in product 0.2.2
 
 `use std::quantum::{h,x};` and nested groups such as

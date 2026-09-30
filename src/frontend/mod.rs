@@ -12,3 +12,7 @@ pub mod lexer;
 pub mod parser;
 pub mod project;
 pub mod sized;
+
+/// Language edition for the current grammar, in-memory source APIs and bundled
+/// library. This is independent of the product version and Rust's Cargo edition.
+pub const CURRENT_EDITION: &str = "2026";

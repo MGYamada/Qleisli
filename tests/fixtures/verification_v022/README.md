@@ -5,12 +5,13 @@ authority. These development fixtures add no public format, dependency,
 acceptance rule or proof. The original baseline comparisons use at most three qubits.
 
 [inventory.json](inventory.json) freezes 232 public enum constructors (including
-all 19 `RawOp` forms), public signatures and capacity constants in 131 source
-snapshots. Thirty-six coverage groups give producers, consumers, obligations,
-replacement packets and executable positive/negative references. Sixteen boundary
+all 19 `RawOp` forms), public signatures and capacity constants in 137 reviewed
+source snapshots, including the VM-23 arithmetic and matrix/capacity proof modules.
+Thirty-six coverage groups give producers, consumers, obligations,
+replacement packets and executable positive/negative references. Seventeen boundary
 contracts distinguish validity from independent semantic requests and retain
 types, ordered ports, effects, phases, source/evidence binding and limits.
-Twenty-seven capacity scopes distinguish acceptance, transport and execution,
+Twenty-eight capacity scopes distinguish acceptance, transport and execution,
 including module-wide grouped-import prefix and documentation copy budgets.
 Capacity references exercise representative successes/failures; frozen constants
 and guards retain the remaining endpoints without new maximum-size corpus runs.
@@ -27,6 +28,42 @@ general source preservation and future production replacement remain separate.
 Reviewed source/API snapshots and small-system harnesses are updated explicitly;
 the original 106-source capture and behavioral fixtures remain historical in
 `validation.json`. No comparison artifact is rebaselined.
+
+The user-selected v0.2.3 edition update separately reviews frontend configuration:
+every filesystem source tree explicitly declares edition 2026 in `Qargo.toml`.
+The new manifest reader is inventoried under source configuration, including its
+65,536-byte read limit; it introduces no IR acceptance rule or transfer of
+authority. The Python version-only change and Rust documentation/configuration
+source hashes are refreshed deliberately. Existing public type/IR declarations,
+source capacities, frozen comparison bytes, historical reports and external-disabled
+schemas are retained. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
+and the [edition contract](../../../docs/language-editions.md).
+The [registry review](registry-edition-v023-validation.json) rebuilds/audits both
+Lean packages, replays the runtime kernel and exports actual theorem types.
+It refreshes only the two package-version source pins; theorem types, domains,
+IDs and disabled external entries are unchanged.
+The later 0.2.3 corpus extension adds six cases and six semantic faults without
+changing this packet's 36-case/12-fault baseline. Its original manifest bytes
+are retained in [corpus-manifest.json](corpus-manifest.json) and
+[corpus-semantic-faults.json](corpus-semantic-faults.json), with their original
+hashes. Current manifests must retain that exact prefix and all original source
+pins. Added cases have their own first-source and numerical reports in
+[the 0.2.3 session](../../../corpus/authoring/v023-small/session.json).
+No behavior or comparison artifact is regenerated.
+The v0.2.2 review repairs explicitly refresh thirteen checking-source snapshots
+and two current harness pins, then add eight regression/source pins. Public
+declarations and capacities are unchanged except for the additive root
+signature/effect preflight method. The new
+[review records](../review_v022/README.md) cover capture diagnostics, commuting
+QFT candidates, generic/concrete source comparisons and small corpus execution.
+Original comparison artifacts, requests, corpus-prefix pins and historical
+reports retain their bytes and identities.
+The [VM-23 continuation](../verification_v023/README.md) inventories its arithmetic,
+reference-data and matrix/capacity proof modules and refreshes the kernel root
+and test import hashes. Existing Rust acceptance APIs, capacity constants and
+all original comparison bytes remain unchanged. Its separate registry report
+rebuilds actual theorem/source identities; no schema or production authority
+is enabled.
 The [current checkpoint](../authoring_sessions/measured-qpe-v021/checkpoint.md)
 separates producer compaction, checker accounting, component proofs and execution.
 
@@ -86,3 +123,10 @@ Local harness code is Apache-2.0. Katas-derived SWAP/Fredkin artifacts retain
 Copyright (c) Microsoft Corporation and their
 [MIT terms](../../../corpus/upstream/quantum_katas/LICENSE); original translations
 and notices remain in corpus. These local fixtures add no external corpus source.
+
+The 2026-10-01 bug repairs (#92/#93/#95) deliberately refresh the sized-source
+implementation and two Rust regression-harness pins, and add the private
+primitive catalog to the same source group. Public APIs and capacities are
+unchanged. Comparison request/artifact bytes, original decisions and historical
+reports are unchanged; new tests cover scope metadata, primitive omissions and
+source diagnostics. The VM-23 scalar proof extension changes proof source only.

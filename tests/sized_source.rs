@@ -15,6 +15,202 @@ fn reject(text: &str, code: &str) {
         "{e}"
     );
 }
+
+#[test]
+fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
+    let prefix = "// The diagnostic must point past this retained prefix.\n";
+    let overflow = format!(
+        "{prefix}pub unitary fn f(q: Q<Bits<{}+1>>) -> Q<Bit> {{ q }}",
+        i128::MAX
+    );
+    let variables = (0..33)
+        .map(|i| format!("static n{i}: Nat"))
+        .collect::<Vec<_>>()
+        .join(",");
+    let variable_limit =
+        format!("{prefix}pub unitary fn f[{variables}](q: Q<Bit>) -> Q<Bit> {{ q }}");
+    let branches = (0..7)
+        .map(|i| format!("n{i} != 0"))
+        .collect::<Vec<_>>()
+        .join(",");
+    let parameters = (0..7)
+        .map(|i| format!("static n{i}: Nat"))
+        .collect::<Vec<_>>()
+        .join(",");
+    let alternative_limit = format!(
+        "{prefix}pub unitary fn f[{parameters}](q: Q<Bit>) -> Q<Bit> requires {branches} {{ q }}"
+    );
+    // One variable, no quantum scaling: exhaustion occurs in elimination,
+    // before contradictory generated constants are considered on the next pass.
+    let constraints = (0..230)
+        .map(|i| format!("n <= {i}"))
+        .chain((0..230).map(|i| format!("n >= {i}")))
+        .collect::<Vec<_>>()
+        .join(",");
+    let work_limit = format!(
+        "{prefix}pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> requires {constraints} {{ q }}"
+    );
+    for (source, cause, obligation) in [
+        (
+            overflow,
+            "linear constant overflow",
+            "normalizing size expression",
+        ),
+        (
+            variable_limit,
+            "exceeds 32 variables",
+            "declared natural premises",
+        ),
+        (
+            alternative_limit,
+            "alternatives exceed 64",
+            "static comparison",
+        ),
+        (
+            work_limit,
+            "linear implication work exhausted",
+            "declared natural premises",
+        ),
+    ] {
+        let error = ParsedProgram::parse(sources(&source)).unwrap_err();
+        assert_eq!(error.code(), "limit", "{error}");
+        assert_eq!(error.module(), Some("main"));
+        assert!(error.span().start >= prefix.len(), "{cause}: {error}");
+        assert!(
+            error.span().end > error.span().start && error.span().end <= source.len(),
+            "{error}"
+        );
+        assert!(error.message().contains(cause), "{error}");
+        assert!(error.message().contains(obligation), "{error}");
+    }
+}
+#[test]
+fn substituted_size_overflow_points_to_the_caller_module() {
+    let dep = "pub unitary fn identity[static n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<n+1>> { q }";
+    let prefix = "// Callsite diagnostics retain the caller location.\n";
+    let main = format!(
+        "{prefix}use dep::identity; pub unitary fn f(q: Q<Bits<{}>>) -> Q<Bits<{}>> {{ identity[{}](q) }}",
+        i128::MAX,
+        i128::MAX,
+        i128::MAX
+    );
+    let error = ParsedProgram::parse(BTreeMap::from([
+        ("main".into(), main.clone()),
+        ("dep".into(), dep.into()),
+    ]))
+    .unwrap_err();
+    assert_eq!(error.code(), "limit");
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(error.span().start, main.rfind("identity[").unwrap());
+    assert!(
+        error.message().contains("substituted callee obligation"),
+        "{error}"
+    );
+    assert!(
+        error.message().contains("linear constant overflow"),
+        "{error}"
+    );
+}
+
+#[test]
+fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
+    // Expected schemas are source fixtures, independent of the shared catalog.
+    let cases = [
+        ("std::quantum::h", "q: Q<Bit>", "Q<Bit>", "h(q)", "unitary"),
+        ("std::quantum::x", "q: Q<Bit>", "Q<Bit>", "x(q)", "unitary"),
+        (
+            "std::quantum::cnot",
+            "q: Q<Bit>, r: Q<Bit>",
+            "(Q<Bit>,Q<Bit>)",
+            "cnot(q,r)",
+            "unitary",
+        ),
+        (
+            "std::quantum::phase",
+            "q: Q<Bit>",
+            "Q<Bit>",
+            "phase[1,2](q)",
+            "unitary",
+        ),
+        (
+            "std::quantum::controlled_phase",
+            "q: Q<Bit>, r: Q<Bit>",
+            "(Q<Bit>,Q<Bit>)",
+            "controlled_phase[1,2](q,r)",
+            "unitary",
+        ),
+        ("std::quantum::init0", "", "Q<Bit>", "init0()", "iso"),
+        (
+            "std::observe::measure_z",
+            "q: Q<Bit>",
+            "CBit",
+            "measure_z(q)",
+            "observe",
+        ),
+        (
+            "std::registers::take_bit",
+            "q: Q<Bits<2>>",
+            "(Q<Bit>,Q<Bits<1>>)",
+            "take_bit[2,0](q)",
+            "unitary",
+        ),
+        (
+            "std::registers::put_bit",
+            "q: Q<Bit>, r: Q<Bits<1>>",
+            "Q<Bits<2>>",
+            "put_bit[2,0](q,r)",
+            "unitary",
+        ),
+        (
+            "std::registers::empty",
+            "",
+            "Q<Bits<0>>",
+            "empty()",
+            "unitary",
+        ),
+        (
+            "std::registers::consume_empty",
+            "q: Q<Bits<0>>",
+            "()",
+            "consume_empty(q)",
+            "unitary",
+        ),
+        (
+            "std::classical::empty_bits",
+            "",
+            "CBits<0>",
+            "empty_bits()",
+            "unitary",
+        ),
+        (
+            "std::classical::prepend_bit",
+            "q: CBit, r: CBits<0>",
+            "CBits<1>",
+            "prepend_bit[0](q,r)",
+            "unitary",
+        ),
+    ];
+    for (path, inputs, output, body, effect) in cases {
+        let source = format!("use {path}; pub {effect} fn f({inputs}) -> {output} {{ {body} }}");
+        let prepared = ParsedProgram::parse(sources(&source))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let definition = &prepared.definitions()[prepared.root()];
+        assert_eq!(definition.effect(), effect);
+        assert_eq!(definition.steps().len(), 1);
+        assert_eq!(definition.steps()[0].primitive(), Some(path));
+        // An extra natural argument must fail at the shared signature boundary.
+        let name = path.rsplit("::").next().unwrap();
+        let tail = body.split_once('(').unwrap().1;
+        let bad = source.replace(body, &format!("{name}[0,0,0]({tail}"));
+        let error = ParsedProgram::parse(sources(&bad)).unwrap_err();
+        assert_eq!(error.code(), "static", "{path}: {error}");
+    }
+}
+
 fn measured_sources() -> BTreeMap<String, PathBuf> {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     [
@@ -844,6 +1040,191 @@ fn evolution(n: u32) -> BTreeMap<String, OperationBinding> {
             naturals(&[("n", n), ("j", 1), ("d", 3)]),
         ),
     )])
+}
+
+fn delayed_fourier_source() -> String {
+    include_str!("fixtures/sized_clients/delayed_fourier.qli").into()
+}
+
+fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::sized::HierarchyProposal {
+    ParsedProgram::parse(BTreeMap::from([("fourier".into(), source.into())]))
+        .unwrap()
+        .instantiate("fourier::fourier", naturals(&[("n", n)]), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap()
+}
+
+fn inverse_fourier_source_proposal(
+    source: &str,
+    n: u32,
+) -> qleisli::frontend::sized::HierarchyProposal {
+    let client = "use fourier::fourier; pub unitary fn inverse[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n],q) }";
+    ParsedProgram::parse(BTreeMap::from([
+        ("fourier".into(), source.into()),
+        ("client".into(), client.into()),
+    ]))
+    .unwrap()
+    .instantiate("client::inverse", naturals(&[("n", n)]), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap()
+    .lower()
+    .unwrap()
+}
+
+#[test]
+fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
+    for (source, reason) in [
+        (
+            "use std::quantum::h; pub iso fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
+            "iso roots",
+        ),
+        (
+            "pub unitary fn f(c: CBit) -> CBit { c }",
+            "classical entry values",
+        ),
+        (
+            "use std::classical::empty_bits; pub unitary fn f() -> CBits<0> { empty_bits() }",
+            "classical results",
+        ),
+        (
+            "use std::observe::measure_z; pub observe fn f(q: Q<Bit>) -> CBit { measure_z(q) }",
+            "exactly one CBits",
+        ),
+    ] {
+        let prepared = ParsedProgram::parse(sources(source))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let error = prepared.check_lowering_profile().unwrap_err();
+        assert_eq!(error.code(), "unsupported");
+        assert!(error.message().contains(reason), "{error}");
+        assert_eq!(error.module(), Some("main"));
+        assert!(error.span().end > error.span().start && error.span().end <= source.len());
+        assert_eq!(prepared.lower().unwrap_err().message(), error.message());
+    }
+}
+
+#[test]
+fn root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source() {
+    let textbook = include_str!("../corpus/sized/qualtran_qft/fourier.qli");
+    let delayed = delayed_fourier_source();
+    for n in 1..=3 {
+        let standard = fourier_source_proposal(textbook, n);
+        let reordered = fourier_source_proposal(&delayed, n);
+        assert_eq!(
+            reordered
+                .source()
+                .instantiation()
+                .program()
+                .source("fourier"),
+            Some(delayed.as_str())
+        );
+        for p in [&standard, &reordered] {
+            let graph = std::str::from_utf8(p.payload()).unwrap();
+            let precursor = std::str::from_utf8(p.lowering_precursor()).unwrap();
+            let definitions = graph.split_once(",\"meanings\":").unwrap().0;
+            let last_sequence = definitions.rsplit_once("\"children\":[").unwrap().1;
+            let children = last_sequence.split_once(']').unwrap().0.split(',').count();
+            assert!(
+                (4..=5).contains(&children),
+                "root must use the recursive Fourier shell"
+            );
+            assert!(precursor.len() > graph.len());
+        }
+        assert_eq!(
+            std::str::from_utf8(standard.payload())
+                .unwrap()
+                .matches("\"interface\":")
+                .count(),
+            std::str::from_utf8(reordered.payload())
+                .unwrap()
+                .matches("\"interface\":")
+                .count(),
+            "equivalent traces use the same bounded candidate shape",
+        );
+    }
+}
+
+#[test]
+#[ignore = "requires the separately built and audited Lean kernel"]
+fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
+    use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
+    let kernel =
+        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let limits = ExecutionLimits {
+        max_amplitudes: 4096,
+        max_steps: 1_000_000,
+    };
+    let textbook = include_str!("../corpus/sized/qualtran_qft/fourier.qli");
+    let delayed = delayed_fourier_source();
+    for n in 1..=3 {
+        for inverse in [false, true] {
+            let mut work = vec![];
+            for source in [textbook, delayed.as_str()] {
+                let p = if inverse {
+                    inverse_fourier_source_proposal(source, n)
+                } else {
+                    fourier_source_proposal(source, n)
+                };
+                // This separate named request copies only the exact interface;
+                // its positive-sign mathematical meaning is independent of IR.
+                let comparison = std::str::from_utf8(p.comparison_request()).unwrap();
+                let interface = comparison
+                    .split_once("\"interface\":")
+                    .unwrap()
+                    .1
+                    .split_once(",\"meanings\":")
+                    .unwrap()
+                    .0;
+                let request = format!(
+                    r#"{{"format":"qleisli.hierarchy-request","version":1,"profile":"qpe-dyadic8-v1","kind":"equation","effect":"unitary","interface":{interface},"meanings":[{{"interface":{interface},"body":{{"tag":"qft","width":{n}}}}}],"entry":0}}"#
+                );
+                // The current named Fourier contract requires identical input/output
+                // owners. Direct source roots retain their fresh output owner;
+                // their independent matrix oracle below checks the full meaning.
+                if !inverse && n == 1 && source == textbook {
+                    let error = kernel
+                        .check_against(p.payload(), request.as_bytes())
+                        .unwrap_err();
+                    assert_eq!(error.code, "contract");
+                }
+                let checked = kernel
+                    .check_against(p.payload(), p.comparison_request())
+                    .unwrap_or_else(|error| {
+                        panic!("width {n}, delayed {}: {error}", source == delayed)
+                    });
+                work.push(checked.reconstruction().structural_work());
+                let d = 1usize << n;
+                let mut input = vec![[0.0, 0.0]; d * d];
+                for x in 0..d {
+                    input[x + d * x] = [1.0, 0.0];
+                }
+                let output = checked.execute(&input, d, limits).unwrap();
+                let expected = (0..d * d)
+                    .map(|i| {
+                        let sign = if inverse { -1.0 } else { 1.0 };
+                        let z = phase(sign * ((i / d) * (i % d)) as f64 / d as f64);
+                        [z[0] / (d as f64).sqrt(), z[1] / (d as f64).sqrt()]
+                    })
+                    .collect::<Vec<_>>();
+                close(&output.amplitudes, &expected);
+            }
+            println!(
+                "Fourier n={n}, inverse={inverse}: textbook work {}, delayed work {}",
+                work[0], work[1]
+            );
+            assert_eq!(
+                work[0], work[1],
+                "commuting variants share the same checking work"
+            );
+        }
+    }
 }
 
 #[test]

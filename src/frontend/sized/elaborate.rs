@@ -1,5 +1,6 @@
 //! Untrusted concrete, source-order ownership proposal. No verified IR is made.
 use super::ast::{self, *};
+use super::primitive::{Primitive, Size, TypeShape};
 use super::{Error, Instantiation, ParsedProgram, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -50,6 +51,13 @@ impl SourceType {
     }
     pub fn is_quantum(&self) -> bool {
         matches!(self.kind, TypeKind::Bit | TypeKind::Bits(_))
+    }
+    fn quantum_group(&self) -> bool {
+        match &self.kind {
+            TypeKind::Bit | TypeKind::Bits(_) => true,
+            TypeKind::Tuple(fields) => !fields.is_empty() && fields.iter().all(Self::quantum_group),
+            TypeKind::CBit | TypeKind::CBits(_) => false,
+        }
     }
     fn linear(&self) -> bool {
         self.is_quantum() || self.fields().iter().any(Self::linear)
@@ -176,7 +184,7 @@ pub struct SourceStep {
 }
 #[derive(Clone, Debug)]
 enum StepKind {
-    Primitive(String, Vec<u32>),
+    Primitive(Primitive, Vec<u32>),
     Call {
         definition: usize,
         operations: BTreeMap<String, SourceOperation>,
@@ -197,6 +205,12 @@ impl SourceStep {
     }
     pub fn primitive(&self) -> Option<&str> {
         match &self.kind {
+            StepKind::Primitive(name, _) => Some(name.signature().path),
+            _ => None,
+        }
+    }
+    pub(super) fn primitive_kind(&self) -> Option<Primitive> {
+        match self.kind {
             StepKind::Primitive(name, _) => Some(name),
             _ => None,
         }
@@ -298,7 +312,15 @@ pub struct ElaboratedProgram {
     folds: usize,
 }
 impl ElaboratedProgram {
-    /// Produce bounded untrusted hierarchical transport. This performs no native
+    /// Preflight the root signature and declared effect against the selected
+    /// hierarchical transport profile. Generic source checking is separate;
+    /// `lower` performs body and operation-specific capability checks before
+    /// generating a proposal. This preflight issues no acceptance evidence.
+    pub fn check_lowering_profile(&self) -> Result<()> {
+        super::lower::check_profile(self)
+    }
+    /// Check the root profile, body and operation capabilities, then produce
+    /// bounded untrusted hierarchical transport. This performs no native
     /// acceptance and retains this source-order program for preservation checks.
     pub fn lower(&self) -> Result<super::HierarchyProposal> {
         super::lower::lower(self)
@@ -709,15 +731,19 @@ impl Builder<'_> {
     }
     fn provider_type(&self, id: usize, span: Span) -> Result<SourceType> {
         let definition = &self.definitions[id];
+        let group = match definition.inputs.as_slice() {
+            [input] => input.ty.clone(),
+            inputs => tuple(inputs.iter().map(|input| input.ty.clone()).collect()),
+        };
         if definition.effect != Effect::Unitary
-            || definition.inputs.len() != 1
-            || !definition.output.ty.is_quantum()
-            || definition.inputs[0].ty != definition.output.ty
+            || definition.inputs.is_empty()
+            || !group.quantum_group()
+            || group != definition.output.ty
         {
             return Err(error(
                 "type",
                 span,
-                "provider must be a single-input quantum unitary",
+                "provider must be unitary and preserve its complete quantum input group",
             ));
         }
         Ok(definition.output.ty.clone())
@@ -1008,7 +1034,7 @@ impl Builder<'_> {
                     return self.operation_step(StepKind::Apply(op), values, frame, span);
                 }
                 let path = self.resolve(name, scope, frame, span)?;
-                if path.starts_with("std::") {
+                if let Some(kind) = Primitive::lookup(&path) {
                     let naturals = arguments
                         .iter()
                         .map(|a| {
@@ -1026,9 +1052,9 @@ impl Builder<'_> {
                         .iter()
                         .map(|e| self.expr(e, scope, frame, depth))
                         .collect::<Result<_>>()?;
-                    let (types, output, effect) = primitive(&path, &naturals, span)?;
+                    let (types, output, effect) = primitive(kind, &naturals, span)?;
                     self.step(
-                        StepKind::Primitive(path, naturals),
+                        StepKind::Primitive(kind, naturals),
                         types,
                         output,
                         effect,
@@ -1346,28 +1372,22 @@ fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Fr
         }
     }
 }
-fn primitive(path: &str, ns: &[u32], span: Span) -> Result<(Vec<SourceType>, SourceType, Effect)> {
-    let tuple2 = || tuple(vec![bit(), bit()]);
-    let natural_arity = match path {
-        "std::quantum::phase"
-        | "std::quantum::controlled_phase"
-        | "std::registers::take_bit"
-        | "std::registers::put_bit" => 2,
-        "std::classical::prepend_bit" => 1,
-        _ => 0,
-    };
-    if ns.len() != natural_arity {
+fn primitive(
+    kind: Primitive,
+    ns: &[u32],
+    span: Span,
+) -> Result<(Vec<SourceType>, SourceType, Effect)> {
+    let signature = kind.signature();
+    if ns.len() != signature.natural_arity {
         return Err(error(
             "static",
             span,
             "concrete primitive natural arity mismatch",
         ));
     }
-    let unitary = Effect::Unitary;
-    Ok(match path {
-        "std::quantum::h" | "std::quantum::x" => (vec![bit()], bit(), unitary),
-        "std::quantum::cnot" => (vec![bit(), bit()], tuple2(), unitary),
-        "std::quantum::phase" | "std::quantum::controlled_phase" => {
+    // These are concrete preparation capacities, not generic source premises.
+    match kind {
+        Primitive::Phase | Primitive::ControlledPhase => {
             if ns[1] > 8 || ns[0] >= (1u32 << ns[1]) {
                 return Err(error(
                     "limit",
@@ -1375,77 +1395,57 @@ fn primitive(path: &str, ns: &[u32], span: Span) -> Result<(Vec<SourceType>, Sou
                     "dyadic phase requires k <= 8 and j < 2^k",
                 ));
             }
-            if path == "std::quantum::phase" {
-                (vec![bit()], bit(), unitary)
-            } else {
-                (vec![bit(), bit()], tuple2(), unitary)
-            }
         }
-        "std::registers::take_bit" | "std::registers::put_bit" => {
-            let (n, k) = (ns[0], ns[1]);
-            if n > 8 || k >= n {
+        Primitive::TakeBit | Primitive::PutBit => {
+            if ns[0] > 8 || ns[1] >= ns[0] {
                 return Err(error("size", span, "concrete register requires k < n <= 8"));
             }
-            let whole = SourceType {
-                kind: TypeKind::Bits(n),
-            };
-            let rest = SourceType {
-                kind: TypeKind::Bits(n - 1),
-            };
-            if path == "std::registers::take_bit" {
-                (vec![whole], tuple(vec![bit(), rest]), unitary)
-            } else {
-                (vec![bit(), rest], whole, unitary)
-            }
         }
-        "std::registers::empty" => (
-            vec![],
-            SourceType {
-                kind: TypeKind::Bits(0),
-            },
-            unitary,
-        ),
-        "std::registers::consume_empty" => (
-            vec![SourceType {
-                kind: TypeKind::Bits(0),
-            }],
-            tuple(vec![]),
-            unitary,
-        ),
-        "std::quantum::init0" => (vec![], bit(), Effect::Iso),
-        "std::observe::measure_z" => (
-            vec![bit()],
-            SourceType {
-                kind: TypeKind::CBit,
-            },
-            Effect::Observe,
-        ),
-        "std::classical::empty_bits" => (
-            vec![],
-            SourceType {
-                kind: TypeKind::CBits(0),
-            },
-            unitary,
-        ),
-        "std::classical::prepend_bit" => {
+        Primitive::PrependBit => {
             if ns[0] >= 8 {
                 return Err(error("limit", span, "classical pack exceeds eight bits"));
             }
-            (
-                vec![
-                    SourceType {
-                        kind: TypeKind::CBit,
-                    },
-                    SourceType {
-                        kind: TypeKind::CBits(ns[0]),
-                    },
-                ],
-                SourceType {
-                    kind: TypeKind::CBits(ns[0] + 1),
-                },
-                unitary,
-            )
         }
-        _ => return Err(error("unsupported", span, "unsupported concrete primitive")),
-    })
+        Primitive::H
+        | Primitive::X
+        | Primitive::Cnot
+        | Primitive::Init0
+        | Primitive::MeasureZ
+        | Primitive::Empty
+        | Primitive::ConsumeEmpty
+        | Primitive::EmptyBits => {}
+    }
+    fn size(size: Size, ns: &[u32], span: Span) -> Result<u32> {
+        match size {
+            Size::Constant(n) => Ok(n),
+            Size::Argument(index, offset) => ns[index]
+                .checked_add_signed(i32::from(offset))
+                .ok_or_else(|| error("limit", span, "concrete primitive register size overflow")),
+        }
+    }
+    fn shape(t: TypeShape, ns: &[u32], span: Span) -> Result<SourceType> {
+        Ok(SourceType {
+            kind: match t {
+                TypeShape::Bit => TypeKind::Bit,
+                TypeShape::CBit => TypeKind::CBit,
+                TypeShape::Bits(n) => TypeKind::Bits(size(n, ns, span)?),
+                TypeShape::CBits(n) => TypeKind::CBits(size(n, ns, span)?),
+                TypeShape::Tuple(fields) => TypeKind::Tuple(
+                    fields
+                        .iter()
+                        .map(|t| shape(*t, ns, span))
+                        .collect::<Result<_>>()?,
+                ),
+            },
+        })
+    }
+    Ok((
+        signature
+            .inputs
+            .iter()
+            .map(|t| shape(*t, ns, span))
+            .collect::<Result<_>>()?,
+        shape(signature.output, ns, span)?,
+        signature.effect,
+    ))
 }

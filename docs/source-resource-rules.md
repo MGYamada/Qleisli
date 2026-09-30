@@ -12,7 +12,7 @@ rather than silently changing the language through this calculus.
 
 The result proved here is preservation of ownership accounting by successful
 derivations of this calculus. The complete calculus below has not been machine
-checked. A separate [Lean development](lean-resource-proof.md) checks its
+checked. A separate [Lean development](../lean/README.md) checks its
 ownership-accounting projection, with explicit scope limits. Neither result
 proves that every Rust execution implements these rules or establishes
 source-to-IR quantum meaning preservation. The [source semantics](source-semantics.md)
@@ -596,7 +596,7 @@ necessary: the source occurrence checks do not replace `verify`.
 3. Transfer the [paper ideal-soundness theorems Q1–Q3](source-soundness.md)
    for the explicit rules to all source-checker paths, with exact phases,
    adaptive composition, and arbitrary external references.
-4. Extend the [Lean accounting model](lean-resource-proof.md) to the complete
+4. Extend the [Lean accounting model](../lean/README.md) to the complete
    source rules when it helps resolve a specification obligation, and verify
    the Rust correspondence. Lexical/effect/scope/history rules and quantum
    semantics remain outside that ownership model. A separate small Kraus

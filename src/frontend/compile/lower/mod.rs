@@ -14,7 +14,7 @@ mod scope;
 mod transforms;
 mod value;
 
-use value::{Env, Register, Slot, Value, env_size};
+use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
 use crate::ir::*;
@@ -250,7 +250,7 @@ impl Lowerer<'_, '_> {
                     ),
                 ));
             }
-            env.insert(name.text.clone(), Some(value));
+            env.insert(name.text.clone(), Binding::Live(value));
         }
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
@@ -407,7 +407,7 @@ impl Lowerer<'_, '_> {
                 }
                 if env
                     .get(&name.text)
-                    .and_then(Option::as_ref)
+                    .and_then(Binding::as_ref)
                     .is_some_and(Value::owns_quantum)
                 {
                     return Err(self.error(
@@ -417,7 +417,7 @@ impl Lowerer<'_, '_> {
                         "binding would hide unconsumed quantum ownership",
                     ));
                 }
-                env.insert(name.text.clone(), Some(value));
+                env.insert(name.text.clone(), Binding::Live(value));
             }
             PatternKind::Tuple(patterns) => {
                 let Some(fields) = value
@@ -714,17 +714,36 @@ impl Lowerer<'_, '_> {
                         format!("unknown value `{}`", name.text),
                     )
                 })?;
-                let value = binding.as_ref().ok_or_else(|| {
-                    self.error(
-                        module,
-                        name.span,
-                        ErrorCode::Ownership,
-                        format!(
-                            "quantum ownership `{}` has already been consumed",
-                            name.text
-                        ),
-                    )
-                })?;
+                let value = match binding {
+                    Binding::Live(value) => value,
+                    Binding::Consumed => {
+                        return Err(self.error(
+                            module,
+                            name.span,
+                            ErrorCode::Ownership,
+                            format!(
+                                "quantum ownership `{}` has already been consumed",
+                                name.text
+                            ),
+                        ));
+                    }
+                    Binding::Hidden { quantum } => {
+                        let repair = if *quantum {
+                            "include it in the source data with `join` and access it through the data binder of three-argument `with_computed`, or restructure the body"
+                        } else {
+                            "use a closed classical expression or restructure the body"
+                        };
+                        return Err(self.error(
+                            module,
+                            name.span,
+                            ErrorCode::Ownership,
+                            format!(
+                                "with_computed body cannot capture outer binding `{}`; {repair}",
+                                name.text
+                            ),
+                        ));
+                    }
+                };
                 self.compiler
                     .charge(module, name.span, value.tree_size().nodes)?;
                 Ok(if value.owns_quantum() {
@@ -1139,17 +1158,16 @@ impl Lowerer<'_, '_> {
         self.compiler.charge(module, body.span, env_size(env))?;
         let mut local: Env = env
             .iter()
-            .map(|(name, value)| {
-                (
-                    name.clone(),
-                    value
-                        .as_ref()
-                        .filter(|value| !value.owns_quantum())
-                        .cloned(),
-                )
+            .map(|(name, binding)| {
+                let visible = if binding.as_ref().is_some_and(Value::owns_quantum) {
+                    binding.hidden()
+                } else {
+                    binding.clone()
+                };
+                (name.clone(), visible)
             })
             .collect();
-        local.insert(binder.text.clone(), Some(ancilla));
+        local.insert(binder.text.clone(), Binding::Live(ancilla));
         let start = self.operations.len();
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();

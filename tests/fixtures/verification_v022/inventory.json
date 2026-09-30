@@ -159,7 +159,7 @@
       "producer": "OpenQASM adapter, Python subprocess Client and optional PyQIR reader",
       "consumer": "Rust interop import; independent finite verify; QIR profile/LLVM checks",
       "obligation": "Only declared terminal exact profile; original source/byte and ordered-result binding; unsupported capabilities reject rather than change meaning",
-      "reference": "docs/connections-v021.md; docs/interop-m1.1.md",
+      "reference": "docs/interop-m1.1.md",
       "replacement": [
         "VM-28"
       ],
@@ -1843,7 +1843,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "b1511c14d51561517d030f341ea1e678d9fbdb9c368984f4ea89e3f2f1c490a4",
+      "sha256": "3be31bb7abf4d9fc6c9b938f9f84e370c6dd12ff3ce13ff138cc8358ca062a68",
       "group": "hierarchy",
       "surface": null
     },
@@ -1863,6 +1863,12 @@
       "path": "lean-kernel/QleisliKernel/Dag.lean",
       "sha256": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Exact.lean",
+      "sha256": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+      "group": "scalar",
       "surface": null
     },
     {
@@ -2130,6 +2136,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Semantics/Exact.lean",
+      "sha256": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303",
+      "group": "scalar",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean",
       "sha256": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
       "group": "hierarchy",
@@ -2155,13 +2167,13 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "7663f5edcc24c730d8e7e8ea8dbbce39a97396022e851167b84c1a6410dd94f6",
+      "sha256": "db9d311f773e3d1ddb71080fdef1593ab436e4c6481507ae4c1674fcf7e86130",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "8ae408c9c326da44a9e8c2148cf5c7dffc3ac0878911f10e91ca12b942c85f1c",
+      "sha256": "46a87c601775d9f9fc58f856b41a33d37c0fe674482991a20865509be1341cc9",
       "group": "foreign",
       "surface": null
     },
@@ -2247,7 +2259,7 @@
     },
     {
       "path": "src/bin/qleisli/sized.rs",
-      "sha256": "f359234d06e8c83971f11c52501d0bb9bc465a9c04022da54419eca4e20741ea",
+      "sha256": "8793aace6523a44156c1cbaa47a33796fc7134077d3aa970878aa857203e0686",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2473,7 +2485,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "1d6b0442a9f0fc8965d08878e928315ff4151f87c40e46eb06110efae2b48343",
+      "sha256": "54b16d5edb2c9e8ed4f5d4184527e94518bd82f6d4624653c2374fad06641edd",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2493,7 +2505,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "7b8a1639f3c1d92dc2351e15ac60ec5e3e1576db5b275badc78abe63b5770e19",
+      "sha256": "7be4d95f279f9babf80efbafd9f40737b5bab36b90e5acbaac4018bdaae5cd8a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2523,7 +2535,7 @@
     },
     {
       "path": "src/frontend/compile/lower/scope.rs",
-      "sha256": "b6decd7fb104cf728a0948c76ba2b639b22c226c556ef8ccbacea836fac846e5",
+      "sha256": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2543,7 +2555,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "2512441ffdb5f8106776d3cd33310f9fc7b76924342d46d87021ec7b821687f5",
+      "sha256": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2652,7 +2664,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "4cfb1798df3ebf9e3136b3f3cab866e881cc46a312a6f0d2d0e5bd168497bfbd",
+      "sha256": "342b8de6e0dacfe18dcf923ce083c6d2c8c1c5dc75760b24ed75b2234c2fe86a",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2692,7 +2704,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "07d7d60769bd88e0fc7429182506f5d44624c2d3ee5f7812ba46907b153829b3",
+      "sha256": "72e2e29951ea1dbe5a51df0c11549ab13503bf57158658ebb037081de11d69e3",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2714,6 +2726,18 @@
       }
     },
     {
+      "path": "src/frontend/project/edition.rs",
+      "sha256": "0c9e5d5166525faf425dcbce5a73ea5989569d7696e72832d7a57f0f006b0b5f",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_MANIFEST_BYTES: u64 = 65_536;"
+        ]
+      }
+    },
+    {
       "path": "src/frontend/project/source_file.rs",
       "sha256": "553a9067c3de4c09996206c5584905b362798274cf47c9bed072878123b95be4",
       "group": "source",
@@ -2725,7 +2749,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "652d33bfebdc800f070cc94160d004e36938601e57832ecb1a88ab41d105636c",
+      "sha256": "5c42c8e42997a8aa5cd8c9620391f8ba35ebda4539be4df3bea14693e077f9ac",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -2772,7 +2796,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "796a9b05d960d400ffa7ace310fed7727f28c2500f8d5840899e419fe47f40aa",
+      "sha256": "55e3628ab17be92b843134b0aafb33023928f47950c34062e992a06b3a1bcedf",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -2782,7 +2806,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "5c8058f2d6cd003892398c9c2928a414495157277e5a3a90ac87bc3ff3be99ba",
+      "sha256": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -2796,6 +2820,7 @@
         "functions": [
           "pub fn call_instances(&self) -> usize",
           "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_lowering_profile(&self) -> Result<()>",
           "pub fn child(&self) -> Option<&Self>",
           "pub fn definition(&self) -> Option<usize>",
           "pub fn definitions(&self) -> &[SourceDefinition]",
@@ -2844,7 +2869,7 @@
     },
     {
       "path": "src/frontend/sized/fourier.rs",
-      "sha256": "438f5f55e4d022a83eebb52bbc42c52080e49f29811edc279a8980703ed9cfcd",
+      "sha256": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2854,17 +2879,17 @@
     },
     {
       "path": "src/frontend/sized/linear.rs",
-      "sha256": "4396d9a0c0eda67a53b398850d1f0960506c0c5ca09f5c0c61d20733a7cd7002",
+      "sha256": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
       "group": "sized-source",
       "surface": {
         "declarations": [],
         "functions": [
           "pub fn add(&self, b: &Self) -> Result<Self>",
-          "pub fn compare(&self, left: Linear, op: Compare, right: Linear, truth: bool) -> Result<Self>",
+          "pub fn compare( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, ) -> Result<Self>",
           "pub fn constant(n: i128) -> Self",
-          "pub fn feasible(&self) -> Result<bool>",
+          "pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool>",
           "pub fn natural(names: impl IntoIterator<Item = String>) -> Result<Self>",
-          "pub fn proves_le(&self, a: &Linear, b: &Linear) -> Result<bool>",
+          "pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool>",
           "pub fn push(&self, inequalities: &[Linear]) -> Self",
           "pub fn scale(&self, n: i128) -> Result<Self>",
           "pub fn sub(&self, b: &Self) -> Result<Self>",
@@ -2875,7 +2900,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "fe1b84aabf6fe90f189fe2d75dc743a1d9222d696834a76ac8c94c48a9ce5f31",
+      "sha256": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -2897,7 +2922,7 @@
     },
     {
       "path": "src/frontend/sized/lower/preservation.rs",
-      "sha256": "a5454257a8cc801426e8e7ba5bd9af3b8a12a60ac3e3b8479c1a908fc17478a0",
+      "sha256": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
       "surface": {
         "declarations": [
           "FramePort",
@@ -2938,8 +2963,21 @@
       }
     },
     {
+      "path": "src/frontend/sized/primitive.rs",
+      "sha256": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn signature(self) -> Signature"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/sized/qpe.rs",
-      "sha256": "0d2d0c1b5b6826fd7b5b75e87276b062e6257a649ada5b82496897896b37137a",
+      "sha256": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -3049,7 +3087,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "eed2e8a5895b800b87ecc4558e7b0db6b77fa6f98b765dd6f5046cdb0bb400fc",
+      "sha256": "66f5c02036a56865b47dfb9a3187f997f9d3e0941ce59f82e41e0bb1423928f5",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3255,7 +3293,7 @@
     },
     {
       "path": "src/ir.rs",
-      "sha256": "6a4b3b7cea817dc7be4adecbe69025dc14be5944bf655c1881c246e9130e3818",
+      "sha256": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3297,7 +3335,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "4e33ee4db0810312ed7f3fdfa5cc588f090a67ce6be4505d0f2036206726b0e6",
+      "sha256": "419cc86fe9193c9b91823dc46e55cd3fb31ef82922ae18216fffd34643a6acd4",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3361,7 +3399,7 @@
     },
     {
       "path": "src/verify.rs",
-      "sha256": "3a2dd1b99fad87d962ca09a011f3008e01c9e0be033b095b2062c7d33ff44114",
+      "sha256": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3403,6 +3441,18 @@
       "sha256": "c4222b357458ae7332591b4a0db2b7b96910afdb2eae4aea13a336d65d8767b0",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/ExactCapacity.lean",
+      "sha256": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/ExactMatrix.lean",
+      "sha256": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+      "group": "scalar",
+      "surface": null
     }
   ],
   "boundaries": [
@@ -3417,7 +3467,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Untrusted complete owned RawProgram; private VerifiedProgram issued only by verification",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "ValidationError; no VerifiedProgram on any failure",
       "replacement": [
@@ -3439,7 +3489,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -3460,7 +3510,7 @@
       "binding": "Reverify and extract BOTH raw bodies; compare full operators and ordered outputs, then freeze graph",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -3480,7 +3530,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -3501,7 +3551,7 @@
       "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
       "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
       "failure": "Reject shape/domain/phase/request/identity mismatch and capacity; no Lean seal or production hierarchy value",
       "replacement": [
         "VM-23",
@@ -3522,7 +3572,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Same generated IR independently verified; source-preservation proof remains open",
       "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
-      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
+      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; source tree4096/depth64; calls/static expansion1M work/depth64; source policy1MiB/file16MiB/project or explicit legacy",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -3541,7 +3591,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
+      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -3732,6 +3782,26 @@
         "VM-27",
         "VM-28"
       ]
+    },
+    {
+      "id": "source-edition-configuration",
+      "group": "source",
+      "entry_points": [
+        "Project::load",
+        "Project::load_with_policy",
+        "read_source_file",
+        "ParsedProgram::load"
+      ],
+      "status": "v0.2.3 user-selected frontend configuration; Rust checker authority unchanged",
+      "request": "Explicit schema-version = 2 and string [qrate].edition = 2026 in the closest enclosing Qargo.toml; no default. Current in-memory parsers use 2026.",
+      "binding": "Each filesystem source checks its enclosing manifest before parsing; bundled std manifest is embedded with source. QLT receives configuration checking only. Metadata is not semantic evidence.",
+      "encoding": "TOML UTF-8; language edition independent of product version and Rust edition; module roots unchanged.",
+      "domain": "Only Qleisli edition 2026; no future-edition or cross-qrate resolution guarantee.",
+      "limits": "65536 manifest bytes, independent of source byte budgets; regular-file reads with existing no-follow policy.",
+      "failure": "Missing/invalid/unsupported/oversized/non-UTF-8/symlink manifests fail without skipping a nearer manifest. Narrow incompatible v0.2.3 requirement explicitly selected by the user.",
+      "replacement": [
+        "VM-29"
+      ]
     }
   ],
   "capacities": [
@@ -3863,7 +3933,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -3905,7 +3975,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; CLI shots1..1M, host attempts≤1M, seedu64",
+      "value": "SampleLimits caller/default bounds; CLI shots1..1M, host attempts\u22641M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [
@@ -4015,6 +4085,16 @@
       "replacement": [
         "VM-28"
       ]
+    },
+    {
+      "id": "source-manifest-bytes",
+      "scope": "Frontend edition manifest read only, separately from .qli source limits",
+      "value": "MAX_MANIFEST_BYTES = 65536",
+      "source": "src/frontend/project/edition.rs",
+      "test": "tests/editions.rs#manifest_bytes_are_bounded_and_decoded_independently_of_source_policy",
+      "replacement": [
+        "VM-29"
+      ]
     }
   ],
   "corpus": {
@@ -4038,7 +4118,6 @@
       "corpus/authoring/v022-simple/check-initial.json": "cc3b819ef38acf1c48773bf7e730f6606ad26d2191cca24f383979d65c80887e",
       "corpus/authoring/v022-simple/semantic-validation.json": "4539e0a8e7065b0e1dcd5f72c22f406af0a280aa2e759d330c947fab9dd55cfc",
       "corpus/authoring/v022-simple/session.json": "8fa9f929aa453728cab3a206643be8ce555276b37986b033ad23c0a304826373",
-      "corpus/manifest.json": "6a571c10c44d09e4861c7b7a702052c4b248f5343f259a4dfa3de6327c319f31",
       "corpus/negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
       "corpus/negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
       "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
@@ -4062,12 +4141,13 @@
       "corpus/quantum_katas/swap2/README.md": "3fcdbc4a08fcef4efba29ce6d06af3e1c4b59cac24e1e65af558e569e33f53a3",
       "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
       "corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
-      "corpus/semantic_faults/manifest.json": "6f8564810fba9b7e8ab012868022d993b1b4393c27ce035db500b454a809ef89",
       "corpus/validation-v0.2.2.json": "0cde88f0e1e98f5ed8acf0e59b3b983bc9e663f37c44e54eaefe81af10bd181c",
       "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
       "examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
       "examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
-      "examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97"
+      "examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
+      "tests/fixtures/verification_v022/corpus-manifest.json": "6a571c10c44d09e4861c7b7a702052c4b248f5343f259a4dfa3de6327c319f31",
+      "tests/fixtures/verification_v022/corpus-semantic-faults.json": "6f8564810fba9b7e8ab012868022d993b1b4393c27ce035db500b454a809ef89"
     }
   },
   "native_packaging": [
@@ -4142,7 +4222,7 @@
       "tests/hierarchical_host.rs": "81d5dae3c8b987827370a473bd336063bce109adf247e4b96fbfa3ab96ca8654",
       "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded",
       "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
-      "scripts/compile_sized_corpus.py": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+      "scripts/compile_sized_corpus.py": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed",
       "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
       "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
       "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
@@ -4162,11 +4242,19 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "39f86891503777906075d746eb19ac2fe0748c37ab6df09174595c8d1fbcc422",
+      "tests/sized_source.rs": "5d291e54376fcff004146fab52a6f7d1aa7328ce11f46195cce001464778e531",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
-      "tests/sized_cli.rs": "f4e4103f71bf2edfae77d7d0f5ffe27054f5722a37e47b84e337e7b255171925",
+      "tests/sized_cli.rs": "2a40c090af36ac1da8571797d9436c612f4c41c54628903b2fa24ac85a3507a6",
       "tests/hierarchical_qpe_host.rs": "b3d53d5f61c05d661cb498514a699a4a6e1a59e9b502a02df61120a6c581b81d",
-      "scripts/test_qpe_instrument_host.py": "6ba0570287c733d295b54d3840b49b9099bd9cec6c7603e58c0735c1ab495b13"
+      "scripts/test_qpe_instrument_host.py": "6ba0570287c733d295b54d3840b49b9099bd9cec6c7603e58c0735c1ab495b13",
+      "tests/connections.rs": "263ff9fcea227374b09f6b0300506816182526bcff583220795ca0dcc3afa4d4",
+      "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
+      "tests/with_computed_diagnostics.rs": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc",
+      "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
+      "tests/sized_review_diagnostics.rs": "5ae10ddceafb9d8dfa1dcdb68cd1c98c58ca2f72965556bf1720865b06c96ab6",
+      "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+      "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
+      "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9"
     },
     "reference": "scripts/test_verification_baseline.py: direct complex basis columns with explicit scratch cleanup; fixed source distributions; never issues evidence",
     "commands": [

@@ -1,7 +1,7 @@
 # Typed shared QFT graph development record
 
 This informed 2026-09-29 packet continues the full v0.2.0 goal under the
-[selected checking contract](../../../docs/lean-qft-graph-packet.md). It is not
+[selected checking contract](../../../lean/Qleisli/QftGraph.lean). It is not
 a controlled model benchmark or an enabled external schema importer.
 
 The original [desired sized source](../authoring_sessions/shared-qpe-v020/attempt-01/estimation.qli)

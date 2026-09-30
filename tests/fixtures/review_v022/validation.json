@@ -1,0 +1,701 @@
+{
+  "format": "qleisli.v022-review-validation",
+  "version": 1,
+  "status": "passed-compatible-review-repairs",
+  "recorded_at_utc": "2026-09-30T23:36:40.851640+00:00",
+  "product_version": "0.2.3",
+  "edition": "2026",
+  "issue": "https://github.com/MGYamada/Qleisli/issues/102",
+  "git": {
+    "branch": "codex/v0.2.3-edition-2026",
+    "head": "c226bb53c80c79e968083950575a14662069a824",
+    "scope": "Uncommitted working-tree repairs; published v0.2.2 unchanged"
+  },
+  "platform": {
+    "system": "Darwin",
+    "machine": "arm64",
+    "python": "3.14.5",
+    "rust_test_versions": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "lean_kernel_version": "4.30.0",
+    "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f"
+  },
+  "source_sha256": {
+    ".github/workflows/ci.yml": "83d571ad5b846027e86e6c197939e8a4908354a8b96c09dbcc4a0bb62acece96",
+    "corpus/sized/katas_ghz/prepare.qli": "756cad0efe7200c37082be1682e54cb85abaa0cde50f47c54cfe10712f89bfc6",
+    "scripts/compile_sized_corpus.py": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed",
+    "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
+    "src/bin/qleisli/sized.rs": "8793aace6523a44156c1cbaa47a33796fc7134077d3aa970878aa857203e0686",
+    "src/frontend/compile/lower/certified.rs": "54b16d5edb2c9e8ed4f5d4184527e94518bd82f6d4624653c2374fad06641edd",
+    "src/frontend/compile/lower/mod.rs": "7be4d95f279f9babf80efbafd9f40737b5bab36b90e5acbaac4018bdaae5cd8a",
+    "src/frontend/compile/lower/scope.rs": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+    "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+    "src/frontend/sized/check.rs": "55e3628ab17be92b843134b0aafb33023928f47950c34062e992a06b3a1bcedf",
+    "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+    "src/frontend/sized/fourier.rs": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
+    "src/frontend/sized/lower.rs": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
+    "src/frontend/sized/qpe.rs": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19",
+    "src/interchange/hierarchical.rs": "66f5c02036a56865b47dfb9a3187f997f9d3e0941ce59f82e41e0bb1423928f5",
+    "src/ir.rs": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+    "src/verify.rs": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
+    "tests/connections.rs": "263ff9fcea227374b09f6b0300506816182526bcff583220795ca0dcc3afa4d4",
+    "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
+    "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
+    "tests/sized_review_diagnostics.rs": "5ae10ddceafb9d8dfa1dcdb68cd1c98c58ca2f72965556bf1720865b06c96ab6",
+    "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
+    "tests/sized_source.rs": "5d291e54376fcff004146fab52a6f7d1aa7328ce11f46195cce001464778e531",
+    "tests/with_computed_diagnostics.rs": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc"
+  },
+  "inventory_sha256": "68dc89a74fd56e2e6582e57ad40de97484e821870ce9c4430b956bc935a16a2d",
+  "inventory_review": {
+    "reviewed_checking_sources": [
+      {
+        "path": "src/bin/qleisli/sized.rs",
+        "before_sha256": "9eba1ef412199e98422781da4c5e873882b426fd4dafa5566cb65fe4be77afd9",
+        "after_sha256": "8793aace6523a44156c1cbaa47a33796fc7134077d3aa970878aa857203e0686",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/compile/lower/certified.rs",
+        "before_sha256": "1d6b0442a9f0fc8965d08878e928315ff4151f87c40e46eb06110efae2b48343",
+        "after_sha256": "54b16d5edb2c9e8ed4f5d4184527e94518bd82f6d4624653c2374fad06641edd",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/compile/lower/mod.rs",
+        "before_sha256": "7b8a1639f3c1d92dc2351e15ac60ec5e3e1576db5b275badc78abe63b5770e19",
+        "after_sha256": "7be4d95f279f9babf80efbafd9f40737b5bab36b90e5acbaac4018bdaae5cd8a",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/compile/lower/scope.rs",
+        "before_sha256": "b6decd7fb104cf728a0948c76ba2b639b22c226c556ef8ccbacea836fac846e5",
+        "after_sha256": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/compile/lower/value.rs",
+        "before_sha256": "2512441ffdb5f8106776d3cd33310f9fc7b76924342d46d87021ec7b821687f5",
+        "after_sha256": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/sized/check.rs",
+        "before_sha256": "9b980793a2f963e4d5f6125be96fa4a7bff41ceff59be601e59359bbc07ce92b",
+        "after_sha256": "55e3628ab17be92b843134b0aafb33023928f47950c34062e992a06b3a1bcedf",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/sized/elaborate.rs",
+        "before_sha256": "13cc74b44541128ecfb917cd9b35d63b52b38eaa547e10847ef3b05b78b404c3",
+        "after_sha256": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+        "surface_change": "additive root preflight API"
+      },
+      {
+        "path": "src/frontend/sized/fourier.rs",
+        "before_sha256": "438f5f55e4d022a83eebb52bbc42c52080e49f29811edc279a8980703ed9cfcd",
+        "after_sha256": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/sized/lower.rs",
+        "before_sha256": "28fe74835cf2a06d4cb570111ff56770a7f0a2a1a69190c162b4ee9deda53dba",
+        "after_sha256": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/frontend/sized/qpe.rs",
+        "before_sha256": "0d2d0c1b5b6826fd7b5b75e87276b062e6257a649ada5b82496897896b37137a",
+        "after_sha256": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/interchange/hierarchical.rs",
+        "before_sha256": "eed2e8a5895b800b87ecc4558e7b0db6b77fa6f98b765dd6f5046cdb0bb400fc",
+        "after_sha256": "66f5c02036a56865b47dfb9a3187f997f9d3e0941ce59f82e41e0bb1423928f5",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/ir.rs",
+        "before_sha256": "6a4b3b7cea817dc7be4adecbe69025dc14be5944bf655c1881c246e9130e3818",
+        "after_sha256": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+        "surface_change": "unchanged"
+      },
+      {
+        "path": "src/verify.rs",
+        "before_sha256": "3a2dd1b99fad87d962ca09a011f3008e01c9e0be033b095b2062c7d33ff44114",
+        "after_sha256": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
+        "surface_change": "unchanged"
+      }
+    ],
+    "reviewed_current_harnesses": [
+      {
+        "path": "scripts/compile_sized_corpus.py",
+        "before_sha256": "0def65afbf0a4249e27fabb371d8d37b7196701051ca21a742c2f3cacdd494a2",
+        "after_sha256": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed"
+      },
+      {
+        "path": "tests/sized_source.rs",
+        "before_sha256": "2c1daa9460cfcc49ad5e251378067fb32efc35c60680a776e46a5995bbedc05e",
+        "after_sha256": "5d291e54376fcff004146fab52a6f7d1aa7328ce11f46195cce001464778e531"
+      }
+    ],
+    "new_regression_pins": [
+      "tests/connections.rs",
+      "tests/frontend_ownership_differential.rs",
+      "tests/with_computed_diagnostics.rs",
+      "tests/sized_review_dialects.rs",
+      "tests/sized_review_diagnostics.rs",
+      "tests/fixtures/sized_clients/delayed_fourier.qli",
+      "tests/fixtures/sized_review/unguarded_take.qli",
+      "scripts/test_rust_fourier_factoring.py"
+    ],
+    "original_artifact_and_request_pins_changed": false,
+    "capacity_constants_changed": false,
+    "public_api_change": "additive ElaboratedProgram::check_lowering_profile only"
+  },
+  "interop_race": {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "connections",
+      "qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity",
+      "--",
+      "--exact"
+    ],
+    "iterations": 12,
+    "exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "duration_seconds": 5.247,
+    "target_dir": "/private/tmp/qleisli-review-v022-target"
+  },
+  "common_ownership": {
+    "seed_hex": "514c4549534c4932",
+    "cases": 4000,
+    "accepted_by_both": 1000,
+    "rejected_by_both": 3000,
+    "acceptance_disagreements": 0,
+    "maximum_source_qubits": 3,
+    "scope": "Generated common straight-line regression source, not a measured model benchmark or general frontend theorem"
+  },
+  "dialect_comparison": {
+    "paired_instantiations": 445,
+    "shared_seeded_cases": 400,
+    "shared_accepted": 80,
+    "shared_rejected": 320,
+    "static_comparisons": 22,
+    "obligation_cases": 4,
+    "intentional_generic_concrete_differences": 2,
+    "corpus_cases": 19,
+    "python_role": "Concrete untrusted development producer/differential oracle",
+    "rust_role": "Generic source obligations under requires and guards"
+  },
+  "ghz_arithmetic_native": {
+    "proposals": 16,
+    "independent_basis_reference_columns": 68,
+    "complex_coefficients": 406,
+    "maximum_source_qubits": 3,
+    "classical_oracle": "Exact modular/bit permutations and phase-fixed GHZ arbitrary-input formula"
+  },
+  "fourier_native": {
+    "widths": [
+      1,
+      2,
+      3
+    ],
+    "root_and_inverse_executions": 12,
+    "textbook_delayed_work_equal": true,
+    "root_work": [
+      76068,
+      197933,
+      335565
+    ],
+    "inverse_work": [
+      99614,
+      226333,
+      369139
+    ],
+    "closed_named_candidate_work": [
+      66724,
+      181958,
+      314938
+    ],
+    "closed_exact_work": [
+      118,
+      236,
+      354
+    ],
+    "phase_and_arbitrary_reference_checks": true,
+    "source_ports_preserved": true,
+    "direct_root_contract": "Producer consistency plus independent numerical oracle; closed named-Fourier endpoint contract is a distinct gate",
+    "independent_original_candidate_report": "fourier-validation.json",
+    "independent_report_sha256": "0d678f9ece8dde532b0c3360e779ef0be97438cccefe8f76d70d9cf78cd8928f"
+  },
+  "named_qpe": {
+    "source_cases": [
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        3
+      ]
+    ],
+    "textbook_delayed_outcomes_equal": true,
+    "n1m2": {
+      "code": "ok",
+      "structural_work": 1242723
+    },
+    "n1m3": {
+      "code": "limit",
+      "structural_work": null
+    },
+    "false_delayed_arity_contract_error_resolved": true,
+    "failure_work_reported": false
+  },
+  "native_failure_probes": {
+    "cli_error_only_cases": 16,
+    "error_codes": [
+      "limit",
+      "contract",
+      "invalid_ir",
+      "format"
+    ],
+    "fake_process_issues_checked_handle": false,
+    "aggregate_structural_work_allowance": 2000000,
+    "required_failure_work": null
+  },
+  "frozen_baseline": {
+    "finite_decisions": 12,
+    "source_decisions": 12,
+    "native_decisions": 5,
+    "hierarchy_cases": 4,
+    "maximum_source_qubits": 3,
+    "captured_or_rebaselined": false
+  },
+  "python_checker_tests": {
+    "documentation": 24,
+    "inventory": 17,
+    "edition": 6
+  },
+  "edition_coverage": {
+    "qli": 628,
+    "qlt": 5,
+    "manifests": 18,
+    "repository_root_manifest": false
+  },
+  "commands": [
+    {
+      "name": "rust-all",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:38.127859+00:00",
+      "duration_seconds": 30.626,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/rust-all.log",
+      "log_sha256": "b7ebd2d5529fc4c1cb919f1423d40dcf26d5ea4328d33da7423ab833ab1ca4db",
+      "passed": 530,
+      "failed": 0,
+      "ignored": 33
+    },
+    {
+      "name": "msrv-all",
+      "command": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:37.615996+00:00",
+      "duration_seconds": 30.115,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-msrv-target",
+        "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/msrv-all.log",
+      "log_sha256": "75be8631a49be962ddb1e53612803c0e84fcec652a99708ba3ba712482a98a20",
+      "passed": 530,
+      "failed": 0,
+      "ignored": 33
+    },
+    {
+      "name": "rust-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:09.115701+00:00",
+      "duration_seconds": 1.617,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/rust-clippy.log",
+      "log_sha256": "c01fbb1f24317b99d0df3780df0b453c346a9196a92a35823b4ba720dca1a8da"
+    },
+    {
+      "name": "msrv-clippy",
+      "command": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:08.244899+00:00",
+      "duration_seconds": 0.746,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-msrv-clippy-target",
+        "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/msrv-clippy.log",
+      "log_sha256": "e1b36bd72028043358800b97bbb41c04ef2adf7dce7ae0771d5f788e5c210ee5"
+    },
+    {
+      "name": "native-sized",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_source",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:29:53.770663+00:00",
+      "duration_seconds": 3.355,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/native-sized.log",
+      "log_sha256": "875f8f3bff2a60f7b1c4be8c70dc48d2319918bc28646799ce3ee76edb1e3250",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "native-qpe",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "native_named_qpe",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:29:51.750545+00:00",
+      "duration_seconds": 1.332,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/native-qpe.log",
+      "log_sha256": "cc5ce51b8fe8cd12d84533c235776ec1bb0869ad1612727ea0794a3afc9cb5ce",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "dialects",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_review_dialects",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:29:51.865124+00:00",
+      "duration_seconds": 1.444,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/dialects.log",
+      "log_sha256": "0efa74244c550ee8e8ce208f244c0c62ee7d55d81f668406d7d115799f844b0b",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "native-cli",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_cli",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:17.554323+00:00",
+      "duration_seconds": 1.688,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/native-cli.log",
+      "log_sha256": "90a9ae342d8c4d35872aacbff8eac529ca686c45de30561dc4e00b07a873ae66",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "rust-fourier-script",
+      "command": [
+        "python3",
+        "scripts/test_rust_fourier_factoring.py",
+        "--record",
+        "tests/fixtures/review_v022/fourier-validation.json"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:29:16.011460+00:00",
+      "duration_seconds": 1.142,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/rust-fourier-script.log",
+      "log_sha256": "cae38588001ed791b3ab17460e8f82cacf1e6a02dadf185946cd37783311bf44"
+    },
+    {
+      "name": "frozen-baseline",
+      "command": [
+        "python3",
+        "scripts/test_verification_baseline.py",
+        "/private/tmp/qleisli-review-v022-target/debug/qleisli",
+        "--kernel",
+        "lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:28:47.675383+00:00",
+      "duration_seconds": 1.702,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/frozen-baseline.log",
+      "log_sha256": "b313d6907a10f266c4639485572351206c6959cbb76abd17872d9125f99cf783"
+    },
+    {
+      "name": "inventory-tests",
+      "command": [
+        "python3",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:29:06.987702+00:00",
+      "duration_seconds": 7.308,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/inventory-tests.log",
+      "log_sha256": "905c3a4022f9fa71505c7b40727552476d823f1c7cbde3b89d37593b13ac3d1a"
+    },
+    {
+      "name": "inventory",
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:44.985050+00:00",
+      "duration_seconds": 0.352,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/inventory.log",
+      "log_sha256": "c8f264f2ab7c94edc9c626bc706f5babfa0c62048723d02f36d8b4c55efb5b99"
+    },
+    {
+      "name": "docs-tests",
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:57.196427+00:00",
+      "duration_seconds": 0.175,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/docs-tests.log",
+      "log_sha256": "f64f8d8ca55513701a122fb469e8762ae1f8904094af330493d838cc4eabc4ec"
+    },
+    {
+      "name": "docs",
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:36:03.039865+00:00",
+      "duration_seconds": 0.737,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/docs.log",
+      "log_sha256": "8b9e065d50f25ab5b72cb43fa0c75a4bc3a88970a52688da0d1c5c0e506d50ab"
+    },
+    {
+      "name": "editions-tests",
+      "command": [
+        "python3",
+        "scripts/test_check_editions.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:57.148443+00:00",
+      "duration_seconds": 0.13,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/editions-tests.log",
+      "log_sha256": "38f4be995c1bb305dc5d7f1c806efbe264aa65ec6a86669aa31361674503f9a3"
+    },
+    {
+      "name": "editions",
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:31:06.416990+00:00",
+      "duration_seconds": 9.399,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/editions.log",
+      "log_sha256": "f0c96bdb6c009e3809b385f171e39095c59b906b0e65b87c20eec7cf3915654b"
+    },
+    {
+      "name": "contract-docs",
+      "command": [
+        "python3",
+        "scripts/check_stdlib_contract_docs.py"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:57.061046+00:00",
+      "duration_seconds": 0.038,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/contract-docs.log",
+      "log_sha256": "b88d4e472b70a7d6a260db5f88b6e13827c51286549942a11eb9435fef9a8c81"
+    },
+    {
+      "name": "fmt",
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:32:44.563467+00:00",
+      "duration_seconds": 0.521,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/fmt.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "rust-doc",
+      "command": [
+        "cargo",
+        "doc",
+        "--offline",
+        "--no-deps"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:16.806062+00:00",
+      "duration_seconds": 0.938,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target",
+        "RUSTDOCFLAGS": "-Dwarnings"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/rust-doc.log",
+      "log_sha256": "4201f571f6b00d934d16b3a748e820d416d099bdbc71871c75f16dbd14b42e0d"
+    },
+    {
+      "name": "rust-doctest",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--doc"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:30:17.663872+00:00",
+      "duration_seconds": 1.798,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-review-v022-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/rust-doctest.log",
+      "log_sha256": "ab4e1c5b2b7322957701fc2dd8b537c4ba57d0b7d97f08e33f4109df98485cbf",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "registry-source",
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:28:21.744740+00:00",
+      "duration_seconds": 0.13,
+      "environment": {},
+      "log_path": "/private/tmp/qleisli-review-validation/registry-source.log",
+      "log_sha256": "035c3db89fdf66e6aa8eaca01c469f75be8eb9bf5a7415adf2f5b4d8e774cec8"
+    }
+  ],
+  "validation_limitations": {
+    "large_reviewer_cases_rerun": false,
+    "new_maximum_size_corpus_validation": false,
+    "linux_release_ci_rerun": false,
+    "new_lean_build_or_axiom_audit": false,
+    "lean_source_identity_checked": true,
+    "new_frontend_or_source_preservation_proof": false,
+    "acceptance_capacity_changed": false,
+    "production_authority": "Rust",
+    "published": false
+  },
+  "initial_msrv_clippy_attempts": {
+    "mixed_driver": "Initial cargo-clippy selection used the default driver with MSRV dependency metadata; corrected by selecting the 1.85.0 executable directory.",
+    "source_lint": "Clippy 1.85.0 identified needless closure borrows; removed and reran both versions and all-target tests successfully."
+  },
+  "github_issue_verified": {
+    "number": 102,
+    "state": "OPEN",
+    "integration_pending": true
+  }
+}

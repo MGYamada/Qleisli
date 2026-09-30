@@ -44,7 +44,7 @@ reference instrument, and [session records](../tests/fixtures/authoring_sessions
 preserve the first source and subsequent observations.
 
 The separately [licensed input corpus](../corpus/README.md), adopted on
-2026-09-28 and expanded during 0.2.1/0.2.2 development, provides 36 finite translations from a closed set of three
+2026-09-28 and expanded during 0.2.1–0.2.3 development, provides 42 finite translations from a closed set of three
 sources. It is distinct from the C01–C20 research inventory above. Its fixed
 QAOA/VQE kernels do not change the unimplemented general-algorithm claims in
 that inventory. Contracts, original sources, actual authoring attempts and
@@ -67,6 +67,12 @@ narrowing of the original phase-kickback key. They introduce no new language
 forms, standard APIs or general-algorithm completion claims.
 
 ## Next extraction tasks
+
+The [six small 0.2.3 translations](../corpus/authoring/v023-small/README.md)
+add odd-parity preparation, a signed Bell singlet, constant comparison/equality,
+RY and one Ising ZZ factor. All 490 complex-entry probes pass and six deliberate
+type-correct faults are detected. This strengthens finite phase/order/predicate
+coverage without adopting a new general algorithm, syntax or standard API.
 
 - Include signs and control capability in public S3 reflection contracts so
   that search, estimation, and walks can share them.

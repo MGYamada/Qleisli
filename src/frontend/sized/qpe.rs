@@ -238,6 +238,9 @@ mod tests {
     use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
     use std::collections::BTreeMap;
     fn source(n: u32, m: u32, j: u32) -> HierarchyProposal {
+        source_with_fourier(n, m, j, None)
+    }
+    fn source_with_fourier(n: u32, m: u32, j: u32, fourier: Option<&str>) -> HierarchyProposal {
         let modules = [
             ("measurement", "corpus/sized/measured_qpe/measurement.qli"),
             (
@@ -252,13 +255,19 @@ mod tests {
         ]
         .into_iter()
         .map(|(name, path)| {
-            (
-                name.into(),
-                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(path),
-            )
+            let body = if name == "fourier" {
+                fourier.map(str::to_owned)
+            } else {
+                None
+            }
+            .unwrap_or_else(|| {
+                std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(path))
+                    .unwrap()
+            });
+            (name.into(), body)
         })
         .collect();
-        ParsedProgram::load(modules)
+        ParsedProgram::parse(modules)
             .unwrap()
             .instantiate(
                 "measurement::qpe",
@@ -387,6 +396,82 @@ mod tests {
         let hs = candidate.field("hadamards").unwrap().array().unwrap();
         assert_eq!(hs.len(), 2);
         assert_eq!(hs[0], hs[1]);
+    }
+    #[test]
+    #[ignore = "requires freshly built native kernel; CI runs explicitly"]
+    fn native_named_qpe_commuting_fourier_variants_have_the_same_outcome() {
+        let kernel =
+            Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+        let delayed = include_str!("../../../tests/fixtures/sized_clients/delayed_fourier.qli");
+        for m in [2, 3] {
+            let textbook = source(1, m, 1);
+            // This detached provider is fixed before building the reordered
+            // circuit. Existing native QPE tests separately check its phase
+            // against the low-bit mathematical formula and mutate the provider.
+            let provider = frozen_provider(&textbook);
+            let reordered = source_with_fourier(1, m, 1, Some(delayed));
+            let mut outcomes = vec![];
+            for proposal in [&textbook, &reordered] {
+                let binding = proposal.qpe_binding(&provider).unwrap();
+                let result = kernel.check_qpe_instrument(
+                    proposal.payload(),
+                    binding.request(),
+                    binding.candidate(),
+                );
+                outcomes.push(match result {
+                    Ok(checked) => {
+                        assert_eq!(m, 2);
+                        let input = [[0.3, 0.2], [0.4, -0.1], [-0.2, 0.5], [0.1, 0.3]];
+                        let output = checked
+                            .instrument()
+                            .execute(
+                                &input,
+                                2,
+                                ExecutionLimits {
+                                    max_amplitudes: 4096,
+                                    max_steps: 1_000_000,
+                                },
+                            )
+                            .unwrap();
+                        for (y, branch) in output.branches.iter().enumerate() {
+                            for (i, z) in input.iter().enumerate() {
+                                let theta = ((i % 2) & 1) as f64 / 8.0;
+                                let mut k = [0.0, 0.0];
+                                for a in 0..4 {
+                                    let angle =
+                                        std::f64::consts::TAU * a as f64 * (theta - y as f64 / 4.0);
+                                    k[0] += angle.cos() / 4.0;
+                                    k[1] += angle.sin() / 4.0;
+                                }
+                                let expected =
+                                    [z[0] * k[0] - z[1] * k[1], z[0] * k[1] + z[1] * k[0]];
+                                assert!(
+                                    (branch[i][0] - expected[0]).abs() < 1e-12
+                                        && (branch[i][1] - expected[1]).abs() < 1e-12
+                                );
+                            }
+                        }
+                        (
+                            "ok",
+                            Some(checked.instrument().reconstruction().structural_work()),
+                        )
+                    }
+                    Err(error) => {
+                        assert_eq!(m, 3);
+                        assert_eq!(
+                            error.code, "limit",
+                            "equivalent QPE is not a contract violation: {error}"
+                        );
+                        ("limit", None)
+                    }
+                });
+            }
+            println!(
+                "named QPE n=1,m={m}: textbook {:?}, delayed {:?}",
+                outcomes[0], outcomes[1]
+            );
+            assert_eq!(outcomes[0], outcomes[1]);
+        }
     }
     #[test]
     #[ignore = "requires freshly built native kernel; CI runs explicitly"]

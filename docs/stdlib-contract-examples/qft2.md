@@ -52,7 +52,7 @@ Physical gate/depth costs and a quantitative resource-bound theorem are pending;
 | --- | --- | --- |
 | Source checking | checked | Two-bit production corpus wrapper passes; [existing validation record](../../corpus/validation-v0.2.2.json). |
 | Semantic tests | tested | Complete complex columns through coherent X/Y probes at tolerance 1e-11, [independent Fourier oracle](../../scripts/check_input_corpus.py) and [case contract](../../corpus/qualtran/qft2/README.md); the cited record is prior execution, not a new run by this pilot. |
-| Actual IR conformance | pending | Bind this emitted finite source body to a conformance theorem. The [hierarchical Fourier components](../lean-qft-proof-packet.md) have different actual-definition scope and do not alone prove this source API. |
+| Actual IR conformance | pending | Bind this emitted finite source body to a conformance theorem. The [hierarchical Fourier components](../../lean/Qleisli/Qft.lean) have different actual-definition scope and do not alone prove this source API. |
 | Source preservation | pending | General correspondence for this production compiler remains open; [formal-core obligations](../formal-core.md). |
 | Specification review | pending | Existing positive-sign/encoding contract is retained; independent community review of this pilot and convention remains to be recorded. |
 
