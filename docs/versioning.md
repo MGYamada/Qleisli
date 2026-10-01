@@ -19,8 +19,9 @@ source trees are to migrate to qrate management later. No repository-root
 Qargo manifest is used. Product versions and language editions are independent;
 Rust's Cargo edition remains `"2024"`. Other API/source meanings retain their
 compatibility obligations. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
-and the [0.2.3 development record](releases/v0.2.3.md). Version 0.2.2 remains the
-latest published release; this selection does not perform publication.
+and the [0.2.3 release record](releases/v0.2.3.md). The user's publication request
+was completed on 2026-10-01: **0.2.3** is the latest published release, with
+[immutable source and artifact evidence](releases/v0.2.3.md#successful-publication-2026-10-01).
 
 **Explicit pre-registry identity exception, 2026-09-30:** the user selected
 `qleisli` for both the package and Rust import name in the first planned
@@ -55,7 +56,7 @@ retains completed experiments/review fixes and bounded host connections in
 The later 2026-09-30 user request selects **0.2.2 development**, synchronizing
 Rust, both Lean packages and the Python host; see the
 [0.2.2 record](releases/v0.2.2.md). The user's later publication request was
-completed on 2026-09-30: the latest published version is **0.2.2**, with
+completed on 2026-09-30: **0.2.2** was published with
 [tag, registry, hosted docs and GitHub evidence](releases/v0.2.2.md#successful-publication-2026-09-30).
 Version selection does not complete feature gates or perform tagging/upload.
 Neither target grants an incompatible PATCH
