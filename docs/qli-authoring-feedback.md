@@ -11,29 +11,31 @@ selecting [edition 2026](language-editions.md).
 
 ## Finite corpus authoring
 
-The [three-source corpus](../corpus/README.md) contains 48 finite translations,
-16 each from the approved QuantumKatas, Qualtran and PennyLane sources.
-The [0.2.3 session](../corpus/authoring/v023-small/session.json) adds odd-parity
-preparation, Bell singlet, two constant predicates, RY and Ising ZZ at 1–3 qubits.
-All six first source checks passed without repair. Known tuple, gate and rotation
-workarounds and the existing driver template were available before authoring;
-this cannot estimate unaided first-attempt success.
+The [three-source corpus](../corpus/README.md) contains 54 finite translations,
+18 each from the approved QuantumKatas, Qualtran and PennyLane sources.
+The [0.2.5 session](../corpus/authoring/v025-small/README.md) adds CZ/Toffoli,
+inclusive/strict one-bit comparisons, mixed-sign rotations and a two-wire QAOA
+mixer. Complete first sources were saved before checking. Five of six initial
+checks pass; the missing controlled_z import is repaired using existing qif.
+The second snapshot also corrects a demo author notice from frozen metadata;
+all six repaired checks pass. Known syntax/gate/driver patterns were available,
+so this is no estimate of unaided model success.
 
-All complex entries are checked against independent coefficient/permutation
-formulas. The singlet's Z/X order and ZZ's scalar leave ordinary probabilities
-unchanged; RY and H agree on the zero-input preparation. Their deliberate
-[type-correct faults](../corpus/semantic_faults/README.md) therefore require
-nonzero inputs or coherent interference. Constant equality's wrong-endian fault
-also leaves the zero-input quickstart unchanged. No new source syntax or library
-API was needed. First attempts and earlier numerical reports stay intact.
+All 490 new probes check complete complex entries against independent formulas.
+Six valid-source faults include equal-input comparison errors, lost input
+restoration, noncommuting order and CZ/mixer phase errors invisible to ordinary
+basis probabilities. [Full replay](../corpus/validation-v0.2.5.json) now detects
+all 30 faults across 54 cases. Initial CZ diagnostic and repair are retained;
+[Issue 19](https://github.com/MGYamada/Qleisli/issues/19) and
+[Issue 21](https://github.com/MGYamada/Qleisli/issues/21) track control and exact
+phase obligations. New source does not adopt additional syntax or std APIs.
 
-The [0.2.4 review migration](../tests/fixtures/review_v023/README.md) modernizes
-ten active kernels with sealed S/S†/T†, identity and scalar-phase aliases.
-Six constant-one flags and four identity definitions are removed without
-changing operator phase. Revised complete attempts and actual diagnostics are
-appended to the existing sessions; first sources remain intact. Independent
-replay still detects all 24 type-correct faults. Frozen comparison sources are
-explicit historical exceptions, not recommended new source patterns.
+The [0.2.4 alias migration](../tests/fixtures/review_v023/README.md) removes
+ten active workarounds while preserving original attempts and VM-22 sources.
+The [0.2.3](../corpus/authoring/v023-small/README.md) and
+[0.2.4](../corpus/authoring/v024-small/README.md) sessions retain their original
+first-check and phase-sensitive results. Historical frozen spellings remain
+exceptions, not recommended patterns.
 
 ## Shared source and measured QPE
 
@@ -62,21 +64,13 @@ pass; named (2,4) still exceeds the unchanged structural budget. General source,
 native/decoder correspondence and full-profile migration remain open. Further
 maximum-size runs are waived; they are not successful capacity checks.
 
-The [0.2.4 finite session](../corpus/authoring/v024-small/README.md) adds negative
-control, signed Bell ZX, decrement, QROM and negative-quarter RX/RY. All twelve
-first-source files were saved before checking; all six first checks pass with
-zero repairs. Its 264 complete complex-entry probes and six detected valid-source
-faults show why readable gate order, target-word layout and scalar completion
-remain author obligations. Existing control/literal Issues cover that friction;
-no new syntax or general algorithm proof is adopted.
-
 ## Current ergonomic obligations
 
 | Authoring obligation | Evidence and current boundary |
 | --- | --- |
 | Explicit product trees and owner packaging | [Tuple contract](tuple-shapes.md), [type system](type-system.md) and [reshape first source](../tests/fixtures/authoring_sessions/reshape-v021/session.json). Flat and nested products are distinct. `split`/`join` and explicit adapters route owners; arithmetic width equality does not reorder axes or erase an owner. |
 | Controlled access and operation identity | [Static-operation contract](static-operations.md) and [operation clients](../examples/operation_algorithms/README.md). Inverse/control/repetition require the declared capability and preserve scalar phase; mathematical unitarity alone does not supply an implementation. [Issue 45](https://github.com/MGYamada/Qleisli/issues/45) tracks the future capability calculus. |
-| Exact rotation phase | [RX source](../corpus/pennylane_demos/rx_quarter/kernel.qli) and [ZZ source](../corpus/pennylane_demos/ising_zz_quarter2/kernel.qli). A case-local scalar helper remains necessary for RZ-derived rotations. [Issue 39](https://github.com/MGYamada/Qleisli/issues/39) tracks exact literals; no continuous-angle API is implied. |
+| Exact rotation phase | [RX source](../corpus/pennylane_demos/rx_quarter/kernel.qli) and [ZZ source](../corpus/pennylane_demos/ising_zz_quarter2/kernel.qli). Exact finite rotations use explicit scalar completion such as `phase_eighth`; gate order and phase remain author obligations. [Issue 39](https://github.com/MGYamada/Qleisli/issues/39) tracks exact literals; no continuous-angle API is implied. |
 | Total basis computation and unary meaning predicates | [Source fixtures](../tests/fixtures/qli_authoring/README.md). Product patterns work, but a multi-argument predicate cannot silently become a unary product contract. [Issue 25](https://github.com/MGYamada/Qleisli/issues/25) and [Issue 30](https://github.com/MGYamada/Qleisli/issues/30) track unresolved design. |
 | Helpful diagnostics for generated source | [Parser prefix regressions](../tests/parser.rs), [repair regressions](../tests/repair_diagnostics.rs) and [review sources](../tests/fixtures/review_v021/README.md) cover truncated input, effect provenance and grouped imports. [Issue 95](https://github.com/MGYamada/Qleisli/issues/95) tracks lost size-error spans. |
 | Evidence separate from source success | [Semantic faults](../corpus/semantic_faults/README.md), [protocol/reference tests](../examples/protocols/README.md) and [measured-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md). A checked source or inverse round trip is not its intended algorithm equation. |

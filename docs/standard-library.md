@@ -2,51 +2,13 @@
 
 # Stage 0: `.qli` files and standard-library organization
 
-Status: **Stage 0 organization fixed; ordinary definitions added** (2026-09-26).
-Following the [design principles](design-philosophy.md), this document defines
-file rules, initial APIs, and the boundary around sealed built-ins. Its file,
-module, and sealed-API rules form part of the [finite core v0 specification](language-spec.md).
-This English edition is authoritative and replaces the earlier Japanese edition
-without changing those rules. The [frontend](frontend-v0.md) checks v0 source
-within its capacity limits and lowers it to [finite IR](ir-prototype.md).
-The executable basic examples and [structured algorithms](algorithm-routines.md)
-use the same checks; the latter reuse ordinary definitions in `std::routines`.
-
-The [Layer 3 plan](stdlib-roadmap.md) describes seven areas from primitives to
-algorithm skeletons and hybrid plans, with semantic contracts and adoption
-criteria. The [contract ledger](stdlib-contracts.md) records the 12 bundled
-public definitions. Proposed metatypes are distinct from current APIs, and
-host-side trials and statistical processing remain outside `.qli` operations.
-
-The [library goal adopted on 2026-09-29](stdlib-roadmap.md#adopted-library-goal)
-is a quantum-computing foundation integrating **BLAS/LAPACK, textbook and formal
-specification**, so readers can learn quantum information from the library
-itself. This goal governs further design. The minimum organization specified
-here already exists; the comprehensive future module hierarchy and generalized
-APIs remain undecided. The goal does not change any current declaration below.
-
-The [0.2.0 type contract](type-system.md) preserves tuple arity and nesting.
-Every binary signature below, including `split`, `join` and `toffoli`, retains
-its explicit shape. N-ary callers use [checked explicit conversions](tuple-shapes.md);
-no implicit flattening or new sealed operation is introduced.
+Current file/module/sealed API contract under [language v0](language-spec.md). [Ledger](stdlib-contracts.md) records twelve ordinary public definitions; [STDLIB.md](../STDLIB.md) fixes contribution/adoption. General APIs remain separate. Explicit schema-2 edition manifests are required by [edition policy](language-editions.md); std is a qrate, other roots remain edition-only pending migration.
 
 <a id="qli-が表すもの"></a>
 
-The executable [sealed declaration inventory](../src/frontend/core.rs) exposes
-all current primitive signatures, effects and arities separately from ordinary
-bundled `.qli` source. Resolution and primitive lowering use that inventory;
-independent verification still checks emitted IR. `A`/`B` in its signature text
-are specification metavariables. This adds neither generic source declarations
-nor a `core::` import path, and source cannot replace a sealed implementation.
-[Signature regressions](../tests/review_v021.rs) instantiate every declaration.
-
 ## What a `.qli` file represents
 
-A `.qli` file is UTF-8 **Qleisli source**, not quantum-state data, a circuit
-binary, IR, or an execution result. One file defines one module. Top-level
-items are `basis fn`, `iso fn`, `unitary fn`, `observe fn`, and `use` only.
-There is no execution on load, global mutable state, I/O, or implicit qubit
-allocation. A `let` binds a name to a value, not to a mutable cell.
+UTF-8 source, one path-derived module per file and no execution on load. Use explicit public imports, grouped leaves where specified; std is sealed/reserved. Private by default, no dynamic loading/reexports/wildcards, distinct foo and foo:: bar modules. Imported/call cycles reject separately. Language types/forms and Bit/CBit operators need no import; library names do. Bit and CBit do not coerce; no implicit prelude. Classical lets are immutable; host I/O/device failures stay outside pure values. check validates every definition; run requires closed parameterless observe main with finite n-ary classical result and no owners.
 
 | Item | Initial rule |
 | --- | --- |
@@ -55,49 +17,19 @@ allocation. A `let` binds a name to a value, not to a mutable cell.
 | Local import | `use oracle::phase_oracle;` refers to a public declaration in the root's `oracle.qli`; `foo::bar::name` refers to `foo/bar.qli`. Paths are absolute relative to the source root, not relative to the caller. |
 | Standard import | The `std::` prefix is reserved for the bundled standard library and cannot be overridden by local files. |
 | Visibility | Declarations are private to their module by default. Only `pub` declarations are accessible from other files. |
-| Import syntax | Only explicit `use path::name;`. No wildcard imports, implicit reexports, or cyclic imports. |
-| Entry point | Execution requires one parameterless `observe fn main() -> T` in root-level `main.qli`. `T` is `Unit`, `CBit`, or a finite nested binary product of classical types. No quantum ownership may remain at termination. Library checking does not require `main.qli`. |
-| Packages | No external dependencies or manifest in this version. Resolve only `.qli` files within the supplied root and bundled `std`. |
-
-The checking/execution commands are `qleisli check src` and `qleisli run src`. `check` checks
-types, effects, and ownership in all source declarations and independently
-verifies the IR generated for every ordinary function. `run` checks all
-declarations, then interprets the closed program in `main.qli`. Features beyond
-the [supported subset](frontend-v0.md) receive diagnostics. Displaying results,
-choosing host execution counts, and submitting work to devices are host duties.
-`src/lib.qli` is an optional library naming convention. `foo.qli` and
-`foo/bar.qli` define distinct modules `foo` and `foo::bar`, without implicit
-parent/child visibility. Cyclic module imports and recursive function calls
-are checked separately.
-
-Missing imports, private names, name collisions, and cyclic imports produce
-diagnostics with source locations. Modules are not loaded dynamically.
-Unsupported device capabilities and host I/O failures must be diagnosed before
-execution or reported as host failures, not hidden inside pure `.qli` values.
-
-Types `Unit`, `Bit`, `CBit`, and `Q<A>`, and language forms such as `if` and
-`do/pure`, require no import. `Iso<A,B>` and `Unitary<A,B>` are explanatory
-metanotation for static function classifications, not first-class source value
-types. Operators `not`, `and`, and `xor` are built in for basis `Bit` expressions
-and, separately, ordinary `CBit` expressions. Ordinary `true` and `false`
-literals have type `CBit`; the basis literals `0` and `1` have type `Bit`.
-There is no implicit conversion between `Bit` and `CBit`, and no implicitly
-opened `std::prelude`: library functions require explicit imports.
+| Import syntax | Explicit `use path::name;` or grouped explicit leaves such as `use std::quantum::{h,x};`. No wildcard imports, implicit reexports, or cyclic imports. |
+| Entry point | Execution requires one parameterless `observe fn main() -> T` in root-level `main.qli`. `T` is `Unit`, `CBit`, or a finite nested classical tuple with immediate arity 2–64. No quantum ownership may remain at termination. Library checking does not require `main.qli`. |
+| Packages | An enclosing schema-2 `Qargo.toml` explicitly selects edition `2026`. Resolve source within the supplied root and bundled `std`; external dependency loading remains unsupported. The bundled std qrate has a complete manifest. |
 
 <a id="標準ライブラリの最小構成"></a>
 
 ## Source documentation
 
-Bundled `.qli` uses Rust-style `//!` module descriptions and `///` function
-documentation. [Block forms, inner/outer attachment, API and migration](documentation-comments.md)
-are specified separately. All four source files and all twelve public/one
-private definitions are documented in English. Read a file's documentation with
-`qleisli doc stdlib/src/routines.qli`, or use the parser's documented-module API.
-This output describes source; it does not check contracts or execute examples.
-The existing [contract ledger](stdlib-contracts.md) remains authoritative.
-Documentation grants no stdlib-specific exemption or evidence authority.
+English Rust-style source doc comments are metadata, not checker/evidence authority. doc parses source and prints documentation only; [attachment/API rules](documentation-comments.md) keep the public AST unchanged.
 
 ## Initial standard-library organization
+
+All ordinary source gets the same frontend/IR checks as callers. Primitive signatures/effects/arities live in [sealed inventory](../src/frontend/core.rs), with independently checked lowering. Structural tuple arity/nesting and complete zero-width ownership are retained; A/B signature variables do not create generic source APIs.
 
 | Module | Initial API | Implementation boundary |
 | --- | --- | --- |
@@ -106,42 +38,11 @@ Documentation grants no stdlib-specific exemption or evidence authority.
 | `std::observe` | `measure_z`, `reset`, `discard` | Sealed observation primitives. Derived measurements can be ordinary definitions, as `measure_x` is in `std::routines`. |
 | `std::routines` | `hadamard2`, `reflect_uniform2`, `measure_x`, `measure_z2`, `parity_zz` | Ordinary `.qli` definitions, evaluating shared structures at fixed widths. No added sealed operations. |
 | `std::transforms` | `qft2`, `qft3` | Ordinary definitions of two- and three-bit QFT using static control and finite repetition. |
-| `std::arithmetic` | `increment2`, `add2`, `mul2_mod15` | Ordinary definitions of total fixed-width reversible arithmetic. Their [contracts](arithmetic-order-finding.md) include overflow and values outside the modular residue range. |
-
+| `std::arithmetic` | `increment2`, `add2`, `mul2_mod15` | Ordinary definitions of total fixed-width reversible arithmetic. Their [contracts](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/arithmetic-order-finding.md) include overflow and values outside the modular residue range. |
 
 ### Exact phase aliases (0.2.4)
 
-[Issue 130](https://github.com/MGYamada/Qleisli/issues/130) specifies the compatible
-primitive extension. Let `omega = exp(i*pi/4)`. The exact meanings are
-`s = diag(1,i)`, `sdg = diag(1,-i)`, `tdg = diag(1,omega^-1)`,
-`id_A = I_A` and `phase_eighth_A = omega I_A`. These meanings include global
-phase and act as identity on any reference system. Each call consumes its
-argument binding once and returns the same owner shape; `Q<Unit>` stays linear.
-No arbitrary basis polymorphism syntax, dynamic phase argument or matrix API
-is introduced.
-
-The source aliases S, S† and T† expand to two, six and seven existing T gates.
-`id` emits no quantum instruction. `phase_eighth` emits `ApplyUnitary` with one
-zero-axis `Monomial`, permutation `[0]` and phase `[1]`; it needs no computed
-flag or auxiliary wire. Static adjoint, repetition and `qif` accept these
-unary primitives at their stated types. Independent static expectations use
-the equations above, with a cache keyed by the exact basis tree. The existing
-IR verifier checks the emitted operations; these aliases add no verifier rule.
-`phase_eighth` in the restricted two-argument computed body remains outside
-that body's Z/T-only certificate format. Existing supported bodies are unchanged.
-
-These are semantic actions, not promises of same-wire target synthesis.
-The [realizability workspace contract](release-milestones.md#synthesis-workspace-contract)
-remains a separate future theorem obligation.
-
-`Q<A>` denotes owned quantum resources, and each quantum argument is transferred
-linearly. The following interfaces summarize types and effects; the
-[v0 specification](language-spec.md) supplies exact typing rules. A product
-domain is **semantic metanotation**, not an instruction to pack multiple source
-arguments into one tuple. For example, `xor2(x: Bit, y: Bit)` has two parameters,
-whereas `f((x,y): (Bit,Bit))` has one patterned basis parameter. `cnot` and
-`join` take two arguments; `toffoli` takes three; `parity_zz` takes two. Every
-other ordinary quantum API listed here takes one argument.
+Let omega=exp(i pi/4): s=diag(1, i), sdg=diag(1,-i), tdg=diag(1, omega^-1), id_A=I_A and phase_eighth_A=omega I_A, phase/reference exact. Consume/return one binding at the same shape, including Q<Unit>. Aliases expand to existing T chains, id to no instruction and scalar phase to an existing zero-axis Monomial; no checker rule is added. Static transforms accept their specified unary types. Scalar phase in restricted two-argument computed use remains outside that profile; certified equality is separate. No dynamic angle or arbitrary matrix operation is introduced.
 
 | API | Interface | Effect and ownership |
 | --- | --- | --- |
@@ -166,60 +67,17 @@ other ordinary quantum API listed here takes one argument.
 | `arithmetic::add2` | `Q<((Bit,Bit),(Bit,Bit))> -> Q<((Bit,Bit),(Bit,Bit))>` | `Unitary`; retain the first two-bit number and add it to the second modulo four; return all four wires. |
 | `arithmetic::mul2_mod15` | `Q<((Bit,Bit),(Bit,Bit))> -> Q<((Bit,Bit),(Bit,Bit))>` | `Unitary`; multiply values below 15 by two modulo 15 and fix 15; return all four wires. |
 
-The names and widths in `routines` are initial implementation contracts, not a
-decision on generalized combinators. Their [individual contracts](algorithm-routines.md#公開apiの契約)
-record acceptance, rejection, whole-system meaning, and existing IR expansion.
-The private `nonzero2(a: Bit,b: Bit) -> Bit` is a total ordinary basis function
-used as an auxiliary predicate. Private bundled declarations follow normal
-visibility rules.
-
-`std::` ships with the compiler version. User replacement and external package
-loading are unavailable. Ordinary `.qli` bodies cannot impersonate primitive
-gate matrices, observation semantics, or ownership transitions merely by using
-standard-looking names. Bundled definitions receive the same checks as user code.
-
-After `measure_z`, the old logical wire cannot be used. Prepare a new logical
-wire with `init0` if needed and classically control it with the measurement
-result. A future backend may map the new wire to a previously measured physical
-device when its capabilities permit.
-
-Ordinary definitions reside in `stdlib/src/basis.qli`, `routines.qli`,
-`transforms.qli`, and `arithmetic.qli`. Rust's module resolver registers the
-sealed public names in `std::quantum` and `std::observe`; their public signatures
-are tied to these module identities. Derived bodies remain ordinary checked source.
-
-`do/pure` (including its injectivity check), `qif`, `adjoint`, `repeat_static`,
-`with_computed`, and `apply_contract` are statically checked **language forms**. They are not
-ordinary functions taking arbitrary first-class operation values. `release0`
-describes an internal, evidence-dependent step inside the atomic auxiliary
-constructor, not a standalone public API. Hardware backends are also outside
-the standard library.
-
-The [static-operation contract](static-operations.md) specifies the implemented
-finite forms, QFT phases and bit order, acceptance/rejection, and lowering.
-Targets are statically resolved function names with a single `Q<A> -> Q<A>`
-interface and no classical parameters. General higher-order operation values
-remain unimplemented.
-
-The [function-contract form](function-contracts-v0.1.md) separately names an
-ordinary implementation and a fixed ordinary specification. It checks their
-exact meaning and retains evidence in final IR; it does not add a sealed gate
-or change the contract ledger's list of bundled definitions.
-
 <a id="複数ファイルの実行例"></a>
 
 ## Executable examples with multiple files
 
-The following blocks reproduce the named files. Their paths and imports follow
-the rules above. The test
-[`documented_projects_compile_verify_and_simulate`](../tests/compile.rs)
-checks the projects' source acceptance, IR verification, and result distributions.
+Examples below use ordinary imported definitions plus sealed primitives; the enclosing source root declares edition 2026. Semantics are checked by the same production verifier.
 
 <a id="bell-状態"></a>
 
 ### Bell state
 
-`examples/bell/bell.qli`:
+Bell preparation is Iso, CNOT retains owners and measurement Observe consumes both; outputs 00/11 with probability one half, preserving result ordering.
 
 ```qli
 pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
@@ -227,8 +85,6 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     pure (x, x)
 }
 ```
-
-`examples/bell/main.qli`:
 
 ```qli
 use bell::entangle;
@@ -244,14 +100,11 @@ observe fn main() -> (CBit, CBit) {
 }
 ```
 
-The results `(0,0)` and `(1,1)` each have probability `1/2`. The map
-`x -> (x,x)` is checked for injectivity; it does not duplicate quantum ownership.
-
 <a id="位相オラクル"></a>
 
 ### Phase oracle
 
-`examples/phase_oracle/oracle.qli`:
+Computed total predicates may be noninjective; reversible XOR into private scratch followed by protected phase and uncomputation supplies exact cleanup. A direct noninjective lift or approximate zero does not.
 
 ```qli
 use std::quantum::z;
@@ -265,8 +118,6 @@ pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
 }
 ```
 
-`examples/phase_oracle/main.qli`:
-
 ```qli
 use oracle::phase_oracle;
 use std::quantum::init0;
@@ -278,40 +129,8 @@ observe fn main() -> CBit {
 }
 ```
 
-Since `predicate(x) = not x`, the oracle's matrix is `-Z`. This closed example
-returns `1`. Source v0 hides the computation source and other outer quantum
-values from the auxiliary body and accepts only an expanded `Z/T` sequence
-on the auxiliary. General work registers and borrowing signatures are deferred.
-
-The total mathematical functions `xor2` and `and2` have noninjective product
-domains, so their full maps cannot define isometric lifts
-`Q<(Bit,Bit)> -> Q<Bit>`. This semantic fact must be distinguished from a
-surface-call error: in `do p <- q; pure xor2(p)` (or `and2(p)`), the function
-expects **two** arguments but receives one product argument, so the compiler
-reports `Arity` before injectivity is relevant. Explicit destructuring in the
-lift binder makes the components available: `do (a,b) <- q; pure xor2(a,b)`
-is well typed as a basis computation, but its full map fails the lift's
-injectivity requirement; the same applies to `and2(a,b)` on that product domain.
-There is no implicit uncurrying of `xor2(p)`. Calls with two basis `Bit`
-expressions are valid syntax, and every enclosing lift checks the complete
-resulting map for injectivity. `with_computed(q,xor2)` instead uses the predicate's
-semantic product domain and is supported for `q:Q<(Bit,Bit)>`.
-
-Likewise, `(q,q)` is rejected for reusing the same ownership. Importing a bundled
-name never relaxes resource or quantum conditions.
-
 <a id="有限コアv0の後続仕様"></a>
 
 ## Specifications after finite core v0
 
-- General borrowing and preservation-effect signatures for `with_computed`.
-  The restricted v0 form and static-operation grammar are already fixed.
-- Sized registers, general operation parameters, and arbitrary angles.
-  Literal-count finite repetition is already implemented.
-- Higher-order functions, external packages, manifests, and further modules.
-
-Stage 1 specification and proof work take priority over these extensions and
-API generalization. Future decisions must still satisfy the
-[quantum-language requirements](quantum-language-requirements.md).
-
-Future candidates follow the [English language evolution framework](language-evolution.md). They are not adopted APIs. Complete and review the six imaginary algorithm drafts required [before v0.2.0](release-milestones.md#pre-v020-imaginary-v1-code), then select and specify the smallest necessary generalization. Existing finite-core maintenance and Stage 1 proof work may continue in parallel.
+Future sizes, capability/generalized library organization, borrowing and approximation require their own contracts/checking/IR/migration. Until v0.5, add algorithm cases to corpus; no draft name is a public API.

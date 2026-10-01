@@ -63,7 +63,9 @@ def read_json(data):
 
 def source_revision(root):
     paths = [*root.glob("lean/Qleisli/**/*.lean"),
-             *root.glob("lean-kernel/QleisliKernel/**/*.lean")]
+             *root.glob("lean-kernel/QleisliKernel/**/*.lean"),
+             *root.glob("lean-kernel/Protocol/**/*.lean"),
+             *root.glob("lean-kernel/Cli/**/*.lean")]
     paths += [root / name for name in (
         "lean/Qleisli.lean", "lean/Audit.lean", "lean/SchemaExport.lean",
         "lean/lean-toolchain", "lean/lakefile.toml", "lean/lake-manifest.json",

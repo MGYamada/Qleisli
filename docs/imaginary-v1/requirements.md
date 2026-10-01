@@ -1,18 +1,10 @@
 # Shared language and contract requirements
 
-Status: **requirements extracted for imaginary design; no feature adoption**
-(2026-09-27). Read the [corpus](README.md) and
-[English specification framework](../language-evolution.md). Every facility
-below is missing in its general form even where fixed finite operations exist.
-The current [stdlib ledger](../stdlib-contracts.md) remains the record of the
-12 shipped ordinary definitions; these proposals are not new ledger entries.
+Design requirements shared by the six [imaginary drafts](README.md), not adopted generic APIs. Existing bounded source/components have separate contracts and [status](../current-status.md).
 
 ## Requirement matrix
 
-L = proposed language form; B = proposed sealed built-in operation;
-D = proposed ordinary definition. A mixed or unresolved classification records
-a design decision still to make, not permission to bypass the verifier.
-Host-only processing is explicitly outside current `.qli`.
+L=language, B=sealed built-in, D=ordinary-definition candidate; unresolved classifications need a decision. Host-only processing is not a current quantum API.
 
 | ID | Required facility and consumers | Proposed classification | Input/output, ownership and effects | Meaning and evidence / intended IR route |
 | --- | --- | --- | --- | --- |
@@ -33,9 +25,7 @@ Host-only processing is explicitly outside current `.qli`.
 
 ## Intended acceptance and rejection boundaries
 
-Local draft records map to this index as follows. Follow each link for the
-algorithm-specific type, equation, acceptance/rejection cases and unresolved
-items; the shared rows do not replace those details.
+Local IDs preserve their algorithm-specific contracts and open obligations; shared rows do not replace them.
 
 | Draft records | Shared requirements |
 | --- | --- |
@@ -48,6 +38,8 @@ items; the shared rows do not replace those details.
 
 ## Intended acceptance and rejection examples
 
+Future intended cases; current executable acceptance/rejection tests still cover the shipped profile.
+
 | Requirements | Accept in a future specified profile | Reject or diagnose |
 | --- | --- | --- |
 | R01–R04 | Finite well-bounded sizes and distinct carried owners; apply/control/adjoint with matching capabilities | Aliased axes; a moved owner reused; hidden quantum capture; unchecked zero-iteration body; exceeding a capacity limit |
@@ -56,141 +48,22 @@ items; the shared rows do not replace those details.
 | R10–R11 | Coherent access implementation, specified subspaces and certified phase sequence | Treating a stochastic matrix as a unitary; ignoring off-block amplitude; arbitrary polynomial phases without an admissibility/synthesis argument |
 | R12–R14 | Full measurement instrument, independently validated classical candidate, evidence bound to actual source/IR | Hiding failure outcomes; extracting a factor from an unverified period claim; reusing evidence after implementation modification; treating finite checks as compiler proof |
 
-These are future design cases. The current parser is not expected to accept
-the imaginary fragments. The existing executable acceptance/rejection suite
-continues to test the shipped finite profile.
-
 ## Decisions still open and order of work
 
-The [0.1.5 dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects fixed-width
-static operation parameters, access evidence and bounded basis-derived meanings
-for M1. Sizes and hierarchical IR with symbolic checking belong to M2;
-predicate/arithmetic synthesis without truth tables belongs to M3/M4. This
-replaces the earlier combined size/operation candidate and indefinite kernel
-deferral. The [M1 specification](../next-minor-spec.md) defines the fixed-width
-grammar implemented and validated in [0.1.8](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md).
-The [machine contracts](../machine-interface-spec.md) specify the host boundary;
-X1 is implemented, while X2–X6 remain pending. These finite implementations do
-not adopt the imaginary drafts' sized notation or general operation builders.
+Before a feature is selected, specify English grammar/types/effects/ownership, IR, meanings/checker, limits/migration and independent acceptance/fault tests. M1 is fixed-width; M2 adds evidence-bound sharing/sizes; M3/M4 require efficient synthesis. Actual bounded implementation does not adopt all imaginary notation.
 
 ### R02 notation and representation alternatives
 
-The drafts currently use two distinct surface designs: QPE/Grover/AE/Shor use
-`fn f<n,m>(static U: ...)` and operation-returning `unitary_op` builders;
-walk/QSVT use `fn f[static n, static U: ...]` followed by ordinary arguments.
-They are alternatives, not interchangeable syntax. M1 selects static parameters with checked access
-constraints; general operation-returning builders remain deferred. The selected
-[fixed-width grammar](../next-minor-spec.md#grammar-and-resolution) completes
-that M1 G020-1 decision; it does not adopt the drafts' sized notation. `ControlledAccess<U>`, a `requires` predicate and
-`with_binary_powers` respectively suggest a wrapper, a constraint and an
-evidence producer for the same underlying access judgment; none grants control
-from unitarity alone. See the [representation decision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#static-operations-and-capability-representation).
-
-The [conjugation rule](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#control-through-conjugation)
-derives controlled `V W V†` from V/inverse and controlled W. It is phase exact
-and avoids requiring controlled state preparation. The fixed-width constructor
-`controlled_op(conjugate_op(V,W))` implements this derivation, with
-[phase-sensitive regression coverage](../../tests/operation_parameters.rs).
-It does not automatically factor an arbitrary named `qif` arm into a conjugation,
-or implement the drafts' sized state-preparation builders.
-
-Before implementing a selected feature, write its English inference/grammar
-rules, actual IR representation, checker algorithm and soundness premises,
-bounded examples and counterexamples, capacity policy, and migration impact.
-Then validate distinct operations at fixed width in M1, and reuse across
-multiple supported sizes and operations in M2. Do not
-raise limits or adopt shared-call IR as a patch merely to make a draft compile.
-
-Outstanding cross-cutting decisions include exact versus approximate angle
-representations, scalable independent evidence checking, treatment of classical
-data in quantum signatures, host sampling errors and retry budgets, and the
-formal connection from generalized elaboration to IR. None is resolved by
-writing a type name or requiring an unimplemented certificate.
+The two draft static-parameter syntaxes and operation-returning builders are alternatives, not interchangeable APIs. M1 uses checked static access constraints; wrapper/constraint/evidence-producer roles cannot infer control from unitarity. Controlled V W V† derives from V/inverse and controlled W with exact phase; [fixed-width tests](../../tests/operation_parameters.rs) cover that rule, not generic builders.
 
 ### Scaling prerequisite for R14
 
-Clarified by the v0.1.2 review and adopted as a design constraint on
-2026-09-27: **generalized contract composition must not require materializing
-or multiplying the whole logical operator's dense matrix.** This is an
-architectural prerequisite for size generalization, not a later performance
-optimization. A dense operator on n bits has `4^n` entries; the current
-straightforward square-matrix product takes `O(8^n)` scalar operations.
-Merely adding `Bits<n>`, increasing a capacity, or caching checked physical
-circuits does not remove that representation cost.
-
-The current bounded checker already has soundness arguments for composition
-and implemented constructors. However, `CheckedContract::then` computes the
-logical matrix product; tensor, adjoint and control also construct dense
-logical matrices, and encodings are matrices. This finite profile remains
-supported throughout compatible 0.1.x maintenance and is permitted for fixed-width M1. See the [review verification](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/v0.1.2.md).
-The `apply_contract` function-evidence checker also constructs and compares
-whole implementation/specification matrices; its acceptance path must be
-generalized along with composition.
-
-A candidate architecture retains typed symbolic meanings and shared proof
-derivations, with nodes such as composition, tensor, adjoint, control and
-static repetition. These names are design metanotation, not accepted syntax
-or APIs. It must also represent encodings and their equality without expanding
-whole-space matrices. Acceptance of a composition checks its component
-evidence and matching intermediate types, encodings, phase conventions and
-axis layouts, and retains binding to the actual implementation and final IR.
-Different symbolic terms require a checked equivalence derivation when they
-are not definitionally equal; a descriptive name or hash alone is not evidence.
-
-Keep dense exact comparison for explicitly bounded leaves and finite
-regressions. Size-dependent arithmetic and circuit families need separately
-checked parameterized derivations, for example induction and algebraic
-identities, rather than whole-basis enumeration. Lean may supply such proofs;
-a dedicated evidence calculus is also possible. The proof/import boundary
-and implementation correspondence must be specified whichever method is used.
-General symbolic equality is not assumed decidable by simplification alone.
-
-Before claiming scalable composition, record the symbolic meaning and encoding
-representation, allowed inference rules and their premises, proof sharing,
-independent checking algorithm and budgets, and final-IR binding. Demonstrate
-that composition in the selected profile checks the derivation without
-expanding a global dense matrix, including negative cases for wrong interfaces
-and stale evidence. This does not promise efficient checking of every possible
-equivalence or polynomial circuit size for every algorithm. Production
-integration and parameterized algorithm generalization remain unimplemented.
-
-The subsequent v0.1.3 [system design](../symbolic-contract-architecture.md) and
-[independent prototype](../../research/semantic-kernel/README.md) begin this
-work in an explicitly limited research profile. Their implemented subset does
-not constitute generalized source support or discharge R14 for the six drafts.
+R14 requires symbolic compositional meanings and encodings without global dense matrices before size generalization. Current finite then/tensor/adjoint/control/extraction remain dense bounded reference paths. Shared typed derivations must bind actual implementations/dependencies/final IR, phase, axes and encodings; differing symbolic terms need checked equality evidence. A name/hash/simplifier cannot grant universal equality. Demonstrate independent bounded checking and interface/stale-evidence faults without full expansion.
 
 ### Complementary scaling gates: R02/R04 and R06/R09
 
-R14 does not eliminate exponential basis tables or fully expanded calls.
-Current `basis fn`/lifts enumerate their input domain; IR monomials and computed
-functions retain tables. Static inverse/control/repetition work on expanded
-circuits. Require **hierarchical calls, loops and parameterized families with
-joint evidence binding** before M2 size generalization. Require **reversible
-circuit synthesis without whole-space truth tables** for M3 predicates and M4
-arithmetic. Keep bounded tables as reference cases, not the general algorithm.
-The [joint design and MINOR migration](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#three-scaling-gates-and-joint-irevidence-design)
-cover public IR changes, proof/definition sharing, costs, whole-space arithmetic
-and exact scratch cleanup. No gate is discharged by a compact proof over a
-fully expanded implementation.
+R14 alone removes neither exponential basis tables nor expanded calls. R02/R04 need hierarchy/calls/folds jointly bound to evidence; R06/R09 need reversible circuit synthesis without whole-space truth tables. Cost/phase/full-space arithmetic/clean return remain separate scaling gates.
 
 ### First generalized QPE profile: decisions required by R08/R12/R14
 
-The selected specification must state supported phase/target widths, the
-required Fourier-angle set, exact or approximate synthesis, the independent
-evidence method, its capacity diagnostics, and any error metric and composition
-budget. In the displayed QFT circuit, a four-bit phase register requires
-`2*pi/16 = pi/8`, with phase `exp(i*pi/8)`. This lies outside the current
-exact coefficient ring `Z[zeta_8,1/2]`; the width-four Python convention check
-uses floating-point arithmetic and does not implement exact QFT4 in Qleisli.
-
-Extending exact phase arithmetic and approximating the target using an
-available gate set lead to different evidence obligations. Select and document
-the approach before claiming generalized QPE support. Approximate operator
-accuracy and sampling failure remain separate from exact auxiliary zero
-return. The 0.1.3 review originally left that choice open. The
-[0.1.5 dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles)
-selects ideal exact symbolic dyadic phases for M2 and puts approximate synthesis
-at the backend boundary. The [bounded M2 profile](../hierarchical-ir-spec.md)
-now fixes widths 1–8, denominator exponent at most eight, budgets, schema
-checking and diagnostics. No new angle
-primitive, numerical executor or error API is implemented by that decision.
+Fix widths, phase angles/domain, exact or approximate realization, independent evidence, budgets/diagnostics and instrument/error conventions. Width four needs exp(i pi/8), outside R8. M2 selects bounded ideal exact dyadic phases; backend approximation is separate and cannot weaken exact scratch. [Hierarchy](../hierarchical-ir-spec.md) fixes its selected profile; this requirement adds no primitive or production authority.

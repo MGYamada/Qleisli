@@ -68,6 +68,21 @@ jobs:
       - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
 
+  macos-source:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Install MSRV and Intel macOS compilation target
+        run: rustup toolchain install 1.85.0 --profile minimal --target x86_64-apple-darwin
+      - name: Exercise descriptor-relative source loading on macOS
+        run: cargo +1.85.0 test --locked --lib source_file::tests
+      - name: Check source budgets, project loading and edition manifests
+        run: cargo +1.85.0 test --locked --test source_capacities --test project --test editions
+      - name: Build with Rust's existing Intel macOS minimum
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '10.12'
+        run: cargo +1.85.0 build --locked --target x86_64-apple-darwin --bin qleisli
+
   interop:
     runs-on: ubuntu-24.04
     steps:
@@ -128,6 +143,7 @@ jobs:
         run: |
           lake env lean -DwarningAsError=true Audit.lean
           lake env lean -DwarningAsError=true Tests.lean
+          lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
       - name: Replay the compiled project definitions through Lean's kernel
         working-directory: lean-kernel
         run: |
@@ -155,6 +171,10 @@ jobs:
         run: python3 scripts/test_lean_exact.py
       - name: VM-24 native finite circuits, fresh encoded equations and original serialized matrices
         run: python3 scripts/test_lean_finite.py
+      - name: VM-25 pure raw owners, actual bodies and finite structured cleanup
+        run: python3 scripts/test_lean_raw.py
+      - name: VM-25 retained bindings, capacity boundaries and non-dense cleanup
+        run: python3 scripts/test_lean_raw_completion.py --record /tmp/qleisli-vm25-completion.json
       - name: Symbolic QFT paths and independent Fourier coefficients
         run: python3 scripts/test_lean_qft.py
       - name: Small QFT semantic-path matcher and nonliteral candidates

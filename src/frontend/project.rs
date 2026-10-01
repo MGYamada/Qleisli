@@ -15,7 +15,10 @@ use super::lexer::keyword_kind;
 use super::parser::parse_module;
 
 mod edition;
+mod manifest;
 mod source_file;
+
+pub use manifest::{manifest_warnings, qrate_source_root};
 
 const BUNDLED_SOURCES: &[(&str, &str)] = &[
     (
@@ -280,6 +283,41 @@ fn io_error(path: &Path, failure: std::io::Error) -> LoadFailure {
 }
 
 impl Project {
+    fn public_name_hint(&self, name: &str, excluded: &str) -> String {
+        let mut candidates: Vec<_> = self
+            .modules
+            .values()
+            .filter(|module| module.name != excluded)
+            .filter(|module| {
+                module
+                    .ast
+                    .decls
+                    .iter()
+                    .any(|decl| decl.public && decl.name.text == name)
+            })
+            .map(|module| format!("{}::{name}", module.name))
+            .collect();
+        candidates.extend(
+            super::core::PRIMITIVES
+                .iter()
+                .filter(|item| item.name == name && item.module != excluded)
+                .map(|item| format!("{}::{name}", item.module)),
+        );
+        candidates.sort();
+        if candidates.is_empty() {
+            String::new()
+        } else {
+            format!(
+                "; help: public alternatives: {}",
+                candidates
+                    .into_iter()
+                    .take(4)
+                    .map(|path| format!("`use {path};`"))
+                    .collect::<Vec<_>>()
+                    .join(", ")
+            )
+        }
+    }
     /// Compatibility adapter retaining the pre-0.2 unbounded byte loader.
     pub fn load(root: &Path) -> Result<Self, ProjectError> {
         Self::load_detailed(root).map_err(|failure| failure.error)
@@ -433,7 +471,10 @@ impl Project {
             return Err(source_error(
                 caller,
                 segments.last().expect("nonempty import path").span,
-                format!("sealed module `{source_module}` has no public name `{name}`"),
+                format!(
+                    "sealed module `{source_module}` has no public name `{name}`{}",
+                    self.public_name_hint(name, &source_module)
+                ),
             ));
         }
         let target = self.modules.get(&source_module).ok_or_else(|| {
@@ -452,7 +493,10 @@ impl Project {
                 source_error(
                     caller,
                     segments.last().expect("nonempty import path").span,
-                    format!("module `{source_module}` has no name `{name}`"),
+                    format!(
+                        "module `{source_module}` has no name `{name}`{}",
+                        self.public_name_hint(name, &source_module)
+                    ),
                 )
             })?;
         if !declaration.public {

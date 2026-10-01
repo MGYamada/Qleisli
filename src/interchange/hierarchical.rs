@@ -3,13 +3,12 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 mod bridge;
+mod runtime;
+use runtime::Mode;
 pub mod execution;
 
-use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
 
 use super::finite_leaf::{
     CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_unitary, check_unitary,
@@ -38,6 +37,20 @@ pub struct Reconstructed {
 }
 
 impl Reconstructed {
+    fn new(
+        payload: &[u8],
+        leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
+        structural_work: usize,
+        budget: &Budget,
+    ) -> Self {
+        Self {
+            payload: Arc::from(payload),
+            leaves,
+            structural_work,
+            exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
+        }
+    }
+
     pub fn payload(&self) -> &[u8] {
         &self.payload
     }
@@ -68,16 +81,10 @@ impl Kernel {
     /// response or producer success flag is accepted as an API argument.
     pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed> {
         let decoded = bridge::decode(payload)?;
-        let response = invoke(&self.executable, decoded.bridge, Mode::Inspect)?;
-        let response = response_indices(&response, Mode::Inspect)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.value, response.indices, &mut budget)?;
-        Ok(Reconstructed {
-            payload: Arc::from(payload),
-            leaves,
-            structural_work: response.work,
-            exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
-        })
+        Ok(Reconstructed::new(payload, leaves, response.work, &budget))
     }
 }
 
@@ -157,36 +164,22 @@ impl Kernel {
         } else {
             Mode::Request
         };
-        let response = invoke(&self.executable, decoded.bridge, mode)?;
-        let response = response_indices(&response, mode)?;
+        let response = runtime::check(&self.executable, decoded.bridge, mode)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.actual, response.indices, &mut budget)?;
         if let Some(width) = decoded.fourier_width {
             reconstruct_hadamards(&decoded.actual, width, response.pairs, &mut budget)?;
-            return Ok(CheckedRequest {
-                reconstruction: Reconstructed {
-                    payload: Arc::from(payload),
-                    leaves,
-                    structural_work: response.work,
-                    exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
-                },
-                request: Arc::from(request),
-            });
+        } else {
+            reconstruct_pairs(
+                &decoded.actual,
+                &decoded.request,
+                &decoded.pairs,
+                response.pairs,
+                &mut budget,
+            )?;
         }
-        reconstruct_pairs(
-            &decoded.actual,
-            &decoded.request,
-            &decoded.pairs,
-            response.pairs,
-            &mut budget,
-        )?;
         Ok(CheckedRequest {
-            reconstruction: Reconstructed {
-                payload: Arc::from(payload),
-                leaves,
-                structural_work: response.work,
-                exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
-            },
+            reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
             request: Arc::from(request),
         })
     }
@@ -270,8 +263,7 @@ impl Kernel {
     /// can be supplied in place of a fresh native check.
     pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument> {
         let decoded = bridge::decode_instrument(payload, request)?;
-        let response = invoke(&self.executable, decoded.bridge, Mode::Instrument)?;
-        let response = response_indices(&response, Mode::Instrument)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.pure.actual, response.indices, &mut budget)?;
         reconstruct_pairs(
@@ -282,12 +274,7 @@ impl Kernel {
             &mut budget,
         )?;
         Ok(CheckedInstrument {
-            reconstruction: Reconstructed {
-                payload: Arc::from(payload),
-                leaves,
-                structural_work: response.work,
-                exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
-            },
+            reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
             request: Arc::from(request),
         })
     }
@@ -305,8 +292,7 @@ impl Kernel {
         candidate: &[u8],
     ) -> Result<CheckedQpeInstrument> {
         let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
-        let response = invoke(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
-        let response = response_indices(&response, Mode::QpeInstrument)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.provider.actual, response.indices, &mut budget)?;
         reconstruct_pairs(
@@ -327,12 +313,7 @@ impl Kernel {
         }
         Ok(CheckedQpeInstrument {
             instrument: CheckedInstrument {
-                reconstruction: Reconstructed {
-                    payload: Arc::from(payload),
-                    leaves,
-                    structural_work: response.work,
-                    exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
-                },
+                reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
                 request: Arc::from(request),
             },
             candidate: Arc::from(candidate),
@@ -403,56 +384,6 @@ fn reconstruct_hadamards(
     Ok(())
 }
 
-#[derive(Clone, Copy)]
-enum Mode {
-    Inspect,
-    Request,
-    Fourier,
-    Instrument,
-    QpeInstrument,
-}
-impl Mode {
-    fn description(self) -> &'static str {
-        match self {
-            Self::Inspect => "artifact inspection",
-            Self::Request => "composition-request checking",
-            Self::Fourier => "independent Fourier-request checking",
-            Self::Instrument => "composition-instrument checking",
-            Self::QpeInstrument => "named-QPE instrument checking",
-        }
-    }
-    fn argument(self) -> &'static str {
-        match self {
-            Self::Inspect => "--hierarchy-pending",
-            Self::Request => "--hierarchy-request-pending",
-            Self::Fourier => "--hierarchy-fourier-pending",
-            Self::Instrument => "--instrument-pending",
-            Self::QpeInstrument => "--qpe-instrument-pending",
-        }
-    }
-    fn header(self) -> &'static str {
-        match self {
-            Self::Inspect => "qleisli.hierarchy-pending 1",
-            Self::Request => "qleisli.hierarchy-request-pending 1",
-            Self::Fourier => "qleisli.hierarchy-fourier-pending 1",
-            Self::Instrument => "qleisli.instrument-pending 1",
-            Self::QpeInstrument => "qleisli.qpe-instrument-pending 1",
-        }
-    }
-    fn maximum(self) -> usize {
-        match self {
-            Self::Inspect => 1_100_000,
-            Self::Request | Self::Fourier | Self::Instrument | Self::QpeInstrument => 2_200_000,
-        }
-    }
-}
-struct Response {
-    work: usize,
-    indices: Vec<usize>,
-    pairs: Vec<usize>,
-    hadamards: Vec<usize>,
-}
-
 fn legacy(value: &Value) -> Result<BasisType> {
     let mut stack = Vec::new();
     for atom in value.array()?.iter().rev() {
@@ -516,181 +447,4 @@ fn boundary(value: &Value) -> Result<UnitaryBoundary> {
         return Err(Error::new("contract", "finite endpoint type trees differ"));
     }
     UnitaryBoundary::new(input_type, input, output)
-}
-
-fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
-    let text =
-        std::str::from_utf8(bytes).map_err(|_| Error::format("invalid runtime response UTF-8"))?;
-    let mut lines = text.split('\n');
-    if lines.next() != Some(mode.header()) {
-        return Err(Error::format("unknown runtime response"));
-    }
-    match lines.next() {
-        Some("pending") => {}
-        Some("error") => {
-            let code = match lines.next() {
-                Some("limit") => "limit",
-                Some("contract") => "contract",
-                Some("invalid_ir") => "invalid_ir",
-                Some("format") => "format",
-                _ => return Err(Error::format("unknown runtime failure")),
-            };
-            if matches!(mode, Mode::QpeInstrument)
-                && (lines.next() != Some("") || lines.next().is_some())
-            {
-                return Err(Error::format("trailing QPE runtime failure data"));
-            }
-            let detail = if code == "limit" {
-                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000; required work is unavailable in the native failure reply"
-            } else {
-                "the native checker rejected the artifact or request"
-            };
-            return Err(Error::new(
-                code,
-                format!("Lean {}: {detail}", mode.description()),
-            ));
-        }
-        _ => return Err(Error::format("unknown runtime response status")),
-    }
-    let integer = |s: Option<&str>, maximum: usize| -> Result<usize> {
-        let s = s.ok_or_else(|| Error::format("truncated runtime response"))?;
-        if s.is_empty()
-            || s.len() > 10
-            || !s.bytes().all(|b| b.is_ascii_digit())
-            || (s.len() > 1 && s.starts_with('0'))
-        {
-            return Err(Error::format("invalid runtime integer"));
-        }
-        let n = s
-            .parse::<usize>()
-            .map_err(|_| Error::limit("runtime integer overflow"))?;
-        if n > maximum {
-            return Err(Error::limit("runtime response exceeds its bound"));
-        }
-        Ok(n)
-    };
-    let work = integer(lines.next(), 2_000_000)?;
-    let count = integer(lines.next(), 100_000)?;
-    let indices = (0..count)
-        .map(|_| integer(lines.next(), 99_999))
-        .collect::<Result<_>>()?;
-    let pairs = match mode {
-        Mode::Inspect => Vec::new(),
-        Mode::Request | Mode::Fourier | Mode::Instrument | Mode::QpeInstrument => {
-            let count = integer(
-                lines.next(),
-                if matches!(mode, Mode::Fourier) {
-                    8
-                } else {
-                    100_000
-                },
-            )?;
-            (0..count)
-                .map(|_| integer(lines.next(), 99_999))
-                .collect::<Result<_>>()?
-        }
-    };
-    let hadamards = if matches!(mode, Mode::QpeInstrument) {
-        let count = integer(lines.next(), 16)?;
-        (0..count)
-            .map(|_| integer(lines.next(), 99_999))
-            .collect::<Result<_>>()?
-    } else {
-        Vec::new()
-    };
-    if lines.next() != Some("") || lines.next().is_some() {
-        return Err(Error::format("trailing runtime response data"));
-    }
-    Ok(Response {
-        work,
-        indices,
-        pairs,
-        hadamards,
-    })
-}
-
-fn invoke(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Vec<u8>> {
-    let mut child = Command::new(executable)
-        .arg(mode.argument())
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()
-        .map_err(|e| Error::new("io", format!("cannot start Lean runtime: {e}")))?;
-    let mut stdin = child.stdin.take().unwrap();
-    let stdout = child.stdout.take().unwrap();
-    let writer = std::thread::spawn(move || stdin.write_all(&bytes));
-    let reader = std::thread::spawn(move || {
-        let mut output = Vec::new();
-        stdout
-            .take((mode.maximum() + 1) as u64)
-            .read_to_end(&mut output)
-            .map(|_| output)
-    });
-    let deadline = Instant::now() + Duration::from_secs(60);
-    let status = loop {
-        match child.try_wait() {
-            Ok(Some(status)) => break Ok(status),
-            Ok(None) if Instant::now() < deadline => std::thread::sleep(Duration::from_millis(10)),
-            Ok(None) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                break Err(Error::limit("Lean runtime inspection timed out"));
-            }
-            Err(e) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                break Err(Error::new("io", format!("Lean runtime wait failed: {e}")));
-            }
-        }
-    };
-    let written = writer
-        .join()
-        .map_err(|_| Error::new("io", "runtime input thread failed"))?;
-    let output = reader
-        .join()
-        .map_err(|_| Error::new("io", "runtime output thread failed"))?
-        .map_err(|e| Error::new("io", format!("runtime output failed: {e}")))?;
-    let status = status?;
-    if output.len() > mode.maximum() {
-        return Err(Error::limit("runtime response exceeds limit"));
-    }
-    if !status.success() {
-        return match response_indices(&output, mode) {
-            Err(error) => Err(error),
-            Ok(_) => Err(Error::new("io", "failed runtime returned success data")),
-        };
-    }
-    written.map_err(|e| Error::new("io", format!("runtime input failed: {e}")))?;
-    Ok(output)
-}
-
-#[cfg(test)]
-mod response_diagnostics_tests {
-    use super::{Mode, response_indices};
-
-    #[test]
-    fn capacity_failure_identifies_the_selected_native_check_without_a_work_claim() {
-        for mode in [
-            Mode::Inspect,
-            Mode::Request,
-            Mode::Fourier,
-            Mode::Instrument,
-            Mode::QpeInstrument,
-        ] {
-            let reply = format!("{}\nerror\nlimit\n", mode.header());
-            let error = match response_indices(reply.as_bytes(), mode) {
-                Err(error) => error,
-                Ok(_) => panic!("capacity rejection must not produce a check report"),
-            };
-            assert_eq!(error.code, "limit");
-            assert!(error.message.contains(mode.description()));
-            assert!(error.message.contains("2000000"));
-            assert!(error.message.contains("required work is unavailable"));
-        }
-        let reply = b"qleisli.qpe-instrument-pending 1\nerror\ncontract\n";
-        let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
-        assert_eq!(error.code, "contract");
-        assert!(!error.message.contains("capacity"));
-    }
 }

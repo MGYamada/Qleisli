@@ -42,14 +42,14 @@ def step (artifact : Artifact) (state : State) (index : Nat) : Except Failure St
   | none => .error ⟨.invalidIr,some ⟨.proof,index⟩⟩
   | some proof =>
     let used := state.visits + 4 + 4 * proof.premises.size
-    if used > 2000000 then .error ⟨.limit,some ⟨.proof,index⟩⟩ else
+    if used > Limits.maxVisits then .error ⟨.limit,some ⟨.proof,index⟩⟩ else
     if !(proof.premises.all (fun child => state.cache[child]? == some true)) then
       .error ⟨.contract,some ⟨.proof,index⟩⟩
-    else match Rule.check artifact index (2000000 - used) with
+    else match Rule.check artifact index (Limits.maxVisits - used) with
       | .error error => .error ⟨error,some ⟨.proof,index⟩⟩
       | .ok checked =>
         let total := used + checked.visits
-        if total > 2000000 then .error ⟨.limit,some ⟨.proof,index⟩⟩
+        if total > Limits.maxVisits then .error ⟨.limit,some ⟨.proof,index⟩⟩
         else .ok ⟨state.cache.setIfInBounds index true,total,state.proofs+1⟩
 
 theorem step_conditions (artifact : Artifact) (state next : State) (index : Nat)
@@ -129,11 +129,11 @@ def checkAll (artifact : Artifact) (order : Array Nat) : Except Failure Checked 
   | .error failure => .error failure
   | .ok typed =>
     let start := typed.totalVisits + 6 * (order.size + artifact.proofs.size)
-    if start > 2000000 then .error ⟨.limit,none⟩ else
+    if start > Limits.maxVisits then .error ⟨.limit,none⟩ else
     match scan artifact (proofOrder artifact order) ⟨Array.replicate artifact.proofs.size false,start,0⟩ with
     | .error failure => .error failure
     | .ok state =>
-      if state.visits > 2000000 then .error ⟨.limit,none⟩ else
+      if state.visits > Limits.maxVisits then .error ⟨.limit,none⟩ else
       if !state.cache.all id || state.cache[artifact.entry.proof]? != some true then
         .error ⟨.contract,some ⟨.proof,artifact.entry.proof⟩⟩
       else .ok ⟨typed,state⟩
@@ -188,11 +188,11 @@ def powerEntry (artifact : Artifact) (order : Array Nat) (exponent provider : Na
   match checkAll artifact order with
   | .error failure => .error failure
   | .ok derivation =>
-    match Power.inspect artifact artifact.entry.proof exponent provider (2000000 - derivation.state.visits) with
+    match Power.inspect artifact artifact.entry.proof exponent provider (Limits.maxVisits - derivation.state.visits) with
     | .error kind => .error ⟨kind,some ⟨.proof,artifact.entry.proof⟩⟩
     | .ok projection =>
       let total := derivation.state.visits + projection.visits
-      if total > 2000000 then .error ⟨.limit,none⟩ else
+      if total > Limits.maxVisits then .error ⟨.limit,none⟩ else
       if derivation.state.cache[projection.providerProofIndex]? != some true then
         .error ⟨.contract,some ⟨.proof,projection.providerProofIndex⟩⟩
       else .ok ⟨derivation,projection,total⟩

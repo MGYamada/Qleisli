@@ -157,6 +157,54 @@ class JsonCliTests(unittest.TestCase):
             self.assertEqual(set(shot), {"bits", "execution_steps"})
             self.assertNotEqual(*shot["bits"])
 
+    def test_text_json_and_interop_samples_keep_the_same_seeded_results(self):
+        for source in [
+            "observe fn main() -> Unit { () }",
+            "use std::quantum::{init0,h,cnot}; use std::observe::measure_z; "
+            "observe fn main() -> (CBit,CBit) { "
+            "let (a,b) = cnot(h(init0()),init0()); (measure_z(a),measure_z(b)) }",
+        ]:
+            with self.subTest(source=source):
+                self.source(source)
+                flags = ("--shots=32", "--seed=18446744073709551615")
+                direct = self.invoke("sample", self.root, *flags, "--format=json")["result"]
+                imported = self.invoke("interop", "sample", self.root, "--input=qli", *flags)["result"]
+                self.assertEqual(direct, imported)
+                text = subprocess.run([BINARY, "sample", self.root, *flags], capture_output=True)
+                self.assertEqual(text.returncode, 0, text)
+                self.assertEqual(text.stderr, b"")
+                expected = "".join(
+                    ("".join("1" if bit else "0" for bit in shot["bits"]) or "()") + "\n"
+                    for shot in direct["shots"]
+                )
+                self.assertEqual(text.stdout.decode(), expected)
+                for shot in direct["shots"]:
+                    self.assertIn(shot["bits"], [[], [False, False], [True, True]])
+
+    def test_numeric_spelling_is_consistent_across_cli_adapters(self):
+        self.source("observe fn main() -> CBit { true }")
+        for seed in ["", "01", "+1", "-1", "１", "18446744073709551616"]:
+            with self.subTest(seed=seed):
+                for args in [
+                    ("sample", self.root, "--shots=1", f"--seed={seed}", "--format=json"),
+                    ("interop", "sample", self.root, "--input=qli", "--shots=1", f"--seed={seed}"),
+                ]:
+                    result = self.invoke(*args, status=2)
+                    self.assertEqual(result["diagnostics"][0]["code"], "usage")
+                sized = subprocess.run(
+                    [BINARY, "sized", "sample", "--entry=main::f", "--module=main=missing.qli",
+                     "--kernel=missing", "--shots=1", f"--seed={seed}"], capture_output=True,
+                )
+                self.assertEqual(sized.returncode, 2, sized)
+                self.assertEqual(sized.stdout, b"")
+        # Sized naturals keep their u32 bound even though seeds use u64.
+        sized = subprocess.run(
+            [BINARY, "sized", "check", "--entry=main::f", "--module=main=missing.qli",
+             "--kernel=missing", "--nat=n=4294967296"], capture_output=True,
+        )
+        self.assertEqual(sized.returncode, 2, sized)
+        self.assertEqual(sized.stdout, b"")
+
     def test_portable_ir_is_independently_decoded_and_reverified(self):
         self.source("observe fn main() -> CBit { true }")
         artifact = self.root / "artifact.json"

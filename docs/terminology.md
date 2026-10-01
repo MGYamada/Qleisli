@@ -13,7 +13,7 @@ contracts. Japanese operational guidance, historical milestone records, legacy
 anchors, and glossary terms remain supporting material. Translation and notation
 cleanup do not change acceptance rules or turn tests into proofs.
 
-The [language evolution framework](language-evolution.md) separates current
+The [language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md) separates current
 normative rules from future design notation and defines the English records
 required before selecting an extension. Imaginary algorithm code is design
 material, even when it resembles `.qli`; it is not executable source evidence.

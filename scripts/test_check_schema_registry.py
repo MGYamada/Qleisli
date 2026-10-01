@@ -93,6 +93,26 @@ class RegistryTests(unittest.TestCase):
             (path.parent / "Added.lean").write_text("def added := true\n")
             self.assertNotEqual(registry.source_revision(root), self.revision)
 
+    def test_source_identity_covers_nested_transport(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in self.revision["files"]:
+                target = root / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((registry.ROOT / name).read_bytes())
+            for name in ["Protocol/Core.lean", "Cli/Common.lean"]:
+                with self.subTest(module=name):
+                    path = root / "lean-kernel" / name
+                    original = path.read_bytes()
+                    path.write_bytes(original + b"\n-- mutation\n")
+                    self.assertNotEqual(registry.source_revision(root), self.revision)
+                    path.write_bytes(original)
+                    extra = path.parent / "Added.lean"
+                    extra.write_text("def added := true\n")
+                    self.assertNotEqual(registry.source_revision(root), self.revision)
+                    extra.unlink()
+                    self.assertEqual(registry.source_revision(root), self.revision)
+
     def test_source_only_cannot_refresh_theorem_types(self):
         with self.assertRaisesRegex(registry.RegistryError, "requires rebuilt types"):
             registry.check(registry.ROOT, write=True, source_only=True)

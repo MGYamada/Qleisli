@@ -1,145 +1,24 @@
 # Qleisli release milestones and north star
 
-Status: **project direction adopted by the user on 2026-09-27; v0.1's declared
-finite acceptance profile is implemented and checked; v1 remains unmet**.
-This English document is the authoritative record
-of the project north star and v0.1/v0.5.0/v1 release conditions. The English summaries in the
-[roadmap](../ROADMAP.md) and [algorithm goal](algorithm-structure-goal.md)
-follow it. It adopts the direction evaluated in the
-[semantic-contract review](semantic-contracts-v0.1.md). The first
-[finite checker and source extension](semantic-contracts-v0.1.md) and
-[retained function evidence](function-contracts-v0.1.md) form the completed
-bounded path. The [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records its
-acceptance evidence, capacity limits, and remaining proof obligations.
-
-The finite core **specification v0**, the development **stages 0–5**, and
-these **release milestones v0.1/v0.5.0/v1** are different labels. The existing Rust
-package version and the standard-library ledger's “format v1” do not
-establish completion of either release milestone. Release claims require the
-evidence below, not a manifest version or successful fixed-size example.
-
-The adopted initial product baseline is **0.1.0**. The
-[versioning policy](versioning.md) defines compatibility, synchronized package
-versions, release validation, and immutable Git tags. The
-[changelog](../CHANGELOG.md) and [0.1.0 release notes](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.0.md)
-record its contents and validation scope. The Git tag and GitHub release
-identify the released commit and publication state; registry publication is
-a separate operation.
-
-Current version selection, milestone states and the finite-rule inventory are
-in the [generated status](current-status.md). The [0.1.9 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md)
-separates compatible review maintenance and local validation from publication;
-the [0.1.8 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) preserves M1/authoring migrations.
-Compatible features follow the revised PATCH policy.
-The [M0–M5 plan](v0x-roadmap.md) supersedes the 0.1.4 version-assigned schedule;
-older [release records](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.4.md) retain their historical evidence.
-The [six initial drafts and requirements](imaginary-v1/README.md), their
-[semantic review](imaginary-v1/review.md), and the English specification
-groundwork are complete as design artifacts. This satisfies the corpus
-prerequisite below; future features still need their own specifications and
-validation. Selecting this patch version does not complete v1.
-
-The subsequent v0.1.3 research goal is a first-principles
-[meaning/implementation architecture](symbolic-contract-architecture.md) and
-an [independent exact-pure prototype](../research/semantic-kernel/README.md).
-It checks a limited symbolic profile and binds evidence to supported actual
-raw IR. Its non-published package does not change production compiler APIs.
-The design's G013-S0–S2 gates concern this initial slice; G013-S3 source/entry/
-release integration and generalized algorithms remain future work. Public
-feature adoption still requires an extension specification, independently of
-the compatibility-based version increment.
-The [0.1.5 decision dossier](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) now selects a
-bounded M2 continuation, replacing indefinite deferral. It does not change
-past release conditions or implement production kernel features. Fixed-width M1
-retains finite checking; size generalization requires R14 and hierarchical IR, and
-general predicate/arithmetic construction additionally requires circuit
-synthesis without whole-space truth tables.
+Authoritative adopted acceptance gates. The declared finite v0.1 profile is implemented and checked; general Soundness, Physical Realizability, Resource Safety and v1 remain unmet. Specification/stage/ledger/product numbers are independent. [Current status](current-status.md) and immutable fixture evidence record actual results.
 
 ## 0.2.0 foundation and 0.2.1 shared-QPE continuation
 
-**Latest scope revision, 2026-09-30:** the user splits [0.2.1](v0.2.2-plan.md)
-at the completed corpus/review/experimental-component boundary, adding bounded
-[Python/OpenQASM/QIR connections](interop-m1.1.md#structured-cli-and-python). Heavy implementation,
-production integration and proof work moves to [0.2.2](v0.2.2-plan.md).
-R14/H1–H5 and full instrument/source correspondence are deferred with the
-features, not waived or completed. Existing components remain audited and
-ordinary 0.2.1 compatibility, Rust/docs/corpus/Lean/distribution checks remain
-release gates. The later user request selects [0.2.2 development](releases/v0.2.2.md).
-Its bounded scope is now [published as 0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30);
-general proof and migration gates remain open. Version selection alone does
-not satisfy these gates. The earlier assignment below is historical.
-
-**User scope revision, 2026-09-29.** The [0.2.0 plan](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) now
-ships implemented tuple/type and resource-policy changes, finite X2–X6, and
-experimental Lean components with their actual proof limits. Its remaining
-gate is migration/contract/status alignment and final primary/MSRV Rust,
-corpus/docs/examples, pinned Lean build/audit and clean distribution validation.
-Tagging, push and publication remain separately recorded operations.
-
-The [0.2.1 target](v0.2.2-plan.md) carries the four remaining areas: full
-hierarchical semantics/evidence, independently bound production verification,
-sized source/shared QPE/QFT, and reference execution with integrated H1–H5.
-The previous multi-size, instrument/reference, phase, mutation, capacity,
-cost and reuse criteria move unchanged. They are deferred, not satisfied;
-0.2.0 must not claim a production hierarchical checker or reusable sized QPE.
-Existing experimental components remain built and audited, with external
-schema acceptance disabled until the required proof/binding gates pass.
-
-0.2.1 requires a compatible public extension. If implementation needs a
-breaking AST/API/format or capacity change, select 0.3.0 under the existing
-version policy. M0–M5, R14, S05-C1–C5, PR-C1–C4 and the independent QLT plan
-retain their obligations. No manifest bump or release completion follows from
-this scheduling revision.
+The published finite foundation and bounded shared-QPE checkpoint are historical results. The broader [continuation](v0.2.2-plan.md) retains hierarchy/source/instrument/execution/R14/H1–H5 obligations; publication did not complete them.
 
 ## v0.3.0 type-system specification and later QLT
 
-**User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
-of the **v0.3.0 breaking-change release**. The
-[detailed plan](v0x-roadmap.md#v030-qleisli-type-system-specification) requires
-explicit rules, checking obligations and migration from the current contracts;
-concrete changes remain to be specified. The later 2026-09-30 instruction moves
-K1/K2 verification implementation to [0.2.2–0.2.9](verification-migration-v0.2.md);
-0.3.0 must adapt those checker rules/proofs to its adopted type changes.
-QLT implementation is deferred to **v0.4.0 or later**.
-
-This selected future work without changing the then-current 0.2.1 version or its
-compatibility/acceptance criteria. It neither adopts new type rules now nor
-adds QLT completion to the S05/PR theorem gates.
+v0.3.0 specifies the type system and any explicitly adopted public migrations; concrete changes remain to be fixed. Adapt migrated checks/proofs to adopted rules. QLT implementation remains v0.4.0 or later and adds no automatic S05/PR gate.
 
 ## 0.2.2–0.2.9 verification implementation targets
 
-**User-selected plan, 2026-09-30; implementation pending.** The
-[eight-packet plan](verification-migration-v0.2.md#release-packets-and-dependencies)
-assigns inventory, exact/finite evidence, pure/observing raw IR, hierarchy and
-production dual integration to successive compatible PATCH targets. This
-supersedes the former K1/0.3.0 and K2/0.4.0 scheduling. Preserve the full existing
-public acceptance surface and small-system validation scope. Shared-QPE feature
-packets retain R14/H1–H5 and their source/instrument/integration obligations
-across the continuation; they are not all a first-packet 0.2.2 prerequisite.
-
-0.2.9 targets a complete Lean implementation and selected production dual path,
-not automatic Lean-only acceptance or an already proved general theorem.
-S05-C1–C5 below still govern formal authority transfer at v0.5.0. Documentation,
-component proofs and test parity alone cannot close those gates.
+[VM-22–29](verification-migration-v0.2.md) cover inventory, exact/finite, pure/observing raw IR, hierarchy and opt-in dual integration. VM-22–25 are checked for their declared profiles; VM-26–29 remain open. Complete implementation/dual checking in 0.2.9 does not transfer Lean-only authority.
 
 ## Qleisli Soundness Theorem (v0.5.0)
 
+To prove at v0.5.0 over the actual complete production verification profile, including published flat/QIRF compatibility and enabled hierarchy paths. The independent contract fixes meanings and explicit entry premises. Satisfaction covers exact-phase pure maps or complete observing instruments, admissible inputs and arbitrary references, exact encodings/axes and zero-return separation. ResourceSafe here means ownership validity, not the quantitative RS theorem. Source/backend preservation, native compilation, approximate execution, algorithm success and hardware are separate.
+
 <a id="qleisli-soundness-theorem-v050"></a>
-
-**Adopted target, 2026-09-29; not yet proved.** Proving the **Qleisli Soundness
-Theorem** is the central v0.5.0 milestone, alongside the K3 transfer of production
-verification to Lean and readiness for broader open-source development.
-
-The [reviewed IR direction](verification-migration-v0.2.md#target-ir-and-reference-semantics-fixed-before-migration)
-covers the complete production profile family: published flat `RawProgram`/QIRF
-compatibility and every hierarchy profile enabled by v0.5. Reuse finite-leaf
-soundness within actual shared-call/repetition and instrument proofs. Freeze
-profiles, domains and independently reviewed denotations before their migration;
-a proof about one experimental projection cannot stand in for that inventory.
-
-For the published v0.5.0 verification profile, let `p : RawIR₀.₅`,
-`C : Contract₀.₅` and `π : Evidence₀.₅`. The target is a Lean theorem about
-the actual executable checking definition:
 
 \[
 \forall p,C,\pi,\quad
@@ -150,22 +29,6 @@ the actual executable checking definition:
 \llbracket p\rrbracket\models C.
 \]
 
-These are specification names for the planned definitions, not existing Lean
-declarations. `C` is independently fixed by the caller; any entry premises are
-explicit. Satisfaction covers every admissible input and arbitrary finite
-reference system, including entangled inputs. Pure contracts compare complex
-linear operators with exact phase and explicit type/axis encodings. Observing
-contracts describe the complete classical–quantum instrument and its branch
-probabilities and residual states. Auxiliary release requires exact zero
-return and separation from the remaining system and reference. An isometry
-contract alone does not grant inverse or controlled access.
-
-Here `ResourceSafe` names linear ownership/resource validity. It is distinct
-from the later quantitative [Resource Safety Theorem](#resource-safety-theorem-v1),
-which requires statically computed finite cost bounds preserved by compilation.
-The 2026-09-30 addition does not retroactively claim that S05 or R1 supplies that
-quantitative result or move its full proof into the v0.5.0 milestone.
-
 | Gate | Required v0.5.0 evidence |
 | --- | --- |
 | **S05-C1: complete declared scope** | Publish the profile, capacities, entry premises and inventory of every enabled IR/evidence rule and production acceptance path. Preserve the required positive corpus and algorithm gates; a rejecting checker or a phase-word-only theorem cannot satisfy this milestone. Unsupported paths must reject explicitly, with versioned migration for any removed support. |
@@ -174,70 +37,15 @@ quantitative result or move its full proof into the v0.5.0 milestone.
 | **S05-C4: production binding** | Complete K3: reconstruct serialized evidence against the independent request, bind the accepted IR to the executed/emitted artifact, pass differential/adversarial/platform checks and fail closed on kernel/transport failure. No silent Rust fallback. |
 | **S05-C5: public review and contribution readiness** | Publish the theorem explanation, coverage/assumption ledger and reproduction commands; record independent review and resolve blocking findings. Prepare contributor setup, bounded issues, proof/code review rules, maintainer responsibilities and release/security reporting procedures for the v0.5 community expansion. |
 
-This is the **verification-kernel soundness theorem**. General source-lowering,
-optimizer and backend meaning preservation remain K4 translation-validation
-work. Native compilation, approximate numerical execution, algorithm success
-and physical hardware correctness are separate claims. The existing cyclic
-phase-word `verify_sound` is a proved precursor, not this completed theorem.
-If a gate remains open, report v0.5.0 as pending rather than weakening the
-theorem or relabeling local tests as its proof. No release date is selected.
-Later releases must extend this coverage for newly enabled acceptance rules
-and continue to publish the theorem profile and its remaining trust assumptions.
-
 ## Physical Realizability Theorem (v1)
+
+To prove by v1 with a substantive Lean backend: derive the complete classical–quantum CPTP semantics from Soundness, construct isometric dilation and synthesize the actual emitted target circuit. Retain every outcome, residual/reference state, pure phase, workspace and environmental discard. A single measurement branch need only be CP/TNI. Unitary semantics alone grants no same-wire realization, inverse or controlled provider.
 
 <a id="physical-realizability-theorem-v1"></a>
 
-Adopted target, 2026-09-29; not yet proved. By v1, prove the Physical
-Realizability Theorem alongside a substantive Lean 4 backend. This is a
-required continuation of soundness: valid quantum semantics must be connected
-to the circuit actually produced for a declared target gate set.
-
-For the finite, terminating supported profile and each admissible classical
-input, derive CPTP semantics as a corollary of the Qleisli Soundness Theorem.
-Retaining every outcome gives a classical–quantum CPTP map; summing the outcome
-maps also gives a CPTP map. An individual measurement branch is generally only
-completely positive and trace-nonincreasing, not trace preserving.
-
-The realizability target constructs an isometric dilation of that complete
-map, then synthesizes the isometry over the declared gate set, with specified
-initialization, readout, synthesis workspace and environmental discard. Prove that the actual Lean
-backend's output realizes the checked instrument, including outcome labels,
-residual states and arbitrary reference systems. For pure operations, retain
-operator phase and the stronger isometry/unitarity contracts; channel equality
-alone does not justify coherent control. Environmental discard is not pure
-auxiliary release: workspace promised clean must still return exactly to zero.
-
 ### Synthesis workspace contract
 
-**Review clarification, 2026-10-01; theorem still to prove.**
-Semantic `unitary` does not entail exact implementation on the source wires
-alone. [Issue 120](https://github.com/MGYamada/Qleisli/issues/120) fixes the
-v0.3.0 specification obligation; existing source acceptance is unchanged.
-For a pure logical operator `U`, clean backend workspace requires a checked
-target circuit `C` and zero embedding `E0` satisfying `C E0 = E0 U`, including
-operator phase and arbitrary references. Backend workspace is separate from
-source-owned registers and environmental discard. Borrowed/dirty workspace
-needs its own arbitrary-state/reference preservation equation; a clean-workspace
-result does not supply it. Target profiles must state workspace admission,
-preparation, clean return, layout correspondence and total live-space limits.
-
-For the same-wire Clifford+T+Toffoli profile, embedded generators on three
-wires have determinant ±1, but positive `F8` has determinant `i`. On four
-wires all generators have determinant 1, while the reviewed `c3x` table
-exchanges labels 14/15 and has determinant -1. These are necessary obstructions
-to those target proposals, not counterexamples to semantic unitarity.
-[Exact regressions](../tests/static_semantics.rs) retain both examples.
-[Giles–Selinger](https://arxiv.org/abs/1212.0506) establishes exact Clifford+T
-synthesis for unitary matrices over `Z[1/sqrt(2),i]` with at most one clean
-ancilla. [Shende et al.](https://arxiv.org/abs/quant-ph/0207001) establishes
-the corresponding same-wire NCT even-permutation restriction. These existence
-results neither prove our backend nor supply practical synthesis bounds.
-
-PR-C2/C3 must bind admitted workspace to the actual emitted circuit; RS-C1/C3
-must count its peak live space and actual initialization/gates/routing.
-The [bounded LiftBasis experiment](https://github.com/MGYamada/Qleisli/issues/132)
-targets v0.4.0; generic exact synthesis and the v1 theorem remain open.
+For clean backend workspace, C E0=E0 U on every input/reference, including phase. Dirty/borrowed workspace needs a separate arbitrary-state preservation contract. Count preparation, return, routing and peak live workspace under the target profile. Same-wire Clifford+T+Toffoli determinant constraints obstruct F8 (det=i on three wires) and reviewed c3x (det=-1 on four wires); [regressions](../tests/static_semantics.rs) preserve them. Exact synthesis existence theorems are not a proved Qleisli backend or practical cost bound. [Issue 120](https://github.com/MGYamada/Qleisli/issues/120) targets v0.3 specification and [Issue 132](https://github.com/MGYamada/Qleisli/issues/132) bounded v0.4 synthesis.
 
 | Gate | Required evidence by v1 |
 | --- | --- |
@@ -246,49 +54,11 @@ targets v0.4.0; generic exact synthesis and the v1 theorem remain open.
 | PR-C3: actual backend correspondence | Implement the relevant backend transformations in Lean and prove their connection from the accepted IR to the actual emitted target program, covering lowering, optimization, layout and emission. Bind every stage to its checked input/output; source-to-IR translation validation remains a separate prerequisite for source-level claims. |
 | PR-C4: release evidence and trust | Publish the supported profile, proof/coverage and assumption ledger, reproducible audits and independent review. Include the three v1 algorithm families; unsupported target capabilities reject explicitly. Record remaining native compiler/runtime, transport and physical-device assumptions. |
 
-The [external-search policy](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
-applies to PR-C2/C3: synthesis search, including norm-equation search for
-rotations, may remain an untrusted oracle. Its actual circuit and witnesses
-must pass the proved Lean `LeafRealizer` checker against the independent target
-and exact or certified-approximate contract. The backend proof composes the
-checked realization; it need not prove the oracle's search procedure or move
-it into Lean. This preserves the supported-profile synthesis obligation and
-explicit failure behavior rather than assuming oracle success.
-
-The [backend execution policy](lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
-requires the substantive Lean backend in addition to external search checking.
-Project backend code forbids `unsafe def`, `@[implemented_by]`, `@[extern]`
-and `partial def`, enforced by source and complete compiled-declaration CI
-alongside axiom auditing. Include private/generated helpers; a proof about a
-logical definition does not authorize a different native implementation.
-
-These are adopted proof and implementation gates, not existing Lean declarations
-or a hardware-noise guarantee. The executable backend follows the Mathlib-free
-runtime boundary; separate proof libraries may provide its mathematical bridge.
-The longer-term migration aims to cover the implementation beyond the frontend.
-Under this project direction, a Lean backend with actual-transformation proofs
-is necessary for the goal “LLMs write `.qli`; Lean guarantees it all the way
-down”; merely moving code to Lean is insufficient. V1 requires PR-C1–C4 in
-addition to V1-C1–C5 and the subsequently adopted RS-C1–C5 below.
-
 ## Resource Safety Theorem (v1)
 
+To prove by v1: an executable static analysis/check issues a finite worst-case resource bound for every admissible execution and prefix, and actual compilation preserves it under declared cost translations. [Resource semantics](resource-semantics.md) defines intended space/work distinctions. Budgets, estimates, QLT tests and ownership are not this theorem.
+
 <a id="resource-safety-theorem-v1"></a>
-
-**Adopted 2026-09-30; to prove.** Resource Safety is the third important pillar
-toward v1, alongside Qleisli Soundness and Physical Realizability:
-
-> Well-typed Qleisli programs admit finite, statically computable resource bounds
-> that are preserved by compilation.
-
-The target is the supported finite, resource-checked profile, with explicit
-input/size premises and target cost semantics. The [resource-semantics account](resource-semantics.md)
-defines the intended operational-bound and pass-preservation obligations.
-Existence of a finite number alone is insufficient: actual analysis/checking
-must produce the bound, and every permitted execution must satisfy it. Types,
-quantum meanings, effects and resource accounts should compose together.
-The proposed vector `(q, a, T, D, M, ...)` is a design direction, not adopted
-syntax, a final cost model or an implemented public API.
 
 | Gate | Required evidence by v1 |
 | --- | --- |
@@ -298,36 +68,13 @@ syntax, a final cost model or an implemented public API.
 | RS-C4: complete execution boundary | Establish termination for the supported finite execution model and bound all permitted execution prefixes, measurement/classical branches and bounded retry policies. Distinguish worst-case from expected cost and quantum execution from compiler/search/simulator/host work. State excluded costs and physical assumptions. No hidden unbounded retry or oracle may satisfy a finite whole-workflow claim. |
 | RS-C5: release evidence | Publish the supported profile, actual-definition proofs, coverage/assumption ledger, reproducible audits and independent review, including the three v1 algorithm families. Test underestimated counts, stale certificates, phase-preserving but cost-changing passes and resource-model mismatches. |
 
-This is an explicit [dated addition to the trust boundary](../TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30),
-not a change to trusted assumptions or present production authority. Existing
-ownership proofs, exact-work budgets and numerical cost reports do not establish
-it. Mathematical realizability does not establish this bound either. V1 requires
-RS-C1–C5 alongside S05, PR-C1–C4 and V1-C1–C5; their completed scopes must agree.
-This adoption changes no current 0.2.1/0.2.2 feature gate, accepted program,
-manifest version, theorem registry or proof status. It does not add a claim
-of polynomial complexity, practical advantage or noiseless hardware execution.
-
 ## Project north star
 
-**Make the language people use to think about quantum algorithms coincide
-with the language they use to write programs.**
-
-State preparation, oracles, reflections, phase estimation, uncomputation,
-and their composition should be usable program concepts with the same
-mathematical meanings. Their contracts must survive implementation choices
-and lowering. This calls for readable, executable abstractions with checked
-meaning, not only familiar names or natural-language descriptions.
-
-This wording, adopted on 2026-09-27, expresses the overarching direction.
-The three algorithm families below remain its concrete v1 acceptance test.
-The v0.1 contract layer supplies the link between those concepts and the
-implementations that realize them.
+Make the language people use to think about quantum algorithms coincide with the language they use to write programs. Actual source must expose mathematical stages, reusable contracts and composition.
 
 ## v0.1 minimum: semantic contracts
 
-**v0.1 must carry a mathematical meaning contract through composition and
-independently check that the actual implementation realizes it.** The first
-fragment is finite-dimensional pure operations with exact phase:
+Exact pure contracts fix isometric input/output encodings, logical meaning, phase/layout and entry evidence; independently check whole-space validity as well as the encoded equation. The bounded SC/FC path meets the declared V01 gates, without a general Rust correctness proof. Initial inverse/control need their specified unitary/encoding premises; approximate leakage never authorizes pure release.
 
 ```text
 u : L_in -> L_out                 logical operation
@@ -339,17 +86,6 @@ E_in† E_in = I,   E_out† E_out = I,   U† U = I,
 U E_in = E_out u.
 ```
 
-The contract fixes u, the encodings, exact types, phase conventions and layouts.
-Entry evidence establishes the encoding promise. The implementation's global
-isometry, and unitarity where required, must be checked independently of the
-encoded-subspace equation. It remains subject to the ordinary resource/effect
-checks, including zero-width owners.
-The contract concerns ideal operators; it does not certify noisy hardware.
-
-All conditions below are necessary. They can begin with a declared bounded
-fragment and concrete function signatures; general size and operation
-parameters are not prerequisites for this first milestone.
-
 | ID | Minimum acceptance condition | Current status |
 | --- | --- | --- |
 | V01-C1 | Specify finite contract/evidence forms with well-typed spaces, checked isometric encodings, entry evidence, exact logical meaning, full ownership interfaces, and phase. Record source-to-IR attachment and trust boundaries. | Met in the declared finite profile: [SC specification](semantic-contracts-v0.1.md), [FC specification](function-contracts-v0.1.md), checked encodings, and exact source signatures. General encoded-state handles remain outside this profile. |
@@ -359,94 +95,23 @@ parameters are not prerequisites for this first milestone.
 | V01-C5 | Publish concrete function contracts that can be reused compositionally. Exchange at least two implementations of one fixed phase-oracle contract while leaving its logical client unchanged. Independently check the resulting IR, including reuse under coherent control and with a correlated reference. Different private auxiliary layouts must be hidden by checked interfaces. | Met: `apply_contract` fixes the client's specification. [One unchanged client](../tests/function_contracts.rs) accepts direct Z and two private-auxiliary implementations, with coherent control and an entangled reference. Calls share immutable evidence; nested composition and static transforms retain it. [Executable example](../examples/function_contracts/README.md). |
 | V01-C6 | Reject auxiliary-only X, incorrect phase/predicate, incompatible encoding or layout, missing entry evidence, invalid inverse/control premises, stale or mismatched certificates, and lost/duplicated ownership. Record exact checks, limits, diagnostics, assumptions, and proof/implementation/test status separately. | Met in the bounded profile: kernel, source, and raw-function rejection tests, changed-source/dependency tests, and finite checking/execution budgets. Exact proof checks and approximate reference results are separately recorded in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). |
 
-The existing [39 exact example checks](../scripts/check_semantic_contract_examples.py)
-and current regression tests are supporting evidence. They do not satisfy
-V01-C2–C6 by themselves. A gate whitelist relaxation, a numerical simulation,
-or a document containing the desired equation is insufficient.
-
-The initial inverse rule may require both logical and implementation operators
-to be unitary. Initial coherent control may require identical input/output
-encodings. Mathematical evidence does not grant inverse/controlled access
-to an unknown device. Exact cleanup must remain separate from approximate
-logical accuracy; approximate leakage never permits pure release. Observation
-uses instrument contracts, and general block encoding uses a projected-block
-contract; neither is silently treated as exact pure intertwining.
-
-Full mechanization of every Rust compiler path is not asserted by this
-milestone. The checker rules, implemented fragment, source/IR correspondence
-evidence, and remaining trusted implementation obligations must be explicit.
-Existing [Stage 1 proof obligations](formal-core.md) remain in force; meeting
-this release gate does not retrospectively mark all of SPEC-4 complete.
-
 <a id="v019-maintenance-boundary"></a>
 
 ## v0.1.9 maintenance acceptance boundary
 
-The broader legacy checkpoint was completed for the recorded 0.1.9
-candidate; see the [six-condition completion evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-completion.md).
-The conditions below remain unchanged, and are distinct from the new 0.2.0 gates.
-
-**Legacy checkpoint, revised by the 0.1.5 review; subsequently completed in 0.1.9.** The
-[B019-1–B019-6 conditions](v0x-roadmap.md#v019-acceptance-boundary) require
-compatibility, finite assurance, audit dispositions, an honest proof ledger,
-a selected next scope with a complete extension specification, and reproducible
-release checks. Maintenance audits are continuous, not assigned to mandatory
-patch releases. M1 specification can proceed alongside them.
-
-B019-5 no longer accepts a no-go as completion. It requires G020-1 scope and
-specification plus a dated kernel go/no-go decision; a blocker requires dated
-reconsideration. [M0](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md) selects fixed-width M1 and
-a bounded M2 kernel path, with a 2026-10-04 JST implementation-readiness checkpoint.
-The [M1 rules](next-minor-spec.md), [external contracts](machine-interface-spec.md)
-and [M2 checker profile](hierarchical-ir-spec.md) complete the selected design
-handoff. The completion record supplies the remaining audit and reproducibility
-evidence. Pending M1/M2 features are separately tracked in the
-[0.2.0 development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
-
-New public APIs, syntax, size generalization and kernel integration require
-specification and validation. Use PATCH for compatible changes in 0.y.z (y > 0)
-and MINOR for incompatible ones, under the [version policy](versioning.md).
-R14 gates size generalization in M2; existing bounded dense checks remain
-permitted for fixed-width M1. Hierarchical IR and circuit-based
-predicate/arithmetic synthesis are complementary scaling gates. V1-C1–C5 are
-unchanged. Later maintenance may use 0.1.10; patch 9 does not force a minor.
+The completed B019 checkpoint is [historical evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-completion.md). It is not a new release gate or reason to force patch numbering; continuous audit remains required.
 
 <a id="v1-north-star-textbook-algorithm-structure"></a>
 
 ## v1 acceptance target: textbook algorithm structure
 
-**Shor, QPE, and Grover should read as the structure of the quantum algorithms
-found in a textbook, rather than as circuit diagrams transcribed into code.**
-
-This makes the project north star concrete for v1. Algorithm definitions should
-show mathematical stages, their composition, and the assumptions necessary
-to use them. Primitive gates, wire permutations, arithmetic decomposition,
-auxiliary management and proof derivations belong inside checked components.
-Readers can inspect those implementations, but should not need to reconstruct
-a gate diagram to understand the algorithm definition.
-
-The following describes required structure, **not proposed `.qli` syntax or
-existing public function names**:
+Real Shor/QPE/Grover source must compile and execute, reuse definitions across supported sizes/operations and carry checked meaning through implementation substitution. Shor reuses QPE and validates GCD/period/factors with explicit sampling/retry behavior; r>0 and a^r mod N=1 do not establish minimal order. Factor extraction needs even r, nontrivial a^(r/2), and nontrivial GCDs. A full simulator distribution cannot replace samples. PR-C1–C4 and RS-C1–C5 are additional v1 gates.
 
 | Algorithm | Structure visible in its implementation source | Contracts visible at the relevant interface |
 | --- | --- | --- |
 | Grover | Prepare the search state; apply the marked-state phase oracle and the reflection about the prepared state; repeat the amplification step under an explicit iteration policy; measure and check the candidate. | Preparation and inverse access where required, the predicate and exact reflection/oracle phases, search size, iteration/success assumptions, and resource/effect boundaries. |
 | QPE | Prepare the phase register; compose controlled powers of the input operation; apply inverse QFT; measure and decode the phase estimate. | Phase-fixed controlled/power access, register size/precision, bit order, approximation and statistical guarantees where used, and the outcome/residual-state instrument. Eigenstate promises must be explicit; general inputs have a distribution over eigencomponents. |
 | Shor | Perform classical preprocessing and select a base; construct the modular-multiplication operation; obtain order information through the shared QPE structure; reconstruct and validate a period candidate; extract and validate factors; handle unsuccessful samples and retry according to a declared policy. | Coprimality and arithmetic domains including behavior outside the valid residue subspace, controlled modular powers, phase precision, classical reconstruction, failure conditions and resource/cost assumptions. A host retry boundary is explicit if used. |
-
-Shor must reuse the QPE component rather than hide a second hand-expanded
-phase-estimation circuit. A single top-level call named after an algorithm
-is not enough: the delivered definition of that algorithm must expose these
-stages. The quantum/classical boundary and retry behavior are part of the
-delivered workflow, even when a documented host layer owns them.
-
-For Shor, classical validation includes the early GCD factor case and checking
-a positive period candidate r with `a^r mod N = 1`. Factor extraction checks
-that r is even, `a^(r/2)` is neither `1` nor `-1` modulo N, and the resulting
-GCDs give nontrivial factors. Failed checks follow the stated retry policy.
-A period check alone does not establish that r is the least order. Samples
-come through the declared execution/measurement interface; access to a
-simulator's full output distribution cannot replace this workflow.
 
 | ID | v1 acceptance condition |
 | --- | --- |
@@ -456,100 +121,12 @@ simulator's full output distribution cannot replace this workflow.
 | V1-C4 | Validate mathematical behavior as well as readability: phase-sensitive and reference-sensitive cases, failure/retry paths, and independently derived expected results. QPE sampling alone is not an order proof, an unverified candidate is not a factor, and a valid circuit alone is not an algorithm-correctness proof. |
 | V1-C5 | Keep source structure stable when changing implementation layout or decomposition. Report circuit-generation and execution costs separately, including oracle access and classical work. Precomputed answers or whole-space truth-table enumeration cannot stand in for the delivered general arithmetic/algorithm construction. Publish supported bounds and proof status. |
 
-V1 does not require a claim of practical hardware advantage, unlimited-size
-execution, or completion of every algorithm in the corpus. It requires a
-usable, checked abstraction for these three algorithm families. Any
-approximation used to support larger QFTs or other components has an explicit
-error contract; it does not weaken exact auxiliary-cleanup requirements.
-
-The [Physical Realizability Theorem and PR-C1–C4](#physical-realizability-theorem-v1)
-are additional v1 requirements under the 2026-09-29 backend migration decision.
-The 2026-09-30 amendment adds the [Resource Safety Theorem and RS-C1–C5](#resource-safety-theorem-v1)
-as a third pillar, with finite static bounds preserved by compilation.
-V1-C1–C5 retain their algorithm-specific meanings.
-
 <a id="pre-v020-imaginary-v1-code"></a>
 
 ## Prerequisite before v0.2.0: imaginary Qleisli 1.0 code
 
-Status: **adopted by the user on 2026-09-27; initial code corpus and requirement
-records completed and reviewed on 2026-09-27**. The
-[artifact index](imaginary-v1/README.md), [requirements](imaginary-v1/requirements.md),
-and [review](imaginary-v1/review.md) establish this limited prerequisite.
-All code remains imaginary and uncompiled; future specification, implementation,
-validation, and proof are separate.
-
-The [0.1.2 roadmap](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.2.md) records the corpus and requirement
-records as documentation deliverables. Completion follows the linked artifacts
-and review, not the plan or version number, and does not fix future syntax/APIs.
-
-**Write the ideal algorithm code in an imaginary Qleisli 1.0 first, before
-starting v0.2.0 feature implementation and before releasing v0.2.0.** This
-design prerequisite precedes size/operation generalization and the new
-abstractions or standard APIs intended for that release. Existing finite-core
-maintenance, regression checks, and open proof work can continue.
-
-The initial corpus must include **QPE, Grover, amplitude estimation, Shor,
-quantum walk, and QSVT**. Write each algorithm's intended definition, exposing
-its mathematical stages, composition, and relevant parameters. A list of
-algorithm names or calls to undefined whole-algorithm functions does not
-satisfy this prerequisite. The code may use proposed syntax and APIs and
-**need not compile yet**; label it explicitly as imaginary Qleisli 1.0 design
-code, separate from executable examples and normative source syntax.
-
-For each draft, record its intended input/output and meaning, required
-capabilities, ownership/effects, phase and cleanup obligations, and any
-accuracy, success/failure, or classical-processing assumptions. Mark unresolved
-contracts explicitly. Link the drafts from a corpus index and identify the
-missing language forms, sealed operations, ordinary definitions, evidence
-rules, and source-to-IR support needed to make the code meaningful; record
-unresolved classifications as such. These initial drafts and their requirement
-records establish the prerequisite, without requiring implementation or proof
-of all proposed operations.
-
-Use the corpus with AI to work through those requirements one by one. Revise
-both the imaginary code and the design when semantic analysis or counterexamples
-expose a problem; the drafts do not freeze the 1.0 grammar or public APIs.
-Keep draft, specification, implementation, validation, and proof status separate.
-AI-generated code and evidence follow the same independent checking boundary.
-
-This prerequisite does not expand the executable v1 acceptance target beyond
-V1-C1–C5 for Shor, QPE, and Grover. The broader drafts test the proposed
-abstractions; their existence does not establish executable support or v1
-completion. Record corpus completion with artifact links in the conformance
-ledger before advancing to v0.2.0 implementation or release. Adoption of this
-policy alone does not complete the prerequisite or change the product version.
+The six imaginary QPE/Grover/AE/Shor/walk/QSVT drafts and requirements satisfied the initial-design prerequisite. Keep their source, capabilities, meaning, phase, cleanup, accuracy/failure and open questions explicit. They remain uncompiled proposals, not final syntax, supported algorithms or a general proof.
 
 ## Work order and design decisions
 
-1. Continue the finite-core source/IR and ownership-state work needed to
-   identify the contract boundary and preserve its premises.
-2. Complete V01-C1–C6 as one finite implementation path: specification,
-   independent checker, source/IR evidence, positive and negative examples,
-   and exchangeable phase-oracle implementations. Publish the v0.1 evidence.
-3. Complete the [imaginary Qleisli 1.0 code prerequisite](#pre-v020-imaginary-v1-code)
-   before v0.2.0 feature implementation. Derive the required abstractions and
-   contracts from the initial algorithm drafts.
-4. Follow the [selected M1/M2 boundary](v0x-roadmap.md): first specify fixed-width
-   operation/access/meaning interfaces using bounded finite checks, then
-   generalize sizes with symbolic meanings/encodings, hierarchical implementation
-   IR and independently checked evidence. R14 prohibits whole dense expansion
-   at that second step. Specify ideal dyadic QPE angles, declared bounds and
-   actual implementation binding; general predicate/arithmetic work must also
-   avoid whole-space truth-table synthesis. Existing finite matrices remain
-   a bounded reference path, not the scalable architecture.
-5. Implement reusable Grover and QPE structures and use QPE in Shor's complete
-   quantum/classical workflow. Evaluate V1-C1–C5 on real source and evidence.
-
-For each proposed abstraction, ask which algorithm stage it makes readable,
-which programmer obligation it removes, which mathematical contract and
-replacement evidence it exposes, and how that evidence survives independent
-checking, lowering and substitution. A more compact gate listing alone does
-not meet the north star. Broader library work follows the needs and verified
-reuse of these structures.
-
-This order refines the [existing roadmap](../ROADMAP.md); it does not turn
-the legacy stage numbers, A0–A4, or L0–L5 into release numbers. The algorithm
-corpus and existing finite examples remain regression material. New source
-forms and APIs still require their normal specification, ownership/effect,
-semantics, IR and conformance records before implementation claims.
+Program first; preserve finite contracts; use symbolic meanings/encodings and evidence-bound hierarchy before size generalization; synthesize predicates/arithmetic without whole-space truth tables. Judge abstractions by removed author obligations, replacement evidence and its independent checker. New forms still need grammar/types/effects/semantics/IR/capacity/migration and validation.

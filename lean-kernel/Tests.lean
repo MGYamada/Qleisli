@@ -411,3 +411,49 @@ end HierarchicalPowerTests
 /-- info: 'QleisliKernel.Reshape.check_reference_coefficients' depends on axioms: [propext, Quot.sound] -/
 #guard_msgs in
 #print axioms QleisliKernel.Reshape.check_reference_coefficients
+
+namespace RawPureTests
+open QleisliKernel.Semantics.Raw
+private def identity (bits : Nat) : Program :=
+  ⟨[⟨0,List.range bits,bits⟩],[],[0],.unitary⟩
+-- These inspect metadata only: no maximum-size quantum matrix is generated.
+example : (QleisliKernel.Raw.prepare [] (identity 12)).isOk = true := by decide +kernel
+example : (QleisliKernel.Raw.prepare [] (identity 13)).isOk = false := by decide +kernel
+example : (QleisliKernel.Raw.prepare []
+  ⟨[⟨0,List.range 12,12⟩,⟨1,(List.range 12).map (·+12),12⟩],[],[1,0],.unitary⟩).isOk = true := by decide +kernel
+example : (QleisliKernel.Raw.prepare [] ⟨[⟨0,[],0⟩,⟨1,[],0⟩],[],[0],.unitary⟩).isOk = false := by decide +kernel
+example : (QleisliKernel.Raw.prepare [] ⟨[⟨0,[],0⟩,⟨1,[],0⟩],[],[1,0],.unitary⟩).isOk = true := by decide +kernel
+example : (QleisliKernel.Raw.prepare [] ⟨[],[.init0 0 1],[0],.unitary⟩).isOk = false := by decide +kernel
+example : (QleisliKernel.Raw.prepare [] ⟨[⟨0,[0],1⟩],[.gate .h 0 0],[0],.unitary⟩).isOk = false := by decide +kernel
+example : (QleisliKernel.Raw.eventMatrix [] (.init0 4294967295)).run 0 = (.error .limit,0) := by rfl
+example : (QleisliKernel.Raw.eventMatrix [] (.circuit 4294967295 [])).run 0 = (.error .limit,0) := by rfl
+example : (QleisliKernel.Raw.eventMatrix [] (.protectedComputed 12 (List.range 12) 12 1 [] [])).run 0 = (.error .limit,0) := by rfl
+
+-- A controlled scalar on Unit must remain visible on the control qubit.
+private def controlledUnitPhase : Program :=
+  ⟨[⟨0,[17],1⟩,⟨1,[],0⟩],[.quantumIf 0 1 2 3 [] [.phase .minusOne]],[3,2],.unitary⟩
+example : QleisliKernel.Semantics.RawTrace.run controlledUnitPhase =
+    some ⟨⟨[⟨2,[17],1⟩,⟨3,[],0⟩],[17]⟩,
+      [.circuit 1 [⟨[⟨0,true⟩],.monomial [] [0] [4]⟩],.reorder 1 [0]],1⟩ := by decide +kernel
+example : (match (QleisliKernel.Raw.reconstruct [] controlledUnitPhase).run 100000 with
+    | (.error _,_) => false
+    | (.ok matrix,_) => (matrix.rows,matrix.cols,matrix.entries) ==
+      (2,2,[QleisliKernel.Semantics.Exact.Scalar.one,.zero,.zero,
+        ⟨.integer (-1),.integer 0,.integer 0,.integer 0⟩])) = true := by decide +kernel
+
+-- Splitting and an empty owner do not erase final output-coordinate order.
+private def reorderedSplit : Program :=
+  ⟨[⟨5,[9,4],2⟩,⟨0,[],0⟩],[.split 5 1 2 1],[2,0,1],.unitary⟩
+example : (QleisliKernel.Semantics.RawTrace.run reorderedSplit).map (·.events) =
+    some [.reorder 2 [1,0]] := by decide +kernel
+example : (match (QleisliKernel.Raw.reconstruct [] reorderedSplit).run 100000 with
+    | (.error _,_) => false
+    | (.ok matrix,_) => ((List.range 4).map fun column =>
+        (List.range 4).filter fun row => matrix.entry row column == QleisliKernel.Semantics.Exact.Scalar.one) ==
+      [[0],[2],[1],[3]]) = true := by decide +kernel
+
+-- Original-trace refinement is independent of the six-bit dense profile.
+example : (match QleisliKernel.Raw.prepare [] (identity 12) with
+    | .error _ => false
+    | .ok prepared => QleisliKernel.Semantics.RawTrace.run (identity 12) == some prepared.reference) = true := by decide +kernel
+end RawPureTests

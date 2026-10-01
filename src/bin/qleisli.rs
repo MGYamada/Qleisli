@@ -1,11 +1,9 @@
 use std::io::Write;
 use std::process::ExitCode;
 
-use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::frontend::documentation::render_markdown;
 use qleisli::frontend::project::read_source_file;
-use qleisli::sim::{SimulationLimits, run_closed};
 
 #[path = "qleisli/artifacts.rs"]
 mod artifacts;
@@ -19,6 +17,8 @@ mod options;
 mod samples;
 #[path = "qleisli/sized.rs"]
 mod sized;
+#[path = "qleisli/source_commands.rs"]
+mod source_commands;
 
 fn report(root: &std::path::Path, error: Diagnostic) {
     if let Some(p) = error.primary {
@@ -46,11 +46,27 @@ fn main() -> ExitCode {
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);
     }
-    let Some(options) = options::Options::parse(&args, false) else {
+    let Some(mut options) = options::Options::parse(&args, false) else {
         eprintln!("{}", options::USAGE);
         return ExitCode::from(2);
     };
+    if options.qrate {
+        match qleisli::frontend::project::qrate_source_root(&options.path) {
+            Ok(root) => options.path = root,
+            Err(error) => {
+                report(&options.path, error);
+                return ExitCode::FAILURE;
+            }
+        }
+    }
     let source_root = &options.path;
+    if options.command != "verify-ir" && options.command != "doc" {
+        for warning in
+            qleisli::frontend::project::manifest_warnings(source_root).unwrap_or_default()
+        {
+            eprintln!("warning: {}", warning.message);
+        }
+    }
     if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
         return match artifacts::execute(&options) {
             Ok(artifacts::Success::Emitted(path)) => {
@@ -93,54 +109,35 @@ fn main() -> ExitCode {
             }
         };
     }
-    if options.command == "check" {
-        return match check_project_with_policy(source_root, options.policy) {
-            Ok(()) => {
-                println!("checked source and verified IR: {}", source_root.display());
-                ExitCode::SUCCESS
-            }
-            Err(error) => {
-                report(source_root, error);
-                ExitCode::FAILURE
-            }
-        };
-    }
-    let program = match compile_project_with_policy(source_root, options.policy) {
-        Ok(program) => program,
-        Err(error) => {
-            report(source_root, error);
-            return ExitCode::FAILURE;
+    match source_commands::execute(&options, source_root) {
+        Ok(source_commands::Success::Checked) => {
+            println!("checked source and verified IR: {}", source_root.display());
+            ExitCode::SUCCESS
         }
-    };
-    if options.command == "sample" {
-        return match samples::collect(&program, options.shots.unwrap(), options.seed.unwrap()) {
-            Ok((samples, _)) => {
-                let mut text = String::new();
-                for sample in samples {
-                    if sample.bits.is_empty() {
-                        text.push_str("()");
-                    }
-                    for bit in sample.bits {
-                        text.push(if bit { '1' } else { '0' });
-                    }
-                    text.push('\n');
+        Err(source_commands::Failure::Source(error)) => {
+            report(source_root, error);
+            ExitCode::FAILURE
+        }
+        Ok(source_commands::Success::Samples { shots, .. }) => {
+            let mut text = String::new();
+            for sample in shots {
+                if sample.bits.is_empty() {
+                    text.push_str("()");
                 }
-                match std::io::stdout().lock().write_all(text.as_bytes()) {
-                    Ok(()) => ExitCode::SUCCESS,
-                    Err(e) => {
-                        eprintln!("could not write sample results: {e}");
-                        ExitCode::FAILURE
-                    }
+                for bit in sample.bits {
+                    text.push(if bit { '1' } else { '0' });
+                }
+                text.push('\n');
+            }
+            match std::io::stdout().lock().write_all(text.as_bytes()) {
+                Ok(()) => ExitCode::SUCCESS,
+                Err(e) => {
+                    eprintln!("could not write sample results: {e}");
+                    ExitCode::FAILURE
                 }
             }
-            Err(error) => {
-                report(source_root, error);
-                ExitCode::FAILURE
-            }
-        };
-    }
-    match run_closed(&program, SimulationLimits::default()) {
-        Ok(distribution) => {
+        }
+        Ok(source_commands::Success::Distribution(distribution)) => {
             for (outcome, probability) in distribution {
                 let label: String = outcome
                     .iter()
@@ -153,7 +150,7 @@ fn main() -> ExitCode {
             }
             ExitCode::SUCCESS
         }
-        Err(error) => {
+        Err(source_commands::Failure::Simulation(error)) => {
             eprintln!("{error}");
             ExitCode::FAILURE
         }

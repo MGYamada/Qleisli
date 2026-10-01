@@ -6,12 +6,25 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Current targets and implementation boundaries below do not adopt future syntax or imply completed proofs. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
-## v0.2.4: documentation reduction and finite corpus
+## v0.2.5: refactoring, documentation and finite corpus
 
-Selected on 2026-10-01. Start with obsolete-document reduction and six small
-finite translations using the frozen three-source intake. The
-[development record](docs/releases/v0.2.4.md) records actual validation;
-publication and VM-24 finite evidence remain separate gates. Current production
+Selected on 2026-10-01. Consolidate CLI source execution, canonical numeric
+argument parsing and sample-result transport; separate sized argument validation
+from execution. Encapsulate frontend flattening state, separate finite numerical
+state/circuit execution, consolidate explicit IR wire maps, and isolate native
+hierarchy response/process handling. Refactor the Lean conditional checker,
+capacity constants and protocol/CLI modules with compatibility proofs and audits.
+Retire 17 obsolete docs, condense current specifications and add six small
+translations from frozen corpus inputs, bringing the count to 54. The
+[development record](docs/releases/v0.2.5.md) records actual checks.
+VM-25 pure raw-IR migration retains its separate proof/binding gates;
+refactoring does not complete that packet or publish a release.
+
+## Published v0.2.4: documentation, corpus and finite evidence
+
+Published and verified on 2026-10-01. Documentation reduction, six small finite
+corpus translations and the VM-24 finite component are recorded with their
+[validation and publication evidence](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md). Production
 Rust authority, edition 2026 and public contracts remain unchanged.
 
 ## Published v0.2.3: Qleisli edition 2026
@@ -24,7 +37,7 @@ is used. The [first VM-23 arithmetic/equality and H/T slice](tests/fixtures/veri
 now satisfies its arithmetic proof/comparison gates, with general scalar/matrix
 meaning, canonicality and exact work/capacity proofs. Later evidence and native
 production integration remain pending. The
-[publication record](docs/releases/v0.2.3.md#successful-publication-2026-10-01)
+[publication record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.3.md#successful-publication-2026-10-01)
 binds the immutable source and package to their validation.
 
 ## v0.2.2–v0.2.9: staged verification migration
@@ -47,8 +60,9 @@ checking, execution and measured clients, with scoped R14/H1–H5 evidence.
 Remaining validation uses small qubit systems; maximum cases are waived rather
 than claimed passed. General source/runtime correspondence and full-profile
 migration remain separate. No external schema is enabled;
-VM-24–VM-29 gates remain open. The bounded 0.2.2 scope is now
-[published and verified](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
+VM-25 straight-line pure checking is complete; VM-26–VM-29 integration gates
+remain open. The bounded 0.2.2 scope is now
+[published and verified](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
 ## v0.3.0: Qleisli type-system specification
 
@@ -66,7 +80,7 @@ obligations and public migrations before implementation; the
 builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development is 0.2.4; the type-system decision remains future work.
+Current development is 0.2.5; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
@@ -147,7 +161,7 @@ Stage 0 organization is selected in the [standard-library specification](docs/st
 
 ## 1. Language specification
 
-The [finite-core v0 specification](docs/language-spec.md) and [normative grammar](docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
+The [finite-core v0 specification](docs/language-spec.md) and [normative grammar](docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
 
 - Formalize effectful transformations of classical values and quantum resources from the [design philosophy](docs/design-philosophy.md) using input/output contexts and composition. Investigate the precise structure of Kleisli-inspired composition and its relationship/limits with free-vector-space `bind`.
 - Specify grammar and name resolution for all examples.
@@ -164,7 +178,7 @@ The [finite-core v0 specification](docs/language-spec.md) and [normative grammar
 
 ## 2. Typed IR
 
-Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](docs/ir-prototype.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](docs/finite-core-proof.md) records constructor semantics and implementation obligations.
+Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](docs/ir-prototype.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) records constructor semantics and implementation obligations.
 
 **Completion:** accept valid small IR and reject intentionally constructed duplication, implicit discard, invalid release, and effect violations. Apply the same verifier to handwritten/external IR regardless of origin, and show that accepted IR meaning satisfies Stage 1 theorem premises.
 

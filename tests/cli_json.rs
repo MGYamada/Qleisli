@@ -65,7 +65,7 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    let usage = include_str!("fixtures/review_v020/usage.txt")
+    let usage = include_str!("fixtures/review_followup_v024/usage.txt")
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [

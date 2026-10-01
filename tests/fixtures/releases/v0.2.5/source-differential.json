@@ -1,0 +1,11 @@
+{
+  "seed": 20260930021,
+  "cases": 96,
+  "max_probability_error": 4.218847493575595e-15,
+  "tolerance": 1e-11,
+  "maximum_live_qubits": 4,
+  "binary_sha256": "42eeb236777fab68b9628d92359d78f8a3ed9599f6d62ef73bdc9458220e7332",
+  "harness_sha256": "f159346abbbf808a7eb460ec44f5866cecbf6456bba1317a52705352742c5b88",
+  "ordered_sources_sha256": "f0feb7bc0a92d9c36ce051ab2fe04f4318a3541295f3553a5ddb9e24365969cc",
+  "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof"
+}

@@ -3,7 +3,7 @@
 Status: **independent research implementation for the v0.1.3 goal**.
 This package has `publish=false`; its Rust data structures are experimental,
 not new public Qleisli language or compiler APIs. The
-[system design](../../docs/symbolic-contract-architecture.md) governs the
+[system design](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/symbolic-contract-architecture.md) governs the
 meaning/implementation boundary and distinguishes the initial subset from
 production integration. Qleisli's Apache-2.0 license and
 [attribution](../../NOTICE) apply. Copyright 2026 Masahiko G. Yamada.

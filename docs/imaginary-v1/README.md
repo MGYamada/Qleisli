@@ -4,7 +4,7 @@ Status: **initial design drafts for the pre-0.2.0 prerequisite** (2026-09-27).
 All code in this directory is **imaginary, uncompiled, and unimplemented**.
 It is not normative `.qli`, a shipped standard API, or evidence that v1 is
 complete. The current executable language remains the [finite core](../language-spec.md).
-The [English language evolution framework](../language-evolution.md) supplies
+The [English language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md) supplies
 the common conventions; [release milestones](../release-milestones.md) define
 the authoritative prerequisite and the separate V1-C1–C5 acceptance target.
 
@@ -36,7 +36,7 @@ algorithms in v1. Executable Shor, QPE, and Grover remain the acceptance target.
 3. Compare the body with its phase-fixed operator or full observation instrument.
 4. Check access, accuracy, success/failure, and cost assumptions separately.
 5. Follow its missing facilities into the [shared requirements](requirements.md).
-6. Consult the [semantic review](review.md) for counterexamples, revisions,
+6. Consult the [semantic review](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/imaginary-v1/review.md) for counterexamples, revisions,
    finite mathematical checks, and open decisions.
 
 The requirement index is a design ledger, not a list of adopted features.

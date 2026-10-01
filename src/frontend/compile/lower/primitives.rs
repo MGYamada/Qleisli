@@ -18,6 +18,18 @@ impl Lowerer<'_, '_> {
         bit_only: bool,
     ) -> Result<Slot, CompileError> {
         let Value::Quantum(slot, basis) = value else {
+            if let Some(origin) = self
+                .tuple_binding_origins
+                .get(&value.quantum_slots())
+                .filter(|origin| origin.ty == value.ty())
+            {
+                let use_site = self
+                    .compiler
+                    .error(module, span, ErrorCode::TypeMismatch, "");
+                return Err(self.error(&origin.module, origin.span, ErrorCode::TypeMismatch,
+                    format!("binding `{}` contains a tuple of owners: expected `{}`, found `{}` at {}:{}:{}; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
+                        origin.name, if bit_only {"Q<Bit>"} else {"Q<A>"}, origin.ty, use_site.path.display(), use_site.line, use_site.column)));
+            }
             return Err(self.error(
                 module,
                 span,

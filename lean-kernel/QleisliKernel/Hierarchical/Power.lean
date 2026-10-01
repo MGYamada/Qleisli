@@ -119,7 +119,7 @@ def finish (artifact : Artifact) (root premise : Proof) (premiseIndex : Nat)
 /-- This local entry does not check arbitrary premise derivations. The caller
 must discharge the returned provider proof on the same immutable artifact. -/
 def inspect (artifact : Artifact) (index exponent provider remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || exponent > 12 || !u32 provider then .error .limit else
+  if remaining > Limits.maxVisits || exponent > 12 || !u32 provider then .error .limit else
   match artifact.proofs[index]? with
   | none => .error .invalidIr
   | some root =>
@@ -266,12 +266,12 @@ def inspectEntry (artifact : Artifact) (order : Array Nat) (exponent provider : 
   match ContractTyping.checkAll artifact order with
   | .error failure => .error failure
   | .ok typed =>
-    match inspect artifact artifact.entry.proof exponent provider (2000000 - typed.totalVisits) with
+    match inspect artifact artifact.entry.proof exponent provider (Limits.maxVisits - typed.totalVisits) with
     | .error kind => .error ⟨kind,some ⟨.proof,artifact.entry.proof⟩⟩
     | .ok pending =>
       if pending.root.implementation != artifact.entry.implementation then
         .error ⟨.contract,some ⟨.proof,artifact.entry.proof⟩⟩
-      else if typed.totalVisits + pending.visits > 2000000 then
+      else if typed.totalVisits + pending.visits > Limits.maxVisits then
         .error ⟨.limit,some ⟨.proof,artifact.entry.proof⟩⟩
       else .ok ⟨typed,pending,typed.totalVisits + pending.visits⟩
 

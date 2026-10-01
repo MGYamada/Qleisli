@@ -1,0 +1,104 @@
+[
+  {
+    "argv": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "Main"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 58.153,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 11.079,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "/tmp/qleisli-v025-kernel-before/Surface.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 2.866,
+    "stdout_sha256": "0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "python3",
+      "/tmp/qleisli-v025-trace-public-review.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.599,
+    "stdout_sha256": "4e4e89d561565c87292eea54155cf56c11c26e125ec1f8a2b9d0a246bdf86f1d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{'format': 'qleisli.kernel-public-type-review', 'version': 1, 'status': 'passed', 'existing_declarations': 5550, 'missing': [], 'incompatible_types': [], 'before_export_sha256': '8f45a33ef390597d037f0bd9f13f82e8ef5b077fd76cb049c66b4b396ef5166f', 'after_export_sha256': '0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9', 'normalization': ['module-generated hygienic binder names', 'universe-parameter alpha renaming', 'five transparent Nat capacity abbreviations'], 'scope': 'non-private compiled declarations including constructors, fields and legacy equation/congruence lemmas; compiler match/proof/simp helpers are implementation details audited separately'}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_verification_baseline.py",
+      "target/debug/qleisli",
+      "--kernel",
+      "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--report",
+      "tests/fixtures/verification_v025/trace/frozen-baseline.json"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 3.572,
+    "stdout_sha256": "b313d6907a10f266c4639485572351206c6959cbb76abd17872d9125f99cf783",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 12 finite comparisons, 12 source decisions, 5 native component decisions; at most three qubits.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_kernel_compatibility.py",
+      "--before",
+      "/tmp/qleisli-v025-kernel-before/qleisli-kernel",
+      "--report",
+      "tests/fixtures/verification_v025/trace/transport-compatibility.json"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 71.807,
+    "stdout_sha256": "f0e4aeaf683c6cac08ae61cb4faba41ac6b43fbaf1c54a7898e5d2ce666e5771",
+    "stderr_sha256": "886b3787cc8734d674a3f8be604debf3e8225501be8cbbcffcc38371174b2c97",
+    "diagnostics": "{\"after_binary_sha256\": \"44a699d8262a96894c163942d48ab3ba8751838f687b61a471ebbbd3eef2ede9\", \"before_binary_sha256\": \"226f14cef0c09e1a3a20e0db45cf17a6994bf327b9c94066f4e40183b25fc0e1\", \"comparisons\": 1435, \"format\": \"qleisli.kernel-transport-compatibility\", \"oracle_tests\": 40, \"scope\": \"textual profiles and all malformed bridge modes; valid bridge semantics use separate native/host suites\", \"status\": \"passed\", \"version\": 1}\n........................................\n----------------------------------------------------------------------\nRan 40 tests in 69.348s\n\nOK\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_schema_registry.py",
+      "--source-only"
+    ],
+    "cwd": ".",
+    "exit_code": 1,
+    "seconds": 0.078,
+    "stdout_sha256": "12f1b1f1636c98e89d6d57f716841260a809dd773f9a749e4626033d0e23d9be",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{\"error\": \"schema manifest differs from current types, domains, enablement or source revision; review the change, then use --write to rebuild and audit\", \"format\": \"qleisli.schema-registry-validation\", \"mode\": \"source-identity-only\", \"status\": \"error\", \"version\": 1}\n"
+  }
+]

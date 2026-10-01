@@ -93,8 +93,21 @@ class Connections(unittest.TestCase):
         for name in ["bell", "gates"]:
             program = self.client.from_openqasm((FIXTURES / f"{name}.qasm").read_text())
             imported = self.client.from_qir(program.to_qir())
-            self.assertEqual(imported.run(), program.run())
-            self.assertEqual(imported.sample(shots=30, seed=17)["shots"], program.sample(shots=30, seed=17)["shots"])
+            before, after = program.run()["distribution"], imported.run()["distribution"]
+            self.assertEqual([row["bits"] for row in before], [row["bits"] for row in after])
+            for a, b in zip(before, after):
+                # Exact target rewrites can change floating evaluation order.
+                self.assertAlmostEqual(a["probability"], b["probability"], delta=1e-12)
+            original, emitted = [p.sample(shots=30, seed=17) for p in [program, imported]]
+            self.assertEqual([shot["bits"] for shot in original["shots"]],
+                             [shot["bits"] for shot in emitted["shots"]])
+            # The shortened target has its own work count; each total must still
+            # account for its actual shots rather than copying the source total.
+            for sample in [original, emitted]:
+                self.assertEqual(sample["execution_steps"], sum(s["execution_steps"] for s in sample["shots"]))
+                self.assertTrue(all(s["execution_steps"] > 0 for s in sample["shots"]))
+            if name == "gates":
+                self.assertLess(emitted["execution_steps"], original["execution_steps"])
         shots = self.client.from_openqasm((FIXTURES / "bell.qasm").read_text()).sample(shots=30, seed=0)["shots"]
         self.assertEqual({tuple(s["bits"]) for s in shots}, {(False, False), (True, True)})
 

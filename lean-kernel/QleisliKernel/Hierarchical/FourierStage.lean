@@ -161,7 +161,7 @@ structure Pending where
 /-- This five-node form is the positive lower-register stage. The one-bit
 base omits the controlled gradient and is deliberately a separate obligation. -/
 def inspect (artifact : Artifact) (n index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || n = 0 || n > 7 then .error .limit else
+  if remaining > Limits.maxVisits || n = 0 || n > 7 then .error .limit else
   match project artifact index with
   | none => .error .contract
   | some s =>
@@ -193,7 +193,7 @@ theorem inspect_sound (artifact : Artifact) (n index remaining : Nat) (pending :
           next invalid => contradiction
           next valid =>
             cases Except.ok.inj accepted
-            exact ⟨Nat.le_of_not_gt charged,by omega,by omega,by omega,project_bound artifact index s projected,
+            exact ⟨Nat.le_of_not_gt charged,by simp only [Limits.maxVisits] at *; omega,by simp only [Limits.maxVisits] at *; omega,by simp only [Limits.maxVisits] at *; omega,project_bound artifact index s projected,
               by simpa using valid⟩
 
 end QleisliKernel.Hierarchical.FourierStage

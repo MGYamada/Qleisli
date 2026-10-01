@@ -1,0 +1,79 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T07:42:45.760022+00:00",
+  "compiler_sha256": "faaac486ae60be6ae478ea39dbdbcfb564bf5428ed8e64008d7337292b8e4495",
+  "results": [
+    {
+      "project": "quantum_katas/controlled_z2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_z2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `controlled_z`\",\"primary\":{\"path\":\"kernel.qli\",\"start\":434,\"end\":446,\"line\":9,\"column\":19},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/toffoli3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/toffoli3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/less_equal1",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_equal1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/greater_than1",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_than1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rotation_mixed_sign",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_mixed_sign",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/qaoa_mixer2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_mixer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -72,11 +72,11 @@ structure Pending where
 
 def assemble (request : Request) (packet : Packet) (circuit : QpeRoot.Pending) : Except Failure Pending :=
   let used := circuit.visits + charge request packet
-  if used > 2000000 then .error ⟨.limit,none⟩ else
-  match Preparation.check request.preparation packet.preparation (2000000-used) with
+  if used > Limits.maxVisits then .error ⟨.limit,none⟩ else
+  match Preparation.check request.preparation packet.preparation (Limits.maxVisits-used) with
   | .error e => .error ⟨e,none⟩
   | .ok preparation =>
-    match Readout.check request.readout packet.readout (2000000-used-preparation.visits) with
+    match Readout.check request.readout packet.readout (Limits.maxVisits-used-preparation.visits) with
     | .error e => .error ⟨e,none⟩
     | .ok readout =>
       if !boundary request packet then .error ⟨.contract,none⟩ else
@@ -96,7 +96,7 @@ theorem assemble_conditions (request : Request) (packet : Packet) (circuit : Qpe
       pending.visits = circuit.visits+charge request packet+pending.preparation.visits+pending.readout.visits ∧
       pending.visits ≤ 2000000 := by
   unfold assemble at accepted
-  dsimp only at accepted
+  simp only [Limits.maxVisits] at accepted
   split at accepted
   next exceeded => contradiction
   next budget =>
@@ -129,8 +129,10 @@ theorem checkAll_conditions (request : Request) (packet : Packet) (pending : Pen
     exact ⟨rfl,rest⟩
 
 theorem checkAll_budget (request : Request) (packet : Packet) (pending : Pending)
-    (accepted : checkAll request packet = .ok pending) : pending.visits ≤ 2000000 :=
-  (assemble_conditions request packet pending.circuit pending (checkAll_conditions request packet pending accepted).2).2.2.2.2.2
+    (accepted : checkAll request packet = .ok pending) : pending.visits ≤ 2000000 := by
+  have stages := checkAll_conditions request packet pending accepted
+  obtain ⟨_,_,_,_,_,budget⟩ := assemble_conditions request packet pending.circuit pending stages.2
+  exact budget
 
 
 theorem position_bound (axes : Array Nat) (axis index : Nat)

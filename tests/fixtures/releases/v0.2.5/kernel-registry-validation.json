@@ -1,0 +1,108 @@
+{
+  "format": "qleisli.schema-registry-validation",
+  "version": 1,
+  "mode": "rebuilt-types-and-audits",
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "Qleisli",
+      "exit_code": 0,
+      "seconds": 0.733,
+      "stdout_sha256": "ccf33242387d793869fe53fd901d13c5de9a1ed4b0d5dadbd9b5a66a3498bfbc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 68 executable kernel/transport source modules; no external Lake dependencies.\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 12.967,
+      "stdout_sha256": "10f3c5adf8d605663ea0e16abf6bac96e70dd46ed3b9ec15e68410fdeb8e3d20",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "\u2714 [106/134] Built QleisliKernel.Hierarchical.Conditional (1.4s)\n\u2714 [108/134] Built QleisliKernel.Hierarchical.FourierRoot (1.4s)\n\u2714 [110/134] Built QleisliKernel.Hierarchical.Root (1.7s)\n\u2714 [112/134] Built QleisliKernel.Hierarchical.Instrument (1.1s)\n\u2714 [114/134] Built QleisliKernel.Hierarchical.QpeSchedule (2.1s)\n\u2714 [116/134] Built QleisliKernel.Hierarchical.QpeRoot (1.9s)\n\u2714 [118/134] Built QleisliKernel.Hierarchical.QpeInstrument (1.3s)\n\u2714 [120/134] Built QleisliKernel (755ms)\n\u2714 [121/134] Built Protocol.Hierarchical (1.7s)\n\u2714 [123/134] Built Protocol (614ms)\n\u2714 [125/134] Built Cli.Common (726ms)\n\u2714 [127/134] Built Cli.Finite (917ms)\n\u2714 [129/134] Built Cli.Hierarchical (999ms)\n\u2714 [132/134] Built Main (650ms)\nBuild completed successfully (134 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 4.511,
+      "stdout_sha256": "a4b01a3cbbb620a70085fa40e23cd8d0e4c6d7d85ede9b3a64d914a5150b7540",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audited 8349 kernel/transport declarations, 1092 pure import modules and 1098 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 186.538,
+      "stdout_sha256": "459f425271e482b2a1a4217d0d8fa286e8a1d18fd25443b82fc143683b1a3257",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "\u2714 [3435/3464] Built Qleisli.HierarchicalFiniteEvaluation (27s)\n\u2714 [3436/3464] Built Qleisli.HierarchicalFiniteUnitary (17s)\n\u2714 [3437/3464] Built Qleisli.HierarchicalWiring (17s)\n\u2714 [3438/3464] Built Qleisli.HierarchicalDiagonal (30s)\n\u2714 [3439/3464] Built Qleisli.HierarchicalRoot (37s)\n\u2714 [3440/3464] Built Qleisli.HierarchicalGradient (10s)\n\u2714 [3441/3464] Built Qleisli.HierarchicalInstrument (6.4s)\n\u2714 [3442/3464] Built Qleisli.HierarchicalProvider (6.5s)\n\u2714 [3443/3464] Built Qleisli.HierarchicalInstrumentCoordinates (15s)\n\u2714 [3444/3464] Built Qleisli.HierarchicalQpeRoot (15s)\n\u2714 [3445/3464] Built Qleisli.HierarchicalFourier (18s)\n\u2714 [3446/3464] Built Qleisli.HierarchicalFourierControl (19s)\n\u2714 [3447/3464] Built Qleisli.HierarchicalInstrumentComplete (30s)\n\u2714 [3448/3464] Built Qleisli.InstrumentExamples (30s)\n\u2714 [3449/3464] Built Qleisli.HierarchicalQpeCircuit (30s)\n\u2714 [3450/3464] Built Qleisli.HierarchicalFourierStage (30s)\n\u2714 [3451/3464] Built Qleisli.HierarchicalCircuitTrace (31s)\n\u2714 [3452/3464] Built Qleisli.HierarchicalFourierBase (13s)\n\u2714 [3453/3464] Built Qleisli.HierarchicalHadamard (13s)\n\u2714 [3454/3464] Built Qleisli.HierarchicalCircuitTraceEvaluation (13s)\n\u2714 [3455/3464] Built Qleisli.InstrumentCompleteExamples (14s)\n\u2714 [3456/3464] Built Qleisli.HierarchicalFourierBody (4.8s)\n\u2714 [3457/3464] Built Qleisli.HierarchicalFourierRoot (4.1s)\n\u2714 [3458/3464] Built Qleisli.HierarchicalRoutedPower (4.3s)\n\u2714 [3459/3464] Built Qleisli.HierarchicalQpeCoordinates (4.1s)\n\u2714 [3460/3464] Built Qleisli.HierarchicalQpeLayout (3.4s)\n\u2714 [3461/3464] Built Qleisli.HierarchicalQpeSchedule (3.5s)\n\u2714 [3462/3464] Built Qleisli.HierarchicalQpeInstrument (4.3s)\n\u2714 [3463/3464] Built Qleisli (3.1s)\nBuild completed successfully (3464 jobs).\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 40.437,
+      "stdout_sha256": "553afaf6e5b3bc596d396ecf131dc356898c739fd5f300215bcb001b60ef6567",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Audited 2856 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n"
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "cwd": "lean-kernel",
+      "exit_code": 0,
+      "seconds": 84.746,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "SchemaExport.lean"
+      ],
+      "cwd": "lean",
+      "exit_code": 0,
+      "seconds": 27.768,
+      "stdout_sha256": "f42bab5070273d64611934e6d55246047343df5254342bc602195b629da8f269",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "{\"checker\":{\"declaration\":\"QleisliKernel.Schema.check\",\"module\":\"QleisliKernel.Schema\",\"readable_type\":\"QleisliKernel.Schema.Request \u2192 QleisliKernel.Schema.Proposal \u2192 Option.{0} QleisliKernel.Schema.Receipt\",\"type\":[\"forall\",\"request\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Request\",[]],[\"forall\",\"proposal\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Proposal\",[]],[\"apply\",[\"constant\",\"Option\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Schema.Receipt\",[]]]]],\"universe_parameters\":[]},\"entries\":[{\"id\":\"qft-dyadic8/1\",\"theorem\":{\"declaration\":\"Qleisli.Schema.qft_sound\",\"module\":\"Qleisli.Schema\",\"readable_type\":\"\u2200 (width : Nat) (proposal : QleisliKernel.Schema.Proposal) (receipt : QleisliKernel.Schema.Receipt),\\n  @Eq.{1} (Option.{0} QleisliKernel.Schema.Receipt)\\n      (QleisliKernel.Schema.check (QleisliKernel.Schema.Request.qft width) proposal)\\n      (@Option.some.{0} QleisliKernel.Schema.Receipt receipt) \u2192\\n    \u2200 (definitions : List.{0} QleisliKernel.QftGraph.Definition) (entry : Nat),\\n      @Eq.{1} QleisliKernel.Schema.Witness proposal.witness (QleisliKernel.Schema.Witness.qft definitions entry) \u2192\\n        \u2203 actual,\\n          And\\n            (@Eq.{1} (Option.{0} QleisliKernel.QftGraph.Action) (QleisliKernel.QftGraph.denote definitions entry)\\n              (@Option.some.{0} QleisliKernel.QftGraph.Action actual))\\n            (And\\n              (@Eq.{1} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                (@HMul.hMul.{0, 0, 0} (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex)\\n                  (@Matrix.instHMulOfFintypeOfMulOfAddCommMonoid.{0, 0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool)\\n                    (Fin width \u2192 Bool) Complex\\n                    (@Pi.instFintype.{0, 0} (Fin width) (fun a => Bool) (instDecidableEqFin width) (Fin.fintype width)\\n                      fun a => Bool.fintype)\\n                    Complex.instMul\\n                    (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                            (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                              (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                  (@Matrix.conjTranspose.{0, 0, 0} (Fin width \u2192 Bool) (Fin width \u2192 Bool) Complex\\n                    (@InvolutiveStar.toStar.{0} Complex\\n                      (@StarAddMonoid.toInvolutiveStar.{0} Complex\\n                        (@AddCommMonoid.toAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                            (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                              (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                                (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                                  (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                                    (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                      (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                        (@StarRing.toStarAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                            (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                              (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\"
+    }
+  ],
+  "source_revision": "6d7fb055b7be61cfe324f580abc26cc2b567b8a476af0763e325c19807263703",
+  "manifest_sha256": "2b3a5bb205b32e89a56a8ec17f18947fee8f949067357e8569f039394e528ac0",
+  "entries": 3,
+  "externally_enabled": 0
+}

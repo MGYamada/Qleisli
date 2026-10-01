@@ -57,14 +57,14 @@ structure Pending where
 def assemble (request : Request) (packet : Packet) (circuit : Root.Checked) :
     Except Failure Pending :=
   let previous := circuitWork circuit
-  if previous + boundaryScan request packet > 2000000 then .error ⟨.limit,none⟩ else
+  if previous + boundaryScan request packet > Limits.maxVisits then .error ⟨.limit,none⟩ else
   let used := previous + boundaryCharge request packet
-  if used > 2000000 then .error ⟨.limit,none⟩ else
+  if used > Limits.maxVisits then .error ⟨.limit,none⟩ else
   if !boundary request packet then .error ⟨.contract,none⟩ else
-  match Preparation.check request.preparation packet.preparation (2000000-used) with
+  match Preparation.check request.preparation packet.preparation (Limits.maxVisits-used) with
   | .error kind => .error ⟨kind,none⟩
   | .ok preparation =>
-    match Readout.check request.readout packet.readout (2000000-used-preparation.visits) with
+    match Readout.check request.readout packet.readout (Limits.maxVisits-used-preparation.visits) with
     | .error kind => .error ⟨kind,none⟩
     | .ok readout => .ok ⟨circuit,preparation,readout,used+preparation.visits+readout.visits⟩
 
@@ -109,7 +109,7 @@ theorem assemble_conditions (request : Request) (packet : Packet)
             subst pending
             have initBound := (Preparation.check_conditions _ _ _ _ hp).1
             have readBound := (Readout.check_conditions _ _ _ _ hr).1
-            exact ⟨rfl,by simpa using linked,by omega,hp,hr,rfl,by dsimp only; omega⟩
+            exact ⟨rfl,by simpa using linked,by simp only [Limits.maxVisits] at *; omega,hp,hr,rfl,by dsimp only; simp only [Limits.maxVisits] at *; omega⟩
 
 theorem checkAll_stages (request : Request) (packet : Packet) (pending : Pending)
     (accepted : checkAll request packet = .ok pending) :
@@ -127,7 +127,8 @@ theorem checkAll_stages (request : Request) (packet : Packet) (pending : Pending
 theorem checkAll_budget (request : Request) (packet : Packet) (pending : Pending)
     (accepted : checkAll request packet = .ok pending) : pending.visits ≤ 2000000 := by
   have stages := checkAll_stages request packet pending accepted
-  exact (assemble_conditions request packet pending.circuit pending stages.2).2.2.2.2.2.2
+  obtain ⟨_,_,_,_,_,_,budget⟩ := assemble_conditions request packet pending.circuit pending stages.2
+  exact budget
 
 theorem checkAll_boundary (request : Request) (packet : Packet) (pending : Pending)
     (accepted : checkAll request packet = .ok pending) :

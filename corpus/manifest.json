@@ -1038,6 +1038,104 @@
       "default_input": [
         0
       ]
+    },
+    {
+      "id": "quantum_katas/controlled_z2",
+      "source": "quantum_katas",
+      "upstream_path": "BasicGates/ReferenceImplementation.qs",
+      "symbol": "TwoQubitGate2_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "|a,b> -> (-1)^(a*b)|a,b>; full diagonal CZ, including relative phase under an additional control.",
+      "limitations": "Two wires, whole-space gate kernel; preserves the upstream controlled-Z operation. No new controlled API or array syntax.",
+      "project": "quantum_katas/controlled_z2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/toffoli3",
+      "source": "quantum_katas",
+      "upstream_path": "BasicGates/ReferenceImplementation.qs",
+      "symbol": "ToffoliGate_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|a,b,t> -> |a,b,t xor (a*b)> with amplitude +1, preserving both controls and an arbitrary target.",
+      "limitations": "Exactly three wires. The sealed Toffoli replaces CCNOT; no scalable multicontrol synthesis or extra workspace claim.",
+      "project": "quantum_katas/toffoli3",
+      "default_input": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/less_equal1",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "LessThanEqual",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|a,b,t> -> |a,b,t xor [a<=b]> with amplitude +1 for unsigned one-bit a,b and either target value.",
+      "limitations": "Both register widths are one. A direct reversible gate kernel replaces the upstream general decomposition; no T-count or scaling equivalence.",
+      "project": "qualtran/less_equal1",
+      "default_input": [
+        1,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/greater_than1",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "GreaterThan",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|a,b,t> -> |a,b,t xor [a>b]> with amplitude +1, retaining both unsigned one-bit inputs and supporting target one.",
+      "limitations": "One-bit specialization of LessThanEqual followed by target X. Uses a direct negative-control Toffoli; no upstream decomposition/cost claim.",
+      "project": "qualtran/greater_than1",
+      "default_input": [
+        1,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/rotation_mixed_sign",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "RY(-pi/2) RX(pi/2), in upstream order, with all complex column signs and absolute scalar phase retained.",
+      "limitations": "Fix params=(pi/2,-pi/2). Gate kernel only; expval(Z) is computed from the measured distribution, with no optimizer or continuous-angle API.",
+      "project": "pennylane_demos/rotation_mixed_sign",
+      "default_input": [
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/qaoa_mixer2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_B(beta)",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "RX(pi/2) tensor RX(pi/2)=(I-iX) tensor (I-iX)/2, including its scalar and arbitrary two-wire input.",
+      "limitations": "Restrict U_B to two wires and beta=pi/4. This isolated product mixer excludes the original four-node graph, cost layer, Hadamard preparation and optimization.",
+      "project": "pennylane_demos/qaoa_mixer2",
+      "default_input": [
+        0,
+        1
+      ]
     }
   ],
   "authoring_sessions": [
@@ -1045,7 +1143,8 @@
     "authoring/v021-expansion/session.json",
     "authoring/v022-simple/session.json",
     "authoring/v023-small/session.json",
-    "authoring/v024-small/session.json"
+    "authoring/v024-small/session.json",
+    "authoring/v025-small/session.json"
   ],
   "sized_experiments": [
     {

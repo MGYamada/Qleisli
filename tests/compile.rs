@@ -597,7 +597,7 @@ fn finite_v0_local_names_shadow_static_callees() {
     }
 }
 
-// SPEC-3 resource calculus boundaries: docs/source-resource-rules.md.
+// SPEC-3 resource calculus boundaries: docs/formal-core.md (R1).
 #[test]
 fn resource_rules_pending_mixed_argument_survives_nested_call() {
     let root = SourceRoot::new(

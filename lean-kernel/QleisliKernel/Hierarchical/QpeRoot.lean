@@ -46,14 +46,14 @@ success bit. Root pairing then binds that exact provider to its independent
 meaning before the actual QPE schedule is inspected. -/
 def assemble (request : Request) (packet : Packet) (checked : Conditional.Pending) : Except Failure Pending :=
   let previous := checked.state.visits + charge request
-  if previous > 2000000 then .error ⟨.limit,none⟩ else
+  if previous > Limits.maxVisits then .error ⟨.limit,none⟩ else
   if !boundary request || checked.state.cache[packet.providerProof]? != some true then .error ⟨.contract,none⟩ else
   match Root.inspect (providerArtifact request packet) request.provider packet.pairs packet.pairOrder
-    (2000000-previous) with
+    (Limits.maxVisits-previous) with
   | .error e => .error ⟨e,none⟩
   | .ok provider =>
     match QpeSchedule.inspect packet.artifact request.circuit packet.candidate
-      (2000000-previous-provider.visits) with
+      (Limits.maxVisits-previous-provider.visits) with
     | .error e => .error ⟨e,none⟩
     | .ok schedule => .ok ⟨checked,provider,schedule,previous+provider.visits+schedule.visits⟩
 
@@ -72,7 +72,7 @@ theorem assemble_conditions (request : Request) (packet : Packet) (checked : Con
       pending.visits = checked.state.visits+charge request+pending.provider.visits+pending.schedule.visits ∧
       pending.visits ≤ 2000000 := by
   unfold assemble at accepted
-  dsimp only at accepted
+  simp only [Limits.maxVisits] at accepted
   split at accepted
   next exceeded => contradiction
   next budget =>
@@ -87,7 +87,7 @@ theorem assemble_conditions (request : Request) (packet : Packet) (checked : Con
         next schedule checkedSchedule =>
           cases Except.ok.inj accepted
           have pb := (Root.inspect_conditions _ _ _ _ _ _ checkedProvider).1
-          have sb := (QpeSchedule.inspect_conditions _ _ _ _ _ checkedSchedule).2.2.2.2.2.2.2.2.2.2.1
+          obtain ⟨_,_,_,_,_,_,_,_,_,_,sb,_⟩ := QpeSchedule.inspect_conditions _ _ _ _ _ checkedSchedule
           simp only [Bool.or_eq_true,Bool.not_eq_true',bne_iff_ne,not_or,Classical.not_not] at ready
           exact ⟨rfl,by simpa using ready.1,ready.2,by simpa only [Nat.sub_sub] using checkedProvider,
             by simpa only [Nat.sub_sub] using checkedSchedule,rfl,by dsimp only; omega⟩
@@ -106,8 +106,9 @@ theorem checkAll_conditions (request : Request) (packet : Packet) (pending : Pen
     exact ⟨rfl,rest⟩
 
 theorem checkAll_budget (request : Request) (packet : Packet) (pending : Pending)
-    (accepted : checkAll request packet = .ok pending) : pending.visits ≤ 2000000 :=
-  (assemble_conditions request packet pending.artifact pending
-    (checkAll_conditions request packet pending accepted).2).2.2.2.2.2.2
+    (accepted : checkAll request packet = .ok pending) : pending.visits ≤ 2000000 := by
+  have stages := checkAll_conditions request packet pending accepted
+  obtain ⟨_,_,_,_,_,_,budget⟩ := assemble_conditions request packet pending.artifact pending stages.2
+  exact budget
 
 end QleisliKernel.Hierarchical.QpeRoot

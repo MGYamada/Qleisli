@@ -74,7 +74,7 @@ structure Checked where
   deriving Repr
 
 def check (artifact : Artifact) (index remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match artifact.proofs[index]? with
   | none => .error .invalidIr
   | some proof =>
@@ -131,7 +131,7 @@ theorem check_conditions (artifact : Artifact) (index remaining : Nat) (checked 
                 next error hi => contradiction
                 next pending hi =>
                   cases Except.ok.inj accepted
-                  have cost := (Power.inspect_binding artifact index exponent provider _ pending hi).2.2.2.2.2.2.1
+                  obtain ⟨_,_,_,_,_,_,cost,_⟩ := Power.inspect_binding artifact index exponent provider _ pending hi
                   refine ⟨by dsimp only; omega,Nat.le_of_not_gt capacity,proof,hp,Or.inr ?_⟩
                   exact ⟨exponent,provider,_,pending,hi⟩
               next => contradiction

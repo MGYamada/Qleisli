@@ -67,6 +67,20 @@ pub(super) enum Value {
 }
 
 impl Value {
+    pub(super) fn quantum_slots(&self) -> Vec<Slot> {
+        let mut slots = vec![];
+        let mut pending = vec![self];
+        while let Some(value) = pending.pop() {
+            match value {
+                Self::Quantum(slot, _) => slots.push(*slot),
+                Self::Pair(a, b) => pending.extend([b.as_ref(), a]),
+                Self::Tuple(fields) => pending.extend(fields.iter().rev()),
+                _ => {}
+            }
+        }
+        slots
+    }
+
     pub(super) fn tree_size(&self) -> TreeSize {
         let mut size = TreeSize::default();
         let mut pending = vec![(self, 1)];

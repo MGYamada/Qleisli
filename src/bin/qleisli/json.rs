@@ -6,9 +6,10 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
 use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
-use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::sim::{Sample, SimulationError};
+
+use super::source_commands::{Failure, Success};
 
 pub(super) fn quoted(text: &str) -> String {
     let mut output = String::from("\"");
@@ -61,6 +62,10 @@ fn location_json(root: &Path, location: &SourceLocation) -> Option<String> {
 }
 
 pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
+    located_diagnostic_json(root, diagnostic, "error")
+}
+
+fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
         .as_ref()
@@ -71,8 +76,9 @@ pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
         diagnostic.code
     };
     format!(
-        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":{},\"related\":[]}}",
+        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]}}",
         quoted(code),
+        quoted(severity),
         quoted(&diagnostic.message),
         primary.as_deref().unwrap_or("null")
     )
@@ -137,39 +143,43 @@ pub(super) fn distribution_json(
     Ok(output)
 }
 
-fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
-    if root.to_str().is_none() {
-        return Err(failure("project", "source root is not valid UTF-8"));
-    }
-    if options.command == "check" {
-        check_project_with_policy(root, options.policy)?;
-        Ok("{\"verified\":true}".into())
-    } else {
-        let program = compile_project_with_policy(root, options.policy)?;
-        if options.command == "sample" {
-            let seed = options.seed.expect("parsed sample seed");
-            let (samples, total) =
-                super::samples::collect(&program, options.shots.expect("parsed shots"), seed)?;
-            let mut result = format!("{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[");
-            for (index, sample) in samples.iter().enumerate() {
-                if index > 0 {
-                    result.push(',');
-                }
-                result.push_str("{\"bits\":[");
-                for (i, bit) in sample.bits.iter().enumerate() {
-                    if i > 0 {
-                        result.push(',');
-                    }
-                    result.push_str(if *bit { "true" } else { "false" });
-                }
-                write!(result, "],\"execution_steps\":{}}}", sample.execution_steps).unwrap();
-            }
-            write!(result, "],\"execution_steps\":{total}}}").unwrap();
-            return Ok(result);
+/// Keep each transport's existing whitespace as well as its sample fields.
+pub(super) fn samples_json(
+    samples: &[Sample],
+    seed: u64,
+    total: u64,
+    bit_separator: &str,
+) -> String {
+    let mut result = format!("{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[");
+    for (index, sample) in samples.iter().enumerate() {
+        if index > 0 {
+            result.push(',');
         }
-        let distribution =
-            run_closed(&program, SimulationLimits::default()).map_err(simulation_failure)?;
-        distribution_json(distribution)
+        result.push_str("{\"bits\":[");
+        for (i, bit) in sample.bits.iter().enumerate() {
+            if i > 0 {
+                result.push_str(bit_separator);
+            }
+            result.push_str(if *bit { "true" } else { "false" });
+        }
+        write!(result, "],\"execution_steps\":{}}}", sample.execution_steps).unwrap();
+    }
+    write!(result, "],\"execution_steps\":{total}}}").unwrap();
+    result
+}
+
+fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
+    match super::source_commands::execute(options, root).map_err(|error| match error {
+        Failure::Source(error) => error,
+        Failure::Simulation(error) => simulation_failure(error),
+    })? {
+        Success::Checked => Ok("{\"verified\":true}".into()),
+        Success::Distribution(distribution) => distribution_json(distribution),
+        Success::Samples {
+            shots,
+            seed,
+            execution_steps,
+        } => Ok(samples_json(&shots, seed, execution_steps, ",")),
     }
 }
 
@@ -182,37 +192,64 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     let options = super::options::Options::parse(args, true);
     let mut root = PathBuf::new();
     let mut artifact_pointer = None;
+    let mut warnings = vec![];
     let result = if let Some(options) = options {
         root = options.path.clone();
-        if root.to_str().is_none() {
-            Err(failure("project", "source root is not valid UTF-8"))
-        } else if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-            // Keep source spans from emission separate from artifact pointers.
-            root = std::fs::canonicalize(&root).unwrap_or(root);
-            match super::artifacts::execute(&options) {
-                Ok(super::artifacts::Success::Emitted(path)) => {
-                    Ok(format!("{{\"path\":{}}}", quoted(&path)))
-                }
-                Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
-                    "{{\"verified\":true,\"request_checked\":{request}}}"
-                )),
-                Err(super::artifacts::Failure::Source(error)) => Err(error),
-                Err(super::artifacts::Failure::Artifact(error)) => {
-                    artifact_pointer = Some(error.json_pointer);
-                    Err(failure(error.code, error.message))
-                }
-            }
+        let selected = if options.qrate {
+            qleisli::frontend::project::qrate_source_root(&root)
         } else {
-            // Use the same canonical root for compilation and relative identities.
-            // Failed canonicalization remains a handled project-load error.
-            root = std::fs::canonicalize(&root).unwrap_or(root);
-            execute(&options, &root)
+            Ok(root.clone())
+        };
+        if let Err(error) = selected {
+            Err(error)
+        } else if root.to_str().is_none() {
+            Err(failure("project", "source root is not valid UTF-8"))
+        } else {
+            let mut options = options;
+            root = selected.expect("checked root selection");
+            options.path = root.clone();
+            if options.command != "verify-ir" {
+                warnings = qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
+            }
+            if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
+                // Keep source spans from emission separate from artifact pointers.
+                root = std::fs::canonicalize(&root).unwrap_or(root);
+                match super::artifacts::execute(&options) {
+                    Ok(super::artifacts::Success::Emitted(path)) => {
+                        Ok(format!("{{\"path\":{}}}", quoted(&path)))
+                    }
+                    Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
+                        "{{\"verified\":true,\"request_checked\":{request}}}"
+                    )),
+                    Err(super::artifacts::Failure::Source(error)) => Err(error),
+                    Err(super::artifacts::Failure::Artifact(error)) => {
+                        artifact_pointer = Some(error.json_pointer);
+                        Err(failure(error.code, error.message))
+                    }
+                }
+            } else {
+                // Use the same canonical root for compilation and relative identities.
+                // Failed canonicalization remains a handled project-load error.
+                root = std::fs::canonicalize(&root).unwrap_or(root);
+                execute(&options, &root)
+            }
         }
     } else {
         Err(failure("usage", super::options::USAGE))
     };
     let (document, status) = match result {
-        Ok(result) => (envelope(command, None, &result), ExitCode::SUCCESS),
+        Ok(result) => {
+            let warnings = warnings
+                .iter()
+                .map(|warning| located_diagnostic_json(&root, warning, "warning"))
+                .collect::<Vec<_>>()
+                .join(",");
+            let document = format!(
+                "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":{},\"outcome\":\"ok\",\"diagnostics\":[{warnings}],\"result\":{result}}}\n",
+                quoted(command)
+            );
+            (document, ExitCode::SUCCESS)
+        }
         Err(error) => {
             let status = if error.code == "usage" { 2 } else { 1 };
             let diagnostic = match artifact_pointer {

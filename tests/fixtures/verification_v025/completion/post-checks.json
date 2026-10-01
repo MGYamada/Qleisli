@@ -1,0 +1,65 @@
+[
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py",
+      "--write-status"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.611,
+    "stdout_sha256": "0c51b4cff7e45f983241b23813b1d160ce4e020cff9c281641e1081e63122682",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 2626 local links, 199 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 158 Lean root modules.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.603,
+    "stdout_sha256": "0c51b4cff7e45f983241b23813b1d160ce4e020cff9c281641e1081e63122682",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 2626 local links, 199 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 158 Lean root modules.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_schema_registry.py",
+      "--source-only"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.066,
+    "stdout_sha256": "1c1b3f9668252108679773368ff450e5815cb24087c60542d58d75d98d7f5f9e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"3445bc0458654ae33f74747554b9efc522fdb39f290d0819af933549b23fedc0\", \"mode\": \"source-identity-only\", \"source_revision\": \"2ac0ca1d1c5148e1ff2ae8b49d5056ae2752761f01d27fe2c93e14c36b4152c8\", \"status\": \"passed\", \"version\": 1}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.332,
+    "stdout_sha256": "0241aa07ddb7eb2ff5588bcc7df98f170226d38506876e486905f2bc1321ab98",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 232 constructors, 181 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.05,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  }
+]

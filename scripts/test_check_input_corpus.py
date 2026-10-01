@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import json
+import math
 from pathlib import Path
 import shutil
 import tempfile
@@ -25,7 +26,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 48)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 54)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -109,6 +110,41 @@ class IntakeTests(unittest.TestCase):
 
 
 class OracleTests(unittest.TestCase):
+    def test_comparison_equality_boundary_and_arbitrary_target(self):
+        inclusive = {"id": "qualtran/less_equal1", "qubits": 3}
+        strict = {"id": "qualtran/greater_than1", "qubits": 3}
+        for value in range(2):
+            for target in range(2):
+                source = 3 * value + 4 * target
+                self.assertEqual(corpus.reference_column(inclusive, source),
+                                 [int(row == (source ^ 4)) for row in range(8)])
+                self.assertEqual(corpus.reference_column(strict, source),
+                                 [int(row == source) for row in range(8)])
+
+    def test_mixed_rotation_matches_chronological_rx_then_negative_ry(self):
+        case = {"id": "pennylane_demos/rotation_mixed_sign", "qubits": 1}
+        c, s = math.cos(math.pi / 4), math.sin(math.pi / 4)
+        rx = [[c, -1j * s], [-1j * s, c]]
+        negative_ry = [[c, s], [-s, c]]
+        for column in range(2):
+            expected = [sum(negative_ry[row][k] * rx[k][column] for k in range(2))
+                        for row in range(2)]
+            self.assertLess(max(abs(a-b) for a, b in zip(
+                corpus.reference_column(case, column), expected)), corpus.TOLERANCE)
+        reversed_entry = sum(rx[0][k] * negative_ry[k][0] for k in range(2))
+        self.assertGreater(abs(reversed_entry - corpus.reference_column(case, 0)[0]), .5)
+
+    def test_qaoa_mixer_keeps_tensor_rotation_scalar(self):
+        case = {"id": "pennylane_demos/qaoa_mixer2", "qubits": 2}
+        c, s = math.cos(math.pi / 4), math.sin(math.pi / 4)
+        rx = [[c, -1j * s], [-1j * s, c]]
+        for column in range(4):
+            expected = [rx[row & 1][column & 1] * rx[row >> 1][column >> 1]
+                        for row in range(4)]
+            self.assertLess(max(abs(a-b) for a, b in zip(
+                corpus.reference_column(case, column), expected)), corpus.TOLERANCE)
+        self.assertEqual(corpus.reference_column(case, 0)[3], -.5)
+
     def test_odd_parity_support_and_signed_nonzero_input(self):
         case = {"id": "quantum_katas/odd_parity3", "qubits": 3}
         self.assertEqual(corpus.reference_column(case, 0), [0, .5, .5, 0, .5, 0, 0, .5])

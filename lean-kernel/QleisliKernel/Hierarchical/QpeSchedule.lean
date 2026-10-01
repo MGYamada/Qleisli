@@ -60,7 +60,7 @@ must establish the phase-fixed H matrix, including its global phase. -/
 def leaf (artifact : Artifact) (atom : CircuitTrace.Atom) : Option Leaf := do
   let d ← artifact.definitions[atom.index]?
   let .leaf program := d.body | none
-  if d.interface == atom.interface && sized 1 d && program.size ≤ 16777216 then
+  if d.interface == atom.interface && sized 1 d && program.size ≤ Limits.maxPayloadBytes then
     some ⟨d,program⟩ else none
 
 structure Part where
@@ -164,7 +164,7 @@ structure Pending where
 
 def inspect (artifact : Artifact) (request : Request) (candidate : Candidate)
     (remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || headerCharge request candidate > remaining then .error .limit else
+  if remaining > Limits.maxVisits || headerCharge request candidate > remaining then .error .limit else
   if request.phase.size > 8 || request.target.size > 8 || request.route.size > 16 ||
       candidate.hadamards.size != request.phase.size || candidate.powers.size != request.phase.size ||
       candidate.powerOrders.size != request.phase.size then .error .contract else
@@ -216,8 +216,8 @@ theorem checkPart_conditions (artifact : Artifact) (request : Request) (h power 
     next failed => contradiction
     next power checkedPower =>
       cases Except.ok.inj checked
-      exact ⟨found,checkedPower,rfl,
-        (RoutedPower.inspect_conditions _ _ _ _ _ _ checkedPower).2.2.2.2.2.1⟩
+      obtain ⟨_,_,_,_,_,budget,_⟩ := RoutedPower.inspect_conditions _ _ _ _ _ _ checkedPower
+      exact ⟨found,checkedPower,rfl,budget⟩
 
 
 /-- A retained part records the exact atom selectors and remaining allowance
@@ -321,6 +321,7 @@ theorem inspect_conditions (artifact : Artifact) (request : Request) (candidate 
   split at checked
   next exceeded => contradiction
   next header =>
+    simp only [Limits.maxVisits] at header
     split at checked
     next malformed => contradiction
     next shape =>
@@ -365,7 +366,9 @@ theorem inspect_derives (artifact : Artifact) (request : Request) (candidate : C
     (remaining : Nat) (pending : Pending)
     (checked : inspect artifact request candidate remaining = .ok pending) :
     CircuitTrace.Derives artifact (atoms candidate) artifact.entry.implementation (expected request candidate) := by
-  have facts := inspect_conditions artifact request candidate remaining pending checked
-  exact (CircuitTrace.inspect_sound _ _ _ _ _ facts.2.2.2.2.2.2.2.1).1 _ _ facts.2.2.2.2.2.2.2.2.1
+  obtain ⟨_,_,_,_,_,_,_,traceChecked,traceResult,_,_,_⟩ :=
+    inspect_conditions artifact request candidate remaining pending checked
+  have traceSound := (CircuitTrace.inspect_sound _ _ _ _ _ traceChecked).1
+  exact traceSound _ _ traceResult
 
 end QleisliKernel.Hierarchical.QpeSchedule

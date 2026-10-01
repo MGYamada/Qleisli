@@ -1,0 +1,193 @@
+[
+  {
+    "argv": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "Main"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 58.153,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 11.079,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "/tmp/qleisli-v025-kernel-before/Surface.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 2.866,
+    "stdout_sha256": "0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "python3",
+      "/tmp/qleisli-v025-trace-public-review.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.599,
+    "stdout_sha256": "4e4e89d561565c87292eea54155cf56c11c26e125ec1f8a2b9d0a246bdf86f1d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{'format': 'qleisli.kernel-public-type-review', 'version': 1, 'status': 'passed', 'existing_declarations': 5550, 'missing': [], 'incompatible_types': [], 'before_export_sha256': '8f45a33ef390597d037f0bd9f13f82e8ef5b077fd76cb049c66b4b396ef5166f', 'after_export_sha256': '0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9', 'normalization': ['module-generated hygienic binder names', 'universe-parameter alpha renaming', 'five transparent Nat capacity abbreviations'], 'scope': 'non-private compiled declarations including constructors, fields and legacy equation/congruence lemmas; compiler match/proof/simp helpers are implementation details audited separately'}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_verification_baseline.py",
+      "target/debug/qleisli",
+      "--kernel",
+      "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--report",
+      "tests/fixtures/verification_v025/trace/frozen-baseline.json"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 3.572,
+    "stdout_sha256": "b313d6907a10f266c4639485572351206c6959cbb76abd17872d9125f99cf783",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 12 finite comparisons, 12 source decisions, 5 native component decisions; at most three qubits.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_kernel_compatibility.py",
+      "--before",
+      "/tmp/qleisli-v025-kernel-before/qleisli-kernel",
+      "--report",
+      "tests/fixtures/verification_v025/trace/transport-compatibility.json"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 71.807,
+    "stdout_sha256": "f0e4aeaf683c6cac08ae61cb4faba41ac6b43fbaf1c54a7898e5d2ce666e5771",
+    "stderr_sha256": "886b3787cc8734d674a3f8be604debf3e8225501be8cbbcffcc38371174b2c97",
+    "diagnostics": "{\"after_binary_sha256\": \"44a699d8262a96894c163942d48ab3ba8751838f687b61a471ebbbd3eef2ede9\", \"before_binary_sha256\": \"226f14cef0c09e1a3a20e0db45cf17a6994bf327b9c94066f4e40183b25fc0e1\", \"comparisons\": 1435, \"format\": \"qleisli.kernel-transport-compatibility\", \"oracle_tests\": 40, \"scope\": \"textual profiles and all malformed bridge modes; valid bridge semantics use separate native/host suites\", \"status\": \"passed\", \"version\": 1}\n........................................\n----------------------------------------------------------------------\nRan 40 tests in 69.348s\n\nOK\n"
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "/tmp/qleisli-v025-kernel-before/Surface.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 1.607,
+    "stdout_sha256": "0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "[{\"name\":\"QleisliKernel.Hierarchical.QpeSchedule.Candidate.mk\",\"type\":[\"forall\",\"hadamards\",\"explicit\",[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Hierarchical.CircuitTrace.Atom\",[]]],[\"forall\",\"powers\",\"explicit\",[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Hierarchical.CircuitTrace.Atom\",[]]],[\"forall\",\"inverseFourier\",\"explicit\",[\"constant\",\"QleisliKernel.Hierarchical.CircuitTrace.Atom\",[]],[\"forall\",\"traceOrder\",\"explicit\",[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"forall\",\"powerOrders\",\"explicit\",[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]]],[\"forall\",\"fourierOrder\",\"explicit\",[\"apply\",[\"constant\",\"Array\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"QleisliKernel.Hierarchical.QpeSchedule.Candidate\",[]]]]]]]],\"universes\":[]},{\"name\":\"QleisliKernel.QftGraph.Body.sequence\",\"type\":[\"forall\",\"first\",\"explicit\",[\"constant\",\"Nat\",[]],[\"forall\",\"second\",\"explicit\",[\"constant\",\"Nat\",[]],[\"constant\",\"QleisliKernel.QftGraph.Body\",[]]]],\"universes\":[]},{\"name\":\"QleisliKernel.Layout.Error.noConfusionType\",\"type\":[\"forall\",\"P\",\"explicit\",[\"sort\",[\"param\",\"v._@.QleisliKernel.Layout.2111619821._hygCtx._hyg.5\"]],[\"forall\",\"x\",\"explicit\",[\"constant\",\"QleisliKernel.Layout.Error\",[]],[\"forall\",\"y\",\"explicit\",[\"constant\",\"QleisliKernel.Layout.Error\",[]],[\"sort\",[\"param\",\"v._@.QleisliKernel.Layout.2111619821._hygCtx._hyg.5\"]]]]],\"universes\":[\"v._@.QleisliKernel.Layout.2111619821._hygCtx._hyg.5\"]},{\"name\":\"QleisliKernel.Reshape.relabel\",\"type\":[\"forall\",\"source\",\"explicit\",[\"apply\",[\"constant\",\"List\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Layout.TypeAtom\",[]]],[\"forall\",\"target\",\"explicit\",[\"apply\",[\"constant\",\"List\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Layout.TypeAtom\",[]]],[\"forall\",\"same\",\"explicit\",[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"Eq\",[[\"succ\",[\"zero\"]]]],[\"apply\",[\"constant\",\"List\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Layout.TypeAtom\",[]]]],[\"apply\",[\"constant\",\"QleisliKernel.Reshape.leaves\",[]],[\"bound\",1]]],[\"apply\",[\"constant\",\"QleisliKernel.Reshape.leaves\",[]],[\"bound\",0]]],[\"forall\",\"index\",\"explicit\",[\"apply\",[\"constant\",\"Fin\",[]],[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"HPow.hPow\",[[\"zero\"],[\"zero\"],[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"instHPow\",[[\"zero\"],[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"apply\",[\"apply\",[\"constant\",\"instPowNat\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"instNatPowNat\",[]]]]],[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"OfNat.ofNat\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"nat\",2]],[\"apply\",[\"constant\",\"instOfNatNat\",[]],[\"nat\",2]]]],[\"apply\",[\"constant\",\"QleisliKernel.Reshape.width\",[]],[\"bound\",2]]]],[\"apply\",[\"constant\",\"Fin\",[]],[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"HPow.hPow\",[[\"zero\"],[\"zero\"],[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"instHPow\",[[\"zero\"],[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"Nat\",[]]],[\"apply\",[\"apply\",[\"constant\",\"instPowNat\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"constant\",\"instNatPowNat\",[]]]]],[\"apply\",[\"apply\",[\"apply\",[\"constant\",\"OfNat.ofNat\",[[\"zero\"]]],[\"constant\",\"Nat\",[]]],[\"nat\",2]],[\"apply\",[\"constant\",\"instOfNatNat\",[]],[\"nat\",2]]]],[\"apply\",[\"constant\",\"QleisliKernel.Reshape.width\",[]],[\"bound\",2]]]]]]]],\"universes\":[]},{\"name\":\"QleisliKernel.Hierarchical.NodeTyping.Typed.noConfusionType\",\"type\":[\"forall\",\"P\",\"explicit\",[\"sort\",[\"param\",\"u\"]],[\"forall\",\"t\",\"explicit\",[\"constant\",\"QleisliKernel.Hierarchical.NodeTyping.Typed\",[]],[\"forall\",\"t'\",\"explicit\",[\"constant\",\"QleisliKernel.Hierarchical.NodeTyping.Typed\",[]],[\"sort\",[\"param\",\"u\"]]]]],\"universes\":[\"u\"]},{\"name\":\"QleisliKernel.Interference.Gate._sizeOf_1\",\"type\":[\"forall\",\"t\",\"explicit\",[\"constant\",\"QleisliKernel.Interference.Gate\",[]],[\"consta"
+  },
+  {
+    "argv": [
+      "python3",
+      "/tmp/qleisli-v025-trace-public-review.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.606,
+    "stdout_sha256": "4e4e89d561565c87292eea54155cf56c11c26e125ec1f8a2b9d0a246bdf86f1d",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{'format': 'qleisli.kernel-public-type-review', 'version': 1, 'status': 'passed', 'existing_declarations': 5550, 'missing': [], 'incompatible_types': [], 'before_export_sha256': '8f45a33ef390597d037f0bd9f13f82e8ef5b077fd76cb049c66b4b396ef5166f', 'after_export_sha256': '0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9', 'normalization': ['module-generated hygienic binder names', 'universe-parameter alpha renaming', 'five transparent Nat capacity abbreviations'], 'scope': 'non-private compiled declarations including constructors, fields and legacy equation/congruence lemmas; compiler match/proof/simp helpers are implementation details audited separately'}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_schema_registry.py",
+      "--source-only"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.073,
+    "stdout_sha256": "e02384ba64ab99e36e4afc41a11f90cd971a660e87fa21ecbe27faa1e306afbb",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"265dec3e1d6793cb19b94e6ef78c8fa1a6e5985f8a56b14264f0824f02104cc7\", \"mode\": \"source-identity-only\", \"source_revision\": \"e26fb93fa499291ce6fbbf291c3f2c583bc613b94bbb5fc5c53fb247b4b306ec\", \"status\": \"passed\", \"version\": 1}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.376,
+    "stdout_sha256": "29bd7f6c38a2a539d25208d3eea5b56af1c352b1271f836e3c41de04c2b658f8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 232 constructors, 163 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "/tmp/qleisli-v025-trace-validation.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.106,
+    "stdout_sha256": "23bd115bd64e0dd48092eb1bc5fec7ecec62cc0b38e6aae04d76ba1daf00dbde",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{\"status\": \"passed\", \"native_results\": {\"native_cases\": 121, \"rust_comparisons\": 104, \"independent_matrices\": 85, \"independent_raw_trace_programs\": 180, \"pure_constructors\": 11, \"rust_source_prefixes\": 6, \"max_semantic_qubits\": 3}, \"compatibility\": {\"existing_public_lean_declarations\": 5550, \"missing_or_incompatible_types\": 0, \"legacy_transport_comparisons\": 1435, \"independent_legacy_oracle_tests\": 40, \"external_schemas_enabled\": 0, \"public_rust_ir_evidence_cli_semantics\": \"unchanged in this continuation\", \"unit_api\": \"Current v0.2.x contracts retained; no future introduction/elimination API from Issue 43 implemented.\"}}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py",
+      "--write-status"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.677,
+    "stdout_sha256": "6ba6b324616937f7ce300722367752abf5017c876b986b1561a3fca25237f139",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 2596 local links, 200 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 141 Lean root modules.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.597,
+    "stdout_sha256": "6ba6b324616937f7ce300722367752abf5017c876b986b1561a3fca25237f139",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 2596 local links, 200 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 141 Lean root modules.\n"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.08,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  }
+]

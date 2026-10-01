@@ -32,7 +32,7 @@ backlog record is required.
 
 ## Current v0.2.x working references
 
-The [0.2.1 review response](docs/releases/v0.2.2.md) records compatible 0.2.2
+The [0.2.1 review response](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) records compatible 0.2.2
 repairs and the remaining v0.3 domain/tuple decisions. Keep reference semantics
 independent of acceptance modules, following the
 [dated specification-review policy](TRUST_BOUNDARY.md#reference-specification-review-2026-09-30).
@@ -62,7 +62,7 @@ linter checks form/links only; `qlippy` is a future tooling role, not a current
 executable or semantic authority. General borrowing syntax remains a separate
 type-system decision. Existing library APIs and proof/release gates are unchanged.
 
-When adding algorithm components, read the [corpus](docs/algorithm-corpus.md)
+When adding algorithm components, read the [corpus](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/algorithm-corpus.md)
 and [routine contracts](docs/algorithm-routines.md). For standard-library work,
 read [STDLIB.md](STDLIB.md), the [layer-3 plan](docs/stdlib-roadmap.md) and [contract ledger](docs/stdlib-contracts.md);
 record each public API's contract, verification state and adoption criteria.
@@ -110,8 +110,9 @@ Issue is created or already tracks the work, no backlog entry, backlog update
 or backlog ID is required.** Use the Issue as the tracking record; do not require
 duplicate records. Do not recreate the retired backlog. An Issue does not
 select a release or adopt syntax. The current development version is
-0.2.4, selected on 2026-10-01 starting with docs reduction and small finite
-corpus augmentation. See the [development record](docs/releases/v0.2.4.md).
+0.2.5, selected on 2026-10-01 for compatible refactoring, documentation reduction
+and small finite corpus additions. See the
+[development record](docs/releases/v0.2.5.md).
 The [edition contract](docs/language-editions.md) remains unchanged.
 Require explicit schema-2 `[qrate].edition = "2026"` in each source tree's
 `Qargo.toml`; keep manifests in `corpus/`, `stdlib/`, individual examples and
@@ -121,9 +122,9 @@ qrate management in the future. The user selected a narrow v0.2.3 compatibility
 exception for the new manifest requirement; other PATCH obligations remain.
 Follow the
 [continuation plan](docs/v0.2.2-plan.md),
-[development record](docs/releases/v0.2.2.md) and
+[development record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md). The latest published release is
-[0.2.4](docs/releases/v0.2.4.md#successful-publication-2026-10-01).
+[0.2.4](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01).
 Version selection does not complete wider feature gates or perform publication.
 The published foundation and its
 validation remain in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The finite B019 closure and
@@ -152,7 +153,7 @@ The original corpus goal is deferred, not completed. Keep those feature gates pe
 proofs audited and external schemas disabled until their binding gates pass.
 
 For the user-selected code-driven continuation from 0.2.0 onward, follow the
-[preparation and work packets](docs/code-driven-development.md). Start from
+[preparation and work packets](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/code-driven-development.md). Start from
 actual desired `.qli` source, preserve first attempts and counterexamples, and
 select a bounded implementation slice with a contract and independent checking
 experiment before changing acceptance. Complete the finite B019 foundation in
@@ -225,7 +226,7 @@ device noise and exact auxiliary zero return distinct.
 Use the [M1 specification](docs/next-minor-spec.md), [machine interfaces](docs/machine-interface-spec.md)
 and [M2 IR/checker profile](docs/hierarchical-ir-spec.md), distinguishing their
 specifications from implementation. The [six imaginary-v1 drafts and index](docs/imaginary-v1/README.md)
-and [semantic review](docs/imaginary-v1/review.md) satisfy the initial-draft
+and [semantic review](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/imaginary-v1/review.md) satisfy the initial-draft
 prerequisite only. Final syntax/APIs, implementation, validation and proof are
 separate. Preserve [R14 and the QPE prerequisites](docs/imaginary-v1/requirements.md#scaling-prerequisite-for-r14)
 and revise drafts when counterexamples require it.
@@ -358,20 +359,20 @@ The published tag/artifact are immutable; later result-record commits do not
 replace their source identity.
 The user's later release request authorizes the verified **v0.2.2** tag,
 crates.io package and GitHub Release, published on 2026-09-30. Its
-[publication record](docs/releases/v0.2.2.md#successful-publication-2026-09-30)
+[publication record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md#successful-publication-2026-09-30)
 binds the immutable source and artifact to all seven CI jobs, fresh registry
 installation, hosted docs and source-archive comparisons. Later result-record
 commits do not replace the tagged source; PyPI distribution remains separate.
 The user's 2026-10-01 release request authorizes the **v0.2.3** annotated tag,
 crates.io package and GitHub Release, published on that date. Its
-[publication record](docs/releases/v0.2.3.md#successful-publication-2026-10-01)
+[publication record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.3.md#successful-publication-2026-10-01)
 binds source `ff460549f0630c88c1f65c00a9e7d740d39e7889` to the validated package,
 fresh registry installation, hosted docs and complete GitHub archives. Later
 record commits preserve that immutable tag and package.
 
 The user explicitly requested **v0.2.4 crates.io and GitHub publication** on
 2026-10-01, and both were published and verified on that date. The
-[release record](docs/releases/v0.2.4.md#successful-publication-2026-10-01)
+[release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01)
 binds source `86ce29552696133de989ce2d61893f64cd23d3f5` to all seven CI jobs,
 matching local/Linux packages, fresh registry installation, hosted docs and
 complete GitHub archives. Later result records preserve the immutable tag and

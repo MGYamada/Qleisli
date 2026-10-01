@@ -3,7 +3,7 @@
 The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
-inputs and have a separate development execution path. The 48 finite CLI cases
+inputs and have a separate development execution path. The finite CLI cases
 below use the production frontend. The bounded `qleisli sized` source/CLI slice
 and measured QPE are recorded in the
 [current checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md);
@@ -26,15 +26,17 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
-**48 finite translations, sixteen per approved source**, including six
-1–3-qubit additions for 0.2.4 on 2026-10-01 and six
-1–3-qubit additions for 0.2.3 and six simple
-1–3-qubit additions for 0.2.2 on 2026-09-30 and six additions for 0.2.1 on
-2026-09-29. The original 24-case intake was selected for 0.1.9
-on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
-QuantumKatas, Qualtran Bloqs and PennyLane Demos and fixes their license handling.
-The [manifest](manifest.json) pins commits, original paths, file hashes, symbols,
-mathematical contracts, parameter specializations and exclusions.
+The six 0.2.5 additions are CZ, Toffoli, inclusive/strict one-bit comparisons, mixed-sign
+RX/RY and a two-wire QAOA mixer, all on 1–3 data qubits. The
+[0.2.5 session](authoring/v025-small/README.md) preserves complete first sources,
+the real missing-CZ-import diagnostic and its qif repair. Five first checks and
+all six repaired checks pass; 490 new complex-entry probes and six semantic
+faults exercise their complete contracts.
+
+The [adopted policy](POLICY.md) permits only QuantumKatas, Qualtran Bloqs and
+PennyLane Demos. [Manifest](manifest.json) pins commits, original paths/hashes,
+symbols, contracts, specializations and exclusions. New cases reuse reviewed
+frozen files; upstream pins and earlier source/validation records remain intact.
 
 The [0.2.3 review migration](../tests/fixtures/review_v023/README.md) replaces
 phase/identity workarounds in ten active kernels with the 0.2.4 sealed aliases.
@@ -174,13 +176,18 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | qualtran | [equals_constant2](qualtran/equals_constant2/README.md) | XOR [x=1] into an arbitrary target and restore mixed-polarity controls. |
 | pennylane_demos | [ry_quarter](pennylane_demos/ry_quarter/README.md) | RY(pi/2) with its signed second column; params=(0,pi/2). |
 | pennylane_demos | [ising_zz_quarter2](pennylane_demos/ising_zz_quarter2/README.md) | One U_C edge exp(-i*pi*Z0*Z1/4), including absolute scalar phase. |
-
 | quantum_katas | [zero_control_x2](quantum_katas/zero_control_x2/README.md) | Flip the target iff the retained control is zero; amplitude +1. |
 | quantum_katas | [bell_change_zx2](quantum_katas/bell_change_zx2/README.md) | ZX on the first Bell wire, retaining its sign on all inputs and under control. |
 | qualtran | [add_minus_one2](qualtran/add_minus_one2/README.md) | Subtract one modulo four, including zero underflow; explicit borrow order. |
 | qualtran | [qrom1](qualtran/qrom1/README.md) | XOR data=[2,1] into an arbitrary two-bit target, retaining a one-bit address. |
 | pennylane_demos | [rx_negative_quarter](pennylane_demos/rx_negative_quarter/README.md) | RX(-pi/2)=(I+iX)/sqrt(2), including absolute scalar phase. |
 | pennylane_demos | [ry_negative_quarter](pennylane_demos/ry_negative_quarter/README.md) | RY(-pi/2) with signed columns and Z-after-H ordering. |
+| quantum_katas | [controlled_z2](quantum_katas/controlled_z2/README.md) | CZ on arbitrary inputs, including its sign on 11 and coherent control. |
+| quantum_katas | [toffoli3](quantum_katas/toffoli3/README.md) | Both retained controls must be one to XOR the arbitrary target; scalar +1. |
+| qualtran | [less_equal1](qualtran/less_equal1/README.md) | XOR [a≤b] into either target value, including equality, restoring both inputs. |
+| qualtran | [greater_than1](qualtran/greater_than1/README.md) | XOR [a>b] into either target value and restore the negative control. |
+| pennylane_demos | [rotation_mixed_sign](pennylane_demos/rotation_mixed_sign/README.md) | RY(-pi/2) RX(pi/2), chronological RX then RY, with full scalar phase. |
+| pennylane_demos | [qaoa_mixer2](pennylane_demos/qaoa_mixer2/README.md) | Two-wire U_B(pi/4)=RX(pi/2) tensor RX(pi/2); excludes cost/preparation/optimization. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -192,39 +199,28 @@ these boundaries before it can count as a port.
 
 ## What was validated
 
-[Current 0.2.4 results](validation-v0.2.4.json): **48 shipped examples, 12,893
-semantic probes and four rejection cases** pass. All **24 type-correct semantic
-faults** are detected. The six new kernels add 264 full complex-entry probes on
-1–3 data qubits. Frozen upstream pins, original snapshots and historical reports
-remain unchanged; these are numerical finite checks, not general proofs.
+Current inventory counts are generated from the manifests; they count inputs,
+not passed checks or proved theorems.
 
+<!-- corpus-inventory:start -->
+<!-- Generated by scripts/check_docs.py --write-status from corpus manifests. -->
 
-[Historical 0.2.3 results](validation-v0.2.3.json): **42 shipped examples, 12,629
-semantic probes and four rejection cases** pass. All **eighteen type-correct
-semantic faults** are detected. New translations use at most three data qubits;
-the full run retains existing small finite cases and never generates new
-maximum-size cases. Source/manifest, oracle and binary hashes bind the report.
+| Finite examples | Unitary examples | Observing examples | Semantic faults |
+| --- | --- | --- | --- |
+| 54 | 49 | 5 | 30 |
 
-[Historical 0.2.2 results](validation-v0.2.2.json): **36 shipped examples, 12,139
-semantic probes and four rejection cases** pass with the local 0.2.2 binary.
-All **twelve type-correct semantic faults** are detected. The
-[six new cases](authoring/v022-simple/semantic-validation.json) account for
-290 semantic probes covering every complex entry and six detected faults. No upstream files or
-prior reports are overwritten; all added kernels use only 1–3 qubits.
+<!-- corpus-inventory:end -->
 
-[Historical 0.2.1 results](validation-v0.2.1.json): **30 shipped examples, 11,849
-semantic probes and four rejection cases** passed with Rust 1.98.1 on macOS.
-All **six type-correct semantic faults** were detected by the independent
-oracle after successful source checking. The report additionally pins the
-fault manifest and source hashes. These results are finite numerical checks,
-not a general proof or upstream-framework execution.
+[Current validation](validation-v0.2.5.json) binds its actual commands,
+probe results and source identities. Historical reports remain reproducibility
+observations for their own snapshots: [0.2.4](validation-v0.2.4.json),
+[0.2.3](validation-v0.2.3.json), [0.2.2](validation-v0.2.2.json),
+[0.2.1](validation-v0.2.1.json) and [original intake](validation.json).
+Their numeric totals are not current acceptance constants. Licensing pins,
+source snapshots and semantic counterexamples remain checked inputs; a log
+cannot adopt semantics or substitute for a new validation run.
 
-[Original local results](validation.json): **24 shipped examples, 9,412 semantic
-probes and four rejection cases** passed with the Rust 1.98.1 compiler on macOS.
-The report binds the manifest, final QLI files, oracle script and compiler by
-SHA-256. It is a reproducibility record, not a signed attestation.
-
-- For each of the 43 current unitary kernels, enumerate every computational input and
+- For each current unitary kernel, enumerate every computational input and
   compare its output distribution with an independent mathematical reference.
   Then measure every complex matrix entry using controlled X/Y interference.
   The reference branch maps the input basis vector to the selected output row;
@@ -269,7 +265,7 @@ Upstream decomposition/T-count and QLI resource overhead were not compared;
 replacing a general Bloq with a finite basis map does not inherit its complexity.
 
 The primary Rust CI job runs the exhaustive runner; both Rust jobs run the
-[48-project and rejection smoke tests](../tests/input_corpus.rs). The docs job
+[project and rejection smoke tests](../tests/input_corpus.rs). The docs job
 checks provenance and the Python harness regressions.
 
 ## Authoring evidence and next language work

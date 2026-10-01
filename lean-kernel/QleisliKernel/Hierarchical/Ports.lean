@@ -92,7 +92,7 @@ structure Checked where
 is ordinary structural data and never authorizes a quantum semantic equation. -/
 def check (source destination : Side) (map : PortMap) (remaining : Nat) :
     Except Error Checked :=
-  if remaining > 2000000 || scanCharge source destination map > remaining then .error .limit
+  if remaining > Limits.maxVisits || scanCharge source destination map > remaining then .error .limit
   else if workCharge source destination map > remaining then .error .limit
   else if !shapeValid source destination map then .error .invalidIr
   else .ok ⟨workCharge source destination map⟩

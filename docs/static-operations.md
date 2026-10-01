@@ -10,7 +10,7 @@ authoritative contract and reference for this document, replacing its earlier
 Japanese edition. The review revision additionally supports closed classical
 computations and deterministic branch selection within a static target. The
 [finite core specification](language-spec.md) supplies the surrounding rules.
-The [static semantics](static-semantics.md) gives local phase-preserving proofs;
+The [static semantics](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md) gives local phase-preserving proofs;
 general source-to-IR meaning preservation and Rust implementation correctness
 remain open.
 
@@ -57,7 +57,7 @@ repetitions.
 ### Static target judgment
 
 Use the environments, opaque pending-value frame `F`, and register store `R`
-from the [source resource rules](source-resource-rules.md). `E` retains spent
+from the [source resource rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md). `E` retains spent
 bindings as unavailable entries. Write
 
 ```text
@@ -87,7 +87,7 @@ are supported. With no classical ports or observations, their values are
 statically determined. After both arms pass source and IR verification,
 flattening selects the arm, transfers its complete simultaneous phi interface,
 and retains output order and phase. This does not enable classical parameters
-or measurement-dependent static targets. See [F2](static-semantics.md#3-f2-flattening-and-final-output-order).
+or measurement-dependent static targets. See [F2](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md#3-f2-flattening-and-final-output-order).
 
 Thus a signature alone is insufficient. These premises are required even for
 zero repetitions and both arms of a `qif`. The emitted enclosing IR is also
@@ -171,7 +171,7 @@ Inversion reverses step order, leaves Hadamards unchanged, and uses
 `p⁻¹[p[x]]=x` and `phase_inv[p[x]]=-phase[x] mod 8`. Control adds the
 corresponding basis control to every step. Output-axis reordering caused by
 `split/join` is part of the operator and is normalized before inversion or
-control. The [static semantics](static-semantics.md) states the exact operator
+control. The [static semantics](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md) states the exact operator
 lemmas for flattening, adjoint, control, finite repetition, and computed phases,
 including their premises and limits.
 
@@ -236,7 +236,7 @@ the charged expansion work. Exhaustion rejects without approximate evidence.
 and [VM-24–27](verification-migration-v0.2.md) retain actual-body/request binding,
 proved hierarchical serial composition and the remaining QPE scaling duties.
 The original 0.2.0/0.2.1 product-matrix failures remain dated history; the
-[0.2.1 review response](releases/v0.2.2.md) records the new scope precisely.
+[0.2.1 review response](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) records the new scope precisely.
 
 <a id="最初の利用対象"></a>
 
@@ -307,7 +307,7 @@ These numerical comparisons use tolerance `1e-12`. Success on one input does
 not establish general machine-checked meaning preservation or arbitrary-
 precision QPE. The additional [exact finite matrix checks](../tests/static_semantics.rs)
 exercise the static-translation correspondence described in
-[static-semantics.md](static-semantics.md). They preserve exact phases on their
+[static-semantics.md](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md). They preserve exact phases on their
 finite cases; they do not prove correctness for arbitrary source programs.
 
 **Historical A2 validation (2026-09-26):** `cargo test --all-targets` passed

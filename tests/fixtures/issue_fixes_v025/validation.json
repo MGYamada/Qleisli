@@ -1,0 +1,284 @@
+{
+  "format": "qleisli.compatible-bug-fixes",
+  "version": 1,
+  "status": "passed",
+  "date": "2026-10-01",
+  "issues": [
+    146,
+    147
+  ],
+  "package_version": "0.2.5",
+  "base_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "platform": "macOS aarch64",
+  "context": "ongoing 0.2.5 workspace",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.351,
+      "log": "tests/fixtures/issue_fixes_v025/check-00.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "seconds": 90.076,
+      "log": "tests/fixtures/issue_fixes_v025/check-01.log",
+      "log_sha256": "e4104b3ad65446d079f83f515ed34bc194490a833d38e797eb06ac78b1ddc011",
+      "tests": {
+        "passed": 547,
+        "failed": 0,
+        "ignored": 34
+      }
+    },
+    {
+      "argv": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "seconds": 95.459,
+      "log": "tests/fixtures/issue_fixes_v025/check-03.log",
+      "log_sha256": "5b3861f7c9c6e7fd7ca4ba5745333cb3862a529036edd19b5217ed04102e0b60",
+      "tests": {
+        "passed": 547,
+        "failed": 0,
+        "ignored": 34
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "source_file::tests"
+      ],
+      "exit_code": 0,
+      "seconds": 5.053,
+      "log": "tests/fixtures/issue_fixes_v025/check-04.log",
+      "log_sha256": "ecab100aef633b5dfd8f6d1e863d32a158d9747ee52a04e130acf4168a1bb91d",
+      "tests": {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "argv": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "source_file::tests"
+      ],
+      "exit_code": 0,
+      "seconds": 5.934,
+      "log": "tests/fixtures/issue_fixes_v025/check-05.log",
+      "log_sha256": "edddd7568f735310ff051eb7d171d1612948f3519af00bcfeedb05d59ae2b4ed",
+      "tests": {
+        "passed": 4,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 7.999,
+      "log": "tests/fixtures/issue_fixes_v025/check-06.log",
+      "log_sha256": "7fd3bf58213fb98b56e1e0429d3afb4545e86245dcba5e7adaf016c8104b5c64"
+    },
+    {
+      "argv": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 9.169,
+      "log": "tests/fixtures/issue_fixes_v025/check-07.log",
+      "log_sha256": "4eb76d5943ef57ef4d08ba97e588b63e428f62777bcc7037d81c07270f2d64b4"
+    },
+    {
+      "argv": [
+        "cargo",
+        "doc",
+        "--offline",
+        "--locked",
+        "--no-deps"
+      ],
+      "exit_code": 0,
+      "seconds": 3.706,
+      "log": "tests/fixtures/issue_fixes_v025/check-08.log",
+      "log_sha256": "740f48a599bd0e506403fb08a141d8a788b7129a350c6d70f6897fbc806ab878",
+      "env": {
+        "RUSTDOCFLAGS": "-D warnings"
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc"
+      ],
+      "exit_code": 0,
+      "seconds": 5.079,
+      "log": "tests/fixtures/issue_fixes_v025/check-09.log",
+      "log_sha256": "139c9e0450fd2f80dbbf1cc186f5887dfa2a1a88db0688399bb42ebc10efa352",
+      "tests": {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.245,
+      "log": "tests/fixtures/issue_fixes_v025/check-10.log",
+      "log_sha256": "01c3fb2f6d6724c2b28b9e9fa10e748c6c04ac24c47938923699b195fb05aa32"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.204,
+      "log": "tests/fixtures/issue_fixes_v025/check-11.log",
+      "log_sha256": "711db47623b24ed1d2493f6e22c0a442d7ed08bb1d0e00e36543480bfc4b991f"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.579,
+      "log": "tests/fixtures/issue_fixes_v025/check-12.log",
+      "log_sha256": "0241aa07ddb7eb2ff5588bcc7df98f170226d38506876e486905f2bc1321ab98"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "seconds": 0.097,
+      "log": "tests/fixtures/issue_fixes_v025/check-13.log",
+      "log_sha256": "1c1b3f9668252108679773368ff450e5815cb24087c60542d58d75d98d7f5f9e"
+    }
+  ],
+  "observed_command_failures": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "seconds": 4.734,
+      "log": null,
+      "log_sha256": "6d0bd1986b702f4da0ed1bfc9281fd8025d939f582c35fe0d7cc0097b6964191",
+      "retention": "Original lint-output hash only; the exploratory log was superseded by the focused regression replay."
+    }
+  ],
+  "command_resolution": "Homebrew cargo does not parse +toolchain; corrected MSRV invocations use rustup run 1.85.0 cargo",
+  "final_test_change": "Clippy suggested slice::from_ref for a regression assertion; focused source-file tests are rerun on both toolchains after that lint-only test change",
+  "rendered_version_pinned_rustdoc_links": "passed: all three match package version",
+  "macos_regressions": "Passed on native macOS: final/parent symlinks, held-parent identity after replacement, FIFO without a writer",
+  "deployment": "No minimum raised; the new CI job compiles Intel macOS at 10.12, which is not an old-OS execution test",
+  "dependency": {
+    "name": "rustix",
+    "version": "1.1.3",
+    "target": "macos only",
+    "features": [
+      "fs"
+    ],
+    "rust_version": "1.63",
+    "license": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+    "role": "safe open/openat wrapper; project unsafe_code remains forbid"
+  },
+  "not_performed": [
+    "Old macOS execution",
+    "Release/tag/registry publication",
+    "Fresh Lean build/audit: no Lean code/proof or registry source changes"
+  ],
+  "source_sha256": {
+    "Cargo.toml": "c07067538e231da46c8606f8a5a102bb31c3f0cc8f58b3e4601d668bde72066b",
+    "Cargo.lock": "f58eafe6e82956c0708bfc8d566d349c0a58f2ea5d304ec9cfa68d4b021bdf4b",
+    "src/frontend/project/source_file.rs": "3a9c1c8a28647083fff12a46e602704fa0224e6d348078faee7c114e2d4d892a",
+    "src/lib.rs": "1e64fa6893a89d2fed0dd4051a09e96b6d683843d56bbb76445379b696bb06e7",
+    "scripts/check_docs.py": "6351a462f6c6ae819e58784158da62921046adb5a8deb8d294f01c0ed31f6c1e",
+    "scripts/test_check_docs.py": "979de7006cd9051a5e48ecb32694e9caae426774195ed7168a580de3f29614e6",
+    ".github/workflows/ci.yml": "8352d1ed5f99273a4892b0e2ad698f346f63c6bf1cdc7f6ef785e71530ef64be",
+    "README.crates.md": "e03db0a4a767187bbec7d20767bc0323f0e3dce372d0e42dd4c00e402c2dded9",
+    "docs/frontend-v0.md": "82162b511f35123ea4ed90fc34f8e74d9287a3a0ddfe43adbed64f6cfd84d9e2",
+    "docs/crates-io-release.md": "465739d472d5bb72c1e17cbebbad8675468beb5ccc7292e6f175fedcdebcbc5e",
+    "docs/project-status.json": "9f3b9f53ae39394fd76ffd03922f4bdf6a9270a5e5bfc2e0111b91526d49fbb1",
+    "docs/current-status.md": "4616255ca60c0d09fa63cca2adc907470b94dc9094dc1a74cb198d8f00b7fc95",
+    "docs/rule-inventory.md": "51a4989051d59335ea9b2efcb7d3495a5fc84f1b369179d9efdf567bad993682",
+    "CHANGELOG.md": "391fbd170a5c9653e8108b1854a00caad2cf377b0fd0acdb0793e2db8af20814",
+    "tests/fixtures/verification_v022/inventory.json": "50e6b97ab74e7481680511ec6eedbc5c78ff21262951f314f00674f58e7a7851",
+    "tests/fixtures/issue_fixes_v025/README.md": "ae489ca7e89e51522d144bf8e3369ffdbce003b8b0fbf335bb74fa65fc6654c7"
+  },
+  "post_validation_docs": {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py",
+      "--write-status"
+    ],
+    "exit_code": 0,
+    "stdout_sha256": "711db47623b24ed1d2493f6e22c0a442d7ed08bb1d0e00e36543480bfc4b991f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

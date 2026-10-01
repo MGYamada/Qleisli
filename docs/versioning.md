@@ -1,126 +1,14 @@
 # Versioning and compatibility
 
-Status: **adopted project policy, revised at the user's request on 2026-09-28**.
-This is the authoritative English policy. The repository working rules in
-[AGENTS.md](../AGENTS.md) summarize it. The project uses the version format
-and release immutability rules of [Semantic Versioning 2.0.0](https://semver.org/spec/v2.0.0.html),
-with Cargo-compatible initial-development version selection below. This
-supersedes the 2026-09-27 rule requiring MINOR for every new feature.
+Authoritative Cargo-compatible version policy, adopted 2026-09-28. [Cargo.toml](../Cargo.toml) selects the version; [release procedure](crates-io-release.md) governs publication. Historical releases use Git history and immutable tags.
 
 ## Version identity
 
-**Current development selection, 2026-10-01:** the user selected **0.2.4**,
-starting with obsolete-document reduction and small finite corpus additions.
-[Its record](releases/v0.2.4.md) separates performed checks from pending release
-and VM-24 gates. This compatible selection adds no new exception and performs
-no publication. The latest published release remains **0.2.3**.
-
-**Explicit edition-declaration exception, 2026-09-30:** the user selected
-v0.2.3 to adopt Qleisli edition `"2026"` and require `Qargo.toml` for every
-filesystem `.qli`/`.qlt` source tree. Formerly manifest-free projects must add
-an [edition declaration](language-editions.md); this is a narrow incompatible
-requirement selected for this PATCH, not a bug fix or a general exception.
-The `std` standard-library qrate is already managed in `stdlib/`; all other
-source trees are to migrate to qrate management later. No repository-root
-Qargo manifest is used. Product versions and language editions are independent;
-Rust's Cargo edition remains `"2024"`. Other API/source meanings retain their
-compatibility obligations. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
-and the [0.2.3 release record](releases/v0.2.3.md). The user's publication request
-was completed on 2026-10-01: **0.2.3** is the latest published release, with
-[immutable source and artifact evidence](releases/v0.2.3.md#successful-publication-2026-10-01).
-
-**Explicit pre-registry identity exception, 2026-09-30:** the user selected
-`qleisli` for both the package and Rust import name in the first planned
-crates.io release, 0.2.1, replacing `qleisli-core` / `qleisli_core`. Existing
-Git/path Rust consumers require the documented
-[name migration or Cargo alias](crates-io-release.md#name-migration-from-github-releases-through-020).
-This is an incompatible identity change, not a compatible rename. The exception
-is limited to this user-requested first-publication naming decision; all other
-0.2.1 public contracts and capacities retain the normal PATCH policy, and the
-type-system changes still target 0.3.0. The subsequent 2026-09-30 user request
-authorizes registry publication after rechecking; record actual upload success.
-
-Compatible feature additions no longer need a version-policy exception.
-The previous 0.1.6/0.1.7 decisions and then-untagged 0.1.8 checkpoint retain their
-historical numbers and migration records; dated exception statements describe the former
-policy, not a continuing requirement. This revision does not reclassify their
-documented source/API breaks as compatible or authorize future incompatible
-PATCH releases. See the [0.1.6](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.6.md),
-[0.1.7](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md) and [0.1.8](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) records.
-
-The user initially selected **0.2.0 development** for shared QPE. The
-2026-09-29 [scope revision](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains the implemented tuple/public-AST,
-capacity and lexical changes, finite interfaces and experimental Lean foundation
-in 0.2.0. Validation and publication evidence are recorded separately in the
-[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The remaining shared-QPE work
-initially targeted [0.2.1](v0.2.2-plan.md), selected as the then-current
-development version by the user on 2026-09-29. Its [record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.1.md) tracks the development
-checkpoints and the verified 2026-09-30 crates.io and GitHub publications.
-The 2026-09-30 [boundary revision](v0.2.2-plan.md)
-retains completed experiments/review fixes and bounded host connections in
-0.2.1; remaining heavy implementation/integration/proofs target [0.2.2](v0.2.2-plan.md).
-The later 2026-09-30 user request selects **0.2.2 development**, synchronizing
-Rust, both Lean packages and the Python host; see the
-[0.2.2 record](releases/v0.2.2.md). The user's later publication request was
-completed on 2026-09-30: **0.2.2** was published with
-[tag, registry, hosted docs and GitHub evidence](releases/v0.2.2.md#successful-publication-2026-09-30).
-Version selection does not complete feature gates or perform tagging/upload.
-Neither target grants an incompatible PATCH
-exception: preserve existing public interfaces with additive successor APIs
-and adapters, or select 0.3.0 if a breaking change is necessary. The
-[development record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains earlier checkpoints; no tag
-or publication follows from this scope selection.
-
-The subsequent 2026-09-29 user decision explicitly plans
-[Qleisli type-system specification in the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification),
-with QLT implementation deferred to v0.4.0 or later. Concrete type changes and
-migrations remain to be specified. The current manifests select 0.2.4, and
-this future boundary does not permit incompatible changes in that PATCH.
-
-The historical finite baseline and release state are in [current status](current-status.md)
-and the [0.1.9 review-fix record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.9.md). The user selected 0.1.9
-for compatible review fixes and diagnostic improvements on 2026-09-28.
-Previously, the user explicitly retained version 0.1.8 for the authoring continuation after its
-temporary 0.2.0 selection. The public Rust `Param.name` → `Param.pattern`
-migration remains incompatible and documented; the general compatibility
-policy below is unchanged. Version selection alone
-does not establish publication. [M0–M5](v0x-roadmap.md) schedule development
-independently of version numbers; a theme alone does not reserve a MINOR
-number. Explicit user-selected release targets are recorded separately above. Continuous
-audits need no PATCH unless a useful compatible change is being released.
-The legacy B019 finite maintenance checkpoint is not a requirement to ship
-patches 6–9 first, and later maintenance may use 0.1.10.
-[Cargo.toml](../Cargo.toml)'s
-`package.version` is the source of truth. Keep the project's own package
-versions in [lean/lakefile.toml](../lean/lakefile.toml),
-[lean-kernel/lakefile.toml](../lean-kernel/lakefile.toml),
-[python/pyproject.toml](../python/pyproject.toml) and Python `__version__`
-synchronized; refresh the Cargo lockfile and synchronize the
-[std qrate version](../stdlib/Qargo.toml) as well. Compiler,
-bundled standard library, examples, and proof development currently share
-one release version; this does not imply that their verification is complete.
-
-Manifests use `MAJOR.MINOR.PATCH`, without a leading `v`; release tags use
-`vMAJOR.MINOR.PATCH`. A prerelease, when needed, uses an explicit suffix such
-as `0.2.0-rc.1`, synchronized in all four project manifests, Python `__version__`,
-the Cargo lockfile and its tag. The current release number is not changed
-merely because a task, commit, or test run
-finishes. Accumulate pending changes under `Unreleased` in the changelog;
-update the number when selecting the next release or prerelease.
-
-The finite-core specification's `v0`, standard-library ledger's format `v1`,
-development stages, and product release numbers are separate identifiers.
-Do not rename historical specification files or rewrite old validation
-records when bumping a package version. [Release milestones](release-milestones.md)
-provide evidence gates: a manifest number alone does not satisfy them.
+Development 0.2.5 covers compatible refactoring, documentation reduction and finite corpus additions; latest published is 0.2.4. Synchronize Cargo/lockfile, both Lean lakefiles, Python metadata/__version__ and std Qargo version, never dependencies. Use MAJOR.MINOR.PATCH and annotated vMAJOR.MINOR.PATCH; synchronize prerelease suffixes. Accumulate Unreleased changes and do not bump per task. Product, edition, specification and ledger identifiers are separate. Narrow user exceptions retain their migration: 0.2.1 package/import identity to qleisli, and 0.2.3 explicit schema-2 edition manifests. They authorize no other incompatible PATCH.
 
 ## Choosing the next version
 
-For `0.y.z` with `y > 0`, Qleisli follows
-[Cargo's compatibility convention](https://doc.rust-lang.org/cargo/reference/semver.html#change-categories):
-`y` identifies the incompatible release line and `z` may include compatible
-features as well as fixes. In the table, MINOR and PATCH name the numeric
-positions, not the size or importance of the work.
+For 0.y.z, y>0, compatible fixes/features/deprecations use PATCH; breaks use MINOR and reset PATCH. In 0.0.z successive PATCH versions are incompatible. From 1.0 use SemVer. Combined changes take the largest required increment. New enum variants/required public fields/reserved valid identifiers may break even when other APIs are additive. V1 requires stabilized public contracts and its evidence gates.
 
 | Change | 0.y.z, with y > 0 | From 1.0 onward |
 | --- | --- | --- |
@@ -128,121 +16,10 @@ positions, not the size or importance of the work.
 | Backward-compatible public functionality, syntax addition, or deprecation without removal | Increment PATCH, for example `0.1.8 -> 0.1.9`; no feature exception is needed. | Increment MINOR and reset PATCH. |
 | Breaking change to a supported public contract | Increment MINOR and reset PATCH; document migration. | Increment MAJOR and reset MINOR/PATCH; document migration. |
 
-For `0.0.z`, Cargo treats successive PATCH versions as incompatible; that is
-not the project's current release line. If a release contains several kinds
-of change, use the largest required bump. An additive feature can still break
-compatibility: reserving a previously valid identifier, adding a variant to an
-exhaustive public enum, or adding a required field to a publicly constructible
-struct requires MINOR in 0.y.z with y > 0. Classify the whole public change, not only
-its new CLI or source entry point. Specification, evidence and validation
-requirements apply equally to compatible features shipped in PATCH releases.
-
-Before starting `0.2.0` feature implementation or releasing `0.2.0` (including
-its prereleases), complete the
-[imaginary Qleisli 1.0 code prerequisite](release-milestones.md#pre-v020-imaginary-v1-code).
-The initial algorithm drafts may be noncompiling; their existence and recorded
-semantic requirements must precede the implementation they guide. Adopting
-this policy does not itself complete the prerequisite or bump the version.
-
-`1.0.0` requires the [V1-C1–C5 acceptance evidence](release-milestones.md#v1-acceptance-target-textbook-algorithm-structure)
-and a documented stable public contract. The current fixed-size examples,
-elapsed development time, or completion of a 0.x feature do not establish
-that threshold.
-
 ## What compatibility covers
 
-The public surface includes the documented `.qli` grammar and name resolution,
-sealed and standard-library APIs, public Rust items including raw IR and
-evidence APIs, CLI commands and exit-status/result conventions, and exported
-Lean declarations. A mathematical contract's phase, bit/axis order, output
-layout, ownership, effect, and entry/cleanup premises are behavior, not
-implementation details. A change to them requires the same compatibility
-review as a signature change.
-
-Record changes to implementation limits and supported Rust/Lean toolchains.
-Reducing supported capacity or raising a toolchain requirement uses at least
-a MINOR bump in 0.y.z with y > 0; after 1.0, apply the declared stable support contract.
-Exact human-readable diagnostic wording and internal file layout are not
-stable interfaces, but public error-code variants remain public Rust API.
-No stable serialized IR or certificate format is promised by the 0.1.x line.
-M1 interchange, JSON diagnostics and sampling may use PATCH when the complete
-change is compatible; they do not require MINOR merely because they add
-functionality. A new source-file byte limit reduces
-accepted capacity and also requires a MINOR decision; it is not a patch fix
-without an already published violated limit. Hierarchical IR changes require
-explicit Rust API and format migration, including exhaustive enum matches.
-
-Rejecting a program or certificate that violated the already published
-specification is a correctness fix and may ship in a patch. Document the
-previously erroneous acceptance, the violated rule, the new diagnostic, and
-regression evidence. Restoring an implementation's promised operator likewise
-requires explicit before/after evidence. This exception does not allow a
-new restriction on previously valid programs, a different promised operator,
-or an incompatible public Rust API change to be hidden in a patch.
+Compatibility includes source syntax/resolution, Rust/IR/evidence, stdlib, CLI commands/exits/results and public Lean declarations; phase, axis/bit order, owners, effects, entry premises and cleanup are public semantics. Reduced capacities or raised toolchains require at least MINOR in 0.y.z. Rejecting already-invalid inputs can be PATCH only with the published violated rule, before/after behavior, diagnostic and regression. A new restriction/operator/API change cannot use that exception. Future breaking changes need an Issue naming 0.x.0, contracts/reason/migration and validation; no duplicate backlog.
 
 ## Release records and validation
 
-For Rust registry preparation and the separate upload step, follow the
-[crates.io procedure](crates-io-release.md). On 2026-09-30 the user authorized
-preparation for the first registry release from 0.2.1 and explicitly placed
-crates.io publication on hold. The user's subsequent instruction to recheck
-and run `cargo publish` outside the sandbox explicitly lifts that hold;
-preparation or a successful package build alone would not do so.
-
-For `0.2.0` and its prereleases, first verify that the conformance ledger links
-the completed initial imaginary-code corpus and its requirement records.
-
-For each release or prerelease:
-
-1. Select the version from the compatibility review. Synchronize all four project
-   manifests, Python `__version__`, Cargo lockfile and the changelog; update
-   current-version summaries and links.
-2. Record added/changed/fixed behavior, breaking changes and migration,
-   supported bounds/toolchains, license or dependency changes, and relevant
-   specification/conformance references. Keep past release entries intact.
-3. Validate the release tree with `cargo fmt --check`,
-   `cargo test --all-targets`, `cargo clippy --all-targets -- -D warnings`,
-   `cargo test --doc`, `RUSTDOCFLAGS="-D warnings" cargo doc --no-deps`,
-   `python3 scripts/test_check_docs.py`, `python3 scripts/check_docs.py`,
-   `python3 scripts/test_check_imaginary_v1_examples.py`,
-   `python3 scripts/check_imaginary_v1_examples.py`,
-   `python3 scripts/test_check_semantic_contract_examples.py`,
-   `python3 scripts/check_semantic_contract_examples.py`, and
-   `git diff --check`. Check package metadata and that distributable archives
-   include the required license/attribution files. Run documented release
-   examples. Record platform exclusions and any skipped check explicitly.
-   While the independent semantic research package is in the release tree,
-   also run its documented [fmt, all-target tests and Clippy](../research/semantic-kernel/README.md#reproduction)
-   on the primary and minimum Rust toolchains (format with the primary
-   formatter). Distinguish the production `.crate` from the complete repository
-   source archive: Cargo excludes nested packages, including this non-published
-   prototype, from the production package.
-4. Build and audit the Lean development using the pinned toolchain:
-   `lake build Qleisli` and
-   `lake env lean -DwarningAsError=true Audit.lean` from `lean/`.
-   For the executable package, run `lake build`, `lake env lean Tests.lean`,
-   `lake env lean Audit.lean`, `lake env leanchecker --fresh QleisliKernel`
-   and `lake env leanchecker --fresh Main`
-   from `lean-kernel/`. From the repository root run
-   `python3 scripts/check_lean_kernel.py`,
-   `python3 scripts/test_check_lean_kernel.py --compiled` and
-   `cargo run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test`.
-   Its source/dependency policy and compiled audit are separate from the
-   existing Mathlib proof audit; neither grants full compiler soundness.
-   Physlib is currently a [future dependency](../lean/README.md#future-physlib-bridge), not a
-   release prerequisite. If reintroduced for a concrete bridge, add its scoped
-   external build/axiom audit separately and document the declarations covered.
-   This is a full release check; a documentation-only working change
-   need not rerun Lean or claim that it did.
-5. Tag the exact checked commit with an annotated `vMAJOR.MINOR.PATCH` tag
-   (including a prerelease suffix if present). Never tag an older HEAD while
-   the release's implementation remains only in a dirty worktree. Include
-   the version, commit identity, verification scope, and known limitations in
-   the release record. Published tags and release artifacts are immutable;
-   corrections require a new version.
-
-Changing a manifest or designating a baseline is distinct from creating a
-Git tag, pushing it, creating a hosted release, or publishing a package.
-Report which steps actually happened; do not infer publication from a file
-version or a completed development goal. Publication operations follow the
-scope of the user's release request.
+Validate exact candidate norms/conformance, fmt/all-target tests/Clippy/doctest/API docs, docs and examples, research checks where shipped, pinned Lean builds/axiom/runtime/compiled audits and independent native comparisons, and package notices/distribution. Record skipped checks honestly; documentation-only work need not rerun Rust/Lean. Tag the exact clean checked release commit, never an older HEAD with uncommitted implementation. Published tags/artifacts are immutable; corrections require another version. Selection, checks, tag, push, registry/hosted publication and PyPI/platform binaries are distinct actions within user authorization.

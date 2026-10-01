@@ -14,7 +14,7 @@ the requirements are not all proved implementation guarantees.
 As consequences of the [adopted design principles](design-philosophy.md),
 the Stage 0 standard-library design, Stage 1 language specification, and
 subsequent Rust implementation must satisfy the same requirements.
-The [language evolution framework](language-evolution.md) preserves them
+The [language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md) preserves them
 when distinguishing proposed extensions from the accepted language.
 
 <a id="意味論と純粋性"></a>

@@ -1,0 +1,134 @@
+{
+  "format": "qleisli.review-followup.validation",
+  "version": 1,
+  "reviewed_release": "0.2.4",
+  "checked_package_version": "0.2.5",
+  "scope": "live development tree",
+  "date": "2026-10-01",
+  "platform": "aarch64-apple-darwin",
+  "rust": {
+    "1.98.1": {
+      "all_targets_passed": 555,
+      "failed": 0,
+      "ignored": 34
+    },
+    "1.85.0": {
+      "all_targets_passed": 555,
+      "failed": 0,
+      "ignored": 34
+    },
+    "warning_diagnostics": 0,
+    "final_review_regressions": 8,
+    "clippy": "all targets; -D warnings; passed",
+    "doctests_passed": 1,
+    "api_docs": "cargo doc --locked --no-deps; passed",
+    "final_closed_v1_warning_regression": "both full all-target suites rerun after warning-category repair; counts unchanged"
+  },
+  "python": {
+    "python3 scripts/test_check_docs.py": {
+      "passed": 28,
+      "skipped": 0
+    },
+    "python3 scripts/test_check_input_corpus.py": {
+      "passed": 29,
+      "skipped": 0
+    },
+    "python3 scripts/test_cli_json.py target/debug/qleisli": {
+      "passed": 11,
+      "skipped": 1
+    },
+    "temporary-venv/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as --opt opt": {
+      "passed": 4,
+      "skipped": 0
+    },
+    "installed matching Python package / test_connections.py": {
+      "passed": 10,
+      "skipped": 0,
+      "package_version": "0.2.5",
+      "pyqir": "0.12.5"
+    }
+  },
+  "independent_source_comparison": {
+    "binary_sha256": "17bb04507e1e44c2b79a6e17bb51335b60366557cc893bd1833610273b6de0f8",
+    "cases": 96,
+    "harness_sha256": "f159346abbbf808a7eb460ec44f5866cecbf6456bba1317a52705352742c5b88",
+    "max_probability_error": 4.218847493575595e-15,
+    "maximum_live_qubits": 4,
+    "ordered_sources_sha256": "f0feb7bc0a92d9c36ce051ab2fe04f4318a3541295f3553a5ddb9e24365969cc",
+    "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof",
+    "seed": 20260930021,
+    "tolerance": 1e-11
+  },
+  "terminal_target_validation": {
+    "cases": 16,
+    "complex_entries": 352,
+    "maximum_physical_qubits": 5,
+    "qft2_qubits": 2,
+    "qft3_qubits": 4,
+    "zero_workspace_and_exact_phase_checked": true,
+    "coefficient_tolerance": 2e-12,
+    "reference_openqasm_parser": "openqasm3 1.0.1 / ANTLR 4.13.2, pinned wheel hashes",
+    "llvm_verifier": "LLVM 22.1.6; 16 review QIR modules plus existing profile smoke cases",
+    "general_transformation_proof": false,
+    "resource_safety_certificate": false,
+    "additional_cases": "both nontrivial phase arms reuse clean workspace; nested controls uncompute two conjunction qubits"
+  },
+  "metadata": "approved-source/provenance/authoring coverage passes; current census generated from manifests; frozen comparison pins unchanged",
+  "not_performed": [
+    "reviewer external fuzz/sampling campaigns",
+    "fresh Lean builds/audits (no Lean change in this review repair)",
+    "full exhaustive corpus replay (source/IR semantics unchanged; small independent regressions performed)",
+    "merge, tag or publication"
+  ],
+  "compatibility": "public IR and production acceptance unchanged; default source-root loading unchanged; new APIs/flag/warnings are additive",
+  "tracking": [
+    "https://github.com/MGYamada/Qleisli/issues/160",
+    "https://github.com/MGYamada/Qleisli/issues/165",
+    "https://github.com/MGYamada/Qleisli/pull/155"
+  ],
+  "source_sha256": {
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+    "src/interop/mod.rs": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
+    "src/frontend/project.rs": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
+    "src/frontend/project/manifest.rs": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
+    "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+    "src/frontend/compile/lower/mod.rs": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
+    "src/frontend/compile/lower/value.rs": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
+    "src/frontend/compile/lower/primitives.rs": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
+    "src/frontend/compile/lower/certified.rs": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
+    "src/bin/qleisli.rs": "3f64d2ca6faf5f60ab42ca94434c12c883229636b97eb6dff7a5919b2ce46ceb",
+    "src/bin/qleisli/options.rs": "07f991ef89b9870e18a30a024488d21c68a7b5bb4b6d2228ba020b2517985d4f",
+    "src/bin/qleisli/json.rs": "e5003c2bee0fb19902c2edaeaf63a59587883314336ca6460c1c45d2c600e2a3",
+    "tests/review_v024.rs": "82b6eb4769517b9b5f977d8ba917ca6ca7dd11abb551a166e34b58958f9ff0a6",
+    "tests/interop.rs": "35ba99f4295ef28fb00c0cdeb0e9aca18d23404780731e2fb0274a8f5dc32977",
+    "scripts/check_docs.py": "1ae7161de2f32aa8fccb49674e8c7bda79f4271e533b7563281abc4ebcc984b3",
+    "scripts/check_input_corpus.py": "de8769df2298443192beed00900aff44d2bf167183ee0879b36dc4fe063e577a",
+    "scripts/test_review_v024.py": "1829870e33579efdd21285eb91dbcfe53d052ac93d328fee63db3ad1168943d4",
+    "scripts/test_interop_external.py": "4f4af1d2520119ec5f4fe2cbd26cdee0d93042f0a3af8cb6b8782e41498e49f0",
+    "tests/fixtures/verification_v022/inventory.json": "244ddde73b9ea5bfcee5c1830f097de44f1cabf8df493862ba2ba9cae25e387d",
+    "corpus/manifest.json": "639333c1a9c504b0e0878d089a51584706863890cfbd90459a7fc94709957626",
+    "corpus/semantic_faults/manifest.json": "fcf27c18154d7ff4647bfa4beb040a6b370343cd1254c7a350670c379b0e104b",
+    "scripts/test_connections.py": "13d1141094054933fcc3e281da0078d8e1433e26cc3ca836db630f80f266f991"
+  },
+  "final_checks": {
+    "documentation": "generated overview/rule inventory and local links passed",
+    "rust_fmt": "passed",
+    "git_diff_check": "passed",
+    "verification_inventory": "passed; 232 constructors, 18 boundaries; Rust authority unchanged"
+  },
+  "ci_followup": {
+    "first_head": "178d94358d84f44f2e185be126ef80380f26dd0e",
+    "run": "https://github.com/MGYamada/Qleisli/actions/runs/36857395371",
+    "failure": "Python round-trip compared floating distributions and work counts for circuits changed by exact target phase folding",
+    "roundoff_observed": 1.1102230246251565e-16,
+    "repair": "compare exact ordered bits and probabilities within 1e-12; seeded bits agree; validate per-circuit shot totals and shorter emitted work; no runtime probability/accounting change"
+  },
+  "transport": {
+    "format": "qleisli.result",
+    "version": 1,
+    "manifest_warning_code": "project",
+    "severity": "warning",
+    "closed_code_list_unchanged": true
+  }
+}

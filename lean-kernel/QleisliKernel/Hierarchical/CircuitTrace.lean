@@ -134,7 +134,7 @@ def step (artifact : Artifact) (atoms : Array Atom) (remaining : Nat)
 def inspect (artifact : Artifact) (atoms : Array Atom) (order : Array Nat)
     (remaining : Nat) : Except Error State :=
   let header := 32 + artifact.definitions.size + atoms.size + order.size
-  if remaining > 2000000 || header > remaining then .error .limit else
+  if remaining > Limits.maxVisits || header > remaining then .error .limit else
   let cost := header + 32 * (1 + atoms.size)^2 + atoms.foldl (fun cost atom => cost + 32 * atom.interface.charge) 0
   if cost > remaining then .error .limit else
   if !(atoms.map Atom.index).toList.Nodup then .error .contract else
@@ -256,7 +256,7 @@ theorem inspect_sound (artifact : Artifact) (atoms : Array Atom) (order : Array 
           simp [Array.getElem?_replicate] at found
           split at found <;> simp_all
         have result := fold_sound artifact atoms order.toList remaining _ result empty (Nat.le_of_not_gt charged) accepted
-        exact ⟨result.1,result.2,by omega⟩
+        exact ⟨result.1,result.2,by simp only [Limits.maxVisits] at *; omega⟩
 
 
 end QleisliKernel.Hierarchical.CircuitTrace

@@ -3,6 +3,11 @@ import QleisliKernel.Exact
 import QleisliKernel.ExactCapacity
 import QleisliKernel.ExactMatrix
 import QleisliKernel.Finite
+import QleisliKernel.Raw.Finite
+import QleisliKernel.Raw.Function
+import QleisliKernel.Raw.ProtectedEvaluation
+import QleisliKernel.Raw.Protected
+import QleisliKernel.Raw.Pure
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
 import QleisliKernel.LayoutDag

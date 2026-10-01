@@ -80,7 +80,7 @@ theorem inspectAux_succ (artifact : Artifact) (precision n index remaining : Nat
             | .ok child => .ok ⟨h.request::child.requests,stage.visits+h.visits+control.visits+child.visits⟩) := rfl
 
 def inspect (artifact : Artifact) (precision width index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || precision > 8 || width = 0 || width > precision then .error .limit
+  if remaining > Limits.maxVisits || precision > 8 || width = 0 || width > precision then .error .limit
   else inspectAux artifact precision (width-1) index remaining
 
 theorem inspectAux_sound (artifact : Artifact) (precision levels index remaining : Nat) (pending : Pending)
@@ -136,6 +136,7 @@ theorem inspect_sound (artifact : Artifact) (precision width index remaining : N
   next valid =>
     simp only [Bool.or_eq_true,decide_eq_true_eq,not_or] at valid
     obtain ⟨bound,matched⟩ := inspectAux_sound artifact precision (width-1) index remaining pending accepted
+    simp only [Limits.maxVisits] at valid
     have size : width-1+1 = width := by omega
     rw [size] at matched
     exact ⟨bound,by omega,by omega,by omega,by omega,matched⟩

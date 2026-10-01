@@ -13,9 +13,10 @@ use qleisli::interop::{self, InteropErrorKind};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 use super::json::{
-    artifact_diagnostic_json, diagnostic_json, distribution_json, envelope, quoted,
+    artifact_diagnostic_json, diagnostic_json, distribution_json, envelope, quoted, samples_json,
     simulation_failure,
 };
+use super::options::natural;
 
 enum Failure {
     Diagnostic(Diagnostic),
@@ -124,17 +125,6 @@ fn load(format: &str, path: &Path) -> Result<VerifiedProgram, Failure> {
     }
 }
 
-fn number(text: &str) -> Option<u64> {
-    if text.is_empty()
-        || text.len() > 1 && text.starts_with('0')
-        || !text.bytes().all(|b| b.is_ascii_digit())
-    {
-        None
-    } else {
-        text.parse().ok()
-    }
-}
-
 fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let usage = || failure("usage", super::options::USAGE);
     if args.len() < 3 {
@@ -148,10 +138,10 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
             Some("--format=json") if !json => json = true,
             Some(s) if s.starts_with("--input=") && format.is_none() => format = Some(&s[8..]),
             Some(s) if s.starts_with("--shots=") && shots.is_none() => {
-                shots = Some(number(&s[8..]).ok_or_else(usage)?)
+                shots = Some(natural(&s[8..]).ok_or_else(usage)?)
             }
             Some(s) if s.starts_with("--seed=") && seed.is_none() => {
-                seed = Some(number(&s[7..]).ok_or_else(usage)?)
+                seed = Some(natural(&s[7..]).ok_or_else(usage)?)
             }
             _ => return Err(usage()),
         }
@@ -183,19 +173,7 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
         "sample" => {
             let seed = seed.unwrap();
             let (samples, steps) = super::samples::collect(&program, shots.unwrap(), seed)?;
-            let records = samples
-                .iter()
-                .map(|s| {
-                    format!(
-                        "{{\"bits\":{:?},\"execution_steps\":{}}}",
-                        s.bits, s.execution_steps
-                    )
-                })
-                .collect::<Vec<_>>()
-                .join(",");
-            return Ok(format!(
-                "{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[{records}],\"execution_steps\":{steps}}}"
-            ));
+            return Ok(samples_json(&samples, seed, steps, ", "));
         }
         "emit-ir" => {
             String::from_utf8(interchange::export(&program, None, Version::V2).map_err(artifact)?)

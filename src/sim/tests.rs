@@ -9,7 +9,10 @@ use crate::contract::{
     BasisType, CheckedContract, Circuit, Contract, DEFAULT_EXACT_WORK, Encoding, FunctionEvidence,
     FunctionIdentity,
 };
-use crate::ir::{BasisShape, BitControl, Effect, QuantumPort, RawProgram};
+use crate::ir::{
+    BasisShape, BitControl, CircuitAction, CircuitStep, Effect, QuantumPort, RawProgram,
+    ScalarPhase, TokenId, UnitaryStep,
+};
 
 fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)

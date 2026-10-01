@@ -89,9 +89,7 @@ def obligations (artifact : Artifact) (request : Request) (pairs : Array Pair) :
 Each basis atom has a constructor tag and at most one numeric parameter.
 Port-array lengths are prepaid by `rowCharge` before this outer-array scan;
 reading a nested array's length does not traverse its elements. -/
-private def equalityFields (side : Side) : Nat :=
-  1 + side.quantum.foldl (fun n p => n + 3 + 2*p.basis.size + p.axes.size) 0 +
-    side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0
+private def equalityFields (side : Side) : Nat := Artifact.sideFields side
 
 /-- `aligned` compares complete headers but does not rerun their quadratic
 uniqueness checks. Keep the old charge as an upper bound: the additional
@@ -126,12 +124,12 @@ does not compare finite bytes or authorize their asserted matrix equality. -/
 def payloadCharge (request : Request) : Except Error Nat :=
   request.meanings.foldlM (fun used m =>
     let next := used + match m.body with | .finite bytes => bytes.size | _ => 0
-    if next > 16777216 then .error Error.limit else .ok next) 0
+    if next > Limits.maxPayloadBytes then .error Error.limit else .ok next) 0
 
 def inspect (artifact : Artifact) (request : Request) (pairs : Array Pair)
     (order : Array Nat) (remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || pairs.isEmpty || pairs.size > 100000 ||
-      request.meanings.isEmpty || request.meanings.size > 100000 then .error .limit else
+  if remaining > Limits.maxVisits || pairs.isEmpty || pairs.size > Limits.maxNodes ||
+      request.meanings.isEmpty || request.meanings.size > Limits.maxNodes then .error .limit else
   let initial := 16 * (pairs.size + request.meanings.size + request.interface.scan)
   if initial > remaining then .error .limit else
   let initial := initial + 16 * request.interface.charge
@@ -148,7 +146,7 @@ def inspect (artifact : Artifact) (request : Request) (pairs : Array Pair)
       | .error e => .error (match e.kind with | .limit => Error.limit | .invalidIr => Error.invalidIr)
       | .ok schedule =>
         let total := used + schedule.stats.visits
-        if total > remaining || payload > 16777216 then .error .limit else
+        if total > remaining || payload > Limits.maxPayloadBytes then .error .limit else
         if !root artifact request pairs || !covered request pairs ||
             !(pairs.all (aligned artifact request pairs)) then .error .contract else
         .ok ⟨total,obligations artifact request pairs⟩
@@ -222,7 +220,7 @@ structure Checked where
 def checkAll (artifact : Artifact) (order : Array Nat) (request : Request)
     (pairs : Array Pair) (pairOrder : Array Nat) : Except Failure Checked := do
   let pending ← Conditional.checkAll artifact order
-  let binding ← match inspect artifact request pairs pairOrder (2000000-pending.state.visits) with
+  let binding ← match inspect artifact request pairs pairOrder (Limits.maxVisits-pending.state.visits) with
     | .error kind => .error ⟨kind,none⟩
     | .ok binding => .ok binding
   return ⟨pending,binding⟩

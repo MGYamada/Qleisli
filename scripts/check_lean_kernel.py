@@ -116,6 +116,11 @@ def source_errors(text: str) -> list[str]:
     return errors
 
 
+def transport_module(name: str) -> bool:
+    """Owned adapters are audited by module origin and forbidden in pure imports."""
+    return name in {"Main", "Protocol"} or name.startswith(("Protocol.", "Cli."))
+
+
 def check_kernel(root: Path) -> tuple[list[str], int]:
     package = root / "lean-kernel"
     errors = []
@@ -129,7 +134,7 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
             for error in source_errors(path.read_text(encoding="utf-8")):
                 errors.append(f"{path.relative_to(root)}: {error}")
             continue  # Separate reduction tests, never an executable import.
-        if not (name in {"QleisliKernel", "Main", "Protocol"}
+        if not (name == "QleisliKernel" or transport_module(name)
                 or name.startswith("QleisliKernel.")):
             errors.append(f"unaudited kernel source module: {name}")
         sources[name] = path
@@ -155,7 +160,7 @@ def check_kernel(root: Path) -> tuple[list[str], int]:
                 return
             errors.append(f"missing or forbidden kernel import: {name}")
             return
-        if not transport and name in {"Main", "Protocol"}:
+        if not transport and transport_module(name):
             errors.append(f"pure kernel imports transport module: {name}")
             return
         for dependency in lean_imports(sources[name].read_text(encoding="utf-8")):

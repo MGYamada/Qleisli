@@ -91,7 +91,7 @@ structure Pending where
 arrays without parsing them; the actual finite checker separately charges that
 work. Whole-artifact preparation additionally enforces aggregate byte limits. -/
 def inspect (artifact : Artifact) (index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match artifact.proofs[index]? with
   | none => .error .invalidIr
   | some proof =>
@@ -106,7 +106,7 @@ def inspect (artifact : Artifact) (index remaining : Nat) : Except Error Pending
     match project artifact index with
     | none => .error .contract
     | some request =>
-      if request.program.size + request.description.size > 16777216 then .error .limit else
+      if request.program.size + request.description.size > Limits.maxPayloadBytes then .error .limit else
       if !conditions artifact request then .error .contract else .ok ⟨request,charge⟩
 
 theorem inspect_conditions (artifact : Artifact) (index remaining : Nat) (pending : Pending)
@@ -153,9 +153,9 @@ theorem inspect_identity (artifact : Artifact) (index remaining : Nat) (pending 
     pending.request.proof.rule = .finite ∧ pending.request.proof.premises.isEmpty = true ∧
     Power.identityEquation artifact pending.request.proof = true ∧
     pending.request.physical.interface = pending.request.logical.interface := by
-  have checked := (inspect_conditions artifact index remaining pending accepted).2.2.2.2.1
-  simp only [conditions,Bool.and_eq_true,beq_iff_eq] at checked
-  exact ⟨checked.1.1.1.1.1.1.1.1,checked.1.1.1.1.1.1.2,
-    checked.1.1.1.1.1.2,checked.1.2⟩
+  obtain ⟨_,_,_,_,checked,_⟩ := inspect_conditions artifact index remaining pending accepted
+  simp only [conditions,Bool.and_eq_true,beq_iff_eq,and_assoc] at checked
+  obtain ⟨rule,_,premises,identity,_,_,_,interface,_⟩ := checked
+  exact ⟨rule,premises,identity,interface⟩
 
 end QleisliKernel.Hierarchical.Finite

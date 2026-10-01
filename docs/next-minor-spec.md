@@ -1,79 +1,18 @@
 # Fixed-width operation parameters and meaning contracts (M1)
 
-Status: **selected on 2026-09-27; fixed-width language slice implemented in
-0.1.8 on 2026-09-28**. This is the normative
-M1 supplement to [current v0](language-spec.md); the finite grammar and older
-special forms retain their contracts. The [implementation/release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md)
-records executed validation and migration. Separate [machine interfaces](machine-interface-spec.md)
-and the [M2 profile](hierarchical-ir-spec.md) retain their own open gates.
-This implementation completes neither M1 as a whole nor G020-3's release gates.
-
-The [0.1.8 authoring supplement](syntax-v0.md#authoring-forms-added-in-product-018)
-allows one basis parameter to decompose a product, so `perm_by`/`phase_by`
-targets can inspect its components without changing their unary interface.
-Since 0.2.0, [tuples retain their immediate arity](tuple-shapes.md), superseding
-the initial left-folding rule. The phase exponent result remains the exact
-right-associated `(Bit,(Bit,Bit))` type specified below; a flat triple is different.
+Normative fixed-width M1 supplement, selected 2026-09-27/implemented 0.1.8. [Language v0](language-spec.md), [static forms](static-operations.md), [machine interfaces](machine-interface-spec.md) and [M2](hierarchical-ir-spec.md) retain separate contracts/gates. Tuple arity/nesting follows [current types](type-system.md); phase result remains (Bit,(Bit, Bit)), not flat triple. Shipping this slice does not complete all M1/G020 gates; [historical migration](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md) records adoption/public changes.
 
 ## Scope, vocabulary and limits
 
-M1 has fixed basis trees `Unit`, `Bit`, and ordered tuples, retaining their
-arity and nesting under the [type contract](type-system.md). A static operation
-description contains no quantum state or runtime classical value. Its semantic
-interface is a phase-fixed unitary on one `Q<A>`, including zero-width ownership.
-It carries a logical meaning and separately justified implementation access.
-Operation descriptions may be copied at compile time; quantum owners may not.
-`Op` is a static parameter category, not a runtime ownership/effect type.
+Static Op is a copyable compile-time description of phase-fixed unary unitary Q<A>→Q<A>, including zero owners, carrying meaning and separately checked access; no quantum/classical runtime capture. Fixed Unit/Bit/ordered tuples only. Forms add no sealed gate/new effect/runtime closure/general builder/size API. Existing computed contracts remain.
 
-All new spellings below are **language forms**, including meaning declarations,
-static parameters/arguments, access constraints and static constructors. There
-is no new sealed physical gate or ordinary-library function in this slice.
-The existing gate library and both computed forms retain their contracts.
-General builders returning operations, runtime closures, size parameters,
-new effects and public capability wrapper types are excluded.
-
-The new operation/meaning profile permits 0–6 interface bits, at most 1,024
-steps per materialized contract circuit and the existing exact work budget of
-10,000,000. Since 0.2.0, one exact budget is shared across the entire compilation,
-including meaning construction, provider/contract checks, transformed circuits
-and final IR verification. It is not reset per static argument, even when the
-callee has no access constraint and never applies that argument. Exhaustion
-rejects the compilation with `limit`. This aggregate policy is a breaking
-capacity change from 0.1.9. Control/tensor count their entire resulting interface against six
-bits. Static repetitions accept 0–4,096. Type/syntax depth remains 64 and type
-trees at most 4,096 nodes. New specialization is limited to 256 distinct
-instances per project, depth 64 and 1,000,000 aggregate lowering work units.
-AST visits, emitted circuit steps and the other copied representations listed
-in the [frontend limits](frontend-v0.md) consume this shared budget.
-
-**Source retention, corrected in 0.1.9:** the original M1 text omitted the
-0.1.8 implementation's repeated source-byte copy/charge for each distinct
-provider binding and `apply_contract` pair. The frontend now shares one frozen
-full-project snapshot between both paths and charges its source bytes once,
-before copying. It retains all loaded modules, comments and bundled std;
-the existing evidence metadata profile is preflighted before allocation and
-independently checked for every receipt. Per-pair raw/name work under
-[FC-CACHE](function-contracts-v0.1.md), per-receipt exact checking, specialization
-limits and all other work charges remain. Public identity inspection keeps its
-owned API through a bounded lazy compatibility view. The
-[F2 resolution](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/reviews/b019-f2-resolution.md) records the compatible repair,
-source/dependency binding and the 100 KB/256-provider experiment. These finite
-limits still apply together; 256 is a specialization cap, not an unconditional
-capacity promise for arbitrary programs.
-Within the exact budget, immutable shared source storage is charged once per
-allocation, with a retained strong reference preventing address reuse. Every
-receipt still checks all metadata limits, name/path work and semantic equations.
-Public owned identity checking keeps its full per-identity byte charge. Powers
-use exact repeated squaring; they retain phase and never approximate equality.
-Non-generic static transforms also use the aggregate exact budget and the
-[finite independent comparison](static-operations.md#phase-preserving-finite-ir).
-Budget exhaustion diagnoses `limit`, never changes semantics or omits checks.
+Caps: 0–6 bits, contract circuit 1024 steps, repeat 0–4096, type/syntax depth 64, type4096 nodes, 256 distinct project specializations/depth 64, aggregate lowering 1M. Control/tensor entire interface counts. Shared exact 10M covers meaning/provider/contract/transforms/final verifier, even unused arguments; no per-callee reset, limit on exhaustion. One frozen full-project snapshot includes every loaded module/comments/std; charge once before copy, retain strong reference preventing allocation identity reuse. Metadata/name/path/pair work and exact equations still checked for every receipt; public owned identity retains full byte charge. Shared storage gives no unconditional 256-provider capacity. Powers exact repeated squaring. [Frontend limits](frontend-v0.md)/[FC-CACHE](function-contracts-v0.1.md) govern all copied/lowered work.
 
 ## Grammar and resolution
 
-Extend the [v0 lexical and grammar rules](syntax-v0.md) as follows. `Name` is
-an imported or local declaration name, not a qualified expression. No trailing
-commas are accepted. `Nat` is decimal with no leading zero except `0`.
+Grammar below extends v0. Name means local/imported declaration, no qualified expression; Nat decimal no leading zero except 0, no trailing comma. QuantumDecl includes pub once. Static/runtime parameter names share namespace; descriptors appear only static operands or unary callees, never runtime let/tuple/result/basis expression. Reserve all literal form/constraint names shown. Meaning/function namespace and import visibility shared; meaning names one ordinary total basis function, not another meaning/parameter.
+
+Explicit arguments in declaration order, no inference. Evaluate runtime arguments left-to-right/pending owners first, then static callee/args in residual scope. Live/spent local bindings shadow globals/static parameters; no resurrection. Header access resolves before body. Check all declarations/zero bodies; provider call graph acyclic. Existing adjoint/repeat_static/qif name operands additionally admit static parameter names, not constructor expressions. Pass constructed operations through brackets. apply_contract/with_computed name/cleanup rules unchanged.
 
 ```ebnf
 Decl          ::= ... | "pub"? "meaning" Ident ":" BasisType "=" Meaning ";"
@@ -95,42 +34,11 @@ StaticArgs    ::= "[" StaticOp ("," StaticOp)* "]"
 Call          ::= Name StaticArgs? "(" Args? ")"
 ```
 
-The `pub` in `QuantumDecl` above denotes the existing declaration modifier once,
-not a second optional modifier inside `Decl`. `Kind` and runtime types remain v0.
-Static parameter names share the local name namespace with runtime parameters;
-duplicates are rejected. Static descriptions cannot occur as runtime results,
-tuple elements, `let` values or basis expressions. A static parameter is only
-usable as a static operand or as the callee of one quantum argument.
-
-New reserved words are `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`,
-`Controlled`, `permutation_by`, `phase_by`, `bind_op`, `inverse_op`, `then_op`,
-`tensor_op`, `controlled_op`, `repeat_op`, and `conjugate_op`. Imports/visibility
-of meanings use the same declaration rules as functions. Meanings and functions
-share the module namespace. A meaning cannot refer to another meaning or an
-operation parameter in this profile; it names an ordinary total basis function.
-Static constructors are only parsed in `StaticOp` positions.
-
-Generic calls require explicit arguments in declaration order. There is no
-inference from runtime values. Evaluate runtime arguments left to right with
-the v0 pending-owner rules, then resolve the static callee and arguments in the
-residual lexical environment. Live and spent local bindings shadow global
-declarations, as for current static forms. Static parameters are immutable;
-a local binding may shadow one but cannot later resurrect it within that scope.
-Static constraint names resolve in the declaration header, before the body.
-All declarations are checked, including unused bodies and zero-repeat bodies.
-The call graph, including static provider dependencies, must be acyclic.
-
-`adjoint`, `repeat_static` and the two arms of `qif` additionally accept a
-static parameter name wherever they accept a unitary name today. A constructed
-operation can be passed to a helper's bracket arguments first; these old forms
-do not gain arbitrary expression operands. `apply_contract` and both
-`with_computed` forms retain their existing name operands and exact rules.
-
 ## Meanings and binding
 
-For a declared exact basis tree A, flatten bit leaves left to right with the
-first leaf least significant, preserving Unit nodes in the type identity.
-The meanings are:
+Flatten Bit leaves left-to-right, first low bit, preserving complete tree/Unit identity. Targets below require ordinary unary basis functions and exhaustive bounded tables; permutations total/bijective, phase total right-associated triple, modulo 8. Reject missing/colliding outputs, wrong trees/equal-width coercion/floats/equality modulo scalar. Unit scalar remains observable under control.
+
+`bind_op(u,m)` requires closed ordinary declared unitary with exact Q<A> signature, fresh verified lowering/exact ordered operator equality. Bind full meaning/tree/raw IR/ports/source/dependency DAG; changing any dependency invalidates. Names/digests/cache claims grant no evidence. Plain transparent provider derives its meaning from verified circuit; bind_op adds independent target. Op<A, m> requires exact fixed meaning; Op<A> parameterizes argument phase-fixed meaning. No phase/layout/encoding/access coercion. Scratch only through existing exact zero-entry/exit certificates and full external frame.
 
 ```text
 permutation_by(f): f : A -> A is total and bijective
@@ -139,51 +47,13 @@ phase_by(phi):     phi : A -> (Bit,(Bit,Bit)) is total
                   D_phi |x> = zeta_8^(b0 + 2*b1 + 4*b2) |x>
 ```
 
-Both operands must be ordinary `basis fn` declarations with exactly one
-parameter. Exhaustively check their finite tables in M1. Duplicate permutation
-outputs, missing values or a mismatched exact type tree are errors; equal bit
-counts are insufficient. Phases reduce modulo eight. This introduces no new
-runtime integer/phase type. Constant phase on `Unit` is observable under control
-and must be retained. Arbitrary floats and equality modulo global phase are
-rejected. These are mathematical target descriptions independent of the
-implementation's circuit.
-
-`bind_op(u,m)` requires an ordinary, closed declared unitary with the exact
-signature `Q<A> -> Q<A>` and a meaning m on A. Lower and independently verify u,
-extract its ordered operator using the existing finite contract boundary, and
-check **exact** equality to m. The checked record binds the full meaning table,
-type tree, implementation raw IR, port order, source bytes and dependency DAG.
-It is not authorized by a name, digest, compiler cache entry or provider claim.
-Changing any dependency invalidates the record. A plain unitary name as a
-static argument uses its independently extracted circuit as its meaning;
-use `bind_op` when the caller requires an independent mathematical target.
-
-`Op<A,m>` restricts the operation to the fixed declared meaning m; `Op<A>`
-quantifies over a phase-fixed meaning supplied by its argument. A constrained
-parameter cannot be substituted solely because its provider is unitary.
-Provider substitution requires identical tree and exact meaning. No implicit
-coercion changes phase, layout, encoding or access. Private scratch is admitted
-only through the current verified computed certificates, with zero entry/exit
-and the complete external interface retained.
-
 ## Access judgments and composition
 
-A generic body is checked against **only its declared access constraints**.
-`Op` alone supplies no executable access. Constraints have no implicit
-entailments for **direct access to U**: `Controlled(U)` does not permit `U(q)`
-or `adjoint(U,q)`. The constructor table below separately derives
-Apply/Adjoint/Controlled for `controlled_op(U)` and Controlled for
-`inverse_op(U)` from `Controlled(U)`. A helper can therefore use a derived
-controlled inverse with its control in `|1>` to apply u†. This is accepted M1
-behavior, recorded by [A020-09](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-09--controlled-access-can-derive-inverse-access-through-constructors),
-not independence under arbitrary constructor composition.
-M1 transparent providers can supply all three after independent
-extraction and verification of the derived circuits; that does not prove that
-every abstract unitary has accessible control/inverse. Opaque external providers
-are excluded from M1. Every requested derived circuit must fit the profile.
+Body uses only declared direct access: Controlled(U) alone permits neither U(q) nor adjoint(U, q). Constructor-derived controlled/inverse circuit access in table remains accepted M1; transparent actual verified circuits supply transforms, opaque providers excluded. Tightening these supported derivations requires MINOR. Every derived circuit fits caps. Constructor operands/premises checked even when result cancels or repeat 0. Failed extraction is unsupported, never assumed unitary access.
 
-For descriptions U,V with meanings u,v, the following rules construct checked
-descriptions. Execution order for `then_op(U,V)` is U then V.
+Table gives meanings and capabilities. Controlled coordinates c+2x, first control low bit; regrouping P|c+2x>=|c*d+x> gives C=P†diag(I, u)P. X table [0, 3, 2, 1], high-control [0, 1, 3, 2] wrong; Unit scalar yields diag(1,ζ8^k). Extend to arbitrary references. Controlled conjugation executes V†, controlledW, V with distinct control; whole-space V/matching phase-fixed inverse required, encoded range needs its separate entry/exit proof.
+
+Parameter call consumes/returns one Q<A>, unitary joined with argument effect. adjoint needs Adjoint; repeat Apply; qif Controlled for both arms/disjoint owners. Generic declared effect stays visible at every call/zero body. Generic iso/observe may call operations; providers themselves unary declared unitary.
 
 | Constructor | Meaning/interface | Access required for Apply; for Adjoint; for Controlled |
 | --- | --- | --- |
@@ -194,55 +64,14 @@ descriptions. Execution order for `then_op(U,V)` is U then V.
 | `repeat_op(n,U)` | u^n on A | Corresponding access to U even when n=0; checked count and repetition |
 | `conjugate_op(V,W)` | v w v† on identical A | Apply/Adjoint(V) and Apply(W); Apply/Adjoint(V) and Adjoint(W); Apply/Adjoint(V) and Controlled(W) |
 
-For `controlled_op`, let d=2^bits(A), c be the control bit, and 0≤x<d the
-target label. In the [existing integer basis order](static-semantics.md#1-scope-and-coordinates),
-the pair (c,x) has index c+2x. Define the phase-fixed controlled operator by
-
 ```text
 C(u) |0+2x> = |0+2x>
 C(u) |1+2x> = sum_y u[y,x] |1+2y>.
 ```
 
-The block matrix diag(I_d,u) applies only after regrouping the basis by control:
-with P|c+2x>=|c*d+x>, C(u)=P† diag(I_d,u) P. It is not the matrix in integer
-index order before that permutation. For A=Bit and u=X, the output-label table
-is `[0,3,2,1]`; `[0,1,3,2]` controls the higher bit and is rejected. For A=Unit,
-d=1, so a scalar u=zeta_8^k gives diag(1,zeta_8^k); the active control sector
-retains the scalar phase. This definition extends linearly and with identity
-on any reference system, without an assumption of separable input.
-
-“That checked circuit” means the actual retained transparent implementation
-and evidence, never an opaque access assertion. Transforming it invokes the
-finite structural inverse/control checker and exact comparison, including its
-phase; failure to extract it is `unsupported`. Constructors check all operands
-even when a result cancels mathematically. Identity result never erases an
-unavailable premise or malformed dependency.
-
-In particular, the inverse-of-controlled entries rely on access to the actual
-verified transparent circuit. They must not be inherited by a future opaque
-provider profile solely from `Controlled(U)`. Such a profile needs its own
-capability rules and compatibility decision; tightening current M1 derivations
-would reject supported programs and requires a MINOR migration.
-
-The controlled conjugation executes V†, then controlled W, then V, with the
-control excluded from V's ports. Its inactive sector is v v†=I, and active
-sector v w v†; the equality holds with an arbitrary reference. V must be a
-whole-space unitary, not merely an isometry, and use its matching phase-fixed
-inverse. For an encoded compute/uncompute construction, prove the analogous
-equation on the admitted zero-scratch encoding and retain the entry/exit
-certificate; the whole-space rule cannot invent that premise.
-
-Calling a static parameter consumes exactly one `Q<A>` and returns one `Q<A>`,
-with own effect Unitary joined with argument effects. `adjoint(U,q)` requires
-Adjoint(U); repeating U requires Apply(U); `qif` requires Controlled on both
-arms and disjoint control/target ownership. A generic declaration's declared
-effect is still the public effect at all calls, including unused/zero-repeat
-cases. Generic `iso`/`observe` functions may call operations; an operation
-provider itself must satisfy the unary unitary signature above.
-
 ## Accepted and rejected examples
 
-Runnable examples in 0.1.8 (not accepted by 0.1.7):
+Executable provider/client examples below retain independently fixed Z and result exact I, subject to budgets. Rejections require the listed versioned categories and located operation/constraint/provider/conflicting declaration; internal matrices need not be displayed.
 
 ```qli
 use std::quantum::z;
@@ -264,9 +93,6 @@ unitary fn second(q: Q<Bit>) -> Q<Bit> {
 }
 ```
 
-Both clients use the same checked body and independently fixed Z meaning;
-the result is I with exact phase. Acceptance still depends on budgets.
-
 | Rejection case | Required diagnostic category and reason |
 | --- | --- |
 | Replace direct_z by X or by minus-Z | `contract`: different operator or exact phase |
@@ -280,53 +106,15 @@ the result is I with exact phase. Acceptance still depends on budgets.
 | Unavailable access in a zero repetition or unreachable branch | `capability`: every branch/body is checked |
 | Stale dependency, different output axes, or edited meaning | `contract`: record/binding mismatch, never a cache hit |
 
-These new categories are mapped to the [versioned diagnostic interface](machine-interface-spec.md#diagnostics).
-Human diagnostics must also locate the operation/constraint and relate the
-provider or conflicting declaration. They need not expose internal matrices.
-
 ## Lowering and compatibility
 
-First type/effect/ownership-check each generic body parametrically, deriving
-its meaning composition and access obligations. Then specialize explicit
-static arguments under a cache keyed by the full immutable binding, not just
-function names. Check every instantiated cleanup/contract numerically **with
-exact arithmetic** in this bounded M1 profile. Uninstantiated parametric
-cleanup obligations cannot authorize execution; they are discharged for each
-instance. No symbolic all-size theorem is claimed.
+Check generic type/effect/ownership/composition using abstract operations and declared access, then explicit specialization keyed by full immutable binding. Resource-only identity placeholders issue no executable evidence. Concrete specialization rebuilds/checks every exact cleanup equation, including zero/unselected source bodies; uninstantiated obligations authorize nothing. Project registry counts bindings, each call expansion still charges work.
 
-Lower static calls to finite `ApplyUnitary` circuits retaining semantic
-evidence. **Implementation refinement, 2026-09-28:** `FiniteMeaning` lowers its
-complete target to canonical monomial raw IR; `MeaningEvidence` checks that
-target against the implementation through existing `FunctionEvidence`. The
-private checked receipt retains both full raw programs, exact type tree and
-source/dependency identity. Final IR uses existing `CircuitAction::Contract`
-and the independent verifier checks its binding. The proposed new core action
-is unnecessary: no irreducible obligation requires a new acceptance rule.
-Existing raw-IR/evidence consumers need no migration or adapter replacement.
-The public AST, tokens and frontend diagnostic variants do require the
-[documented migration](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.8.md#compatibility-and-migration).
-Portable interchange remains unimplemented under its separate specification.
-
-Each generic body is checked with abstract operations and only declared access.
-Disposable identity placeholders support resource checking but never produce
-an executable generic program or evidence. Three-argument computed equations
-inside that check remain obligations: concrete specialization rebuilds the
-body and verifies every exact equation, including zero-count and unselected
-source branches. No uninstantiated cleanup claim authorizes execution.
-A per-project registry counts full immutable concrete bindings; lowering still
-expands each call and charges its work rather than caching unchecked output.
-
-Existing named-function cases of all five static/contract language forms keep
-their evaluation order, local/spent-name shadowing, effects, phase, tree and
-zero-count checks. Computed forms keep their different cleanup premises.
-No keyword becomes an ordinary function. Existing programs need only rename
-identifiers colliding with the newly reserved words when migrating to this
-extension. Old public Rust AST/token/error matches must handle the documented
-additions; core IR matches remain unchanged. New source-capacity defaults have an explicit legacy override in
-the machine-interface specification; they remain unimplemented and do not
-apply in 0.1.8.
+FiniteMeaning lowers independent target to canonical monomial raw IR; MeaningEvidence uses existing FunctionEvidence, retaining both programs/full tree/source/dependencies. Final CircuitAction:: Contract binding is independently checked; no new core action. Existing IR consumers unchanged; public AST/tokens/diagnostics need the documented 0.1.8 migration. Old static forms keep evaluation/shadowing/effects/phase/tree/zero checks, computed forms their distinct premises. Portable QIRF now follows [its separate contract](machine-interface-spec.md); proposed future capacity overrides do not apply implicitly.
 
 ## Implementation acceptance matrix
+
+N1–N6 are slice acceptance requirements; executed results live in retained release/fixture records. G020-2 shipping implementation and G020-3 validation/ledger remain separate from adoption; no symbolic all-size/source adequacy theorem is asserted.
 
 | Gate | Required evidence (implementation validation in the release record) |
 | --- | --- |
@@ -336,8 +124,3 @@ apply in 0.1.8.
 | N4 ownership/effects | Preserve pending frames, entangled references, Q<Unit>, declared effects and all old computed/static rejection cases. |
 | N5 binding/limits | Feed independently mutated target/receipt attachments directly to the verifier; enforce exact arithmetic/work/width/instance limits without recursion or unchecked allocations. |
 | N6 reuse/migration | Compile and execute the two providers above through one unchanged client; exercise the canonical target/existing-receipt adapter, retain old CLI behavior, and document reserved-name/public API migration. |
-
-G020-2 requires implementation of the selected shipping slice and G020-3 its
-matrix, Rust/Lean/release checks and evidence ledger. These are **acceptance
-requirements**; dated executed results belong to the implementation/release
-record, not the original documentation-only adoption.

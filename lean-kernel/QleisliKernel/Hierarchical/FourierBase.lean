@@ -85,7 +85,7 @@ def shape (s : FourierStage.Step) : Bool :=
   FourierStage.shape 0 s && FourierStage.identity s.child
 
 def inspect (artifact : Artifact) (index remaining : Nat) : Except Error FourierStage.Pending :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match project artifact index with
   | none => .error .contract
   | some s =>

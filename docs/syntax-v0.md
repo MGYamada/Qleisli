@@ -350,7 +350,7 @@ checking enforce this restriction after parsing, as specified below.
   `with_computed` is a statically resolved **basis-function name**, not a runtime
   function value. In the finite semantic-contract extension, the third
   operand is an eligible unitary function name (ordinary or sealed H/X/Z/T), also resolved statically
-  and included in the acyclic dependency graph. The [name rules](source-typing-rules.md#2-names-declarations-and-project-acceptance)
+  and included in the acyclic dependency graph. The [name rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md#2-names-declarations-and-project-acceptance)
   specify when local names hide each kind of callable.
 - Parameters and `let` bindings have lexical scope. In `let q = h(q);`, the
   right-hand side consumes the old `q` before the new `q` enters scope.
@@ -380,7 +380,7 @@ checking enforce this restriction after parsing, as specified below.
   body. The source register is protected and inaccessible there, as are other
   outer quantum values; outer classical values remain usable. The body's final
   expression must return the updated ownership of that auxiliary. The
-  [computed-scope rule](source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
+  [computed-scope rule](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
   masks outer linear bindings into a private frame before introducing `a`.
   The auxiliary may have the same spelling as a masked outer name without
   consuming or exposing that outer resource.
@@ -493,9 +493,9 @@ or execution; the compilation and execution regressions are recorded in the
 ### Proof status and subsequent specifications
 
 The grammar, precedence, finite type rules, and branch interfaces are fixed
-for v0. The [resource calculus](source-resource-rules.md) and
-[typing supplement](source-typing-rules.md) give explicit rules, and
-[Q1–Q3](source-soundness.md) establishes paper ideal soundness for those
+for v0. The [resource calculus](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md) and
+[typing supplement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) give explicit rules, and
+[Q1–Q3](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-soundness.md) establishes paper ideal soundness for those
 mathematical derivations. Their adequacy for every Rust acceptance path and
 general source-to-IR meaning preservation remain
 [Stage 1 obligations](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). General preservation effects
@@ -505,5 +505,5 @@ certificate. The three-argument extension has the separately specified
 [SC evidence rules](semantic-contracts-v0.1.md). Together with the
 [retained function-contract path](function-contracts-v0.1.md), it meets the
 declared finite V01-C1–C6 profile. General implementation proofs and the v1
-algorithm-structure target remain open. The [language evolution framework](language-evolution.md)
+algorithm-structure target remain open. The [language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md)
 organizes future design notation without adding forms to this grammar.

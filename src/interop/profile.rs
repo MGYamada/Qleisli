@@ -205,7 +205,10 @@ impl TerminalCircuit {
     }
 }
 
-fn recognize(step: &CircuitStep, wires: &[usize]) -> Result<(Gate, Vec<usize>), InteropError> {
+pub(super) fn recognize(
+    step: &CircuitStep,
+    wires: &[usize],
+) -> Result<(Gate, Vec<usize>), InteropError> {
     let mut axes = Vec::new();
     for control in &step.controls {
         if !control.when_one {
@@ -275,6 +278,7 @@ pub(super) fn extract(program: &VerifiedProgram) -> Result<TerminalCircuit, Inte
         measurements: vec![],
     };
     let mut owners = BTreeMap::<TokenId, Vec<usize>>::new();
+    let mut scratch = Vec::new();
     let mut measured = BTreeMap::new();
     let mut observed = false;
     for (index, op) in raw.operations.iter().enumerate() {
@@ -363,11 +367,19 @@ pub(super) fn extract(program: &VerifiedProgram) -> Result<TerminalCircuit, Inte
                     steps,
                 } => {
                     let wires = owners.remove(input).expect("verified owner");
-                    for step in steps {
-                        let (gate, args) = recognize(step, &wires)?;
-                        circuit.push(gate, args)?;
-                    }
+                    super::export::steps(&mut circuit, &mut scratch, steps, &wires)?;
                     owners.insert(*output, wires);
+                }
+                RawOp::LiftBasis {
+                    input,
+                    output,
+                    output_wires,
+                    table,
+                } => {
+                    let wires = owners.remove(input).expect("verified owner");
+                    let axes =
+                        super::export::axis_permutation(table, wires.len(), output_wires.len())?;
+                    owners.insert(*output, axes.into_iter().map(|axis| wires[axis]).collect());
                 }
                 RawOp::MeasureZ { input, output } => {
                     observed = true;
@@ -402,6 +414,7 @@ pub(super) fn extract(program: &VerifiedProgram) -> Result<TerminalCircuit, Inte
                 .ok_or_else(|| InteropError::unsupported("output must be a measured bit"))?,
         );
     }
+    super::export::fold_phases(&mut circuit);
     Ok(circuit)
 }
 

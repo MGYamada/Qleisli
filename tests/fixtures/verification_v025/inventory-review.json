@@ -1,0 +1,59 @@
+{
+  "format": "qleisli.vm25-inventory-review",
+  "version": 1,
+  "refreshed_sources": [
+    {
+      "path": "lean-kernel/Protocol.lean",
+      "before": "f1d8afc3ee8c87a392de83c50a375b9c978a3c87ccee07ede1a973f64574ccc2",
+      "after": "30e1e7950aa7c3c491398c98d08aba9ad3ae8208e048c67ebd7e6ac4c3272485"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel.lean",
+      "before": "30a45b02ea4059cda87ebd82c0d2b4d3509c939c8f1db81d1dcad7df1ebeb57a",
+      "after": "9e9611e91168f1ea0d5e1d2c3c7228dce81e7da11117cca48c73ec2768f8d7f9"
+    },
+    {
+      "path": "lean-kernel/Tests.lean",
+      "before": "db9d311f773e3d1ddb71080fdef1593ab436e4c6481507ae4c1674fcf7e86130",
+      "after": "a45eb13cc4f90299395223b4c8a5e369d07a3091c3801ae1ce9f8dff0440403b"
+    }
+  ],
+  "added_sources": [
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean",
+    "lean-kernel/Protocol/Raw.lean",
+    "lean/Qleisli/Raw.lean",
+    "scripts/test_lean_raw.py"
+  ],
+  "public_surfaces": "unchanged; additive experimental Lean component",
+  "frozen_comparison_files": "unchanged",
+  "late_preflight_review": [
+    {
+      "path": "lean-kernel/Tests.lean",
+      "before": "a45eb13cc4f90299395223b4c8a5e369d07a3091c3801ae1ce9f8dff0440403b",
+      "after": "6ef9a114f751a943a4fc28630b0a06f96d05843a92871709bb376625a1c7c086"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Raw.lean",
+      "before": "b71e533b991a990322f6f37d199d0379e0f4581ef9e290f578d44f81129782e3",
+      "after": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Structure.lean",
+      "before": "9c656a79babf01d9f77e7a8d5c1f0cdabd361e215d4640d07fc021740a6546d7",
+      "after": "2e431a95a1cb871931a24c68834242abbc3c833fdbcf6d29d210e9105df6e24c"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Finite.lean",
+      "before": "f99893e54218bb4bf3f68f058383dfc5635420bd4837a62d18becff803f76446",
+      "after": "f2c73042502b2fec1bf7b84da7175808f27ac5b2564ec6e47d8176369f8ac8bd"
+    }
+  ],
+  "source_provenance_review": {
+    "change": "Pin actual corpus and bundled-library sources and manifests independently of optional embedded QIRF source metadata.",
+    "script_sha256": "f49ed83317d5b27d7c89ad086dd6953848c5326593610274d4c7384db4918eb5",
+    "native_cases_replayed": 121,
+    "frozen_vm22_comparison_files": "unchanged"
+  }
+}

@@ -13,7 +13,8 @@ pub(super) const USAGE: &str = "usage:
   qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]
   interop always returns JSON; qli input takes a project directory.
-source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits
+source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate
+  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   --legacy-source-limits cannot be combined with explicit byte limits.
   --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
@@ -27,9 +28,11 @@ pub(super) struct Options {
     pub seed: Option<u64>,
     pub output: Option<PathBuf>,
     pub against: Option<PathBuf>,
+    pub qrate: bool,
 }
 
-fn number(text: &str) -> Option<u64> {
+/// Canonical unsigned decimal spelling; the caller supplies its range and type.
+pub(super) fn natural<T: std::str::FromStr>(text: &str) -> Option<T> {
     if text.is_empty()
         || !text.bytes().all(|b| b.is_ascii_digit())
         || text.len() > 1 && text.starts_with('0')
@@ -46,21 +49,23 @@ impl Options {
         let (mut format, mut legacy) = (false, false);
         let (mut source, mut project, mut shots, mut seed) = (None, None, None, None);
         let (mut output, mut against) = (None, None);
+        let mut qrate = false;
         for arg in args {
             match arg.to_str() {
                 Some("--format=json") if json && !format => format = true,
                 Some("--legacy-source-limits") if !legacy => legacy = true,
+                Some("--qrate") if !qrate => qrate = true,
                 Some(s) if s.starts_with("--source-bytes=") && source.is_none() => {
-                    source = Some(number(&s[15..])?)
+                    source = Some(natural(&s[15..])?)
                 }
                 Some(s) if s.starts_with("--project-bytes=") && project.is_none() => {
-                    project = Some(number(&s[16..])?)
+                    project = Some(natural(&s[16..])?)
                 }
                 Some(s) if s.starts_with("--shots=") && shots.is_none() => {
-                    shots = Some(number(&s[8..])?)
+                    shots = Some(natural(&s[8..])?)
                 }
                 Some(s) if s.starts_with("--seed=") && seed.is_none() => {
-                    seed = Some(number(&s[7..])?)
+                    seed = Some(natural(&s[7..])?)
                 }
                 Some(s) if s.starts_with("--output=") && output.is_none() && s.len() > 9 => {
                     output = Some(PathBuf::from(&s[9..]));
@@ -85,6 +90,7 @@ impl Options {
             || command != "verify-ir" && against.is_some()
             || matches!(command, "emit-ir" | "verify-ir") && (shots.is_some() || seed.is_some())
             || command == "verify-ir" && (legacy || source.is_some() || project.is_some())
+            || matches!(command, "verify-ir" | "doc") && qrate
         {
             return None;
         }
@@ -111,6 +117,7 @@ impl Options {
             seed,
             output,
             against,
+            qrate,
         })
     }
 }

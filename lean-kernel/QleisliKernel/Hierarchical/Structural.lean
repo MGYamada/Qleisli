@@ -106,7 +106,7 @@ structure Checked where
   deriving Repr
 
 def check (operation : StructuralOp) (interface : Interface) (remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 || scanCharge interface > remaining then .error .limit
+  if remaining > Limits.maxVisits || scanCharge interface > remaining then .error .limit
   else if workCharge interface > remaining then .error .limit
   else if !valid operation interface then .error .invalidIr
   else .ok ⟨workCharge interface⟩
