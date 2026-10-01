@@ -78,6 +78,16 @@ and require rechecking. Reverification of resource-valid IR alone does not
 establish equality to the original meaning. LLVM optimization cannot inherit
 a Qleisli proof merely because metadata or a digest survived.
 
+The current finite IR includes semantic tables and compute scopes. Its
+OpenQASM terminal exporter is a restricted profile; Bell's injective `[0,3]`
+lift and general algorithm examples require decomposition before export.
+[Issue 132](https://github.com/MGYamada/Qleisli/issues/132) specifies a v0.4.0
+experiment: untrusted LiftBasis NCT synthesis, independently checked table and
+clean-workspace realization, exact phase and resource/layout binding. Parity
+can reject a same-wire NCT proposal while the source remains a valid unitary.
+It cannot decide general target realizability. Unsupported IR continues to
+reject; this review does not claim that all examples now export.
+
 ## IR reduction and the trusted boundary
 
 On 2026-09-28 the user also selected reduction of the existing IR and adopted
@@ -292,123 +302,19 @@ Before selecting dependencies, check licenses, binary redistribution notices
 and the existing Rust 1.85 minimum; any required toolchain change needs an
 explicit compatibility decision.
 
-## Primary references inspected on 2026-09-28
+## External semantic references
 
-- [QIR specification](https://github.com/qir-alliance/qir-spec) represents quantum
-  programs in LLVM IR. Its [Base Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Base_Profile.md)
-  separates the execution profile from the QIS and describes terminal measurements
-  and output recording. The current main-branch text uses QIR v2 opaque pointers;
-  an implementation must pin the actual revision, not rely on the moving branch.
-- [Adaptive Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Adaptive_Profile.md)
-  describes mid-circuit measurement, feedback and further optional capabilities.
-  Its measured-qubit reuse is a concrete translation obligation above.
-- [OpenQASM 3.1 quantum instructions](https://openqasm.com/versions/3.1/language/insts.html)
-  and [gate modifiers/global phase](https://openqasm.com/versions/3.1/language/gates.html)
-  supply the external semantic reference. M1.1-A selects a common 3.0/3.1 terminal subset with explicit initialization;
-  it is not full OpenQASM 3.1 support.
-- [PyQIR](https://github.com/qir-alliance/pyqir) supplies QIR APIs;
-  [PyO3 distribution guidance](https://pyo3.rs/v0.29.2/building-and-distribution.html)
-  describes packaging native Python extensions. These are candidates to evaluate,
-  not dependencies installed or versions selected by this design change.
+- [QIR specification](https://github.com/qir-alliance/qir-spec),
+  [Base Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Base_Profile.md)
+  and [Adaptive Profile](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Adaptive_Profile.md).
+  Pin the actual revision when implementing a target; measured-qubit reuse must
+  satisfy the ownership/translation obligations above.
+- OpenQASM 3.1 [quantum instructions](https://openqasm.com/versions/3.1/language/insts.html)
+  and [gate modifiers/global phase](https://openqasm.com/versions/3.1/language/gates.html).
+  M1.1-A supports a terminal common 3.0/3.1 subset with explicit initialization.
 
-The [Fourier request host](hierarchical-ir-spec.md#fourier-request-host) now
-connects the shared native QFT fixture producer and strict external request
-codec to one composite Lean checker and fresh Rust exact H reconstruction.
-Its named meaning is restricted to the published closed `Bits<n>` boundary.
-It adds no public IR variant or primitive, removes no Rust rule, and issues no
-production `VerifiedProgram`. Ordinary sized `.qli` lowering, remaining
-hierarchy/instrument cases and native/reader correspondence remain integration
-debt; external schema IDs and TP-005 API migration remain separate gates.
-
-The [interference continuation](../lean/Qleisli/Interference.lean) adds an internal
-proved transformation and complex interpretation, with a generated native test
-producer. It introduces no further wire protocol or standalone acceptance
-variant, removes no Rust rule and does not yet supply a `.qli` hierarchical
-producer. Its amplitude equalities become usable checking premises only when
-original typed nodes and evidence bindings are validated by a later integration.
-
-The [QFT circuit proof](../lean/Qleisli/Qft.lean) likewise has an internal
-matcher and generated native fixture producer. It adds no external protocol,
-production Rust acceptance rule or `.qli` hierarchy producer. Its source-level
-round trip and deliberate wrong reversal are finite regression clients. Typed
-ports, actual graph dependencies and the shipped theorem registry must bind
-the matched circuit before an external schema can use this theorem.
-
-The [typed shared QFT projection](../lean/Qleisli/QftGraph.lean) now binds complete
-internal interfaces and dependencies to literal graph/Fourier semantics. It
-retains a generated native producer and has no `.qli` hierarchical producer
-or external decoder yet. A physical data permutation is separate from owner
-metadata renaming. The external finite-leaf/control/rewire projection and fixed
-registry remain debt to close before this component can issue external evidence.
-
-The [typed artifact preparer](hierarchical-ir-spec.md#typed-artifact-preparation)
-now represents every adopted node and derives references from actual fields,
-with exact proof endpoint binding and a shared-budget graph pass. Its producer
-is the retained native fixture generator. There is still no `.qli` producer or
-public hierarchical decoder; no variant issues semantic evidence. Finite-leaf
-reconstruction, derivations and independent request binding must
-close this integration debt before production use. This preparatory component
-does not remove a Rust acceptance rule or reduce the existing trusted base.
-The same fixture producer exercises the complete side-map checker and its
-reference round-trip theorem. This adds no wire variant; the enclosing node
-checker now binds both call sides, checks fresh names and charges the returned
-work. Its fixture producer tests the actual definition-node pass, which proves
-every definition was structurally checked, including zero-repeat bodies. This
-still supplies no semantic evidence handle or external decoder; finite leaves,
-mathematical meaning/encoding equations, proof derivation and independent requests remain debt.
-The meaning/encoding structural pass is now integrated with that node pass and
-has actual whole-table coverage/budget theorems. It still has only the generated
-fixture producer; opaque finite descriptions are not verified by their headers.
-The explicit `structural` definition/meaning variant now covers checked
-Bits/Bit, immediate tuple and empty-owner conversions with actual inverse
-routing proofs. Its only producer is the native fixture generator; source
-lowering, equation/encoding binding and execution are open integration debt.
-This adds a necessary ownership conversion rule without changing `rewire`'s
-type-preservation requirement or reducing the existing Rust trusted base.
-
-The 0.2.1 [canonical reshape helper](size-expressions.md) adds experimental checked
-metadata and encoding proofs only. Its producer is the native test harness;
-the preserved `.qli` draft is rejected. It adds no `Body`, `MeaningBody`, rule
-or wire-format variant and cannot issue evidence. Source lowering must emit
-the existing structural/tensor/sequence nodes and retain exact bindings; this
-is open producer debt, not a reduction of the trusted acceptance base.
-
-The 0.2.1 [shared-call producer](../lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean)
-now emits existing `rewire` and `sequence` definitions while retaining the
-callee reference. Its native fixture generator supplies separate meanings and
-evidence to the existing derivation checker. This adds no `Body`, `MeaningBody`,
-rule or transport variant, and changes no acceptance predicate. Conditional
-coordinate/unitary/reference preservation is proved in the separate Mathlib
-package. The original call-typing premise remains explicit; `.qli` production,
-full external call translation validation and hierarchy-bound finite reconstruction remain open.
-
-The [finite unitary adapter](machine-interface-spec.md#reconstructed-finite-unitary-leaves)
-adds a successor API with private result fields, using existing QIRF import and
-exact checking under a shared budget. It reconstructs the bytes and binds the
-independently required matrix and complete actual unary boundary, including
-type trees, owners and output wire order. This adds no raw enum variant or
-Lean acceptance rule. It is still a transitional Rust premise; production
-hierarchy transport and the rest of the finite profile remain open. The pure
-[finite request projection](../lean-kernel/QleisliKernel/Hierarchical/Finite.lean)
-now retains actual indexed bytes and identity-encoded boundaries with proved
-binding. The [conditional whole-artifact pass](hierarchical-ir-spec.md#conditional-finite-derivations)
-composes those requests and proves exact operator/reference equality relative
-to explicit leaf interpretations. The mathematical extension also propagates
-leaf unitarity to both entry inverse laws with arbitrary references. The
-[exact matrix description](machine-interface-spec.md#exact-finite-matrix-descriptions)
-allows fresh decoding of both byte strings, with complete immutable binding and
-no change to scalar capacity. Rust host/decoder correspondence and production
-hierarchy acceptance are still pending. Moving this checking into an
-adapter does not reduce the Rust trusted acceptance base.
-
-The [fresh hierarchy host](hierarchical-ir-spec.md#external-field-encoding-and-reconstruction-host)
-connects strict external JSON, a bounded private binary bridge, actual native
-Lean conditional checking and fresh Rust reconstruction on retained immutable
-leaf data. Its successor result is an inspection report with private fields;
-it provides no legacy `VerifiedProgram` conversion or implicit reverse adapter.
-The existing public raw enums are unchanged. The additive
-[independent request API](hierarchical-ir-spec.md#independently-requested-roots)
-now matches a separate meaning graph through the actual pure checker and fresh
-finite equality checks, retaining both original byte strings. Remaining profile
-rules and native/transport correspondence still gate production integration;
-all external schema entries remain disabled.
+Current component implementation and producer debt are recorded in the
+[inventory above](#ir-reduction-and-the-trusted-boundary) and the
+[generated rule inventory](rule-inventory.md). Proof modules and retained
+fixtures carry their detailed evidence; none enables production hierarchy
+acceptance or an external schema without its binding gates.

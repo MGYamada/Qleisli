@@ -1,0 +1,129 @@
+{
+  "format": "qleisli.vm24-boundary-validation",
+  "version": 1,
+  "created_utc": "2026-10-01T02:29:20.954865+00:00",
+  "issue": "https://github.com/MGYamada/Qleisli/issues/128",
+  "project_version": "0.2.4",
+  "status": "finite component implemented, proved and checked in the working tree",
+  "production_authority": "Rust",
+  "external_schemas_enabled": 0,
+  "committed": false,
+  "tagged": false,
+  "published": false,
+  "actual_boundary": [
+    "Original H/monomial/retained dependency reconstruction",
+    "Canonical independent-dyadic matrix descriptions",
+    "Full structural encoding/contract checking and U E_in = E_out u",
+    "Whole-space physical isometry/unitarity",
+    "Fresh dependency pass from empty cache; independent root requirement"
+  ],
+  "actual_definition_proofs": [
+    "QleisliKernel.Finite.dyadicRead_valid",
+    "QleisliKernel.Finite.descriptionRead_valid",
+    "Qleisli.Finite.contributions_meaning",
+    "Qleisli.Finite.applyStep_meaning",
+    "Qleisli.Finite.circuitMatrix_trace",
+    "Qleisli.Finite.check_encoded",
+    "Qleisli.Finite.check_reference",
+    "Qleisli.Finite.check_logical_norm",
+    "Qleisli.Finite.check_clean_return",
+    "Qleisli.Finite.wholeSpace_unitary",
+    "Qleisli.Finite.checkAll_root"
+  ],
+  "native_comparison": {
+    "lean": 222,
+    "rust": 211,
+    "independent_rational_matrices": 110,
+    "semantic_circuit_qubits_at_most": 3,
+    "scope": "Published matrix decoding, direct circuit and whole-space budgets compared exactly. Selected Rust CheckedContract API equations compare acceptance and full matrices; graph work additionally reads all maps, checks whole-space Gram and rechecks the root under one experimental aggregate budget. No production graph price change.",
+    "diagnostic_scope": "VM-24 compares acceptance/full values and relevant remaining work. Detailed Rust diagnostic payloads/failing substep locations are not a new Lean public protocol."
+  },
+  "registry": {
+    "status": "passed",
+    "source_revision": "d326df2d34c9477b47373f268602f0c00ea5288570635e5cfd43dc0428ad81b9",
+    "checker_and_entries_unchanged": true,
+    "checks_record": "registry-validation.json"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/test_lean_finite.py --record tests/fixtures/verification_v024/native-validation.json",
+      "exit_code": 0,
+      "result": "222 Lean cases; 211 Rust comparisons; 110 independent rational matrices; 22 graph faults and three damaged-result/work records"
+    },
+    {
+      "command": "python3 scripts/test_lean_exact.py",
+      "exit_code": 0,
+      "result": "815 Rust/Lean comparisons; 551 rational and 75 matrix checks"
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "exit_code": 0,
+      "result": "25 tests pass, including all seven compiled mutation cases; no skips"
+    },
+    {
+      "command": "cargo test --offline --test semantic_contracts --test finite_matrix --test finite_leaf",
+      "exit_code": 0,
+      "result": "42 ordinary Rust regression tests pass; no ignored tests in these suites"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "17 tests pass"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "result": "24 tests pass"
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "exit_code": 0,
+      "result": "11 tests pass"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0,
+      "result": "generated both views from project-status.json; 3247 links and 126 Lean root modules checked"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "result": "current views, links and norm references pass"
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "232 published constructors; 139 reviewed source snapshots; 18 boundaries; original Rust surfaces and frozen baseline bytes retained"
+    },
+    {
+      "command": "python3 scripts/check_lean_kernel.py",
+      "exit_code": 0,
+      "result": "60 executable kernel/transport modules; zero external Lake packages; reference import direction enforced"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "result": "current source identity passes; checker/theorem types and all three disabled schema entries unchanged"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "passed"
+    }
+  ],
+  "remaining": {
+    "VM_25_26": "Actual RawProgram extraction, owners/effects, observation/SSA and complete original function/source identities",
+    "VM_27": "Composition of the finite component with production hierarchy/root/instrument obligations",
+    "VM_28_29": "Transport refinement, aggregate integration price/limits, native compiler/runtime/platform assumptions, immutable accepted-artifact execution and fail-closed production dual integration",
+    "S05": "Complete Qleisli Soundness Theorem, independent specification review and authority-transfer gates"
+  },
+  "not_rerun_this_packet": [
+    "Full corpus/Rust all-target/fmt/Clippy/docs/package rehearsals: earlier version/corpus snapshot remains in tests/fixtures/releases/v0.2.4/development-validation.json",
+    "MSRV/full optional suites, final-commit Linux CI, clean package distribution and publication: still separate release gates"
+  ],
+  "evidence_sha256": {
+    "native-validation.json": "10ab39e6a492a4b862e9f44a812cbeafc497640aaa9647e3c2ab4c20f357c85a",
+    "native-inputs.json": "0e9afdfbd8cd8e619932b1598653bf7fbfb29e0ddffd642260dd4bf06e6962b5",
+    "registry-validation.json": "a97979143e66a0b0cb2f08092c3a772c7256f13ccfef417f91e29871f6975f68"
+  }
+}

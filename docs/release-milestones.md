@@ -201,12 +201,43 @@ completely positive and trace-nonincreasing, not trace preserving.
 
 The realizability target constructs an isometric dilation of that complete
 map, then synthesizes the isometry over the declared gate set, with specified
-initialization, readout and environmental discard. Prove that the actual Lean
+initialization, readout, synthesis workspace and environmental discard. Prove that the actual Lean
 backend's output realizes the checked instrument, including outcome labels,
 residual states and arbitrary reference systems. For pure operations, retain
 operator phase and the stronger isometry/unitarity contracts; channel equality
 alone does not justify coherent control. Environmental discard is not pure
 auxiliary release: workspace promised clean must still return exactly to zero.
+
+### Synthesis workspace contract
+
+**Review clarification, 2026-10-01; theorem still to prove.**
+Semantic `unitary` does not entail exact implementation on the source wires
+alone. [Issue 120](https://github.com/MGYamada/Qleisli/issues/120) fixes the
+v0.3.0 specification obligation; existing source acceptance is unchanged.
+For a pure logical operator `U`, clean backend workspace requires a checked
+target circuit `C` and zero embedding `E0` satisfying `C E0 = E0 U`, including
+operator phase and arbitrary references. Backend workspace is separate from
+source-owned registers and environmental discard. Borrowed/dirty workspace
+needs its own arbitrary-state/reference preservation equation; a clean-workspace
+result does not supply it. Target profiles must state workspace admission,
+preparation, clean return, layout correspondence and total live-space limits.
+
+For the same-wire Clifford+T+Toffoli profile, embedded generators on three
+wires have determinant ±1, but positive `F8` has determinant `i`. On four
+wires all generators have determinant 1, while the reviewed `c3x` table
+exchanges labels 14/15 and has determinant -1. These are necessary obstructions
+to those target proposals, not counterexamples to semantic unitarity.
+[Exact regressions](../tests/static_semantics.rs) retain both examples.
+[Giles–Selinger](https://arxiv.org/abs/1212.0506) establishes exact Clifford+T
+synthesis for unitary matrices over `Z[1/sqrt(2),i]` with at most one clean
+ancilla. [Shende et al.](https://arxiv.org/abs/quant-ph/0207001) establishes
+the corresponding same-wire NCT even-permutation restriction. These existence
+results neither prove our backend nor supply practical synthesis bounds.
+
+PR-C2/C3 must bind admitted workspace to the actual emitted circuit; RS-C1/C3
+must count its peak live space and actual initialization/gates/routing.
+The [bounded LiftBasis experiment](https://github.com/MGYamada/Qleisli/issues/132)
+targets v0.4.0; generic exact synthesis and the v1 theorem remain open.
 
 | Gate | Required evidence by v1 |
 | --- | --- |

@@ -108,6 +108,42 @@
       "reference": "pennylane_demos/ising_zz_quarter2",
       "project": "semantic_faults/zz_erased_scalar",
       "reason": "Erase the RZ scalar: every basis probability still agrees, but the full two-wire operator differs by exp(+i*pi/4)."
+    },
+    {
+      "id": "negative_control_changed_to_positive",
+      "reference": "quantum_katas/zero_control_x2",
+      "project": "semantic_faults/negative_control_changed_to_positive",
+      "reason": "Remove the target X: the control-zero block changes while every owner still returns."
+    },
+    {
+      "id": "bell_change_reversed_phase",
+      "reference": "quantum_katas/bell_change_zx2",
+      "project": "semantic_faults/bell_change_reversed_phase",
+      "reason": "Reverse X and Z: ordinary probabilities are identical, but the full operator has scalar -1."
+    },
+    {
+      "id": "subtract_wrong_borrow_order",
+      "reference": "qualtran/add_minus_one2",
+      "project": "semantic_faults/subtract_wrong_borrow_order",
+      "reason": "Propagate the old low bit instead of the complemented bit, implementing increment instead of decrement."
+    },
+    {
+      "id": "qrom_reversed_target_bits",
+      "reference": "qualtran/qrom1",
+      "project": "semantic_faults/qrom_reversed_target_bits",
+      "reason": "Reverse data=[2,1] to [1,2]: the address survives but the target word has the wrong bit order."
+    },
+    {
+      "id": "negative_rx_missing_scalar",
+      "reference": "pennylane_demos/rx_negative_quarter",
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "reason": "Erase the RZ completion scalar: basis probabilities still agree, but controlled phase differs."
+    },
+    {
+      "id": "negative_ry_wrong_sign",
+      "reference": "pennylane_demos/ry_negative_quarter",
+      "project": "semantic_faults/negative_ry_wrong_sign",
+      "reason": "Use positive RY(pi/2): the basis probabilities agree but the signed column coefficients differ."
     }
   ]
 }

@@ -1,0 +1,115 @@
+{
+  "native_lean_cases": 222,
+  "native_rust_comparisons": 211,
+  "independent_rational_matrix_checks": 110,
+  "rejected_inputs": 112,
+  "detected_graph_faults": [
+    "wrong_scalar_phase",
+    "coordinated_body_claim_mutation",
+    "changed_owned_type",
+    "overlapping_control",
+    "out_of_bounds_axis",
+    "duplicate_permutation",
+    "unbound_dependency",
+    "invalid_tuple_shape",
+    "producer_success_flag",
+    "producer_matrix_cache",
+    "shared_work_exhaustion",
+    "dirty_zero_scratch",
+    "same_image_different_coordinates",
+    "wrong_computed_encoding",
+    "changed_dependency",
+    "parent_before_dependency",
+    "duplicate_order",
+    "invalid_root",
+    "restricted_encoding_not_callable",
+    "dependency_depth_33",
+    "control_polarity",
+    "ordered_axes"
+  ],
+  "detected_semantic_faults": [
+    "erased_unit_phase",
+    "axis_order",
+    "refunded_invalid_description"
+  ],
+  "largest_circuit_qubits": 3,
+  "production_authority": "Rust",
+  "external_schemas_enabled": 0,
+  "remaining_premises": [
+    "RawProgram extraction/ownership/effects (VM-25/26)",
+    "native transport refinement and production dual integration (VM-28/29)"
+  ],
+  "budget_scope": "Published matrix decoding, direct circuit and whole-space budgets compared exactly. Selected Rust CheckedContract API equations compare acceptance and full matrices; graph work additionally reads all maps, checks whole-space Gram and rechecks the root under one experimental aggregate budget. No production graph price change.",
+  "cases_sha256": "c180d017ef5b6ee049136a56784f1cc463ab720a4a691c8704347cd5c8f38970",
+  "outcomes_sha256": "8a604cd9176478d66dadfd6fa0e2ad70522d0f101f6d732813d7528f5fb68e98",
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanc",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "clang version 19.1.2 (https://github.com/llvm/llvm-project 7ba7d8e2f7b6445b60679da826210cdde29eaf8b)\nTarget: arm64-apple-darwin27.0.0\nThread model: posix\nInstalledDir: /Users/masa/.elan/toolchains/leanprover--lean4---v4.30.0/bin\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "rustc",
+        "-vV"
+      ],
+      "exit": 0,
+      "stdout": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: finite_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "finite-test < original JSON requests"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/Protocol.lean": "f57d4a5373e034f5865ef0d5b6924632f74f2bbcf22f332375ad24dd113c5880",
+    "lean-kernel/QleisliKernel/Finite.lean": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+    "lean-kernel/QleisliKernel/Semantics/Finite.lean": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+    "lean/Qleisli/Finite.lean": "88a11c8a07e574f6d080af1edabd460eafa899bedcdbb2b6c27c1b3ad6488df3",
+    "lean/Qleisli/Semantics/Finite.lean": "a86f0318ec89160bc139904df73913a812dc6dd95addee9019a1f1148a468bf2",
+    "src/contract/mod.rs": "53ec2704e2cbb89cbfb6ee7f3394b5ca69658d007ed00029c377c28a4970bd67",
+    "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+    "scripts/test_lean_finite.py": "290955b7a6dd00c457fd4bc130b4d8dde22797a0c256bd88a9d80d58def26fd7"
+  }
+}

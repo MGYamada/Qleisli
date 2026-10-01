@@ -1837,13 +1837,13 @@
     },
     {
       "path": "lean-kernel/Protocol.lean",
-      "sha256": "a82cfe890134ff5cb45569dd817841545103df32c85a33a72d3569362d12720d",
+      "sha256": "f57d4a5373e034f5865ef0d5b6924632f74f2bbcf22f332375ad24dd113c5880",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "3be31bb7abf4d9fc6c9b938f9f84e370c6dd12ff3ce13ff138cc8358ca062a68",
+      "sha256": "30a45b02ea4059cda87ebd82c0d2b4d3509c939c8f1db81d1dcad7df1ebeb57a",
       "group": "hierarchy",
       "surface": null
     },
@@ -1869,6 +1869,24 @@
       "path": "lean-kernel/QleisliKernel/Exact.lean",
       "sha256": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
       "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/ExactCapacity.lean",
+      "sha256": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/ExactMatrix.lean",
+      "sha256": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+      "group": "scalar",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Finite.lean",
+      "sha256": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+      "group": "finite-contract",
       "surface": null
     },
     {
@@ -2142,6 +2160,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Semantics/Finite.lean",
+      "sha256": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+      "group": "finite-contract",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean",
       "sha256": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
       "group": "hierarchy",
@@ -2173,7 +2197,7 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "46a87c601775d9f9fc58f856b41a33d37c0fe674482991a20865509be1341cc9",
+      "sha256": "e28fb5b3bdd8542b339f2d0b2a716b72df9254d700e35a45b7df1f8194aa6fbf",
       "group": "foreign",
       "surface": null
     },
@@ -2259,7 +2283,7 @@
     },
     {
       "path": "src/bin/qleisli/sized.rs",
-      "sha256": "8793aace6523a44156c1cbaa47a33796fc7134077d3aa970878aa857203e0686",
+      "sha256": "3cd05f187cf3e5c854cabfd7df727e20bcc1cfcc4e50a098b055ddfbf56fdaca",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2505,7 +2529,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "7be4d95f279f9babf80efbafd9f40737b5bab36b90e5acbaac4018bdaae5cd8a",
+      "sha256": "08935fca71a1a94bd811b48afb615d5e3294c0c61bd09ab1eb3f6a4c612e486a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2525,7 +2549,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "e5c90d0fa821dc2b6a7fbd8166b6f82313f4e5a80d648d183e78f1ae184990ad",
+      "sha256": "73b977c488ae5dbb8f607ab722c50e915876c407044a055232f71105a006c2d6",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2545,7 +2569,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "663ba2cc2cefc59f9bc20bc5a234a036407a239c60cf34590e6e3a5af1ac0079",
+      "sha256": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2601,7 +2625,7 @@
     },
     {
       "path": "src/frontend/core.rs",
-      "sha256": "7c6f26c2bf40d7d93b43bdb531734428c49d3eee65c472c03422cdeda4475cbd",
+      "sha256": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2727,7 +2751,7 @@
     },
     {
       "path": "src/frontend/project/edition.rs",
-      "sha256": "0c9e5d5166525faf425dcbce5a73ea5989569d7696e72832d7a57f0f006b0b5f",
+      "sha256": "ea71d9341b43b0d51cc163c2dbf8aa7691574a04a9f1c9786fd5ccf188f65367",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2739,7 +2763,7 @@
     },
     {
       "path": "src/frontend/project/source_file.rs",
-      "sha256": "553a9067c3de4c09996206c5584905b362798274cf47c9bed072878123b95be4",
+      "sha256": "022890128935ad3280a31b7bcb44c9b5ca41f1b67e334d858f2eee59c3371480",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2749,7 +2773,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "5c42c8e42997a8aa5cd8c9620391f8ba35ebda4539be4df3bea14693e077f9ac",
+      "sha256": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -2796,7 +2820,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "55e3628ab17be92b843134b0aafb33023928f47950c34062e992a06b3a1bcedf",
+      "sha256": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3438,20 +3462,8 @@
     },
     {
       "path": "stdlib/src/transforms.qli",
-      "sha256": "c4222b357458ae7332591b4a0db2b7b96910afdb2eae4aea13a336d65d8767b0",
+      "sha256": "9116d185e214fc4fc06ead860dc91234cd20f62878b4dad4f5f1c61ad0d67eab",
       "group": "source",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/ExactCapacity.lean",
-      "sha256": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
-      "group": "scalar",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/ExactMatrix.lean",
-      "sha256": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
-      "group": "scalar",
       "surface": null
     }
   ],
@@ -3800,6 +3812,30 @@
       "limits": "65536 manifest bytes, independent of source byte budgets; regular-file reads with existing no-follow policy.",
       "failure": "Missing/invalid/unsupported/oversized/non-UTF-8/symlink manifests fail without skipping a nearer manifest. Narrow incompatible v0.2.3 requirement explicitly selected by the user.",
       "replacement": [
+        "VM-29"
+      ]
+    },
+    {
+      "id": "lean-finite-component-v024",
+      "group": "finite-contract",
+      "entry_points": [
+        "QleisliKernel.Finite.circuitMatrix",
+        "QleisliKernel.Finite.check",
+        "QleisliKernel.Finite.checkAll",
+        "QleisliKernel.Protocol.FiniteCodec.readMatrix"
+      ],
+      "status": "Audited experimental component; production Rust authority retained; no RawProgram replacement seal",
+      "request": "Complete separately supplied root Contract; claims cannot replace it",
+      "binding": "Strict original component bytes; full structural types/ordered axes/controls; fresh empty dependency cache with prior-entry and height checks. Raw body/source identity remains VM-25/26; execution binding VM-28/29.",
+      "encoding": "Actual input/output map dimensions and Gram identities; U E_in = E_out u; whole-space physical Gram. Restricted encodings are not callable dependencies.",
+      "domain": "R8 canonical signed-i128 independent dyadics, including scalar Unit phase; private prefix type bridge, not a new QIRF tag",
+      "limits": "Finite 6-bit/1024-step/128-node/depth32 profile; serialized matrix 1..64,16MiB/depth64; 10M shared decoding ceiling. Experimental graph also charges all fresh maps/full-space/repeated root inspections; production pricing unchanged.",
+      "failure": "Fail closed on semantic/type/axis/dependency/request/canonical/format faults and exhausted work; no producer success/cache field; no fallback",
+      "replacement": [
+        "VM-25",
+        "VM-26",
+        "VM-27",
+        "VM-28",
         "VM-29"
       ]
     }
@@ -4242,9 +4278,9 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103",
+      "tests/sized_source.rs": "e772fe9384a04ce23c0ba3e6d44ae7cb53329f781bf17fdf18902a4d6783e296",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
-      "tests/sized_cli.rs": "2a40c090af36ac1da8571797d9436c612f4c41c54628903b2fa24ac85a3507a6",
+      "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
       "tests/hierarchical_qpe_host.rs": "b3d53d5f61c05d661cb498514a699a4a6e1a59e9b502a02df61120a6c581b81d",
       "scripts/test_qpe_instrument_host.py": "6ba0570287c733d295b54d3840b49b9099bd9cec6c7603e58c0735c1ab495b13",
       "tests/connections.rs": "263ff9fcea227374b09f6b0300506816182526bcff583220795ca0dcc3afa4d4",

@@ -70,6 +70,16 @@ state. Repetition charges every actual execution even when its body is shared
 in the IR. Query access, inverse and controlled implementations carry the costs
 of their actual providers; abstract unitarity does not supply them for free.
 
+Backend synthesis workspace is included even when no source ancilla exists.
+The target account distinguishes source/data owners, clean or dirty synthesis
+workspace, retained references and routing workspace; peak live target space
+counts all simultaneously live roles. The present 12-bit logical register
+limit is neither a promise of a 12-wire backend nor a limit on total live space.
+A clean count needs the [realization/zero-return equation](release-milestones.md#synthesis-workspace-contract).
+Typed producer, acceptance, transport and execution budgets remain separate
+([Issue 94](https://github.com/MGYamada/Qleisli/issues/94)); grouping them must
+not silently equate their capacities or issue quantitative resource evidence.
+
 The composition rules must cover initialization, retained targets, auxiliary
 allocation/release, routing and measurement. This extends the existing
 Kleisli-inspired tracking of ownership, classical context and effects; it does

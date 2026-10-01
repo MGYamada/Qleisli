@@ -1,0 +1,108 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T02:58:46.855241+00:00",
+  "project_version": "0.2.4",
+  "compiler_sha256": "f7a1242953fd4a398077c263f5f76b049b015cb156966dd609331bc83ebbfee7",
+  "oracle_script_sha256": "e12c067629fc94ac538d278d4ce0898d3520f7c3416448ec98a5e762d44a22f8",
+  "manifest_sha256": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "semantic_fault_manifest_sha256": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
+  "scope": "Actual post-migration independent semantic replay of this authoring group; earlier observations remain immutable",
+  "cases": [
+    {
+      "id": "quantum_katas/odd_parity3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_singlet2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/less_than_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/ry_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_quarter2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "parity_prepared_even",
+      "reference": "quantum_katas/odd_parity3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/odd_parity3 column 0: (True, False, True): 0.2500000000000001 != 0"
+    },
+    {
+      "id": "singlet_phase_after_flip",
+      "reference": "quantum_katas/bell_singlet2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_singlet2 entry 1,1 x: (True, True, False): 0.7285533905932741 != 0.02144660940672623"
+    },
+    {
+      "id": "threshold_wrong_polarity",
+      "reference": "qualtran/less_than_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/less_than_constant2 column 0: (False, False, False): 1 != 0.0"
+    },
+    {
+      "id": "equals_constant_wrong_endian",
+      "reference": "qualtran/equals_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals_constant2 column 1: (True, False, True): 0 != 1.0"
+    },
+    {
+      "id": "ry_second_column_sign",
+      "reference": "pennylane_demos/ry_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ry_quarter entry 0,1 x: (True, False): 0.02144660940672623 != 0.7285533905932733"
+    },
+    {
+      "id": "zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    }
+  ],
+  "source_sha256": {
+    "quantum_katas/odd_parity3/kernel.qli": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d",
+    "quantum_katas/odd_parity3/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+    "quantum_katas/bell_singlet2/kernel.qli": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77",
+    "quantum_katas/bell_singlet2/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+    "qualtran/less_than_constant2/kernel.qli": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f",
+    "qualtran/less_than_constant2/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+    "qualtran/equals_constant2/kernel.qli": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27",
+    "qualtran/equals_constant2/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+    "pennylane_demos/ry_quarter/kernel.qli": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986",
+    "pennylane_demos/ry_quarter/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+    "pennylane_demos/ising_zz_quarter2/kernel.qli": "f37fb2390062640645c70a92c3c18fedf112060a98637ab1ebb34d125b4896f0",
+    "pennylane_demos/ising_zz_quarter2/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+  },
+  "complete_report": "tests/fixtures/review_v023/corpus-validation.json"
+}

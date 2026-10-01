@@ -8,10 +8,10 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Version: 0.2.3. Qleisli language edition: `"2026"`.**
+**Version: 0.2.4. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
-and the [0.2.3 release record](docs/releases/v0.2.3.md).
+and the [0.2.4 release record](docs/releases/v0.2.4.md).
 The Rust CLI and library run with Rust alone.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
@@ -20,9 +20,10 @@ its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-Version 0.2.3 is published on
-[crates.io](https://crates.io/crates/qleisli/0.2.3) and
-[GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.3).
+Version 0.2.4 distribution links: [crates.io](https://crates.io/crates/qleisli/0.2.4)
+and [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4).
+The [release record](docs/releases/v0.2.4.md) distinguishes verification, tagging
+and actual publication.
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
@@ -30,7 +31,7 @@ Version 0.2.3 is published on
 ## Language edition and qrate management
 
 The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
-each source. Compiler version `0.2.3`, Qleisli edition `"2026"` and the Rust
+each source. Compiler version `0.2.4`, Qleisli edition `"2026"` and the Rust
 implementation's Cargo edition `"2024"` are independent. See the
 [edition contract](docs/language-editions.md) for manifest validation and migration.
 
@@ -85,15 +86,15 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Install the published registry version:
+Install this registry version:
 
 ```sh
-cargo install qleisli --version 0.2.3 --locked
+cargo install qleisli --version 0.2.4 --locked
 ```
 
-The [publication record](docs/releases/v0.2.3.md#successful-publication-2026-10-01)
-binds the immutable 0.2.3 source and package to CI, fresh installation and
-[hosted API documentation](https://docs.rs/qleisli/0.2.3/qleisli/).
+The [release record](docs/releases/v0.2.4.md) binds the source and package to
+validation and publication results.
+[Hosted API documentation](https://docs.rs/qleisli/0.2.4/qleisli/) is built separately after upload.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)
@@ -206,18 +207,19 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-The selected release candidate is **0.2.3**, introducing explicit edition-2026
-configuration; the [release record](docs/releases/v0.2.3.md) distinguishes
-validation from publication. The active
-[0.2.2 plan](docs/v0.2.2-plan.md) and [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
-remain the current work targets. [Current status](docs/current-status.md) records
-bounded sized-source/QPE integration and the remaining checking/proof scope.
-Rust remains the production acceptance authority; external schemas are disabled.
+The selected development version is **0.2.4**, beginning with documentation
+reduction and six small finite corpus additions. The
+[development record](docs/releases/v0.2.4.md) distinguishes validation from
+publication. The latest published release remains **0.2.3**.
+The active [0.2.2 plan](docs/v0.2.2-plan.md) and
+[0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
+remain current work targets. Rust retains production acceptance authority;
+external schemas remain disabled. The [VM-24 finite component](tests/fixtures/verification_v024/README.md)
+is implemented and checked; raw-IR/hierarchy/production integration remains VM-25–VM-29.
 
-The [release record](docs/releases/v0.2.3.md) records local validation and
-[release preparation](docs/crates-io-release.md). Future type-system breaks use
-v0.3.0; QLT implementation remains deferred to v0.4.0 or later. These schedules
-do not establish the three general theorems or completion of the v1 algorithms.
+Future type-system breaks use v0.3.0; QLT implementation remains deferred to
+v0.4.0 or later. These targets do not establish the three general theorems or
+completion of the v1 algorithms.
 
 ## Project goals
 
@@ -269,8 +271,10 @@ alongside a substantive Lean 4 backend. The intended chain is: the Soundness
 Theorem yields completely positive, trace-preserving (CPTP) semantics as a
 corollary for the complete computation, including all measurement outcomes;
 physical realizability then constructs an isometric dilation and synthesizes
-it over a declared gate set, with the required preparation, measurement and
-discard. The backend proof must connect the actual emitted circuit to the
+it over a declared gate set, with the required preparation, measurement,
+discard and explicitly admitted synthesis workspace. Semantic unitarity does
+not guarantee exact synthesis on the source wires alone; clean workspace must
+return to zero and its resources must be counted ([workspace contract](docs/release-milestones.md#synthesis-workspace-contract)). The backend proof must connect the actual emitted circuit to the
 checked meaning, with exact equality or an explicitly certified approximation
 bound. CPTP validity alone does not establish that synthesis result.
 

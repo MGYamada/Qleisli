@@ -67,6 +67,17 @@ current work/step limits and ownership checks are not this theorem. Existing
 production authority and its migration gates remain unchanged. The 2026-09-29
 adoption date is retained rather than backdating this extension.
 
+## Realizability workspace clarification (2026-10-01)
+
+The 0.2.3 review exposes a same-wire synthesis obstruction, recorded in
+[Issue 120](https://github.com/MGYamada/Qleisli/issues/120). The
+[theorem contract](docs/release-milestones.md#synthesis-workspace-contract)
+therefore binds target gate set, admitted synthesis workspace, exact phase,
+zero return and physical-layout correspondence. Quantitative resources count
+backend workspace too. Semantic unitarity remains independent of a target's
+realizability judgment. This clarifies the future proof obligation; it adds
+no trusted synthesizer, verifier restriction or current proof claim.
+
 ## Pipeline migration and execution policy
 
 The [pipeline migration policy](docs/lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary),

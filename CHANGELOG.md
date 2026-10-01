@@ -6,6 +6,46 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+No additional changes.
+
+## 0.2.4 — 2026-10-01
+
+Publication authorized on 2026-10-01; outcomes are recorded in the
+[release record](docs/releases/v0.2.4.md).
+
+- Add sealed `s`, `sdg`, `tdg`, `id` and `phase_eighth` aliases using existing
+  finite IR (#130). Remove two private QFT wrappers and modernize ten active
+  corpus kernels; retain exact phase, original source attempts and VM-22 pins.
+- Clarify realizability with backend workspace and resource/layout obligations
+  (#120), preserve exact determinant/parity counterexamples, and specify future
+  generic-contract/pipeline consolidation (#131) and LiftBasis synthesis (#132).
+  Correct the quick reference version and explain branch wire-ID renaming.
+
+- Track the root Cargo.lock to retain the compiler/CLI dependency resolution.
+
+- Fix manifest symlink/non-file rejection before platform opening (#116),
+  sized entry/provider visibility bypasses (#117), and execution-only `--basis`
+  handling in `sized check` (#119). Document and diagnose the existing Linux
+  procfs source-loading requirement without weakening no-follow protection (#118).
+
+- Move VM-24 finite circuit reconstruction, canonical matrix descriptions and
+  phase-sensitive encoded equations into the Mathlib-free Lean kernel. Prove
+  actual column traces, arbitrary-reference action, clean encoding return and
+  whole-space inverse laws. Freshly check dependencies and independent root
+  requests; add native Rust/rational comparisons and adversarial CI checks.
+  Production Rust authority and later raw-IR/transport gates remain separate.
+- Expand the finite corpus from 42 to 48 cases, sixteen per approved source:
+  negative-control X, exact Bell ZX, modulo-four decrement, one-address QROM,
+  and RX/RY at negative quarter turns. Preserve first attempts and six new
+  type-correct semantic faults; no new stdlib API or acceptance rule.
+- Remove the redundant quantum-bookkeeping design narrative, shorten completed
+  0.2.2/0.2.3 reports and retire historical roadmap entries. Delete the obsolete
+  Physlib environment report, keeping its current dependency gate in the Lean
+  README. Condense hierarchy component histories and duplicate proof summaries;
+  retain current contracts, v0.2.x goals, proofs and validation fixtures.
+- Synchronize compiler, Python host, both proof packages and bundled std qrate
+  to 0.2.4. Edition 2026, Rust 1.85 and dependencies remain unchanged.
+
 ## 0.2.3 — 2026-10-01
 
 - Introduce Qleisli edition `"2026"`, declared explicitly in each source tree's

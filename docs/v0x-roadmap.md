@@ -1,6 +1,7 @@
 # Qleisli milestones toward v1
 
-Current version and latest published release: [**0.2.2**](releases/v0.2.2.md#successful-publication-2026-09-30).
+Current development version: [**0.2.4**](releases/v0.2.4.md). Latest published
+release: [**0.2.3**](releases/v0.2.3.md#successful-publication-2026-10-01).
 The [current plan](v0.2.2-plan.md) and [VM-22–VM-29](verification-migration-v0.2.md)
 replace old release work plans. Product versions follow [compatibility](versioning.md):
 compatible changes use PATCH in 0.y.z, public breaks use MINOR. Milestone IDs
@@ -59,7 +60,7 @@ existing external maintainers. The supported production checker and complete
 declared profile determine S05 scope; phase-word/component proofs are precursors.
 General source/backend preservation follows K4. CPTP semantics is a soundness
 corollary; realizability must construct/synthesize a dilation over a declared gate
-set. Resource Safety covers actual execution under declared cost models, beyond
+set with an explicit [synthesis-workspace contract](release-milestones.md#synthesis-workspace-contract). Resource Safety counts that workspace and covers actual execution under declared cost models, beyond
 linear ownership and checker budgets. Apache-2.0 and the three-source corpus
 policy continue to apply.
 

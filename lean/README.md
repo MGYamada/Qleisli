@@ -6,6 +6,11 @@ canonical coefficient/scalar equality and full scalar arithmetic. The
 adjoint meanings, low-coordinate tensor order, actual isometry soundness and
 arbitrary-reference inner-product/joint-norm preservation. Its
 [complex reference](Qleisli/Semantics/Exact.lean) imports data only.
+The [VM-24 finite bridge](Qleisli/Finite.lean) proves actual column traces,
+phase-sensitive encoded/reference equations, clean output-encoding return and
+both whole-space inverse laws. Its [data-only literal reference](Qleisli/Semantics/Finite.lean)
+and [native scope record](../tests/fixtures/verification_v024/README.md) keep raw
+extraction, hierarchy closure and production transport as later obligations.
 Rust arithmetic is a compatibility comparison path; its general formal
 correctness is not required for the proved Lean replacement. Production
 evidence/transport integration remains in later packets; see the
@@ -40,7 +45,7 @@ theorem. The current [rule inventory](../docs/rule-inventory.md) links exact
 declarations, checking evidence and remaining proof obligations.
 
 Lean and Mathlib are pinned to `v4.30.0`; the committed manifest pins their
-transitive dependencies. Physlib is a [future dependency candidate](../docs/physlib-environment.md),
+transitive dependencies. Physlib is a [future dependency candidate](#future-physlib-bridge),
 not required by this environment or CI. Reintroduce it with an actual instrument
 bridge, compatible version selection and a separate external audit. With `elan` installed, run:
 
@@ -54,6 +59,37 @@ lake env lean -DwarningAsError=true Audit.lean
 Run `lake update` only when intentionally changing dependency resolution.
 The initial cache download needs network access; subsequent builds can use
 the installed toolchain and cached dependencies. Julia is not a dependency.
+
+## Future Physlib bridge
+
+Physlib is absent from the required environment and default CI. Its first
+candidate use is a finite-IR instrument/CPTP bridge for measurement, discard and
+reset. Add it only with a concrete bridge and named theorem obligation covering
+coordinate order, complete outcomes, arbitrary references, phase and cleanup.
+A POVM's Lüders instrument alone does not cover every Qleisli instrument.
+
+Recheck compatible Lean/Mathlib/Physlib versions, pin the selected commit, audit
+actual external declarations alongside `Audit.lean`, test the bridge and retain
+its third-party notices. A required toolchain increase needs MINOR review.
+Library availability, an import probe and a channel theorem do not establish
+source/IR, Rust or native correspondence.
+
+The [optional probe](../research/quantum-libraries/PhyslibAudit.lean) preserves an
+experiment at `f5242c99d796b59a390d26cd7d1a8057e04c46b5`; that baseline does not
+select a future dependency. After restoring it in a separate compatible
+experiment and building the chosen QuantumInfo modules, run from `lean/`:
+
+```sh
+lake env lean -DwarningAsError=true ../research/quantum-libraries/PhyslibAudit.lean
+```
+
+Physlib retains its own authorship and
+[Apache-2.0 license](https://github.com/leanprover-community/physlib/blob/f5242c99d796b59a390d26cd7d1a8057e04c46b5/LICENSE);
+no implementation is vendored or relabeled as Qleisli work. Preserve all notices
+of any selected transitive dependencies. This optional probe has no current
+build target and is separate from the retained 4.34.1 survey.
+
+## Proof modules
 
 | File | Role |
 | --- | --- |

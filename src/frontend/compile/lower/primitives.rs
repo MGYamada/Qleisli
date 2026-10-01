@@ -6,7 +6,7 @@
 use super::super::{CompileError, ErrorCode, MAX_BITS, Ty};
 use super::{Lowerer, Slot, Value};
 use crate::frontend::ast::Span;
-use crate::ir::{Effect, RawOp, SingleGate};
+use crate::ir::{CircuitAction, CircuitStep, Effect, RawOp, SingleGate};
 use std::collections::BTreeSet;
 
 impl Lowerer<'_, '_> {
@@ -89,7 +89,7 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(value)
             }
-            "h" | "x" | "z" | "t" => {
+            "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" => {
                 let value = args.pop().expect("one argument");
                 let slot = self.quantum(module, span, &value, true)?;
                 let gate = match name {
@@ -98,14 +98,47 @@ impl Lowerer<'_, '_> {
                     "z" => SingleGate::Z,
                     _ => SingleGate::T,
                 };
-                let output = self.token();
-                let reg = self.registers.get_mut(&slot).expect("owned register");
-                self.operations.push(RawOp::Gate {
-                    gate,
-                    input: reg.token,
-                    output,
-                });
-                reg.token = output;
+                // These source aliases introduce no gate kind or acceptance rule.
+                let repetitions = match name {
+                    "s" => 2,
+                    "sdg" => 6,
+                    "tdg" => 7,
+                    _ => 1,
+                };
+                for _ in 0..repetitions {
+                    let output = self.token();
+                    let reg = self.registers.get_mut(&slot).expect("owned register");
+                    self.operations.push(RawOp::Gate {
+                        gate,
+                        input: reg.token,
+                        output,
+                    });
+                    reg.token = output;
+                }
+                Ok(value)
+            }
+            "id" | "phase_eighth" => {
+                let value = args.pop().expect("one argument");
+                let slot = self.quantum(module, span, &value, false)?;
+                if name == "phase_eighth" {
+                    let output = self.token();
+                    let reg = self.registers.get_mut(&slot).expect("owned register");
+                    // The zero-axis monomial is the existing exact scalar action.
+                    // It also acts on Q<Unit>; no ancilla or physical wire is added.
+                    self.operations.push(RawOp::ApplyUnitary {
+                        input: reg.token,
+                        output,
+                        steps: vec![CircuitStep {
+                            controls: vec![],
+                            action: CircuitAction::Monomial {
+                                indices: vec![],
+                                permutation: vec![0],
+                                phases: vec![1],
+                            },
+                        }],
+                    });
+                    reg.token = output;
+                }
                 Ok(value)
             }
             "cnot" | "toffoli" => {

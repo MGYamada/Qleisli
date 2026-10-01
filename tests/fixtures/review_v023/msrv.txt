@@ -1,0 +1,62 @@
+   Compiling qleisli v0.2.4 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.34s
+     Running tests/input_corpus.rs (/private/tmp/qleisli-v024-review-msrv/debug/deps/input_corpus-2265b4fcffe8e602)
+
+running 2 tests
+test local_corpus_counterexamples_reject ... ok
+test all_reviewed_corpus_projects_compile_verify_and_execute ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/qli_corpus.rs (/private/tmp/qleisli-v024-review-msrv/debug/deps/qli_corpus-28f47096f382631b)
+
+running 12 tests
+test every_source_fixture_belongs_to_an_exercised_case ... ok
+test type_correct_forward_qft_fault_negates_the_phase_label ... ok
+test every_quick_reference_program_compiles_and_executes ... ok
+test bell_components_support_dense_coding_and_entanglement_swapping ... ok
+test inline_and_modular_teleportation_agree_on_every_classical_message ... ok
+test phase_estimation_matches_off_grid_probabilities_and_reference_instruments ... ok
+test hadamard_tests_preserve_the_target_and_measure_both_overlap_components ... ok
+test type_correct_protocol_faults_are_detected_by_branch_sensitive_oracles ... ok
+test amplification_handles_all_marked_labels_and_detects_overshoot ... ok
+test authoring_limitations_and_useful_guardrails_have_source_reproductions ... ok
+test teleportation_recovers_seven_states_and_an_entangled_reference ... ok
+test phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running tests/review_v021.rs (/private/tmp/qleisli-v024-review-msrv/debug/deps/review_v021-b596fca0c0f1d6eb)
+
+running 12 tests
+test grouped_import_markdown_renders_each_source_item_once ... ok
+test grouped_imports_bound_copied_name_bytes_as_well_as_identifier_count ... ok
+test grouped_import_documentation_checks_copied_bytes_before_cloning ... ok
+test raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower ... ok
+test grouped_imports_reject_long_prefix_amplification_before_expanding_every_leaf ... ok
+test grouped_import_copy_budget_is_shared_across_use_items_and_reset_per_module ... ok
+test grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution ... ok
+test toffoli_flat_pattern_remains_a_located_compatibility_error_with_a_nested_repair ... ok
+test grouped_import_documentation_bounds_empty_comment_copies ... ok
+test ungrouped_imports_do_not_spend_the_group_expansion_budget ... ok
+test every_sealed_declaration_matches_the_existing_source_signature ... ok
+test th_repetition_matches_an_independent_numerical_recurrence_and_inline_source ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+     Running tests/static_semantics.rs (/private/tmp/qleisli-v024-review-msrv/debug/deps/static_semantics-adfcd4c24e61b5a8)
+
+running 11 tests
+test exact_scalar_arithmetic_matches_cyclotomic_and_hadamard_identities ... ok
+test nested_qif_preserves_zero_one_controls_and_branch_phases ... ok
+test product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control ... ok
+test review_same_wire_obstructions_do_not_reject_semantic_unitaries ... ok
+test scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types ... ok
+test computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control ... ok
+test adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries ... ok
+test finite_repetition_preserves_the_phase_of_a_noncommuting_operator ... ok
+test closed_classical_computation_selects_static_branches_and_preserves_output_axes ... ok
+test sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations ... ok
+test sealed_phase_aliases_match_exact_operators_and_their_static_clients ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s

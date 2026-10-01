@@ -1,0 +1,110 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T02:58:46.855241+00:00",
+  "project_version": "0.2.4",
+  "compiler_sha256": "f7a1242953fd4a398077c263f5f76b049b015cb156966dd609331bc83ebbfee7",
+  "oracle_script_sha256": "e12c067629fc94ac538d278d4ce0898d3520f7c3416448ec98a5e762d44a22f8",
+  "manifest_sha256": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "semantic_fault_manifest_sha256": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
+  "scope": "Actual post-migration independent semantic replay of this authoring group; earlier observations remain immutable",
+  "cases": [
+    {
+      "id": "quantum_katas/deutsch_jozsa3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_measure",
+      "semantic_probes": 13,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/add_constant3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals2",
+      "semantic_probes": 2080,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/lcu_projector",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1,
+        "zero_selector_probability": 0
+      }
+    },
+    {
+      "id": "pennylane_demos/kernel_overlap2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0,
+        "kernel_overlap": 0.2500000000000001
+      }
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "majority_replaced_by_parity",
+      "reference": "quantum_katas/deutsch_jozsa3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/deutsch_jozsa3 column 0: (False, True, False): 0 != 0.25"
+    },
+    {
+      "id": "swapped_bell_labels",
+      "reference": "quantum_katas/bell_measure",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_measure Bell-label-False-True: (True, False): 1 != 0"
+    },
+    {
+      "id": "missing_add_two",
+      "reference": "qualtran/add_constant3",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/add_constant3 column 0: (True, True, False): 0 != 1.0"
+    },
+    {
+      "id": "low_bit_equality_only",
+      "reference": "qualtran/equals2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals2 column 2: (False, True, False, False, True): 1 != 0.0"
+    },
+    {
+      "id": "missing_lcu_unprepare",
+      "reference": "pennylane_demos/lcu_projector",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/lcu_projector column 0: (True, False): 0.5000000000000001 != 0.0"
+    },
+    {
+      "id": "erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+    }
+  ],
+  "source_sha256": {
+    "quantum_katas/deutsch_jozsa3/kernel.qli": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+    "quantum_katas/deutsch_jozsa3/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+    "quantum_katas/bell_measure/kernel.qli": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287",
+    "quantum_katas/bell_measure/main.qli": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+    "qualtran/add_constant3/kernel.qli": "919e0a13fb82450d067ea24c7cf2c27d6040b7794010c0a241c126d37c2fe518",
+    "qualtran/add_constant3/main.qli": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+    "qualtran/equals2/kernel.qli": "f90a3d88e538f7b6b32cd944017fd1683d85a93cc41853b91c99be7c625427e5",
+    "qualtran/equals2/main.qli": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+    "pennylane_demos/lcu_projector/kernel.qli": "2e545374d28ce5949c0b4dec9f5ba5ace2a405fce330166644b2940d0793bb77",
+    "pennylane_demos/lcu_projector/main.qli": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+    "pennylane_demos/kernel_overlap2/kernel.qli": "7a0a853c0a0d706eff7cffef6e726465a524ebf8f265444b932033a6a786f40b",
+    "pennylane_demos/kernel_overlap2/main.qli": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875"
+  },
+  "complete_report": "tests/fixtures/review_v023/corpus-validation.json"
+}

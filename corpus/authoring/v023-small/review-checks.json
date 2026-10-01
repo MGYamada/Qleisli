@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "kind": "curated-review-migration",
+  "created_utc": "2026-10-01T02:57:28.987528+00:00",
+  "context": "Real checks of saved revised sources; aliases only, not a model benchmark.",
+  "results": [
+    {
+      "project": "pennylane_demos/ising_zz_quarter2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ising_zz_quarter2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/ry_quarter",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ry_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/equals_constant2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/qualtran/equals_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/less_than_constant2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/qualtran/less_than_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/bell_singlet2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bell_singlet2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/odd_parity3",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/odd_parity3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

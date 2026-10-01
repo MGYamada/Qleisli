@@ -1,18 +1,14 @@
 # Qleisli release procedure
 
-Status: **0.2.3 published on 2026-10-01**. The latest Rust package and GitHub
-Release are 0.2.3; their [publication evidence](releases/v0.2.3.md#successful-publication-2026-10-01)
-binds the immutable tag and registry artifact. This reusable procedure illustrates
-the sequence with 0.2.3.
-The [versioning policy](versioning.md) remains authoritative for compatibility
-and the complete release gates. Executed results belong in the
-[matching release record](releases/v0.2.3.md), including failures and skipped
-checks. This procedure does not itself perform or authorize publication.
+Status: **0.2.4 publication authorized on 2026-10-01; candidate checks in progress**.
+The latest completed publication is [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01).
+This reusable procedure illustrates the sequence with 0.2.4; actual outcomes
+belong in its [release record](releases/v0.2.4.md). Versioning and proof/feature
+gates remain authoritative.
 
-Release **0.2.3** adopts [Qleisli edition 2026](language-editions.md).
-Its [release record](releases/v0.2.3.md) binds the verified source, publication
-and installed package. Required source-tree `Qargo.toml` files and the full `std`
-qrate manifest belong in packaging and quickstart checks.
+The release retains Qleisli edition 2026 and the explicit source-tree manifests
+introduced in 0.2.3. Package the full std qrate manifest and check the shipped
+quickstarts. A version or this procedure alone does not perform publication.
 
 ## Release sequence
 
@@ -21,7 +17,7 @@ qrate manifest belong in packaging and quickstart checks.
 | Select development version | Synchronized manifests/runtime version, `Unreleased` changelog, current status and a release record; no publication claim. |
 | Finalize candidate | Compatibility and feature-gate dispositions, release notes/date, a clean commit containing all intended release changes. |
 | Validate exact commit | Required local checks, every applicable CI job and clean distribution report with commit and artifact hashes. |
-| Tag and push source | Annotated `v0.2.3` tag on that verified commit and remote readback; version-pinned README links become available. |
+| Tag and push source | Annotated `v0.2.4` tag on that verified commit and remote readback; version-pinned README links become available. |
 | Publish Rust package | Successful `cargo publish`, registry availability and matching downloaded `.crate` identity. |
 | Verify installed package/docs | Fresh exact-version registry installation, shipped quickstart, rendered registry README and actual docs.rs build. |
 | Publish GitHub Release | Release on the existing verified tag, prepared notes and verified complete source downloads. |
@@ -137,17 +133,17 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
 
 ## Prepare and validate without publishing
 
-1. Review changes against the latest shipped public contracts. For 0.2.3,
-   compare with 0.2.2 and keep compatibility except for the user's edition-manifest
-   requirement; another necessary public break selects 0.3.0. Resolve the
+1. Review changes against the latest shipped public contracts. For 0.2.4,
+   compare with 0.2.3 and preserve its published contracts; a necessary public
+   break selects 0.3.0. The earlier edition exception does not authorize another break. Resolve the
    [0.2.2 feature gates](v0.2.2-plan.md) for the selected release scope explicitly;
    a metadata bump cannot mark shared QPE or H1–H5 complete. Retain `Unreleased`
    and development wording until the final candidate is selected. Synchronize
    `Cargo.toml`, `Cargo.lock`, both Lean package manifests, `python/pyproject.toml`
    and Python `__version__`; do not change dependency versions. Refresh the
-   local lockfile after changing version metadata. `Cargo.lock` is intentionally
-   ignored in this repository; the distribution checker validates the generated
-   package lockfile. After changing Lean manifests, refresh the source-bound
+   local lockfile after changing version metadata. The root `Cargo.lock` is tracked from 0.2.4 at the user's request.
+   Keep the reviewed dependency resolution fixed with `--locked`; the
+   distribution checker also validates the generated package lockfile. After changing Lean manifests, refresh the source-bound
    registry through its normal build
    and audit path:
 
@@ -178,11 +174,11 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
    cargo package --list --allow-dirty --offline
    cargo package --allow-dirty --offline
    qleisli_release_dir="$(mktemp -d)"
-   cargo install --path target/package/qleisli-0.2.3 --offline --locked \
+   cargo install --path target/package/qleisli-0.2.4 --offline --locked \
      --bin qleisli --root "$qleisli_release_dir" \
      --target-dir "$qleisli_release_dir/build"
    python3 scripts/check_installation.py "$qleisli_release_dir/bin/qleisli" \
-     --root target/package/qleisli-0.2.3
+     --root target/package/qleisli-0.2.4
    ```
 
    `check_installation.py` runs in a temporary directory with no helper tools
@@ -198,7 +194,7 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
    After the intended changes are committed, run the clean distribution gate:
 
    ```sh
-   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.3-distribution.json
+   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.4-distribution.json
    ```
 
    Choose a fresh report filename if one already exists. Inspect all CI jobs for
@@ -211,7 +207,7 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
 ## Final candidate and publication
 
 First finalize release scope, move completed `Unreleased` changes into a dated
-0.2.3 changelog entry, and prepare standalone release notes. State supported
+0.2.4 changelog entry, and prepare standalone release notes. State supported
 contracts, migrations, proof coverage and remaining limitations. Finalize
 candidate installation examples and version-pinned links while still recording
 publication as pending. Commit the final tree and run the full checks and clean
@@ -233,10 +229,10 @@ Once the publication operations are within the user's authorized scope, tag
 that commit and push the tag:
 
 ```sh
-git tag -a v0.2.3 -m "Qleisli v0.2.3"
-git show --no-patch v0.2.3
-git push origin refs/tags/v0.2.3
-git ls-remote origin refs/tags/v0.2.3 'refs/tags/v0.2.3^{}'
+git tag -a v0.2.4 -m "Qleisli v0.2.4"
+git show --no-patch v0.2.4
+git push origin refs/tags/v0.2.4
+git ls-remote origin refs/tags/v0.2.4 'refs/tags/v0.2.4^{}'
 ```
 
 Verify the annotation and peeled commit locally and remotely. Open the
@@ -264,7 +260,7 @@ target directory, run:
 ```sh
 qleisli_registry_dir="$(mktemp -d)"
 CARGO_HOME="$qleisli_registry_dir/cargo" \
-  cargo install qleisli --version '=0.2.3' --locked --registry crates-io \
+  cargo install qleisli --version '=0.2.4' --locked --registry crates-io \
   --root "$qleisli_registry_dir/install" \
   --target-dir "$qleisli_registry_dir/build"
 ```
@@ -278,11 +274,11 @@ evidence that the hosted docs.rs build succeeded. Preserve failures for follow-u
 any needed package correction takes a new version.
 
 Then create the GitHub Release on the already pushed tag. Save the reviewed
-Markdown notes in `/tmp/qleisli-0.2.3-release-notes.md` before running:
+Markdown notes in `/tmp/qleisli-0.2.4-release-notes.md` before running:
 
 ```sh
-gh release create v0.2.3 --repo MGYamada/Qleisli --verify-tag \
-  --title "Qleisli v0.2.3" --notes-file /tmp/qleisli-0.2.3-release-notes.md
+gh release create v0.2.4 --repo MGYamada/Qleisli --verify-tag \
+  --title "Qleisli v0.2.4" --notes-file /tmp/qleisli-0.2.4-release-notes.md
 ```
 
 Read back the actual release title, body, tag, published/prerelease status and

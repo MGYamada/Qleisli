@@ -185,6 +185,8 @@ impl ParsedProgram {
 
     /// Check concrete entry bindings. This records an untrusted specialization
     /// request, not an elaborated body, executable circuit, or semantic proof.
+    /// The host-selected entry must be public. Providers obey ordinary module
+    /// visibility from that entry's module, even when unused by its body.
     pub fn instantiate(
         &self,
         entry: &str,

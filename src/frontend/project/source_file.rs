@@ -43,7 +43,21 @@ fn open_platform(path: &Path) -> io::Result<File> {
     )
 ))]
 fn open_platform(path: &Path) -> io::Result<File> {
-    use std::os::fd::AsRawFd;
+    open_linux(path, Path::new("/proc/self/fd"))
+}
+
+#[cfg(all(
+    target_os = "linux",
+    any(
+        target_arch = "x86",
+        target_arch = "x86_64",
+        target_arch = "aarch64",
+        target_arch = "arm",
+        target_arch = "riscv64",
+        target_arch = "riscv32"
+    )
+))]
+fn open_linux(path: &Path, procfs: &Path) -> io::Result<File> {
     use std::os::unix::fs::OpenOptionsExt;
     use std::path::Component;
     // Linux UAPI asm-generic/fcntl.h on these architectures.
@@ -59,6 +73,9 @@ fn open_platform(path: &Path) -> io::Result<File> {
         .read(true)
         .custom_flags(DIRECTORY)
         .open("/")?;
+    // Diagnose a missing/inaccessible descriptor filesystem separately from a
+    // missing source. Check the actual held descriptor, not just /proc itself.
+    procfs_directory(&directory, procfs)?;
     let mut components = absolute.components().peekable();
     while let Some(component) = components.next() {
         let name = match component {
@@ -71,8 +88,7 @@ fn open_platform(path: &Path) -> io::Result<File> {
                 ));
             }
         };
-        let child =
-            std::path::PathBuf::from(format!("/proc/self/fd/{}", directory.as_raw_fd())).join(name);
+        let child = procfs_directory(&directory, procfs)?.join(name);
         let flags = NOFOLLOW
             | NONBLOCK
             | if components.peek().is_some() {
@@ -94,6 +110,43 @@ fn open_platform(path: &Path) -> io::Result<File> {
         io::ErrorKind::InvalidInput,
         "source path has no file name",
     ))
+}
+
+// The injected descriptor root is private and only used by regression tests;
+// production never falls back to following the original pathname.
+#[cfg(any(
+    all(test, unix),
+    all(
+        target_os = "linux",
+        any(
+            target_arch = "x86",
+            target_arch = "x86_64",
+            target_arch = "aarch64",
+            target_arch = "arm",
+            target_arch = "riscv64",
+            target_arch = "riscv32"
+        )
+    )
+))]
+fn procfs_directory(directory: &File, procfs: &Path) -> io::Result<std::path::PathBuf> {
+    use std::os::fd::AsRawFd;
+    let path = procfs.join(directory.as_raw_fd().to_string());
+    let unavailable = |cause: String| {
+        io::Error::new(
+            io::ErrorKind::Unsupported,
+            format!(
+                "Linux source loading requires accessible procfs descriptors at {}: {cause}",
+                procfs.display()
+            ),
+        )
+    };
+    let metadata = std::fs::metadata(&path).map_err(|e| unavailable(e.to_string()))?;
+    if !metadata.is_dir() {
+        return Err(unavailable(
+            "held directory descriptor is not accessible as a directory".into(),
+        ));
+    }
+    Ok(path)
 }
 
 #[cfg(not(any(
@@ -137,6 +190,49 @@ mod tests {
     use std::os::unix::fs::symlink;
     use std::sync::atomic::{AtomicU64, Ordering};
     static NEXT: AtomicU64 = AtomicU64::new(0);
+
+    #[test]
+    fn unavailable_linux_procfs_has_a_targeted_diagnostic() {
+        let root = std::env::temp_dir().join(format!(
+            "qleisli-procfs-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        fs::create_dir(&root).unwrap();
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(root.clone());
+        fs::write(root.join("file"), "not a descriptor directory").unwrap();
+        for procfs in [root.join("absent"), root.join("file")] {
+            let directory = File::open("/").unwrap();
+            let error = procfs_directory(&directory, &procfs).unwrap_err();
+            assert_eq!(error.kind(), io::ErrorKind::Unsupported);
+            assert!(
+                error
+                    .to_string()
+                    .contains("Linux source loading requires accessible procfs descriptors"),
+                "{error}"
+            );
+            assert!(error.to_string().contains(&procfs.display().to_string()));
+        }
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn missing_linux_source_is_not_misreported_as_missing_procfs() {
+        let root = std::env::temp_dir().join(format!(
+            "qleisli-missing-source-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        let error = open(&root.join("main.qli")).unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::NotFound);
+        assert!(!error.to_string().contains("procfs"));
+    }
 
     #[test]
     fn source_replacement_between_discovery_and_open_cannot_follow_links() {

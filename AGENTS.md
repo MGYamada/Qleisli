@@ -110,8 +110,9 @@ Issue is created or already tracks the work, no backlog entry, backlog update
 or backlog ID is required.** Use the Issue as the tracking record; do not require
 duplicate records. Do not recreate the retired backlog. An Issue does not
 select a release or adopt syntax. The current development version is
-0.2.3, selected on 2026-09-30 for explicit Qleisli edition 2026. See the
-[edition contract](docs/language-editions.md) and [development record](docs/releases/v0.2.3.md).
+0.2.4, selected on 2026-10-01 starting with docs reduction and small finite
+corpus augmentation. See the [development record](docs/releases/v0.2.4.md).
+The [edition contract](docs/language-editions.md) remains unchanged.
 Require explicit schema-2 `[qrate].edition = "2026"` in each source tree's
 `Qargo.toml`; keep manifests in `corpus/`, `stdlib/`, individual examples and
 test trees, with no repository-root manifest. The `std` qrate in `stdlib/` has
@@ -297,7 +298,7 @@ cost models. Do not confuse quantitative bounds with ownership/R1 safety,
 checker budgets or measured diagnostics. Estimators/certificates remain untrusted;
 this future target adds no implementation/proof gate to 0.2.1 or 0.2.2.
 Development Python scripts require 3.11 or later.
-Physlib remains a [future dependency](docs/physlib-environment.md); recheck its
+Physlib remains a [future dependency](lean/README.md#future-physlib-bridge); recheck its
 compatibility and external axioms when adding a concrete semantic bridge that
 uses it. Library availability is not a proof of Qleisli semantics.
 
@@ -367,6 +368,11 @@ crates.io package and GitHub Release, published on that date. Its
 binds source `ff460549f0630c88c1f65c00a9e7d740d39e7889` to the validated package,
 fresh registry installation, hosted docs and complete GitHub archives. Later
 record commits preserve that immutable tag and package.
+
+The user explicitly requested **v0.2.4 crates.io and GitHub publication** on
+2026-10-01. Complete exact-candidate validation and clean distribution before
+tagging/upload, preserve published identities, and record actual outcomes in
+[the release record](docs/releases/v0.2.4.md). PyPI/platform binaries remain separate.
 
 The user adopted Cargo-compatible 0.y.z versioning on 2026-09-28. Compatible
 features need no exception. The user selected development version 0.1.9 on

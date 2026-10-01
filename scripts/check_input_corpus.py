@@ -97,8 +97,8 @@ def check_manifest(corpus=CORPUS):
             if case["source"] == "qualtran":
                 require("Google LLC" in text, "lost Google attribution")
         require((project / "README.md").is_file(), "missing case explanation")
-    # The 0.2.3 small-system extension reuses the reviewed frozen inputs.
-    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 14 for k in APPROVED}), "reviewed case inventory changed")
+    # The 0.2.4 small-system extension reuses the reviewed frozen inputs.
+    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 16 for k in APPROVED}), "reviewed case inventory changed")
     projects = {str(p.parent.relative_to(corpus)) for key in APPROVED for p in (corpus / key).rglob("main.qli")}
     require(projects == {c["project"] for c in manifest["cases"]}, "unrecorded project")
     # Sized authoring experiments reuse the same frozen inputs, with a distinct
@@ -291,6 +291,11 @@ def reference_column(case, column):
     state = [complex(i == column) for i in range(dim)]
     if name == "global_phase":
         return [-a for a in state]
+    if name == "zero_control_x2":
+        return permute(state, lambda i: i ^ (2 if not i & 1 else 0))
+    if name == "bell_change_zx2":
+        return [((-1) ** (row & 1) if row == column ^ 1 else 0)
+                for row in range(4)]
     if name == "swap2":
         return permute(state, lambda i: (i >> 1) | ((i & 1) << 1))
     if name == "fredkin3":
@@ -327,6 +332,8 @@ def reference_column(case, column):
         return permute(state, lambda i: (i & 3) + (((i & 3) + (i >> 2)) % 4) * 4)
     if name == "add_constant3":
         return permute(state, lambda i: (i + 3) % 8)
+    if name == "add_minus_one2":
+        return permute(state, lambda i: (i - 1) % 4)
     if name == "equals2":
         return permute(state, lambda i: i ^ (16 if (i & 3) == ((i >> 2) & 3) else 0))
     if name == "less_than_constant2":
@@ -343,6 +350,8 @@ def reference_column(case, column):
         return permute(state, lambda i: i ^ (16 if (i & 3) < ((i >> 2) & 3) else 0))
     if name == "qrom2":
         return permute(state, lambda i: i ^ ([1, 2, 3, 0][i & 3] << 2))
+    if name == "qrom1":
+        return permute(state, lambda i: i ^ ([2, 1][i & 1] << 1))
     if name == "and_phase":
         return [a * (-1 if i == 3 else 1) for i, a in enumerate(state)]
     if name == "qft2":
@@ -355,6 +364,11 @@ def reference_column(case, column):
         return single(state, 0, RX)
     if name == "ry_quarter":
         return single(state, 0, RY)
+    if name == "rx_negative_quarter":
+        return [(1 if row == column else 1j) / math.sqrt(2) for row in range(2)]
+    if name == "ry_negative_quarter":
+        return [(-1 if row == 1 and column == 0 else 1) / math.sqrt(2)
+                for row in range(2)]
     if name == "ising_zz_quarter2":
         return [a * cmath.exp(-1j * math.pi / 4 * (-1) ** i.bit_count())
                 for i, a in enumerate(state)]

@@ -65,6 +65,101 @@ fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
         assert!(output.stdout.is_empty());
     }
 }
+
+#[test]
+fn sized_check_rejects_execution_basis_before_loading() {
+    for basis in ["0", "1", "999"] {
+        let output = command()
+            .args([
+                "sized",
+                "check",
+                "--entry=foo::f",
+                "--module=foo=missing.qli",
+                "--kernel=missing",
+            ])
+            .arg(format!("--basis={basis}"))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(2), "{output:?}");
+        assert!(output.stdout.is_empty());
+        assert!(String::from_utf8_lossy(&output.stderr).starts_with("usage:"));
+    }
+}
+
+#[test]
+fn sized_execution_basis_still_checks_input_width() {
+    let files = common::SourceRoot::new("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
+    for action in ["run", "sample"] {
+        let mut cmd = command();
+        cmd.args([
+            "sized",
+            action,
+            "--entry=main::f",
+            "--basis=2",
+            "--kernel=missing",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            files.0.join("main.qli").display()
+        ));
+        if action == "sample" {
+            cmd.args(["--shots=1", "--seed=0"]);
+        }
+        let output = cmd.output().unwrap();
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        assert!(output.stdout.is_empty());
+        assert!(
+            String::from_utf8_lossy(&output.stderr)
+                .contains("input basis is outside the entry's quantum type")
+        );
+    }
+}
+
+#[test]
+fn sized_cli_cannot_select_private_entries_or_providers() {
+    let files = common::SourceRoot::new("unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
+    let args = ["sized", "emit-proposal", "--entry=main::f"];
+    let run = |provider: bool| {
+        let mut cmd = command();
+        cmd.args(args)
+            .arg(format!(
+                "--module=main={}",
+                files.0.join("main.qli").display()
+            ))
+            .arg(format!(
+                "--output={}",
+                files.0.join("proposal.json").display()
+            ));
+        if provider {
+            cmd.arg(format!(
+                "--module=dep={}",
+                files.0.join("dep.qli").display()
+            ))
+            .arg("--operation=U=dep::g");
+        }
+        cmd.output().unwrap()
+    };
+    let private_entry = run(false);
+    assert_eq!(private_entry.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&private_entry.stderr).contains("visibility"));
+    assert!(!files.0.join("proposal.json").exists());
+
+    files.write(
+        "main.qli",
+        "pub unitary fn f[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) { U(q) }",
+    );
+    files.write("dep.qli", "unitary fn g(q: Q<Bit>) -> Q<Bit> { q }");
+    let private_provider = run(true);
+    assert_eq!(private_provider.status.code(), Some(1));
+    assert!(
+        String::from_utf8_lossy(&private_provider.stderr).contains("dependency dep::g is private")
+    );
+    assert!(!files.0.join("proposal.json").exists());
+    files.write("dep.qli", "pub unitary fn g(q: Q<Bit>) -> Q<Bit> { q }");
+    let public_provider = run(true);
+    assert!(public_provider.status.success(), "{public_provider:?}");
+    assert!(files.0.join("proposal.json").is_file());
+}
 #[test]
 fn sized_cli_emits_only_an_untrusted_proposal_without_a_kernel() {
     let file = std::env::temp_dir().join(format!("qleisli-sized-cli-{}.json", std::process::id()));
@@ -101,7 +196,6 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
         "--operation-nat=U.n=1",
         "--operation-nat=U.j=1",
         "--operation-nat=U.d=1",
-        "--basis=1",
     ];
     for action in ["check", "run", "sample"] {
         let mut cmd = command();
@@ -111,6 +205,9 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
             .arg(format!("--kernel={}", kernel.display()));
         if action == "sample" {
             cmd.args(["--shots=8", "--seed=42"]);
+        }
+        if action != "check" {
+            cmd.arg("--basis=1");
         }
         let output = cmd.output().unwrap();
         assert!(

@@ -1,0 +1,59 @@
+{
+  "format": 1,
+  "task": "Add six one-to-three-qubit finite translations for v0.2.4 using existing frozen inputs",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.4",
+  "baseline_commit": "9000f85da953d7f4fa24787f6257409060794497",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read design, intake policy and pinned upstream symbols; reused finite driver, tuple and rotation patterns and existing independent harness. Baseline compiler is v0.2.3. Documentation cleanup is uncommitted. All six complete first projects are saved and hashed before any check. Informed authoring, not controlled model evaluation; no upstream framework execution.",
+  "created_utc": "2026-10-01T01:26:02.809246+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Untouched complete first-source projects before first compiler check",
+      "sha256": {
+        "quantum_katas/zero_control_x2/kernel.qli": "1733046b23a824a30f85be7336328758389c1020e092f3aa44424ad5d64d1042",
+        "quantum_katas/zero_control_x2/main.qli": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+        "quantum_katas/bell_change_zx2/kernel.qli": "5b361a8ae3d27bfa0a28e6ee775c9762141d77751131b7a5328576c1d533cb7d",
+        "quantum_katas/bell_change_zx2/main.qli": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+        "qualtran/add_minus_one2/kernel.qli": "404ed4fb916643d034fca8f65f546bc185ad91f3c3243f9f3306eeaf0a19dd9c",
+        "qualtran/add_minus_one2/main.qli": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+        "qualtran/qrom1/kernel.qli": "12831e0cdb2776176b8e1215a74d44f61d5f3f5e03b06093c5427f7cea5fc671",
+        "qualtran/qrom1/main.qli": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+        "pennylane_demos/rx_negative_quarter/kernel.qli": "f48c774d21a515b33fcff6ce050526c7a8c24e63bd24128458e9dba9e460ba5a",
+        "pennylane_demos/rx_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+        "pennylane_demos/ry_negative_quarter/kernel.qli": "0706725fb5e88108dda3564c45c36db571c7371b4b4772c37862b714946b4f64",
+        "pennylane_demos/ry_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+      },
+      "observations": [
+        "check-initial.json",
+        "semantic-validation.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Curated v0.2.3 review migration to compatible sealed aliases (Issue 130), preserving exact phase and all original first sources; revised sources saved before checks",
+      "project_version": "0.2.4",
+      "created_utc": "2026-10-01T02:55:51.332237+00:00",
+      "context": "Informed migration with repository and reviewer advice available; not a controlled model evaluation. Frozen VM-22 sources are excluded.",
+      "sha256": {
+        "quantum_katas/zero_control_x2/kernel.qli": "1733046b23a824a30f85be7336328758389c1020e092f3aa44424ad5d64d1042",
+        "quantum_katas/zero_control_x2/main.qli": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+        "quantum_katas/bell_change_zx2/kernel.qli": "5b361a8ae3d27bfa0a28e6ee775c9762141d77751131b7a5328576c1d533cb7d",
+        "quantum_katas/bell_change_zx2/main.qli": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+        "qualtran/add_minus_one2/kernel.qli": "404ed4fb916643d034fca8f65f546bc185ad91f3c3243f9f3306eeaf0a19dd9c",
+        "qualtran/add_minus_one2/main.qli": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+        "qualtran/qrom1/kernel.qli": "12831e0cdb2776176b8e1215a74d44f61d5f3f5e03b06093c5427f7cea5fc671",
+        "qualtran/qrom1/main.qli": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+        "pennylane_demos/rx_negative_quarter/kernel.qli": "8e5a2c4dfd83c8b3a577ca56a6404c38cf9cec26ce2ed8a66d771f51b0094346",
+        "pennylane_demos/rx_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+        "pennylane_demos/ry_negative_quarter/kernel.qli": "0706725fb5e88108dda3564c45c36db571c7371b4b4772c37862b714946b4f64",
+        "pennylane_demos/ry_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+      },
+      "observations": [
+        "review-checks.json",
+        "review-semantics.json"
+      ]
+    }
+  ]
+}

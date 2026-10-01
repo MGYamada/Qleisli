@@ -1,0 +1,252 @@
+{
+  "format": "qleisli.review-v023.validation",
+  "version": 1,
+  "created_utc": "2026-10-01T03:02:30.925808+00:00",
+  "development_version": "0.2.4",
+  "baseline_commit": "9000f85da953d7f4fa24787f6257409060794497",
+  "state": "Uncommitted development working tree; no tag, upload, issue closure or publication",
+  "rust": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+  "msrv_rust": "rustc 1.85.0 (4d91de4e4 2025-02-17)",
+  "python": "Python 3.14.5",
+  "compiler_sha256": "f7a1242953fd4a398077c263f5f76b049b015cb156966dd609331bc83ebbfee7",
+  "source_sha256": {
+    "src/frontend/core.rs": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+    "src/frontend/compile/lower/primitives.rs": "73b977c488ae5dbb8f607ab722c50e915876c407044a055232f71105a006c2d6",
+    "src/frontend/compile/lower/mod.rs": "08935fca71a1a94bd811b48afb615d5e3294c0c61bd09ab1eb3f6a4c612e486a",
+    "src/frontend/compile/lower/transforms.rs": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
+    "stdlib/src/transforms.qli": "9116d185e214fc4fc06ead860dc91234cd20f62878b4dad4f5f1c61ad0d67eab",
+    "tests/static_semantics.rs": "c3548c7070b12522465374c4c23829963e9d0cdb6ef9eb8ae6d3532e8bbb5df2",
+    "tests/qli_corpus.rs": "01a568873ccedcb2116536c6fff77d08bc2c5b60809d952fbb410cec677d5546",
+    "tests/documentation.rs": "73b69594ed511620a048b70c85e930554a7d802dc4e791a37dc46e596074bbbf",
+    "tests/fixtures/review_v023/c3x.qli": "0a47cf9fdd4a6addf0cae8a9ee7f513d1842b5919cc0161a716a9df0a4ad516a",
+    "scripts/check_input_corpus.py": "e12c067629fc94ac538d278d4ce0898d3520f7c3416448ec98a5e762d44a22f8",
+    "corpus/quantum_katas/qpe3/kernel.qli": "7bf19c837512d27e44a3a23085ded55faef863e727ffc1fc9cab4c08feeb2fee",
+    "corpus/qualtran/qpe2/kernel.qli": "f92af9bedac5237a91854f606588a205480a09e67ab779e0c17d0855ba94e75a",
+    "corpus/pennylane_demos/qubit_rotation/kernel.qli": "f47149d434e7db85529d2fb20b13061e6cedba23fa58ae17f3b83fc65b8daf1b",
+    "corpus/pennylane_demos/qaoa_vertex_cover/kernel.qli": "80c3382c46fec5d20893d3a8ba9ebc38d2bd423194faa30afd3ed6fb2c8c5118",
+    "corpus/pennylane_demos/qaoa_maxcut/kernel.qli": "baad3cd880f1fcea80d69b57e24842317e14376cdf684b403183a4cfecdcc9a4",
+    "corpus/pennylane_demos/qpe3/kernel.qli": "19075932c37f442aafd63ee47e76aa37a3472b6879fae98e3468fd139fc23dcf",
+    "corpus/pennylane_demos/lcu_projector/kernel.qli": "2e545374d28ce5949c0b4dec9f5ba5ace2a405fce330166644b2940d0793bb77",
+    "corpus/pennylane_demos/kernel_overlap2/kernel.qli": "7a0a853c0a0d706eff7cffef6e726465a524ebf8f265444b932033a6a786f40b",
+    "corpus/pennylane_demos/ising_zz_quarter2/kernel.qli": "f37fb2390062640645c70a92c3c18fedf112060a98637ab1ebb34d125b4896f0",
+    "corpus/pennylane_demos/rx_negative_quarter/kernel.qli": "8e5a2c4dfd83c8b3a577ca56a6404c38cf9cec26ce2ed8a66d771f51b0094346"
+  },
+  "corpus_migrations": [
+    {
+      "session": "corpus/authoring/session.json",
+      "changed": [
+        "quantum_katas/qpe3/kernel.qli",
+        "qualtran/qpe2/kernel.qli",
+        "pennylane_demos/qubit_rotation/kernel.qli",
+        "pennylane_demos/qaoa_vertex_cover/kernel.qli",
+        "pennylane_demos/qaoa_maxcut/kernel.qli",
+        "pennylane_demos/qpe3/kernel.qli"
+      ],
+      "projects": [
+        "pennylane_demos/classifier_layer",
+        "pennylane_demos/phase_lock",
+        "pennylane_demos/qaoa_maxcut",
+        "pennylane_demos/qaoa_vertex_cover",
+        "pennylane_demos/qpe3",
+        "pennylane_demos/qubit_rotation",
+        "pennylane_demos/teleport",
+        "pennylane_demos/vqe_excitation",
+        "qualtran/add2",
+        "qualtran/and_phase",
+        "qualtran/less_than2",
+        "qualtran/qft2",
+        "qualtran/qpe2",
+        "qualtran/qrom2",
+        "qualtran/reflection2",
+        "qualtran/xor2",
+        "quantum_katas/bernstein_vazirani",
+        "quantum_katas/dense_coding",
+        "quantum_katas/ghz3",
+        "quantum_katas/global_phase",
+        "quantum_katas/grover2",
+        "quantum_katas/measure_plus",
+        "quantum_katas/qpe3",
+        "quantum_katas/teleport"
+      ]
+    },
+    {
+      "session": "corpus/authoring/v021-expansion/session.json",
+      "changed": [
+        "pennylane_demos/lcu_projector/kernel.qli",
+        "pennylane_demos/kernel_overlap2/kernel.qli"
+      ],
+      "projects": [
+        "pennylane_demos/kernel_overlap2",
+        "pennylane_demos/lcu_projector",
+        "qualtran/add_constant3",
+        "qualtran/equals2",
+        "quantum_katas/bell_measure",
+        "quantum_katas/deutsch_jozsa3"
+      ]
+    },
+    {
+      "session": "corpus/authoring/v023-small/session.json",
+      "changed": [
+        "pennylane_demos/ising_zz_quarter2/kernel.qli"
+      ],
+      "projects": [
+        "pennylane_demos/ising_zz_quarter2",
+        "pennylane_demos/ry_quarter",
+        "qualtran/equals_constant2",
+        "qualtran/less_than_constant2",
+        "quantum_katas/bell_singlet2",
+        "quantum_katas/odd_parity3"
+      ]
+    },
+    {
+      "session": "corpus/authoring/v024-small/session.json",
+      "changed": [
+        "pennylane_demos/rx_negative_quarter/kernel.qli"
+      ],
+      "projects": [
+        "pennylane_demos/rx_negative_quarter",
+        "pennylane_demos/ry_negative_quarter",
+        "qualtran/add_minus_one2",
+        "qualtran/qrom1",
+        "quantum_katas/bell_change_zx2",
+        "quantum_katas/zero_control_x2"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "CARGO_TARGET_DIR=<fresh> cargo test --locked --offline --all-targets",
+      "exit_code": 0,
+      "passed": 542,
+      "failed": 0,
+      "ignored": 34,
+      "transcript": "all-targets.txt",
+      "scope": "All 65 suites/targets; optional native/Python tests retain their opt-in status",
+      "transcript_sha256": "51638c9f2e150bc355a2ae2caea00f3f4fcc0dc2422e705bc342174e7a445612",
+      "raw_transcript_sha256": "4c396564d381be4201b2f314e1335d40ce0f469205921b3a7d0a2c390d169a93",
+      "transcript_presentation": "Only trailing blank lines removed for committed-tree whitespace policy; test output content/results unchanged."
+    },
+    {
+      "command": "CARGO_TARGET_DIR=<fresh-msrv> rustup run 1.85.0 cargo test --locked --offline --test static_semantics --test review_v021 --test input_corpus --test qli_corpus",
+      "exit_code": 0,
+      "passed": 37,
+      "failed": 0,
+      "ignored": 0,
+      "transcript": "msrv.txt",
+      "scope": "Selected modified surface and every corpus/quick-reference project, not all-target MSRV release validation",
+      "transcript_sha256": "14780937e006b541bc8a990ed250192e0a234cb972255d52eee6c0bdbfb2e557",
+      "raw_transcript_sha256": "6345fdc92b3836824e883f319b8a2e7c4b76fbd9b357c4bafd0632fe170e3194",
+      "transcript_presentation": "Only trailing blank lines removed for committed-tree whitespace policy; test output content/results unchanged."
+    },
+    {
+      "command": "CARGO_TARGET_DIR=<fresh> cargo clippy --locked --offline --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "CARGO_TARGET_DIR=<fresh> cargo test --locked --offline --doc",
+      "exit_code": 0,
+      "passed": 1
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py <fresh>/debug/qleisli --exhaustive --report tests/fixtures/review_v023/corpus-validation.json",
+      "exit_code": 0,
+      "report": "corpus-validation.json",
+      "cases": 48,
+      "semantic_probes": 12893,
+      "negative_cases": 4,
+      "detected_semantic_faults": 24
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "exit_code": 0,
+      "scope": "Provenance, notices, complete source attempts and appended observations"
+    },
+    {
+      "command": "python3 scripts/test_check_input_corpus.py",
+      "exit_code": 0,
+      "passed": 26
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "passed": 17
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "constructors": 232,
+      "sources": 139,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/test_verification_baseline.py <fresh>/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel --report tests/fixtures/review_v023/vm22-baseline.json",
+      "exit_code": 0,
+      "report": "vm22-baseline.json",
+      "finite_comparisons": 12,
+      "source_decisions": 12,
+      "native_component_decisions": 5,
+      "scope": "Frozen VM-22 comparisons, at most three qubits; prebuilt native runtime, not a new Lean proof build"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status; then python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "local_links": 3275,
+      "markdown_anchors": 388,
+      "rust_declarations": 135,
+      "rust_tests": 105,
+      "lean_root_modules": 126
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "qli": 749,
+      "qlt": 5,
+      "explicit_manifests": 18
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "exit_code": 0,
+      "records": 14,
+      "snapshots": 22,
+      "observations": 43,
+      "scope": "Other authoring records; corpus-specific revised attempts are checked by check_input_corpus.py"
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "pilots": 3,
+      "scope": "Documentation form and links only"
+    },
+    {
+      "command": "python3 scripts/test_check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "passed": 11
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "corrected_development_failures": [
+    "An initial test selection named a nonexistent standard_library target; corrected to existing suites.",
+    "The new direct-alias fixture had one extra closing parenthesis; corrected and exact all-entry test passes.",
+    "The new quick-reference example required a fourth output oracle; added and both all-target/MSRV reruns pass.",
+    "Python unittest module invocation missed the scripts import path; rerun through the repository script entry points.",
+    "The contract-document checker was initially called by the wrong filename; the correct check_stdlib_contract_docs.py and eleven checker tests pass."
+  ],
+  "not_run": [
+    "Optional --ignored suites except the five frozen native baseline decisions",
+    "New Lean build/audit/fresh replay: no executable Lean changed by this review packet",
+    "Final-commit Linux CI, all-target MSRV release validation, packaging, tagging or publication"
+  ],
+  "authority": "Rust remains production-authoritative; external schemas disabled; no current physical-realizability/resource or complete soundness proof claimed"
+}

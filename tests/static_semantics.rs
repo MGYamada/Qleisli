@@ -363,6 +363,256 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
 }
 
 #[test]
+fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
+    let imports = "use std::quantum::{s,sdg,tdg,id,phase_eighth};";
+    for (name, exponent) in [("s", 2), ("sdg", 6), ("tdg", 7)] {
+        for (operation, power) in [
+            (format!("repeat_static(1,{name},q)"), exponent),
+            (format!("adjoint({name},q)"), 8 - exponent),
+            (format!("repeat_static(3,{name},q)"), 3 * exponent),
+        ] {
+            let steps = compiled_steps(imports, "let q = init0();", &operation);
+            assert_operator(1, &steps, |row, column| {
+                if row == column {
+                    Exact::phase(power * column)
+                } else {
+                    Exact::ZERO
+                }
+            });
+        }
+        let definitions = format!(
+            "{imports}
+            unitary fn controlled(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> {{
+                let (c,t) = split(q);
+                let (c,t) = qif(c,t) {{ 0 => id, 1 => {name} }};
+                join(c,t)
+            }}"
+        );
+        let steps = compiled_steps(
+            &definitions,
+            "let q = join(init0(),init0());",
+            "repeat_static(1,controlled,q)",
+        );
+        assert_operator(2, &steps, |row, column| {
+            if row == column {
+                Exact::phase(if column == 3 { exponent } else { 0 })
+            } else {
+                Exact::ZERO
+            }
+        });
+    }
+    // Direct aliases must agree too, independently of static-call expansion.
+    let steps = compiled_steps(
+        &format!(
+            "{imports}
+        unitary fn direct(q:Q<Bit>)->Q<Bit>{{ phase_eighth(tdg(sdg(s(id(q))))) }}"
+        ),
+        "let q = init0();",
+        "repeat_static(1,direct,q)",
+    );
+    assert_operator(1, &steps, |row, column| {
+        if row == column {
+            Exact::phase(1 + 15 * column)
+        } else {
+            Exact::ZERO
+        }
+    });
+}
+
+#[test]
+fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
+    let imports = "use std::quantum::{id,phase_eighth};";
+    let unit = "let pair = do b <- init0(); pure ((),b);
+        let (q,b) = split(pair); discard(b);";
+    for (operation, exponent) in [
+        ("repeat_static(1,id,q)", 0),
+        ("repeat_static(1,phase_eighth,q)", 1),
+        ("adjoint(phase_eighth,q)", 7),
+        ("repeat_static(8,phase_eighth,q)", 0),
+    ] {
+        let steps = compiled_steps(imports, unit, operation);
+        assert_operator(0, &steps, |_, _| Exact::phase(exponent));
+    }
+    // Within one compiler, check both Unit and Bit meanings for the same names.
+    let definitions = format!(
+        "{imports}
+        unitary fn mixed(q:Q<((Bit,Unit),Bit)>)->Q<((Bit,Unit),Bit)> {{
+            let (cu,b) = split(q); let (c,u) = split(cu);
+            let (c,u) = qif(c,u) {{ 0 => id, 1 => phase_eighth }};
+            let (c,b) = qif(c,b) {{ 0 => id, 1 => phase_eighth }};
+            join(join(c,u),b)
+        }}"
+    );
+    let steps = compiled_steps(
+        &definitions,
+        &format!("{unit} let q = join(join(init0(),q),init0());"),
+        "repeat_static(1,mixed,q)",
+    );
+    assert_operator(2, &steps, |row, column| {
+        if row == column {
+            Exact::phase(2 * (column & 1))
+        } else {
+            Exact::ZERO
+        }
+    });
+    let steps = compiled_steps(
+        imports,
+        "let q = join(init0(),init0());",
+        "adjoint(phase_eighth,q)",
+    );
+    assert_operator(2, &steps, |row, column| {
+        if row == column {
+            Exact::phase(7)
+        } else {
+            Exact::ZERO
+        }
+    });
+}
+
+#[test]
+fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
+    use qleisli::frontend::compile::{ErrorCode, check_project};
+    let root = SourceRoot::new(
+        "use std::quantum::{init0,phase_eighth};
+        use std::observe::discard;
+        observe fn main()->Unit { discard(phase_eighth(init0())); () }",
+    );
+    let verified = compile_project(&root.0).unwrap();
+    assert_eq!(verified.program().operations.len(), 3);
+    assert!(
+        matches!(&verified.program().operations[1], RawOp::ApplyUnitary { steps, .. }
+        if steps.len() == 1 && matches!(&steps[0].action,
+            CircuitAction::Monomial { indices, permutation, phases }
+            if indices.is_empty() && permutation == &[0] && phases == &[1]))
+    );
+    for (source, code) in [
+        (
+            "use std::quantum::id; unitary fn f(q:Q<Unit>)->(Q<Unit>,Q<Unit>){(id(q),id(q))}",
+            ErrorCode::Ownership,
+        ),
+        (
+            "use std::quantum::phase_eighth; unitary fn f(q:CBit)->CBit{phase_eighth(q)}",
+            ErrorCode::TypeMismatch,
+        ),
+        (
+            "use std::quantum::s; unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{s(q)}",
+            ErrorCode::TypeMismatch,
+        ),
+        (
+            "use std::quantum::tdg; unitary fn f(q:Q<Unit>)->Q<Unit>{repeat_static(0,tdg,q)}",
+            ErrorCode::TypeMismatch,
+        ),
+    ] {
+        root.write("main.qli", source);
+        assert_eq!(check_project(&root.0).unwrap_err().code, code);
+    }
+}
+
+fn permutation_is_odd(permutation: &[usize]) -> bool {
+    let mut odd = false;
+    for (i, output) in permutation.iter().enumerate() {
+        for later in &permutation[i + 1..] {
+            odd ^= output > later;
+        }
+    }
+    odd
+}
+
+// Exact determinant of the small monomial/H circuits in this review. This is
+// an independent necessary obstruction, not a synthesis decision procedure.
+fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
+    let dimension = 1 << width;
+    steps
+        .iter()
+        .map(|step| match &step.action {
+            CircuitAction::Hadamard { .. } => {
+                4 * ((1usize << (width - step.controls.len() - 1)) % 2)
+            }
+            CircuitAction::Monomial {
+                indices,
+                permutation,
+                phases,
+            } => {
+                let mut mapping = Vec::new();
+                let mut exponent = 0;
+                for basis in 0..dimension {
+                    if !step
+                        .controls
+                        .iter()
+                        .all(|c| ((basis >> c.index) & 1 != 0) == c.when_one)
+                    {
+                        mapping.push(basis);
+                        continue;
+                    }
+                    let label = indices
+                        .iter()
+                        .enumerate()
+                        .fold(0, |label, (i, axis)| label | (((basis >> axis) & 1) << i));
+                    exponent += usize::from(phases[label]);
+                    mapping.push(indices.iter().enumerate().fold(basis, |output, (i, axis)| {
+                        (output & !(1 << axis))
+                            | (((usize::from(permutation[label]) >> i) & 1) << axis)
+                    }));
+                }
+                (exponent + 4 * usize::from(permutation_is_odd(&mapping))) % 8
+            }
+            CircuitAction::Contract { .. } => panic!("outside this determinant regression"),
+        })
+        .sum::<usize>()
+        % 8
+}
+
+#[test]
+fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
+    let c3x = include_str!("fixtures/review_v023/c3x.qli");
+    let root = SourceRoot::new(&format!(
+        "{IMPORTS}\n{c3x}
+        observe fn main()->Unit {{
+            discard(c3x(join(join(init0(),init0()),join(init0(),init0())))); ()
+        }}"
+    ));
+    let verified = compile_project(&root.0).unwrap();
+    let table = verified
+        .program()
+        .operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::LiftBasis {
+                table,
+                output_wires,
+                ..
+            } => {
+                assert_eq!(output_wires.len(), 4);
+                Some(table)
+            }
+            _ => None,
+        })
+        .unwrap();
+    let expected: Vec<u16> = (0..14).chain([15, 14]).collect();
+    assert_eq!(table, &expected);
+    assert!(permutation_is_odd(
+        &table.iter().map(|x| usize::from(*x)).collect::<Vec<_>>()
+    ));
+
+    let steps = compiled_steps(
+        "use std::transforms::qft3;",
+        "let q = join(join(init0(),init0()),init0());",
+        "repeat_static(1,qft3,q)",
+    );
+    assert_operator(3, &steps, |row, column| {
+        Exact::phase(row * column) * Exact::inverse_sqrt_two() * Exact::new([1, 0, 0, 0], 1)
+    });
+    assert_eq!(determinant_exponent(3, &steps), 2, "det(F8) = i exactly");
+    // Embedded H/T/X and NCT generate only +/-1 at width 3 and +1 at width 4.
+    for width in [3, 4] {
+        let allowed = if width == 3 { vec![0, 4] } else { vec![0] };
+        for (local_width, determinant) in [(1usize, 4usize), (1, 1), (2, 4), (3, 4)] {
+            assert!(allowed.contains(&((determinant * (1 << (width - local_width))) % 8)));
+        }
+    }
+}
+
+#[test]
 fn closed_classical_computation_selects_static_branches_and_preserves_output_axes() {
     let definitions = "
 unitary fn choose(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {

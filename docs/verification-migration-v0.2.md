@@ -1,12 +1,12 @@
 # Verification migration through 0.2.2–0.2.9
 
-Status: **VM-22 and VM-23 arithmetic/comparison gates satisfied in the working
-tree; VM-24–VM-29 remain open**. This status does not select production authority.
+Status: **VM-22/23 and the VM-24 finite component gates checked in the working
+tree; VM-25–VM-29 remain open**. This status does not select production authority.
 The user assigns the Rust-to-Lean verification migration to 0.2.2–0.2.9.
 This replaces the earlier K1/0.3.0 and K2/0.4.0 implementation schedule in the
 [migration policy](lean-kernel-migration.md#staged-migration). The current
-development version is [0.2.3](releases/v0.2.3.md); the latest published release
-is [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
+development version is [0.2.4](releases/v0.2.4.md); the latest published release
+is [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01).
 The [frozen VM-22 baseline](../tests/fixtures/verification_v022/README.md)
 records the implemented inventory, boundary contracts and small comparisons;
 it enables no schema or production Lean authority.
@@ -44,9 +44,10 @@ arguments onto a compatible public API.
 | Hierarchical verification | [Existing Lean conditional checker](../lean-kernel/QleisliKernel/Hierarchical/Conditional.lean) already checks structure and supported derivations; [host](../src/interchange/hierarchical.rs) still discharges explicit Rust finite-reader/equality obligations | Reuse audited definitions and constructed denotations; eliminate required Rust-checker premises, complete selected rules and bind an independent root request. Conditional reports are not production evidence. |
 | Transport and execution binding | QIRF and experimental hierarchy/native protocols have bounded adapters; production `check`/`run` still use Rust | Independently decoded immutable artifacts and requests, reviewed result protocol, fail-closed integration and execution of the exact accepted artifact. |
 
-The [36-case finite corpus](../corpus/README.md), four ownership/effect
-rejections and twelve semantic faults are the current positive/negative
-regression baseline, not a formal equivalence proof. Preserve the frozen three
+The frozen VM-22 36-case census, four ownership/effect rejections and twelve
+semantic faults are the original comparison baseline. The
+[extended current corpus](../corpus/README.md) is additional regression material,
+not a formal equivalence proof. Preserve the frozen three
 upstreams and historical reports. Use the adopted [small-system validation
 scope](v0.2.2-plan.md#remaining-validation-scope-small-qubit-systems-2026-09-30):
 do not newly generate or check maximum-size corpus cases. Capacity compatibility
@@ -163,6 +164,14 @@ semantics. This packet does not make every M2 phase representable in the ζ8
 finite domain, add an arbitrary coefficient domain or adopt approximation.
 
 ### VM-24: reconstruct evidence, not producer conclusions
+
+**Implemented component:** [actual checker/proof and validation scope](../tests/fixtures/verification_v024/README.md),
+tracked by [Issue 128](https://github.com/MGYamada/Qleisli/issues/128). Fresh finite
+reconstruction, canonical descriptions, encoded equations, arbitrary-reference
+and clean-return laws, whole-space inverse laws and independent root checking
+are implemented and proved. Native checks cover small semantic circuits and
+capacity/format mutations. Production RawProgram and transport premises remain
+in their assigned packets; experimental graph work is not production pricing.
 
 Implement the finite matrix/circuit readers and encoding/contract checks in
 Lean. Recheck controls, permutations, canonical coefficients, whole-space

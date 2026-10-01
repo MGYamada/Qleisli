@@ -301,8 +301,8 @@ The IR is atomic `ComputeUseUncompute`. Verify the entire structure correspondin
 `with_computed(q,f,u){|d,a| body}` is a **language form**, specified by
 [SC-1–SC-IR](semantic-contracts-v0.1.md). Evaluate and consume `q:Q<A>`;
 resolve the total basis predicate `f:A -> Bit` and an explicit
-`unitary fn u(q:Q<A>)->Q<A>` at compile time. The sealed H/X/Z/T functions
-are also eligible on `Q<Bit>`, as for existing static targets. Names resolve after input
+`unitary fn u(q:Q<A>)->Q<A>` at compile time. The sealed H/X/Z/T/S/Sdg/Tdg functions are eligible on `Q<Bit>`;
+`id/phase_eighth` are eligible on every supported finite `Q<A>`, as for static targets. Names resolve after input
 evaluation and local names still hide callable names. The isolated body
 owns `d:Q<A>` and `a:Q<Bit>`, captures no outer values, and returns exactly
 `(Q<A>,Q<Bit>)` in that order with effect `Unitary`. All ownership checks,
@@ -370,7 +370,7 @@ the new local paper argument does not extend a Lean theorem.
 3. An independent IR verifier rechecks IR from every producer using the same rules. Unverified IR cannot enter the execution API.
 4. Execute a closed entry point: a parameterless `observe fn main()->C` in the root `main.qli`, where `C` is a classical type and no quantum ownership remains at termination. Library checking does not require an entry point.
 
-A quantum IR instruction consumes its input ownership tokens and creates fresh tokens for any quantum outputs. Name moves and identity functions do not themselves add physical operations. Gates and structural operations carry logical wires forward; `init0`, width-increasing lifts, and `reset` allocate fresh IDs as needed. Branch merge IDs rename the selected arm's axes. IDs alone do not establish the presence or absence of correlations.
+A quantum IR instruction consumes its input ownership tokens and creates fresh tokens for any quantum outputs. Name moves and identity functions do not themselves add physical operations. Gates and structural operations carry logical wires forward; `init0`, width-increasing lifts, and `reset` allocate fresh IDs as needed. Branch merge IDs rename the selected arm's axes. Every merged quantum register receives fresh logical wire IDs, including unchanged frame registers. The selected arm's ordered axes define the correspondence; this logical rename does not imply physical allocation, SWAP or loss of correlations. LiftBasis preserves its current input wire IDs only within that instruction, not across a later branch merge. A target layout must carry the explicit correspondence ([Issue 126](https://github.com/MGYamada/Qleisli/issues/126)). IDs alone do not establish the presence or absence of correlations.
 
 `LiftBasis` implements `|x⟩ ↦ |f(x)⟩` for an injective table. Its output begins
 with the original ordered wire identities, followed by fresh wires. The values

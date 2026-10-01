@@ -1,0 +1,21 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/data_loading/qrom.py
+// Selected symbol(s): QROM
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    let (a, b) = cnot(a, b);
+    let (a, c) = cnot(a, c);
+    join(join(a, x(b)), c)
+}
+
+// Deliberate local semantic mutation: Reverse data=[2,1] to [1,2]: the address survives but the target word has the wrong bit order.

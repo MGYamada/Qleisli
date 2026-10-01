@@ -274,6 +274,7 @@ No QLT evaluator or such theorem is implemented by the design record.
 | Mathematical translation, C1–C5 | [Explicit source-to-IR schemas and conditional preservation](source-ir-correspondence.md), including basis encoding, concrete leaves, auxiliary chain extraction, and complete phi construction. | Every Rust path constructs that translation, verifier implementation correctness, or exact numerical execution. |
 | Restricted auxiliary zero return | Exact local factorization above and in the resource calculus. | A general release primitive or arbitrary auxiliary-body acceptance. |
 | Executable Lean phase-word acceptance | [`normalize_correct` and `verify_sound`](../lean-kernel/QleisliKernel/PhaseWord.lean) prove the actual normalizer/checker against direct cyclic phase execution for every bit and initial phase. | Complex interpretation, wire decoding, full IR/ownership/instrument acceptance, source adequacy or native compilation correctness. |
+| Actual bounded finite equations, VM-24 | [Actual finite bridge](../lean/Qleisli/Finite.lean) proves literal reconstructed column traces, full-phase encoded equations, arbitrary-reference action, clean return from required output encodings and both whole-space inverse laws; [native/audit scope](../tests/fixtures/verification_v024/README.md). | RawProgram extraction/ownership/effects, original function/source identity, hierarchy finite discharge, native transport refinement or production authority. |
 | Canonical single-owner reshape metadata | [`encode_leaves`, `compatible_encoding`, `relabel_round_trip`, `relabel_compose`, `check_encoding`, `check_axes_owners`, `check_reference_coefficients`](../lean-kernel/QleisliKernel/Reshape.lean) prove general prefix encoding/coherence and actual bounded helper properties. | Source syntax/production, arbitrary circuit equations, general Mac Lane coherence, production evidence or H1–H5. |
 | Hierarchical operator unitarity | [Actual complex operator laws](../lean/Qleisli/HierarchicalUnitary.lean) and [typing bridges](../lean/Qleisli/HierarchicalTyping.lean) prove both inverse laws for phase/permutations and closure under sequence, tensor, inverse, coherent control and powers. [Recursive acceptance](../lean/Qleisli/HierarchicalAcceptance.lean) derives the actual entry's unitarity, including arbitrary finite reference extension, from supported internal checker success without assumed child isometries. | Finite leaves, calls/encodings/computed regions, the remaining full profile, external production verification or sized source. |
 | Finite IR ideal soundness | [Conditional paper argument](finite-core-proof.md) for its constructors and verification premises. | Verified Rust implementation, source translation, or numerical exactness. |
@@ -298,163 +299,50 @@ arbitrary reference identity, without excluding entanglement. The relation
 between this meaning, actual Rust IR generation, and numerical execution is
 not proved by the instrument equations.
 
-**Remaining obligations, in priority order (updated for the 2026-09-28–29
-Lean kernel migration decision):**
+**Remaining obligations, in priority order:**
 
-1. Define the finite raw IR's denotation and complete ownership interfaces in
-   Lean, using the [IR paper proof and verifier obligations](finite-core-proof.md).
-   Cover pure maps and observing instruments with arbitrary reference systems.
-   The first planned Physlib use is a bridge from finite IR Kraus branches to
-   a classical–quantum CPTP map. Physlib is a [future dependency](physlib-environment.md):
-   introduce it with that concrete bridge; the preserved external audit does not provide it.
-2. Implement the acceptance core in the [Mathlib-free Lean package](../lean-kernel/README.md)
-   and prove resource safety and ideal quantum soundness of the actual executable
-   verification function. Follow the [staged authority transfer](lean-kernel-migration.md):
-   Rust/Lean differential checks are intermediate evidence, not a Rust equivalence
-   proof or automatic permission to replace production verification. The initial
-   `verify_sound` covers one-bit cyclic phase words only.
-3. Prove selected semantic-kernel rules and their checker/model correspondence
-   under the [bounded M2 scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/decisions/2026-09-27-v1-path.md#bounded-kernel-scope-and-ideal-qpe-angles).
-   Preserve fixed requested meanings, entry evidence, output axes, exact phase,
-   zero return and binding to hierarchical IR. Existing local matrix theorems
-   prove equations, not acceptance soundness of the Rust implementation. New M2
-   checker rules must be implemented and proved in Lean over the same definitions;
-   the initial phase-word slice supplies no QFT/QPE schema theorem.
-   Subsequent [QFT circuit](../lean/Qleisli/Qft.lean) and
-   [typed shared graph](../lean/Qleisli/QftGraph.lean) theorems now establish the
-   positive normalized Fourier coefficient and arbitrary reference extension
-   for actual accepted internal projections. The [QPE instrument component](../lean/Qleisli/Qpe.lean)
-   now connects actual preparation, controlled powers and the inverse graph to
-   full residual reference maps. Its completeness and total trace theorem
-   explicitly require a whole-space isometric provider. The controlled-power component now proves the actual coherent amplitude
-   action equals its complex block operator, with conditional unitary laws and
-   arbitrary-reference maps. Full external IR/provider binding remains an obligation. The component registry now
-   [pins rebuilt types and source revisions](../lean/README.md#component-registry-review);
-   external schema enablement remains gated. The full-profile dependency
-   scheduler additionally proves actual-checker acyclicity. Typed artifact
-   preparation now proves this for the graph extracted from the actual four
-   tables and establishes exact logical/physical proof endpoint binding under
-   a shared work budget. These are structural results; the later passes check
-   node typing, while derivations and quantum equations remain obligations.
-   The side-map checker now proves complete owner/axis permutations, exact
-   structural type matching and coefficient round trips with arbitrary
-   references. The actual definition-node pass now checks both call maps and
-   fresh names, all child interface/effect conditions and zero-repeat bodies;
-   its whole-table theorem covers every definition under the shared budget.
-   The meaning/encoding pass now proves the same coverage and shared budget
-   for their actual structural checks, including QPE provider shapes and
-   explicit zero-scratch boundaries. These typing results do not prove
-   finite-leaf semantics, unitary/entry premises or semantic derivations.
-   Explicit Bits/Bit, immediate tuple and empty-owner conversions are now
-   checked by both typing passes. Their actual basis routing and its reversed
-   endpoints satisfy finite inverse laws and coefficient round trips for
-   arbitrary phases/references. Source lowering and external derivation
-   binding are still required; this does not enable an implicit conversion.
-   The supported whole-space derivation pass now also has
-   [constructed actual-body denotations](../lean/Qleisli/HierarchicalEvaluation.lean):
-   accepted equations give equal unique complex operators and reference maps
-   without an assumed interpretation environment. The
-   [recursive acceptance theorem](../lean/Qleisli/HierarchicalAcceptance.lean)
-   now proves whole-space unitarity and arbitrary finite reference extension
-   for that supported internal profile. Finite reconstruction and remaining
-   full-profile rules are still open.
-   The [conditional finite extension](../lean/Qleisli/HierarchicalFiniteUnitary.lean)
-   now constructs the same unitary conclusion from the actual returned leaf
-   obligations. Its leaf readers are independent of proof metadata, and both
-   inverse laws hold with arbitrary finite references. This retains explicit
-   decoder/Rust correspondence premises; serialized exact matrix decoding is
-   an implementation bridge, not a proof of that correspondence or K1/K2.
-   The [independent root extension](../lean/Qleisli/HierarchicalRoot.lean)
-   composes actual checked graph pairs with this conditional entry theorem.
-   `checkAll_denotes`, `checkAll_unitary` and `checkAll_reference_laws` bind the
-   resulting common operator to a separate requested meaning graph, preserving
-   phase and arbitrary finite references. Exact finite meaning-pair equality
-   remains an explicit, freshly reconstructed Rust/reader obligation.
-   The [instrument bridge](../lean/Qleisli/HierarchicalInstrument.lean) extends
-   this result through checked actual initialization and ordered readout:
-   complete branch coefficients, residual/reference density matrices and
-   classical packing match the independent request. Its small complex
-   [reference module](../lean/Qleisli/Semantics/Instrument.lean) imports no checker.
-   Named QPE binding, whole-instrument completeness, source preservation and
-   production integration remain open; finite/native correspondence is retained.
-   The conditional pass now reuses its actual completed type context for
-   ordinary matching. [TypedRule](../lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean)
-   proves that the reduced matcher implies the original rule predicate;
-   the same derivation, finite-request and root theorems apply. This removes
-   repeated work, without adding a semantic rule or an assumed typed flag.
-   The [shared-gradient operator laws](hierarchical-ir-spec.md#shared-phase-gradient-laws)
-   now relate actual hierarchical powers, controls, tensor products and inverse
-   routing to complete complex diagonals. Mathlib-free sparse scaling/control
-   helpers have proved evaluation and constant term counts. Their complex
-   interpretation covers arbitrary reference amplitudes. The subsequent
-   [actual-gradient inspection](hierarchical-ir-spec.md#actual-shared-gradient-inspection)
-   derives the child diagonal from actual recursive definitions with independent
-   little-endian phase arithmetic. Its actual evaluation, uniqueness and
-   reference theorems remove that premise from the controlled-node bridge.
-   The [actual-stage coefficient extension](hierarchical-ir-spec.md#actual-fourier-stage-coefficients)
-   now proves the recursive Fourier formula and explicit output-reversal law
-   for all natural widths. A bounded pure stage inspector binds actual ordered
-   children and interfaces; its evaluation bridge derives identity children
-   and keeps exact H, controlled-gradient and recursive-body obligations explicit.
-   Connecting the one-bit base, actual outer reversal and complete independently
-   requested Fourier root remains open.
-   The subsequent [complete recursive-body bridge](hierarchical-ir-spec.md#complete-recursive-fourier-body)
-   connects the base and derives every controlled-gradient/recursive-child
-   equation, leaving only full-byte-bound finite H reader equations. Its actual
-   evaluation and reference theorem apply to all supported widths, with a single
-   remaining structural budget. Fresh exact reconstruction rejects global -H;
-   decoder/native correspondence, actual outer reversal and named-root binding
-   remain explicit obligations.
-   The [actual shared-wiring bridge](hierarchical-ir-spec.md#actual-shared-wiring)
-   now constructs phase-free routes from a fresh cache of actual definitions
-   and proves their exact complex physical action on arbitrary reference
-   amplitudes. This covers the outer QFT producer's renames/SWAPs as components.
-   Whole-artifact typing is still required for ownership and valid permutations.
-   The subsequent [actual outer Fourier request](hierarchical-ir-spec.md#actual-outer-fourier-request)
-   binds the complete actual entry to an independent width/interface request and
-   derives the positive-sign Fourier matrix, including arbitrary correlated
-   reference columns. Only the returned full-byte-bound H equations remain as
-   semantic premises. Native/source correspondence, production request seals,
-   remaining hierarchy rules and source/corpus gates remain open. Existing
-   TP-005 declarations remain audited until callers and the registry migrate;
-   this component theorem does not authorize their removal.
-   The [Fourier host composition](hierarchical-ir-spec.md#fourier-request-host)
-   now proves the actual composite checker's unitary interface, full Fourier
-   matrix and both reference inverse laws under both bound finite obligation
-   sets. The fresh host path checks these data against the independent exact H
-   target; it retains the explicit native/reader correspondence premises.
-4. Develop translation validation for Rust source lowering and implement the
-   backend's lowering, optimization, synthesis and emission in Lean with proofs
-   of its actual definitions. Follow the
-   [pipeline migration invariant](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary):
-   retain independent IR checking at the Rust/Lean boundary and compose each
-   migrated pass's preservation result with the verified downstream segment.
-   Keep external candidate search outside that proof obligation when a proved
-   checker validates its results; the planned
-   [LeafRealizer checker](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
-   must connect rotation-synthesis witnesses to the actual circuit contract.
-   Complete PR-C1–C4 and RS-C1–C5 by v1, binding each output and its
-   checked resource bound to
-   its checked input and requested meaning. Establish source typing/name/effect
-   and resource-rule adequacy, including
-   snapshots, tombstones, pending/caller frames and the open trace premises of
-   the [scope lookup theorem](lowering-state-refinement.md). Establish that Rust
-   realizes [C1–C5](source-ir-correspondence.md), then transfer S1–S4, F1–F5 and
-   Q1–Q3 through that correspondence to source compilation. IR validity alone
-   does not establish the promised source meaning or declared source effects.
-5. Keep numerical execution and algorithm claims separate; preserve Bell,
-   partial measurement/discard, feedback and phase-oracle regressions. No finite
-   regression or library import completes a general implementation theorem.
+1. Formalize the complete finite raw IR's pure maps and observing instruments,
+   including ownership and arbitrary reference systems, from the
+   [IR proof obligations](finite-core-proof.md). A future Physlib bridge must
+   satisfy the [dependency gate](../lean/README.md#future-physlib-bridge).
+2. Prove acceptance soundness of the actual executable checker in the
+   [Mathlib-free kernel](../lean-kernel/README.md), covering every enabled rule.
+   Follow [VM-22–VM-29](verification-migration-v0.2.md) and the
+   [authority-transfer gates](lean-kernel-migration.md). Rust remains production
+   authoritative; differential tests and the phase-word theorem do not transfer it.
+3. Close the complete hierarchy/request boundary. Supported internal derivations
+   have [constructed denotations](../lean/Qleisli/HierarchicalEvaluation.lean)
+   and [unitarity proofs](../lean/Qleisli/HierarchicalAcceptance.lean).
+   [Finite](../lean/Qleisli/HierarchicalFiniteUnitary.lean),
+   [independent-root](../lean/Qleisli/HierarchicalRoot.lean),
+   [instrument](../lean/Qleisli/HierarchicalInstrument.lean) and
+   [Fourier-host](hierarchical-ir-spec.md#fourier-request-host) extensions retain
+   explicit leaf-reader, native/decoder and provider premises. Discharge these
+   against the actual immutable artifact and independent request, preserving
+   phase, output order, zero return and complete instruments. Remaining rules,
+   source integration and R14/H1–H5 are open; all external schemas stay disabled.
+   The [rule inventory](rule-inventory.md) records exact component coverage and
+   saved validation. Keep pinned registry types and temporary APIs audited until
+   their specified compatible migration/removal conditions hold.
+4. Establish source/Rust adequacy and actual backend-pass preservation. Cover
+   typing, effects, names, snapshots, tombstones, pending/caller frames and the
+   open [scope-trace premises](lowering-state-refinement.md), then realize
+   [C1–C5](source-ir-correspondence.md) and transfer S1–S4, F1–F5 and Q1–Q3.
+   Retain independent IR checks at every [pipeline boundary](lean-kernel-migration.md#pipeline-migration-with-a-stable-ir-verification-boundary).
+   Lowering, optimization, synthesis and emission need proofs of their actual
+   definitions; external candidate search may remain untrusted when a proved
+   [LeafRealizer](lean-kernel-migration.md#external-search-and-the-leafrealizer-checker)
+   checks its result. PR-C1–C4 and RS-C1–C5 must bind actual output and resource
+   bounds to the checked input and requested meaning.
+5. Keep numerical execution, protocol properties, algorithm success and hardware
+   realization separate. Preserve Bell, partial measurement/discard, feedback
+   and phase-oracle regressions. Finite tests or library imports cannot complete
+   a general implementation theorem.
 
-The verifier/evidence boundary is prioritized because it must check any IR
-producer, including a faulty frontend or AI. Source adequacy remains necessary
-for source-level claims; it is deferred in proof order, not removed.
-
-The resource model deliberately avoids general entanglement detection. Ownership
-tracks operation rights; quantum validity needs whole-system semantics and
-checked cleanup evidence. Even completing these source theorems would not
-prove a protocol's state-preservation property, an algorithm's success
-probability, a hardware realization, or the physical no-cloning theorem.
+Independent verification precedes general frontend adequacy because it must
+check every producer. Source adequacy remains required for source-level claims.
+Ownership tracks operation rights without general entanglement detection;
+whole-system validity and clean release require their own checked evidence.
 
 ### Temporary proof markers
 

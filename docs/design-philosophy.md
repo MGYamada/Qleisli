@@ -129,11 +129,6 @@ are now implemented and checked, meeting v0.1's declared finite profile.
 Generalization for v1 remains incomplete. Keep existing paper proofs, finite
 regression checks, and a correctness proof of the entire implementation distinct.
 
-[Quantum bookkeeping is the language's responsibility](quantum-bookkeeping.md)
-is a design note presenting these principles from the algorithm author's
-perspective. It considers ownership, auxiliary cleanup, control, and phase as
-one language responsibility and proposes QPE as an early design acceptance test.
-
 **Abstraction criterion adopted for the v0.x plan (2026-09-27):** each new
 abstraction must identify an obligation it removes from the algorithm author,
 the evidence that replaces that obligation, and the independent check that

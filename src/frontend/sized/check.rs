@@ -328,14 +328,7 @@ fn imports(program: &ParsedProgram, module: &str) -> Result<BTreeMap<String, Str
     let mut result = BTreeMap::new();
     for (path, span) in &source.imports {
         if Primitive::lookup(path).is_none() {
-            let (owner, f) = definition(program, path, *span)?;
-            if owner != module && !f.public {
-                return Err(err(
-                    "visibility",
-                    *span,
-                    format!("dependency {path} is private"),
-                ));
-            }
+            visible_definition(program, path, Some(module), *span)?;
         }
         let name = path.rsplit("::").next().unwrap();
         if name == source.function.name && path != &format!("{module}::{name}") {
@@ -353,6 +346,24 @@ fn imports(program: &ParsedProgram, module: &str) -> Result<BTreeMap<String, Str
         .entry(source.function.name.clone())
         .or_insert_with(|| format!("{module}::{}", source.function.name));
     Ok(result)
+}
+
+/// Host entry selection has no module privilege. Providers are selected in the
+/// entry module's context, with the same visibility rule as source imports.
+fn visible_definition<'a>(
+    program: &'a ParsedProgram,
+    path: &str,
+    requester: Option<&str>,
+    span: Span,
+) -> Result<(&'a str, &'a Function)> {
+    let (owner, function) = definition(program, path, span)?;
+    if requester != Some(owner) && !function.public {
+        return Err(
+            err("visibility", span, format!("dependency {path} is private"))
+                .in_module(requester.unwrap_or(owner)),
+        );
+    }
+    Ok((owner, function))
 }
 
 pub(super) fn program(program: &ParsedProgram) -> Result<()> {
@@ -962,7 +973,7 @@ pub(super) fn instantiate(
     naturals: &BTreeMap<String, u32>,
     operations: &BTreeMap<String, OperationBinding>,
 ) -> Result<()> {
-    let (module, f) = definition(program, entry, Span::default())?;
+    let (module, f) = visible_definition(program, entry, None, Span::default())?;
     let result = (|| {
         let mut scope = concrete_scope(f, naturals)?;
         let expected: BTreeSet<_> = f
@@ -986,7 +997,8 @@ pub(super) fn instantiate(
         for p in &f.parameters {
             if let Parameter::Operation(name, b) = p {
                 let binding = &operations[name];
-                let (_, provider) = definition(program, &binding.definition, f.span)?;
+                let (_, provider) =
+                    visible_definition(program, &binding.definition, Some(module), f.span)?;
                 if provider
                     .parameters
                     .iter()
@@ -1039,4 +1051,28 @@ pub(super) fn instantiate(
         Ok(())
     })();
     result.map_err(|e| e.in_module(module))
+}
+
+#[cfg(test)]
+mod visibility_tests {
+    use super::*;
+
+    #[test]
+    fn private_definitions_remain_visible_in_their_own_module() {
+        let program = ParsedProgram::parse(BTreeMap::from([(
+            "local".into(),
+            "use local::f; unitary fn f(q: Q<Bit>) -> Q<Bit> { q }".into(),
+        )]))
+        .unwrap();
+        let span = Span::default();
+        assert!(visible_definition(&program, "local::f", Some("local"), span).is_ok());
+        for requester in [None, Some("other")] {
+            assert_eq!(
+                visible_definition(&program, "local::f", requester, span)
+                    .unwrap_err()
+                    .code(),
+                "visibility"
+            );
+        }
+    }
 }

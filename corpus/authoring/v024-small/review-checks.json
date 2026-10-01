@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "kind": "curated-review-migration",
+  "created_utc": "2026-10-01T02:57:29.021593+00:00",
+  "context": "Real checks of saved revised sources; aliases only, not a model benchmark.",
+  "results": [
+    {
+      "project": "pennylane_demos/rx_negative_quarter",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/rx_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/ry_negative_quarter",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ry_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/add_minus_one2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/qualtran/add_minus_one2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/qrom1",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/qualtran/qrom1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/bell_change_zx2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bell_change_zx2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/zero_control_x2",
+      "argv": [
+        "/private/tmp/qleisli-v024-review-tests/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/zero_control_x2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

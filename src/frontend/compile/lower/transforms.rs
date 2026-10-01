@@ -47,7 +47,9 @@ impl Lowerer<'_, '_> {
         let target = self.compiler.resolve(module, name)?;
         let key = match &target {
             Callee::User(key) => key.clone(),
-            Callee::Sealed(namespace, gate) => (namespace.clone(), gate.clone()),
+            // The polymorphic sealed aliases have a different dimension for
+            // each exact basis tree. Never reuse a Bit matrix for Unit/product.
+            Callee::Sealed(namespace, gate) => (namespace.clone(), format!("{gate}:{basis}")),
         };
         if let Some(matrix) = self.compiler.closed_meanings.get(&key) {
             let cost = matrix.entries().len();
@@ -72,35 +74,66 @@ impl Lowerer<'_, '_> {
                 )
             }
             Callee::Sealed(_, gate) => {
-                let gate = match gate.as_str() {
-                    "h" => SingleGate::H,
-                    "x" => SingleGate::X,
-                    "z" => SingleGate::Z,
-                    "t" => SingleGate::T,
-                    _ => unreachable!("static target validated"),
-                };
-                let raw = RawProgram {
-                    quantum_inputs: vec![QuantumPort {
-                        token: TokenId(0),
-                        wires: vec![WireId(0)],
-                        shape: BasisShape::BIT,
-                    }],
-                    classical_inputs: vec![],
-                    operations: vec![RawOp::Gate {
-                        gate,
-                        input: TokenId(0),
-                        output: TokenId(1),
-                    }],
-                    quantum_outputs: vec![TokenId(1)],
-                    classical_outputs: vec![],
-                    declared_effect: Effect::Unitary,
-                };
-                let verified = crate::verify(raw).expect("fixed sealed primitive");
-                crate::contract::function::verified_meaning(
-                    &verified,
-                    &signature,
-                    &mut self.compiler.exact_work,
-                )
+                if matches!(gate.as_str(), "s" | "sdg" | "tdg" | "id" | "phase_eighth") {
+                    // Independent expectations use the declared diagonal/scalar
+                    // equations, not the candidate lowering or its T expansion.
+                    let dimension = 1 << basis.basis_bits().expect("basis");
+                    self.compiler
+                        .exact_work
+                        .charge(dimension * dimension)
+                        .map_err(|e| self.compiler.op_error(module, name.span, e.into()))?;
+                    let exponent = match gate.as_str() {
+                        "s" => 2,
+                        "sdg" => 6,
+                        "tdg" => 7,
+                        "phase_eighth" => 1,
+                        _ => 0,
+                    };
+                    let entries = (0..dimension * dimension)
+                        .map(|index| {
+                            let row = index / dimension;
+                            let column = index % dimension;
+                            if row != column {
+                                Exact::zero()
+                            } else if matches!(gate.as_str(), "s" | "sdg" | "tdg") && row == 0 {
+                                Exact::one()
+                            } else {
+                                Exact::phase(exponent)
+                            }
+                        })
+                        .collect();
+                    Matrix::new(dimension, dimension, entries).map_err(Into::into)
+                } else {
+                    let gate = match gate.as_str() {
+                        "h" => SingleGate::H,
+                        "x" => SingleGate::X,
+                        "z" => SingleGate::Z,
+                        "t" => SingleGate::T,
+                        _ => unreachable!("static target validated"),
+                    };
+                    let raw = RawProgram {
+                        quantum_inputs: vec![QuantumPort {
+                            token: TokenId(0),
+                            wires: vec![WireId(0)],
+                            shape: BasisShape::BIT,
+                        }],
+                        classical_inputs: vec![],
+                        operations: vec![RawOp::Gate {
+                            gate,
+                            input: TokenId(0),
+                            output: TokenId(1),
+                        }],
+                        quantum_outputs: vec![TokenId(1)],
+                        classical_outputs: vec![],
+                        declared_effect: Effect::Unitary,
+                    };
+                    let verified = crate::verify(raw).expect("fixed sealed primitive");
+                    crate::contract::function::verified_meaning(
+                        &verified,
+                        &signature,
+                        &mut self.compiler.exact_work,
+                    )
+                }
             }
         }
         .map_err(|e| self.compiler.op_error(module, name.span, e))?;

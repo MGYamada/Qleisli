@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T01:26:10.668343+00:00",
+  "compiler_version": "0.2.3",
+  "compiler_sha256": "f0e060d5c8e2b606aa73519db82a0446749d2ceee92f75ce12b8c9502318ebf1",
+  "results": [
+    {
+      "project": "pennylane_demos/rx_negative_quarter",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/rx_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/ry_negative_quarter",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ry_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/add_minus_one2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/add_minus_one2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/qrom1",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/qrom1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/bell_change_zx2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bell_change_zx2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/zero_control_x2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/zero_control_x2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

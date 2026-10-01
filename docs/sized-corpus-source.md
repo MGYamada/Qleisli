@@ -368,6 +368,13 @@ and Adjoint forms can be prepared when their access is declared; this adds no
 execution support to the experimental Python producer. Body elaboration is a
 separate step; source preservation and independent acceptance remain obligations.
 
+Module visibility also applies to direct specialization: host/API/CLI entry
+selection occurs outside the source modules and requires a `pub` definition.
+An `OperationBinding` provider resolves in the selected entry module's context:
+cross-module providers must be `pub`, including providers unused by the body.
+Private definitions remain accessible inside their own module. Fully qualified
+paths do not bypass this rule; violations report `visibility`, as imports do.
+
 Preparation limits are 64 modules, 64 KiB per module, 1 MiB total, 10,000 tokens
 per module, syntax nesting 64, natural-expression depth 128 and tuple arity 64.
 Inferred types have depth at most 64 and 4,096 cells; a scope retains at most
@@ -502,6 +509,8 @@ does not include required work or the exhausted subcomponent.
 
 `run` returns all complex state/branch coefficients from `--basis=N` (default 0).
 `sample` is observing-only and requires `--shots=1..1024` and `--seed=N`.
+`--basis` is accepted only by `run` and `sample`; `check` rejects it as usage
+error (exit 2) and performs no input-state construction or execution-width check.
 `emit-proposal` requires `--output=PATH` and no kernel; its JSON is untrusted.
 The existing finite commands retain their contracts. This bounded Rust route does
 not complete general source preservation or the remaining R14/H1–H5 gates.
