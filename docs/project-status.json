@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Development 0.2.3 selected on 2026-09-30 for Qleisli edition 2026; not tagged or published. Latest published release: **0.2.2**.",
+  "release_state": "Release candidate 0.2.3 prepared on 2026-10-01 for Qleisli edition 2026; publication pending. Latest published release: **0.2.2**.",
   "current": [
     {
       "topic": "Use today",
@@ -23,8 +23,13 @@
       "detail": "Corpus: 36 finite cases. [The release record](releases/v0.2.2.md#successful-publication-2026-09-30) binds all seven CI jobs, clean distribution, fresh registry installation, hosted docs and GitHub source downloads to the immutable tag/package. Compatible review fixes and remaining limits are recorded separately."
     },
     {
+      "topic": "0.2.3 publication preparation",
+      "state": "Implementation integrated; final candidate release checks pending",
+      "detail": "[PR 104](https://github.com/MGYamada/Qleisli/pull/104) integrates the implemented edition, VM-23 and review/QPE repairs after all seven source/PR CI jobs and clean distribution pass. The [release record](releases/v0.2.3.md#integrated-implementation-and-release-preparation-2026-10-01) selects the final candidate scope and migration. Three [logo concepts](../assets/logo-concepts/v0.4.0/README.md) retain their original branch history for v0.4.0 discussion. Final candidate CI, package/dry-run results and publication remain separate steps."
+    },
+    {
       "topic": "v0.2.2 review repairs",
-      "state": "Compatible frontend and QFT repairs in development 0.2.3",
+      "state": "Compatible frontend and QFT repairs integrated in 0.2.3",
       "detail": "[Issue 102](https://github.com/MGYamada/Qleisli/issues/102) and [validation](../tests/fixtures/review_v022/validation.json) record 530 passing all-target tests on Rust 1.98.1/1.85.0. Repairs cover the stdin race, capture diagnostics, commuting QFT schedules/root factoring, lowering preflight and corpus providers. The 4,000-case ownership comparison agrees; paired Rust/Python checking retains explicit scope differences. Native QFT widths 1\u20133 match. [QPE capacity repair](../tests/fixtures/qpe_capacity_v023/README.md) accepts both tested (1,3) schedules at 1,996,759 structural/708 exact units under the unchanged 2,000,000 cap. Final Rust/MSRV all-target checks pass 531 tests; 34 optional tests are explicit."
     },
     {
