@@ -39,6 +39,12 @@
     "temporary-venv/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as --opt opt": {
       "passed": 4,
       "skipped": 0
+    },
+    "installed matching Python package / test_connections.py": {
+      "passed": 10,
+      "skipped": 0,
+      "package_version": "0.2.4",
+      "pyqir": "0.12.5"
     }
   },
   "independent_source_comparison": {
@@ -101,12 +107,20 @@
     "scripts/test_interop_external.py": "4f4af1d2520119ec5f4fe2cbd26cdee0d93042f0a3af8cb6b8782e41498e49f0",
     "tests/fixtures/verification_v022/inventory.json": "e21327b5665920416ed2d9f688d7d2e4826d0f1c58f1bd343996ad2b4a450978",
     "corpus/manifest.json": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
-    "corpus/semantic_faults/manifest.json": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c"
+    "corpus/semantic_faults/manifest.json": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
+    "scripts/test_connections.py": "13d1141094054933fcc3e281da0078d8e1433e26cc3ca836db630f80f266f991"
   },
   "final_checks": {
     "documentation": "generated overview/rule inventory and local links passed",
     "rust_fmt": "passed",
     "git_diff_check": "passed",
     "verification_inventory": "passed; 232 constructors, 18 boundaries; Rust authority unchanged"
+  },
+  "ci_followup": {
+    "first_head": "178d94358d84f44f2e185be126ef80380f26dd0e",
+    "run": "https://github.com/MGYamada/Qleisli/actions/runs/36857395371",
+    "failure": "Python round-trip compared floating distributions and work counts for circuits changed by exact target phase folding",
+    "roundoff_observed": 1.1102230246251565e-16,
+    "repair": "compare exact ordered bits and probabilities within 1e-12; seeded bits agree; validate per-circuit shot totals and shorter emitted work; no runtime probability/accounting change"
   }
 }

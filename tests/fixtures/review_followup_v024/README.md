@@ -28,6 +28,12 @@ for small QFT/control cases. The
 uses the reference OpenQASM parser and LLVM verifier. These numerical checks do
 not establish a transformation theorem or a Resource Safety certificate.
 
+The installed [Python connection tests](../../../scripts/test_connections.py)
+compare ordered outcomes within the numerical tolerance and validate each
+circuit's own work totals. Exact phase folding changes floating evaluation order
+and reduces the emitted work; source and target counters must not be equated.
+The initial CI failure and its repair are recorded in the validation file.
+
 Breaking/future obligations are recorded with concrete experiments in their
 existing Issues: [borrowing 29](https://github.com/MGYamada/Qleisli/issues/29),
 [prelude 58](https://github.com/MGYamada/Qleisli/issues/58),
