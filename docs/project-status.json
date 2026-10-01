@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Version **0.2.4** selected on 2026-10-01; crates.io and GitHub publication now authorized and candidate verification in progress. Latest completed publication: **0.2.3**.",
+  "release_state": "Version **0.2.4** published and verified on 2026-10-01: annotated source tag, crates.io package, fresh registry installation, docs.rs and GitHub Release. [Publication evidence](../tests/fixtures/releases/v0.2.4/publication.json) binds the immutable source and artifacts.",
   "current": [
     {
       "topic": "Use today",
@@ -24,8 +24,8 @@
     },
     {
       "topic": "Latest release",
-      "state": "0.2.4 release candidate; publication authorized",
-      "detail": "[0.2.4 scope and authorization](releases/v0.2.4.md) cover corpus, compatible review/frontend fixes and VM-24. Final clean-source CI, distribution, tagging and upload are separate results. [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01) remains the latest completed publication until upload/readback succeed."
+      "state": "0.2.4 published and verified on 2026-10-01",
+      "detail": "[PR 143](https://github.com/MGYamada/Qleisli/pull/143) integrates the verified source. [Publication evidence](../tests/fixtures/releases/v0.2.4/publication.json) records all seven CI jobs, matching macOS/Linux archives, registry checksum and fresh installation, docs.rs and complete GitHub downloads. [Release record](releases/v0.2.4.md#successful-publication-2026-10-01) preserves source/artifact immutability; PyPI and platform binaries are separate."
     },
     {
       "topic": "0.2.3 publication",
@@ -39,8 +39,8 @@
     },
     {
       "topic": "v0.2.4 bug repairs",
-      "state": "Manifest and sized frontend fixes implemented in the working tree",
-      "detail": "[Issues 116\u2013119](https://github.com/MGYamada/Qleisli/issues/116) and [validation](../tests/fixtures/issue_fixes_v024/validation.json): portable manifest symlink/non-file rejection, direct sized entry/provider visibility, execution-only --basis handling, and a targeted diagnostic/documentation for the existing Linux procfs requirement. Rust all-target, Clippy and native sized CLI checks pass on macOS; final-commit Linux checking and publication remain separate."
+      "state": "Manifest and sized frontend fixes published in 0.2.4",
+      "detail": "[Issues 116\u2013119](https://github.com/MGYamada/Qleisli/issues/116) and [development validation](../tests/fixtures/issue_fixes_v024/validation.json) cover portable manifest symlink/non-file rejection, sized entry/provider visibility, execution-only --basis and the existing Linux procfs diagnostic. [Final publication validation](../tests/fixtures/releases/v0.2.4/publication.json) adds exact-commit Linux Rust/MSRV and native CLI checks; macOS passes 542 all-target tests, Linux 544."
     },
     {
       "topic": "Finite corpus development",
@@ -81,9 +81,9 @@
   "milestones": [
     {
       "id": "M0",
-      "state": "Finite foundation retained; edition 2026 and 0.2.3 published",
-      "evidence": "[0.2.3 record](releases/v0.2.3.md#successful-publication-2026-10-01); [publication evidence](../tests/fixtures/releases/v0.2.3/publication.json)",
-      "open": "Later verification packets remain pending. Exact-source CI and local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and archive comparisons pass for 0.2.3."
+      "state": "Finite foundation retained; edition 2026 and 0.2.4 published",
+      "evidence": "[0.2.4 record](releases/v0.2.4.md#successful-publication-2026-10-01); [publication evidence](../tests/fixtures/releases/v0.2.4/publication.json)",
+      "open": "Later verification packets remain pending. Exact-source CI, local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and archive comparisons pass for 0.2.4."
     },
     {
       "id": "M1",

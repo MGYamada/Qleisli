@@ -1,0 +1,311 @@
+{
+  "format": "qleisli.release-publication",
+  "version": 1,
+  "release": "0.2.4",
+  "recorded_utc": "2026-10-01T04:42:45.272066+00:00",
+  "status": "published and verified",
+  "authorization": "User explicitly requested crates.io and GitHub Release publication on 2026-10-01.",
+  "source": {
+    "clean": true,
+    "commit": "86ce29552696133de989ce2d61893f64cd23d3f5",
+    "tree": "20ec7194ae31a86575523142c03a6900772c7c47",
+    "tag": "v0.2.4",
+    "annotated_tag_object": "f974a81d73d119c6dc5410bb45908c184fe215ad",
+    "local_and_remote_peeled_commit_match": true,
+    "pull_request": "https://github.com/MGYamada/Qleisli/pull/143",
+    "merge_commit": "225baa1027615203feb1c360b3f1de3771d76112",
+    "merge_tree_matches_candidate": true,
+    "result_record_is_after_tag": true
+  },
+  "ci": {
+    "candidate": "86ce29552696133de989ce2d61893f64cd23d3f5",
+    "all_seven_jobs_success_on_both_events": true,
+    "runs": [
+      {
+        "conclusion": "success",
+        "databaseId": 36814448188,
+        "event": "push",
+        "headSha": "86ce29552696133de989ce2d61893f64cd23d3f5",
+        "jobs": [
+          {
+            "conclusion": "success",
+            "name": "rust-msrv",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "lean",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "distribution",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "lean-kernel",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "docs",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "interop",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "rust",
+            "status": "completed"
+          }
+        ],
+        "status": "completed",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36814448188"
+      },
+      {
+        "conclusion": "success",
+        "databaseId": 36814467368,
+        "event": "pull_request",
+        "headSha": "86ce29552696133de989ce2d61893f64cd23d3f5",
+        "jobs": [
+          {
+            "conclusion": "success",
+            "name": "rust",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "docs",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "rust-msrv",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "interop",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "lean-kernel",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "lean",
+            "status": "completed"
+          },
+          {
+            "conclusion": "success",
+            "name": "distribution",
+            "status": "completed"
+          }
+        ],
+        "status": "completed",
+        "url": "https://github.com/MGYamada/Qleisli/actions/runs/36814467368"
+      }
+    ],
+    "linux_rust_all_target_tests": {
+      "rust": {
+        "passed": 544,
+        "failed": 0,
+        "ignored": 34,
+        "suites": 65
+      },
+      "rust-msrv": {
+        "passed": 544,
+        "failed": 0,
+        "ignored": 34,
+        "suites": 65
+      }
+    },
+    "local_macos_all_target_tests": {
+      "passed": 542,
+      "failed": 0,
+      "ignored": 34
+    },
+    "platform_difference": "Linux enables two additional filesystem regressions; no failures on either platform.",
+    "lean_audit": {
+      "project_declarations": 2856,
+      "kernel_transport_declarations": 8321,
+      "axioms_used": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "build_audit_tests_source_and_compiled_runtime_policy_fresh_replay": "passed",
+      "explicit_native_python_and_small_source_suites": "passed"
+    },
+    "log_sha256": "0b87cebbb265b7406fa3c18d47f047d4ef30b5ed0510822c5fe1987f9dd0f690"
+  },
+  "local_and_linux_distribution": {
+    "status": "passed",
+    "clean_candidate": true,
+    "crate_files": 2173,
+    "source_files": 2179,
+    "crate_sha256": "349300f79df59a975871acaef5196e0d5dc75400dbea65faa675d87fc819aa10",
+    "source_tar_sha256": "9af5a839449d6b5d7bd2bb27616f5ce6c0ca3cc21de064a69d61bd3c2a196bf2",
+    "linux_crate_matches": true,
+    "linux_source_matches": true,
+    "local_report_sha256": "b8a5cd007b0ad413e1b24c09db7daf54042bfa82ff058476e03a8e133f3fd624",
+    "linux_report_sha256": "4de09f392e966c769e212b47df262823a185cada937b7de1331cba6e6953177c",
+    "generated_lock_sha256": "9e28950492c06f13cf8b784e421248bea6105e5c66b9e19f321f36382c0f8c29",
+    "checks": [
+      "Cargo verification and offline locked extracted metadata/install",
+      "Packaged and complete-source license/provenance",
+      "Warning-free rustdoc and doctest",
+      "Complete-source Rust all-target and nested research tests",
+      "Shipped quickstart with empty helper-tool PATH"
+    ],
+    "dry_run": "cargo publish --dry-run --locked --registry crates-io passed with matching local/Linux crate hash"
+  },
+  "registry": {
+    "url": "https://crates.io/crates/qleisli/0.2.4",
+    "created_at": "2026-10-01T04:39:46.098377Z",
+    "sha256": "349300f79df59a975871acaef5196e0d5dc75400dbea65faa675d87fc819aa10",
+    "vcs": {
+      "git": {
+        "sha1": "86ce29552696133de989ce2d61893f64cd23d3f5"
+      },
+      "path_in_vcs": ""
+    },
+    "license": "Apache-2.0",
+    "rust_version": "1.85",
+    "yanked": false,
+    "matches_clean_validated_crate": true,
+    "publish_command": "cargo publish --locked --registry crates-io --target-dir <isolated-target>",
+    "publish_result": "Uploaded and Published qleisli v0.2.4; exit 0",
+    "publish_log_sha256": "0046c7871a236d7d55bafee93952fb2073294d3d57b88e83475bf88818e1f5bb",
+    "fresh_install": {
+      "command": "CARGO_HOME=<empty-cargo-home> cargo install qleisli --version '=0.2.4' --locked --registry crates-io --root <empty-install-root> --target-dir <empty-target>",
+      "result": "passed",
+      "shipped_check_installation_py": "passed against the downloaded crate and installed executable",
+      "checks": [
+        "Bell check/run/sample in text and JSON",
+        "embedded qft2",
+        "reject measured-owner reuse"
+      ],
+      "execution": "temporary directory; empty helper-tool PATH",
+      "install_log_sha256": "d9537be8bed5ea7d47b117bc55d6a8d9af1abc24a1520dfdeb0297f642930ccc"
+    },
+    "readme": "Browser confirmed version 0.2.4, edition 2026, Qargo.toml, matching Bell source, install command and absolute pinned links.",
+    "pinned_readme_targets": {
+      "tag": "v0.2.4",
+      "status": "passed",
+      "links": [
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/TRUST_BOUNDARY.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/TRUST_BOUNDARY.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "6e8de6d1bde5d9ef8a509783a925e163a20836e27458d3dc1f1bc714b2be4706"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/crates-io-release.md#name-migration-from-github-releases-through-020",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/docs/crates-io-release.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "54dbe001a057e3ec88838bb92e22980e043912a6b8e2ba81248e90ef8d85807e"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/interop-m1.1.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/docs/interop-m1.1.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "6c9c479af8953647013d5232aa09ef4c4ddefb45073032d5393959bfa443639a"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/language-editions.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/docs/language-editions.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "13c7d5303b9295e4768c307f541fa64d3777b455369718c929edd26bb204aa6b"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/qli-quick-reference.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/docs/qli-quick-reference.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "65da401e71c7f25c43580b0fec2f3a22939df28632af927637dbeaba34578e5d"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/releases/v0.2.4.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/docs/releases/v0.2.4.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "86e2e59573647b5bda23a8c554337c588f195a37445fd70c1c647960dac24c5d"
+        },
+        {
+          "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.4/python/README.md",
+          "raw_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.4/python/README.md",
+          "status": 200,
+          "matches_tagged_source": true,
+          "sha256": "670c1bb9caea920bba212a87af08961ddc71a214c106b8e9c12fd9296b4e7885"
+        }
+      ]
+    }
+  },
+  "docs_rs": {
+    "url": "https://docs.rs/qleisli/0.2.4/qleisli/",
+    "build_url": "https://docs.rs/crate/qleisli/0.2.4/builds/4664672",
+    "build_status": "All builds succeeded; actual build log and rendered API verified in browser",
+    "rustc": "1.101.0-nightly (21b707e3f 2026-09-30)",
+    "docsrs_revision": "6b0955898af88db642c5ce7420d9dbef2c65d5d9",
+    "rendered_api_version": "0.2.4",
+    "reference_links": "Three pre-existing library-doc reference links retain their live v0.2.3 targets; registry README targets are all v0.2.4.",
+    "duration_seconds": 10
+  },
+  "github_release": {
+    "id": 400655323,
+    "html_url": "https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4",
+    "tag_name": "v0.2.4",
+    "name": "Qleisli v0.2.4",
+    "published_at": "2026-10-01T04:41:26Z",
+    "draft": false,
+    "prerelease": false,
+    "latest": true,
+    "notes_readback_matches": true,
+    "notes_sha256": "860ea5b8f8f8375a636df4348efc3329b7f66c39067346c1114cd004922f9dc5",
+    "custom_assets": 0,
+    "archives": {
+      "tag": "v0.2.4",
+      "commit": "86ce29552696133de989ce2d61893f64cd23d3f5",
+      "status": "passed",
+      "archives": {
+        "v0.2.4.tar.gz": {
+          "sha256": "5d7b2c5cfe5c82d6ff28fb233bc78f5985c41f930600fff32381f7e07120196d",
+          "files": 2179,
+          "bytes_match_tagged_source": true,
+          "git_executable_modes": "matched",
+          "url": "https://github.com/MGYamada/Qleisli/archive/refs/tags/v0.2.4.tar.gz"
+        },
+        "v0.2.4.zip": {
+          "sha256": "f4267b095ce15ed6162ae7e75f4e0e3fe4fbcc4006b54c66d6f570af980e9b67",
+          "files": 2179,
+          "bytes_match_tagged_source": true,
+          "git_executable_modes": "not preserved by the GitHub ZIP container",
+          "url": "https://github.com/MGYamada/Qleisli/archive/refs/tags/v0.2.4.zip"
+        }
+      }
+    }
+  },
+  "observed_failures_and_resolution": [
+    "Complete-tree whitespace validation found trailing blank lines in two retained validation transcripts. Presentation was normalized and checksum records refreshed before any candidate push/tag/publication; underlying test results were unchanged.",
+    "Initial crates.io API request without the project User-Agent returned HTTP 403; the identified project User-Agent returned the correct prepublication 404 and successful postpublication response.",
+    "Initial docs.rs build-in-progress state resolved to a successful hosted build."
+  ],
+  "not_performed": [
+    "PyPI publication",
+    "Custom platform binary publication",
+    "New maximum-size corpus generation/validation",
+    "Transfer of production acceptance authority to Lean"
+  ],
+  "immutability": "The annotated tag and registry artifact are fixed. This later result record does not replace their source commit."
+}
