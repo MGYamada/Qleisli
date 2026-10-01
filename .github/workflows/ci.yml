@@ -2,17 +2,67 @@ name: Specification and implementation checks
 
 on:
   push:
+    branches: [main]
+    tags: ['v*']
   pull_request:
   workflow_dispatch:
+    inputs:
+      cache:
+        description: Cargo dependency archives (all validation still runs)
+        type: choice
+        options: [enabled, disabled]
+        default: enabled
+
+# Only ordinary PRs supersede each other. Release PRs, tags and manual full runs
+# have unique groups, so even pending exact-source validation is never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') }}
 
 permissions:
   contents: read
 
 jobs:
-  rust:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.select.outputs.profile }}
+      head: ${{ steps.select.outputs.head }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+      - name: Test fail-closed routing and required-check aggregation
+        run: |
+          python3 scripts/test_ci_profiles.py
+          python3 scripts/test_measure_ci.py
+      - name: Select validation from the exact commit and both sides of its diff
+        id: select
+        run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
+      - name: Retain selection inputs and exact commit binding
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ci-selection-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-selection.json
+          if-no-files-found: error
+  check-rust:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the tested Rust toolchain
         run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
       - run: cargo +1.98.1 fmt --check
@@ -48,10 +98,23 @@ jobs:
       - run: cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
 
-  rust-msrv:
+  check-rust-msrv:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.85.0-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the minimum supported Rust toolchain
         run: rustup toolchain install 1.85.0 --profile minimal --component clippy
       - run: cargo +1.85.0 test --all-targets
@@ -68,10 +131,23 @@ jobs:
       - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
 
-  macos-source:
+  check-macos-source:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.85.0-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install MSRV and Intel macOS compilation target
         run: rustup toolchain install 1.85.0 --profile minimal --target x86_64-apple-darwin
       - name: Exercise descriptor-relative source loading on macOS
@@ -83,10 +159,23 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: '10.12'
         run: cargo +1.85.0 build --locked --target x86_64-apple-darwin --bin qleisli
 
-  interop:
+  check-interop:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install validators and the tested Rust toolchain
         run: |
           rustup toolchain install 1.98.1 --profile minimal
@@ -106,7 +195,9 @@ jobs:
           llvm-as-18 tests/fixtures/interop/independent.ll -o /tmp/qleisli-independent.bc
           opt-18 -passes=verify -disable-output /tmp/qleisli-independent.bc
 
-  lean:
+  check-lean:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -114,18 +205,32 @@ jobs:
         with:
           lake-package-directory: lean
           auto-config: 'false'
+          use-github-cache: 'false'
           build: 'true'
       - name: Audit every project declaration for forbidden axioms
         working-directory: lean
         run: lake env lean -DwarningAsError=true Audit.lean
       - name: Bind shipped schema types to rebuilt declarations and audited executable sources
         run: python3 scripts/check_schema_registry.py
-  lean-kernel:
+  check-lean-kernel:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     env:
       RUSTUP_TOOLCHAIN: 1.98.1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the tested Rust toolchain for native host comparisons
         run: rustup toolchain install 1.98.1 --profile minimal
       - name: Fetch Rust dependencies before offline native host comparisons
@@ -136,6 +241,7 @@ jobs:
         with:
           lake-package-directory: lean-kernel
           auto-config: 'false'
+          use-github-cache: 'false'
           build: 'true'
           use-mathlib-cache: 'false'
       - name: Audit axioms, unsafe/partial declarations and runtime replacements
@@ -305,10 +411,23 @@ jobs:
         run: python3 scripts/test_hierarchical_qft.py --construction shared-gradient
       - name: Differential and process-boundary checks
         run: cargo +1.98.1 run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test
-  distribution:
+  check-distribution:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the tested Rust toolchain
         run: |
           rustup toolchain install 1.98.1 --profile minimal
@@ -328,7 +447,8 @@ jobs:
             ${{ runner.temp }}/qleisli-distribution-artifacts-*/*.crate
             ${{ runner.temp }}/qleisli-distribution-artifacts-*/*-source.tar
           if-no-files-found: error
-  docs:
+  check-docs:
+    needs: changes
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -361,3 +481,28 @@ jobs:
       - run: python3 scripts/check_semantic_contract_examples.py
       - name: Check whitespace throughout the committed tree
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+
+  required:
+    # Stable public check names preserve the existing branch-protection contexts.
+    # Every context fails if selection or ANY required suite fails/is missing.
+    name: ${{ matrix.check }}
+    if: always()
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [rust, rust-msrv, macos-source, interop, lean, lean-kernel, distribution, docs]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Enforce complete selected validation and exact commit binding
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: python3 scripts/ci_profiles.py --gate --report "$RUNNER_TEMP/required-results.json"
+      - name: Retain required-check and dependency-cache observations
+        if: always() && matrix.check == 'docs'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ci-validation-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/required-results.json
+          if-no-files-found: error
