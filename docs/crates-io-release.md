@@ -1,6 +1,6 @@
 # Qleisli release procedure
 
-Reusable procedure illustrated with published 0.2.4; substitute the selected candidate consistently. [Latest publication](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01) has immutable evidence; development 0.2.5 is unpublished. Cargo selects the version; [versioning](versioning.md) and feature/proof gates govern release. Ship edition 2026 manifests, full std qrate and checked quickstarts.
+Reusable procedure illustrated with published 0.2.5; substitute the next selected candidate consistently. [Latest publication](releases/v0.2.5.md#successful-publication-2026-10-02) has immutable evidence. Cargo selects the version; [versioning](versioning.md) and feature/proof gates govern release. Ship edition 2026 manifests, full std qrate and checked quickstarts.
 
 ## Release sequence
 
@@ -11,7 +11,7 @@ Complete each step separately with the evidence below. Read all applicable [CI j
 | Select development version | Synchronized manifests/runtime version, `Unreleased` changelog, current status and a release record; no publication claim. |
 | Finalize candidate | Compatibility and feature-gate dispositions, release notes/date, a clean commit containing all intended release changes. |
 | Validate exact commit | Required local checks, every applicable CI job and clean distribution report with commit and artifact hashes. |
-| Tag and push source | Annotated `v0.2.4` tag on that verified commit and remote readback; version-pinned README links become available. |
+| Tag and push source | Annotated `v0.2.5` tag on that verified commit and remote readback; version-pinned README links become available. |
 | Publish Rust package | Successful `cargo publish`, registry availability and matching downloaded `.crate` identity. |
 | Verify installed package/docs | Fresh exact-version registry installation, shipped quickstart, rendered registry README and actual docs.rs build. |
 | Publish GitHub Release | Release on the existing verified tag, prepared notes and verified complete source downloads. |
@@ -77,15 +77,15 @@ Rehearsal commands below publish nothing. Installation checker uses empty helper
    cargo package --list --allow-dirty --offline
    cargo package --allow-dirty --offline
    qleisli_release_dir="$(mktemp -d)"
-   cargo install --path target/package/qleisli-0.2.4 --offline --locked \
+   cargo install --path target/package/qleisli-0.2.5 --offline --locked \
      --bin qleisli --root "$qleisli_release_dir" \
      --target-dir "$qleisli_release_dir/build"
    python3 scripts/check_installation.py "$qleisli_release_dir/bin/qleisli" \
-     --root target/package/qleisli-0.2.4
+     --root target/package/qleisli-0.2.5
    ```
 
    ```sh
-   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.4-distribution.json
+   python3 scripts/check_distribution.py --report /tmp/qleisli-0.2.5-distribution.json
    ```
 
 ## Final candidate and publication
@@ -105,10 +105,10 @@ cargo publish --dry-run --locked --registry crates-io
 ```
 
 ```sh
-git tag -a v0.2.4 -m "Qleisli v0.2.4"
-git show --no-patch v0.2.4
-git push origin refs/tags/v0.2.4
-git ls-remote origin refs/tags/v0.2.4 'refs/tags/v0.2.4^{}'
+git tag -a v0.2.5 -m "Qleisli v0.2.5"
+git show --no-patch v0.2.5
+git push origin refs/tags/v0.2.5
+git ls-remote origin refs/tags/v0.2.5 'refs/tags/v0.2.5^{}'
 ```
 
 ```sh
@@ -118,12 +118,12 @@ cargo publish --locked --registry crates-io
 ```sh
 qleisli_registry_dir="$(mktemp -d)"
 CARGO_HOME="$qleisli_registry_dir/cargo" \
-  cargo install qleisli --version '=0.2.4' --locked --registry crates-io \
+  cargo install qleisli --version '=0.2.5' --locked --registry crates-io \
   --root "$qleisli_registry_dir/install" \
   --target-dir "$qleisli_registry_dir/build"
 ```
 
 ```sh
-gh release create v0.2.4 --repo MGYamada/Qleisli --verify-tag \
-  --title "Qleisli v0.2.4" --notes-file /tmp/qleisli-0.2.4-release-notes.md
+gh release create v0.2.5 --repo MGYamada/Qleisli --verify-tag \
+  --title "Qleisli v0.2.5" --notes-file /tmp/qleisli-0.2.5-release-notes.md
 ```

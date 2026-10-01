@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Release candidate **0.2.5** selected on 2026-10-01; complete integration, exact-source validation and crates.io/GitHub publication authorized. Publication pending. Latest published: [0.2.4](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4).",
+  "release_state": "Published **0.2.5** on 2026-10-02 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.5), [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.5) and [source/installation evidence](../tests/fixtures/releases/v0.2.5/publication.json). The annotated source and artifact are immutable.",
   "current": [
     {
       "topic": "Use today",
@@ -9,13 +9,13 @@
     },
     {
       "topic": "v0.2.4 follow-up review",
-      "state": "Compatible exports, loading and diagnostics repaired; unreleased",
+      "state": "Compatible exports, loading and diagnostics published in 0.2.5",
       "detail": "[Issue 160](https://github.com/MGYamada/Qleisli/issues/160) and [regressions/validation](../tests/fixtures/review_followup_v024/README.md) cover short exact target phases, negative controls, QFT2/QFT3 export, clean workspace, opt-in declared qrate roots, metadata warnings, import/type/binding hints and manifest-derived corpus counts. Independent complex columns preserve phase/output axes and zero return; no general backend proof or Resource Safety certificate. [Issue 165](https://github.com/MGYamada/Qleisli/issues/165) tracks phase-aware IR/cost design at 0.3.0. Existing borrowing, prelude, generic checking, synthesis and exact/approximate domain Issues carry the review experiments; published artifacts remain immutable."
     },
     {
       "topic": "v0.2.5 internal refactoring",
-      "state": "Frontend, finite simulator, IR transport, CLI and Lean kernel refactored; local compatibility checks pass",
-      "detail": "[Development record](releases/v0.2.5.md) and [validation](../tests/fixtures/releases/v0.2.5/refactoring-validation.json): 545 all-target Rust tests on both 1.98.1 and 1.85.0, 132 byte-identical CLI comparisons, 96 independent source comparisons, 48 finite corpus cases, ten Python/QIR connection tests and small native hierarchy/Fourier/QPE checks pass. Existing public contracts, capacities and Rust authority remain unchanged. [Kernel continuation](../tests/fixtures/releases/v0.2.5/kernel-refactoring-validation.json) adds universal equality for seven conditional functions, 1,435 native transport comparisons, compiled public-type review, full Lean rebuilds/audits and component/host comparisons. Source identities are refreshed; checker/theorem contracts and disabled schemas remain unchanged. VM-25 acceptance/proof migration and publication are separate."
+      "state": "Compatible refactoring published in 0.2.5; exact-source validation passes",
+      "detail": "[Final publication validation](../tests/fixtures/releases/v0.2.5/publication.json): both local Rust toolchains pass 555 tests, Clippy/fmt; all eight hosted CI jobs and clean distribution/install checks pass. [Earlier development record](releases/v0.2.5.md) and [validation](../tests/fixtures/releases/v0.2.5/refactoring-validation.json) checkpoint: 545 all-target Rust tests on both 1.98.1 and 1.85.0, 132 byte-identical CLI comparisons, 96 independent source comparisons, 48 finite corpus cases, ten Python/QIR connection tests and small native hierarchy/Fourier/QPE checks pass. Existing public contracts, capacities and Rust authority remain unchanged. [Kernel continuation](../tests/fixtures/releases/v0.2.5/kernel-refactoring-validation.json) adds universal equality for seven conditional functions, 1,435 native transport comparisons, compiled public-type review, full Lean rebuilds/audits and component/host comparisons. Source identities are refreshed; checker/theorem contracts and disabled schemas remain unchanged. VM-25 acceptance/proof migration and publication are separate."
     },
     {
       "topic": "Language edition and qrate management",
@@ -34,8 +34,8 @@
     },
     {
       "topic": "Latest release",
-      "state": "0.2.4 published and verified on 2026-10-01",
-      "detail": "[PR 143](https://github.com/MGYamada/Qleisli/pull/143) integrates the verified source. [Publication evidence](../tests/fixtures/releases/v0.2.4/publication.json) records all seven CI jobs, matching macOS/Linux archives, registry checksum and fresh installation, docs.rs and complete GitHub downloads. [Release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01) preserves source/artifact immutability; PyPI and platform binaries are separate."
+      "state": "0.2.5 published and verified on 2026-10-02 (Asia/Tokyo)",
+      "detail": "[PR 166](https://github.com/MGYamada/Qleisli/pull/166) integrates the verified source. [Publication evidence](../tests/fixtures/releases/v0.2.5/publication.json) binds all eight CI jobs, matching macOS/Linux distribution, fresh registry installation, docs.rs and complete GitHub archives to the immutable release source. PyPI and custom binaries remain separate."
     },
     {
       "topic": "0.2.3 publication",
@@ -89,16 +89,16 @@
     },
     {
       "topic": "v0.2.5 bug repairs",
-      "state": "Issues 146/147 repaired; PR 155 merged, final release validation pending",
+      "state": "Issues 146/147 integrated through PR 155 and published in 0.2.5",
       "detail": "[Repairs and validation](../tests/fixtures/issue_fixes_v025/README.md) preserve macOS deployment targets with held-parent openat/O_NOFOLLOW, retain symlink/FIFO protection and add macOS/MSRV CI. Both Rust toolchains, Clippy and rendered API links pass; package-facing version pins are checked against Cargo. Published artifacts remain immutable."
     }
   ],
   "milestones": [
     {
       "id": "M0",
-      "state": "Finite foundation retained; edition 2026 and 0.2.4 published",
-      "evidence": "[0.2.4 record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01); [publication evidence](../tests/fixtures/releases/v0.2.4/publication.json)",
-      "open": "Later verification packets remain pending. Exact-source CI, local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and archive comparisons pass for 0.2.4."
+      "state": "Finite foundation retained; edition 2026 and 0.2.5 published",
+      "evidence": "[0.2.5 release record](releases/v0.2.5.md); [publication evidence](../tests/fixtures/releases/v0.2.5/publication.json)",
+      "open": "VM-26\u201329 and later theorem gates remain pending. Exact-source CI, local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and source archive comparisons pass for 0.2.5."
     },
     {
       "id": "M1",

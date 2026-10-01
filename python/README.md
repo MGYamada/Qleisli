@@ -4,7 +4,7 @@ Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0.
 
 This development host package calls the separately installed Qleisli 0.2.5 Rust
 executable built from the same checkout. The latest published Rust release is
-0.2.4; Python registry publication is separate.
+0.2.5; Python registry publication is separate.
 It does not embed Rust or require an LLVM installation. Install a local wheel,
 then select `Client(executable="/path/to/qleisli")`, set `QLEISLI_BIN`, or put
 `qleisli` on PATH. Prebuilt all-in-one platform wheels are not provided yet.

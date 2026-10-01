@@ -6,10 +6,10 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-## 0.2.5 — 2026-10-01
+## 0.2.5 — 2026-10-02
 
-Publication to crates.io and GitHub authorized on 2026-10-01. Exact-source
-validation and publication outcomes are recorded in the
+Published to crates.io and GitHub on 2026-10-02 (Asia/Tokyo), following
+authorization on 2026-10-01. Exact-source validation and publication outcomes are recorded in the
 [release record](docs/releases/v0.2.5.md).
 
 - Repair 0.2.4 review findings (#160): fold exact terminal phase words, export

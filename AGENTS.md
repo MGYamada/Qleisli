@@ -124,7 +124,7 @@ Follow the
 [continuation plan](docs/v0.2.2-plan.md),
 [development record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md). The latest published release is
-[0.2.4](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01).
+[0.2.5](docs/releases/v0.2.5.md#successful-publication-2026-10-02).
 Version selection does not complete wider feature gates or perform publication.
 The published foundation and its
 validation remain in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The finite B019 closure and
@@ -503,3 +503,13 @@ and lowering. Specify totality and types of basis functions. Update
 [language v0](docs/language-spec.md) plus [ROADMAP](ROADMAP.md) for stage 1.
 Run relevant checks after Rust changes and record actual results. Semantic
 prose alone does not make unimplemented tests pass.
+
+## v0.2.5 publication record
+
+The user authorized complete 0.2.5 integration and crates.io/GitHub publication
+on 2026-10-01. The annotated tag and registry artifact are published and verified
+at source `487a01be81718c02d068a1a411447393dfdec694`;
+[observed evidence](tests/fixtures/releases/v0.2.5/publication.json) binds exact
+CI, clean distribution, fresh registry installation, docs.rs and complete
+GitHub archives. Later result records preserve that immutable identity.
+PyPI/custom binaries and VM-26–29 remain separate.

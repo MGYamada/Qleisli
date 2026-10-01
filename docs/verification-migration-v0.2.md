@@ -1,6 +1,6 @@
 # Verification migration through 0.2.2–0.2.9
 
-VM-22/23, the VM-24 finite component and [VM-25 straight-line pure raw checking](../tests/fixtures/verification_v025/completion/README.md) are implemented and checked. VM-26–29 retain classical branches/observation, hierarchy closure and production integration. Development [0.2.5](releases/v0.2.5.md) remains unpublished. The user assigned verification migration to 0.2.2–0.2.9, superseding the old K1/K2 dates. 0.2.9 targets complete implementation plus explicitly selected dual checking; Lean-only authority still requires v0.5 S05-C1–C5.
+VM-22/23, the VM-24 finite component and [VM-25 straight-line pure raw checking](../tests/fixtures/verification_v025/completion/README.md) are implemented and checked. VM-26–29 retain classical branches/observation, hierarchy closure and production integration. Release [0.2.5](releases/v0.2.5.md) is published; the declared VM-25 profile is checked separately from later integration gates. The user assigned verification migration to 0.2.2–0.2.9, superseding the old K1/K2 dates. 0.2.9 targets complete implementation plus explicitly selected dual checking; Lean-only authority still requires v0.5 S05-C1–C5.
 
 ## Scope and starting point
 
