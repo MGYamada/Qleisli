@@ -23,6 +23,17 @@ SUITES = (
     "check-lean", "check-lean-kernel", "check-distribution", "check-docs",
 )
 SHA = re.compile(r"[0-9a-f]{40}\Z")
+PROTECTED_ROOTS = {
+    "Cargo.toml", "Cargo.lock", "LICENSE", "NOTICE", "TRUST_BOUNDARY.md",
+    "CONSTITUTION.md", "STDLIB.md", "README.crates.md",
+}
+NORMATIVE_DOCS = {
+    "docs/language-spec.md", "docs/syntax-v0.md", "docs/type-system.md",
+    "docs/tuple-shapes.md", "docs/size-expressions.md", "docs/finite-contracts.md",
+    "docs/static-operations.md", "docs/language-editions.md",
+    "docs/hierarchical-ir-spec.md", "docs/machine-interface-spec.md",
+    "docs/release-milestones.md", "docs/versioning.md",
+}
 
 
 def valid_path(path: str) -> bool:
@@ -48,7 +59,7 @@ def classify(paths: list[str], policy: dict) -> tuple[str, str]:
     for path in paths:
         if not valid_path(path):
             return "full", "unrecognized path; full validation required"
-        if path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/")):
+        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/")):
             return "full", f"protected executable/policy input: {path}"
         if path in policy["documentation_only"]:
             continue

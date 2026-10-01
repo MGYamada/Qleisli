@@ -41,9 +41,11 @@ class CIProfiles(unittest.TestCase):
                 self.assertEqual(classify(["CHANGELOG.md", path], self.policy)[0], "full")
         self.assertEqual(classify([], self.policy)[0], "full")
         broadened = copy.deepcopy(self.policy)
-        broadened["documentation_only"] += ["src/verify.rs", ".github/ci/profiles.json"]
-        self.assertEqual(classify(["src/verify.rs"], broadened)[0], "full")
-        self.assertEqual(classify([".github/ci/profiles.json"], broadened)[0], "full")
+        protected = ["src/verify.rs", ".github/ci/profiles.json", "Cargo.toml", "LICENSE",
+                     "docs/type-system.md", "CONSTITUTION.md", "tests/proof.lean"]
+        broadened["documentation_only"] += protected
+        for path in protected:
+            self.assertEqual(classify([path], broadened)[0], "full")
 
     def needs(self, profile):
         return {

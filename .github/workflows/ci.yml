@@ -50,7 +50,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -102,7 +102,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -135,7 +135,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -163,7 +163,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -216,7 +216,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     env:
       RUSTUP_TOOLCHAIN: 1.98.1
@@ -415,7 +415,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
-      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

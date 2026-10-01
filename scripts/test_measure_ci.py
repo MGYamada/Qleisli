@@ -27,9 +27,10 @@ class Measurements(unittest.TestCase):
 
     def test_skipped_and_cancelled_jobs_are_not_fabricated_successes(self):
         jobs = copy.deepcopy(self.jobs)
-        jobs["jobs"] += [dict(name="skipped", status="completed", conclusion="skipped", started_at=None, completed_at=None)]
+        jobs["jobs"] += [dict(name="skipped", status="completed", conclusion="skipped", started_at="2026-10-02T00:00:22Z", completed_at="2026-10-02T00:00:21Z")]
         result = summarize(self.run, jobs)
         self.assertEqual(result["jobs"][-1]["conclusion"], "skipped")
+        self.assertEqual(result["jobs"][-1]["runner_seconds"], 0)
         self.assertEqual(result["runner_minutes"], 3)
         jobs["jobs"][0]["conclusion"] = "cancelled"
         self.assertEqual(summarize(self.run, jobs)["jobs"][0]["conclusion"], "cancelled")
