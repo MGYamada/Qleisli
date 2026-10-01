@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "issue": 145,
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "workflow_sha256": "e9729472ba682e176f4246541604b1c57835be718b988ad11d2f3eec48c87c78",
+  "preserved_suite_steps": 147,
+  "preservation_check": "Ruby YAML parsing; every original run/action/env step retained in corresponding check-* job, except explicit use-github-cache=false",
+  "tests": {
+    "routing_and_gate_regressions": "4 tests passed with exhaustive subcases",
+    "measurement_regressions": "4 tests passed"
+  },
+  "cache_scope": "Cargo registry index and compressed dependency archives; no source/target/Lean project outputs",
+  "github_runs": "not yet measured; separate API observations required",
+  "constitutional_policy": "not adopted by this CI selection change"
+}

@@ -6,6 +6,8 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+- Reduce duplicate/superseded CI runs and use fail-closed documentation profiles with stable required checks and complete release validation (#145).
+
 ## 0.2.5 — 2026-10-02
 
 Published to crates.io and GitHub on 2026-10-02 (Asia/Tokyo), following

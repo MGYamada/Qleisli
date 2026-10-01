@@ -56,6 +56,14 @@ update the English specification and relevant acceptance/rejection evidence
 in the same change.
 
 Run the checks appropriate to the affected files and record actual results.
+CI validates PRs once, cancels superseded ordinary PR runs and keeps the existing
+required check names. [Input profiles](.github/ci/profiles.json) permit only listed
+descriptive documents/result records to use the docs path; specifications,
+protected/unknown inputs, missing diffs, tags and manual runs require full checks.
+Every required context rejects missing/failed selected suites. Cargo caches contain
+dependency archives only; project binaries/Lean definitions are rebuilt, audited
+and freshly replayed. This selection policy does not adopt the future constitutional
+registry in Issue #141. Use `python3 scripts/test_ci_profiles.py` locally.
 For release preparation, use the complete checklist in
 [Versioning](docs/versioning.md#release-records-and-validation). Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
