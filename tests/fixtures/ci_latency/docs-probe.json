@@ -3,7 +3,7 @@
   "issue": 145,
   "purpose": "Observe docs/result-record-only CI selection and feedback; not an algorithm/model benchmark",
   "parent_candidate": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
-  "revision": 1,
+  "revision": 2,
   "expected_profile": "docs",
   "measurements": "captured separately from GitHub run/jobs API after execution"
 }
