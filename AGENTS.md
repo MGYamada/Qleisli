@@ -123,7 +123,7 @@ Follow the
 [continuation plan](docs/v0.2.2-plan.md),
 [development record](docs/releases/v0.2.2.md) and
 [release procedure](docs/crates-io-release.md). The latest published release is
-[0.2.3](docs/releases/v0.2.3.md#successful-publication-2026-10-01).
+[0.2.4](docs/releases/v0.2.4.md#successful-publication-2026-10-01).
 Version selection does not complete wider feature gates or perform publication.
 The published foundation and its
 validation remain in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The finite B019 closure and

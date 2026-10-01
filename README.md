@@ -207,10 +207,10 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-The selected development version is **0.2.4**, beginning with documentation
+The latest published version is **0.2.4**, which began with documentation
 reduction and six small finite corpus additions. The
-[development record](docs/releases/v0.2.4.md) distinguishes validation from
-publication. The latest published release remains **0.2.3**.
+[release record](docs/releases/v0.2.4.md#successful-publication-2026-10-01)
+distinguishes source validation from completed publication and distribution checks.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and
 [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain current work targets. Rust retains production acceptance authority;
