@@ -3,7 +3,7 @@
 The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
-inputs and have a separate development execution path. The 42 finite CLI cases
+inputs and have a separate development execution path. The 48 finite CLI cases
 below use the production frontend. The bounded `qleisli sized` source/CLI slice
 and measured QPE are recorded in the
 [current checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md);
@@ -26,7 +26,8 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
-**42 finite translations, fourteen per approved source**, including six
+**48 finite translations, sixteen per approved source**, including six
+1–3-qubit additions for 0.2.4 on 2026-10-01 and six
 1–3-qubit additions for 0.2.3 and six simple
 1–3-qubit additions for 0.2.2 on 2026-09-30 and six additions for 0.2.1 on
 2026-09-29. The original 24-case intake was selected for 0.1.9
@@ -34,6 +35,13 @@ on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
 QuantumKatas, Qualtran Bloqs and PennyLane Demos and fixes their license handling.
 The [manifest](manifest.json) pins commits, original paths, file hashes, symbols,
 mathematical contracts, parameter specializations and exclusions.
+
+The [0.2.3 review migration](../tests/fixtures/review_v023/README.md) replaces
+phase/identity workarounds in ten active kernels with the 0.2.4 sealed aliases.
+Current authoring guidance uses `s`, `sdg`, `tdg`, `id` and `phase_eighth`;
+old attempt snapshots and the six frozen VM-22 comparison projects preserve
+their original spellings. New attempts and independent phase-sensitive replay
+are appended, without replacing earlier observations or upstream pins.
 
 The development method is to [start with quantum programs as they ought to be
 written](../docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write),
@@ -63,6 +71,12 @@ reviews and author notices remain intact. All six first checks passed without
 source repair. One-bit phase kickback explicitly narrows the original four-bit
 key; RX fixes the original two rotation parameters to `(pi/2,0)`. These are
 small finite translations, not completion of the shared-QPE integration goal.
+
+The [0.2.4 session](authoring/v024-small/README.md) adds negative coherent control,
+exact Bell ZX, modulo-four decrement, one-address QROM, and negative-quarter RX/RY.
+All six first checks pass without repair. The full-entry run covers 264 new probes
+and six paired semantic faults, including signs invisible to basis probabilities.
+It reuses pinned inputs and the enclosing edition-2026 manifest.
 
 ## Use and layout
 
@@ -161,6 +175,13 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | pennylane_demos | [ry_quarter](pennylane_demos/ry_quarter/README.md) | RY(pi/2) with its signed second column; params=(0,pi/2). |
 | pennylane_demos | [ising_zz_quarter2](pennylane_demos/ising_zz_quarter2/README.md) | One U_C edge exp(-i*pi*Z0*Z1/4), including absolute scalar phase. |
 
+| quantum_katas | [zero_control_x2](quantum_katas/zero_control_x2/README.md) | Flip the target iff the retained control is zero; amplitude +1. |
+| quantum_katas | [bell_change_zx2](quantum_katas/bell_change_zx2/README.md) | ZX on the first Bell wire, retaining its sign on all inputs and under control. |
+| qualtran | [add_minus_one2](qualtran/add_minus_one2/README.md) | Subtract one modulo four, including zero underflow; explicit borrow order. |
+| qualtran | [qrom1](qualtran/qrom1/README.md) | XOR data=[2,1] into an arbitrary two-bit target, retaining a one-bit address. |
+| pennylane_demos | [rx_negative_quarter](pennylane_demos/rx_negative_quarter/README.md) | RX(-pi/2)=(I+iX)/sqrt(2), including absolute scalar phase. |
+| pennylane_demos | [ry_negative_quarter](pennylane_demos/ry_negative_quarter/README.md) | RY(-pi/2) with signed columns and Z-after-H ordering. |
+
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
 one layer and its angles. PennyLane QPE changes the original 1/5 phase to
@@ -171,7 +192,14 @@ these boundaries before it can count as a port.
 
 ## What was validated
 
-[Current 0.2.3 results](validation-v0.2.3.json): **42 shipped examples, 12,629
+[Current 0.2.4 results](validation-v0.2.4.json): **48 shipped examples, 12,893
+semantic probes and four rejection cases** pass. All **24 type-correct semantic
+faults** are detected. The six new kernels add 264 full complex-entry probes on
+1–3 data qubits. Frozen upstream pins, original snapshots and historical reports
+remain unchanged; these are numerical finite checks, not general proofs.
+
+
+[Historical 0.2.3 results](validation-v0.2.3.json): **42 shipped examples, 12,629
 semantic probes and four rejection cases** pass. All **eighteen type-correct
 semantic faults** are detected. New translations use at most three data qubits;
 the full run retains existing small finite cases and never generates new
@@ -196,7 +224,7 @@ probes and four rejection cases** passed with the Rust 1.98.1 compiler on macOS.
 The report binds the manifest, final QLI files, oracle script and compiler by
 SHA-256. It is a reproducibility record, not a signed attestation.
 
-- For each of the 37 current unitary kernels, enumerate every computational input and
+- For each of the 43 current unitary kernels, enumerate every computational input and
   compare its output distribution with an independent mathematical reference.
   Then measure every complex matrix entry using controlled X/Y interference.
   The reference branch maps the input basis vector to the selected output row;
@@ -220,7 +248,7 @@ SHA-256. It is a reproducibility record, not a signed attestation.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
-- Eighteen [type-correct semantic faults](semantic_faults/README.md) must pass source
+- Twenty-four [type-correct semantic faults](semantic_faults/README.md) must pass source
   checking and then fail the mathematical oracle. They test majority/parity,
   Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
   The six 0.2.2 faults additionally test incomplete SWAP, unconditional Fredkin,
@@ -241,7 +269,7 @@ Upstream decomposition/T-count and QLI resource overhead were not compared;
 replacing a general Bloq with a finite basis map does not inherit its complexity.
 
 The primary Rust CI job runs the exhaustive runner; both Rust jobs run the
-[30-project and rejection smoke tests](../tests/input_corpus.rs). The docs job
+[48-project and rejection smoke tests](../tests/input_corpus.rs). The docs job
 checks provenance and the Python harness regressions.
 
 ## Authoring evidence and next language work
@@ -261,7 +289,7 @@ session covers the six additions. Their latest snapshots together must cover
 every current source, so growth cannot silently omit authoring records.
 
 The [authoring report](../docs/qli-authoring-feedback.md) and
-[backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md) retain these gaps, phase-preserving rotation
+[GitHub Issues](https://github.com/MGYamada/Qleisli/issues) track these gaps, phase-preserving rotation
 boilerplate and the boundary around continuous parameters/host optimization.
 Preserve the real attempts as language-design evidence instead of treating
 these finite adaptations as the final desired notation.

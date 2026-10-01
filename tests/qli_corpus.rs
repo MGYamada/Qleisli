@@ -296,6 +296,7 @@ fn every_quick_reference_program_compiles_and_executes() {
     .unwrap();
     let programs: Vec<_> = reference.split("```qli\n").skip(1).collect();
     let expected = [
+        vec![(vec![false], 1.0)],
         message_distribution(&[true]),
         vec![(vec![true, true], 1.0)],
         vec![(vec![false], 1.0)],

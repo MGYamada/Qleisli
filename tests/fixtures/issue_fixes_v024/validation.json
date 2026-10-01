@@ -1,0 +1,177 @@
+{
+  "format": "qleisli.issue-fix-validation",
+  "version": 1,
+  "created_utc": "2026-10-01T02:39:53.126174+00:00",
+  "release": "0.2.4",
+  "platform": "aarch64 macOS",
+  "status": "four compatible frontend fixes implemented and locally checked in the working tree",
+  "committed": false,
+  "pushed": false,
+  "tagged": false,
+  "published": false,
+  "github_issues_closed": false,
+  "issues": [
+    {
+      "number": 116,
+      "url": "https://github.com/MGYamada/Qleisli/issues/116",
+      "fix": "Reject symlink and non-file manifest metadata before platform opening; do not skip valid-target or dangling nearer links for an ancestor manifest.",
+      "published_rule": "docs/language-editions.md: an invalid, unreadable, symlinked or non-file nearer manifest is an error.",
+      "regressions": [
+        "manifest_symlinks_and_non_files_cannot_fall_back_to_an_ancestor",
+        "non_file_manifest_is_rejected_before_platform_open"
+      ]
+    },
+    {
+      "number": 117,
+      "url": "https://github.com/MGYamada/Qleisli/issues/117",
+      "fix": "Share visibility resolution between imports and direct bindings. Host entries require pub; providers resolve from the entry module, including unused providers. Own-module private lookup remains permitted.",
+      "published_rule": "Module-private declarations are not accessible from other modules; fully qualified names confer no additional privilege. The sized source contract uses public external entries.",
+      "before": "Direct private entry specialization accepted; cross-module binding resolved through unchecked definition lookup.",
+      "after": "visibility diagnostic before elaboration/proposal or execution. Public providers and own-module private resolution remain accepted.",
+      "regressions": [
+        "sized_host_bindings_respect_module_visibility",
+        "private_definitions_remain_visible_in_their_own_module",
+        "sized_cli_cannot_select_private_entries_or_providers"
+      ]
+    },
+    {
+      "number": 118,
+      "url": "https://github.com/MGYamada/Qleisli/issues/118",
+      "fix": "Document existing procfs requirement for hardened Linux x86/x86_64, ARM/aarch64 and RISC-V. Check accessibility of held directory descriptors with a targeted Unsupported I/O diagnostic. Retain no-follow descriptor walk and no pathname fallback.",
+      "selected_contract": "Document and diagnose the existing runtime requirement; no new dependency or weakened symlink protection.",
+      "regressions": [
+        "unavailable_linux_procfs_has_a_targeted_diagnostic",
+        "missing_linux_source_is_not_misreported_as_missing_procfs",
+        "source_replacement_between_discovery_and_open_cannot_follow_links"
+      ],
+      "local_scope": "Unavailable/malformed descriptor-root diagnostic helper and existing macOS replacement tests executed. Actual Linux descriptor walking and missing-source distinction are compiled/executed by existing Linux CI, not run locally."
+    },
+    {
+      "number": 119,
+      "url": "https://github.com/MGYamada/Qleisli/issues/119",
+      "fix": "Reject every explicit --basis for sized check as CLI usage (exit 2), before loading. Construct and validate input vectors only for run/sample. Preserve execution basis bounds.",
+      "published_rule": "The sized CLI usage and source contract specify --basis only for run/sample.",
+      "before": "check accepted --basis=0 and failed with unrelated source/basis errors for other values.",
+      "after": "check --basis=0/1/999 rejects as usage. Plain check succeeds through the native checker; valid/invalid execution bases remain covered.",
+      "regressions": [
+        "sized_check_rejects_execution_basis_before_loading",
+        "sized_execution_basis_still_checks_input_width",
+        "sized_cli_native_source_check_run_and_fresh_sampling"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --offline --target-dir /private/tmp/qleisli-v024-issue-tests --all-targets",
+      "exit_code": 0,
+      "result": "passed; fresh Rust 1.98.1 dependency/library/binary builds; optional tests retain explicit ignored status"
+    },
+    {
+      "command": "cargo test --offline --target-dir /private/tmp/qleisli-v024-issue-tests --test sized_cli",
+      "exit_code": 0,
+      "result": "5 passed, 2 native tests ignored; includes the final CLI visibility regression added after the all-target snapshot"
+    },
+    {
+      "command": "QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo test --offline --target-dir /private/tmp/qleisli-v024-issue-tests --test sized_cli -- --ignored",
+      "exit_code": 0,
+      "result": "both native tests passed; check, run, fresh sampling and independent request comparisons"
+    },
+    {
+      "command": "rustup run 1.85.0 cargo test --offline --target-dir /private/tmp/qleisli-v024-issue-msrv --lib --test editions --test sized_source --test sized_cli --test project",
+      "exit_code": 0,
+      "result": "115 passed, 7 optional tests ignored; fresh MSRV builds"
+    },
+    {
+      "command": "cargo clippy --offline --target-dir /private/tmp/qleisli-v024-issue-tests --all-targets -- -D warnings",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --offline --target-dir /private/tmp/qleisli-v024-issue-tests --no-deps",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "cargo test --offline --target-dir /private/tmp/qleisli-v024-issue-tests --doc",
+      "exit_code": 0,
+      "result": "one doctest passed"
+    },
+    {
+      "command": "python3 scripts/test_verification_baseline.py /private/tmp/qleisli-v024-issue-tests/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel",
+      "exit_code": 0,
+      "result": "12 finite comparisons, 12 source decisions, 5 native decisions; at most three qubits"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "17 passed"
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "232 published constructors, 139 reviewed source snapshots, 18 boundaries"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "result": "24 passed"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "result": "passed; unchanged manifest/source identity and all three external-disabled entries"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0,
+      "result": "both views regenerated from project-status.json; 3251 links, 381 anchors and 126 Lean root modules checked"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "result": "passed on final working-tree documentation"
+    }
+  ],
+  "inventory_review": {
+    "source_pins_refreshed": [
+      "src/frontend/project/edition.rs",
+      "src/frontend/project/source_file.rs",
+      "src/frontend/sized.rs",
+      "src/frontend/sized/check.rs",
+      "src/bin/qleisli/sized.rs"
+    ],
+    "harness_pins_refreshed": [
+      "tests/sized_source.rs",
+      "tests/sized_cli.rs"
+    ],
+    "public_rust_shapes_and_capacities_changed": false,
+    "frozen_comparison_artifact_request_bytes_changed": false,
+    "historical_reports_overwritten": false
+  },
+  "source_sha256": {
+    "src/frontend/project/edition.rs": "ea71d9341b43b0d51cc163c2dbf8aa7691574a04a9f1c9786fd5ccf188f65367",
+    "src/frontend/project/source_file.rs": "022890128935ad3280a31b7bcb44c9b5ca41f1b67e334d858f2eee59c3371480",
+    "src/frontend/sized.rs": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+    "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+    "src/bin/qleisli/sized.rs": "3cd05f187cf3e5c854cabfd7df727e20bcc1cfcc4e50a098b055ddfbf56fdaca",
+    "tests/editions.rs": "411ccc476aed2cc47a37b6403cd31b182a3d37ee9fdc3405a8b36956f278600f",
+    "tests/sized_source.rs": "e772fe9384a04ce23c0ba3e6d44ae7cb53329f781bf17fdf18902a4d6783e296",
+    "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f"
+  },
+  "remaining": [
+    "Actual Linux runtime and fallback-platform checks on the final committed source; existing Linux CI includes the new tests.",
+    "Commit/merge, issue closure and any v0.2.4 publication are not performed.",
+    "Issue 94 capacity-scope type separation remains open."
+  ],
+  "proof_scope": "No Lean executable/proof edits in this bug packet; prior VM-24 audits remain their own snapshot, and source-only registry identity is unchanged."
+}

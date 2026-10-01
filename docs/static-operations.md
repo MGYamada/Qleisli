@@ -26,7 +26,7 @@ constructors use bracket arguments; they are not runtime closures.
 ## Surface contracts
 
 A target `u` is a known `unitary fn u(q: Q<A>) -> Q<A>` or one of the sealed
-single-qubit gates `h/x/z/t`. The initial subset requires one register, identical
+single-qubit gates `h/x/z/t/s/sdg/tdg`, or `id/phase_eighth` on the exact finite basis `A`. The initial subset requires one register, identical
 input/output basis type trees, and no classical parameters. Expand and check
 the ordinary body for types, effects, and ownership, independently verify its
 IR, and only then transform it.
@@ -72,7 +72,7 @@ not a new source type or API. The premises are:
    current module and its explicit imports.
 2. Either it names a declaration whose **declared** classification is
    `unitary`, with exactly the signature `(Q<A>) -> Q<A>`, or it names sealed
-   `std::quantum::h/x/z/t` and `A=Bit`. Exact type-tree equality is required;
+   `std::quantum::h/x/z/t/s/sdg/tdg` and `A=Bit`, or `id/phase_eighth` on the exact finite basis `A`. Exact type-tree equality is required;
    equal wire width alone is insufficient. An `iso` identity is ineligible.
 3. Check the whole body from one fresh symbolic input in a separate register
    store. Enforce normal calls, types, ownership closure, effect bounds, and

@@ -209,8 +209,36 @@ fn manifest_symlinks_and_non_files_cannot_fall_back_to_an_ancestor() {
     fs::create_dir(root.0.join("src")).unwrap();
     root.write("src/main.qli", SOURCE);
     symlink(root.0.join("Qargo.toml"), root.0.join("src/Qargo.toml")).unwrap();
-    assert!(compile_project(&root.0.join("src")).is_err());
+    let error = compile_project(&root.0.join("src")).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("Qargo.toml must be a regular, non-symlink file"),
+        "{error:?}"
+    );
     fs::remove_file(root.0.join("src/Qargo.toml")).unwrap();
+    symlink(root.0.join("missing.toml"), root.0.join("src/Qargo.toml")).unwrap();
+    let error = compile_project(&root.0.join("src")).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("Qargo.toml must be a regular, non-symlink file"),
+        "{error:?}"
+    );
+    fs::remove_file(root.0.join("src/Qargo.toml")).unwrap();
+}
+
+#[test]
+fn non_file_manifest_is_rejected_before_platform_open() {
+    let root = SourceRoot::new(SOURCE);
+    fs::create_dir(root.0.join("src")).unwrap();
+    root.write("src/main.qli", SOURCE);
     fs::create_dir(root.0.join("src/Qargo.toml")).unwrap();
-    assert!(compile_project(&root.0.join("src")).is_err());
+    let error = compile_project(&root.0.join("src")).unwrap_err();
+    assert!(
+        error
+            .message
+            .contains("Qargo.toml must be a regular, non-symlink file"),
+        "{error:?}"
+    );
 }

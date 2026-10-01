@@ -90,7 +90,7 @@ opened `std::prelude`: library functions require explicit imports.
 
 Bundled `.qli` uses Rust-style `//!` module descriptions and `///` function
 documentation. [Block forms, inner/outer attachment, API and migration](documentation-comments.md)
-are specified separately. All four source files and all twelve public/three
+are specified separately. All four source files and all twelve public/one
 private definitions are documented in English. Read a file's documentation with
 `qleisli doc stdlib/src/routines.qli`, or use the parser's documented-module API.
 This output describes source; it does not check contracts or execute examples.
@@ -102,11 +102,37 @@ Documentation grants no stdlib-specific exemption or evidence authority.
 | Module | Initial API | Implementation boundary |
 | --- | --- | --- |
 | `std::basis` | `xor2`, `and2` | Ordinary `.qli` basis functions. They may be noninjective; any enclosing `do/pure` lift must satisfy its own injectivity check. |
-| `std::quantum` | `init0`, `h`, `x`, `z`, `t`, `cnot`, `toffoli`, `split`, `join` | Sealed primitive and ownership-structure operations. Derived operations such as `s(q) = t(t(q))` can be ordinary definitions; `s` is not a bundled public name. |
+| `std::quantum` | `init0`, `h`, `x`, `z`, `t`, `s`, `sdg`, `tdg`, `id`, `phase_eighth`, `cnot`, `toffoli`, `split`, `join` | Sealed source primitives and ownership operations; aliases lower to existing finite IR without new acceptance rules. |
 | `std::observe` | `measure_z`, `reset`, `discard` | Sealed observation primitives. Derived measurements can be ordinary definitions, as `measure_x` is in `std::routines`. |
 | `std::routines` | `hadamard2`, `reflect_uniform2`, `measure_x`, `measure_z2`, `parity_zz` | Ordinary `.qli` definitions, evaluating shared structures at fixed widths. No added sealed operations. |
 | `std::transforms` | `qft2`, `qft3` | Ordinary definitions of two- and three-bit QFT using static control and finite repetition. |
 | `std::arithmetic` | `increment2`, `add2`, `mul2_mod15` | Ordinary definitions of total fixed-width reversible arithmetic. Their [contracts](arithmetic-order-finding.md) include overflow and values outside the modular residue range. |
+
+
+### Exact phase aliases (0.2.4)
+
+[Issue 130](https://github.com/MGYamada/Qleisli/issues/130) specifies the compatible
+primitive extension. Let `omega = exp(i*pi/4)`. The exact meanings are
+`s = diag(1,i)`, `sdg = diag(1,-i)`, `tdg = diag(1,omega^-1)`,
+`id_A = I_A` and `phase_eighth_A = omega I_A`. These meanings include global
+phase and act as identity on any reference system. Each call consumes its
+argument binding once and returns the same owner shape; `Q<Unit>` stays linear.
+No arbitrary basis polymorphism syntax, dynamic phase argument or matrix API
+is introduced.
+
+The source aliases S, S† and T† expand to two, six and seven existing T gates.
+`id` emits no quantum instruction. `phase_eighth` emits `ApplyUnitary` with one
+zero-axis `Monomial`, permutation `[0]` and phase `[1]`; it needs no computed
+flag or auxiliary wire. Static adjoint, repetition and `qif` accept these
+unary primitives at their stated types. Independent static expectations use
+the equations above, with a cache keyed by the exact basis tree. The existing
+IR verifier checks the emitted operations; these aliases add no verifier rule.
+`phase_eighth` in the restricted two-argument computed body remains outside
+that body's Z/T-only certificate format. Existing supported bodies are unchanged.
+
+These are semantic actions, not promises of same-wire target synthesis.
+The [realizability workspace contract](release-milestones.md#synthesis-workspace-contract)
+remains a separate future theorem obligation.
 
 `Q<A>` denotes owned quantum resources, and each quantum argument is transferred
 linearly. The following interfaces summarize types and effects; the
@@ -121,7 +147,8 @@ other ordinary quantum API listed here takes one argument.
 | --- | --- | --- |
 | `basis::xor2`, `basis::and2` | Two `Bit` arguments; result `Bit` | Total basis functions, outside the quantum-effect order. Injectivity is not required for a basis declaration. |
 | `quantum::init0` | No arguments; result `Q<Bit>` | `Iso`; create a fresh logical wire in `\|0⟩`. |
-| `quantum::{h,x,z,t}` | `Q<Bit> -> Q<Bit>` | `Unitary`; return ownership of the same logical wire. |
+| `quantum::{h,x,z,t,s,sdg,tdg}` | `Q<Bit> -> Q<Bit>` | `Unitary`; return ownership of the same logical wire. |
+| `quantum::{id,phase_eighth}` | `Q<A> -> Q<A>` for every supported finite basis `A`, including `Unit` | `Unitary`; transfer one owner, preserving its exact type tree and wire order; allocate no workspace. |
 | `quantum::cnot` | Arguments `Q<Bit>, Q<Bit>`; result `(Q<Bit>,Q<Bit>)` | `Unitary`; require distinct wires. |
 | `quantum::toffoli` | Three `Q<Bit>` arguments; result `((Q<Bit>,Q<Bit>),Q<Bit>)` | `Unitary`; all three wires must be distinct. Results use nested binary products. |
 | `quantum::split` / `join` | `Q<(A,B)> -> (Q<A>,Q<B>)` / arguments `Q<A>,Q<B>` returning `Q<(A,B)>` | `Unitary` ownership-structure operations; preserve amplitudes and correlations in the specified wire order. |

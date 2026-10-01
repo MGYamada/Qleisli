@@ -953,15 +953,20 @@ impl Lowerer<'_, '_> {
                 }
             }
             Callee::Sealed(namespace, gate) => {
-                if namespace != "std::quantum" || !matches!(gate.as_str(), "h" | "x" | "z" | "t") {
+                if namespace != "std::quantum"
+                    || !matches!(
+                        gate.as_str(),
+                        "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" | "id" | "phase_eighth"
+                    )
+                {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::Effect,
-                        "static sealed operation must be h, x, z or t",
+                        "static sealed operation requires a unary unitary quantum primitive",
                     ));
                 }
-                if *basis != Ty::Bit {
+                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::Bit {
                     return Err(self.error(
                         module,
                         name.span,

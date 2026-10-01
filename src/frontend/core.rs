@@ -19,7 +19,7 @@ pub struct Primitive {
     pub signature: &'static str,
 }
 
-/// The existing sealed surface, without new source paths or library functions.
+/// The sealed surface; additive aliases lower to already specified finite IR.
 pub const PRIMITIVES: &[Primitive] = &[
     Primitive {
         module: "std::quantum",
@@ -55,6 +55,41 @@ pub const PRIMITIVES: &[Primitive] = &[
         kind: FnKind::Unitary,
         arity: 1,
         signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "s",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "sdg",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "tdg",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<Bit>) -> Q<Bit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "id",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<A>) -> Q<A>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "phase_eighth",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<A>) -> Q<A>",
     },
     Primitive {
         module: "std::quantum",

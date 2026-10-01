@@ -1,0 +1,18 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/comparison.py
+// Selected symbol(s): LessThanConstant
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::x;
+use std::quantum::toffoli;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, target) = split(q);
+    let (a, b) = split(ab);
+    let ((a, b), target) = toffoli(a, b, x(target));
+    join(join(a, b), target)
+}

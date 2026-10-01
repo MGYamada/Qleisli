@@ -1,6 +1,6 @@
 # Deliberate semantic counterexamples
 
-These eighteen local mutations are **expected to compile and verify** under the
+These twenty-four local mutations are **expected to compile and verify** under the
 language's type/resource rules, then disagree with the independently stated
 algorithm contract. They are curated semantic tests, not external translations,
 failed first attempts or a fourth input source. Upstream-derived source retains
@@ -24,3 +24,8 @@ order, invert threshold polarity, reverse constant bit order, replace RY by H,
 and erase the ZZ scalar. Singlet and ZZ probability distributions remain
 unchanged for all basis inputs; RY/H and the equality fault also agree on the
 zero-input quickstart. Nonzero columns and complex interference are required.
+
+The six 0.2.4 mutations change negative control to positive, reverse Bell ZX,
+propagate the wrong borrow, reverse QROM target bits, erase negative RX scalar,
+and use positive RY. Bell order, erased RX phase and RY sign preserve every
+basis-input Z probability; full complex-entry interference must distinguish them.

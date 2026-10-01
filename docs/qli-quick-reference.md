@@ -1,6 +1,6 @@
 # QLI quick reference
 
-**Implemented finite source, Qleisli 0.2.2.** Start here and copy a complete program
+**Implemented finite source, Qleisli 0.2.4.** Start here and copy a complete program
 into `main.qli` in a source directory. Run `cargo run --bin qleisli -- check
 <directory>` or `cargo run --bin qleisli -- run <directory>`; append the single
 flag `--format=json` for machine-readable results. `run` enumerates the finite
@@ -20,6 +20,28 @@ edition = "2026"
 ```
 
 See the [edition and qrate migration contract](language-editions.md).
+
+## Exact phase primitives
+
+Import `std::quantum::{s,sdg,tdg,id,phase_eighth}` directly. S/S†/T† act on
+`Q<Bit>`; `id` and `phase_eighth` accept any supported finite `Q<A>`, including
+`Q<Unit>`. `phase_eighth(q)` multiplies the full operator by `exp(i*pi/4)`
+without an ancilla. Its inverse is `adjoint(phase_eighth,q)`. Phase is retained
+under coherent control. The program below returns zero.
+
+```qli
+use std::quantum::{init0,h,s,sdg,tdg,t,id,phase_eighth};
+use std::observe::measure_z;
+
+observe fn main() -> CBit {
+    let q = h(init0());
+    let q = tdg(t(sdg(s(id(q)))));
+    let q = adjoint(phase_eighth,phase_eighth(q));
+    measure_z(h(q))
+}
+```
+
+See the [exact contracts](standard-library.md#exact-phase-aliases-024).
 
 ## Fresh samples and portable verification
 

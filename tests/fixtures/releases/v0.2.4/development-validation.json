@@ -1,0 +1,176 @@
+{
+  "format": "qleisli.development-validation",
+  "version": 1,
+  "project_version": "0.2.4",
+  "created_utc": "2026-10-01T01:32:29.425661+00:00",
+  "baseline_commit": "9000f85da953d7f4fa24787f6257409060794497",
+  "scope": "Working-tree version selection, documentation reduction and small finite corpus extension; not release/publication",
+  "checks": [
+    {
+      "command": "cargo build --offline --bin qleisli",
+      "result": "v0.2.4 binary built",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --offline --all-targets",
+      "result": "passed; existing opt-in tests not run with --ignored",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --check",
+      "result": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --offline --all-targets -- -D warnings",
+      "result": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --offline --doc",
+      "result": "one doctest passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py /private/tmp/qleisli-v024-validation-bin --exhaustive --report corpus/validation-v0.2.4.json",
+      "result": "26 tests passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "result": "24 tests passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "result": "17 tests passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "result": "11 tests passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_editions.py",
+      "result": "6 tests passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive --report corpus/validation-v0.2.4.json",
+      "result": "48 cases; 12,893 probes; four rejections; 24 detected type-correct faults",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_installation.py target/debug/qleisli",
+      "result": "local binary Bell/QFT2/reuse rejection passed; not registry installation",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "result": "664 .qli and 5 .qlt through 18 manifests",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "result": "14 records, 22 snapshots and 43 observations checked",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "result": "template and three pilots checked",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "result": "232 constructors, 137 snapshots, 17 boundaries; frozen comparison bytes and original corpus-prefix census preserved",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo doc --offline --no-deps",
+      "result": "passed without warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "result": "local references and generated views passed",
+      "exit_code": 0
+    }
+  ],
+  "reviewed_pin_changes": [
+    "python/qleisli/__init__.py: __version__ only",
+    "lean/lakefile.toml: package version only",
+    "lean-kernel/lakefile.toml: package version only"
+  ],
+  "registry_types_and_parameter_domains_unchanged": true,
+  "externally_enabled_schemas": 0,
+  "corpus_prior_42_cases_unchanged": true,
+  "semantic_fault_prior_18_cases_unchanged": true,
+  "upstream_sources_unchanged": true,
+  "production_authority": "Rust",
+  "vm24": "pending",
+  "new_maximum_size_corpus_validation": false,
+  "skipped": [
+    "Rust 1.85/MSRV and Linux/remote CI",
+    "opt-in full native/Python integration suites",
+    "clean-commit distribution and source archives",
+    "publish dry run, tags, registry upload, docs.rs, fresh registry installation and GitHub Release",
+    "VM-24 implementation"
+  ],
+  "package_validation": {
+    "command": [
+      "cargo",
+      "package",
+      "--offline",
+      "--allow-dirty"
+    ],
+    "exit_code": 0,
+    "files": 2062,
+    "verification_compile_seconds": 4.38,
+    "scope": "Rebuilt after additional docs reduction; working-tree rehearsal before final result-record and generated-view updates"
+  },
+  "package_contents": {
+    "files": 2062,
+    "new_source_snapshot_readme_and_fault_files_checked": 42,
+    "license_notice_and_policy_files_checked": 7,
+    "result": "all selected bytes match checkout; rehearsal before final result-record updates"
+  },
+  "completed_utc": "2026-10-01T01:42:29.609615+00:00",
+  "corpus_first_run": {
+    "record": "corpus-first-run.json",
+    "scope": "Preserved initial full run while Cargo checks used the same binary path; final run uses a fixed copy after build completion.",
+    "final_binary_sha256": "1424f615aec1f6664eb36f0a7a127699574ec784a77b886dfab60247704c1b25"
+  },
+  "documentation_followup": {
+    "request": "Further reduce docs",
+    "removed": [
+      "docs/quantum-bookkeeping.md",
+      "docs/physlib-environment.md"
+    ],
+    "active_contracts_preserved": true,
+    "validation": "24 documentation tests, links/generated views, inventory and registry source identities rechecked after condensation",
+    "markdown_files_before": 74,
+    "markdown_files_after": 73,
+    "markdown_lines_before": 20301,
+    "markdown_lines_after": 18731,
+    "net_markdown_line_reduction": 1570
+  },
+  "package_previous_rehearsal": {
+    "command": [
+      "cargo",
+      "package",
+      "--offline",
+      "--allow-dirty"
+    ],
+    "exit_code": 0,
+    "seconds": 8.784,
+    "output_sha256": "aca354bd48f00efb361b5f0f46880e6820ca4f3f4dc046d3600688f4d85af999",
+    "diagnostics": "   Packaging qleisli v0.2.4 (/Users/masa/git/Qleisli)\n    Packaged 2061 files, 22.8MiB (5.5MiB compressed)\n   Verifying qleisli v0.2.4 (/Users/masa/git/Qleisli)\n   Compiling qleisli v0.2.4 (/Users/masa/git/Qleisli/target/package/qleisli-0.2.4)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.64s\n"
+  },
+  "corpus_final_binary_sha256": "1424f615aec1f6664eb36f0a7a127699574ec784a77b886dfab60247704c1b25"
+}

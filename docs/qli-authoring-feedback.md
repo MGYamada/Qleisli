@@ -11,8 +11,8 @@ selecting [edition 2026](language-editions.md).
 
 ## Finite corpus authoring
 
-The [three-source corpus](../corpus/README.md) contains 42 finite translations,
-14 each from the approved QuantumKatas, Qualtran and PennyLane sources.
+The [three-source corpus](../corpus/README.md) contains 48 finite translations,
+16 each from the approved QuantumKatas, Qualtran and PennyLane sources.
 The [0.2.3 session](../corpus/authoring/v023-small/session.json) adds odd-parity
 preparation, Bell singlet, two constant predicates, RY and Ising ZZ at 1–3 qubits.
 All six first source checks passed without repair. Known tuple, gate and rotation
@@ -26,6 +26,14 @@ unchanged; RY and H agree on the zero-input preparation. Their deliberate
 nonzero inputs or coherent interference. Constant equality's wrong-endian fault
 also leaves the zero-input quickstart unchanged. No new source syntax or library
 API was needed. First attempts and earlier numerical reports stay intact.
+
+The [0.2.4 review migration](../tests/fixtures/review_v023/README.md) modernizes
+ten active kernels with sealed S/S†/T†, identity and scalar-phase aliases.
+Six constant-one flags and four identity definitions are removed without
+changing operator phase. Revised complete attempts and actual diagnostics are
+appended to the existing sessions; first sources remain intact. Independent
+replay still detects all 24 type-correct faults. Frozen comparison sources are
+explicit historical exceptions, not recommended new source patterns.
 
 ## Shared source and measured QPE
 
@@ -53,6 +61,14 @@ diagnostic is historical, not the current implemented state. Small named widths
 pass; named (2,4) still exceeds the unchanged structural budget. General source,
 native/decoder correspondence and full-profile migration remain open. Further
 maximum-size runs are waived; they are not successful capacity checks.
+
+The [0.2.4 finite session](../corpus/authoring/v024-small/README.md) adds negative
+control, signed Bell ZX, decrement, QROM and negative-quarter RX/RY. All twelve
+first-source files were saved before checking; all six first checks pass with
+zero repairs. Its 264 complete complex-entry probes and six detected valid-source
+faults show why readable gate order, target-word layout and scalar completion
+remain author obligations. Existing control/literal Issues cover that friction;
+no new syntax or general algorithm proof is adopted.
 
 ## Current ergonomic obligations
 

@@ -230,5 +230,5 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
             }
         }
     }
-    assert_eq!((public, private), (12, 3));
+    assert_eq!((public, private), (12, 1));
 }

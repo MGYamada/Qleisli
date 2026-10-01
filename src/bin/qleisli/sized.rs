@@ -14,7 +14,7 @@ const USAGE: &str = "usage: qleisli sized <check|run|sample|emit-proposal> --ent
   [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)
   --kernel=PATH [--request=PATH | --qpe-provider=PATH]
   [--basis=N] [--shots=N --seed=N] [--output=PATH]
-  run/sample start in the explicit input basis (default 0). sample requires shots and seed.
+  --basis is run/sample-only (default 0). sample requires shots and seed.
   emit-proposal requires output and no kernel; it emits untrusted JSON.
   default check/run/sample verify producer consistency, not source meaning.
   --request verifies the IR against a caller-supplied composition contract;
@@ -166,7 +166,8 @@ fn options(args: &[OsString]) -> Option<Options> {
             if result.kernel.is_some()
                 && result.output.is_none()
                 && result.shots.is_none()
-                && result.seed.is_none() => {}
+                && result.seed.is_none()
+                && (result.command == "run" || !singleton.contains("basis")) => {}
         "sample"
             if result.kernel.is_some()
                 && result.output.is_none()
@@ -219,16 +220,23 @@ fn execute(mut o: Options) -> Result<String> {
         .map_err(|e| e.to_string())?
         .elaborate()
         .map_err(|e| e.to_string())?;
-    let root = &source.definitions()[source.root()];
-    let bits = root
-        .inputs()
-        .iter()
-        .map(SourceValue::ty)
-        .map(width)
-        .sum::<usize>();
-    if bits > 16 || o.basis >= 1usize << bits {
-        return Err("input basis is outside the entry's quantum type".into());
-    }
+    let input = if matches!(o.command.as_str(), "run" | "sample") {
+        let root = &source.definitions()[source.root()];
+        let bits = root
+            .inputs()
+            .iter()
+            .map(SourceValue::ty)
+            .map(width)
+            .sum::<usize>();
+        if bits > 16 || o.basis >= 1usize << bits {
+            return Err("input basis is outside the entry's quantum type".into());
+        }
+        let mut input = vec![[0.0, 0.0]; 1usize << bits];
+        input[o.basis] = [1.0, 0.0];
+        Some(input)
+    } else {
+        None
+    };
     let proposal = source.lower().map_err(|e| e.to_string())?;
     let checking_error = |e: qleisli::interchange::Error| {
         format!(
@@ -246,8 +254,6 @@ fn execute(mut o: Options) -> Result<String> {
         return Ok("{\"status\":\"untrusted-proposal\"}".into());
     }
     let kernel = Kernel::new(o.kernel.ok_or("missing kernel")?);
-    let mut input = vec![[0.0, 0.0]; 1usize << bits];
-    input[o.basis] = [1.0, 0.0];
     let limits = ExecutionLimits {
         max_amplitudes: 1 << 20,
         max_steps: 10_000_000,
@@ -281,10 +287,11 @@ fn execute(mut o: Options) -> Result<String> {
                 "{{\"status\":\"checked\",\"profile\":\"sized-instrument\",\"contract\":\"{contract}\",{verification}}}"
             ));
         }
+        let input = input.as_deref().ok_or("missing execution input")?;
         if o.command == "sample" {
             let output = checked
                 .sample_normalized_shots(
-                    &input,
+                    input,
                     1,
                     o.shots.unwrap(),
                     &mut SplitMix64::new(o.seed.unwrap()),
@@ -301,7 +308,7 @@ fn execute(mut o: Options) -> Result<String> {
             ));
         }
         let output = checked
-            .execute(&input, 1, limits)
+            .execute(input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
             "{{\"measured_bits\":{},\"residual_bits\":{},\"branches\":{:?},{verification}}}",
@@ -323,8 +330,9 @@ fn execute(mut o: Options) -> Result<String> {
                 "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification}}}"
             ));
         }
+        let input = input.as_deref().ok_or("missing execution input")?;
         let output = checked
-            .execute(&input, 1, limits)
+            .execute(input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
             "{{\"quantum_bits\":{},\"amplitudes\":{:?},{verification}}}",

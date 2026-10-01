@@ -17,6 +17,52 @@ fn reject(text: &str, code: &str) {
 }
 
 #[test]
+fn sized_host_bindings_respect_module_visibility() {
+    let public = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }";
+    let private = public.strip_prefix("pub ").unwrap();
+    let program = ParsedProgram::parse(sources(private)).unwrap();
+    let error = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
+    assert_eq!(error.code(), "visibility");
+    assert_eq!(error.module(), Some("main"));
+    assert!(error.message().contains("main::f is private"));
+    ParsedProgram::parse(sources(public))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap();
+
+    for body in ["q", "U(q)"] {
+        let main = format!(
+            "pub unitary fn f[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) {{ {body} }}"
+        );
+        for (provider, accepted) in [(public, true), (private, false)] {
+            let program = ParsedProgram::parse(BTreeMap::from([
+                ("main".into(), main.clone()),
+                ("nested::dep".into(), provider.into()),
+            ]))
+            .unwrap();
+            let result = program.instantiate(
+                "main::f",
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("nested::dep::f", BTreeMap::new()),
+                )]),
+            );
+            if accepted {
+                result.unwrap().elaborate().unwrap();
+            } else {
+                let error = result.unwrap_err();
+                assert_eq!(error.code(), "visibility");
+                assert_eq!(error.module(), Some("main"));
+                assert!(error.message().contains("nested::dep::f is private"));
+            }
+        }
+    }
+}
+
+#[test]
 fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
     let prefix = "// The diagnostic must point past this retained prefix.\n";
     let overflow = format!(

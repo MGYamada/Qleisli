@@ -2,8 +2,8 @@
 
 Status: **staged migration adopted; experimental phase-word, phase-DAG, typed-layout, typed-call and combined phase/layout
 slices implemented; production verification remains in Rust**. The user selected this
-direction during 2026-09-28–29 JST. The current version and latest published
-release are [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
+direction during 2026-09-28–29 JST. The current development version is [0.2.4](releases/v0.2.4.md); the latest
+published release is [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01).
 Publication does not transfer production authority to Lean. Foundation publication evidence
 remains in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). The [0.2.0 foundation scope](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md) retains
 the implemented components. The 2026-09-30 [0.2.1 boundary](v0.2.2-plan.md)
@@ -95,6 +95,34 @@ mismatch witnesses, with later K4 source/backend tracing. The presentation and
 repair layer remains untrusted. Its witness-checking correctness is a separate
 obligation; rejection by the acceptance checker does not itself refute the
 requested mathematical claim. This tooling adds no K0–K4 release gate.
+
+## Algorithm contracts and pipeline consolidation review
+
+[Issue 131](https://github.com/MGYamada/Qleisli/issues/131) targets boundary
+specification in v0.3.0 and versioned consolidation in v0.4.0. The proposed
+disposition is one production source/elaboration/desugaring path into declared
+checked IR profiles, preserving published flat IR compatibility. Rust
+`fourier.rs`/`qpe.rs` perform untrusted candidate discovery. Existing named Lean
+QFT/QPE acceptance still requires its own soundness obligations; moving these
+files is not a reduction. Algorithm meanings and Fourier/QPE reference lemmas
+should belong to the library/proof side, with generic checked composition.
+
+| Current path | Proposed consolidation duty; not yet implemented |
+| --- | --- |
+| Finite Rust | Published production compatibility profile during VM migration. |
+| Hierarchical interchange / Rust sized | Converge on the shared source path and checked profile boundary. |
+| Python sized compiler | Independent differential oracle, not production authority. |
+| Research semantic kernel | Experimental oracle, not a second production checker. |
+| Mathlib-free `lean-kernel/` | Executable generic acceptance and actual-definition proofs. |
+| Mathlib `lean/` | Independent intended-meaning specifications and library/semantic bridges. |
+
+`PathSum.compile_sound` is useful but establishes path-state correspondence.
+Replacing literal QFT templates also requires complex path summation, an
+independently fixed Fourier contract and complete binding/control/instrument
+coverage. Symbolic equality is sufficient within a declared profile, not a
+complete normal form for arbitrary equivalent circuits. The modulus-256 phase
+domain remains fixed until a separately specified and proved generalization.
+Keep current public Lean APIs, audits and production gates during replacement.
 
 ## Pipeline migration with a stable IR verification boundary
 

@@ -8,8 +8,8 @@ The production Lean/Mathlib versions and imports are unchanged.
 **Subsequent environment decisions:** Physlib was added at compatible `v4.30.0`
 after this survey, then removed from required dependencies/CI in the v0.1.5
 maintenance candidate until a concrete instrument bridge needs it. The
-[dependency record](../../docs/physlib-environment.md) retains both decisions
-and reintroduction conditions. [PhyslibAudit.lean](PhyslibAudit.lean) preserves
+[current dependency gate](../../lean/README.md#future-physlib-bridge) states
+the reintroduction conditions; earlier decisions are available in Git history. [PhyslibAudit.lean](PhyslibAudit.lean) preserves
 the optional eight-declaration integration probe from 4.30.0; it is not runnable
 in the current default environment. The survey below retains its separate
 4.34.1 experiment and original validation scope.

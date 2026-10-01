@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Version **0.2.3** published on 2026-10-01 with explicit Qleisli edition 2026; crates.io and GitHub Release verified.",
+  "release_state": "Version **0.2.4** selected on 2026-10-01; crates.io and GitHub publication now authorized and candidate verification in progress. Latest completed publication: **0.2.3**.",
   "current": [
     {
       "topic": "Use today",
@@ -14,13 +14,18 @@
     },
     {
       "topic": "Documentation cleanup",
-      "state": "Eleven completed reports retired; v0.3.0 rewrite pending",
-      "detail": "[Issue 48](https://github.com/MGYamada/Qleisli/issues/48) tracks aggressive cleanup. Proof/implementation narratives are removed and authoring feedback is shortened to current obligations; definitions and preserved fixture evidence are linked directly. Active v0.2.x goals and VM-22\u2013VM-29 remain usable until the v0.3.0 rewrite."
+      "state": "Two redundant documents deleted; reports, roadmap and component prose shortened",
+      "detail": "[Issue 48](https://github.com/MGYamada/Qleisli/issues/48) tracks cleanup. The active Physlib gate is in the Lean README; hierarchy contracts, v0.2.x goals and VM-22\u2013VM-29 remain usable. Original fixtures and proofs stay intact. Remaining legacy docs retire at the v0.3.0 rewrite boundary."
+    },
+    {
+      "topic": "v0.2.3 review response",
+      "state": "Compatible phase primitives and ten active corpus migrations implemented in 0.2.4",
+      "detail": "[Review response](../tests/fixtures/review_v023/README.md) and [Issue 130](https://github.com/MGYamada/Qleisli/issues/130): s/sdg/tdg/id/phase_eighth use existing IR, exact phase and no added scalar workspace. QFT public meanings and original attempts remain. [120](https://github.com/MGYamada/Qleisli/issues/120) specifies synthesis workspace; [131](https://github.com/MGYamada/Qleisli/issues/131) and [132](https://github.com/MGYamada/Qleisli/issues/132) track future generic checking/consolidation and LiftBasis synthesis. Production authority and theorem completion remain separate."
     },
     {
       "topic": "Latest release",
-      "state": "0.2.3, published",
-      "detail": "Corpus: 42 finite cases. [The publication record](releases/v0.2.3.md#successful-publication-2026-10-01) binds all seven source/PR CI jobs, matching local/Linux distribution, fresh registry installation, hosted docs and complete GitHub source downloads to the immutable tag/package."
+      "state": "0.2.4 release candidate; publication authorized",
+      "detail": "[0.2.4 scope and authorization](releases/v0.2.4.md) cover corpus, compatible review/frontend fixes and VM-24. Final clean-source CI, distribution, tagging and upload are separate results. [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01) remains the latest completed publication until upload/readback succeed."
     },
     {
       "topic": "0.2.3 publication",
@@ -33,14 +38,19 @@
       "detail": "[Issue 102](https://github.com/MGYamada/Qleisli/issues/102) and [validation](../tests/fixtures/review_v022/validation.json) record 530 passing all-target tests on Rust 1.98.1/1.85.0. Repairs cover the stdin race, capture diagnostics, commuting QFT schedules/root factoring, lowering preflight and corpus providers. The 4,000-case ownership comparison agrees; paired Rust/Python checking retains explicit scope differences. Native QFT widths 1\u20133 match. [QPE capacity repair](../tests/fixtures/qpe_capacity_v023/README.md) accepts both tested (1,3) schedules at 1,996,759 structural/708 exact units under the unchanged 2,000,000 cap. Final Rust/MSRV all-target checks pass 531 tests; 34 optional tests are explicit."
     },
     {
+      "topic": "v0.2.4 bug repairs",
+      "state": "Manifest and sized frontend fixes implemented in the working tree",
+      "detail": "[Issues 116\u2013119](https://github.com/MGYamada/Qleisli/issues/116) and [validation](../tests/fixtures/issue_fixes_v024/validation.json): portable manifest symlink/non-file rejection, direct sized entry/provider visibility, execution-only --basis handling, and a targeted diagnostic/documentation for the existing Linux procfs requirement. Rust all-target, Clippy and native sized CLI checks pass on macOS; final-commit Linux checking and publication remain separate."
+    },
+    {
       "topic": "Finite corpus development",
-      "state": "42 cases, fourteen per approved source",
-      "detail": "[Six 0.2.3 additions](../corpus/authoring/v023-small/README.md) use only frozen inputs and 1\u20133 data qubits. All six first checks and 490 complete complex-entry probes pass; six new semantic faults are detected. Prior numerical reports and VM-22\u2019s 36-case/12-fault census remain unchanged. No general algorithm or translation proof is claimed."
+      "state": "48 cases, sixteen per approved source",
+      "detail": "[Full 0.2.4 validation](../corpus/validation-v0.2.4.json) passes 48 cases, 12,893 semantic probes, four rejections and 24 detected type-correct faults. [Six new first attempts](../corpus/authoring/v024-small/README.md) use frozen inputs and 1\u20133 data qubits without repair. The VM-22 36-case/12-fault census and historical reports remain unchanged; no general algorithm or translation proof is claimed."
     },
     {
       "topic": "Verification migration",
-      "state": "VM-22/VM-23 implementation and proof gates satisfied",
-      "detail": "[VM-23 exact boundary](../tests/fixtures/verification_v023/README.md) has actual scalar/matrix meaning, canonicality, reference/isometry, capacity and aggregate-work proofs; 815 native comparisons pass. Rust arithmetic is a compatibility comparison path, not a general formal-proof prerequisite. [Scope correction](../tests/fixtures/verification_v023/scope-review.json) removes the overly broad extra blocker. VM-24\u2013VM-29 remain open; production Rust authority and disabled schemas are preserved."
+      "state": "VM-22/23 and VM-24 finite component implemented and checked",
+      "detail": "[VM-24 boundary](../tests/fixtures/verification_v024/README.md) and [Issue 128](https://github.com/MGYamada/Qleisli/issues/128) record original finite reconstruction, canonical descriptions, actual column traces, phase-sensitive encoded/reference/clean-return and whole-space inverse proofs. 222 native Lean cases, 211 Rust comparisons and 110 independent matrices pass; VM-23 reruns 815 comparisons. Raw extraction is VM-25/26, hierarchy closure VM-27, transport/production integration VM-28/29. Experimental graph pricing is separate; Rust authority and disabled schemas remain."
     },
     {
       "topic": "Deferred v0.2.1 feature track",
@@ -170,7 +180,7 @@
     {
       "rule": "[Modules, sealed names, visibility and cycles](standard-library.md)",
       "implementation": "[Project loader](../src/frontend/project.rs)",
-      "tests": "[`import_cycles_and_name_collisions_are_rejected`](../tests/project.rs); [`unknown_sealed_name_is_not_reinterpreted_as_user_code`](../tests/project.rs)",
+      "tests": "[`import_cycles_and_name_collisions_are_rejected`](../tests/project.rs); [`unknown_sealed_name_is_not_reinterpreted_as_user_code`](../tests/project.rs); [exact phase/Unit/ownership/realizability-obstruction regressions](../tests/static_semantics.rs)",
       "proof": "[Source/IR obligations](source-ir-correspondence.md); module resolver implementation correspondence open"
     },
     {
@@ -189,7 +199,7 @@
       "rule": "[Measurement, reset, discard and classical SSA](finite-core-proof.md)",
       "implementation": "[Independent verifier](../src/verify.rs); [reference execution](../src/sim.rs)",
       "tests": "[`observation_instruments_preserve_public_weights_and_reference_statistics`](../tests/source_ir_correspondence.rs); [`classical_constants_and_conjunction_require_fresh_visible_ssa_values`](../tests/verify.rs); [`reset_breaks_bell_correlation_and_returns_new_zero_wire`](../tests/sim.rs)",
-      "proof": "Theorem C instrument paper argument and local Kraus lemmas; [future Physlib bridge and reintroduction gate](physlib-environment.md#current-decision-and-reintroduction-gate) and full implementation proof open"
+      "proof": "Theorem C instrument paper argument and local Kraus lemmas; [future Physlib bridge and reintroduction gate](../lean/README.md#future-physlib-bridge) and full implementation proof open"
     },
     {
       "rule": "[Finite work, width, depth and numeric execution limits](frontend-v0.md)",
@@ -381,7 +391,7 @@
       "rule": "[Whole-space operator unitarity](../tests/fixtures/hierarchical_ir/unitarity-packet.md)",
       "implementation": "[Actual complex operator laws](../lean/Qleisli/HierarchicalUnitary.lean); [actual local typing bridges](../lean/Qleisli/HierarchicalTyping.lean)",
       "tests": "[Preserved first source and compilation failures](../tests/fixtures/hierarchical_ir/unitarity-first/compile.txt); [235 native derivation regressions](../tests/fixtures/hierarchical_ir/unitarity-derivation-native.json)",
-      "proof": "Both inverse laws for identity, phase and permutations; closure under sequence, tensor, inverse, coherent control and literal powers; arbitrary finite reference extension. Actual phase/rewire/structural typing predicates imply leaf unitarity; actual sequence/tensor/inverse/control/repeat typing preserves child UnitaryInterface premises. No repeat expansion or runtime matrix checker is added. Recursive connection to supported accepted derivations is proved by HierarchicalAcceptance.checkAll_unitary and its inverse/reference corollaries. Finite reconstruction, remaining rules and production binding remain pending."
+      "proof": "Both inverse laws for identity, phase and permutations; closure under sequence, tensor, inverse, coherent control and literal powers; arbitrary finite reference extension. Actual phase/rewire/structural typing predicates imply leaf unitarity; actual sequence/tensor/inverse/control/repeat typing preserves child UnitaryInterface premises. No repeat expansion or runtime matrix checker is added. Recursive connection to supported accepted derivations is proved by HierarchicalAcceptance.checkAll_unitary and its inverse/reference corollaries. Hierarchy connection to the VM-24 finite component, remaining rules and production binding remain pending."
     },
     {
       "rule": "[Shared call expansion](../tests/fixtures/hierarchical_ir/call-packet.md)",
@@ -565,15 +575,15 @@
     },
     {
       "rule": "[Finite three-source corpus contracts and closed intake](../corpus/POLICY.md)",
-      "implementation": "[42 case-local QLI translations](../corpus/README.md), fourteen per approved source, through production frontend/IR checking with explicit edition 2026 manifests.",
-      "tests": "[Current finite validation](../corpus/validation-v0.2.3.json): 12,629 semantic probes, four ownership/effect rejections and eighteen detected type-correct faults; [six preserved first attempts](../corpus/authoring/v023-small/session.json); 26 provenance/oracle checker tests.",
+      "implementation": "[48 case-local QLI translations](../corpus/README.md), sixteen per approved source, through production frontend/IR checking with explicit edition 2026 manifests.",
+      "tests": "[Full 0.2.4 validation](../corpus/validation-v0.2.4.json): 12,893 semantic probes, four rejections and 24 detected type-correct faults; [preserved new first attempts](../corpus/authoring/v024-small/session.json); 26 provenance/oracle checker tests.",
       "proof": "Full finite complex-entry and protocol/reference numerical comparisons at tolerance 1e-11; no general source/algorithm proof or upstream-framework execution. Exact evidence, production authority, external-disabled schemas and shared-QPE/R14/H1\u2013H5 gates are unchanged. Historical sessions and upstream pins remain intact."
     },
     {
       "rule": "[0.2.2\u20130.2.9 verification migration plan](verification-migration-v0.2.md)",
-      "implementation": "VM-22 freezes APIs/boundaries; [VM-23 arithmetic packet](../tests/fixtures/verification_v023/README.md) implements bounded R8 coefficients/matrices and shared work in the pure Lean kernel. Its adopted arithmetic/comparison gates are satisfied in the 0.2.3 implementation. Production evidence/transport and VM-24\u2013VM-29 remain pending.",
-      "tests": "[Current native/capacity comparison](../tests/fixtures/verification_v023/runtime-capacity-contract.json): 815 Rust/Lean decisions, 551 independent rational and 75 matrix checks, 24 capacity/order probes and seven calibrated faults; ordinary matrix dimension at most four. Both package builds/audits and fresh kernel replay pass; historical reports and first-source diagnostics remain intact.",
-      "proof": "[Scalar bridge](../lean/Qleisli/Exact.lean), [general matrix/reference bridge](../lean/Qleisli/ExactMatrix.lean), [canonical storage and exact shared-work proofs](../lean-kernel/QleisliKernel/ExactMatrix.lean) and [capacity proofs](../lean-kernel/QleisliKernel/ExactCapacity.lean) establish the actual Lean arithmetic profile. A general correctness proof of old Rust arithmetic is not required for replacement; compiler/runtime assumptions remain explicit. [Scope correction](../tests/fixtures/verification_v023/scope-review.json) records that distinction. Later evidence/transport/source obligations remain separate; no production transfer or enabled schema."
+      "implementation": "VM-22 freezes APIs/boundaries; VM-23 implements bounded R8 arithmetic; [VM-24 finite component](../tests/fixtures/verification_v024/README.md) reconstructs original circuits/descriptions and checks encoded equations/fresh dependencies. Actual-definition component proofs and native comparisons pass. Production raw-IR/hierarchy/transport integration remains VM-25\u2013VM-29.",
+      "tests": "[VM-24 native comparison](../tests/fixtures/verification_v024/native-validation.json): 222 Lean cases, 211 Rust comparisons, 110 independent matrices, twenty-two graph faults and three damaged-result/work checks. Small semantic systems and malformed/Unit capacity inputs; [VM-23 arithmetic comparison](../tests/fixtures/verification_v023/runtime-capacity-contract.json) retains 815 native cases. Both builds/audits and fresh replay are recorded separately.",
+      "proof": "[VM-23 scalar/matrix bridge](../lean/Qleisli/ExactMatrix.lean) and [VM-24 actual finite bridge](../lean/Qleisli/Finite.lean) prove canonical description reading, complete literal column traces, encoded equations, arbitrary-reference action, clean return from the required encoding and whole-space inverse laws. Reference modules import no acceptance code. General Rust correctness, raw/source extraction, hierarchy closure, native transport refinement and production authority remain distinct later obligations."
     },
     {
       "rule": "Bounded Rust sized-source preparation and lowering",

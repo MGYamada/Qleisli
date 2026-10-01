@@ -5,10 +5,10 @@ authority. These development fixtures add no public format, dependency,
 acceptance rule or proof. The original baseline comparisons use at most three qubits.
 
 [inventory.json](inventory.json) freezes 232 public enum constructors (including
-all 19 `RawOp` forms), public signatures and capacity constants in 137 reviewed
-source snapshots, including the VM-23 arithmetic and matrix/capacity proof modules.
+all 19 `RawOp` forms), public signatures and capacity constants in 139 reviewed
+source snapshots, including VM-23 arithmetic and the VM-24 finite component.
 Thirty-six coverage groups give producers, consumers, obligations,
-replacement packets and executable positive/negative references. Seventeen boundary
+replacement packets and executable positive/negative references. Eighteen boundary
 contracts distinguish validity from independent semantic requests and retain
 types, ordered ports, effects, phases, source/evidence binding and limits.
 Twenty-eight capacity scopes distinguish acceptance, transport and execution,
@@ -130,3 +130,17 @@ primitive catalog to the same source group. Public APIs and capacities are
 unchanged. Comparison request/artifact bytes, original decisions and historical
 reports are unchanged; new tests cover scope metadata, primitive omissions and
 source diagnostics. The VM-23 scalar proof extension changes proof source only.
+
+The later v0.2.4 repairs (#116–#119) refresh five frontend/source/CLI snapshots
+and two sized regression harness pins. Manifest metadata now rejects symlinks
+and non-files before opening; Linux retains the descriptor walk with a targeted
+procfs capability error. Direct sized bindings obey module visibility, and
+`check` rejects the execution-only basis flag. Public Rust shapes, capacities,
+frozen artifact/request bytes and earlier reports remain unchanged. Separate
+[validation](../issue_fixes_v024/validation.json) records the actual local scope.
+
+The [0.2.3 review packet](../review_v023/README.md) refreshes five current source
+body pins for additive phase/identity aliases and the equivalent bundled QFT
+source. Public Rust/IR/Lean declarations and capacities are unchanged. Original
+36-case/12-fault comparison sources, bytes and reports remain frozen; later
+active corpus improvements preserve first attempts in their own sessions.

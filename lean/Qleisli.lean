@@ -1,6 +1,7 @@
 import Qleisli.Resource
 import Qleisli.Exact
 import Qleisli.ExactMatrix
+import Qleisli.Finite
 import Qleisli.Scope
 import Qleisli.Transition
 import Qleisli.Phi

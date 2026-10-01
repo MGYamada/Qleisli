@@ -7,7 +7,7 @@ Copyright 2026 Masahiko G. Yamada. Released under Apache-2.0.
 
 Preserved optional probe for the formerly pinned Physlib v4.30.0 environment.
 Not part of the current Lean dependency graph, default build, or CI.
-See docs/physlib-environment.md for reintroduction conditions and reproduction.
+See lean/README.md#future-physlib-bridge for reintroduction conditions and reproduction.
 
 Check that the pinned QuantumInfo interfaces coexist with the Qleisli proof
 library and that the selected external declarations use only the standard

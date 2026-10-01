@@ -29,6 +29,31 @@
         "check-initial.json",
         "semantic-validation.json"
       ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Curated v0.2.3 review migration to compatible sealed aliases (Issue 130), preserving exact phase and all original first sources; revised sources saved before checks",
+      "project_version": "0.2.4",
+      "created_utc": "2026-10-01T02:55:51.245695+00:00",
+      "context": "Informed migration with repository and reviewer advice available; not a controlled model evaluation. Frozen VM-22 sources are excluded.",
+      "sha256": {
+        "quantum_katas/deutsch_jozsa3/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+        "quantum_katas/deutsch_jozsa3/kernel.qli": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+        "quantum_katas/bell_measure/main.qli": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+        "quantum_katas/bell_measure/kernel.qli": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287",
+        "qualtran/add_constant3/main.qli": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+        "qualtran/add_constant3/kernel.qli": "919e0a13fb82450d067ea24c7cf2c27d6040b7794010c0a241c126d37c2fe518",
+        "qualtran/equals2/main.qli": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+        "qualtran/equals2/kernel.qli": "f90a3d88e538f7b6b32cd944017fd1683d85a93cc41853b91c99be7c625427e5",
+        "pennylane_demos/lcu_projector/main.qli": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+        "pennylane_demos/lcu_projector/kernel.qli": "2e545374d28ce5949c0b4dec9f5ba5ace2a405fce330166644b2940d0793bb77",
+        "pennylane_demos/kernel_overlap2/main.qli": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875",
+        "pennylane_demos/kernel_overlap2/kernel.qli": "7a0a853c0a0d706eff7cffef6e726465a524ebf8f265444b932033a6a786f40b"
+      },
+      "observations": [
+        "review-checks.json",
+        "review-semantics.json"
+      ]
     }
   ]
 }

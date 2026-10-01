@@ -16,6 +16,13 @@ pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
         match fs::symlink_metadata(&path) {
             Err(failure) if failure.kind() == std::io::ErrorKind::NotFound => continue,
             Err(failure) => return Err(io_error(&path, failure)),
+            Ok(metadata) if !metadata.file_type().is_file() => {
+                return Err(error(
+                    &path,
+                    Span::default(),
+                    "Qargo.toml must be a regular, non-symlink file",
+                ));
+            }
             Ok(_) => {}
         }
         // Do not skip a malformed, unreadable or symlinked nearer manifest.

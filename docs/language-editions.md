@@ -71,6 +71,13 @@ and unsupported schema versions fail before source parsing. An invalid,
 unreadable, symlinked or non-file nearer manifest is an error; search does not
 continue upward past it. Manifest reads are bounded to 65,536 bytes and do not
 consume the separate source byte budget.
+The regular-file check uses `symlink_metadata` before the platform opener, so
+static symlinks (including dangling links) and non-files receive the same
+manifest diagnostic on every platform. Hardened macOS/Linux openers additionally
+reject replacement symlinks; other platforms retain the filesystem trust
+assumption for concurrent replacements. The Linux component walk on x86/x86_64,
+ARM/aarch64 and RISC-V requires accessible `/proc/self/fd` descriptors and
+diagnoses their absence without falling back to following source symlinks.
 
 The caller's module root and explicit sized-module map are unchanged by
 manifest discovery. `Project::load`, source checking/compilation, source CLI

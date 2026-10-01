@@ -1,0 +1,104 @@
+{
+  "format": "qleisli.release-preparation",
+  "version": 1,
+  "release": "0.2.4",
+  "authorization": "User explicitly requested crates.io and GitHub publication on 2026-10-01.",
+  "created_utc": "2026-10-01T04:15:50.944972+00:00",
+  "scope": "Final working-tree preparation before clean candidate commit. Exact-commit CI, distribution, dry-run and publication are subsequent gates.",
+  "compatibility": "Additive sealed source aliases and checked finite experimental component; existing Rust/IR/Lean contracts, capacities, Rust 1.85, edition 2026 and production Rust authority preserved.",
+  "checks": [
+    {
+      "command": "Rust 1.85.0 cargo test --locked --offline --all-targets",
+      "exit_code": 0,
+      "passed": 542,
+      "failed": 0,
+      "ignored": 34,
+      "log_sha256": "d91954f8571bad53c26711c77977f95032bd3ebf8e3abcdcdc0a2f4457bcdb31"
+    },
+    {
+      "command": "Rust 1.85.0 cargo clippy --locked --offline --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_installation.py <built-0.2.4-binary>",
+      "exit_code": 0,
+      "scope": "matching finalized README sources, Bell text/JSON/check/run/sample, embedded QFT2 and owner-reuse rejection, with empty helper-tool PATH"
+    },
+    {
+      "command": "python3 scripts/check_lean_kernel.py",
+      "exit_code": 0,
+      "modules": 60
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "external_enabled": 0
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "constructors": 232,
+      "sources": 139,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "exit_code": 0,
+      "cases": 48
+    },
+    {
+      "command": "python3 scripts/test_check_distribution.py",
+      "exit_code": 0,
+      "passed": 21
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "pilots": 3
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "exit_code": 0,
+      "records": 14,
+      "snapshots": 22,
+      "observations": 43
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "qli": 749,
+      "qlt": 5,
+      "manifests": 18
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "prior_evidence": [
+    "tests/fixtures/review_v023/validation.json",
+    "tests/fixtures/review_v023/corpus-validation.json",
+    "tests/fixtures/verification_v024/registry-validation.json",
+    "tests/fixtures/verification_v024/native-validation.json"
+  ],
+  "pending": [
+    "Exact candidate seven-job CI including Linux/Lean/native/Python checks",
+    "Clean candidate package/source distribution and publish dry-run",
+    "Annotated tag/push, crates.io upload/readback, fresh registry installation and hosted docs",
+    "GitHub Release and complete source archive comparisons"
+  ],
+  "not_requested": [
+    "PyPI publication",
+    "New platform binaries",
+    "New maximum-size corpus generation or production Lean authority transfer"
+  ]
+}

@@ -396,7 +396,8 @@ Store transitions and fresh IDs are those of the resource calculus.
 | Sealed name | Argument list | Result type | Own effect / IR |
 | --- | --- | --- | --- |
 | `init0` | empty | `Q<Bit>` | `I / Init0` |
-| `h`, `x`, `z`, `t` | `Q<Bit>` | `Q<Bit>` | `U / Gate` |
+| `h`, `x`, `z`, `t`, `s`, `sdg`, `tdg` | `Q<Bit>` | `Q<Bit>` | `U / Gate`; aliases expand to existing T gates |
+| `id`, `phase_eighth` | `Q<A>` | `Q<A>` with the same exact tree | `U / identity` or zero-axis scalar `ApplyUnitary`; no new wire |
 | `cnot` | `Q<Bit>, Q<Bit>` | `(Q<Bit>,Q<Bit>)` | `U / Cnot` |
 | `toffoli` | `Q<Bit>, Q<Bit>, Q<Bit>` | `((Q<Bit>,Q<Bit>),Q<Bit>)` | `U / Toffoli` |
 | `split` | `Q<(A,B)>` | `(Q<A>,Q<B>)` | `U / Split` |
@@ -495,7 +496,7 @@ a known runtime condition does not remove the other checking premise.
 
 For `adjoint`, `repeat_static`, and `qif`, use the complete
 [StaticTarget and expression rules](static-operations.md#static-target-judgment).
-They require declared `unitary` with exact `Q<A>->Q<A>` or sealed `h/x/z/t`
+They require declared `unitary` with exact `Q<A>->Q<A>` or sealed `id/phase_eighth` on `A`, or `h/x/z/t/s/sdg/tdg`
 on `Bit`; check the whole target and independently verify/flatten it. The
 conclusions are `Q<A>`, `Q<A>`, and `(Q<Bit>,Q<A>)`, respectively, with own
 effect `U` joined with all input effects. Repeat zero retains every target

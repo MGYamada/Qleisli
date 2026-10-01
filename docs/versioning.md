@@ -9,6 +9,12 @@ supersedes the 2026-09-27 rule requiring MINOR for every new feature.
 
 ## Version identity
 
+**Current development selection, 2026-10-01:** the user selected **0.2.4**,
+starting with obsolete-document reduction and small finite corpus additions.
+[Its record](releases/v0.2.4.md) separates performed checks from pending release
+and VM-24 gates. This compatible selection adds no new exception and performs
+no publication. The latest published release remains **0.2.3**.
+
 **Explicit edition-declaration exception, 2026-09-30:** the user selected
 v0.2.3 to adopt Qleisli edition `"2026"` and require `Qargo.toml` for every
 filesystem `.qli`/`.qlt` source tree. Formerly manifest-free projects must add
@@ -68,7 +74,7 @@ or publication follows from this scope selection.
 The subsequent 2026-09-29 user decision explicitly plans
 [Qleisli type-system specification in the v0.3.0 breaking-change release](v0x-roadmap.md#v030-qleisli-type-system-specification),
 with QLT implementation deferred to v0.4.0 or later. Concrete type changes and
-migrations remain to be specified. The current manifests select 0.2.3, and
+migrations remain to be specified. The current manifests select 0.2.4, and
 this future boundary does not permit incompatible changes in that PATCH.
 
 The historical finite baseline and release state are in [current status](current-status.md)
@@ -223,7 +229,7 @@ For each release or prerelease:
    `cargo run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test`.
    Its source/dependency policy and compiled audit are separate from the
    existing Mathlib proof audit; neither grants full compiler soundness.
-   Physlib is currently a [future dependency](physlib-environment.md), not a
+   Physlib is currently a [future dependency](../lean/README.md#future-physlib-bridge), not a
    release prerequisite. If reintroduced for a concrete bridge, add its scoped
    external build/axiom audit separately and document the declarations covered.
    This is a full release check; a documentation-only working change
