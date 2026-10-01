@@ -20,10 +20,10 @@ its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-Version 0.2.4 distribution links: [crates.io](https://crates.io/crates/qleisli/0.2.4)
+Version 0.2.4 was published on 2026-10-01: [crates.io](https://crates.io/crates/qleisli/0.2.4)
 and [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4).
-The [release record](docs/releases/v0.2.4.md) distinguishes verification, tagging
-and actual publication.
+The [release record](docs/releases/v0.2.4.md#successful-publication-2026-10-01)
+binds the verified source, registry package and complete GitHub downloads.
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)

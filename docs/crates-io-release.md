@@ -1,7 +1,7 @@
 # Qleisli release procedure
 
-Status: **0.2.4 publication authorized on 2026-10-01; candidate checks in progress**.
-The latest completed publication is [0.2.3](releases/v0.2.3.md#successful-publication-2026-10-01).
+Status: **0.2.4 published and verified on 2026-10-01**.
+The latest completed publication is [0.2.4](releases/v0.2.4.md#successful-publication-2026-10-01).
 This reusable procedure illustrates the sequence with 0.2.4; actual outcomes
 belong in its [release record](releases/v0.2.4.md). Versioning and proof/feature
 gates remain authoritative.
