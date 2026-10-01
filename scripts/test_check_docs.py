@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_lean, check_links, check_status, markdown_anchors, markdown_paths, render_status
+from check_docs import check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -31,6 +31,21 @@ class DocumentationReferences(unittest.TestCase):
         self.assertEqual(counts["links"], 1)
         self.assertEqual(len(errors), 1)
         self.assertIn("corpus/source/case/README.md:1: missing target deleted.qli", errors[0])
+
+    def test_package_doc_links_reject_previous_and_future_tags(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.2.5"\n')
+        self.write("src/lib.rs", "//! [trust](https://github.com/MGYamada/Qleisli/blob/v0.2.4/TRUST_BOUNDARY.md)\n")
+        self.write("README.crates.md", "[quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0/docs/qli-quick-reference.md)\n")
+        errors = check_release_doc_links(self.root)
+        self.assertEqual(len(errors), 2)
+        self.assertIn("src/lib.rs:1: documentation tag v0.2.4", errors[0])
+        self.assertIn("README.crates.md:1: documentation tag v0.3.0", errors[1])
+
+    def test_package_doc_links_accept_matching_and_independent_targets(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.2.5"\n')
+        self.write("src/lib.rs", "//! [trust](https://github.com/MGYamada/Qleisli/blob/v0.2.5/TRUST_BOUNDARY.md)\n")
+        self.write("README.crates.md", "[current](https://github.com/MGYamada/Qleisli/blob/main/README.md)\n[release history](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4)\n")
+        self.assertEqual(check_release_doc_links(self.root), [])
 
     def status_fixture(self):
         self.write("Cargo.toml", '[package]\nversion = "0.1.5"\n')

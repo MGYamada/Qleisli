@@ -6,7 +6,11 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No additional changes.
+- Replace macOS source loading's `O_NOFOLLOW_ANY` dependency with held-parent
+  `openat`/`O_NOFOLLOW`, preserving the existing deployment minimum and rejecting
+  source/parent symlink replacements and FIFOs; add macOS/MSRV CI (#146).
+- Align crate-level documentation links with the selected package version and
+  check package-facing version pins in the documentation linter (#147).
 
 ## 0.2.4 — 2026-10-01
 

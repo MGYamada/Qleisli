@@ -24,6 +24,7 @@ See the [validation/publication record](releases/v0.2.4.md).
 | Library growth | Algorithms in corpus until v0.5.0 | [STDLIB.md](../STDLIB.md) sets contract and review conventions for later mathlib-style library growth; qlippy remains planned. |
 | Next specification work | Type/documentation discipline in v0.3; QLT at v0.4 or later | [Roadmap](v0x-roadmap.md#documentation-discipline-for-v030) adopts deletion before a newly written v0.3.0 Reference. Active v0.2.x goals remain; [coefficient decisions](coefficient-domains.md) still require compatible or versioned changes. |
 | Proof goals | Soundness at v0.5; realizability and resource safety by v1 | [Milestone gates](release-milestones.md) are targets, not completed guarantees. The [shared-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md) records bounded R14/H1–H5 evidence; general source/runtime correspondence, full-profile migration and v1 algorithm/resource proofs remain open. |
+| v0.2.5 bug repairs | Issues 146/147 locally validated; PR integration pending | [Repairs and validation](../tests/fixtures/issue_fixes_v025/README.md) preserve macOS deployment targets with held-parent openat/O_NOFOLLOW, retain symlink/FIFO protection and add macOS/MSRV CI. Both Rust toolchains, Clippy and rendered API links pass; package-facing version pins are checked against Cargo. Published artifacts remain immutable. |
 
 Historical narrative pages are retired; lookup uses Git history and published tags.
 

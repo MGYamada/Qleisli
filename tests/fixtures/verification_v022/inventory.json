@@ -2763,7 +2763,7 @@
     },
     {
       "path": "src/frontend/project/source_file.rs",
-      "sha256": "022890128935ad3280a31b7bcb44c9b5ca41f1b67e334d858f2eee59c3371480",
+      "sha256": "3a9c1c8a28647083fff12a46e602704fa0224e6d348078faee7c114e2d4d892a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3359,7 +3359,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "419cc86fe9193c9b91823dc46e55cd3fb31ef82922ae18216fffd34643a6acd4",
+      "sha256": "3d9a418f70b87f0aae6095b4e3a05814f08325bcb4b53d397cf6ef7ee5b3006f",
       "group": "raw-core",
       "surface": {
         "declarations": [

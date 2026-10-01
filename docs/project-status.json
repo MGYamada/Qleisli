@@ -76,6 +76,11 @@
       "topic": "Proof goals",
       "state": "Soundness at v0.5; realizability and resource safety by v1",
       "detail": "[Milestone gates](release-milestones.md) are targets, not completed guarantees. The [shared-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md) records bounded R14/H1\u2013H5 evidence; general source/runtime correspondence, full-profile migration and v1 algorithm/resource proofs remain open."
+    },
+    {
+      "topic": "v0.2.5 bug repairs",
+      "state": "Issues 146/147 locally validated; PR integration pending",
+      "detail": "[Repairs and validation](../tests/fixtures/issue_fixes_v025/README.md) preserve macOS deployment targets with held-parent openat/O_NOFOLLOW, retain symlink/FIFO protection and add macOS/MSRV CI. Both Rust toolchains, Clippy and rendered API links pass; package-facing version pins are checked against Cargo. Published artifacts remain immutable."
     }
   ],
   "milestones": [

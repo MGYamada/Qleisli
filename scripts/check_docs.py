@@ -10,6 +10,7 @@ from pathlib import Path
 import json
 import re
 import sys
+import tomllib
 from urllib.parse import unquote, urlsplit
 
 
@@ -343,6 +344,20 @@ def markdown_paths(root: Path) -> list[Path]:
     return docs
 
 
+def check_release_doc_links(root: Path) -> list[str]:
+    """Package-facing documentation must follow the package's selected version."""
+    version = tomllib.loads((root / "Cargo.toml").read_text())["package"]["version"]
+    pattern = re.compile(r"https://github\.com/MGYamada/Qleisli/blob/v([^/\s)]+)/")
+    errors = []
+    for name in ["src/lib.rs", "README.crates.md"]:
+        text = (root / name).read_text()
+        for match in pattern.finditer(text):
+            if match[1] != version:
+                line = text.count("\n", 0, match.start()) + 1
+                errors.append(f"{name}:{line}: documentation tag v{match[1]} differs from package v{version}")
+    return errors
+
+
 def main() -> int:
     if sys.argv[1:] not in ([], ["--write-status"]):
         print("usage: check_docs.py [--write-status]", file=sys.stderr)
@@ -350,6 +365,7 @@ def main() -> int:
     status_errors = check_status(ROOT, write=sys.argv[1:] == ["--write-status"])
     errors, counts = check_links(ROOT, markdown_paths(ROOT))
     errors.extend(status_errors)
+    errors.extend(check_release_doc_links(ROOT))
     lean_errors, modules = check_lean(ROOT)
     errors.extend(lean_errors)
     # Loaded here so the standalone checker can reuse lean_imports above.
