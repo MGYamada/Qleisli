@@ -1,0 +1,112 @@
+{
+  "format": "qleisli.review-followup.validation",
+  "version": 1,
+  "reviewed_release": "0.2.4",
+  "checked_package_version": "0.2.4",
+  "scope": "isolated compatible repair PR candidate",
+  "date": "2026-10-01",
+  "platform": "aarch64-apple-darwin",
+  "rust": {
+    "1.98.1": {
+      "all_targets_passed": 552,
+      "failed": 0,
+      "ignored": 34
+    },
+    "1.85.0": {
+      "all_targets_passed": 552,
+      "failed": 0,
+      "ignored": 34
+    },
+    "warning_diagnostics": 0,
+    "final_review_regressions": 8,
+    "clippy": "all targets; -D warnings; passed",
+    "doctests_passed": 1,
+    "api_docs": "cargo doc --locked --no-deps; passed"
+  },
+  "python": {
+    "python3 scripts/test_check_docs.py": {
+      "passed": 28,
+      "skipped": 0
+    },
+    "python3 scripts/test_check_input_corpus.py": {
+      "passed": 26,
+      "skipped": 0
+    },
+    "python3 scripts/test_cli_json.py target/debug/qleisli": {
+      "passed": 9,
+      "skipped": 1
+    },
+    "temporary-venv/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as --opt opt": {
+      "passed": 4,
+      "skipped": 0
+    }
+  },
+  "independent_source_comparison": {
+    "binary_sha256": "d249bc5cdfb63357a6bab4b986c7835db1c857eff05c4b734e08bf94ebb002ae",
+    "cases": 96,
+    "harness_sha256": "f159346abbbf808a7eb460ec44f5866cecbf6456bba1317a52705352742c5b88",
+    "max_probability_error": 4.218847493575595e-15,
+    "maximum_live_qubits": 4,
+    "ordered_sources_sha256": "f0feb7bc0a92d9c36ce051ab2fe04f4318a3541295f3553a5ddb9e24365969cc",
+    "scope": "exact extractor comparison against separately expanded gate-word contracts; source/CLI probabilities with independent X/Y/Z, coherent control, classical branch and reset oracles; regressions, not general proof",
+    "seed": 20260930021,
+    "tolerance": 1e-11
+  },
+  "terminal_target_validation": {
+    "cases": 16,
+    "complex_entries": 352,
+    "maximum_physical_qubits": 5,
+    "qft2_qubits": 2,
+    "qft3_qubits": 4,
+    "zero_workspace_and_exact_phase_checked": true,
+    "coefficient_tolerance": 2e-12,
+    "reference_openqasm_parser": "openqasm3 1.0.1 / ANTLR 4.13.2, pinned wheel hashes",
+    "llvm_verifier": "LLVM 22.1.6; 16 review QIR modules plus existing profile smoke cases",
+    "general_transformation_proof": false,
+    "resource_safety_certificate": false,
+    "additional_cases": "both nontrivial phase arms reuse clean workspace; nested controls uncompute two conjunction qubits"
+  },
+  "metadata": "approved-source/provenance/authoring coverage passes; current census generated from manifests; frozen comparison pins unchanged",
+  "not_performed": [
+    "reviewer external fuzz/sampling campaigns",
+    "fresh Lean builds/audits (no Lean change in this review repair)",
+    "full exhaustive corpus replay (source/IR semantics unchanged; small independent regressions performed)",
+    "merge, tag or publication"
+  ],
+  "compatibility": "public IR and production acceptance unchanged; default source-root loading unchanged; new APIs/flag/warnings are additive",
+  "tracking": [
+    "https://github.com/MGYamada/Qleisli/issues/160",
+    "https://github.com/MGYamada/Qleisli/issues/165",
+    "https://github.com/MGYamada/Qleisli/pull/155"
+  ],
+  "source_sha256": {
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+    "src/interop/mod.rs": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
+    "src/frontend/project.rs": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
+    "src/frontend/project/manifest.rs": "410db2fcaeb7724329844ca4b42b9a0b54484d1f555f7470233c1a217cf05161",
+    "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+    "src/frontend/compile/lower/mod.rs": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
+    "src/frontend/compile/lower/value.rs": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
+    "src/frontend/compile/lower/primitives.rs": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
+    "src/frontend/compile/lower/certified.rs": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
+    "src/bin/qleisli.rs": "caced06de5e530939506e117a087d45d82f2eeb1bd5f367936ac3ad5de97ebab",
+    "src/bin/qleisli/options.rs": "7a190d6d56a9506a058dc7b3655000964ac0991f61978f9e9eb34a42871ca4af",
+    "src/bin/qleisli/json.rs": "31d975329179df33b32b530db8e9afea7b4e84fb22cc988b98db4dac1dc30a85",
+    "tests/review_v024.rs": "5160969e075e6a81ac9d9c184dd3edfe2a627b2631510f7cde5d031e2a3c3869",
+    "tests/interop.rs": "35ba99f4295ef28fb00c0cdeb0e9aca18d23404780731e2fb0274a8f5dc32977",
+    "scripts/check_docs.py": "1ae7161de2f32aa8fccb49674e8c7bda79f4271e533b7563281abc4ebcc984b3",
+    "scripts/check_input_corpus.py": "2f898fc6effa1d03e9a8f836d0ad0f7eb13141a4e04fbc2559d51e91e2666a6f",
+    "scripts/test_review_v024.py": "1829870e33579efdd21285eb91dbcfe53d052ac93d328fee63db3ad1168943d4",
+    "scripts/test_interop_external.py": "4f4af1d2520119ec5f4fe2cbd26cdee0d93042f0a3af8cb6b8782e41498e49f0",
+    "tests/fixtures/verification_v022/inventory.json": "e21327b5665920416ed2d9f688d7d2e4826d0f1c58f1bd343996ad2b4a450978",
+    "corpus/manifest.json": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
+    "corpus/semantic_faults/manifest.json": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c"
+  },
+  "final_checks": {
+    "documentation": "generated overview/rule inventory and local links passed",
+    "rust_fmt": "passed",
+    "git_diff_check": "passed",
+    "verification_inventory": "passed; 232 constructors, 18 boundaries; Rust authority unchanged"
+  }
+}

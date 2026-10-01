@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
+from check_docs import check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -31,6 +31,24 @@ class DocumentationReferences(unittest.TestCase):
         self.assertEqual(counts["links"], 1)
         self.assertEqual(len(errors), 1)
         self.assertIn("corpus/source/case/README.md:1: missing target deleted.qli", errors[0])
+
+    def test_corpus_inventory_is_derived_and_stale_views_reject(self):
+        self.write("corpus/manifest.json", json.dumps({"cases": [{"kind": "unitary"}, {"kind": "observe"}]}))
+        self.write("corpus/semantic_faults/manifest.json", json.dumps({"cases": [{}]}))
+        path = self.write("corpus/README.md", "intro\n<!-- corpus-inventory:start -->\nold total\n<!-- corpus-inventory:end -->\nend\n")
+        self.assertIn("stale", check_corpus_overview(self.root)[0])
+        self.assertEqual(check_corpus_overview(self.root, write=True), [])
+        self.assertIn("| 2 | 1 | 1 | 1 |", path.read_text())
+        self.assertEqual(check_corpus_overview(self.root), [])
+        self.write("corpus/manifest.json", json.dumps({"cases": [{"kind": "unitary"}]}))
+        self.assertTrue(check_corpus_overview(self.root))
+
+    def test_missing_corpus_markers_do_not_allow_a_silent_rewrite(self):
+        self.write("corpus/manifest.json", '{"cases": []}')
+        self.write("corpus/semantic_faults/manifest.json", '{"cases": []}')
+        path = self.write("corpus/README.md", "historical prose\n")
+        self.assertIn("markers", check_corpus_overview(self.root, write=True)[0])
+        self.assertEqual(path.read_text(), "historical prose\n")
 
     def test_package_doc_links_reject_previous_and_future_tags(self):
         self.write("Cargo.toml", '[package]\nversion = "0.2.5"\n')

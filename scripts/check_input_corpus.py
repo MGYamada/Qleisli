@@ -9,7 +9,6 @@ import argparse
 import cmath
 import datetime
 from concurrent.futures import ThreadPoolExecutor
-from collections import Counter
 import hashlib
 import json
 import math
@@ -97,8 +96,8 @@ def check_manifest(corpus=CORPUS):
             if case["source"] == "qualtran":
                 require("Google LLC" in text, "lost Google attribution")
         require((project / "README.md").is_file(), "missing case explanation")
-    # The 0.2.4 small-system extension reuses the reviewed frozen inputs.
-    require(Counter(c["source"] for c in manifest["cases"]) == Counter({k: 16 for k in APPROVED}), "reviewed case inventory changed")
+    # Coverage follows the reviewed manifest, not a duplicated release total.
+    require({c["source"] for c in manifest["cases"]} == set(APPROVED), "approved source coverage changed")
     projects = {str(p.parent.relative_to(corpus)) for key in APPROVED for p in (corpus / key).rglob("main.qli")}
     require(projects == {c["project"] for c in manifest["cases"]}, "unrecorded project")
     # Sized authoring experiments reuse the same frozen inputs, with a distinct

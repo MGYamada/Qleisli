@@ -61,18 +61,23 @@ fn location_json(root: &Path, location: &SourceLocation) -> Option<String> {
 }
 
 pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
+    located_diagnostic_json(root, diagnostic, "error")
+}
+
+fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
         .as_ref()
         .and_then(|p| location_json(root, p));
-    let code = if diagnostic.primary.is_some() && primary.is_none() {
+    let code = if severity == "error" && diagnostic.primary.is_some() && primary.is_none() {
         "project"
     } else {
         diagnostic.code
     };
     format!(
-        "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":{},\"related\":[]}}",
+        "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]}}",
         quoted(code),
+        quoted(severity),
         quoted(&diagnostic.message),
         primary.as_deref().unwrap_or("null")
     )
@@ -182,37 +187,64 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     let options = super::options::Options::parse(args, true);
     let mut root = PathBuf::new();
     let mut artifact_pointer = None;
+    let mut warnings = vec![];
     let result = if let Some(options) = options {
         root = options.path.clone();
-        if root.to_str().is_none() {
-            Err(failure("project", "source root is not valid UTF-8"))
-        } else if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-            // Keep source spans from emission separate from artifact pointers.
-            root = std::fs::canonicalize(&root).unwrap_or(root);
-            match super::artifacts::execute(&options) {
-                Ok(super::artifacts::Success::Emitted(path)) => {
-                    Ok(format!("{{\"path\":{}}}", quoted(&path)))
-                }
-                Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
-                    "{{\"verified\":true,\"request_checked\":{request}}}"
-                )),
-                Err(super::artifacts::Failure::Source(error)) => Err(error),
-                Err(super::artifacts::Failure::Artifact(error)) => {
-                    artifact_pointer = Some(error.json_pointer);
-                    Err(failure(error.code, error.message))
-                }
-            }
+        let selected = if options.qrate {
+            qleisli::frontend::project::qrate_source_root(&root)
         } else {
-            // Use the same canonical root for compilation and relative identities.
-            // Failed canonicalization remains a handled project-load error.
-            root = std::fs::canonicalize(&root).unwrap_or(root);
-            execute(&options, &root)
+            Ok(root.clone())
+        };
+        if let Err(error) = selected {
+            Err(error)
+        } else if root.to_str().is_none() {
+            Err(failure("project", "source root is not valid UTF-8"))
+        } else {
+            let mut options = options;
+            root = selected.expect("checked root selection");
+            options.path = root.clone();
+            if options.command != "verify-ir" {
+                warnings = qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
+            }
+            if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
+                // Keep source spans from emission separate from artifact pointers.
+                root = std::fs::canonicalize(&root).unwrap_or(root);
+                match super::artifacts::execute(&options) {
+                    Ok(super::artifacts::Success::Emitted(path)) => {
+                        Ok(format!("{{\"path\":{}}}", quoted(&path)))
+                    }
+                    Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
+                        "{{\"verified\":true,\"request_checked\":{request}}}"
+                    )),
+                    Err(super::artifacts::Failure::Source(error)) => Err(error),
+                    Err(super::artifacts::Failure::Artifact(error)) => {
+                        artifact_pointer = Some(error.json_pointer);
+                        Err(failure(error.code, error.message))
+                    }
+                }
+            } else {
+                // Use the same canonical root for compilation and relative identities.
+                // Failed canonicalization remains a handled project-load error.
+                root = std::fs::canonicalize(&root).unwrap_or(root);
+                execute(&options, &root)
+            }
         }
     } else {
         Err(failure("usage", super::options::USAGE))
     };
     let (document, status) = match result {
-        Ok(result) => (envelope(command, None, &result), ExitCode::SUCCESS),
+        Ok(result) => {
+            let warnings = warnings
+                .iter()
+                .map(|warning| located_diagnostic_json(&root, warning, "warning"))
+                .collect::<Vec<_>>()
+                .join(",");
+            let document = format!(
+                "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":{},\"outcome\":\"ok\",\"diagnostics\":[{warnings}],\"result\":{result}}}\n",
+                quoted(command)
+            );
+            (document, ExitCode::SUCCESS)
+        }
         Err(error) => {
             let status = if error.code == "usage" { 2 } else { 1 };
             let diagnostic = match artifact_pointer {

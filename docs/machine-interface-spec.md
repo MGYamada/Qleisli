@@ -126,8 +126,11 @@ returning `frontend::diagnostic::Diagnostic` (`code`, `message`, optional
 portable relative/`std://` rendering belongs to the CLI. Parser provenance and
 coordinates are retained from the loaded source rather than inferred from
 message text or a later file read. Load failures with source spans retain them;
-I/O/path failures and a missing entry point have null locations. Source errors
-still produce no related locations or warnings; artifact errors attach their
+I/O/path failures and a missing entry point have null locations. Source errors still produce no related locations. Successful ordinary-source
+commands may include `unused_manifest_key` warnings with severity `warning`;
+outcome remains `ok` and exit status zero. Unknown metadata remains accepted
+for PATCH compatibility. `--qrate` selects the explicit `[source].root` without
+changing default root-relative module discovery. Artifact errors attach their
 JSON pointer with a null location. Legacy `CompileError`, `ErrorCode` and `ProjectError`
 shapes/categories remain unchanged, including parser failures as `Project`.
 

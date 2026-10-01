@@ -67,6 +67,18 @@ now limits input to 1 MiB per file and 16 MiB per project. Explicit
 The selected `Bits<n>`/`CBits<m>` sized extension is still pending; `CWord` is
 not a supported alias. The complete programs below use implemented finite types.
 
+For a qrate with `[source].root = "src"`, use `qleisli check path/to/qrate --qrate`
+(or pass `path/to/qrate/src` directly). Only that source directory is traversed;
+all its modules are checked. Ordinary commands warn on unused manifest keys.
+
+User-defined finite unary compositions already support an independent source
+reference in one call: `apply_contract(provider, expected, q)`. Both names are
+separately defined unitary functions with the same exact type tree. For example,
+use `provider(q) = h(h(q))` and an independently written `expected(q) = q`;
+changing the provider to `h(q)` rejects. This is the existing finite contract
+API, not QLT or a whole observing-program specification, and its reference's
+intended meaning and source preservation remain separate obligations.
+
 ## Ownership and ordinary feedback
 
 Import each operation explicitly; grouped imports such as

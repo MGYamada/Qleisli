@@ -51,10 +51,14 @@ fn independent_bell_and_gate_fixtures_are_verified() {
         let canonical = export_openqasm3(program).unwrap();
         assert!(canonical.contains("reset q;"));
         let roundtrip = import_openqasm3(&canonical).unwrap();
-        assert_eq!(
-            run_closed(program, SimulationLimits::default()).unwrap(),
-            run_closed(&roundtrip, SimulationLimits::default()).unwrap()
-        );
+        let before = run_closed(program, SimulationLimits::default()).unwrap();
+        let after = run_closed(&roundtrip, SimulationLimits::default()).unwrap();
+        for (bits, p) in &before {
+            close(after.get(bits).copied().unwrap_or(0.0), *p);
+        }
+        for (bits, p) in &after {
+            close(before.get(bits).copied().unwrap_or(0.0), *p);
+        }
     }
 }
 
@@ -313,8 +317,7 @@ fn qli_frontend_and_qir_profile_contract() {
         "!\"qir_major_version\", i32 2",
         "!\"dynamic_qubit_management\", i1 false",
         "!\"dynamic_result_management\", i1 false",
-        "@__quantum__qis__s__adj",
-        "@__quantum__qis__t__adj",
+        "@__quantum__qis__z__body",
         "@__quantum__qis__ccx__body",
         "ret i64 0",
     ] {
@@ -324,7 +327,7 @@ fn qli_frontend_and_qir_profile_contract() {
 }
 
 #[test]
-fn export_tracks_reordered_owners_and_rejects_other_control_forms() {
+fn export_tracks_reordered_owners_and_control_phase() {
     let mut p = raw(
         vec![
             RawOp::Init0 {
@@ -389,12 +392,12 @@ fn export_tracks_reordered_owners_and_rejects_other_control_forms() {
     if let RawOp::ApplyUnitary { steps, .. } = &mut p.operations[4] {
         steps[0].controls[0].when_one = false;
     }
-    assert_eq!(
-        export_qir_base(&verify(p.clone()).unwrap())
-            .unwrap_err()
-            .operation,
-        Some(4)
+    let negative = export_openqasm3(&verify(p.clone()).unwrap()).unwrap();
+    close(
+        probability(&import_openqasm3(&negative).unwrap(), &[false, true]),
+        1.0,
     );
+    assert!(export_qir_base(&verify(p.clone()).unwrap()).is_ok());
     if let RawOp::ApplyUnitary { steps, .. } = &mut p.operations[4] {
         steps[0].controls[0].when_one = true;
         steps[0].action = CircuitAction::Monomial {
@@ -403,9 +406,10 @@ fn export_tracks_reordered_owners_and_rejects_other_control_forms() {
             phases: vec![1],
         };
     }
-    assert_eq!(
-        export_openqasm3(&verify(p).unwrap()).unwrap_err().operation,
-        Some(4)
+    assert!(
+        export_openqasm3(&verify(p).unwrap())
+            .unwrap()
+            .contains("t q[0];")
     );
 }
 

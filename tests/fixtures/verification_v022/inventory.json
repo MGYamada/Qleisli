@@ -2221,7 +2221,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "ccf29d7755917f06c6b2c4c2c91c87ffe35c3d7094d3e67cd2dc9f3eeb34c881",
+      "sha256": "caced06de5e530939506e117a087d45d82f2eeb1bd5f367936ac3ad5de97ebab",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2251,7 +2251,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "30fb4ad1b1d21bf7449a4bb3aae5786de91f89d08c6e1544f4ae32f54dc0257a",
+      "sha256": "31d975329179df33b32b530db8e9afea7b4e84fb22cc988b98db4dac1dc30a85",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2261,7 +2261,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "378f70393842196cb4885afc5278a07bf457178fdb43cfd559ebf287493a19f9",
+      "sha256": "7a190d6d56a9506a058dc7b3655000964ac0991f61978f9e9eb34a42871ca4af",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2509,7 +2509,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "54b16d5edb2c9e8ed4f5d4184527e94518bd82f6d4624653c2374fad06641edd",
+      "sha256": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2529,7 +2529,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "08935fca71a1a94bd811b48afb615d5e3294c0c61bd09ab1eb3f6a4c612e486a",
+      "sha256": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2549,7 +2549,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "73b977c488ae5dbb8f607ab722c50e915876c407044a055232f71105a006c2d6",
+      "sha256": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2579,7 +2579,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+      "sha256": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2728,7 +2728,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "72e2e29951ea1dbe5a51df0c11549ab13503bf57158658ebb037081de11d69e3",
+      "sha256": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2751,7 +2751,7 @@
     },
     {
       "path": "src/frontend/project/edition.rs",
-      "sha256": "ea71d9341b43b0d51cc163c2dbf8aa7691574a04a9f1c9786fd5ccf188f65367",
+      "sha256": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2759,6 +2759,19 @@
         "capacity_constants": [
           "const MAX_MANIFEST_BYTES: u64 = 65_536;"
         ]
+      }
+    },
+    {
+      "path": "src/frontend/project/manifest.rs",
+      "sha256": "410db2fcaeb7724329844ca4b42b9a0b54484d1f555f7470233c1a217cf05161",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic>",
+          "pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic>"
+        ],
+        "capacity_constants": []
       }
     },
     {
@@ -3255,8 +3268,18 @@
       }
     },
     {
+      "path": "src/interop/export.rs",
+      "sha256": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+      "group": "foreign",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interop/mod.rs",
-      "sha256": "8e17ce302c67643ae212a6a90de8aeddafbdc3aac1422564baad5a88847cc6ae",
+      "sha256": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
       "group": "foreign",
       "surface": {
         "declarations": [
@@ -3290,7 +3313,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "f64ca2aa560bb864bd97afd61e7b2af7429563550016230839c77cd100946f09",
+      "sha256": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
       "group": "foreign",
       "surface": {
         "declarations": [],

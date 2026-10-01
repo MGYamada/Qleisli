@@ -79,8 +79,25 @@ assumption for concurrent replacements. The Linux component walk on x86/x86_64,
 ARM/aarch64 and RISC-V requires accessible `/proc/self/fd` descriptors and
 diagnoses their absence without falling back to following source symlinks.
 
-The caller's module root and explicit sized-module map are unchanged by
-manifest discovery. `Project::load`, source checking/compilation, source CLI
+The caller's ordinary module root and explicit sized-module map are unchanged
+by default manifest discovery. The additive ordinary-source CLI flag `--qrate`
+selects the string `[source].root` from the manifest in the passed qrate directory.
+It requires an existing relative directory beneath that root, no parent traversal,
+no symlink components and no `target` component. Files, build output and unrelated
+links outside the selected source directory are not visited. All `.qli` files
+inside it are still checked, including unimported library modules; this is not
+import-reachable discovery or full qargo orchestration. Existing `Project::load`
+and command behavior without the flag remain unchanged. Passing `qrate/src`
+explicitly is also supported.
+
+Ordinary check/run/sample/emit-ir commands warn about unused schema-2 manifest
+keys, with `unused_manifest_key` and JSON severity `warning` on success. They
+do not reject formerly accepted unknown metadata; qargo's full schema validation
+remains separate. The additive host helpers `qrate_source_root` and
+`manifest_warnings` expose those configuration operations without changing the
+public Project shape or granting acceptance authority.
+
+ `Project::load`, source checking/compilation, source CLI
 commands, documentation-file reads and `ParsedProgram::load` all check edition
 configuration. In-memory parsing APIs use the current 2026 grammar and do not
 invent filesystem metadata. The bundled standard-library manifest is embedded
@@ -89,8 +106,8 @@ beside its source, independent of user manifests.
 QLT files receive edition-coverage checking only; **`.qlt` execution and
 `qleisli test` remain unimplemented**. Raw IR checking does not take a source
 manifest. The TOML reader is frontend configuration, outside the independent
-IR verifier and evidence kernel. It validates only schema/edition; qargo owns
-full qrate metadata, root validation and package orchestration. Metadata is not
+IR verifier and evidence kernel. It validates schema/edition and optionally selects the explicit source directory;
+qargo owns full qrate metadata, complete root validation and package orchestration. Metadata is not
 semantic evidence and bypasses no ownership, effect, contract or IR check.
 
 CI independently parses manifests with Python's `tomllib`, checks all `.qli`

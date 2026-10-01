@@ -11,6 +11,12 @@ use crate::frontend::{CURRENT_EDITION, ast::Span};
 const MAX_MANIFEST_BYTES: u64 = 65_536;
 
 pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
+    read_directory(directory).map(|_| ())
+}
+
+pub(super) fn read_directory(
+    directory: &Path,
+) -> Result<(std::path::PathBuf, String), LoadFailure> {
     for ancestor in directory.ancestors() {
         let path = ancestor.join("Qargo.toml");
         match fs::symlink_metadata(&path) {
@@ -40,7 +46,8 @@ pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
         }
         let source = String::from_utf8(bytes)
             .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
-        return check_manifest(&path, &source);
+        check_manifest(&path, &source)?;
+        return Ok((path, source));
     }
     Err(error(
         &directory.join("Qargo.toml"),
