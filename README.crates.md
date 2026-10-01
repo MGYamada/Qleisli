@@ -8,7 +8,7 @@ The Rust frontend produces IR that an independent Rust verifier checks before
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Development version: **0.2.3**. **Qleisli language edition: `"2026"` for all current
+Version: **0.2.3**. **Qleisli language edition: `"2026"` for all current
 `.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
 The version-specific release record distinguishes the
 implemented bounded profile from pending proof and migration goals.
@@ -17,10 +17,9 @@ ordinary CLI/library use requires no Lean, Python or LLVM installation.
 
 ## Install and run
 
-Install this development checkout with
-`cargo install --path . --locked --bin qleisli`. Version 0.2.3 has not been tagged
-or published; the latest published version is 0.2.2. After 0.2.3 is published,
-its matching registry command is:
+Install from a source checkout with
+`cargo install --path . --locked --bin qleisli`. For registry installation after
+0.2.3 is published, use:
 
 ```sh
 cargo install qleisli --version 0.2.3 --locked
@@ -135,8 +134,8 @@ breaking-change boundary.
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
 Documentation links target the version-specific `v0.2.3` source tag when published.
-Version selection alone does not create that tag or publish this package. The packaged files
-retain the same version-specific specifications and validation account.
+The release record lists publication results; packaged files retain the matching
+specifications and validation account.
 
 ## License
 

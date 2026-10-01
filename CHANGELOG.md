@@ -6,7 +6,7 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-## 0.2.3 — development selected 2026-09-30
+## 0.2.3 — 2026-10-01
 
 - Introduce Qleisli edition `"2026"`, declared explicitly in each source tree's
   schema-2 `Qargo.toml`. Filesystem source loading diagnoses missing, invalid
@@ -16,7 +16,7 @@ separately in [release milestones](docs/release-milestones.md).
   trees will migrate to qrate management. [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
   records the user's narrow PATCH exception for the manifest requirement.
 - Synchronize the compiler, Python package, both Lean packages and bundled
-  library to development 0.2.3.
+  library to 0.2.3.
 - Expand the finite corpus to 42 cases, fourteen per approved source, with
   phase/order checks and six new semantic counterexamples on small systems.
 - Retire eleven completed reports from `docs/` and shorten authoring feedback.
@@ -45,8 +45,10 @@ separately in [release milestones](docs/release-milestones.md).
   capacity allowance.
 - State the GitHub policy: **Issues track implementation. Discussions determine
   the language.**
+- Preserve three AI-generated logo concepts for v0.4.0 discussion in
+  [assets](assets/logo-concepts/v0.4.0/README.md), with the original commit history.
 
-The [development record](docs/releases/v0.2.3.md) and
+The [release record](docs/releases/v0.2.3.md) and
 [status ledger](docs/current-status.md) hold validation and proof status.
 
 ## 0.2.2 — 2026-09-30

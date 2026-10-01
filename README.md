@@ -8,10 +8,10 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Development version: 0.2.3. Qleisli language edition: `"2026"`.**
+**Release candidate: 0.2.3. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
-and the [0.2.3 development record](docs/releases/v0.2.3.md).
+and the [0.2.3 release record](docs/releases/v0.2.3.md).
 The Rust CLI and library run with Rust alone.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
@@ -79,7 +79,7 @@ library is imported as `qleisli`.
 Earlier Git/path users of `qleisli-core` / `qleisli_core` should follow the
 [name migration](docs/crates-io-release.md#name-migration-from-github-releases-through-020).
 
-Install this development version from the checkout:
+Install the 0.2.3 candidate from the checkout:
 
 ```sh
 cargo install --path . --locked --bin qleisli
@@ -91,7 +91,7 @@ After 0.2.3 is published, the matching registry command is:
 cargo install qleisli --version 0.2.3 --locked
 ```
 
-Version 0.2.3 is selected for development; it has not been tagged or published.
+Version 0.2.3 is prepared for release; publication is pending.
 The latest published version remains 0.2.2, with its
 [immutable publication record](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
@@ -206,15 +206,15 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-This development version is **0.2.3**, introducing explicit edition-2026
-configuration; the [development record](docs/releases/v0.2.3.md) distinguishes
+The selected release candidate is **0.2.3**, introducing explicit edition-2026
+configuration; the [release record](docs/releases/v0.2.3.md) distinguishes
 validation from publication. The active
 [0.2.2 plan](docs/v0.2.2-plan.md) and [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain the current work targets. [Current status](docs/current-status.md) records
 bounded sized-source/QPE integration and the remaining checking/proof scope.
 Rust remains the production acceptance authority; external schemas are disabled.
 
-The [development record](docs/releases/v0.2.3.md) records local validation and
+The [release record](docs/releases/v0.2.3.md) records local validation and
 [release preparation](docs/crates-io-release.md). Future type-system breaks use
 v0.3.0; QLT implementation remains deferred to v0.4.0 or later. These schedules
 do not establish the three general theorems or completion of the v1 algorithms.
@@ -365,6 +365,9 @@ includes the additional proof, platform and packaging checks. Changes are
 recorded in the [changelog](CHANGELOG.md). The
 [crates.io preparation and publication procedure](docs/crates-io-release.md)
 separates local validation, release approval and registry publication.
+
+The [three logo concepts](assets/logo-concepts/v0.4.0/README.md) are preserved
+for the v0.4.0 design discussion.
 
 ## License
 
