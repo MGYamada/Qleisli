@@ -2251,7 +2251,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "31d975329179df33b32b530db8e9afea7b4e84fb22cc988b98db4dac1dc30a85",
+      "sha256": "aaade4d55ac14c00f28e1686e2429743ae32d5b25656a3ad7b17c915d8621602",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2763,7 +2763,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "410db2fcaeb7724329844ca4b42b9a0b54484d1f555f7470233c1a217cf05161",
+      "sha256": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
       "group": "source",
       "surface": {
         "declarations": [],

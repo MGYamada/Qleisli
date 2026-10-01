@@ -69,7 +69,7 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
         .primary
         .as_ref()
         .and_then(|p| location_json(root, p));
-    let code = if severity == "error" && diagnostic.primary.is_some() && primary.is_none() {
+    let code = if diagnostic.primary.is_some() && primary.is_none() {
         "project"
     } else {
         diagnostic.code

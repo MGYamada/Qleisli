@@ -12,7 +12,7 @@ not a controlled authoring study or model benchmark.
 | Negative controls and controlled phases block QFT export | X conjugation, exact controlled-H/phase decompositions and explicitly uncomputed conjunction workspace. QFT2 uses two physical qubits; QFT3 uses four, including one clean synthesis qubit. Workspace counts toward the existing twelve-qubit target limit. |
 | QFT's final axis permutation is rejected | Track equal-width bit-axis permutations as ordered wires. Arbitrary LiftBasis permutations/injections remain unsupported. |
 | Unrelated source-tree contents break qrate checking | Opt-in `--qrate` selects explicit `[source].root`; old default loading remains unchanged. Escape/target/linked source paths reject. All files within the selected source root are still checked. This is not full qargo dependency management or reachable-module loading. |
-| Unknown manifest metadata is silent | Ordinary source CLI commands report `unused_manifest_key` warnings in text/JSON. Validity and successful exits remain unchanged. |
+| Unknown manifest metadata is silent | Ordinary source CLI commands report `project` warnings for unused keys in text/JSON. Validity and successful exits remain unchanged. |
 | Wrong module import gives no repair | Suggest actual public declarations, including `std::transforms::qft2`; private declarations are excluded. |
 | Nested register pattern hides actual type | Report the actual immediate type/arity and the additional split needed. |
 | Misused cnot tuple points only at later use | Point to the tuple binding, name its type, retain the use location in the message and suggest destructuring. Correct named tuple results remain legal. |

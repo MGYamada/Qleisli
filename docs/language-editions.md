@@ -91,7 +91,7 @@ and command behavior without the flag remain unchanged. Passing `qrate/src`
 explicitly is also supported.
 
 Ordinary check/run/sample/emit-ir commands warn about unused schema-2 manifest
-keys, with `unused_manifest_key` and JSON severity `warning` on success. They
+keys, with the existing `project` category and JSON severity `warning` on success. They
 do not reject formerly accepted unknown metadata; qargo's full schema validation
 remains separate. The additive host helpers `qrate_source_root` and
 `manifest_warnings` expose those configuration operations without changing the

@@ -148,7 +148,7 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
     check_project(&root.0).unwrap();
     let warnings = manifest_warnings(&root.0).unwrap();
     assert_eq!(warnings.len(), 1);
-    assert_eq!(warnings[0].code, "unused_manifest_key");
+    assert_eq!(warnings[0].code, "project");
     assert!(warnings[0].message.contains("qrate.unknown_key"));
     for json in [false, true] {
         let mut cli = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -182,7 +182,7 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
         .unwrap();
     assert!(output.status.success());
     let text = String::from_utf8(output.stdout).unwrap();
-    assert!(text.contains("\"code\":\"unused_manifest_key\""), "{text}");
+    assert!(text.contains("\"code\":\"project\""), "{text}");
     assert!(text.contains("\"primary\":null"), "{text}");
 }
 

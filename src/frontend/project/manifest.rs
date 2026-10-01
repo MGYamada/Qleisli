@@ -99,7 +99,7 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
     }
     unused.sort();
     Ok(unused.into_iter().map(|key| located_error(&path,&source,
-        Span{start:0,end:source.len()},"unused_manifest_key",
+        Span{start:0,end:source.len()},"project",
         format!("unused manifest key `{key}` in {}; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)",path.display()))
         .into_diagnostic()).collect())
 }

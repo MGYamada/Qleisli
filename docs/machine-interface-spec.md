@@ -127,7 +127,8 @@ portable relative/`std://` rendering belongs to the CLI. Parser provenance and
 coordinates are retained from the loaded source rather than inferred from
 message text or a later file read. Load failures with source spans retain them;
 I/O/path failures and a missing entry point have null locations. Source errors still produce no related locations. Successful ordinary-source
-commands may include `unused_manifest_key` warnings with severity `warning`;
+commands may include unused-manifest-key warnings with code `project` and
+severity `warning`; the closed version-1 code list is unchanged;
 outcome remains `ok` and exit status zero. Unknown metadata remains accepted
 for PATCH compatibility. `--qrate` selects the explicit `[source].root` without
 changing default root-relative module discovery. Artifact errors attach their

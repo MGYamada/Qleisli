@@ -21,7 +21,8 @@
     "final_review_regressions": 8,
     "clippy": "all targets; -D warnings; passed",
     "doctests_passed": 1,
-    "api_docs": "cargo doc --locked --no-deps; passed"
+    "api_docs": "cargo doc --locked --no-deps; passed",
+    "final_closed_v1_warning_regression": "both full all-target suites rerun after warning-category repair; counts unchanged"
   },
   "python": {
     "python3 scripts/test_check_docs.py": {
@@ -90,7 +91,7 @@
     "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
     "src/interop/mod.rs": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
     "src/frontend/project.rs": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
-    "src/frontend/project/manifest.rs": "410db2fcaeb7724329844ca4b42b9a0b54484d1f555f7470233c1a217cf05161",
+    "src/frontend/project/manifest.rs": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
     "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
     "src/frontend/compile/lower/mod.rs": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
     "src/frontend/compile/lower/value.rs": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
@@ -98,14 +99,14 @@
     "src/frontend/compile/lower/certified.rs": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
     "src/bin/qleisli.rs": "caced06de5e530939506e117a087d45d82f2eeb1bd5f367936ac3ad5de97ebab",
     "src/bin/qleisli/options.rs": "7a190d6d56a9506a058dc7b3655000964ac0991f61978f9e9eb34a42871ca4af",
-    "src/bin/qleisli/json.rs": "31d975329179df33b32b530db8e9afea7b4e84fb22cc988b98db4dac1dc30a85",
-    "tests/review_v024.rs": "5160969e075e6a81ac9d9c184dd3edfe2a627b2631510f7cde5d031e2a3c3869",
+    "src/bin/qleisli/json.rs": "aaade4d55ac14c00f28e1686e2429743ae32d5b25656a3ad7b17c915d8621602",
+    "tests/review_v024.rs": "82b6eb4769517b9b5f977d8ba917ca6ca7dd11abb551a166e34b58958f9ff0a6",
     "tests/interop.rs": "35ba99f4295ef28fb00c0cdeb0e9aca18d23404780731e2fb0274a8f5dc32977",
     "scripts/check_docs.py": "1ae7161de2f32aa8fccb49674e8c7bda79f4271e533b7563281abc4ebcc984b3",
     "scripts/check_input_corpus.py": "2f898fc6effa1d03e9a8f836d0ad0f7eb13141a4e04fbc2559d51e91e2666a6f",
     "scripts/test_review_v024.py": "1829870e33579efdd21285eb91dbcfe53d052ac93d328fee63db3ad1168943d4",
     "scripts/test_interop_external.py": "4f4af1d2520119ec5f4fe2cbd26cdee0d93042f0a3af8cb6b8782e41498e49f0",
-    "tests/fixtures/verification_v022/inventory.json": "e21327b5665920416ed2d9f688d7d2e4826d0f1c58f1bd343996ad2b4a450978",
+    "tests/fixtures/verification_v022/inventory.json": "bc7df5a796828b9e8c52a9c96c7c62a5f2e6ffa2ff8532dd4b480f0f3e604031",
     "corpus/manifest.json": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
     "corpus/semantic_faults/manifest.json": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
     "scripts/test_connections.py": "13d1141094054933fcc3e281da0078d8e1433e26cc3ca836db630f80f266f991"
@@ -122,5 +123,12 @@
     "failure": "Python round-trip compared floating distributions and work counts for circuits changed by exact target phase folding",
     "roundoff_observed": 1.1102230246251565e-16,
     "repair": "compare exact ordered bits and probabilities within 1e-12; seeded bits agree; validate per-circuit shot totals and shorter emitted work; no runtime probability/accounting change"
+  },
+  "transport": {
+    "format": "qleisli.result",
+    "version": 1,
+    "manifest_warning_code": "project",
+    "severity": "warning",
+    "closed_code_list_unchanged": true
   }
 }
