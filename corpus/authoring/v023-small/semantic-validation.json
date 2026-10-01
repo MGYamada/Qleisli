@@ -1,0 +1,120 @@
+{
+  "format": 1,
+  "created_utc": "2026-09-30T14:22:43.376739+00:00",
+  "project_version": "0.2.3",
+  "compiler_sha256": "2210d043037236cd674ba2ff1420d22d2a1d582721312d72a84f67d1e553d8b4",
+  "oracle_script_sha256": "a5ef1773b47da9d6f3ecd5e27c9df8d38ea8440457aeb5fd92f112054c105865",
+  "manifest_sha256": "5dcb70e3b3504d2584bdb51a5e2ef69080102e4454bc8db16930a70a5049628d",
+  "source_sha256": {
+    "quantum_katas/odd_parity3/kernel.qli": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d",
+    "quantum_katas/odd_parity3/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+    "quantum_katas/bell_singlet2/kernel.qli": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77",
+    "quantum_katas/bell_singlet2/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+    "qualtran/less_than_constant2/kernel.qli": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f",
+    "qualtran/less_than_constant2/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+    "qualtran/equals_constant2/kernel.qli": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27",
+    "qualtran/equals_constant2/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+    "pennylane_demos/ry_quarter/kernel.qli": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986",
+    "pennylane_demos/ry_quarter/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+    "pennylane_demos/ising_zz_quarter2/kernel.qli": "af6353a2e64e2a9074c447fef3071077454a6ae95b71ff9ce58e492e7c458b86",
+    "pennylane_demos/ising_zz_quarter2/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+  },
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "cases": [
+    {
+      "id": "quantum_katas/odd_parity3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_singlet2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/less_than_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/ry_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_quarter2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "parity_prepared_even",
+      "reference": "quantum_katas/odd_parity3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/odd_parity3 column 0: (True, False, True): 0.2500000000000001 != 0"
+    },
+    {
+      "id": "singlet_phase_after_flip",
+      "reference": "quantum_katas/bell_singlet2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_singlet2 entry 1,1 x: (True, True, False): 0.7285533905932741 != 0.02144660940672623"
+    },
+    {
+      "id": "threshold_wrong_polarity",
+      "reference": "qualtran/less_than_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/less_than_constant2 column 0: (False, False, False): 1 != 0.0"
+    },
+    {
+      "id": "equals_constant_wrong_endian",
+      "reference": "qualtran/equals_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals_constant2 column 1: (True, False, True): 0 != 1.0"
+    },
+    {
+      "id": "ry_second_column_sign",
+      "reference": "pennylane_demos/ry_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ry_quarter entry 0,1 x: (True, False): 0.02144660940672623 != 0.7285533905932733"
+    },
+    {
+      "id": "zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    }
+  ],
+  "semantic_fault_manifest_sha256": "9957efa1ab6b78df6e16443dcd7a2d20f08f6bf468c9b1bf127e0cf6262cbbbf",
+  "semantic_fault_source_sha256": {
+    "semantic_faults/parity_prepared_even/kernel.qli": "224edd2720c3229aa3c42ddd229094f566d8cea250a6032e0b804b0ff03b52b3",
+    "semantic_faults/parity_prepared_even/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+    "semantic_faults/singlet_phase_after_flip/kernel.qli": "85a3df9326bafa672b669969e0f9612040f86648ff6296d746adc4ef9648ade6",
+    "semantic_faults/singlet_phase_after_flip/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+    "semantic_faults/threshold_wrong_polarity/kernel.qli": "317c055e9b4fefe85911247e552ee9cff93ae53e02fd7a09654daef098b64e55",
+    "semantic_faults/threshold_wrong_polarity/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+    "semantic_faults/equals_constant_wrong_endian/kernel.qli": "87b03e799b6a3abc6d24f6740daf7f3e895df46193bd4d20b476cc4f9bea0f29",
+    "semantic_faults/equals_constant_wrong_endian/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+    "semantic_faults/ry_second_column_sign/kernel.qli": "8cbc23b19a16cfbe9652747d3aa4eca875de2221bbe0bf1df2e6748e72ccbc8a",
+    "semantic_faults/ry_second_column_sign/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+    "semantic_faults/zz_erased_scalar/kernel.qli": "146c773dc671e295e31b9e9cf619261f7a0d34db8801c34c7ff8c7b1fec4f0f4",
+    "semantic_faults/zz_erased_scalar/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+  }
+}

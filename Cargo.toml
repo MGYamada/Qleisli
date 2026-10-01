@@ -1,6 +1,6 @@
 [package]
 name = "qleisli"
-version = "0.2.2"
+version = "0.2.3"
 license = "Apache-2.0"
 repository = "https://github.com/MGYamada/Qleisli"
 edition = "2024"
@@ -14,6 +14,9 @@ categories = ["compilers", "science", "command-line-utilities"]
 [lib]
 name = "qleisli"
 path = "src/lib.rs"
+
+[dependencies]
+toml = { version = "=0.8.23", default-features = false, features = ["parse"] }
 
 [lints.rust]
 unsafe_code = "forbid"

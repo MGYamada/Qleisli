@@ -1,6 +1,7 @@
 //! Independent structural validation of stable fresh-initialization extraction.
 //! This validates one preparation pass, not source-to-unitary translation.
 use super::{HierarchyProposal, Instrument, Item, Port};
+use crate::frontend::sized::primitive::Primitive;
 use crate::frontend::sized::{Error, Result, SourceStep, SourceValue, Span};
 use crate::interchange::json::{self, Value};
 use std::collections::{BTreeMap, BTreeSet};
@@ -189,6 +190,40 @@ impl PreparationValidation {
     }
 }
 
+// Independent classification: adding a catalog variant requires this pass to
+// specify its trace obligation instead of falling through to a string default.
+fn trace_kind(primitive: Primitive) -> &'static str {
+    match primitive {
+        Primitive::Init0 => "init0",
+        Primitive::MeasureZ => "observe",
+        Primitive::EmptyBits => "empty_bits",
+        Primitive::PrependBit => "prepend_bit",
+        Primitive::H
+        | Primitive::X
+        | Primitive::Cnot
+        | Primitive::Phase
+        | Primitive::ControlledPhase
+        | Primitive::TakeBit
+        | Primitive::PutBit
+        | Primitive::Empty
+        | Primitive::ConsumeEmpty => "pure",
+    }
+}
+fn structural(primitive: Primitive) -> bool {
+    match primitive {
+        Primitive::TakeBit | Primitive::PutBit | Primitive::Empty | Primitive::ConsumeEmpty => true,
+        Primitive::H
+        | Primitive::X
+        | Primitive::Cnot
+        | Primitive::Phase
+        | Primitive::ControlledPhase
+        | Primitive::Init0
+        | Primitive::MeasureZ
+        | Primitive::EmptyBits
+        | Primitive::PrependBit => false,
+    }
+}
+
 pub(super) fn record(
     state: &mut Instrument,
     definition: usize,
@@ -198,17 +233,10 @@ pub(super) fn record(
     outputs: Vec<Item>,
     node: Option<usize>,
 ) -> Result<()> {
-    let kind = if node.is_some() {
-        "pure"
-    } else {
-        match step.primitive() {
-            Some("std::quantum::init0") => "init0",
-            Some("std::observe::measure_z") => "observe",
-            Some("std::classical::empty_bits") => "empty_bits",
-            Some("std::classical::prepend_bit") => "prepend_bit",
-            _ => return Err(invalid("unsupported trace step")),
-        }
-    };
+    let kind = step.primitive_kind().map(trace_kind).unwrap_or("pure");
+    if (kind == "pure") != node.is_some() {
+        return Err(invalid("trace kind differs from actual primitive"));
+    }
     let cost = state
         .current
         .len()
@@ -430,6 +458,9 @@ impl Replay<'_> {
         }
         unique(&e.before)?;
         unique(&e.after)?;
+        if step.primitive_kind().map(trace_kind).unwrap_or("pure") != e.kind {
+            return Err(invalid("source event kind differs from actual primitive"));
+        }
         let selected = quantum(&e.inputs);
         let outputs = quantum(&e.outputs);
         if selected.iter().any(|p| !self.current.contains(p))
@@ -458,17 +489,7 @@ impl Replay<'_> {
                 {
                     return Err(invalid("non-unitary source step proposed as pure"));
                 }
-                if !self.measured.is_empty()
-                    && !step.primitive().is_some_and(|s| {
-                        matches!(
-                            s,
-                            "std::registers::take_bit"
-                                | "std::registers::put_bit"
-                                | "std::registers::empty"
-                                | "std::registers::consume_empty"
-                        )
-                    })
-                {
+                if !self.measured.is_empty() && !step.primitive_kind().is_some_and(structural) {
                     return Err(invalid("quantum gate crossed observation"));
                 }
                 let d = self
@@ -491,7 +512,7 @@ impl Replay<'_> {
                 [outputs.clone(), rest].concat()
             }
             "init0" => {
-                if step.primitive() != Some("std::quantum::init0")
+                if step.primitive_kind() != Some(Primitive::Init0)
                     || e.node.is_some()
                     || !e.inputs.is_empty()
                     || e.outputs.len() != 1
@@ -511,7 +532,7 @@ impl Replay<'_> {
                 [self.current.clone(), outputs.clone()].concat()
             }
             "observe" => {
-                if step.primitive() != Some("std::observe::measure_z")
+                if step.primitive_kind() != Some(Primitive::MeasureZ)
                     || e.node.is_some()
                     || selected.len() != 1
                     || !selected[0].bit
@@ -530,7 +551,7 @@ impl Replay<'_> {
                 rest
             }
             "empty_bits" => {
-                if step.primitive() != Some("std::classical::empty_bits")
+                if step.primitive_kind() != Some(Primitive::EmptyBits)
                     || e.node.is_some()
                     || !e.inputs.is_empty()
                     || e.outputs != [Item::Classical(vec![])]
@@ -540,7 +561,7 @@ impl Replay<'_> {
                 self.current.clone()
             }
             "prepend_bit" => {
-                if step.primitive() != Some("std::classical::prepend_bit")
+                if step.primitive_kind() != Some(Primitive::PrependBit)
                     || e.node.is_some()
                     || e.inputs.len() != 2
                 {

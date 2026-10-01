@@ -8,21 +8,24 @@ The Rust frontend produces IR that an independent Rust verifier checks before
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Version: **0.2.2**. The version-specific release record distinguishes the
+Development version: **0.2.3**. **Qleisli language edition: `"2026"` for all current
+`.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
+The version-specific release record distinguishes the
 implemented bounded profile from pending proof and migration goals.
-Rust 1.85 or later is required. There are no external Rust dependencies;
+Rust 1.85 or later is required. Cargo builds the implementation and its TOML reader;
 ordinary CLI/library use requires no Lean, Python or LLVM installation.
 
 ## Install and run
 
-Install the matching executable from crates.io:
+Install this development checkout with
+`cargo install --path . --locked --bin qleisli`. Version 0.2.3 has not been tagged
+or published; the latest published version is 0.2.2. After 0.2.3 is published,
+its matching registry command is:
 
 ```sh
-cargo install qleisli --version 0.2.2 --locked
+cargo install qleisli --version 0.2.3 --locked
 ```
 
-Alternatively, install 0.2.2 from a repository checkout with
-`cargo install --path . --locked --bin qleisli`.
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 
 Create a directory named `bell` and save this program as `bell/main.qli`:
@@ -41,7 +44,24 @@ observe fn main() -> (CBit, CBit) {
 ```
 <!-- /quickstart:bell -->
 
-From its parent directory:
+Also create `bell/Qargo.toml`:
+
+<!-- quickstart:manifest -->
+```toml
+schema-version = 2
+
+[qrate]
+edition = "2026"
+```
+<!-- /quickstart:manifest -->
+
+This edition-only declaration applies even when the source tree is not a qrate.
+The standard library is already a qrate named `std` in the `stdlib/` directory,
+with a full [qargo](https://github.com/MGYamada/qargo)-compatible manifest.
+All other source trees will migrate to qrate management in the future. Rust's
+implementation edition remains `"2024"`, independently of Qleisli edition `"2026"`.
+
+From the parent of `bell`:
 
 ```sh
 qleisli check bell
@@ -63,7 +83,7 @@ Add this dependency to your Rust project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-qleisli = "0.2.2"
+qleisli = "0.2.3"
 ```
 
 The [API documentation](https://docs.rs/qleisli) provides a runnable
@@ -96,21 +116,26 @@ checked programs become `VerifiedProgram` values.
 The published 0.2.1 first registry release adopted the name `qleisli` in place of
 the earlier Git/path package `qleisli-core` and Rust import `qleisli_core`.
 Those consumers must update dependency/import names or use the documented
-[Cargo alias](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/crates-io-release.md#name-migration-from-github-releases-through-020).
+[Cargo alias](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/crates-io-release.md#name-migration-from-github-releases-through-020).
 This user-selected identity migration is a narrow exception; other 0.2.x
-contracts stay compatible. The planned 0.3.0 type-system work is a separate
+contracts stay compatible except for the explicitly selected v0.2.3 requirement
+to add an edition manifest to filesystem source trees. The planned 0.3.0
+type-system work is a separate
 breaking-change boundary.
 
 ## Documentation
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/qli-quick-reference.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/connections-v021.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.2/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.2/TRUST_BOUNDARY.md)
-- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.2/docs/releases/v0.2.2.md)
+- [Language editions and qrate migration](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/language-editions.md)
+
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/qli-quick-reference.md)
+- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/interop-m1.1.md)
+- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.3/python/README.md)
+- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.3/TRUST_BOUNDARY.md)
+- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/releases/v0.2.3.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Documentation links are pinned to the `v0.2.2` source tag. The packaged files
+Documentation links target the version-specific `v0.2.3` source tag when published.
+Version selection alone does not create that tag or publish this package. The packaged files
 retain the same version-specific specifications and validation account.
 
 ## License

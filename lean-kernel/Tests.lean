@@ -4,6 +4,21 @@ import QleisliKernel
 
 open QleisliKernel
 
+namespace ExactTests
+open QleisliKernel.Semantics.Exact QleisliKernel.Exact
+
+example : Coefficient.make 8 3 = .ok (.integer 1) := by cbv
+example : Coefficient.make 0 4294967295 = .ok (.integer 0) := by cbv
+example : Coefficient.make 1 127 = .error .arithmeticCapacity := by cbv
+example : Coefficient.make 2 127 = .ok ⟨1, 126⟩ := by cbv
+example : Coefficient.neg ⟨-(2 ^ 127), 0⟩ = .error .arithmeticCapacity := by cbv
+example : (charge 3).run 2 = (.error .workLimit, 2) := by cbv
+example : (charge 3).run 4 = (.ok (), 1) := by cbv
+example : Scalar.phase 4 ≠ Scalar.one := by decide
+example : Matrix.identity 0 = .error .dimension := by cbv
+
+end ExactTests
+
 namespace InterferenceTests
 open QleisliKernel.Interference
 

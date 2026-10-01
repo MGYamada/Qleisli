@@ -1,0 +1,79 @@
+{
+  "format": 1,
+  "created_utc": "2026-09-30T14:22:02.560811+00:00",
+  "compiler_sha256": "2210d043037236cd674ba2ff1420d22d2a1d582721312d72a84f67d1e553d8b4",
+  "results": [
+    {
+      "project": "pennylane_demos/ising_zz_quarter2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ising_zz_quarter2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/ry_quarter",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/ry_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/equals_constant2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/equals_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/less_than_constant2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/less_than_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/bell_singlet2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/bell_singlet2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/odd_parity3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/odd_parity3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

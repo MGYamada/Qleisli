@@ -845,12 +845,111 @@
         0,
         1
       ]
+    },
+    {
+      "id": "quantum_katas/odd_parity3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "AllStatesWithParitySuperposition_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "Apply H to the first two wires, XOR them into the third, then flip the third: |000> becomes the uniform odd-parity state. The complete unitary extension retains signed input columns.",
+      "limitations": "Specializes the recursive source to three wires and parity 1. The common even/odd recursive bodies share their Hadamards; their conditional last-wire X is a CNOT. This is deterministic preparation, not the postselection alternative.",
+      "project": "quantum_katas/odd_parity3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/bell_singlet2",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "AllBellStates_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "The index-3 Bell preparation X(second) Z(second) CNOT(first,second) H(first) sends |00> to (|01>-|10>)/sqrt(2) in upstream first/second-wire notation, retaining its sign on every input.",
+      "limitations": "Specializes index to 3 and two wires. It returns the complete unitary extension, not a general classical-index API or a Bell measurement.",
+      "project": "quantum_katas/bell_singlet2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/less_than_constant2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "LessThanConstant",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1, map |x,t> to |x,t xor [x<3]> with scalar +1, retaining arbitrary target values and input correlations.",
+      "limitations": "Specializes unsigned width to 2 and threshold to 3. Uses X(target) followed by Toffoli, since [x<3]=not(x0 and x1); no general comparator synthesis or upstream resource bound is transferred.",
+      "project": "qualtran/less_than_constant2",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/equals_constant2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "EqualsAConstant",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "For x=x0+2*x1, map |x,t> to |x,t xor [x=1]> with scalar +1 and restore both input bits.",
+      "limitations": "Specializes unsigned width to 2 and constant to 1. The mixed-polarity controls explicitly invert and restore the high bit; no symbolic-size equality API or imported gate-count claim.",
+      "project": "qualtran/equals_constant2",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/ry_quarter",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "Apply RY(pi/2)=(I-iY)/sqrt(2)=[[1,-1],[1,1]]/sqrt(2) exactly, including the second-column sign.",
+      "limitations": "Specializes params=(0,pi/2), making RX identity. The exact H Z implementation introduces no global scalar. No optimizer, continuous angle API, gradient or upstream framework execution.",
+      "project": "pennylane_demos/ry_quarter",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/ising_zz_quarter2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_C(gamma), single-edge factor",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "Apply exp(-i*pi*Z0*Z1/4): equal bits receive exp(-i*pi/4), unequal bits exp(+i*pi/4). Retain both owners and the absolute scalar phase.",
+      "limitations": "Extracts one edge from U_C at gamma=pi/2. This is the cost-layer factor CNOT/RZ/CNOT, not the full four-node graph, mixer or optimizer. The two-wire specialization preserves the upstream rotation sign.",
+      "project": "pennylane_demos/ising_zz_quarter2",
+      "default_input": [
+        0,
+        0
+      ]
     }
   ],
   "authoring_sessions": [
     "authoring/session.json",
     "authoring/v021-expansion/session.json",
-    "authoring/v022-simple/session.json"
+    "authoring/v022-simple/session.json",
+    "authoring/v023-small/session.json"
   ],
   "sized_experiments": [
     {
@@ -888,7 +987,7 @@
       "status": "experimental-source-path",
       "contract": "H on axis zero then CNOT to each other axis. The all-zero premise gives a GHZ state; tests also cover every general input.",
       "limitations": "Untrusted development source producer and independently inspected hierarchy; production CLI, general source adequacy and named algorithm acceptance remain open.",
-      "sha256": "67b958139f21cc2a35a5f3d18d2c8685d604e504cf82ffaf5acd77a95ad74af6"
+      "sha256": "756cad0efe7200c37082be1682e54cb85abaa0cde50f47c54cfe10712f89bfc6"
     },
     {
       "id": "sized/qualtran_qft",

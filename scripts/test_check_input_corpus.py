@@ -25,7 +25,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 36)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 42)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -109,6 +109,36 @@ class IntakeTests(unittest.TestCase):
 
 
 class OracleTests(unittest.TestCase):
+    def test_odd_parity_support_and_signed_nonzero_input(self):
+        case = {"id": "quantum_katas/odd_parity3", "qubits": 3}
+        self.assertEqual(corpus.reference_column(case, 0), [0, .5, .5, 0, .5, 0, 0, .5])
+        self.assertEqual(corpus.reference_column(case, 1), [0, -.5, .5, 0, .5, 0, 0, -.5])
+
+    def test_singlet_keeps_upstream_wire_order_and_sign(self):
+        case = {"id": "quantum_katas/bell_singlet2", "qubits": 2}
+        column = corpus.reference_column(case, 0)
+        self.assertEqual(column[0], 0)
+        self.assertEqual(column[3], 0)
+        self.assertGreater(column[2], 0)
+        self.assertEqual(column[1], -column[2])
+
+    def test_constant_predicates_preserve_input_and_toggle_both_target_values(self):
+        for name, predicate in [("less_than_constant2", lambda x: x < 3),
+                                ("equals_constant2", lambda x: x == 1)]:
+            case = {"id": "qualtran/" + name, "qubits": 3}
+            for x in range(4):
+                for target in range(2):
+                    col = corpus.reference_column(case, x + 4 * target)
+                    self.assertEqual(col, [int(i == x + 4 * (target ^ predicate(x))) for i in range(8)])
+
+    def test_zz_preserves_the_absolute_rotation_scalar(self):
+        case = {"id": "pennylane_demos/ising_zz_quarter2", "qubits": 2}
+        even = corpus.reference_column(case, 0)[0]
+        odd = corpus.reference_column(case, 1)[1]
+        self.assertAlmostEqual(even.real, 2 ** -.5)
+        self.assertAlmostEqual(even.imag, -(2 ** -.5))
+        self.assertEqual(odd, even.conjugate())
+
     def test_fredkin_preserves_control_and_leaves_zero_control_unchanged(self):
         case = {"id": "quantum_katas/fredkin3", "qubits": 3}
         self.assertEqual(corpus.reference_column(case, 4), [int(i == 4) for i in range(8)])

@@ -338,7 +338,7 @@ def markdown_paths(root: Path) -> list[Path]:
     docs += list(root.joinpath("lean").glob("*.md"))
     docs += list(root.joinpath("lean-kernel").glob("*.md"))
     docs += list(root.joinpath("research").glob("*/README.md"))
-    for directory in ["examples", "corpus", "tests/fixtures"]:
+    for directory in ["examples", "corpus", "stdlib", "tests/fixtures"]:
         docs += list(root.joinpath(directory).rglob("*.md"))
     return docs
 

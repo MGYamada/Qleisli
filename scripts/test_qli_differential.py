@@ -201,6 +201,7 @@ def main():
     source_hash, max_error = hashlib.sha256(), 0.0
     with tempfile.TemporaryDirectory(prefix="qleisli-source-differential-") as directory:
         root = Path(directory)
+        (root / "Qargo.toml").write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
         for index in range(args.cases):
             source, expected = make_case(rng, index)
             (root / "main.qli").write_text(source)  # Save before checking.

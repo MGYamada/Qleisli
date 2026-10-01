@@ -1,7 +1,7 @@
 # Typed layout implementation record
 
 This informed CD-3 exercise is not a controlled model benchmark or an extra
-external corpus source. See the [component contract](../../../docs/lean-layout-slice.md).
+external corpus source. See the [component contract](../../../lean-kernel/QleisliKernel/Layout.lean).
 
 The untouched [first source](first_source/main.qli) was saved before checking.
 It already passes the Rust source checker: three owners, including `Q<Unit>`,

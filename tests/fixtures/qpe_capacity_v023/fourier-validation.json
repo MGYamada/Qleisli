@@ -1,0 +1,172 @@
+{
+  "format": "qleisli.rust-fourier-factoring-validation",
+  "version": 1,
+  "status": "pass",
+  "widths": [
+    1,
+    2,
+    3
+  ],
+  "phase_sensitive": true,
+  "frontend_adequacy_proved": false,
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "implementation_sha256": {
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/lower.rs": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+    "corpus/sized/qualtran_qft/fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9"
+  },
+  "artifacts": {
+    "original-1": {
+      "sha256": "cc084d4cde79a9534fa9dae0104523c01f51395b2390668d53aa47af36318c95",
+      "definitions": 9
+    },
+    "candidate-1": {
+      "sha256": "334de85a477889f273d2622dd109eb475963e73cb2f95cca7da1211c6e8a0520",
+      "definitions": 14
+    },
+    "delayed-original-1": {
+      "sha256": "cc084d4cde79a9534fa9dae0104523c01f51395b2390668d53aa47af36318c95",
+      "definitions": 9
+    },
+    "delayed-candidate-1": {
+      "sha256": "334de85a477889f273d2622dd109eb475963e73cb2f95cca7da1211c6e8a0520",
+      "definitions": 14
+    },
+    "original-2": {
+      "sha256": "40f0d534ccd038e5f2e5e1ff7f292937bfb0f8ea3873dbba3fc1097af83f0e23",
+      "definitions": 41
+    },
+    "candidate-2": {
+      "sha256": "c88a3ffff407bf0644bbfb2c9cb676152d2d0ea2cd05934dd9c1abb3b04fec96",
+      "definitions": 31
+    },
+    "delayed-original-2": {
+      "sha256": "a48353c29f884f49fe5f747f8288e4ee377dc0c92770e1cbedb9eb3eefad85b5",
+      "definitions": 41
+    },
+    "delayed-candidate-2": {
+      "sha256": "c88a3ffff407bf0644bbfb2c9cb676152d2d0ea2cd05934dd9c1abb3b04fec96",
+      "definitions": 31
+    },
+    "original-3": {
+      "sha256": "1bdc53bc1ad1e27085fd701b214e881016314691058d9f5fd662e154b0fd1e8c",
+      "definitions": 75
+    },
+    "candidate-3": {
+      "sha256": "29352ee57fb47d4fd75754475b6bdd6916fbb6e13148da82ebfc2608f537d882",
+      "definitions": 51
+    },
+    "delayed-original-3": {
+      "sha256": "63dc12fbf40958e0ffb707d7b8c733455302c3117dcc6052d469b5b1391b3e6f",
+      "definitions": 75
+    },
+    "delayed-candidate-3": {
+      "sha256": "29352ee57fb47d4fd75754475b6bdd6916fbb6e13148da82ebfc2608f537d882",
+      "definitions": 51
+    }
+  },
+  "semantic": {
+    "original-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "candidate-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "delayed-original-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "delayed-candidate-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "original-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "candidate-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "delayed-original-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "delayed-candidate-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "original-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3947004136484323e-15,
+      "executed_gates": 6
+    },
+    "candidate-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    },
+    "delayed-original-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 6
+    },
+    "delayed-candidate-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "actual_source_fourier_factoring",
+        "--",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 3 tests\ntest frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok\ntest frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok\ntest frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 59 filtered out; finished in 0.13s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s\n     Running unittests src/lib.rs (/private/tmp/qleisli-qpe-perf-target/debug/deps/qleisli-05d62cfc1d28a709)\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "sized_corpus",
+        "check_source_fourier_contracts",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "stdout": "\nrunning 1 test\nSIZED-FOURIER|original-1|inspect|40205|67\nSIZED-FOURIER|candidate-1|inspect|60965|67\nSIZED-FOURIER|candidate-1|ok|66724|118\nSIZED-FOURIER|delayed-original-1|inspect|40205|67\nSIZED-FOURIER|delayed-candidate-1|inspect|60965|67\nSIZED-FOURIER|delayed-candidate-1|ok|66724|118\nSIZED-FOURIER|original-2|inspect|280216|134\nSIZED-FOURIER|candidate-2|inspect|151507|134\nSIZED-FOURIER|candidate-2|ok|166496|236\nSIZED-FOURIER|delayed-original-2|inspect|280530|134\nSIZED-FOURIER|delayed-candidate-2|inspect|151507|134\nSIZED-FOURIER|delayed-candidate-2|ok|166496|236\nSIZED-FOURIER|original-3|inspect|585982|201\nSIZED-FOURIER|candidate-3|inspect|265713|201\nSIZED-FOURIER|candidate-3|ok|294187|354\nSIZED-FOURIER|delayed-original-3|inspect|586610|201\nSIZED-FOURIER|delayed-candidate-3|inspect|265713|201\nSIZED-FOURIER|delayed-candidate-3|ok|294187|354\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.77s\n\n",
+      "stderr": "   Compiling qleisli v0.2.3 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.10s\n     Running tests/sized_corpus.rs (/private/tmp/qleisli-qpe-perf-target/debug/deps/sized_corpus-9e91f0227d4dea26)\n"
+    }
+  ]
+}

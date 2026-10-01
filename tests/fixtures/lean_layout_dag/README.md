@@ -2,7 +2,7 @@
 
 This informed CD-3 implementation exercise belongs to Qleisli (Apache-2.0), not
 the three-source external corpus. It is not a controlled model benchmark.
-The [contract](../../../docs/lean-layout-dag-slice.md) was written before the
+The [contract](../../../lean-kernel/QleisliKernel/LayoutDag.lean) was written before the
 new acceptance path. The first source and desired artifact were saved before
 their [baseline checks](baseline.json): Rust already accepted the ordinary
 two-call source, while the preceding Lean executable rejected `--layout-dag`

@@ -9,9 +9,8 @@ The Rust checker is not formally verified, and general source/compiler
 correctness remains open. Implementation and regression results belong in
 the [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 
-The [proposal review](semantic-contract-proposal-review.md) gives the motivation
-and counterexamples. The present document fixes a bounded exact fragment and
-its rule obligations. Existing source v0 remains the baseline; the implemented
+This document fixes a bounded exact fragment and its rule obligations.
+Existing source v0 remains the baseline; the implemented
 three-argument computed form below extends the two-argument form without
 changing that form's structural acceptance rule.
 

@@ -16,10 +16,54 @@ const USAGE: &str = "usage: qleisli sized <check|run|sample|emit-proposal> --ent
   [--basis=N] [--shots=N --seed=N] [--output=PATH]
   run/sample start in the explicit input basis (default 0). sample requires shots and seed.
   emit-proposal requires output and no kernel; it emits untrusted JSON.
-  check/run/sample independently check the emitted composition against a producer-derived request.
-  --request adds a caller-supplied composition contract; --qpe-provider adds the named QPE contract.";
+  default check/run/sample verify producer consistency, not source meaning.
+  --request verifies the IR against a caller-supplied composition contract;
+  --qpe-provider verifies the named QPE contract. Every result reports this scope.
+  The legacy check status means checked IR; none of these modes proves source preservation.";
 
 type Result<T> = std::result::Result<T, String>;
+#[derive(Clone, Copy)]
+enum RequestScope {
+    ProducerConsistency,
+    CallerComposition,
+    NamedQpe,
+}
+impl RequestScope {
+    fn name(self) -> &'static str {
+        match self {
+            Self::ProducerConsistency => "producer-consistency",
+            Self::CallerComposition => "caller-composition",
+            Self::NamedQpe => "named-qpe",
+        }
+    }
+    fn contract(self) -> &'static str {
+        match self {
+            Self::ProducerConsistency => "composition",
+            Self::CallerComposition => "requested-composition",
+            Self::NamedQpe => "qpe",
+        }
+    }
+    fn report(self) -> String {
+        let (scope, origin, authority) = match self {
+            Self::ProducerConsistency => {
+                ("producer-consistency", "producer", "checked-produced-ir")
+            }
+            Self::CallerComposition => (
+                "caller-composition",
+                "caller",
+                "checked-ir-against-caller-request",
+            ),
+            Self::NamedQpe => (
+                "named-qpe",
+                "caller-provider",
+                "checked-ir-against-named-qpe",
+            ),
+        };
+        format!(
+            "\"verification\":{{\"scope\":\"{scope}\",\"request_origin\":\"{origin}\",\"source_meaning_verified\":false}},\"execution_authority\":\"{authority}\""
+        )
+    }
+}
 #[derive(Default)]
 struct Options {
     command: String,
@@ -152,13 +196,15 @@ fn width(ty: &SourceType) -> usize {
     }
 }
 fn execute(mut o: Options) -> Result<String> {
-    let contract = if o.provider.is_some() {
-        "qpe"
+    let scope = if o.provider.is_some() {
+        RequestScope::NamedQpe
     } else if o.request.is_some() {
-        "requested-composition"
+        RequestScope::CallerComposition
     } else {
-        "composition"
+        RequestScope::ProducerConsistency
     };
+    let contract = scope.contract();
+    let verification = scope.report();
     let ops = o
         .ops
         .into_iter()
@@ -184,6 +230,17 @@ fn execute(mut o: Options) -> Result<String> {
         return Err("input basis is outside the entry's quantum type".into());
     }
     let proposal = source.lower().map_err(|e| e.to_string())?;
+    let checking_error = |e: qleisli::interchange::Error| {
+        format!(
+            "{e}; sized {} profile, {} contract",
+            if proposal.is_instrument() {
+                "instrument"
+            } else {
+                "unitary"
+            },
+            scope.name()
+        )
+    };
     if let Some(path) = o.output {
         std::fs::write(&path, proposal.payload()).map_err(|e| e.to_string())?;
         return Ok("{\"status\":\"untrusted-proposal\"}".into());
@@ -204,7 +261,7 @@ fn execute(mut o: Options) -> Result<String> {
                 .map_err(|e| e.to_string())?;
             named = kernel
                 .check_qpe_instrument(proposal.payload(), binding.request(), binding.candidate())
-                .map_err(|e| e.to_string())?;
+                .map_err(checking_error)?;
             named.instrument()
         } else {
             let request = match o.request {
@@ -213,7 +270,7 @@ fn execute(mut o: Options) -> Result<String> {
             };
             generic = kernel
                 .check_instrument(proposal.payload(), &request)
-                .map_err(|e| e.to_string())?;
+                .map_err(checking_error)?;
             &generic
         };
         proposal
@@ -221,7 +278,7 @@ fn execute(mut o: Options) -> Result<String> {
             .map_err(|e| e.to_string())?;
         if o.command == "check" {
             return Ok(format!(
-                "{{\"status\":\"checked\",\"profile\":\"sized-instrument\",\"contract\":\"{contract}\"}}"
+                "{{\"status\":\"checked\",\"profile\":\"sized-instrument\",\"contract\":\"{contract}\",{verification}}}"
             ));
         }
         if o.command == "sample" {
@@ -238,7 +295,7 @@ fn execute(mut o: Options) -> Result<String> {
                 )
                 .map_err(|e| e.to_string())?;
             return Ok(format!(
-                "{{\"measured_bits\":{},\"outcomes\":{:?}}}",
+                "{{\"measured_bits\":{},\"outcomes\":{:?},{verification}}}",
                 output.measured_bits,
                 output.shots.iter().map(|s| s.outcome).collect::<Vec<_>>()
             ));
@@ -247,7 +304,7 @@ fn execute(mut o: Options) -> Result<String> {
             .execute(&input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
-            "{{\"measured_bits\":{},\"residual_bits\":{},\"branches\":{:?}}}",
+            "{{\"measured_bits\":{},\"residual_bits\":{},\"branches\":{:?},{verification}}}",
             output.measured_bits, output.residual_quantum_bits, output.branches
         ))
     } else {
@@ -260,17 +317,17 @@ fn execute(mut o: Options) -> Result<String> {
         };
         let checked = kernel
             .check_against(proposal.payload(), &request)
-            .map_err(|e| e.to_string())?;
+            .map_err(checking_error)?;
         if o.command == "check" {
             return Ok(format!(
-                "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\"}}"
+                "{{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"{contract}\",{verification}}}"
             ));
         }
         let output = checked
             .execute(&input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
-            "{{\"quantum_bits\":{},\"amplitudes\":{:?}}}",
+            "{{\"quantum_bits\":{},\"amplitudes\":{:?},{verification}}}",
             output.quantum_bits, output.amplitudes
         ))
     }

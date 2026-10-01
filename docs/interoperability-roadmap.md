@@ -5,7 +5,7 @@ The [bounded connection contract](interop-m1.1.md) specifies the current host
 adapters: OpenQASM 3 input/output and QIR 2.0 Base text output. The user's added
 M1.1 request added these adapters to 0.1.7; they change no `.qli` syntax,
 existing capacity or evidence-checking rule. The 0.2.1
-[bounded host connections](connections-v021.md) add Python orchestration,
+[bounded host connections](interop-m1.1.md#structured-cli-and-python) add Python orchestration,
 structured CLI commands and optional LLVM-backed QIR Base input. Adaptive
 operations, general format/target coverage and all-in-one binary wheels remain
 pending. The Python wheel currently requires a separate Rust executable. The
@@ -140,15 +140,15 @@ it against independent requests. Existing lifts, ports and split/join implement
 explicit conversions; no raw quantum instruction is added. This is a breaking
 source/AST/evidence extension, not a reduction of the trusted acceptance base.
 
-**0.2.0 typed layout component:** the [Lean checker](lean-layout-slice.md) is
+**0.2.0 typed layout component:** the [Lean checker](../lean-kernel/QleisliKernel/Layout.lean) is
 an experimental consumer of explicit complete type/owner/axis descriptions.
 It checks permutation and request binding without a new finite RawOp variant.
 It is not a source producer, QIRF replacement, production authority transfer or
 reduction of the current Rust acceptance base. The [shared typed-call
-component](lean-layout-dag-slice.md) now consumes layout DAGs with explicit
+component](../lean-kernel/QleisliKernel/LayoutDag.lean) now consumes layout DAGs with explicit
 adapters and independent entry requests. It has no source producer and does
 not connect general gate or encoding rules yet. The subsequent [combined
-phase/layout consumer](lean-phase-layout-slice.md) adds sparse controlled dyadic
+phase/layout consumer](../lean-kernel/QleisliKernel/PhaseLayout.lean) adds sparse controlled dyadic
 phases to these typed graphs, with actual normalization/composition proofs.
 It still has no source producer, finite-leaf adapter or production authority;
 this does not reduce the current Rust acceptance base.
@@ -320,21 +320,21 @@ production `VerifiedProgram`. Ordinary sized `.qli` lowering, remaining
 hierarchy/instrument cases and native/reader correspondence remain integration
 debt; external schema IDs and TP-005 API migration remain separate gates.
 
-The [interference continuation](lean-interference-slice.md) adds an internal
+The [interference continuation](../lean/Qleisli/Interference.lean) adds an internal
 proved transformation and complex interpretation, with a generated native test
 producer. It introduces no further wire protocol or standalone acceptance
 variant, removes no Rust rule and does not yet supply a `.qli` hierarchical
 producer. Its amplitude equalities become usable checking premises only when
 original typed nodes and evidence bindings are validated by a later integration.
 
-The [QFT circuit proof](lean-qft-proof-packet.md) likewise has an internal
+The [QFT circuit proof](../lean/Qleisli/Qft.lean) likewise has an internal
 matcher and generated native fixture producer. It adds no external protocol,
 production Rust acceptance rule or `.qli` hierarchy producer. Its source-level
 round trip and deliberate wrong reversal are finite regression clients. Typed
 ports, actual graph dependencies and the shipped theorem registry must bind
 the matched circuit before an external schema can use this theorem.
 
-The [typed shared QFT projection](lean-qft-graph-packet.md) now binds complete
+The [typed shared QFT projection](../lean/Qleisli/QftGraph.lean) now binds complete
 internal interfaces and dependencies to literal graph/Fourier semantics. It
 retains a generated native producer and has no `.qli` hierarchical producer
 or external decoder yet. A physical data permutation is separate from owner

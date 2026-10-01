@@ -1,0 +1,271 @@
+{
+  "format": "qleisli.named-qpe-capacity-profile",
+  "version": 1,
+  "recorded_at_utc": "2026-09-30T23:57:04.769551+00:00",
+  "producer_base_commit": "8d1046c39737a8b514719d4b383be0cca5e53516",
+  "producer_state": "working-tree",
+  "profile": "accepted",
+  "aggregate_budget": 2000000,
+  "quantum_widths": [
+    3,
+    4
+  ],
+  "source_preservation_proved": false,
+  "production_authority_transferred": false,
+  "isolated_diagnostic": "Separate inspectors use the existing 2M ceiling; their sum is not an accepted receipt.",
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "profile_binary_sha256": "9cc525ec0d9b63b07fbed14f8615fdd9e1e7caa5c74548be8e60c1144272cc0b",
+  "profile_source_sha256": "7aceb8cb9607a0833df0951b57e297e990baf539a0771110bf4503634cd64905",
+  "script_sha256": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564",
+  "current_source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "a07b8dd52cfb4458d1d852208022a75a784cef3196a5b480139976af907e7262",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "e71c395de4aaf128322d1cfea94b34708bd2c15ed85eae2b89866a250bd2253a",
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "af909f47f285eeb643f2ec80f6fd0b06210a93145559fd4d6d42ea37e2033170",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "33eb6bff842c32b4a5c81526e1b414064f1f1bef6fea35e21fbca2f0941e9e05",
+    "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc",
+    "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "204ba5ba2cc42ff834628d34be9a2f5e2bda1c7ad5e41408bb02a3baec5e5d0e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "bebadb3fe717b5e3cd5085eb0649d49c60c64dc95af760177b85935396ac4064",
+    "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+    "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+    "lean-kernel/Protocol.lean": "a82cfe890134ff5cb45569dd817841545103df32c85a33a72d3569362d12720d",
+    "lean-kernel/Main.lean": "4b30a889020c4df940ca96ea4d4f623cea5d21903e5039a2406f19a878f5464b",
+    "src/frontend/sized/lower.rs": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/interchange/hierarchical.rs": "66f5c02036a56865b47dfb9a3187f997f9d3e0941ce59f82e41e0bb1423928f5",
+    "tests/sized_source.rs": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103",
+    "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "corpus/sized/measured_qpe/measurement.qli": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "corpus/sized/qualtran_qpe/estimation.qli": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "corpus/sized/qualtran_qft/fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "run",
+        "--offline",
+        "--manifest-path",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/Cargo.toml",
+        "--",
+        "/private/tmp/qleisli-qpe-perf-final",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/capture.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/.lake/build/bin/qpe-capacity-profile",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/n1-m2-textbook.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/n1-m2-delayed.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/n1-m3-textbook.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-u9t_t30o/n1-m3-delayed.bin"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "cases": {
+    "n1-m2-textbook": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1196545,
+        "exact_work": 472,
+        "finite_equations": 4,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 4
+      },
+      "graph_counts": [
+        123,
+        123,
+        91,
+        123,
+        460
+      ],
+      "conditional": {
+        "total": 840497,
+        "contract_typing": 611843,
+        "node_typing": 400111,
+        "preparation": 65778,
+        "finite_obligations": 4
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 14304,
+        "instrument": 10688
+      },
+      "provider": 7795,
+      "schedule": 267933,
+      "powers": 4934,
+      "inverse_fourier": 15081,
+      "trace": 233614,
+      "preparation": 24672,
+      "readout": 44480,
+      "isolated_diagnostic_total": 1196545,
+      "diagnostic_budget_margin": 803455,
+      "provider_request_sha256": "f577bbcdc71f9904bce48f4423340a8c3503f1b4e0866e7e57dc33630e3b9276",
+      "bridge_sha256": "64ad8c25d579ab9431cfb4a341e6ba84f374cfbcb5b6cb826bd969ad1480d56a",
+      "input_sha256": {
+        "payload": "c64d5de09fe5e178c3d2e3874c73c722e14edc028e4b727b2de4f93c1933a38a",
+        "request": "fbb6716dbeaf2f26883477afca255eee265d3a3c4ddff4024d5c35b0ce079fc5",
+        "candidate": "4be185d3b598bd865048b8b2e445f7af3ae2a97a65552cb137ac949cba334c74",
+        "precursor": "2aa2897aec82ba3bb18de46434417aa74a99bc1cd56e39fa16659830b131ff91"
+      },
+      "same_full_source_root_interface": true,
+      "same_independent_provider_request": true
+    },
+    "n1-m2-delayed": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1196545,
+        "exact_work": 472,
+        "finite_equations": 4,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 4
+      },
+      "graph_counts": [
+        123,
+        123,
+        91,
+        123,
+        460
+      ],
+      "conditional": {
+        "total": 840497,
+        "contract_typing": 611843,
+        "node_typing": 400111,
+        "preparation": 65778,
+        "finite_obligations": 4
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 14304,
+        "instrument": 10688
+      },
+      "provider": 7795,
+      "schedule": 267933,
+      "powers": 4934,
+      "inverse_fourier": 15081,
+      "trace": 233614,
+      "preparation": 24672,
+      "readout": 44480,
+      "isolated_diagnostic_total": 1196545,
+      "diagnostic_budget_margin": 803455,
+      "provider_request_sha256": "f577bbcdc71f9904bce48f4423340a8c3503f1b4e0866e7e57dc33630e3b9276",
+      "bridge_sha256": "64ad8c25d579ab9431cfb4a341e6ba84f374cfbcb5b6cb826bd969ad1480d56a",
+      "input_sha256": {
+        "payload": "c64d5de09fe5e178c3d2e3874c73c722e14edc028e4b727b2de4f93c1933a38a",
+        "request": "fbb6716dbeaf2f26883477afca255eee265d3a3c4ddff4024d5c35b0ce079fc5",
+        "candidate": "4be185d3b598bd865048b8b2e445f7af3ae2a97a65552cb137ac949cba334c74",
+        "precursor": "1ea206eec324589a453f1aa831768207db0bfa6ee87334bd80372987c1e7217d"
+      },
+      "same_full_source_root_interface": true,
+      "same_independent_provider_request": true
+    },
+    "n1-m3-textbook": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1996759,
+        "exact_work": 708,
+        "finite_equations": 6,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 6
+      },
+      "graph_counts": [
+        172,
+        172,
+        128,
+        172,
+        644
+      ],
+      "conditional": {
+        "total": 1354165,
+        "contract_typing": 1008616,
+        "node_typing": 673434,
+        "preparation": 103918,
+        "finite_obligations": 6
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 21536,
+        "instrument": 15584
+      },
+      "provider": 7795,
+      "schedule": 475727,
+      "powers": 7548,
+      "inverse_fourier": 28595,
+      "trace": 418048,
+      "preparation": 49888,
+      "readout": 93120,
+      "isolated_diagnostic_total": 1996759,
+      "diagnostic_budget_margin": 3241,
+      "provider_request_sha256": "ca60b84e08dda20c34015b42f5a0eb6c4106c211d3e1e7574512adf805b95a64",
+      "bridge_sha256": "2ef7f0397eb4f8713b356ecbaab2bd15ed4b094b2219c8f82f530f0ba954437a",
+      "input_sha256": {
+        "payload": "9ca05f2d5ce2eab58a5ae3cea67b40ae2c8dfcc3bc412d996d41022b252d2de3",
+        "request": "28e1e9aafcea9811a4039c5ed658c1ae9faebd065ef7d9b13f029798a021f377",
+        "candidate": "5c430a93e09f9d64d8441d5a9446a416bbaf73a761bdc54fdd9c20e82808dea8",
+        "precursor": "f38620d1bb309d77452049cc273bbbfa809df8584602ced05f685bcbbc03da96"
+      },
+      "same_full_source_root_interface": true,
+      "same_independent_provider_request": true
+    },
+    "n1-m3-delayed": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1996759,
+        "exact_work": 708,
+        "finite_equations": 6,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 6
+      },
+      "graph_counts": [
+        172,
+        172,
+        128,
+        172,
+        644
+      ],
+      "conditional": {
+        "total": 1354165,
+        "contract_typing": 1008616,
+        "node_typing": 673434,
+        "preparation": 103918,
+        "finite_obligations": 6
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 21536,
+        "instrument": 15584
+      },
+      "provider": 7795,
+      "schedule": 475727,
+      "powers": 7548,
+      "inverse_fourier": 28595,
+      "trace": 418048,
+      "preparation": 49888,
+      "readout": 93120,
+      "isolated_diagnostic_total": 1996759,
+      "diagnostic_budget_margin": 3241,
+      "provider_request_sha256": "ca60b84e08dda20c34015b42f5a0eb6c4106c211d3e1e7574512adf805b95a64",
+      "bridge_sha256": "2ef7f0397eb4f8713b356ecbaab2bd15ed4b094b2219c8f82f530f0ba954437a",
+      "input_sha256": {
+        "payload": "9ca05f2d5ce2eab58a5ae3cea67b40ae2c8dfcc3bc412d996d41022b252d2de3",
+        "request": "28e1e9aafcea9811a4039c5ed658c1ae9faebd065ef7d9b13f029798a021f377",
+        "candidate": "5c430a93e09f9d64d8441d5a9446a416bbaf73a761bdc54fdd9c20e82808dea8",
+        "precursor": "112042beefa64a610a229cf115ad5918823ca372b039d7578f38da7e1fb4327e"
+      },
+      "same_full_source_root_interface": true,
+      "same_independent_provider_request": true
+    }
+  }
+}

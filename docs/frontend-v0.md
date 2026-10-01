@@ -34,6 +34,12 @@ message changes; categories, source locations, JSON v1 and acceptance remain
 unchanged. [Repair regressions](../tests/repair_diagnostics.rs) cover both a
 working correction and a false contract that still rejects.
 
+From v0.2.3 every filesystem source tree declares Qleisli edition `"2026"` in
+its closest enclosing `Qargo.toml`; missing or invalid declarations fail before
+source parsing. The selected module root is unchanged. In-memory parsers use
+the current 2026 grammar. See [language editions](language-editions.md) for
+manifest discovery, the selected compatibility exception and migration.
+
 ## Entry points and trust boundary
 
 The Rust APIs `frontend::compile::check_project(&Path)` and

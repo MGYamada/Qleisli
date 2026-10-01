@@ -1,16 +1,10 @@
 # M1.1: bounded OpenQASM 3 and QIR connections
 
-Status: **M1.1-A contract selected and initial implementation validated locally and in Linux CI on 2026-09-28**. M1.1 is a
-submilestone of M1, not a product version or completion of interoperability.
-The user requested this additional slice during 0.1.7 feature development.
-Future additions use the [compatibility-based version policy](versioning.md).
-Implementation and validation are recorded separately in the
-[0.1.7 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md). The additive 0.2.1
-[connection contract](connections-v021.md) now covers Python orchestration,
-structured CLI commands and a pinned PyQIR terminal-input subset. The historical
-future-reader discussion below is superseded for that subset only. Adaptive
-programs and broader import/distribution gates remain open; the compiler and
-evidence kernel stay unchanged.
+Status: **implemented bounded terminal connections**, including Rust adapters,
+the structured CLI, Python orchestration and optional PyQIR input. M1.1 names a
+development submilestone, not a product version. Adaptive circuits, general
+translation proofs and bundled native wheels remain open. These adapters use
+the existing finite Rust verifier; they add no language form or acceptance rule.
 
 ## Host interface and trust boundary
 
@@ -34,9 +28,58 @@ connects the adapters; it is not a new trusted IR or public certificate.
 with explanatory text, an optional original UTF-8 byte `Span` for imports and
 an optional zero-based raw operation index for exports. These locations are
 not invented when failure concerns the whole artifact. No successful artifact
-or partial output is returned on failure. The initial adapter has no main-CLI
-command or JSON envelope extension; `cargo run --example interop -- ...`
-provides a reproducible host caller.
+or partial output is returned on failure. The structured CLI below and
+`cargo run --example interop -- ...` provide host callers.
+
+## Structured CLI and Python
+
+`qleisli interop ACTION INPUT --input=FORMAT` emits one version-1
+`qleisli.result` JSON envelope. Actions are `check`, `run`, `sample`, `emit-ir`,
+`emit-qasm` and `emit-qir`; formats are `qasm`, `qirf` and `qli`.
+Input is a file, stdin `-` for qasm/qirf, or a source project for qli.
+Sampling requires `--shots=N --seed=S` and uses the existing bounds, SplitMix64
+and a fresh state per shot. Exports return `result.text`. Success exits 0,
+processing failures 1 and usage failures 2. Input bounds are 1 MiB for QASM,
+16 MiB for QIRF and the existing source-project policy for QLI.
+
+Artifact errors retain JSON pointers in `related`. OpenQASM spans retain
+original UTF-8 byte offsets and one-based line/Unicode-column coordinates,
+with CRLF counted once; stdin uses filename `-`. Unlocated errors keep
+`primary: null`. See [CLI regressions](../tests/connections.rs).
+
+The [Python host](../python/README.md) provides `Client`, `Program` and
+`QleisliError`. `from_openqasm`, `from_qir`, `from_ir` and `compile_project`
+construct programs; checking, execution, sampling and export freshly invoke
+the Rust boundary. A Python object never supplies acceptance authority.
+The host needs Python 3.11+ and a separately installed matching Rust executable.
+Pure host wheels do not bundle that executable or LLVM.
+
+## Optional QIR input
+
+The isolated [reader](../python/qleisli/_qir.py) uses pinned **PyQIR 0.12.5**
+(MIT) to parse text/bitcode and verify LLVM. It accepts one closed entry with
+static counts at most twelve, an acyclic unconditional block chain, the terminal
+QIS vocabulary below, Z measurements and one ordered result array. It validates
+signatures, module/profile flags, measurement attributes, pointer identities,
+initialization placement, measurement/result uniqueness and output order.
+Traversal uses LLVM block identity, including unnamed blocks.
+
+Reject additional definitions, dynamic resources, loops, conditional or
+unvisited blocks, unknown calls/custom QIS bodies, post-measurement gates,
+measured-wire/result reuse, unsupported output structures, assembly, mutable
+globals and unknown semantic attributes. Parsing is capped at 1 MiB with
+bounded function/block/instruction counts. Imported code is never executed.
+The validated slice becomes canonical QASM with explicit reset/output order;
+Rust reconstructs logical owners and independently checks the IR. Unrecorded
+measured systems and other terminal wires are explicitly discarded.
+
+LLVM validity, profile validation, IR acceptance and translation correctness
+are distinct. Reader wheels and their LLVM/dependency notices belong to PyQIR;
+default Rust builds need neither Python nor LLVM. The
+[connection harness](../scripts/test_connections.py) and
+[retained validation](../tests/fixtures/interop/connections-validation.json)
+cover text/bitcode, output order, invalid signatures/CFG/resources, phase,
+structured errors, isolated host installation and seeded sampling.
 
 ## Terminal profile v1
 
@@ -166,11 +209,10 @@ distributions and exact gate mappings. Parse exported OpenQASM with an independe
 reference parser and QIR with LLVM, then inspect profile/QIS structure. Round
 trips and numeric histograms alone do not validate open-operation phase.
 
-M1.1-B remains QIR import through a pinned LLVM/PyQIR reader with adversarial
-fixtures; M1.1-C remains adaptive measurement/reset/reuse with instrument
-correspondence. Python wheels, general .qli export, portable Qleisli evidence,
-all M1 N/X gates and M2 scaling are separate. This slice adds no soundness theorem
-and does not shrink the trusted evidence kernel.
+The terminal QIR reader is implemented; adaptive measurement/reset/reuse with
+instrument correspondence remains open. Bundled native wheels, general .qli
+export, portable Qleisli evidence, all M1 N/X gates and M2 scaling are separate.
+These adapters add no soundness theorem and do not shrink the trusted core.
 
 ## Reproduction and reader decision
 
@@ -200,12 +242,8 @@ in [implementation CI](https://github.com/MGYamada/Qleisli/actions/runs/36382687
 that LLVM 17 was executed. Native device/runtime execution remains untested.
 
 [PyQIR's reader API](https://www.qir-alliance.org/pyqir/api/pyqir.html#pyqir.Module.from_ir)
-provides `Module.from_ir`, `from_bitcode`, `verify`, function/block inspection
-and module flags. It is the candidate bridge for M1.1-B. This API review does
-not select a runtime dependency: pin an actual release and compatible LLVM,
-check opaque-pointer/QIR 2 support, available binary wheels, licenses and
-adversarial traversal/profile checks before adopting it. No hand-written LLVM
-import parser, imported code execution or Python proof authority is introduced.
+provides the module/bitcode/verification and inspection APIs used by the optional
+reader. The pinned dependency and checked subset above define the current scope.
 
 Primary initialization reference: [OpenQASM 3.1 quantum types](https://openqasm.com/versions/3.1/language/types.html#qubits)
 defines declarations as initially undefined; the explicit reset requirement

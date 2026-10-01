@@ -4,7 +4,7 @@ Status: **Stage 1 in progress** (2026-09-26). The English
 [source resource calculus](source-resource-rules.md) now gives explicit rules
 for mixed values, pending results, calls, frames, and branch interfaces, together
 with a paper proof of its resource invariant (R1). An
-[ownership-accounting projection](lean-resource-proof.md) is now machine checked
+[ownership-accounting projection](../lean/README.md) is now machine checked
 in Lean; it is supporting evidence for the specification, not the complete R1
 derivation system. The [source semantics](source-semantics.md) now defines mixed
 value/environment interfaces and gives conditional local proofs for call-by-value
@@ -266,7 +266,7 @@ No QLT evaluator or such theorem is implemented by the design record.
 | Resource Safety Theorem, RS-C1–C5 | Adopted v1 target on 2026-09-30; to prove. Resource semantics/analyzer and compilation-bound preservation are not implemented as a complete proof path. | No quantitative bound theorem follows from current ownership checks, work/step ceilings, finite probes or cost reports. |
 | Source resource accounting, R1 | Paper proof for the explicit [resource calculus](source-resource-rules.md#7-resource-preservation-theorem-and-proof), plus a declaration-boundary corollary. | General equivalence with Rust execution or the whole source specification. |
 | Source types, effects, names and scopes, T1–T3 | [Syntax-complete rule presentation](source-typing-rules.md), local paper proofs of typed total basis evaluation, type/effect determinacy, lexical projection and conservative effects; finite boundary regressions. | Uniqueness of generated IR, full source/Rust adequacy, or general quantum soundness. |
-| R1-accounting projection | [Lean-checked](lean-resource-proof.md) typed ownership occurrences, local resource edits, frames, complete renaming/phi, and composition. | Full source R1, lexical/effect/scope/history rules, Rust adequacy, or quantum semantics. |
+| R1-accounting projection | [Lean-checked](../lean/README.md) typed ownership occurrences, local resource edits, frames, complete renaming/phi, and composition. | Full source R1, lexical/effect/scope/history rules, Rust adequacy, or quantum semantics. |
 | Lexical scope projection | [Lean lookup model and Rust extraction](lowering-state-refinement.md): entry-domain/classical restoration, spent non-revival, and exact current quantum-footprint preservation after approval. | Every Rust trace supplies the required snapshots/rebound set, complete pending/caller holder coverage, or full source/Rust adequacy. |
 | Phi axis renaming | Local paper lemma for complete position/frame interfaces, including references. | Full source-to-IR branch correctness. |
 | Source interface semantics and S1–S4 | [Conditional local paper proofs](source-semantics.md) for evaluated-value substitution, arbitrary correlated frames, classical branch/phi and structural IR composition. | Complete typing/name/scope adequacy, every semantic leaf or Rust implementation path. |
@@ -278,7 +278,7 @@ No QLT evaluator or such theorem is implemented by the design record.
 | Hierarchical operator unitarity | [Actual complex operator laws](../lean/Qleisli/HierarchicalUnitary.lean) and [typing bridges](../lean/Qleisli/HierarchicalTyping.lean) prove both inverse laws for phase/permutations and closure under sequence, tensor, inverse, coherent control and powers. [Recursive acceptance](../lean/Qleisli/HierarchicalAcceptance.lean) derives the actual entry's unitarity, including arbitrary finite reference extension, from supported internal checker success without assumed child isometries. | Finite leaves, calls/encodings/computed regions, the remaining full profile, external production verification or sized source. |
 | Finite IR ideal soundness | [Conditional paper argument](finite-core-proof.md) for its constructors and verification premises. | Verified Rust implementation, source translation, or numerical exactness. |
 | Source rule-system pure-operation and instrument soundness | [Paper Q1–Q3](source-soundness.md): pure determinacy/isometry/unitarity, finite adaptive instruments, CP and total trace preservation with arbitrary references. | Full Rust acceptance/translation correspondence, numerical exactness, protocol, algorithm, or hardware correctness. |
-| Local Kraus completeness algebra | [Lean KA-1–KA-5](lean-resource-proof.md#6-local-kraus-completeness-algebra): exact matrix identities for isometries, output transport, and adaptive composition. | Positivity/trace, source derivations, arbitrary-reference extension, or the whole Q1–Q3 proof. |
+| Local Kraus completeness algebra | [Lean KA-1–KA-5](../lean/Qleisli/Kraus.lean): exact matrix identities for isometries, output transport, and adaptive composition. | Positivity/trace, source derivations, arbitrary-reference extension, or the whole Q1–Q3 proof. |
 
 **Pure-operation result and transfer obligation.** For each fixed classical
 input, every `Iso` derivation of the explicit source rules denotes an isometry
@@ -320,16 +320,16 @@ Lean kernel migration decision):**
    prove equations, not acceptance soundness of the Rust implementation. New M2
    checker rules must be implemented and proved in Lean over the same definitions;
    the initial phase-word slice supplies no QFT/QPE schema theorem.
-   Subsequent [QFT circuit](lean-qft-proof-packet.md) and
-   [typed shared graph](lean-qft-graph-packet.md) theorems now establish the
+   Subsequent [QFT circuit](../lean/Qleisli/Qft.lean) and
+   [typed shared graph](../lean/Qleisli/QftGraph.lean) theorems now establish the
    positive normalized Fourier coefficient and arbitrary reference extension
-   for actual accepted internal projections. The [QPE instrument component](lean-qpe-instrument-packet.md)
+   for actual accepted internal projections. The [QPE instrument component](../lean/Qleisli/Qpe.lean)
    now connects actual preparation, controlled powers and the inverse graph to
    full residual reference maps. Its completeness and total trace theorem
    explicitly require a whole-space isometric provider. The controlled-power component now proves the actual coherent amplitude
    action equals its complex block operator, with conditional unitary laws and
    arbitrary-reference maps. Full external IR/provider binding remains an obligation. The component registry now
-   [pins rebuilt types and source revisions](lean-qpe-instrument-packet.md#shipped-type-and-source-manifest);
+   [pins rebuilt types and source revisions](../lean/README.md#component-registry-review);
    external schema enablement remains gated. The full-profile dependency
    scheduler additionally proves actual-checker acyclicity. Typed artifact
    preparation now proves this for the graph extracted from the actual four

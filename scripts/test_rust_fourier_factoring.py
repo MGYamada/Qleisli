@@ -38,7 +38,7 @@ def main():
                             {'QLEISLI_FOURIER_PROPOSALS': temporary}))
         cases = []
         for width in (1, 2, 3):
-            for kind in ('original', 'candidate'):
+            for kind in ('original', 'candidate', 'delayed-original', 'delayed-candidate'):
                 name = f'{kind}-{width}'
                 payload = (directory/f'{name}.json').read_bytes()
                 graph = json.loads(payload)
@@ -47,8 +47,8 @@ def main():
                 artifacts[name] = dict(sha256=hashlib.sha256(payload).hexdigest(),
                                        definitions=len(graph['definitions']))
                 request_name = ''
-                if kind == 'candidate':
-                    request_name = f'request-{width}.json'
+                if kind.endswith('candidate'):
+                    request_name = f'{kind}-request-{width}.json'
                     header = graph['definitions'][graph['entry']['implementation']]['interface']
                     request = dict(format='qleisli.hierarchy-request', version=1,
                         profile='qpe-dyadic8-v1', kind='equation', effect='unitary',
@@ -66,7 +66,9 @@ def main():
         kernel_sha256=hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
         implementation_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in
             ('src/frontend/sized/fourier.rs','src/frontend/sized/lower.rs',
-             'corpus/sized/qualtran_qft/fourier.qli','scripts/test_rust_fourier_factoring.py')},
+             'corpus/sized/qualtran_qft/fourier.qli',
+             'tests/fixtures/sized_clients/delayed_fourier.qli',
+             'scripts/test_rust_fourier_factoring.py')},
         artifacts=artifacts,semantic=semantic,commands=commands)
     if args.record:
         args.record.write_text(json.dumps(report,indent=2)+'\n')

@@ -2,7 +2,7 @@
 
 This informed CD-3 implementation exercise belongs to Qleisli (Apache-2.0).
 It adds no external corpus source and is not a controlled model benchmark.
-The [bounded contract](../../../docs/lean-phase-layout-slice.md) preceded the
+The [bounded contract](../../../lean-kernel/QleisliKernel/PhaseLayout.lean) preceded the
 new acceptance path. The [first source](first_source/main.qli) and actual
 [baseline](baseline.json) preserve a working finite program and the old Lean
 executable's unsupported-command response. The old command was probed with

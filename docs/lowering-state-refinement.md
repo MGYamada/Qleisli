@@ -113,7 +113,7 @@ to `Option (Option Value)`. `Approved E L B` is precisely the absence of the
 rejection condition. Its noncomputable `close` specifies universal approval;
 the finite Rust map implements a scan of the names that are present.
 
-The [SC theorem ledger](lean-resource-proof.md#7-lexical-scope-projection)
+The [SC theorem ledger](../lean/Qleisli/Scope.lean)
 records classical restoration, spent-marker preservation, exact entry-domain
 restoration, quantum retention, and rejection of introduced/rebound quantum
 owners. `Value.ownsQuantum_eq_true_iff` identifies the Boolean guard with a
@@ -127,7 +127,7 @@ duplicate-free list covering both finite map domains. No bound on the number
 of names, nesting of values, or register width appears in these theorems.
 
 As a paper corollary, suppose the post-body holders `values(L) + result + frame`
-and register store satisfy the [resource accounting invariant](lean-resource-proof.md#1-exact-statement-and-model).
+and register store satisfy the [resource accounting invariant](../lean/Qleisli/Resource.lean).
 Successful scope projection replaces only `values(L)` by `values(E')` with
 the same typed ownership occurrences. The result, frame, store, and ID history
 are unchanged, so resource coverage and uniqueness still hold. This step

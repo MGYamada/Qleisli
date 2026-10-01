@@ -2,7 +2,7 @@
 
 This informed development packet continues the adopted shared-QPE goal on
 2026-09-29. It is not a controlled model benchmark or a completed 0.2.0 release.
-The [selected contract](../../../docs/lean-qft-proof-packet.md) preceded changes
+The [selected contract](../../../lean/Qleisli/Qft.lean) preceded changes
 to acceptance-related definitions. The earlier desired sized QPE source remains
 unimplemented; no external corpus source or new wire protocol was added.
 

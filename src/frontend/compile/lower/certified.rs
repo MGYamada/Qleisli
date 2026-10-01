@@ -187,9 +187,12 @@ impl Lowerer<'_, '_> {
         };
         // Hidden outer names still hide functions, but no outer classical or
         // quantum value can be captured by the independently checked circuit.
-        let mut local: Env = env.keys().map(|name| (name.clone(), None)).collect();
-        local.insert(data_binder.text.clone(), Some(*data));
-        local.insert(ancilla_binder.text.clone(), Some(*ancilla));
+        let mut local: Env = env
+            .iter()
+            .map(|(name, binding)| (name.clone(), binding.hidden()))
+            .collect();
+        local.insert(data_binder.text.clone(), Binding::Live(*data));
+        local.insert(ancilla_binder.text.clone(), Binding::Live(*ancilla));
         let result = inner.block(module, body, &mut local)?;
         inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
         if inner.effect != Effect::Unitary {

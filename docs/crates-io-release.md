@@ -9,6 +9,12 @@ and the complete release gates. Executed results belong in the
 [matching release record](releases/v0.2.2.md), including failures and skipped
 checks. This procedure does not itself perform or authorize publication.
 
+Current development is **0.2.3**, selected for [Qleisli edition 2026](language-editions.md).
+Its [development record](releases/v0.2.3.md) is separate from the latest published
+0.2.2 artifact. Required source-tree `Qargo.toml` files and the full `std` qrate
+manifest must be included in packaging and quickstart checks; version selection
+alone does not authorize or perform a new upload.
+
 ## Release sequence
 
 | Step | Completion evidence |

@@ -372,6 +372,19 @@ the new local paper argument does not extend a Lean theorem.
 
 A quantum IR instruction consumes its input ownership tokens and creates fresh tokens for any quantum outputs. Name moves and identity functions do not themselves add physical operations. Gates and structural operations carry logical wires forward; `init0`, width-increasing lifts, and `reset` allocate fresh IDs as needed. Branch merge IDs rename the selected arm's axes. IDs alone do not establish the presence or absence of correlations.
 
+`LiftBasis` implements `|x⟩ ↦ |f(x)⟩` for an injective table. Its output begins
+with the original ordered wire identities, followed by fresh wires. The values
+on those original wires may change: equal-width lifts include arbitrary basis
+permutations. A fixed classical input `γ` selects a quantum operator `U_γ` in a
+`Unitary` IR program, as in the source effect contract above.
+
+The finite verifier admits live registers with at most 12 distinct ordered
+wires. Every insertion checks this bound before a live register's width is
+converted to `u8` or used in a basis-dimension shift. Token and newly allocated
+wire identities are globally fresh; consuming tokens preserves their checked
+register shape. These implementation premises apply when translating the
+actual verifier into Lean.
+
 Report type, ownership, and effect violations, noninjective lifts, unsupported auxiliary evidence, unknown names, recursion, and capacity overflow with source locations. With multiple violations, diagnostic ordering and exact wording are not normative. Implementation error codes and numerical/capacity limits are given in the [implementation profile](frontend-v0.md#診断と上限). Capacity overflow must not be handled by changing meaning, such as truncating repetitions or implicitly discarding resources.
 
 The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness. The [translation contract](source-ir-correspondence.md) specifies the correspondence required of tables, primitive choices, ordered interfaces, and complete phis: raw-IR validity alone does not establish equality with the source meaning.

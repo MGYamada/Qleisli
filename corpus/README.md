@@ -3,12 +3,17 @@
 The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
-inputs and have a separate development execution path. The 36 finite CLI cases
-below use the production frontend; production sized-source integration is still open.
+inputs and have a separate development execution path. The 42 finite CLI cases
+below use the production frontend. The bounded `qleisli sized` source/CLI slice
+and measured QPE are recorded in the
+[current checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md);
+general correspondence and full-profile migration remain open.
 The [coherent QPE continuation](sized/qualtran_qpe/README.md) now passes its
 small selected configurations with static operation providers and full-state
 diagnostics. Further maximum-size checks are deferred by the 2026-09-30 user
-decision; initialization/measurement and `CBits` remain open.
+decision. Initialization, readout and `CBits` now have a separately checked
+bounded measured-source slice; accepted sizes and remaining gates are explicit
+in that checkpoint.
 The [shared AddK/Equals continuation](sized/qualtran_arithmetic/README.md) now
 passes widths 0–3, using coherent recursive controls and shared XOR/complement
 to restore input registers. Its independent arithmetic oracles cover all small
@@ -18,9 +23,11 @@ The [local order/amplitude integration clients](../tests/fixtures/sized_clients/
 now reuse the same coherent QPE at small sizes, with explicit operation
 forwarding and independent phase/reference formulas. They are local verification
 material under the existing policy, not a fourth external corpus. Their
-initialization/measurement and production integration remain open.
+measured clients now have bounded source/CLI integration; general correspondence
+and wider production integration remain open.
 
-**36 finite translations, twelve per approved source**, including six simple
+**42 finite translations, fourteen per approved source**, including six
+1–3-qubit additions for 0.2.3 and six simple
 1–3-qubit additions for 0.2.2 on 2026-09-30 and six additions for 0.2.1 on
 2026-09-29. The original 24-case intake was selected for 0.1.9
 on 2026-09-28. The [adopted policy](POLICY.md) restricts external inputs to
@@ -58,6 +65,15 @@ key; RX fixes the original two rotation parameters to `(pi/2,0)`. These are
 small finite translations, not completion of the shared-QPE integration goal.
 
 ## Use and layout
+
+The [0.2.3 small-system session](authoring/v023-small/README.md) adds odd-parity
+preparation and a signed Bell singlet, constant comparison/equality, exact RY
+and one Ising ZZ edge. It reuses the same frozen commits/files and reviewed
+licenses. All six first checks passed; 490 full-entry semantic probes pass and
+six type-correct faults are detected, including errors invisible to zero-input
+probabilities. The enclosing [Qargo.toml](Qargo.toml) selects edition `2026` for
+translations, first attempts and faults. This tree is not yet a qrate;
+future qrate management does not alter source-specific licensing.
 
 Each case is an independent source project. `kernel.qli` is the reusable
 translation; `main.qli` supplies a runnable example; its README states the
@@ -138,6 +154,12 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | qualtran | [bitwise_not2](qualtran/bitwise_not2/README.md) | Complement both register bits, mapping x to 3-x modulo 4 with scalar +1. |
 | pennylane_demos | [rx_quarter](pennylane_demos/rx_quarter/README.md) | RX(pi/2)=(I-iX)/sqrt(2), preserving the scalar required under coherent control. |
 | pennylane_demos | [phase_kickback1](pennylane_demos/phase_kickback1/README.md) | A one-bit secret 1 XORs the retained key into the meter through H/controlled-Z/H. |
+| quantum_katas | [odd_parity3](quantum_katas/odd_parity3/README.md) | Uniform odd-parity preparation on three wires, retaining all signed input columns. |
+| quantum_katas | [bell_singlet2](quantum_katas/bell_singlet2/README.md) | Index-3 Bell preparation with the upstream Z-then-X sign and wire order. |
+| qualtran | [less_than_constant2](qualtran/less_than_constant2/README.md) | XOR [x<3] into an arbitrary target, retaining the two-bit input. |
+| qualtran | [equals_constant2](qualtran/equals_constant2/README.md) | XOR [x=1] into an arbitrary target and restore mixed-polarity controls. |
+| pennylane_demos | [ry_quarter](pennylane_demos/ry_quarter/README.md) | RY(pi/2) with its signed second column; params=(0,pi/2). |
+| pennylane_demos | [ising_zz_quarter2](pennylane_demos/ising_zz_quarter2/README.md) | One U_C edge exp(-i*pi*Z0*Z1/4), including absolute scalar phase. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -149,7 +171,13 @@ these boundaries before it can count as a port.
 
 ## What was validated
 
-[Current 0.2.2 results](validation-v0.2.2.json): **36 shipped examples, 12,139
+[Current 0.2.3 results](validation-v0.2.3.json): **42 shipped examples, 12,629
+semantic probes and four rejection cases** pass. All **eighteen type-correct
+semantic faults** are detected. New translations use at most three data qubits;
+the full run retains existing small finite cases and never generates new
+maximum-size cases. Source/manifest, oracle and binary hashes bind the report.
+
+[Historical 0.2.2 results](validation-v0.2.2.json): **36 shipped examples, 12,139
 semantic probes and four rejection cases** pass with the local 0.2.2 binary.
 All **twelve type-correct semantic faults** are detected. The
 [six new cases](authoring/v022-simple/semantic-validation.json) account for
@@ -168,7 +196,7 @@ probes and four rejection cases** passed with the Rust 1.98.1 compiler on macOS.
 The report binds the manifest, final QLI files, oracle script and compiler by
 SHA-256. It is a reproducibility record, not a signed attestation.
 
-- For each of the 31 current unitary kernels, enumerate every computational input and
+- For each of the 37 current unitary kernels, enumerate every computational input and
   compare its output distribution with an independent mathematical reference.
   Then measure every complex matrix entry using controlled X/Y interference.
   The reference branch maps the input basis vector to the selected output row;
@@ -192,7 +220,7 @@ SHA-256. It is a reproducibility record, not a signed attestation.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
-- Twelve [type-correct semantic faults](semantic_faults/README.md) must pass source
+- Eighteen [type-correct semantic faults](semantic_faults/README.md) must pass source
   checking and then fail the mathematical oracle. They test majority/parity,
   Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
   The six 0.2.2 faults additionally test incomplete SWAP, unconditional Fredkin,

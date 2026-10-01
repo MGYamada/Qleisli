@@ -1,0 +1,27 @@
+--- a/src/frontend/sized/qpe.rs
++++ b/src/frontend/sized/qpe.rs
+@@ -411,8 +411,23 @@
+             let provider = frozen_provider(&textbook);
+             let reordered = source_with_fourier(1, m, 1, Some(delayed));
+             let mut outcomes = vec![];
+-            for proposal in [&textbook, &reordered] {
++            for (variant, proposal) in [("textbook", &textbook), ("delayed", &reordered)] {
+                 let binding = proposal.qpe_binding(&provider).unwrap();
++                if let Some(directory) = std::env::var_os("QLEISLI_QPE_PERF_PROPOSALS") {
++                    let directory = std::path::PathBuf::from(directory);
++                    std::fs::create_dir_all(&directory).unwrap();
++                    for (suffix, bytes) in [
++                        ("payload", proposal.payload()),
++                        ("request", binding.request()),
++                        ("candidate", binding.candidate()),
++                        ("precursor", proposal.lowering_precursor()),
++                    ] {
++                        std::fs::write(
++                            directory.join(format!("n1-m{m}-{variant}-{suffix}.json")),
++                            bytes,
++                        ).unwrap();
++                    }
++                }
+                 let result = kernel.check_qpe_instrument(
+                     proposal.payload(),
+                     binding.request(),

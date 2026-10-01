@@ -1,0 +1,21 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/Superposition/ReferenceImplementation.qs
+// Selected symbol(s): AllBellStates_Reference
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    let (a, b) = cnot(h(a), b);
+    join(a, z(x(b)))
+}
+
+// Deliberate semantic mutation: Exchange Z and X on the second wire; every ordinary output probability is unchanged but the full operator gains scalar -1.

@@ -17,6 +17,10 @@ jobs:
         run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
       - run: cargo +1.98.1 fmt --check
       - run: cargo +1.98.1 test --all-targets
+      - name: Sized Rust and Python source dialect comparisons on small inputs
+        run: cargo +1.98.1 test --test sized_review_dialects -- --ignored --skip native
+      - name: Sized primitive omissions must fail compilation
+        run: python3 scripts/test_sized_primitive_catalog.py
       - name: Build public API documentation without warnings
         env:
           RUSTDOCFLAGS: -D warnings
@@ -109,6 +113,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install the tested Rust toolchain for native host comparisons
         run: rustup toolchain install 1.98.1 --profile minimal
+      - name: Fetch Rust dependencies before offline native host comparisons
+        run: cargo +1.98.1 fetch
       - name: Reject kernel/backend source escape hatches and unaudited imports
         run: python3 scripts/check_lean_kernel.py
       - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
@@ -145,6 +151,8 @@ jobs:
         run: python3 scripts/test_hierarchical_fourier_stage.py
       - name: Native interference normalization and independent joint amplitudes
         run: python3 scripts/test_lean_interference.py
+      - name: VM-23 native exact arithmetic, Rust capacities and independent rational matrices
+        run: python3 scripts/test_lean_exact.py
       - name: Symbolic QFT paths and independent Fourier coefficients
         run: python3 scripts/test_lean_qft.py
       - name: Small QFT semantic-path matcher and nonliteral candidates
@@ -196,11 +204,13 @@ jobs:
       - name: Check actual QPE initialization and ordered readout
         run: python3 scripts/test_hierarchical_qpe_instrument.py
       - name: Native checking of Rust sized-source proposals
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_source rust_source_proposals -- --ignored
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_source -- --ignored
+      - name: Rust GHZ and arithmetic corpus with independent small-system oracles
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_review_dialects native -- --ignored
       - name: Sized-source CLI checking, execution and sampling
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_cli sized_cli_native -- --ignored
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_cli -- --ignored
       - name: Rust source to named QPE with independent phase and reference probes
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --lib native_named_qpe_from_rust_source -- --ignored
+        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --lib native_named_qpe -- --ignored
       - name: Check actual provider derivations from an empty proof cache
         run: python3 scripts/test_hierarchical_derivation.py
       - name: Shared call expansion, typed adapters and independent phase oracle
@@ -281,6 +291,8 @@ jobs:
         run: |
           rustup toolchain install 1.98.1 --profile minimal
           rustup default 1.98.1
+      - name: Fetch package dependencies before offline distribution checks
+        run: cargo +1.98.1 fetch
       - name: Verify clean package and complete source archive
         run: python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
       - name: Retain candidate hashes, archives and command logs
@@ -298,6 +310,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Check edition 2026 coverage of every Qleisli source and QLT draft
+        run: |
+          python3 scripts/test_check_editions.py
+          python3 scripts/check_editions.py
       - run: python3 scripts/test_check_docs.py
       - run: python3 scripts/test_check_lean_kernel.py
       - run: python3 scripts/test_check_schema_registry.py

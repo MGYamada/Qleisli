@@ -482,7 +482,7 @@ matrix dimensions are one instance of the history-dependent paper equation.
 It is separate from the existing ownership-accounting projection and does
 not formalize source typing, positivity, trace, hidden-history grouping,
 arbitrary reference extension, or the Q1/Q3 induction. See the
-[Lean theorem ledger](lean-resource-proof.md) for exact declarations and checks.
+[Lean theorem ledger](../lean/README.md) for exact declarations and checks.
 
 [tests/source_soundness.rs](../tests/source_soundness.rs) checks selected
 compiled source programs against independent analytic expectations. These

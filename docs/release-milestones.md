@@ -6,7 +6,7 @@ This English document is the authoritative record
 of the project north star and v0.1/v0.5.0/v1 release conditions. The English summaries in the
 [roadmap](../ROADMAP.md) and [algorithm goal](algorithm-structure-goal.md)
 follow it. It adopts the direction evaluated in the
-[semantic-contract review](semantic-contract-proposal-review.md). The first
+[semantic-contract review](semantic-contracts-v0.1.md). The first
 [finite checker and source extension](semantic-contracts-v0.1.md) and
 [retained function evidence](function-contracts-v0.1.md) form the completed
 bounded path. The [conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) records its
@@ -59,7 +59,7 @@ synthesis without whole-space truth tables.
 
 **Latest scope revision, 2026-09-30:** the user splits [0.2.1](v0.2.2-plan.md)
 at the completed corpus/review/experimental-component boundary, adding bounded
-[Python/OpenQASM/QIR connections](connections-v021.md). Heavy implementation,
+[Python/OpenQASM/QIR connections](interop-m1.1.md#structured-cli-and-python). Heavy implementation,
 production integration and proof work moves to [0.2.2](v0.2.2-plan.md).
 R14/H1–H5 and full instrument/source correspondence are deferred with the
 features, not waived or completed. Existing components remain audited and

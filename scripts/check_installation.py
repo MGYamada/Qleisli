@@ -32,12 +32,26 @@ def quickstart(path):
     return text, matches[0]
 
 
+def quickstart_manifest(text):
+    matches = re.findall(
+        r"<!-- quickstart:manifest -->\s*```toml\n(.*?)```\s*<!-- /quickstart:manifest -->",
+        text, re.DOTALL,
+    )
+    require(len(matches) == 1, "expected one marked edition manifest")
+    manifest = tomllib.loads(matches[0])
+    require(manifest == {"schema-version": 2, "qrate": {"edition": "2026"}},
+            "quickstart must declare edition 2026 explicitly")
+    return matches[0]
+
+
 def check(root, binary):
     package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
     registry = root / package["readme"]
     readme, source = quickstart(root / "README.md")
     landing, landing_source = quickstart(registry)
     require(source == landing_source, "repository and registry quickstarts differ")
+    manifest = quickstart_manifest(readme)
+    require(manifest == quickstart_manifest(landing), "quickstart edition manifests differ")
     install = f'cargo install {package["name"]} --version {package["version"]} --locked'
     for text in [readme, landing]:
         require(install in text, "quickstart install command differs from manifest")
@@ -79,6 +93,7 @@ def check(root, binary):
         def write_project(name, body):
             project = work / name
             project.mkdir()
+            (project / "Qargo.toml").write_text(manifest, encoding="utf-8")
             (project / "main.qli").write_text(body, encoding="utf-8")
 
         write_project("bell", source)

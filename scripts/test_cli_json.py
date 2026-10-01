@@ -18,6 +18,7 @@ class JsonCliTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory(prefix="qleisli-json-日本語-")
         self.addCleanup(self.directory.cleanup)
         self.root = Path(self.directory.name)
+        (self.root / "Qargo.toml").write_text('schema-version = 2\n[qrate]\nedition = "2026"\n')
 
     def source(self, source):
         (self.root / "main.qli").write_bytes(source.encode("utf-8"))

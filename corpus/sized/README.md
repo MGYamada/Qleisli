@@ -1,10 +1,12 @@
 # Shared sized corpus sources
 
 These are executable **development experiments** using the
-[bounded source producer](../../scripts/compile_sized_corpus.py), existing
-hierarchical IR, and fresh native/finite reconstruction. They reuse pinned
-inputs, add no upstream intake, and are separate from the 30 production-CLI
-cases. `qleisli check/run` integration remains open. See the
+[Rust sized source API](../../src/frontend/sized.rs), existing hierarchical IR
+and fresh native/finite reconstruction. The
+[Python concrete producer](../../scripts/compile_sized_corpus.py) also serves
+as a differential oracle. They reuse pinned inputs and are separate from the
+42 finite corpus cases. The additive `qleisli sized` commands select a native
+kernel explicitly. See the
 [source contract](../../docs/sized-corpus-source.md).
 
 | Source | Sizes exercised | Whole-space contract | License |
@@ -35,6 +37,9 @@ large dense contract matrices.
 python3 scripts/compile_sized_corpus.py corpus/sized/qualtran_xor/bitwise.qli \
   --entry xor_into --size n=2 --output /tmp/xor2.json
 python3 scripts/test_sized_corpus.py --small
+cargo test --test sized_review_dialects -- --ignored --skip native
+QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel \
+  cargo test --test sized_review_dialects native -- --ignored
 ```
 
 The first command emits **untrusted** IR only. The second independently checks

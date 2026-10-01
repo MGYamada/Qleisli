@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "task": "Add six one-to-three-qubit finite translations for 0.2.3 using already frozen inputs",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.3",
+  "baseline_commit": "c226bb53c80c79e968083950575a14662069a824",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read design and intake policies, frozen upstream symbols, existing finite translations, tuple/rotation workarounds and independent oracle harness. Reused the existing driver template. Prior 0.2.3 edition/version work is uncommitted. No external model call or upstream framework execution; informed authoring, not controlled evaluation. All six complete first sources saved before checking.",
+  "created_utc": "2026-09-30T14:20:17.725309+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Untouched six projects saved before first QLI check",
+      "sha256": {
+        "quantum_katas/odd_parity3/kernel.qli": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d",
+        "quantum_katas/odd_parity3/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+        "quantum_katas/bell_singlet2/kernel.qli": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77",
+        "quantum_katas/bell_singlet2/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+        "qualtran/less_than_constant2/kernel.qli": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f",
+        "qualtran/less_than_constant2/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+        "qualtran/equals_constant2/kernel.qli": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27",
+        "qualtran/equals_constant2/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+        "pennylane_demos/ry_quarter/kernel.qli": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986",
+        "pennylane_demos/ry_quarter/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+        "pennylane_demos/ising_zz_quarter2/kernel.qli": "af6353a2e64e2a9074c447fef3071077454a6ae95b71ff9ce58e492e7c458b86",
+        "pennylane_demos/ising_zz_quarter2/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+      },
+      "observations": [
+        "check-initial.json",
+        "semantic-validation.json"
+      ]
+    }
+  ]
+}

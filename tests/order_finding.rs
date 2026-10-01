@@ -28,6 +28,7 @@ impl Root {
             NEXT.fetch_add(1, Ordering::Relaxed)
         ));
         fs::create_dir(&path).unwrap();
+        fs::write(path.join("Qargo.toml"), include_str!("Qargo.toml")).unwrap();
         Self(path)
     }
 

@@ -5,15 +5,27 @@ use std::io::Write;
 use std::process::{Command, Output, Stdio};
 
 fn call(args: &[&str], input: &[u8]) -> Output {
+    let reads_stdin = args.get(1) == Some(&"-");
     let mut child = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .arg("interop")
         .args(args)
-        .stdin(Stdio::piped())
+        .stdin(if reads_stdin {
+            Stdio::piped()
+        } else {
+            Stdio::null()
+        })
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .unwrap();
-    child.stdin.take().unwrap().write_all(input).unwrap();
+    if let Some(mut stdin) = child.stdin.take() {
+        match stdin.write_all(input) {
+            Ok(()) => {}
+            // Invalid options or a bounded read can close stdin before the writer.
+            Err(error) if error.kind() == std::io::ErrorKind::BrokenPipe => {}
+            Err(error) => panic!("child stdin write failed: {error}"),
+        }
+    }
     child.wait_with_output().unwrap()
 }
 
@@ -65,6 +77,23 @@ fn malformed_options_are_usage_errors_before_reading_input() {
         let result = call(&args, b"");
         assert_eq!(result.status.code(), Some(2), "{args:?}");
     }
+}
+
+#[test]
+fn file_inputs_and_early_usage_rejection_do_not_require_stdin_reads() {
+    let root = SourceRoot::new("");
+    let file = root.0.join("bell.qasm");
+    std::fs::write(&file, include_bytes!("fixtures/interop/bell.qasm")).unwrap();
+    // This exceeds the pipe buffer: file invocations must ignore this input,
+    // while an invalid stdin invocation may close its pipe before it is sent.
+    let unused_input = vec![b'x'; 1 << 20];
+    let file_result = call(
+        &["check", file.to_str().unwrap(), "--input=qasm"],
+        &unused_input,
+    );
+    assert!(file_result.status.success(), "{file_result:?}");
+    let rejected = call(&["check", "-", "--input=qir"], &unused_input);
+    assert_eq!(rejected.status.code(), Some(2), "{rejected:?}");
 }
 
 #[test]

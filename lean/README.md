@@ -1,5 +1,16 @@
 # Lean ownership, scope, and Kraus algebra proofs
 
+The [VM-23 exact bridge](Qleisli/Exact.lean) proves actual normalization,
+canonical coefficient/scalar equality and full scalar arithmetic. The
+[matrix bridge](Qleisli/ExactMatrix.lean) proves general composition, tensor and
+adjoint meanings, low-coordinate tensor order, actual isometry soundness and
+arbitrary-reference inner-product/joint-norm preservation. Its
+[complex reference](Qleisli/Semantics/Exact.lean) imports data only.
+Rust arithmetic is a compatibility comparison path; its general formal
+correctness is not required for the proved Lean replacement. Production
+evidence/transport integration remains in later packets; see the
+[packet's precise coverage](../tests/fixtures/verification_v023/README.md).
+
 The executable **Mathlib-free** kernel is in [lean-kernel](../lean-kernel/README.md).
 This directory remains the separate Mathlib proof/model package. The
 [staged migration](../docs/lean-kernel-migration.md) now includes an
@@ -25,8 +36,8 @@ with separate isometry and unitary premises; it does not enumerate large
 operators or verify the experimental Rust kernel.
 It does not formalize the complete source
 language, the Rust compiler, general positivity, or the full quantum soundness
-theorem. The English
-[theorem ledger and scope](../docs/lean-resource-proof.md) is the status record.
+theorem. The current [rule inventory](../docs/rule-inventory.md) links exact
+declarations, checking evidence and remaining proof obligations.
 
 Lean and Mathlib are pinned to `v4.30.0`; the committed manifest pins their
 transitive dependencies. Physlib is a [future dependency candidate](../docs/physlib-environment.md),
@@ -73,7 +84,7 @@ execution constructs the snapshots or rebound set. Its universal approval
 predicate is noncomputable; equality with Rust's finite-map scan is a paper
 correspondence supported by finite implementation checks, not a mechanized
 compiler-correctness theorem. See the
-[SC theorem ledger](../docs/lean-resource-proof.md#7-lexical-scope-projection)
+[scope definitions and theorems](Qleisli/Scope.lean)
 and [Rust lowering-state refinement](../docs/lowering-state-refinement.md).
 
 The build treats warnings as errors. The audit permits only `propext`,
@@ -88,6 +99,34 @@ Markdown targets and that every `Qleisli/*.lean` module is reachable from
 The coverage scanner reads the import header and skips ordinary comments,
 including nested block comments. Commented imports and import-like text in
 declarations or strings do not count as dependencies.
+
+## Component registry review
+
+[schema-registry.json](schema-registry.json) binds the internal QFT, controlled
+power and QPE IDs to exported theorem types, including universes and every
+explicit/implicit binder. [SchemaExport.lean](SchemaExport.lean) exports the
+rebuilt structural expressions and actual dispatcher signature. The manifest
+also fixes parameter domains, template versions and a content revision over
+runtime/proof sources, locks, toolchains and audit tools.
+
+`python3 scripts/check_schema_registry.py` rebuilds both packages, audits compiled
+declarations, replays the runtime kernel and compares actual exported types.
+`--write` refreshes the registry only after those checks; `--source-only` is a
+weaker archive identity check and cannot refresh or validate theorem types.
+The [mutation suite](../scripts/test_check_schema_registry.py) rejects changed
+types, checker identities, IDs, domains, versions, source hashes and enablement.
+All entries remain `external_enabled: false`. An internal receipt or matching
+provider index does not establish the intended provider operator. Complete
+external IR/port/provider binding, exact finite reconstruction and decoder/native
+correspondence remain required before external enablement.
+
+The [actual dispatcher](../lean-kernel/QleisliKernel/Schema.lean) and
+[semantic bridge](Qleisli/Schema.lean) define the checked component domains:
+QFT width 1–8, single controlled power exponent 0–12, and QPE n,m in 1–8 with
+n+m≤16. Coherent-power and QPE completeness/unitarity statements explicitly
+require a whole-space isometric provider. The original weaker power theorem
+remains available; the registry binds the coherent operator/reference theorem.
+These domains do not establish accepted capacity for a composed production case.
 
 CI runs the build and audit separately from Rust tests. A passing Lean job
 establishes the statements in this model; a passing Rust job does not prove

@@ -1,25 +1,36 @@
 # Qleisli executable Lean 4 kernel
 
+The [VM-23 arithmetic packet](../tests/fixtures/verification_v023/README.md)
+adds bounded exact R8 coefficients/matrices and shared work to the pure kernel.
+Actual scalar arithmetic and general matrix composition/tensor/adjoint/isometry
+meanings are proved in the separate [proof bridge](../lean/Qleisli/ExactMatrix.lean).
+[Canonical matrix and exact shared-work proofs](QleisliKernel/ExactMatrix.lean)
+and [input/cost capacity proofs](QleisliKernel/ExactCapacity.lean) stay Mathlib-free.
+The native harness recomputes from original inputs and compares Rust independently.
+Rust arithmetic comparison checks compatibility without requiring a general proof
+of the old implementation. Production evidence/transport integration remains in
+later packets; production acceptance still uses Rust.
+
 This **Mathlib-free** package is the first executable slice of the
 [staged Rust/Lean migration](../docs/lean-kernel-migration.md). It checks a bounded
 one-bit X/phase word or a shared call/sequence/repetition DAG against a separately
-supplied required action. It also checks [typed owner/axis layouts](../docs/lean-layout-slice.md),
+supplied required action. It also checks [typed owner/axis layouts](QleisliKernel/Layout.lean),
 including zero-wire owners and exact n-ary type trees. The phase checkers have
 soundness theorems over cyclic actions; layout theorems establish finite
 permutations and reference-preserving coefficient reindexing. The
-[typed layout DAG](../docs/lean-layout-dag-slice.md) connects these to shared calls
+[typed layout DAG](QleisliKernel/LayoutDag.lean) connects these to shared calls
 and ordered composition, proving acceptance against direct graph semantics.
-The [combined phase/layout profile](../docs/lean-phase-layout-slice.md) adds
+The [combined phase/layout profile](QleisliKernel/PhaseLayout.lean) adds
 exact sparse dyadic phases, including controlled conditions and scalar phase,
 with proved normalization and shared-composition semantics modulo 256.
-The [interference module](../docs/lean-interference-slice.md) adds amplitude
+The [interference module](../lean/Qleisli/Interference.lean) adds amplitude
 semantics and proved local H cancellation. Its complex interpretation is in
 the separate proof package, which imports these actual definitions.
-The [QFT proof packet](../docs/lean-qft-proof-packet.md) adds symbolic path
+The [QFT proof packet](../lean/Qleisli/Qft.lean) adds symbolic path
 compilation and an internal literal-circuit matcher. Its Fourier coefficient
-theorem is in the separate proof package. A [typed shared circuit checker](../docs/lean-qft-graph-packet.md)
+theorem is in the separate proof package. A [typed shared circuit checker](../lean/Qleisli/QftGraph.lean)
 now binds this to actual graph dependencies and exact interfaces; external
-hierarchy/registry binding is pending. The [QPE plan checker](../docs/lean-qpe-instrument-packet.md)
+hierarchy/registry binding is pending. The [QPE plan checker](../lean/Qleisli/Qpe.lean)
 binds fresh zeros, H preparation, literal controlled powers, inverse-QFT
 orientation, measurement order and retained target layout. The separate
 proof package establishes its residual instrument and conditional completeness.
@@ -74,6 +85,52 @@ limitations; [validation and contract](../docs/hierarchical-ir-spec.md#fourier-r
 include coordinated semantic faults and malformed process responses.
 Production
 `qleisli check`/`run` and QIRF verification still use the Rust verifier.
+
+Experimental command formats and pure checking bounds are defined by the
+[protocol](Protocol.lean), [phase hierarchy](QleisliKernel/Hierarchy.lean),
+[layout](QleisliKernel/Layout.lean), [layout graph](QleisliKernel/LayoutDag.lean)
+and [phase/layout](QleisliKernel/PhaseLayout.lean) modules. They are distinct
+from QIRF and production hierarchy acceptance. Artifact and independent request
+files are capped at 65,536 bytes, use printable ASCII/canonical unsigned decimal
+tokens separated by one space, and require LF including the final line.
+The phase-DAG envelope is `qleisli.phase-dag 1 phase256-dag-v1`; each actual
+summary preserves flip and both cyclic phases, and all proposed summaries are
+checked against derived actions and a separate root request. Powers are closed
+summary computations, without expanding their execution count.
+
+The layout/request envelopes are `qleisli.layout` and `qleisli.layout-request`
+version 1/profile `typed-layout-v1`. Exact prefix type trees, ordered axes,
+owner/axis maps and their artifact inverses retain zero-width owners. The pure
+checker bounds each interface to 64 owners/16 axes, each type to 128 atoms,
+32 tuple levels and Bits width 8, and combined type atoms to 512. Work is charged
+conservatively before validation, with a 2,000,000-unit ceiling. Layout DAGs
+use `qleisli.layout-dag 1 typed-layout-dag-v1`, cap 256 definitions, 4,096 visits
+and depth 64, and bind both call adapters and actual composition order. The
+phase/layout profile adds exact sparse phase polynomials without erasing axes,
+global phase or type trees. Unknown/malformed profiles, fields and maps reject;
+limits fail without partial success. Fixture READMEs retain first sources and
+process/mutation results, while actual decoder definitions determine wire fields.
+
+The current internal interference and Fourier contracts are defined by
+[Interference](QleisliKernel/Interference.lean), [PathSum](QleisliKernel/PathSum.lean),
+[Qft](QleisliKernel/Qft.lean) and [QftGraph](QleisliKernel/QftGraph.lean).
+Interference normalization preserves amplitudes and arbitrary references under
+the stated ring/root premises; it adds no external artifact profile. QFT uses
+positive Fourier coefficients `exp(2*pi*i*x*y/2^m)/sqrt(2^m)` with little-endian
+coordinates and actual final data reversal. Both literal and normalized-path
+matchers retain widths 1–8, at most 36 gates and exact phase modulo 256.
+Normalized path equality is not a complete unitary-equivalence procedure.
+The typed graph projection requires one canonical `Bits(m)` owner, no classical
+slots, unitary effect and exact call boundaries. Its cached summaries are bounded
+to 256 definitions, depth 64 and 4,096 references, with charged gate concatenation.
+The complex coefficient/reference and whole-space inverse theorems live in
+[Qft](../lean/Qleisli/Qft.lean), [QftGraph](../lean/Qleisli/QftGraph.lean) and
+[QftUnitary](../lean/Qleisli/QftUnitary.lean). External decoding, complete hierarchy
+projection, source preservation and native correspondence are separate gates;
+all external schema entries remain disabled. Historical experiments and first
+diagnostics remain with [interference](../tests/fixtures/lean_interference/README.md),
+[QFT](../tests/fixtures/lean_qft/README.md) and
+[graph](../tests/fixtures/lean_qft_graph/README.md) fixtures.
 
 Lean 4.30.0 is pinned. With `elan` and that toolchain installed, from this
 directory run:
@@ -167,10 +224,10 @@ failures. `global_phase.qpk` paired with `identity.qpr` must reject.
 | [Audit.lean](Audit.lean) | Compiled project declaration, axiom and import audit |
 
 See the [word wire contract](../docs/lean-kernel-migration.md#first-executable-slice)
-and [DAG contract and proof limits](../docs/lean-hierarchy-slice.md), plus the
-[typed layout contract](../docs/lean-layout-slice.md) and
-[shared typed call contract](../docs/lean-layout-dag-slice.md) and
-[combined phase/layout contract](../docs/lean-phase-layout-slice.md),
+and [DAG contract and proof limits](QleisliKernel/Hierarchy.lean), plus the
+[typed layout contract](QleisliKernel/Layout.lean) and
+[shared typed call contract](QleisliKernel/LayoutDag.lean) and
+[combined phase/layout contract](QleisliKernel/PhaseLayout.lean),
 before reusing the experimental formats. This is not a full IR, QFT/QPE schema,
 general ownership verifier or compiler-correctness proof. The separate
 [complex bridge](../lean/Qleisli/Interference.lean) currently covers H/diagonal

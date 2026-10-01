@@ -1,13 +1,17 @@
-# Executable sized-corpus source experiment
+# Sized source: Rust pipeline and Python oracle
 
 The 2026-09-29 user instruction puts corpus implementation before further
 general proof infrastructure. This bounded experiment connects actual source
 to the existing hierarchical IR and fresh independent inspection. It does not
 change the production `qleisli check/run` grammar or assert source adequacy.
-The Python compiler remains an untrusted development tool; the additive Rust
-source API and CLI continuation are specified below.
+The [Rust source pipeline](#additive-rust-source-pipeline) checks generic size
+obligations under `requires` and branch/fold guards. The Python script is an
+untrusted concrete-instantiation experiment and differential oracle. Its
+historical concrete source contract appears first below. The two checking
+scopes are explicit; a successful concrete example does not discharge a generic
+obligation. CI compares their shared subset and retains intentional differences.
 
-## Source contract
+## Historical Python concrete source contract
 
 Each module file contains explicit imports and one public unitary function. Static
 parameters have type `Nat`, or the bounded `Op<Bits<e>>` entry parameters
@@ -405,6 +409,12 @@ the reported source peak are diagnostics, not certified execution-work bounds.
 
 `ElaboratedProgram::lower` emits an opaque `HierarchyProposal` in the existing
 hierarchical/instrument transport, retaining its complete source-order elaboration.
+`ElaboratedProgram::check_lowering_profile` preflights the concrete root before
+graph construction. Supported roots are quantum-only `unitary` functions and
+`observe` functions returning one chronological `CBits` value plus any residual
+quantum owners. Classical entry parameters and `iso` roots receive a located
+`unsupported` diagnostic naming the lowering profile. Generic source checking
+and concrete elaboration keep their broader contracts.
 Its payload, pure graph and proposal-derived comparison request are **untrusted**.
 Pure calls and operation providers share graph bodies; only H/X primitive leaves
 use exact finite matrices. Structural register/owner transitions determine explicit
@@ -420,18 +430,36 @@ describes the proposal itself; it is not an independent named-QPE specification,
 source-preservation proof, production seal or external-schema enablement.
 Proposal construction is bounded by 10,000 definitions, 16 MiB retained graph
 descriptor/cache text and 16 MiB per serialized payload/request/precursor, with
-1,024 observing call visits and depth 16. H/X leaves are shared and independently reconstructed.
+1,024 observing call visits and depth 16. H/X primitives use finite leaves at
+their actual source ports; Fourier components share their canonical H leaf.
+Each actual finite request is independently reconstructed.
 Small native regressions cover QFT widths 1–3, arbitrary coherent QPE inputs,
 measured QPE `(n,m) = (1,1),(1,2),(1,3),(2,2)`, order readout, zero-width owners and
 the phase-sensitive Grover provider and amplitude readout `(1,2)` including its
 preparation prefix. These cases pass the unchanged native checking budget.
-Fourier factoring compares complete phase-sensitive traces before constructing a
-canonical candidate. Export compacts reachable definitions and remaps source-event
+Fourier factoring compares complete phase-sensitive traces, including root
+definitions. It permits exchanges of disjoint actions and diagonal phases,
+while preserving the order of noncommuting actions, exact phase, axes and output
+routing. Equivalent schedules produce the same bounded candidate shape.
+The producer emits direct primitive leaves and removes redundant identity and
+owner-renaming shells while retaining explicit structural owners and axes.
+Named QPE `(1,3)` with either tested Fourier schedule checks within the unchanged
+2,000,000 structural allowance; the small-system
+[capacity record](../tests/fixtures/qpe_capacity_v023/README.md) gives actual costs.
+Export compacts reachable definitions and remaps source-event
 references; `lowering_precursor` retains the original source-derived table.
 Fixed-seed shots from both actual source clients feed validated modular-order
 candidates and finite-grid amplitude estimates, with independent branch/residual
 checks. The [validation record](../tests/fixtures/authoring_sessions/measured-qpe-v021/rust-sized-validation.json)
 records this bounded coverage.
+
+Ordinary transparent unitary providers may take multiple quantum parameters;
+their complete argument group must match the exact result tuple shape. Abstract
+`Op<Bits<e>>` parameters retain their single-basis contract. Rust corpus tests
+cover GHZ with `requires n >= 1` and the controlled arithmetic helpers, alongside
+Python comparisons and independent small-system execution.
+The transport profile name `qpe-dyadic8-v1` identifies its bounded angle and
+hierarchy format; it does not grant privileges to a function named QPE.
 
 Initialization extraction retains a complete source-event trace: original concrete
 definition/step/call path and span, selected values, full quantum frames including
@@ -465,6 +493,12 @@ The optional `--request=PATH` supplies an independent contract. Alternatively,
 `--qpe-provider=PATH` supplies the independent provider request for named QPE
 checking. The default compares the proposal's own meaning and makes no named-QPE
 claim. These two request options are mutually exclusive.
+Every successful result includes `verification.scope`, `request_origin` and
+`source_meaning_verified`, plus `execution_authority`. The existing `checked`
+status is interpreted with these fields. Native failure diagnostics identify
+the selected checking mode, source profile and request scope. Capacity failures
+state the aggregate structural allowance; the current native failure reply
+does not include required work or the exhausted subcomponent.
 
 `run` returns all complex state/branch coefficients from `--basis=N` (default 0).
 `sample` is observing-only and requires `--shots=1..1024` and `--seed=N`.

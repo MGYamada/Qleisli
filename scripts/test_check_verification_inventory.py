@@ -24,7 +24,8 @@ class InventoryTests(unittest.TestCase):
         files |= set(cls.baseline['comparison']['pinned_files'])
         files |= {g[k]['path'] for g in cls.baseline['groups'] for k in ['positive','negative']}
         files |= {c['test'].split('#')[0] for c in cls.baseline['capacities']}
-        files |= {'lean/schema-registry.json', INVENTORY}
+        files |= {'lean/schema-registry.json', INVENTORY, 'corpus/manifest.json',
+                  'corpus/semantic_faults/manifest.json'}
         for name in files:
             target = cls.root/name
             target.parent.mkdir(parents=True,exist_ok=True)
@@ -113,6 +114,26 @@ class InventoryTests(unittest.TestCase):
         name=next(iter(self.data['corpus']['pinned_files']))
         self.data['corpus']['pinned_files'][name]='0'*64
         self.bad('corpus baseline changed')
+
+    def test_current_corpus_additions_cannot_rewrite_original_cases(self):
+        path=self.root/'corpus/manifest.json'
+        original=path.read_text()
+        try:
+            data=json.loads(original)
+            data['cases'][0]['contract']='different original meaning'
+            path.write_text(json.dumps(data))
+            self.bad('original corpus census changed')
+        finally: path.write_text(original)
+
+    def test_current_fault_additions_cannot_rewrite_original_faults(self):
+        path=self.root/'corpus/semantic_faults/manifest.json'
+        original=path.read_text()
+        try:
+            data=json.loads(original)
+            data['cases'][0]['reference']='different/reference'
+            path.write_text(json.dumps(data))
+            self.bad('original corpus fault census changed')
+        finally: path.write_text(original)
 
     def test_comparison_bytes_cannot_be_silently_refreshed(self):
         name=next(iter(self.data['comparison']['pinned_files']))

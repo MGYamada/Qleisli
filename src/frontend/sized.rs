@@ -10,6 +10,7 @@ mod elaborate;
 mod linear;
 mod lower;
 mod parser;
+mod primitive;
 mod qpe;
 
 use std::collections::BTreeMap;

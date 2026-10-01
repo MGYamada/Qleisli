@@ -1,10 +1,12 @@
 # Verification migration through 0.2.2–0.2.9
 
-Status: **VM-22 implemented, 2026-09-30; VM-23–VM-29 pending**.
+Status: **VM-22 and VM-23 arithmetic/comparison gates satisfied in the working
+tree; VM-24–VM-29 remain open**. This status does not select production authority.
 The user assigns the Rust-to-Lean verification migration to 0.2.2–0.2.9.
 This replaces the earlier K1/0.3.0 and K2/0.4.0 implementation schedule in the
 [migration policy](lean-kernel-migration.md#staged-migration). The current
-version and latest published release are [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
+development version is [0.2.3](releases/v0.2.3.md); the latest published release
+is [0.2.2](releases/v0.2.2.md#successful-publication-2026-09-30).
 The [frozen VM-22 baseline](../tests/fixtures/verification_v022/README.md)
 records the implemented inventory, boundary contracts and small comparisons;
 it enables no schema or production Lean authority.
@@ -129,6 +131,18 @@ are work labels, not new public profiles, commands or wire tags.
 
 ### VM-23: exact meanings without a domain change
 
+The [first implemented packet](../tests/fixtures/verification_v023/README.md)
+now computes bounded R8 arithmetic and work in the Mathlib-free kernel from
+original inputs. Actual normalization, canonical rational/complex equality,
+full successful scalar arithmetic, general matrix composition/tensor/adjoint,
+canonicality, exact stage/aggregate work and whole-space isometry/reference norm
+preservation are proved. Signed-i128 normalization fuel and machine-sized matrix
+cost/index bounds are proved. Native Rust/Lean parity and independent
+rational/matrix experiments pass. This satisfies the adopted arithmetic packet;
+native production transport/platform integration remains VM-28/29.
+This is an experimental arithmetic boundary, not production
+acceptance or VM-24's finite evidence reader.
+
 Define normalization, addition, multiplication, conjugation, equality and
 matrix composition over the existing finite coefficient domain. Prove these
 actual definitions agree with the separate complex interpretation, including
@@ -137,6 +151,12 @@ authorize unlimited inputs or alter Rust's published capacity behavior: specify
 bounded intermediate operations, checked failure and aggregate work accounting.
 Use Rust arithmetic plus independent mathematical identities as distinct
 comparison paths, including signed extrema and denominator normalization.
+
+The gate is a proof about the actual Lean replacement plus compatibility review
+and comparison, not a general formal proof of the old Rust arithmetic. Such a
+proof would be needed to claim formal soundness of that Rust implementation
+itself; migration does not make that claim. Keep ordinary native compiler/runtime
+assumptions explicit and retain the later evidence/transport/binding gates.
 
 The hierarchical dyadic-angle profile retains its separately specified
 semantics. This packet does not make every M2 phase representable in the ζ8

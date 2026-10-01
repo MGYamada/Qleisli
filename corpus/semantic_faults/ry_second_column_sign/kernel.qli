@@ -1,0 +1,15 @@
+// Upstream authors (repository usernames): josh. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py
+// Selected symbol(s): circuit(params)
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::z;
+
+pub unitary fn kernel(q: Q<Bit>) -> Q<Bit> {
+    h(q)
+}
+
+// Deliberate semantic mutation: Omit Z: the |0> preparation and all Z output probabilities agree, but the second column and controlled interference differ.

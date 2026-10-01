@@ -238,6 +238,9 @@ mod tests {
     use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
     use std::collections::BTreeMap;
     fn source(n: u32, m: u32, j: u32) -> HierarchyProposal {
+        source_with_fourier(n, m, j, None)
+    }
+    fn source_with_fourier(n: u32, m: u32, j: u32, fourier: Option<&str>) -> HierarchyProposal {
         let modules = [
             ("measurement", "corpus/sized/measured_qpe/measurement.qli"),
             (
@@ -252,13 +255,19 @@ mod tests {
         ]
         .into_iter()
         .map(|(name, path)| {
-            (
-                name.into(),
-                std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(path),
-            )
+            let body = if name == "fourier" {
+                fourier.map(str::to_owned)
+            } else {
+                None
+            }
+            .unwrap_or_else(|| {
+                std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(path))
+                    .unwrap()
+            });
+            (name.into(), body)
         })
         .collect();
-        ParsedProgram::load(modules)
+        ParsedProgram::parse(modules)
             .unwrap()
             .instantiate(
                 "measurement::qpe",
@@ -374,7 +383,7 @@ mod tests {
         .unwrap()
     }
     #[test]
-    fn qpe_candidate_retains_a_separate_caller_request_and_shared_h_roles() {
+    fn qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles() {
         let p = source(1, 2, 1);
         let independent = br#"{"independent":"caller supplied"}"#;
         let b = p.qpe_binding(independent).unwrap();
@@ -386,7 +395,126 @@ mod tests {
         let candidate = json::parse(b.candidate()).unwrap();
         let hs = candidate.field("hadamards").unwrap().array().unwrap();
         assert_eq!(hs.len(), 2);
-        assert_eq!(hs[0], hs[1]);
+        // Finite leaves use their actual source ports directly. Distinct axes
+        // need distinct interfaces; every complete H program is checked fresh.
+        assert_ne!(hs[0], hs[1]);
+        let graph = json::parse(p.pure_graph()).unwrap();
+        let definitions = graph.field("definitions").unwrap().array().unwrap();
+        for h in hs {
+            let definition = &definitions[h.field("index").unwrap().number().unwrap() as usize];
+            let body = definition.field("body").unwrap();
+            assert_eq!(body.field("tag").unwrap().text().unwrap(), "leaf");
+            let program = body.field("program").unwrap().text().unwrap();
+            let imported = crate::interchange::import(program.as_bytes(), None).unwrap();
+            assert!(matches!(
+                imported.program.raw().operations.as_slice(),
+                [crate::ir::RawOp::Gate {
+                    gate: crate::ir::SingleGate::H,
+                    ..
+                }]
+            ));
+        }
+    }
+    #[test]
+    #[ignore = "requires freshly built native kernel; CI runs explicitly"]
+    fn native_named_qpe_commuting_fourier_variants_have_the_same_outcome() {
+        let kernel =
+            Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+        let delayed = include_str!("../../../tests/fixtures/sized_clients/delayed_fourier.qli");
+        for m in [2, 3] {
+            let textbook = source(1, m, 1);
+            // This detached provider is fixed before building the reordered
+            // circuit. Existing native QPE tests separately check its phase
+            // against the low-bit mathematical formula and mutate the provider.
+            let provider = frozen_provider(&textbook);
+            let reordered = source_with_fourier(1, m, 1, Some(delayed));
+            let mut outcomes = vec![];
+            for (variant, proposal) in [("textbook", &textbook), ("delayed", &reordered)] {
+                let binding = proposal.qpe_binding(&provider).unwrap();
+                if let Some(directory) = std::env::var_os("QLEISLI_QPE_PERF_PROPOSALS") {
+                    let directory = std::path::PathBuf::from(directory);
+                    std::fs::create_dir_all(&directory).unwrap();
+                    for (suffix, bytes) in [
+                        ("payload", proposal.payload()),
+                        ("request", binding.request()),
+                        ("candidate", binding.candidate()),
+                        ("precursor", proposal.lowering_precursor()),
+                    ] {
+                        std::fs::write(
+                            directory.join(format!("n1-m{m}-{variant}-{suffix}.json")),
+                            bytes,
+                        )
+                        .unwrap();
+                    }
+                }
+                let result = kernel.check_qpe_instrument(
+                    proposal.payload(),
+                    binding.request(),
+                    binding.candidate(),
+                );
+                outcomes.push(match result {
+                    Ok(checked) => {
+                        proposal
+                            .validate_initialization_moves(checked.instrument())
+                            .unwrap();
+                        let input = [[0.3, 0.2], [0.4, -0.1], [-0.2, 0.5], [0.1, 0.3]];
+                        let output = checked
+                            .instrument()
+                            .execute(
+                                &input,
+                                2,
+                                ExecutionLimits {
+                                    max_amplitudes: 4096,
+                                    max_steps: 1_000_000,
+                                },
+                            )
+                            .unwrap();
+                        for (y, branch) in output.branches.iter().enumerate() {
+                            for (i, z) in input.iter().enumerate() {
+                                let theta = ((i % 2) & 1) as f64 / 8.0;
+                                let mut k = [0.0, 0.0];
+                                let count = (1usize << m) as f64;
+                                for a in 0..1usize << m {
+                                    let angle = std::f64::consts::TAU
+                                        * a as f64
+                                        * (theta - y as f64 / count);
+                                    k[0] += angle.cos() / count;
+                                    k[1] += angle.sin() / count;
+                                }
+                                let expected =
+                                    [z[0] * k[0] - z[1] * k[1], z[0] * k[1] + z[1] * k[0]];
+                                assert!(
+                                    (branch[i][0] - expected[0]).abs() < 1e-12
+                                        && (branch[i][1] - expected[1]).abs() < 1e-12
+                                );
+                            }
+                        }
+                        let changed =
+                            source_with_fourier(1, m, 2, (variant == "delayed").then_some(delayed));
+                        let changed_binding = changed.qpe_binding(&provider).unwrap();
+                        let error = kernel
+                            .check_qpe_instrument(
+                                changed.payload(),
+                                changed_binding.request(),
+                                changed_binding.candidate(),
+                            )
+                            .unwrap_err();
+                        assert_eq!(error.code, "contract", "provider phase mutation: {error}");
+                        (
+                            "ok",
+                            Some(checked.instrument().reconstruction().structural_work()),
+                            Some(checked.instrument().reconstruction().exact_work()),
+                        )
+                    }
+                    Err(error) => panic!("n=1,m={m},variant={variant}: {error}"),
+                });
+            }
+            println!(
+                "named QPE n=1,m={m}: textbook {:?}, delayed {:?}",
+                outcomes[0], outcomes[1]
+            );
+            assert_eq!(outcomes[0], outcomes[1]);
+        }
     }
     #[test]
     #[ignore = "requires freshly built native kernel; CI runs explicitly"]

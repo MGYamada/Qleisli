@@ -1,4 +1,7 @@
 import QleisliKernel.PhaseWord
+import QleisliKernel.Exact
+import QleisliKernel.ExactCapacity
+import QleisliKernel.ExactMatrix
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
 import QleisliKernel.LayoutDag

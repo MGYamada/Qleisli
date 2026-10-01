@@ -6,7 +6,7 @@
 
 use std::collections::BTreeSet;
 
-use super::value::{Env, Value};
+use super::value::{Binding, Env, Value};
 use crate::frontend::ast::{Pattern, PatternKind, Span};
 
 /// Locate the source binder without changing the ownership/scope projection.
@@ -41,7 +41,7 @@ pub(super) fn close_scope<'a>(
         if value.as_ref().is_some_and(Value::owns_quantum)
             && (rebound.contains(name) || local.get(name) != Some(&*value))
         {
-            *value = None;
+            *value = Binding::Consumed;
         }
     }
     Ok(())
@@ -56,7 +56,7 @@ mod tests {
     // Unlike the production snapshot algorithm, the oracle keeps explicit
     // lexical identities. Rebinding changes the identity even for equal values.
     #[derive(Clone)]
-    struct Binding {
+    struct LexicalBinding {
         identity: usize,
         value: Option<Value>,
         linear: bool,
@@ -64,8 +64,8 @@ mod tests {
 
     #[derive(Clone)]
     struct Case {
-        entry: Option<Binding>,
-        local: Option<Binding>,
+        entry: Option<LexicalBinding>,
+        local: Option<LexicalBinding>,
     }
 
     fn cases(slot: u32) -> Vec<Case> {
@@ -95,7 +95,7 @@ mod tests {
             ),
         ];
         let entries = std::iter::once(None).chain(values.iter().map(|(value, linear)| {
-            Some(Binding {
+            Some(LexicalBinding {
                 identity: 0,
                 value: value.clone(),
                 linear: *linear,
@@ -111,7 +111,7 @@ mod tests {
             if let Some(binding) = entry.as_ref().filter(|binding| binding.linear) {
                 cases.push(Case {
                     entry: entry.clone(),
-                    local: Some(Binding {
+                    local: Some(LexicalBinding {
                         identity: binding.identity,
                         value: None,
                         linear: false,
@@ -123,7 +123,7 @@ mod tests {
             for (value, linear) in &values {
                 cases.push(Case {
                     entry: entry.clone(),
-                    local: Some(Binding {
+                    local: Some(LexicalBinding {
                         identity: 1,
                         value: value.clone(),
                         linear: *linear,
@@ -136,6 +136,7 @@ mod tests {
 
     #[test]
     fn scope_projection_matches_a_finite_lexical_identity_model() {
+        let slot = |value: Option<Value>| value.map_or(Binding::Consumed, Binding::Live);
         let cases_a = cases(0);
         let cases_b = cases(1);
         assert_eq!(cases_a.len() * cases_b.len(), 7_225);
@@ -148,7 +149,7 @@ mod tests {
                 let mut escaping = None;
                 for (name, case) in [("a", a), ("b", b)] {
                     if let Some(binding) = &case.entry {
-                        entry.insert(name.to_owned(), binding.value.clone());
+                        entry.insert(name.to_owned(), slot(binding.value.clone()));
                         // An immutable classical binding restores its entry
                         // value. Linear ownership stays only with its original
                         // still-live identity, otherwise it becomes spent.
@@ -161,10 +162,10 @@ mod tests {
                         } else {
                             binding.value.clone()
                         };
-                        expected.insert(name.to_owned(), projected);
+                        expected.insert(name.to_owned(), slot(projected));
                     }
                     if let Some(binding) = &case.local {
-                        local.insert(name.to_owned(), binding.value.clone());
+                        local.insert(name.to_owned(), slot(binding.value.clone()));
                         if binding.identity == 1 {
                             rebound.insert(name.to_owned());
                             if binding.linear && escaping.is_none() {
