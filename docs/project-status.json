@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "Release candidate 0.2.3 prepared on 2026-10-01 for Qleisli edition 2026; publication pending. Latest published release: **0.2.2**.",
+  "release_state": "Version **0.2.3** published on 2026-10-01 with explicit Qleisli edition 2026; crates.io and GitHub Release verified.",
   "current": [
     {
       "topic": "Use today",
@@ -19,13 +19,13 @@
     },
     {
       "topic": "Latest release",
-      "state": "0.2.2, published",
-      "detail": "Corpus: 36 finite cases. [The release record](releases/v0.2.2.md#successful-publication-2026-09-30) binds all seven CI jobs, clean distribution, fresh registry installation, hosted docs and GitHub source downloads to the immutable tag/package. Compatible review fixes and remaining limits are recorded separately."
+      "state": "0.2.3, published",
+      "detail": "Corpus: 42 finite cases. [The publication record](releases/v0.2.3.md#successful-publication-2026-10-01) binds all seven source/PR CI jobs, matching local/Linux distribution, fresh registry installation, hosted docs and complete GitHub source downloads to the immutable tag/package."
     },
     {
-      "topic": "0.2.3 publication preparation",
-      "state": "Implementation integrated; final candidate release checks pending",
-      "detail": "[PR 104](https://github.com/MGYamada/Qleisli/pull/104) integrates the implemented edition, VM-23 and review/QPE repairs after all seven source/PR CI jobs and clean distribution pass. The [release record](releases/v0.2.3.md#integrated-implementation-and-release-preparation-2026-10-01) selects the final candidate scope and migration. Three [logo concepts](../assets/logo-concepts/v0.4.0/README.md) retain their original branch history for v0.4.0 discussion. Final candidate CI, package/dry-run results and publication remain separate steps."
+      "topic": "0.2.3 publication",
+      "state": "Published and verified on 2026-10-01",
+      "detail": "[PR 109](https://github.com/MGYamada/Qleisli/pull/109) integrates the verified final source. The [publication evidence](../tests/fixtures/releases/v0.2.3/publication.json) binds the annotated tag, registry checksum, fresh install, docs.rs and GitHub tar.gz/ZIP to that source. Three [logo concepts](../assets/logo-concepts/v0.4.0/README.md) retain their original branch history for v0.4.0 discussion."
     },
     {
       "topic": "v0.2.2 review repairs",
@@ -71,9 +71,9 @@
   "milestones": [
     {
       "id": "M0",
-      "state": "Finite foundation retained; compatible 0.2.2 published",
-      "evidence": "[0.2.2 record](releases/v0.2.2.md); [review response](releases/v0.2.2.md)",
-      "open": "Later verification packets remain pending. Exact-commit clean distribution/Linux CI, crates.io/GitHub publication, fresh registry installation and hosted docs pass for 0.2.2."
+      "state": "Finite foundation retained; edition 2026 and 0.2.3 published",
+      "evidence": "[0.2.3 record](releases/v0.2.3.md#successful-publication-2026-10-01); [publication evidence](../tests/fixtures/releases/v0.2.3/publication.json)",
+      "open": "Later verification packets remain pending. Exact-source CI and local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and archive comparisons pass for 0.2.3."
     },
     {
       "id": "M1",

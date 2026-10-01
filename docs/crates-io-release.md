@@ -1,19 +1,18 @@
 # Qleisli release procedure
 
-Status: **0.2.2 published on 2026-09-30**. The latest Rust package and GitHub
-Release are 0.2.2; their [publication evidence](releases/v0.2.2.md#successful-publication-2026-09-30)
+Status: **0.2.3 published on 2026-10-01**. The latest Rust package and GitHub
+Release are 0.2.3; their [publication evidence](releases/v0.2.3.md#successful-publication-2026-10-01)
 binds the immutable tag and registry artifact. This reusable procedure illustrates
-the sequence with the selected 0.2.3 candidate.
+the sequence with 0.2.3.
 The [versioning policy](versioning.md) remains authoritative for compatibility
 and the complete release gates. Executed results belong in the
 [matching release record](releases/v0.2.3.md), including failures and skipped
 checks. This procedure does not itself perform or authorize publication.
 
-The current release candidate is **0.2.3**, selected for [Qleisli edition 2026](language-editions.md).
-Its [release record](releases/v0.2.3.md) is separate from the latest published
-0.2.2 artifact. Required source-tree `Qargo.toml` files and the full `std` qrate
-manifest must be included in packaging and quickstart checks; version selection
-alone does not authorize or perform a new upload.
+Release **0.2.3** adopts [Qleisli edition 2026](language-editions.md).
+Its [release record](releases/v0.2.3.md) binds the verified source, publication
+and installed package. Required source-tree `Qargo.toml` files and the full `std`
+qrate manifest belong in packaging and quickstart checks.
 
 ## Release sequence
 
@@ -138,8 +137,8 @@ dirty-tree rehearsal is useful but does not satisfy that clean-commit gate.
 
 ## Prepare and validate without publishing
 
-1. Review changes against the latest shipped public contracts, currently 0.2.2.
-   Keep 0.2.3 compatible except for the user's selected edition-manifest
+1. Review changes against the latest shipped public contracts. For 0.2.3,
+   compare with 0.2.2 and keep compatibility except for the user's edition-manifest
    requirement; another necessary public break selects 0.3.0. Resolve the
    [0.2.2 feature gates](v0.2.2-plan.md) for the selected release scope explicitly;
    a metadata bump cannot mark shared QPE or H1–H5 complete. Retain `Unreleased`

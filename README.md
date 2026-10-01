@@ -8,7 +8,7 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Release candidate: 0.2.3. Qleisli language edition: `"2026"`.**
+**Version: 0.2.3. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
 and the [0.2.3 release record](docs/releases/v0.2.3.md).
@@ -20,9 +20,9 @@ its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-The published version, 0.2.2, is available on
-[crates.io](https://crates.io/crates/qleisli/0.2.2) and
-[GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.2).
+Version 0.2.3 is published on
+[crates.io](https://crates.io/crates/qleisli/0.2.3) and
+[GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.3).
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
@@ -79,21 +79,21 @@ library is imported as `qleisli`.
 Earlier Git/path users of `qleisli-core` / `qleisli_core` should follow the
 [name migration](docs/crates-io-release.md#name-migration-from-github-releases-through-020).
 
-Install the 0.2.3 candidate from the checkout:
+Install from a source checkout:
 
 ```sh
 cargo install --path . --locked --bin qleisli
 ```
 
-After 0.2.3 is published, the matching registry command is:
+Install the published registry version:
 
 ```sh
 cargo install qleisli --version 0.2.3 --locked
 ```
 
-Version 0.2.3 is prepared for release; publication is pending.
-The latest published version remains 0.2.2, with its
-[immutable publication record](docs/releases/v0.2.2.md#successful-publication-2026-09-30).
+The [publication record](docs/releases/v0.2.3.md#successful-publication-2026-10-01)
+binds the immutable 0.2.3 source and package to CI, fresh installation and
+[hosted API documentation](https://docs.rs/qleisli/0.2.3/qleisli/).
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)

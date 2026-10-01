@@ -18,8 +18,7 @@ ordinary CLI/library use requires no Lean, Python or LLVM installation.
 ## Install and run
 
 Install from a source checkout with
-`cargo install --path . --locked --bin qleisli`. For registry installation after
-0.2.3 is published, use:
+`cargo install --path . --locked --bin qleisli`. For registry installation, use:
 
 ```sh
 cargo install qleisli --version 0.2.3 --locked
@@ -133,9 +132,10 @@ breaking-change boundary.
 - [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.3/docs/releases/v0.2.3.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Documentation links target the version-specific `v0.2.3` source tag when published.
-The release record lists publication results; packaged files retain the matching
-specifications and validation account.
+Documentation links target the immutable `v0.2.3` source tag. The
+[GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.3) records
+publication results; packaged files retain the matching specifications and
+validation account.
 
 ## License
 
