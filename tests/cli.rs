@@ -78,7 +78,7 @@ fn non_utf8_command_reports_usage_without_panicking() {
     assert_eq!(output.status.code(), Some(2), "{output:?}");
     assert_eq!(
         String::from_utf8(output.stderr).unwrap(),
-        include_str!("fixtures/review_v020/usage.txt")
+        include_str!("fixtures/review_followup_v024/usage.txt")
     );
 }
 

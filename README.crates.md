@@ -15,6 +15,9 @@ The version-specific release record distinguishes the
 implemented bounded profile from pending proof and migration goals.
 Rust 1.85 or later is required. Cargo builds the implementation and its TOML reader;
 ordinary CLI/library use requires no Lean, Python or LLVM installation.
+On macOS, source loading uses descriptor-relative `openat` with `O_NOFOLLOW`
+for each component, preserving Rust's existing deployment targets without
+requiring macOS 11's `O_NOFOLLOW_ANY` flag.
 Filesystem source loading on Linux x86/x86_64, ARM/aarch64 and RISC-V requires
 accessible procfs directory descriptors at `/proc/self/fd`. A missing or
 inaccessible descriptor path produces a targeted runtime diagnostic.

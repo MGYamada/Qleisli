@@ -6,7 +6,23 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-No additional changes.
+- Repair 0.2.4 review findings (#160): fold exact terminal phase words, export
+  negative controls and controlled H/phases, and represent bit-axis permutations.
+  QFT2/QFT3 now export with explicit clean synthesis workspace counted against
+  the target cap; public IR and production verifier rules remain unchanged.
+- Add opt-in declared qrate source-root selection and unused manifest-key warnings.
+  Improve public-module import hints, nested register-pattern actual types and
+  quantum tuple binding locations. Document finite user composition contracts.
+- Generate the current corpus inventory from manifests and remove fixed current
+  per-source census assertions while retaining provenance, licenses, authoring
+  coverage and historical validation identities. Track breaking phase/cost IR
+  and wider type/pipeline/theorem obligations in their versioned Issues.
+
+- Replace macOS source loading's `O_NOFOLLOW_ANY` dependency with held-parent
+  `openat`/`O_NOFOLLOW`, preserving the existing deployment minimum and rejecting
+  source/parent symlink replacements and FIFOs; add macOS/MSRV CI (#146).
+- Align crate-level documentation links with the selected package version and
+  check package-facing version pins in the documentation linter (#147).
 
 ## 0.2.4 — 2026-10-01
 

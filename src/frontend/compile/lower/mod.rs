@@ -30,6 +30,13 @@ struct CallSite<'a> {
 // Keys use the independent verifier's operation/branch-index path convention.
 type OperationSources = BTreeMap<Vec<usize>, (String, Span)>;
 
+struct TupleBindingOrigin {
+    module: String,
+    span: Span,
+    name: String,
+    ty: Ty,
+}
+
 fn verification_error(
     compiler: &Compiler<'_>,
     sources: &OperationSources,
@@ -63,6 +70,8 @@ struct Lowerer<'c, 'p> {
     registers: BTreeMap<Slot, Register>,
     operations: Vec<RawOp>,
     operation_sources: OperationSources,
+    // Diagnostics only; never consulted by ownership, scope or IR checking.
+    tuple_binding_origins: BTreeMap<Vec<Slot>, TupleBindingOrigin>,
     next_token: u32,
     next_wire: u32,
     next_classical: u32,
@@ -378,7 +387,7 @@ impl Lowerer<'_, '_> {
     }
 
     fn bind(
-        &self,
+        &mut self,
         module: &str,
         pattern: &Pattern,
         value: Value,
@@ -417,9 +426,26 @@ impl Lowerer<'_, '_> {
                         "binding would hide unconsumed quantum ownership",
                     ));
                 }
+                if matches!(&value, Value::Pair(..) | Value::Tuple(_)) && value.owns_quantum() {
+                    self.tuple_binding_origins.insert(
+                        value.quantum_slots(),
+                        TupleBindingOrigin {
+                            module: module.to_owned(),
+                            span: name.span,
+                            name: name.text.clone(),
+                            ty: value.ty(),
+                        },
+                    );
+                }
                 env.insert(name.text.clone(), Binding::Live(value));
             }
             PatternKind::Tuple(patterns) => {
+                let actual = value.ty();
+                let help = if matches!(value, Value::Quantum(..)) {
+                    "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
+                } else {
+                    ""
+                };
                 let Some(fields) = value
                     .into_fields()
                     .filter(|fields| fields.len() == patterns.len())
@@ -428,7 +454,7 @@ impl Lowerer<'_, '_> {
                         module,
                         pattern.span,
                         ErrorCode::TypeMismatch,
-                        "tuple pattern requires a tuple value with the same immediate arity",
+                        format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{actual}`{help}", patterns.len()),
                     ));
                 };
                 for (pattern, field) in patterns.iter().zip(fields) {
@@ -983,6 +1009,7 @@ impl Lowerer<'_, '_> {
             registers: BTreeMap::new(),
             operations: vec![],
             operation_sources: BTreeMap::new(),
+            tuple_binding_origins: BTreeMap::new(),
             next_token: 0,
             next_wire: 0,
             next_classical: 0,
@@ -1269,6 +1296,7 @@ fn lower_function_inner(
         registers: BTreeMap::new(),
         operations: Vec::new(),
         operation_sources: BTreeMap::new(),
+        tuple_binding_origins: BTreeMap::new(),
         next_token: 0,
         next_wire: 0,
         next_classical: 0,

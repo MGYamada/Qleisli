@@ -244,7 +244,9 @@ specified work, not elapsed wall time or whole-process memory. There is no flag
 to reset it per call; reduce the derivation or wait for the separately gated
 hierarchical profile. Source-byte overrides do not override exact work.
 
-On macOS, source opening rejects symlinks in every path component atomically.
+On macOS, descriptor-relative `openat` with `O_NOFOLLOW` acquires each path
+component atomically while retaining its parent descriptor. It does not require
+`O_NOFOLLOW_ANY` or raise Rust's existing minimum deployment target.
 On Linux x86/x86_64, ARM/AArch64 and RISC-V, held directory descriptors and
 no-follow opens provide the corresponding protection; readable `/proc/self/fd`
 is required and failure does not fall back to following links. Opened sources

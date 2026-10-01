@@ -46,11 +46,27 @@ fn main() -> ExitCode {
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);
     }
-    let Some(options) = options::Options::parse(&args, false) else {
+    let Some(mut options) = options::Options::parse(&args, false) else {
         eprintln!("{}", options::USAGE);
         return ExitCode::from(2);
     };
+    if options.qrate {
+        match qleisli::frontend::project::qrate_source_root(&options.path) {
+            Ok(root) => options.path = root,
+            Err(error) => {
+                report(&options.path, error);
+                return ExitCode::FAILURE;
+            }
+        }
+    }
     let source_root = &options.path;
+    if options.command != "verify-ir" && options.command != "doc" {
+        for warning in
+            qleisli::frontend::project::manifest_warnings(source_root).unwrap_or_default()
+        {
+            eprintln!("warning: {}", warning.message);
+        }
+    }
     if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
         return match artifacts::execute(&options) {
             Ok(artifacts::Success::Emitted(path)) => {

@@ -7,13 +7,17 @@ or external include lookup occurs. Missing validators fail, never silently skip.
 """
 import argparse
 from pathlib import Path
+import sys
 import re
 import subprocess
 import tempfile
 import unittest
 
+sys.dont_write_bytecode = True
+
 import openqasm3
 from openqasm3 import ast
+from test_review_v024 import check_all
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = ROOT / "tests/fixtures/interop"
@@ -47,8 +51,13 @@ class ExternalFormats(unittest.TestCase):
             openqasm3.parse((FIXTURES / f"{name}.qasm").read_text())
         self.check_qasm(self.emit("qasm-canonical", FIXTURES / "bell.qasm"), ["h", "cx"], [1, 0])
         self.check_qasm(self.emit("qasm-canonical", FIXTURES / "gates.qasm"),
-                        ["h", "x", "y", "z", "s", "sdg", "t", "tdg", "cx", "cz", "swap", "ccx"], [0, 1, 2])
+                        ["h", "x", "y", "z", "cx", "cz", "swap", "ccx"], [0, 1, 2])
         self.check_qasm(self.emit("qli-to-qasm", FIXTURES / "terminal"), ["h", "cx"], [1, 0])
+
+    def test_review_target_coefficients_and_reference_parser(self):
+        results = check_all(Path(OPTIONS.example).resolve(), openqasm3.parse, self.check_qir)
+        self.assertTrue(results)
+        self.assertTrue(any(name == "QFT3" and qubits == 4 for name, _, qubits in results))
 
     def check_qir(self, text, qubits, results):
         with tempfile.TemporaryDirectory(prefix="qleisli-qir-") as directory:

@@ -118,8 +118,9 @@ SWAP and CCX. H has its standard real matrix; X swaps labels; Y maps
 exponents modulo eight. CX/CCX flip only the last operand when all preceding
 controls are one; CZ negates `|11>`; SWAP exchanges axes. Global phase is
 preserved exactly in these gate definitions. No Rz-to-phase substitution or
-phase quotient is permitted. Arbitrary scalar phase and controlled scalar
-phase outside this vocabulary are rejected on export.
+phase quotient is permitted. Uncontrolled nontrivial scalar phase remains unsupported; it is never
+quotiented away. Conditional eighth-turn scalar phases are expanded into
+phase gates on their controls, with clean synthesis workspace when needed.
 
 Import desugars these gates into `ApplyUnitary` Hadamard/monomial actions,
 using explicit Join/Split ownership transitions for multiwire operands.
@@ -130,8 +131,24 @@ Export accepts closed verified programs built from Init0, Gate, Cnot,
 Toffoli, Split, Join, the supported exact ApplyUnitary steps, terminal MeasureZ
 and terminal Discard. Allocations before observation may move to the beginning
 because each fresh zero wire has no earlier use; no physical ID is reused.
-Only the listed local monomial tables/control forms are recognized, including
-exact phases. Arbitrary lifts, QuantumIf, contracts, certified cleanup, classical
+Export additionally expands negative controls with X conjugation, single-control
+H, and one-axis diagonal eighth-turn phases. Even controlled phases use an exact
+CX/phase decomposition; odd controlled phases compute the conjunction into
+clean workspace, apply the phase and undo the conjunction. Workspace is reused
+only after restoration, starts in zero, and is included in the 12-qubit target
+limit and QIR required_num_qubits/OpenQASM declarations. This is backend
+workspace, not a new source owner or a general realizability theorem. QFT2 and
+QFT3 now export; QFT3 uses one extra clean target qubit.
+
+Adjacent single-qubit phase gates on the same physical operand are folded
+modulo eight: S/S-adjoint/T-adjoint export as short target words. No commuting
+across other gates, controlled-phase erasure or projective equality is used.
+IR T counts still describe the literal finite-v0 word; they are not minimal
+physical non-Clifford costs. No Resource Safety certificate is issued.
+
+Equal-width LiftBasis tables are admitted only when every row is exactly an
+axis permutation, including identity. The output owner ordering is tracked
+without inventing a physical SWAP. Other lifts, QuantumIf, contracts, certified cleanup, classical
 operations/branches and other IR constructors receive Unsupported. Valid IR
 does not imply that this target profile can represent it.
 

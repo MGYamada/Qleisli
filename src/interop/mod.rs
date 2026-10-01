@@ -4,6 +4,7 @@
 //! ownership is independently verified; translation correctness is not proved
 //! by that check. Export never transfers Qleisli evidence to an external tool.
 
+mod export;
 mod openqasm;
 mod profile;
 mod qir;

@@ -8,6 +8,11 @@
       "detail": "No Lean installation is required. [Try the Bell example](../README.md#try-it)."
     },
     {
+      "topic": "v0.2.4 follow-up review",
+      "state": "Compatible exports, loading and diagnostics repaired; unreleased",
+      "detail": "[Issue 160](https://github.com/MGYamada/Qleisli/issues/160) and [regressions/validation](../tests/fixtures/review_followup_v024/README.md) cover short exact target phases, negative controls, QFT2/QFT3 export, clean workspace, opt-in declared qrate roots, metadata warnings, import/type/binding hints and manifest-derived corpus counts. Independent complex columns preserve phase/output axes and zero return; no general backend proof or Resource Safety certificate. [Issue 165](https://github.com/MGYamada/Qleisli/issues/165) tracks phase-aware IR/cost design at 0.3.0. Existing borrowing, prelude, generic checking, synthesis and exact/approximate domain Issues carry the review experiments; published artifacts remain immutable."
+    },
+    {
       "topic": "Language edition and qrate management",
       "state": "All current .qli/.qlt files explicitly use edition 2026",
       "detail": "[Edition contract](language-editions.md) and [Issue 96](https://github.com/MGYamada/Qleisli/issues/96): manifests belong to corpus, stdlib, examples and test trees, with no repository-root manifest. The std qrate has a full schema-2 manifest; all other trees are to migrate to qrate management later. QLT execution remains deferred. The in-progress qargo captures std but its linked 0.2.1 local loader rejects basis.qli; the namespace adapter remains pending."
@@ -76,6 +81,11 @@
       "topic": "Proof goals",
       "state": "Soundness at v0.5; realizability and resource safety by v1",
       "detail": "[Milestone gates](release-milestones.md) are targets, not completed guarantees. The [shared-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md) records bounded R14/H1\u2013H5 evidence; general source/runtime correspondence, full-profile migration and v1 algorithm/resource proofs remain open."
+    },
+    {
+      "topic": "v0.2.5 bug repairs",
+      "state": "Issues 146/147 locally validated; PR integration pending",
+      "detail": "[Repairs and validation](../tests/fixtures/issue_fixes_v025/README.md) preserve macOS deployment targets with held-parent openat/O_NOFOLLOW, retain symlink/FIFO protection and add macOS/MSRV CI. Both Rust toolchains, Clippy and rendered API links pass; package-facing version pins are checked against Cargo. Published artifacts remain immutable."
     }
   ],
   "milestones": [
