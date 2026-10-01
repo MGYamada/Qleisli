@@ -1,0 +1,160 @@
+[
+  {
+    "argv": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "Main"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 61.32,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 10.914,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_lean_kernel.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.425,
+    "stdout_sha256": "69bb1e8c7197942e4f28f8056865e0928c29df4708941fa800408caee8f63527",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 80 executable kernel/transport source modules; no external Lake dependencies.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_check_lean_kernel.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.24,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "46364d9e9dd6b3f3396815259e94f0c36c38a91081a878f691762989fa1823cf",
+    "diagnostics": "ssssssss...................\n----------------------------------------------------------------------\nRan 27 tests in 0.163s\n\nOK (skipped=8)\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_check_schema_registry.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.6,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "1b1af4c3a0d20bfece5e22cb097fd0449ea328c53097d08e7874f9fd57893307",
+    "diagnostics": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.527s\n\nOK\n"
+  },
+  {
+    "argv": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "/tmp/qleisli-v025-kernel-before/Surface.lean"
+    ],
+    "cwd": "lean-kernel",
+    "exit_code": 0,
+    "seconds": 1.296,
+    "stdout_sha256": "21c120c054695c4e5e1cce7f593e3d41c4a2c8d8fd44b49c435232177a9510f5",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "argv": [
+      "python3",
+      "/tmp/qleisli-v025-completion-public-review.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 1.913,
+    "stdout_sha256": "909f8a1187c94b37660c00fa51778b346a731401960349b7cef684e502b96095",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "{'format': 'qleisli.kernel-public-type-review', 'version': 1, 'status': 'passed', 'existing_declarations': 5550, 'missing': [], 'incompatible_types': [], 'before_export_sha256': '8f45a33ef390597d037f0bd9f13f82e8ef5b077fd76cb049c66b4b396ef5166f', 'after_export_sha256': '21c120c054695c4e5e1cce7f593e3d41c4a2c8d8fd44b49c435232177a9510f5', 'normalization': ['module-generated hygienic binder names', 'universe-parameter alpha renaming', 'five transparent Nat capacity abbreviations'], 'scope': 'non-private compiled declarations including constructors, fields and legacy equation/congruence lemmas; compiler match/proof/simp helpers are implementation details audited separately'}\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_verification_baseline.py",
+      "target/debug/qleisli",
+      "--kernel",
+      "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--report",
+      "tests/fixtures/verification_v025/completion/frozen-baseline.json"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 3.364,
+    "stdout_sha256": "b313d6907a10f266c4639485572351206c6959cbb76abd17872d9125f99cf783",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 12 finite comparisons, 12 source decisions, 5 native component decisions; at most three qubits.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.354,
+    "stdout_sha256": "0241aa07ddb7eb2ff5588bcc7df98f170226d38506876e486905f2bc1321ab98",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "VM-22: 232 constructors, 181 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/test_check_verification_inventory.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 7.635,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "01b3f16007de389c39ba57f30ee2463ff6794c83d45d2e9526d735313c0cec8c",
+    "diagnostics": ".................\n----------------------------------------------------------------------\nRan 17 tests in 7.562s\n\nOK\n"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.686,
+    "stdout_sha256": "0c51b4cff7e45f983241b23813b1d160ce4e020cff9c281641e1081e63122682",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": "Checked 2626 local links, 199 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 158 Lean root modules.\n"
+  },
+  {
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "cwd": ".",
+    "exit_code": 0,
+    "seconds": 0.085,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "diagnostics": ""
+  }
+]

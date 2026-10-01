@@ -1,0 +1,314 @@
+{
+  "format": "qleisli.development-validation",
+  "version": 1,
+  "project_version": "0.2.5",
+  "created_utc": "2026-10-01T06:59:30.559437+00:00",
+  "base_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "tree_state": "Working tree; no commit, tag, upload or hosted release performed",
+  "scope": "Compatible internal refactoring across frontend flattening, finite simulation, QIRF transport, native hierarchy responses and CLI",
+  "toolchains": {
+    "rust": "1.98.1",
+    "msrv": "1.85.0",
+    "python": "3.14.5",
+    "lean_mathlib": "4.30.0"
+  },
+  "changed_code_and_metadata_sha256": {
+    "Cargo.toml": "b9618a7c95a66f66a6926af0cf0d3ad97d0f20a7fc4573943723e22b9147f747",
+    "Cargo.lock": "3066e53ad1f23876f5e59578a1bf5b5cc964eba543599e9c54da9714b63056dc",
+    "lean/lakefile.toml": "6a3e1ea05fd7de0beda10b886ec48210e82fda8b62fbd3a8d8fb004d75dfe02c",
+    "lean-kernel/lakefile.toml": "057b227d3998a58a840ec60d37eaad262f27629d3747a46e95718d2a768586ef",
+    "python/pyproject.toml": "3cf36bd4a8e16105cc8d15d8da7ffb968afd80c4737f3198d9be30c31859e77c",
+    "python/qleisli/__init__.py": "a5814ec5cd72a556f23c660379bd59de054c28870f52a8a272ebd8aba7b63dcb",
+    "stdlib/Qargo.toml": "1210c40a96977241fa96e1b7a6c42ce88301c4fd9f8ed8661503a8c97b611d82",
+    "src/bin/qleisli.rs": "20412e8d467aa3573db0aa5901aab852e05a76e204106f3922a41b32b6e60750",
+    "src/bin/qleisli/source_commands.rs": "5f111199e3c8b9c2cc8075aeecae63679a196fb01fc39cedc9ff157ec7be91e6",
+    "src/bin/qleisli/options.rs": "b474fbbb29c0fc4a857364a8845fea91d00a133b4f1356c52cadb855816fd96c",
+    "src/bin/qleisli/json.rs": "ec29fb65845d70c20bebd2015003c75a775cea6130d6222e254eb4a1cc69c3f6",
+    "src/bin/qleisli/interop.rs": "aa179180bd09f421980ac9bdaefb26ec6508a8add70e1ee5f5dc4b306cd104cc",
+    "src/bin/qleisli/sized.rs": "9bdd8df2b972ffb03d82d8d3d96dd45b742df68a707f6b5f2fff414f41a3cea6",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "scripts/test_cli_json.py": "3338452b5b23e97bbe7b4a46b731f06689c0e4147bd79c3796ab823f92f87f30",
+    "src/frontend/compile/circuit.rs": "ebc01a224e051e19981d6a2f3a7d62abe4e287549fc2b42cbd68d9432ccf3a77",
+    "src/sim.rs": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+    "src/sim/state.rs": "7b0d035cc7f712c04e856e0307b5766f130a9aa343fb783fcff2c991d1f45c2f",
+    "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+    "src/sim/tests.rs": "9907a6e908c944b28a6822245923a08bebe85fbaa26cbd75b0fd28e34aefc657",
+    "src/interchange/codec.rs": "2eff8a2f58873d795c10dee8b5837da30dc3167fc5b6775b49f2bd4087277cea",
+    "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+    "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+    "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+    "src/interchange/hierarchical.rs": "a05d73e20d52be394a3a19922231eefd2bfde065e9be7123dd1d89fb7bb7237c",
+    "src/interchange/hierarchical/runtime.rs": "02ab1b657b14b2e736a12bbd7108955e0643d5f599835761817b75381f184cf9"
+  },
+  "frozen_binary_sha256": "80c7425b27514d77e1981c411dd0bbf703a74e90b58d9d5de18b526bb9571f4e",
+  "checks": [
+    {
+      "command": "cargo test --offline --locked --all-targets",
+      "exit_code": 0,
+      "passed": 545,
+      "ignored": 34,
+      "log_sha256": "b4065c019cdd9680eb027b98c015ca48fe8f0449875d524740b4d4a31bb3e568"
+    },
+    {
+      "command": "rustup run 1.85.0 cargo test --offline --locked --all-targets",
+      "exit_code": 0,
+      "passed": 545,
+      "ignored": 34,
+      "log_sha256": "1d87de21dcc107b7dce4860e6c9d612f4db1e334ee3f542339338d304da8b04a"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_verification_baseline.py",
+        "/tmp/qleisli-v025-broad-bin",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--report=/Users/masa/git/Qleisli/tests/fixtures/releases/v0.2.5/refactoring-baseline-validation.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.276,
+      "log_sha256": "b313d6907a10f266c4639485572351206c6959cbb76abd17872d9125f99cf783"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "hierarchical_host",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "seconds": 2.199,
+      "passed": 11,
+      "log_sha256": "676359d26acd68f31ef526f2e77800beedb8a8914854fd39aecce23eed414734"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "native_named_qpe",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "seconds": 4.433,
+      "passed": 2,
+      "log_sha256": "51d47f93d56196744a84827c794dbbfdec20cfbf0a1d5f5b31ecf322849ee3af"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "sized_source",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "seconds": 5.299,
+      "passed": 3,
+      "log_sha256": "7d3214025dd5e3598034ac96e7429668f478c700dc17186423af436d95de9ea9"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "sized_cli",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "seconds": 2.105,
+      "passed": 2,
+      "log_sha256": "dc555141c393ea8343b2107c1f1792da2b2d0b6cf05e9318026baba45582b732"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_execution.py",
+        "--record=/Users/masa/git/Qleisli/tests/fixtures/releases/v0.2.5/refactoring-hierarchical-execution.json"
+      ],
+      "exit_code": 0,
+      "seconds": 10.113,
+      "passed": 3,
+      "log_sha256": "cdbf8af8410b4576e65c4dceaf06812c950c5766356b1d69ad84af11a1fc1570"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_qpe_instrument_host.py",
+        "--record=/Users/masa/git/Qleisli/tests/fixtures/releases/v0.2.5/refactoring-qpe-host.json"
+      ],
+      "exit_code": 0,
+      "seconds": 7.941,
+      "log_sha256": "369dde94617003cf9b8f63ef6b4342c25902c9d227ffb82fde991b9b29e8003f"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 7.716,
+      "log_sha256": "8fdf07b8a0a97dd9863e307c7730c67781c3efb688c99384b8ce44ad9ab5f798"
+    },
+    {
+      "command": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "clippy",
+        "--offline",
+        "--locked",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 10.545,
+      "log_sha256": "32f491fa3a1cf6b0ce736eb844b000b51a279e00beba9a622bf5cd71e55ae02b"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc"
+      ],
+      "exit_code": 0,
+      "seconds": 5.63,
+      "passed": 1,
+      "log_sha256": "3972494359f95cd39bcf235dace84b948017d69487155c9a91033bf23be81cb2"
+    },
+    {
+      "command": [
+        "cargo",
+        "doc",
+        "--offline",
+        "--locked",
+        "--no-deps"
+      ],
+      "exit_code": 0,
+      "seconds": 3.634,
+      "log_sha256": "01cdd658f8fe70aeefb045e34efbf312a51e958d65ef940dcf0df9b8d0491ea3"
+    },
+    {
+      "command": "python3 scripts/test_cli_json.py /tmp/qleisli-v025-broad-bin",
+      "exit_code": 0,
+      "passed": 11,
+      "skipped": 1
+    },
+    {
+      "command": "python3 scripts/check_installation.py /tmp/qleisli-v025-broad-bin",
+      "exit_code": 0,
+      "scope": "Bell text/JSON, embedded QFT2 and ownership rejection; empty helper PATH"
+    },
+    {
+      "command": "PYTHONPATH=python QLEISLI_BIN=/tmp/qleisli-v025-broad-bin /private/tmp/qleisli-connections-021/bin/python scripts/test_connections.py",
+      "exit_code": 0,
+      "passed": 10,
+      "scope": "Current checkout Python host with existing PyQIR 0.12.5 environment; no fresh package installation"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "passed": 17
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "constructors": 232,
+      "source_snapshots": 147,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "scope": "Earlier built/audited Lean source and registry identity unchanged"
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_qli_differential.py /tmp/qleisli-v025-broad-bin --cases=96 --report=tests/fixtures/releases/v0.2.5/refactoring-source-differential.json",
+      "exit_code": 0,
+      "cases": 96,
+      "maximum_live_qubits": 4
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py /tmp/qleisli-v025-broad-bin --exhaustive --report=tests/fixtures/releases/v0.2.5/refactoring-corpus-validation.json",
+      "exit_code": 0,
+      "cases": 48,
+      "semantic_probes": 12893,
+      "negative_cases": 4,
+      "type_correct_faults_detected": 24
+    },
+    {
+      "command": "python3 /tmp/qleisli-v025-cli-compare.py after /tmp/qleisli-v025-broad-bin",
+      "exit_code": 0,
+      "cases": 132,
+      "stdout_stderr_exit_status": "byte-identical to fresh offline build of base_commit"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0,
+      "local_links": 3311,
+      "markdown_anchors": 394,
+      "rust_declarations": 135,
+      "rust_tests": 105,
+      "lean_root_modules": 126
+    }
+  ],
+  "evidence": {
+    "initial_cli_checkpoint": "development-validation.json",
+    "cli": "refactoring-cli-comparison.json",
+    "source_differential": "refactoring-source-differential.json",
+    "finite_corpus": "refactoring-corpus-validation.json",
+    "frozen_baseline": "refactoring-baseline-validation.json",
+    "hierarchical_execution": "refactoring-hierarchical-execution.json",
+    "qpe_host": "refactoring-qpe-host.json",
+    "unchanged_lean_metadata": "registry-validation.json"
+  },
+  "compatibility_review": "Existing published declarations, constructors, capacity constants, explicit field/evaluation order and budget/diagnostic behavior retained. Eleven existing body/version hashes reviewed; eight private modules inventoried across both checkpoints. Original VM-22 request/artifact, corpus prefix and comparison harness pins are unchanged.",
+  "numerical_definition_review": "Moved state and deterministic circuit definitions compared with before refactoring after ignoring private visibility, whitespace and trailing commas; only the ordered axis-lookup helper was added.",
+  "not_performed": [
+    "Hosted candidate CI",
+    "Clean distribution/package rehearsal",
+    "Tagging or publication",
+    "Fresh installed Python package validation or full external LLVM/OpenQASM validator suite",
+    "Maximum-size corpus generation/validation",
+    "General VM-25 acceptance or soundness proof"
+  ],
+  "limits": "Local macOS development checks. Small quantum systems only. Rust retains production authority, external schemas remain disabled, no general source-preservation claim. Initial full Lean build/audit results retain unchanged source identities; no new Lean definition changes.",
+  "reviewed_inventory_sha256": "2da2992de4f811d36f63d864de7727937d4e7cd80d2c3b75d39daea394e7768b",
+  "unchanged_lean_registry_sha256": "c9334801334a2368e9e56e329c0ae823f7ba6623cea7cceff8b15c2dcfb1297f"
+}

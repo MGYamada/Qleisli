@@ -31,7 +31,8 @@ pub(super) struct Options {
     pub qrate: bool,
 }
 
-fn number(text: &str) -> Option<u64> {
+/// Canonical unsigned decimal spelling; the caller supplies its range and type.
+pub(super) fn natural<T: std::str::FromStr>(text: &str) -> Option<T> {
     if text.is_empty()
         || !text.bytes().all(|b| b.is_ascii_digit())
         || text.len() > 1 && text.starts_with('0')
@@ -55,16 +56,16 @@ impl Options {
                 Some("--legacy-source-limits") if !legacy => legacy = true,
                 Some("--qrate") if !qrate => qrate = true,
                 Some(s) if s.starts_with("--source-bytes=") && source.is_none() => {
-                    source = Some(number(&s[15..])?)
+                    source = Some(natural(&s[15..])?)
                 }
                 Some(s) if s.starts_with("--project-bytes=") && project.is_none() => {
-                    project = Some(number(&s[16..])?)
+                    project = Some(natural(&s[16..])?)
                 }
                 Some(s) if s.starts_with("--shots=") && shots.is_none() => {
-                    shots = Some(number(&s[8..])?)
+                    shots = Some(natural(&s[8..])?)
                 }
                 Some(s) if s.starts_with("--seed=") && seed.is_none() => {
-                    seed = Some(number(&s[7..])?)
+                    seed = Some(natural(&s[7..])?)
                 }
                 Some(s) if s.starts_with("--output=") && output.is_none() && s.len() > 9 => {
                     output = Some(PathBuf::from(&s[9..]));

@@ -1,0 +1,41 @@
+[
+  {
+    "cwd": ".",
+    "argv": [
+      "python3",
+      "scripts/check_docs.py",
+      "--write-status"
+    ],
+    "exit_code": 0,
+    "stdout": "Checked 2573 local links, 200 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 139 Lean root modules.\n"
+  },
+  {
+    "cwd": ".",
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "stdout": "VM-22: 232 constructors, 161 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+  },
+  {
+    "cwd": ".",
+    "argv": [
+      "python3",
+      "scripts/check_schema_registry.py",
+      "--source-only"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"6c81d3e14f7a85ed95a534b80f4e6e2ff3e25baf6ea05b35a66af2780795f309\", \"mode\": \"source-identity-only\", \"source_revision\": \"e76367a6c8ff3e2c6c4d7da1c8f55c1e18b42151a0ea998bff550705c7ef1da1\", \"status\": \"passed\", \"version\": 1}\n"
+  },
+  {
+    "cwd": ".",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": ""
+  }
+]

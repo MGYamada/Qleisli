@@ -73,7 +73,7 @@ structure Pending where
   deriving Repr
 
 def inspect (artifact : Artifact) (precision n index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || precision > 8 || n = 0 || n+1 > precision then .error .limit else
+  if remaining > Limits.maxVisits || precision > 8 || n = 0 || n+1 > precision then .error .limit else
   match project artifact index with
   | none => .error .contract
   | some r =>
@@ -115,9 +115,9 @@ theorem inspect_sound (artifact : Artifact) (precision n index remaining : Nat) 
               cases Except.ok.inj accepted
               have bounded := (Gradient.inspect_sound artifact precision n r.gradientIndex
                 (remaining-charge r) gradient checked).1
-              refine ⟨?_,by omega,by omega,by omega,by omega,project_bound artifact index r projected,
+              refine ⟨?_,by simp only [Limits.maxVisits] at *; omega,by simp only [Limits.maxVisits] at *; omega,by simp only [Limits.maxVisits] at *; omega,by simp only [Limits.maxVisits] at *; omega,project_bound artifact index r projected,
                 by simpa using valid,checked⟩
               change charge r+gradient.visits ≤ remaining
-              omega
+              simp only [Limits.maxVisits] at *; omega
 
 end QleisliKernel.Hierarchical.FourierControl

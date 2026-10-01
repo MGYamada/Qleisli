@@ -1,0 +1,148 @@
+{
+  "native_cases": 121,
+  "rust_comparisons": 104,
+  "independent_matrices": 85,
+  "independent_raw_trace_programs": 180,
+  "pure_constructors": 11,
+  "max_semantic_qubits": 3,
+  "rust_source_prefixes": 6,
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "rustc",
+        "-vV"
+      ],
+      "exit": 0,
+      "stdout": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: aarch64-apple-darwin\nrelease: 1.98.1\nLLVM version: 22.1.8\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_z2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/0.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/toffoli3",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/1.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_equal1",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/2.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_than1",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/3.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_mixed_sign",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/4.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_mixer2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-raw-source-d06yb19z/5.qirf.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: raw_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_bindings": {
+    "lean_binary_sha256": "a8d55bc27b8da45fcd2b89f63828243106090ff72b7964eebabf21c22961f1fa",
+    "lean_input_sha256": "4e71125f148531510439672f9831971b1f3ca14b65536a92bb17c48c538ff733",
+    "lean_stdout_sha256": "1acae5be41b22931d1664fc9f21f3d1d0ce746adbb38480b2f0dfe52e6207288",
+    "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lean_exit": 0,
+    "rust_binary_sha256": "ae28744daafe90f355db763cf1bc489a427f1949197415f3ce4adf47d2f460b9",
+    "rust_stdout_sha256": "41e5e5f5ca0d3ea023038b18021db036134dc137b9c8f8cf523f57489f5a923b"
+  },
+  "remaining": [
+    "VM-26 classical control/observation",
+    "general per-constructor raw denotation and structural cleanup beyond finite profile",
+    "VM-27 hierarchy closure",
+    "VM-28/29 native packaging, byte refinement and production dual path"
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+    "lean-kernel/Protocol/Raw.lean": "225ee6b7262d1b51dd9e3e3122431d7038af52d53f88c2746bb630306f76f46c",
+    "lean/Qleisli/Raw.lean": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
+    "scripts/test_lean_raw.py": "1e26af6f08a1b260c2cbdcc6e4bdc4189f2bcb5a70e36eee3830585273676762",
+    "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+    "lean-kernel/QleisliKernel/Raw/Trace.lean": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d"
+  }
+}

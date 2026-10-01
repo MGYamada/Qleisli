@@ -1,90 +1,71 @@
 # Qleisli executable Lean 4 kernel
 
-The [VM-23 arithmetic packet](../tests/fixtures/verification_v023/README.md)
-adds bounded exact R8 coefficients/matrices and shared work to the pure kernel.
-Actual scalar arithmetic and general matrix composition/tensor/adjoint/isometry
-meanings are proved in the separate [proof bridge](../lean/Qleisli/ExactMatrix.lean).
-[Canonical matrix and exact shared-work proofs](QleisliKernel/ExactMatrix.lean)
-and [input/cost capacity proofs](QleisliKernel/ExactCapacity.lean) stay Mathlib-free.
-The native harness recomputes from original inputs and compares Rust independently.
-Rust arithmetic comparison checks compatibility without requiring a general proof
-of the old implementation. Production evidence/transport integration remains in
-later packets; production acceptance still uses Rust.
+This Mathlib-free package implements bounded pure checkers and proves facts
+about their actual executable definitions. Rust remains the production
+acceptance authority. Pending hierarchical results retain explicit finite,
+meaning-pair and exact-H obligations; they are not production evidence seals.
+Decoder/native/Rust correspondence, source preservation, full-profile soundness
+and the later [verification migration gates](../docs/verification-migration-v0.2.md)
+remain separate.
 
-This **Mathlib-free** package is the first executable slice of the
-[staged Rust/Lean migration](../docs/lean-kernel-migration.md). It checks a bounded
-one-bit X/phase word or a shared call/sequence/repetition DAG against a separately
-supplied required action. It also checks [typed owner/axis layouts](QleisliKernel/Layout.lean),
-including zero-wire owners and exact n-ary type trees. The phase checkers have
-soundness theorems over cyclic actions; layout theorems establish finite
-permutations and reference-preserving coefficient reindexing. The
-[typed layout DAG](QleisliKernel/LayoutDag.lean) connects these to shared calls
-and ordered composition, proving acceptance against direct graph semantics.
-The [combined phase/layout profile](QleisliKernel/PhaseLayout.lean) adds
-exact sparse dyadic phases, including controlled conditions and scalar phase,
-with proved normalization and shared-composition semantics modulo 256.
-The [interference module](../lean/Qleisli/Interference.lean) adds amplitude
-semantics and proved local H cancellation. Its complex interpretation is in
-the separate proof package, which imports these actual definitions.
-The [QFT proof packet](../lean/Qleisli/Qft.lean) adds symbolic path
-compilation and an internal literal-circuit matcher. Its Fourier coefficient
-theorem is in the separate proof package. A [typed shared circuit checker](../lean/Qleisli/QftGraph.lean)
-now binds this to actual graph dependencies and exact interfaces; external
-hierarchy/registry binding is pending. The [QPE plan checker](../lean/Qleisli/Qpe.lean)
-binds fresh zeros, H preparation, literal controlled powers, inverse-QFT
-orientation, measurement order and retained target layout. The separate
-proof package establishes its residual instrument and conditional completeness.
-The [hierarchical artifact preparer](../docs/hierarchical-ir-spec.md#typed-artifact-preparation)
-now extracts typed dependencies and binds proof endpoints to actual interfaces,
-sharing its work budget with the proved acyclic graph scheduler. This is
-structural preparation. Meaning/encoding typing now follows the node pass;
-mathematical equations and semantic derivation checks remain open.
-The side-map checker proves complete owner/axis permutations and coefficient
-round trips, including zero-width owners and arbitrary references. Integration
-with both sides of actual calls is now checked by the definition-node pass,
-including consistent fresh names and the same aggregate budget. Finite leaf
-semantics and the semantic derivation pass remain required. Structural meanings
-and encodings are checked across their complete tables, including all selected
-QPE header shapes and explicit zero-scratch boundaries. Explicit structural
-conversions now connect Bits/Bit, immediate tuple fields and empty owners, with
-checked actual inverse routing and arbitrary-reference coefficient round trips.
-The source conversion producer and semantic derivation binding remain pending.
-The [finite request projection](../docs/hierarchical-ir-spec.md#finite-reconstruction-requests)
-retains the actual indexed program/meaning bytes, complete unary boundary and
-identity encodings under the structural budget. Its theorems establish binding,
-not the opaque bytes' meaning. The transitional Rust finite checker must still
-be connected to these requests and the semantic derivation pass.
-The [conditional derivation entry](../docs/hierarchical-ir-spec.md#conditional-finite-derivations)
-now checks whole-artifact composition while retaining every such obligation.
-Its state/request-origin invariants and conditional derivation are proved;
-the separate mathematical package constructs equal operators/reference maps
-from explicit leaf equations and now propagates finite-leaf unitarity to both
-entry inverse laws with arbitrary references. Pending results still require
-decoder/host correspondence before production acceptance. Rust can now freshly
-decode the exact finite matrix descriptions, but its result is not a Lean proof
-or a whole-hierarchy seal. The additive `--hierarchy-pending` command now reads
-the private bounded binary bridge on stdin, reconstructs complete tables and
-runs `Conditional.checkAll`. The Rust host freshly checks every returned finite
-proof index on the same immutable external artifact. Its inspection report
-does not establish an independently requested root contract. The additive
-`--hierarchy-request-pending` command runs `Root.checkAll` on that artifact and
-a separate complete request with an untrusted graph-pair proposal. The Rust
-`Kernel::check_against` API freshly checks both finite reconstruction and exact
-meaning-pair equality; the mathematical package proves the requested-root
-equation and unitary/reference laws conditional on those actual obligations.
-Remaining profile rules and reader/native correspondence still gate production
-acceptance; all external schemas remain disabled.
-For singleton named Fourier requests, `--hierarchy-fourier-pending` now reads
-the private `QLF1` frame and runs `FourierRoot.checkAll`. Complete artifact
-checking, the requested closed `Bits<n>` interface and actual Fourier geometry
-share the structural budget. The host additionally reconstructs every returned
-H index against the independent exact matrix with its remaining finite budget.
-The same `Kernel::check_against` API retains both raw inputs. This remains a
-conditional checked-request report, with the same correspondence and production
-limitations; [validation and contract](../docs/hierarchical-ir-spec.md#fourier-request-host)
-include coordinated semantic faults and malformed process responses.
-Production
-`qleisli check`/`run` and QIRF verification still use the Rust verifier.
+## Code organization
+
+| Layer | Responsibility |
+| --- | --- |
+| [Reference data](QleisliKernel/Semantics/Exact.lean) and [finite circuits](QleisliKernel/Semantics/Finite.lean) | Independent data and interpretation interfaces; no checker, transport, capacity or producer dependency |
+| [Exact arithmetic](QleisliKernel/Exact.lean), [matrix proofs](QleisliKernel/ExactMatrix.lean) and [capacity proofs](QleisliKernel/ExactCapacity.lean) | Canonical R8 coefficients, bounded actual operations and precise work accounting |
+| [Finite reconstruction](QleisliKernel/Finite.lean) | Fresh circuit/dependency reconstruction, independently required encoded equations and whole-space inspection |
+| [Pure raw checking](QleisliKernel/Raw/Pure.lean), [retained binding](QleisliKernel/Raw/Function.lean) and [finite extraction](QleisliKernel/Raw/Finite.lean) | Eleven original straight-line pure constructors, complete owners/effects, fresh original bodies/attachments and finite/non-dense clean scopes; VM-26 retains classical branches/observation |
+| [Hierarchical artifacts](QleisliKernel/Hierarchical/Artifact.lean), [graph schedules](QleisliKernel/Hierarchical/Graph.lean), [node typing](QleisliKernel/Hierarchical/NodeTyping.lean) and [contract typing](QleisliKernel/Hierarchical/ContractTyping.lean) | Actual dependencies, ordered endpoints, type trees, ownership and effects; structural checks alone do not prove leaf meanings |
+| [Conditional derivations](QleisliKernel/Hierarchical/Conditional.lean) and [root binding](QleisliKernel/Hierarchical/Root.lean) | Supported rule closure with every finite obligation retained; binding to a separately supplied meaning graph |
+| [Fourier root](QleisliKernel/Hierarchical/FourierRoot.lean), [QPE root](QleisliKernel/Hierarchical/QpeRoot.lean), [instrument](QleisliKernel/Hierarchical/Instrument.lean) and [QPE instrument](QleisliKernel/Hierarchical/QpeInstrument.lean) | Actual algorithm geometry/provider binding and initialization/readout composition, retaining component obligations |
+| [Protocol import](Protocol.lean) and [native entry point](Main.lean) | Unproved adapters, split into textual, layout, binary hierarchy and finite-JSON readers and CLI modules; never imported by the pure kernel |
+| [Separate mathematical package](../lean/README.md) | Complex operator/reference interpretations and mathematical soundness bridges importing these actual definitions; may use Mathlib |
+| [Audit](Audit.lean) and [reduction tests](Tests.lean) | Build-time verification, outside executable acceptance |
+
+The [hierarchical limits](QleisliKernel/Hierarchical/Limits.lean) name existing
+capacities without changing them. Equality-only field accounting is distinct
+from type/uniqueness checking. Ordinary and typed conditional paths share one
+state transition and invariant proof, while their local rule checkers retain
+separate premises. Typed context proofs arise from actual complete-artifact
+checking, never a serialized flag. The [compatibility proof](../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean)
+compares all seven conditional entry/transition definitions with their literal
+pre-refactor expressions, including failure, visits and request order.
+
+The [VM-23 packet](../tests/fixtures/verification_v023/README.md) covers actual
+scalar/matrix semantics, canonicality and work/capacity. The [finite checker](QleisliKernel/Finite.lean)
+adds fresh reconstruction and encoded equations for VM-24. Their complex bridges
+are [ExactMatrix](../lean/Qleisli/ExactMatrix.lean) and
+[Finite](../lean/Qleisli/Finite.lean); independent native comparisons use original
+inputs rather than Rust decisions or submitted matrices.
+
+[VM-25](../tests/fixtures/verification_v025/README.md) moves structural checking
+and bounded extraction before that circuit boundary. It checks eleven original
+pure raw constructors and freshly reconstructs retained bodies and structured
+cleanup. [Trace refinement](../tests/fixtures/verification_v025/trace/README.md)
+binds every executable constructor to an independent original-operation reader,
+including final output order and reconstructed matrix spaces.
+[Actual pure proofs](../lean/Qleisli/RawPure.lean) add complete original complex
+action, fresh retained graph/attachment semantics and non-dense protected zero
+return. The [completion record](../tests/fixtures/verification_v025/completion/README.md)
+retains small native Rust/rational/source comparisons. Production seal, QIRF
+transport, source preservation and default CLI authority remain separate.
+
+The phase-word/shared-DAG profiles prove cyclic actions, typed layouts prove
+permutation/reference round trips, and interference normalization proves its
+local amplitude laws. Internal QFT/QPE matchers have separate complex bridges:
+[QFT](../lean/Qleisli/Qft.lean), [typed QFT graphs](../lean/Qleisli/QftGraph.lean)
+and [QPE](../lean/Qleisli/Qpe.lean). Internal matching is distinct from complete
+hierarchical binding and does not enable an external schema.
+
+The binary stdin modes run fresh checks of complete tables. `--hierarchy-pending`
+retains finite leaf requests; `--hierarchy-request-pending` additionally binds an
+independent complete meaning graph. `--hierarchy-fourier-pending` retains exact-H
+roles. Initialization/readout and named-QPE modes retain their full ordered
+boundaries. The Rust host reconstructs all returned obligations on the same
+immutable bytes with its remaining finite budget. See the [hierarchical
+contracts](../docs/hierarchical-ir-spec.md) for each mode's scope and remaining
+gates. Production `qleisli check`/`run` and QIRF verification continue through Rust.
 
 Experimental command formats and pure checking bounds are defined by the
 [protocol](Protocol.lean), [phase hierarchy](QleisliKernel/Hierarchy.lean),
@@ -139,6 +120,7 @@ directory run:
 lake build
 lake env lean Tests.lean
 lake env lean Audit.lean
+lake env lean ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
 lake env leanchecker --fresh QleisliKernel
 lake env leanchecker --fresh Main
 ```
@@ -148,8 +130,9 @@ requires source and compiled-declaration rejection of `unsafe def`,
 `@[implemented_by]`, `@[extern]` and `partial def` for project executable code,
 including private/generated helpers. These bans already apply throughout this
 package and must carry over to future backend code or a separate backend
-package. Axiom auditing alone cannot rule out runtime replacements. The
-compiled negative suite covers nested backend modules and axiom-free
+package. Protocol and CLI submodules are audited by origin too; pure imports
+cannot reach either transport namespace. Axiom auditing alone cannot rule out runtime replacements. The
+compiled negative suite covers nested backend/transport modules and axiom-free
 replacement examples; it does not claim an implemented backend.
 
 There are no Mathlib downloads or external package dependencies. The separate
@@ -218,8 +201,8 @@ failures. `global_phase.qpk` paired with `identity.qpr` must reject.
 | [Hierarchical/Preparation.lean](QleisliKernel/Hierarchical/Preparation.lean) | Actual fresh `init0` nodes, exact frames and zero-factor/reference proofs. Private `--preparation-check` checks this component; composition with the pure graph/readout remains a separate obligation. |
 | [Hierarchical/NodeTyping.lean](QleisliKernel/Hierarchical/NodeTyping.lean) | Actual definition-node ownership/effect checks, both call maps and names, and proved whole-table checking under the shared budget |
 | [Hierarchical/ContractTyping.lean](QleisliKernel/Hierarchical/ContractTyping.lean) | Actual meaning/encoding types, QPE provider/header binding and zero-scratch shape, with whole-table budget/coverage theorems |
-| [Protocol.lean](Protocol.lean) | Bounded canonical text decoder; correspondence not mechanized |
-| [Main.lean](Main.lean) | Native file/JSON adapter; issues no production evidence handle |
+| [Protocol.lean](Protocol.lean) | Compatibility import for [text](Protocol/Core.lean), [layout](Protocol/Layout.lean), [binary hierarchy](Protocol/Hierarchical.lean) and [finite JSON](Protocol/FiniteCodec.lean); correspondence not mechanized |
+| [Main.lean](Main.lean) | Command dispatch to [textual CLI](Cli/Finite.lean) and [hierarchical CLI](Cli/Hierarchical.lean), with shared bounded file/error handling; issues no production evidence handle |
 | [Tests.lean](Tests.lean) | Reduction-checked examples and maximum-word boundary evaluations |
 | [Audit.lean](Audit.lean) | Compiled project declaration, axiom and import audit |
 

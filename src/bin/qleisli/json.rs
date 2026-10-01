@@ -6,9 +6,10 @@ use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
 use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
-use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
+use qleisli::sim::{Sample, SimulationError};
+
+use super::source_commands::{Failure, Success};
 
 pub(super) fn quoted(text: &str) -> String {
     let mut output = String::from("\"");
@@ -142,39 +143,43 @@ pub(super) fn distribution_json(
     Ok(output)
 }
 
-fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
-    if root.to_str().is_none() {
-        return Err(failure("project", "source root is not valid UTF-8"));
-    }
-    if options.command == "check" {
-        check_project_with_policy(root, options.policy)?;
-        Ok("{\"verified\":true}".into())
-    } else {
-        let program = compile_project_with_policy(root, options.policy)?;
-        if options.command == "sample" {
-            let seed = options.seed.expect("parsed sample seed");
-            let (samples, total) =
-                super::samples::collect(&program, options.shots.expect("parsed shots"), seed)?;
-            let mut result = format!("{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[");
-            for (index, sample) in samples.iter().enumerate() {
-                if index > 0 {
-                    result.push(',');
-                }
-                result.push_str("{\"bits\":[");
-                for (i, bit) in sample.bits.iter().enumerate() {
-                    if i > 0 {
-                        result.push(',');
-                    }
-                    result.push_str(if *bit { "true" } else { "false" });
-                }
-                write!(result, "],\"execution_steps\":{}}}", sample.execution_steps).unwrap();
-            }
-            write!(result, "],\"execution_steps\":{total}}}").unwrap();
-            return Ok(result);
+/// Keep each transport's existing whitespace as well as its sample fields.
+pub(super) fn samples_json(
+    samples: &[Sample],
+    seed: u64,
+    total: u64,
+    bit_separator: &str,
+) -> String {
+    let mut result = format!("{{\"rng\":\"splitmix64-v1\",\"seed\":\"{seed}\",\"shots\":[");
+    for (index, sample) in samples.iter().enumerate() {
+        if index > 0 {
+            result.push(',');
         }
-        let distribution =
-            run_closed(&program, SimulationLimits::default()).map_err(simulation_failure)?;
-        distribution_json(distribution)
+        result.push_str("{\"bits\":[");
+        for (i, bit) in sample.bits.iter().enumerate() {
+            if i > 0 {
+                result.push_str(bit_separator);
+            }
+            result.push_str(if *bit { "true" } else { "false" });
+        }
+        write!(result, "],\"execution_steps\":{}}}", sample.execution_steps).unwrap();
+    }
+    write!(result, "],\"execution_steps\":{total}}}").unwrap();
+    result
+}
+
+fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
+    match super::source_commands::execute(options, root).map_err(|error| match error {
+        Failure::Source(error) => error,
+        Failure::Simulation(error) => simulation_failure(error),
+    })? {
+        Success::Checked => Ok("{\"verified\":true}".into()),
+        Success::Distribution(distribution) => distribution_json(distribution),
+        Success::Samples {
+            shots,
+            seed,
+            execution_steps,
+        } => Ok(samples_json(&shots, seed, execution_steps, ",")),
     }
 }
 

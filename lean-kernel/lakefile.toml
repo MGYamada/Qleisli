@@ -1,5 +1,5 @@
 name = "qleisli_kernel"
-version = "0.2.4"
+version = "0.2.5"
 defaultTargets = ["QleisliKernel", "qleisli-kernel"]
 
 [leanOptions]
@@ -9,6 +9,7 @@ warningAsError = true
 [[lean_lib]]
 name = "QleisliKernel"
 roots = ["QleisliKernel", "Protocol"]
+globs = ["QleisliKernel.*", "Protocol.*", "Cli.+"]
 
 [[lean_exe]]
 name = "qleisli-kernel"

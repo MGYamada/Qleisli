@@ -1,0 +1,1515 @@
+{
+  "format": "qleisli.cli-refactor-comparison",
+  "version": 1,
+  "base_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "before_version": "0.2.4",
+  "after_version": "0.2.5",
+  "before_build": "Fresh offline build of git archive HEAD in a temporary source directory; no reuse of checkout build artifacts",
+  "before_binary_sha256": "202afb38398e6d9e0641de7a6912b3af9b0b120fda5fe858626c984efb9e705c",
+  "after_binary_sha256": "80c7425b27514d77e1981c411dd0bbf703a74e90b58d9d5de18b526bb9571f4e",
+  "harness_sha256": "7f81c48fa33d769b1c1ef39fb431800f64f0a1ac5db44be16630450ce461c15f",
+  "comparison": "Byte-for-byte stdout/stderr and exact exit-code comparison for all commands; no JSON whitespace normalization",
+  "scope": "Expanded compatible frontend/simulator/QIRF/native-transport refactoring; same 132 raw-output comparisons and immutable before snapshot",
+  "cases": 132,
+  "differences": [],
+  "baseline_results": [
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant"
+      ],
+      "status": 0,
+      "stdout": "checked source and verified IR: /tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant"
+      ],
+      "status": 0,
+      "stdout": "10: 1.000000000000e0\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n10\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2},{\"bits\":[true,false],\"execution_steps\":2}],\"execution_steps\":32}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e constant",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2},{\"bits\":[true, false],\"execution_steps\":2}],\"execution_steps\":32}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit"
+      ],
+      "status": 0,
+      "stdout": "checked source and verified IR: /tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit"
+      ],
+      "status": 0,
+      "stdout": "(): 1.000000000000e0\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n()\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0}],\"execution_steps\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e unit",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0},{\"bits\":[],\"execution_steps\":0}],\"execution_steps\":0}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell"
+      ],
+      "status": 0,
+      "stdout": "checked source and verified IR: /tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell"
+      ],
+      "status": 0,
+      "stdout": "00: 5.000000000000e-1\n11: 5.000000000000e-1\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "11\n00\n11\n11\n11\n00\n00\n00\n00\n00\n00\n00\n00\n11\n11\n00\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6}],\"execution_steps\":96}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6}],\"execution_steps\":96}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback"
+      ],
+      "status": 0,
+      "stdout": "checked source and verified IR: /tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback"
+      ],
+      "status": 0,
+      "stdout": "00: 5.000000000000e-1\n11: 5.000000000000e-1\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--input=qli"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "11\n00\n11\n11\n11\n00\n00\n00\n00\n00\n00\n00\n00\n11\n11\n00\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6}],\"execution_steps\":102}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e feedback",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"18446744073709551615\",\"shots\":[{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[false, false],\"execution_steps\":6},{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[true, true],\"execution_steps\":7},{\"bits\":[false, false],\"execution_steps\":6}],\"execution_steps\":102}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse/main.qli:1:39: parse: parse error: expected a static operation description\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse/main.qli:1:39: parse: parse error: expected a static operation description\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse/main.qli:1:39: parse: parse error: expected a static operation description\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e parse",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected a static operation description\",\"primary\":{\"path\":\"main.qli\",\"start\":38,\"end\":38,\"line\":1,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership/main.qli:1:49: ownership: quantum ownership `q` has already been consumed\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` has already been consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":48,\"end\":49,\"line\":1,\"column\":49},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership: invalid_entry: expected observe fn main() with a classical result\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership: invalid_entry: expected observe fn main() with a classical result\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e ownership",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type/main.qli:1:29: type_mismatch: result does not match the function return type: expected `CBit`, found `Unit`\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type/main.qli:1:29: type_mismatch: result does not match the function return type: expected `CBit`, found `Unit`\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type/main.qli:1:29: type_mismatch: result does not match the function return type: expected `CBit`, found `Unit`\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e type",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"result does not match the function return type: expected `CBit`, found `Unit`\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":30,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry"
+      ],
+      "status": 0,
+      "stdout": "checked source and verified IR: /tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--format=json"
+      ],
+      "status": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry: invalid_entry: expected observe fn main() with a classical result\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--input=qli"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry: invalid_entry: expected observe fn main() with a classical result\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--shots=16",
+        "--seed=18446744073709551615",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e entry",
+        "--input=qli",
+        "--shots=16",
+        "--seed=18446744073709551615"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_entry\",\"severity\":\"error\",\"message\":\"expected observe fn main() with a classical result\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n="
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=00",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=00",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=00",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=00",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=00"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=01",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=01",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=01",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=01",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=01"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=+1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=+1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=+1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=+1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=+1"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=-1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=-1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=-1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=-1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=-1"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=1.0",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=1.0",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=1.0",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=1.0",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=1.0"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots= 1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots= 1",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed= 1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed= 1",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n= 1"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=\uff11",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=\uff11",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=\uff11",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=\uff11",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=\uff11"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--shots=18446744073709551616",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--shots=18446744073709551616",
+        "--seed=0"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--format=json",
+        "--seed=18446744073709551616",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "interop",
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--input=qli",
+        "--seed=18446744073709551616",
+        "--shots=1"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"interop sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--nat=n=18446744073709551616"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--source-bytes=1"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell: limit: /private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing: project: No such file or directory (os error 2)\n"
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--source-bytes=1",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"limit\",\"severity\":\"error\",\"message\":\"/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "check",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--source-bytes=1"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell: limit: /private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing: project: No such file or directory (os error 2)\n"
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--source-bytes=1",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"limit\",\"severity\":\"error\",\"message\":\"/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "run",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--shots=1",
+        "--seed=0",
+        "--source-bytes=1"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell: limit: /private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing",
+        "--shots=1",
+        "--seed=0"
+      ],
+      "status": 1,
+      "stdout": "",
+      "stderr": "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing: project: No such file or directory (os error 2)\n"
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--shots=1",
+        "--seed=0",
+        "--source-bytes=1",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"limit\",\"severity\":\"error\",\"message\":\"/private/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli: source exceeds 1-byte file limit\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/missing",
+        "--shots=1",
+        "--seed=0",
+        "--format=json"
+      ],
+      "status": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sample",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell",
+        "--shots=1",
+        "--seed=0",
+        "--seed=1",
+        "--format=json"
+      ],
+      "status": 2,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"usage\",\"severity\":\"error\",\"message\":\"usage:\\u000a  qleisli check <source-root> [--format=json] [source-options]\\u000a  qleisli run <source-root> [--format=json] [source-options]\\u000a  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\\u000a  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\\u000a  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]\\u000a  qleisli doc <source-file> [source-options]\\u000a  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\\u000a  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\\u000a  interop always returns JSON; qli input takes a project directory.\\u000asource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits\\u000a  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\\u000a  --legacy-source-limits cannot be combined with explicit byte limits.\\u000a  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\\u000a  doc produces Markdown text; verify-ir does not accept source-options.\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "doc",
+        "/tmp/qleisli-v025-cli-comparison/source \u65e5\u672c\u8a9e bell/main.qli"
+      ],
+      "status": 0,
+      "stdout": "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n## main (private)\n\n```qli\nobserve fn main() -> (CBit,CBit)\n```\n\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "sized",
+        "check",
+        "--entry=x::f",
+        "--module=x=missing",
+        "--kernel=missing",
+        "--basis=0"
+      ],
+      "status": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli sized <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  --kernel=PATH [--request=PATH | --qpe-provider=PATH]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --basis is run/sample-only (default 0). sample requires shots and seed.\n  emit-proposal requires output and no kernel; it emits untrusted JSON.\n  default check/run/sample verify producer consistency, not source meaning.\n  --request verifies the IR against a caller-supplied composition contract;\n  --qpe-provider verifies the named QPE contract. Every result reports this scope.\n  The legacy check status means checked IR; none of these modes proves source preservation.\n"
+    }
+  ]
+}

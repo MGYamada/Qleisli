@@ -6,7 +6,7 @@
       "--check"
     ],
     "exit_code": 0,
-    "seconds": 0.35,
+    "seconds": 0.351,
     "log": "tests/fixtures/issue_fixes_v025/check-00.log",
     "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
   },
@@ -18,11 +18,11 @@
       "--all-targets"
     ],
     "exit_code": 0,
-    "seconds": 72.461,
+    "seconds": 90.076,
     "log": "tests/fixtures/issue_fixes_v025/check-01.log",
-    "log_sha256": "f58e9ca4943223f70fa001138e34f7b0d39f64c5e5f2e8744d447e610add126e",
+    "log_sha256": "e4104b3ad65446d079f83f515ed34bc194490a833d38e797eb06ac78b1ddc011",
     "tests": {
-      "passed": 544,
+      "passed": 547,
       "failed": 0,
       "ignored": 34
     }
@@ -39,11 +39,11 @@
       "--all-targets"
     ],
     "exit_code": 0,
-    "seconds": 77.619,
+    "seconds": 95.459,
     "log": "tests/fixtures/issue_fixes_v025/check-03.log",
-    "log_sha256": "9ca6ca87dab0338af4d6023e92b2072fcc0ac09acdb7ac7d4c1a58fb91e6d134",
+    "log_sha256": "5b3861f7c9c6e7fd7ca4ba5745333cb3862a529036edd19b5217ed04102e0b60",
     "tests": {
-      "passed": 544,
+      "passed": 547,
       "failed": 0,
       "ignored": 34
     }
@@ -58,9 +58,9 @@
       "source_file::tests"
     ],
     "exit_code": 0,
-    "seconds": 4.486,
+    "seconds": 5.053,
     "log": "tests/fixtures/issue_fixes_v025/check-04.log",
-    "log_sha256": "56a8ef2d365e9d659f91118a65c4fe751b94b669ef013806cd43d724577ac39b",
+    "log_sha256": "ecab100aef633b5dfd8f6d1e863d32a158d9747ee52a04e130acf4168a1bb91d",
     "tests": {
       "passed": 4,
       "failed": 0,
@@ -80,9 +80,9 @@
       "source_file::tests"
     ],
     "exit_code": 0,
-    "seconds": 5.416,
+    "seconds": 5.934,
     "log": "tests/fixtures/issue_fixes_v025/check-05.log",
-    "log_sha256": "ff239269fbed3919ad25cb8267c17fac0a305b43fa35afe53bb3c2c0c5861c4a",
+    "log_sha256": "edddd7568f735310ff051eb7d171d1612948f3519af00bcfeedb05d59ae2b4ed",
     "tests": {
       "passed": 4,
       "failed": 0,
@@ -101,9 +101,9 @@
       "warnings"
     ],
     "exit_code": 0,
-    "seconds": 4.782,
+    "seconds": 7.999,
     "log": "tests/fixtures/issue_fixes_v025/check-06.log",
-    "log_sha256": "b21f1c6432a5815406138ac91da7ad81fe5e02bf3dfe2335e5c4d587a037c100"
+    "log_sha256": "7fd3bf58213fb98b56e1e0429d3afb4545e86245dcba5e7adaf016c8104b5c64"
   },
   {
     "argv": [
@@ -120,9 +120,9 @@
       "warnings"
     ],
     "exit_code": 0,
-    "seconds": 7.251,
+    "seconds": 9.169,
     "log": "tests/fixtures/issue_fixes_v025/check-07.log",
-    "log_sha256": "9009da7a8c86ce2ed1748acee31284de2856b60916cfa24fb780ac42a0c92534"
+    "log_sha256": "4eb76d5943ef57ef4d08ba97e588b63e428f62777bcc7037d81c07270f2d64b4"
   },
   {
     "argv": [
@@ -133,9 +133,9 @@
       "--no-deps"
     ],
     "exit_code": 0,
-    "seconds": 3.426,
+    "seconds": 3.706,
     "log": "tests/fixtures/issue_fixes_v025/check-08.log",
-    "log_sha256": "20b3eb7aaf984942bdd30cdadc2cacb20ab8432d6ccb8ecd63da3d27814bb635",
+    "log_sha256": "740f48a599bd0e506403fb08a141d8a788b7129a350c6d70f6897fbc806ab878",
     "env": {
       "RUSTDOCFLAGS": "-D warnings"
     }
@@ -149,9 +149,9 @@
       "--doc"
     ],
     "exit_code": 0,
-    "seconds": 5.952,
+    "seconds": 5.079,
     "log": "tests/fixtures/issue_fixes_v025/check-09.log",
-    "log_sha256": "2e0c1890bc0c52b8b03746061b29748041048cca4e5d4f291f195db2900a71e1",
+    "log_sha256": "139c9e0450fd2f80dbbf1cc186f5887dfa2a1a88db0688399bb42ebc10efa352",
     "tests": {
       "passed": 1,
       "failed": 0,
@@ -164,9 +164,9 @@
       "scripts/test_check_docs.py"
     ],
     "exit_code": 0,
-    "seconds": 0.507,
+    "seconds": 0.245,
     "log": "tests/fixtures/issue_fixes_v025/check-10.log",
-    "log_sha256": "e3ef5e4816d19bc79ce085c329f932e44fefb3ea5d897910849a9aee091a7eff"
+    "log_sha256": "01c3fb2f6d6724c2b28b9e9fa10e748c6c04ac24c47938923699b195fb05aa32"
   },
   {
     "argv": [
@@ -174,9 +174,9 @@
       "scripts/check_docs.py"
     ],
     "exit_code": 0,
-    "seconds": 1.371,
+    "seconds": 1.204,
     "log": "tests/fixtures/issue_fixes_v025/check-11.log",
-    "log_sha256": "aeefd25ddb879e5e905eac5f5e711396f41a0fb4aa1aeb0373a3c47d91e1d0e9"
+    "log_sha256": "711db47623b24ed1d2493f6e22c0a442d7ed08bb1d0e00e36543480bfc4b991f"
   },
   {
     "argv": [
@@ -184,9 +184,9 @@
       "scripts/check_verification_inventory.py"
     ],
     "exit_code": 0,
-    "seconds": 0.471,
+    "seconds": 0.579,
     "log": "tests/fixtures/issue_fixes_v025/check-12.log",
-    "log_sha256": "f4d117e9c97d95c6b145263aba0716937873bbcb316d6f54ed2ecfd890112d69"
+    "log_sha256": "0241aa07ddb7eb2ff5588bcc7df98f170226d38506876e486905f2bc1321ab98"
   },
   {
     "argv": [
@@ -195,8 +195,8 @@
       "--source-only"
     ],
     "exit_code": 0,
-    "seconds": 0.076,
+    "seconds": 0.097,
     "log": "tests/fixtures/issue_fixes_v025/check-13.log",
-    "log_sha256": "3a85a12ec84611cbfe295e941f53db6bbd157387fa4b2189f5e3f04f347ecadf"
+    "log_sha256": "1c1b3f9668252108679773368ff450e5815cb24087c60542d58d75d98d7f5f9e"
   }
 ]

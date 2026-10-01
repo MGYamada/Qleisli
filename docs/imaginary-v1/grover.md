@@ -1,21 +1,10 @@
 # Imaginary Qleisli 1.0: Grover and amplitude amplification
 
-Status: **initial design draft, unimplemented and noncompiling** (2026-09-27).
-This original design code follows the [future-language framework](../language-evolution.md).
-It is not accepted v0 syntax, a new public API, or executable v1 evidence.
-The current [finite Grover example](../algorithm-routines.md#grover-オラクル反射有限反復)
-remains a regression baseline. The shared iterate below is also used by the
-[amplitude-estimation draft](amplitude-estimation.md).
+Imaginary uncompiled design; no new syntax/API or executable v1 evidence. [Finite routines](../algorithm-routines.md) remain the regression baseline. Shared G also serves [amplitude estimation](amplitude-estimation.md).
 
 ## Algorithm body
 
-`n >= 1` and `k >= 0` are finite static parameters. `A` is a phase-fixed
-unitary description on the entire `Bits<n>` space, with apply and inverse
-access; it prepares `psi = A|0^n>`. `good` is a total basis predicate
-`Bits<n> -> Bit`. The proposed `BasisFn` type, static builders, and operation
-closures below capture only classical/static descriptions, never live `Q`
-owners. `unitary_op` denotes a proposed builder of a checked, phase-fixed
-`UnitaryOp` description; its quantum body must be checked before use.
+n>=1, k>=0 static; phase-fixed whole-space unitary A has apply/inverse access and good is total. Builders capture static/classical descriptions, no live owners. Fresh attempts use an explicit k/budget; runtime errors propagate, exhaustion proves no absence. Classical eval_basis must agree with the same quantum predicate.
 
 ```text
 // IMAGINARY QLEISLI 1.0 — DESIGN CODE, NOT CURRENT SOURCE SYNTAX
@@ -88,22 +77,9 @@ host fn search<n,k>(A, good, attempts: UInt)
 }
 ```
 
-For conventional Grover search over `2^n` candidates, supply a reusable
-Hadamard-layer description for `A`. General amplitude amplification permits
-another specified preparation unitary. The iteration count is supplied by an
-explicit policy; this body does not discover a suitable `k` from an unknown
-success probability. Host attempts reuse descriptions and prepare fresh states.
-`sample` propagates execution failure rather than treating it as an unmarked
-candidate. `AttemptsExhausted` does not assert that no marked value exists.
-
-`nonzero<n>(x)` is the total Boolean function that is zero exactly at `0^n`.
-`eval_basis` evaluates the same predicate on the measured classical bit word;
-it does not inspect an unmeasured quantum register. Its source/host agreement
-is a required future contract, not assumed from an identical function name.
-
 ## Meaning, ownership, and effects
 
-The exact signs are shared with the existing standard-library plan:
+Execute oracle then positive preparation reflection. Good/bad-plane equations fix the scalar shared under control. Unitary applications return all owners; amplify creates Iso ownership; sampling is Observe. Exact compute/Z/uncompute cleanup extends by identity to all references and retains data/flag/reference order. Initializers cannot replace invertible A. Arbitrary-input sampling has Kraus <x|G^k and closed trials prepend preparation. [Amplification construction](https://arxiv.org/abs/quant-ph/0005055) supplies the ideal law.
 
 ```text
 Pi_good = sum_{x: good(x)=1} |x><x|
@@ -114,12 +90,6 @@ G       = R_psi O_good
 amplify output = G^k A |0^n>.
 ```
 
-Statements apply `O_good` first and `R_psi` second. The two reflections are
-ordinary checked compositions, with exactly these operators on the entire
-register space. For `0 < p < 1`, let `p = <psi|Pi_good|psi> = sin²(theta)`,
-and normalize the good and bad projections to `|g>` and `|b>`. In that order,
-the invariant plane has the following direct matrix calculation:
-
 ```text
 |psi> = sin(theta)|g> + cos(theta)|b>
 G = [[cos(2 theta), sin(2 theta)],
@@ -127,72 +97,18 @@ G = [[cos(2 theta), sin(2 theta)],
 G^k|psi> = sin((2k+1)theta)|g> + cos((2k+1)theta)|b>.
 ```
 
-Thus the ideal marked-outcome probability is `sin²((2k+1)theta)`, including
-the endpoint limits `p=0` and `p=1`. This is the amplitude-amplification
-construction of Brassard, Hoyer, Mosca, and Tapp, with its leading minus sign
-absorbed into our positive preparation reflection.
-[Primary reference, Section 2](https://arxiv.org/pdf/quant-ph/0005055).
-The equal-superposition specialization is
-[Grover's original search algorithm](https://arxiv.org/abs/quant-ph/9605043).
-
-`phase_oracle`, `preparation_reflection`, and `grover_iterate` build static
-descriptions; their applications have effect `Unitary` and type
-`Q<Bits<n>> -> Q<Bits<n>>`. Every input owner is consumed once and its successor
-is returned. `amplify` has effect `Iso`, creates one data register, and returns
-it. `grover_sample` has effect `Observe` and consumes that register completely.
-There is no surviving quantum output in the host workflow. A caller that uses
-`amplify` alone must subsequently use, return, measure, or explicitly
-`discard(q)` with effect `Observe`; it cannot abandon the returned owner.
-
-The phase oracle's private flag uses reversible XOR computation `C_good`,
-followed by Z and the inverse computation. Its pure release requires the exact
-equation, for arbitrary data and arbitrary reference `R`,
-
 ```text
 E0 : H(D) -> H(D) tensor H(Bit),   E0|x> = |x,0>
 C_good† (I_D tensor Z) C_good E0 = E0 O_good
 ```
 
-Tensor this entire map equality with `I_R`, giving the explicit output order
-data, flag, reference; implementations must preserve that order or certify
-their corresponding permutation. Any additional synthesis scratch has the same
-zero-and-separation obligation. A lexical `with_computed` scope, a borrowed
-lifetime, or a numerical near-zero flag is insufficient. Retain the original
-implementation and checked meaning through final IR, including control used
-by amplitude estimation. An `Iso` initializer cannot replace invertible `A`.
-
-For a general input state `rho_DR`, the sample portion after an existing
-register has Kraus operators `K_x = <x| G^k` on D, extended by identity on R.
-The closed trial first prepares `A|0^n>`. Classical validation merely labels
-each complete outcome as marked or unmarked; it does not remove probability
-mass. All repeated trials, including failure and exhaustion, remain visible.
-
 ## Accuracy, assumptions, and costs
 
-The displayed law assumes exact preparation, oracle, reflection, and execution.
-An iteration policy must state the information used to select `k`; repeated
-amplification can overshoot, and more iterations need not improve success.
-For independent ideal trials with fixed success `s`, the probability of
-exhausting `b` attempts is `(1-s)^b`. This statement needs fresh identical
-preparations and the specified sampler; it is not a hardware guarantee.
-
-One trial uses `k` oracle applications, `k` applications each of `A†` and `R0`,
-and `k+1` applications of `A`, followed by n-bit measurement. The shown oracle
-implementation computes and uncomputes its predicate once per application;
-predicate and zero-test synthesis costs remain explicit. Host validation costs
-one predicate evaluation per successful execution. Static expansion may grow
-with `k` and circuit size; shared IR is an unresolved implementation option.
-No whole-space truth table or precomputed marked answer is assumed efficient.
-
-Approximate realizations require additional phase-sensitive operator/channel
-error contracts and a separate success analysis. They never weaken exact
-private-scratch cleanup. A predicate check guarantees that a returned candidate
-is marked only when its classical evaluation implements the same total `good`.
+Success sin²((2k+1)theta) can overshoot; independent identical trials of success s exhaust b attempts with (1-s)^b. Each trial uses k oracles/A†/R0 and k+1 A, n measurements plus predicate synthesis/validation. Count generation, provider scratch and routing separately; whole-space tables are not scalable synthesis. Approximation needs its own phase-sensitive success analysis, while scratch stays exact.
 
 ## Proposed facilities and acceptance records
 
-All entries are **proposals**, with no generalized implementation or compiler
-acceptance tests.
+Table entries are proposed obligations. Review k=0, empty/all-marked, small predicates, nonuniform A, inverse/reference/control, zero attempts and -G. Capabilities, scalable synthesis, staging, host execution and budgets remain open; multi-context evidence precedes stdlib adoption.
 
 | ID / facility | Classification and intended type/effect | Acceptance / rejection and proposed IR responsibility |
 | --- | --- | --- |
@@ -202,16 +118,3 @@ acceptance tests.
 | GR-4 `amplify`, `grover_sample`, register helpers | Ordinary-definition candidates; `amplify: () -> Q<Bits<n>>` is `Iso`; sampling returns `CBits<n>` with `Observe`. `init_zero`/`measure_bits` derive from sealed single-bit primitives. | Accept each owner exactly once; reject implicit disposal or a measurement inside a unitary. Fold/group resource creation and consuming measurements with fixed bit order. |
 | GR-5 static carry loop | Language-form candidate; carry `Q<Bits<n>>` through a finite same-interface body. | Accept k=0 with body checking and identity ownership transfer; reject duplicate owners or unchecked zero-iteration bodies. Enforce generation budgets and reverify generated IR. |
 | GR-6 host search and `eval_basis` | Host-only proposal; `sample` returns classical execution results, predicate evaluation returns Boolean, search returns candidate or failure. | Accept fresh attempts, exact classical validation and explicit exhaustion; reject simulator-distribution access, unvalidated candidates, or treating failure as proof of absence. Host ABI and predicate-artifact binding are unresolved. |
-
-Useful review cases are k=0, empty/all-marked predicates, all single marked
-values at small n, nonuniform A, overshooting k, exact inverse/control with a
-reference, and zero attempts. A controlled comparison must distinguish G from
-−G even though isolated basis-output probabilities can coincide. These are
-planned checks, not results from running this imaginary code.
-
-Open work includes operation capabilities and evidence schemas, scalable
-predicate/reflection construction, runtime choice versus static specialization
-of k, host execution semantics, and supported sizes and budgets. The ordinary
-definitions should undergo the [standard adoption process](../stdlib-roadmap.md#5-標準への採用とaiからの還流)
-only after real multi-context implementation and verification. This draft adds
-no current compiler guarantee or proof of general implementation correctness.

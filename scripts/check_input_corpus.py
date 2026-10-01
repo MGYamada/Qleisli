@@ -290,6 +290,14 @@ def reference_column(case, column):
     state = [complex(i == column) for i in range(dim)]
     if name == "global_phase":
         return [-a for a in state]
+    if name == "controlled_z2":
+        return [a * (-1 if i == 3 else 1) for i, a in enumerate(state)]
+    if name == "toffoli3":
+        return permute(state, lambda i: i ^ (4 if i & 3 == 3 else 0))
+    if name in {"less_equal1", "greater_than1"}:
+        a, b = column & 1, (column >> 1) & 1
+        predicate = a <= b if name == "less_equal1" else a > b
+        return permute(state, lambda i: i ^ (4 if predicate else 0))
     if name == "zero_control_x2":
         return permute(state, lambda i: i ^ (2 if not i & 1 else 0))
     if name == "bell_change_zx2":
@@ -359,6 +367,12 @@ def reference_column(case, column):
         return [a - sum(state) / 2 for a in state]
     if name == "qubit_rotation":
         return single(single(state, 0, RX), 0, RY)
+    if name == "rotation_mixed_sign":
+        # Direct product RY(-pi/2) RX(pi/2); independent closed coefficients.
+        matrix = [[(1-1j)/2, (1-1j)/2], [(-1-1j)/2, (1+1j)/2]]
+        return [matrix[row][column] for row in range(2)]
+    if name == "qaoa_mixer2":
+        return [(-1j) ** ((row ^ column).bit_count()) / 2 for row in range(4)]
     if name == "rx_quarter":
         return single(state, 0, RX)
     if name == "ry_quarter":

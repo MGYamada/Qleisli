@@ -1,4 +1,4 @@
-import Std
+import QleisliKernel.Hierarchical.Limits
 
 /-! Bounded scheduling of the full hierarchy's combined dependency graph.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
@@ -54,7 +54,7 @@ def topology (nodes : Nodes) (ranks : Array Nat) : Bool :=
 def depths (nodes : Nodes) (order : Array Nat) : Except Failure (Array Nat) :=
   order.foldlM (fun results parent => do
     let value := 1 + ((dependencies nodes parent).map (fun child => results[child]?.getD 0)).foldl max 0
-    if value > 256 then .error ⟨.limit, some parent⟩
+    if value > Limits.maxDepth then .error ⟨.limit, some parent⟩
     else .ok (results.set! parent value)) (Array.replicate nodes.size 0)
 
 def reachable (nodes : Nodes) (order : Array Nat) (roots : List Nat) : Bool := Id.run do
@@ -76,18 +76,18 @@ all list lengths first would do uncharged work on a rejected input. -/
 def countReferencesWithin (nodes : Nodes) (rootCount budget : Nat) : Option Nat :=
   nodes.foldlM (fun count children => children.foldlM (fun current _ =>
     let next := current + 1
-    if next > 1000000 || charge nodes.size next rootCount > budget then none
+    if next > Limits.maxReferences || charge nodes.size next rootCount > budget then none
     else some next) count) 0
 
 def countReferences (nodes : Nodes) (rootCount : Nat) : Option Nat :=
-  countReferencesWithin nodes rootCount 2000000
+  countReferencesWithin nodes rootCount Limits.maxVisits
 
 /-- All four external tables are flattened by the untrusted adapter. Typed
 reference projection and node semantics are checked separately; this pass is
 never sufficient to accept an artifact. Its visits debit the enclosing budget. -/
 def checkWithBudget (nodes : Nodes) (roots : List Nat) (order : Array Nat)
     (budget : Nat) : Except Failure Schedule :=
-  if nodes.isEmpty || nodes.size > 100000 || budget > 2000000 || 10 * nodes.size > budget then
+  if nodes.isEmpty || nodes.size > Limits.maxNodes || budget > Limits.maxVisits || 10 * nodes.size > budget then
     .error ⟨.limit, none⟩
   else
     let rootCount := (roots.take (nodes.size + 1)).length
@@ -96,7 +96,7 @@ def checkWithBudget (nodes : Nodes) (roots : List Nat) (order : Array Nat)
       | none => .error ⟨.limit, none⟩
       | some references =>
         let visits := charge nodes.size references rootCount
-        if references > 1000000 || visits > budget then .error ⟨.limit, none⟩
+        if references > Limits.maxReferences || visits > budget then .error ⟨.limit, none⟩
         else match makeRanks nodes.size order with
           | none => .error ⟨.invalidIr, none⟩
           | some ranks =>
@@ -148,7 +148,7 @@ theorem checkWithBudget_conditions (nodes : Nodes) (roots : List Nat) (order : A
 /-- Standalone callers retain the original full-profile allowance. Integrated
 callers use checkWithBudget with the actual remaining shared allowance. -/
 def check (nodes : Nodes) (roots : List Nat) (order : Array Nat) : Except Failure Schedule :=
-  checkWithBudget nodes roots order 2000000
+  checkWithBudget nodes roots order Limits.maxVisits
 
 theorem check_conditions (nodes : Nodes) (roots : List Nat) (order : Array Nat)
     (schedule : Schedule) (accepted : check nodes roots order = .ok schedule) :

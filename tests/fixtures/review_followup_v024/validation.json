@@ -2,18 +2,18 @@
   "format": "qleisli.review-followup.validation",
   "version": 1,
   "reviewed_release": "0.2.4",
-  "checked_package_version": "0.2.4",
-  "scope": "isolated compatible repair PR candidate",
+  "checked_package_version": "0.2.5",
+  "scope": "live development tree",
   "date": "2026-10-01",
   "platform": "aarch64-apple-darwin",
   "rust": {
     "1.98.1": {
-      "all_targets_passed": 552,
+      "all_targets_passed": 555,
       "failed": 0,
       "ignored": 34
     },
     "1.85.0": {
-      "all_targets_passed": 552,
+      "all_targets_passed": 555,
       "failed": 0,
       "ignored": 34
     },
@@ -30,11 +30,11 @@
       "skipped": 0
     },
     "python3 scripts/test_check_input_corpus.py": {
-      "passed": 26,
+      "passed": 29,
       "skipped": 0
     },
     "python3 scripts/test_cli_json.py target/debug/qleisli": {
-      "passed": 9,
+      "passed": 11,
       "skipped": 1
     },
     "temporary-venv/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as --opt opt": {
@@ -44,12 +44,12 @@
     "installed matching Python package / test_connections.py": {
       "passed": 10,
       "skipped": 0,
-      "package_version": "0.2.4",
+      "package_version": "0.2.5",
       "pyqir": "0.12.5"
     }
   },
   "independent_source_comparison": {
-    "binary_sha256": "d249bc5cdfb63357a6bab4b986c7835db1c857eff05c4b734e08bf94ebb002ae",
+    "binary_sha256": "17bb04507e1e44c2b79a6e17bb51335b60366557cc893bd1833610273b6de0f8",
     "cases": 96,
     "harness_sha256": "f159346abbbf808a7eb460ec44f5866cecbf6456bba1317a52705352742c5b88",
     "max_probability_error": 4.218847493575595e-15,
@@ -97,18 +97,18 @@
     "src/frontend/compile/lower/value.rs": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
     "src/frontend/compile/lower/primitives.rs": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
     "src/frontend/compile/lower/certified.rs": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
-    "src/bin/qleisli.rs": "caced06de5e530939506e117a087d45d82f2eeb1bd5f367936ac3ad5de97ebab",
-    "src/bin/qleisli/options.rs": "7a190d6d56a9506a058dc7b3655000964ac0991f61978f9e9eb34a42871ca4af",
-    "src/bin/qleisli/json.rs": "aaade4d55ac14c00f28e1686e2429743ae32d5b25656a3ad7b17c915d8621602",
+    "src/bin/qleisli.rs": "3f64d2ca6faf5f60ab42ca94434c12c883229636b97eb6dff7a5919b2ce46ceb",
+    "src/bin/qleisli/options.rs": "07f991ef89b9870e18a30a024488d21c68a7b5bb4b6d2228ba020b2517985d4f",
+    "src/bin/qleisli/json.rs": "e5003c2bee0fb19902c2edaeaf63a59587883314336ca6460c1c45d2c600e2a3",
     "tests/review_v024.rs": "82b6eb4769517b9b5f977d8ba917ca6ca7dd11abb551a166e34b58958f9ff0a6",
     "tests/interop.rs": "35ba99f4295ef28fb00c0cdeb0e9aca18d23404780731e2fb0274a8f5dc32977",
     "scripts/check_docs.py": "1ae7161de2f32aa8fccb49674e8c7bda79f4271e533b7563281abc4ebcc984b3",
-    "scripts/check_input_corpus.py": "2f898fc6effa1d03e9a8f836d0ad0f7eb13141a4e04fbc2559d51e91e2666a6f",
+    "scripts/check_input_corpus.py": "de8769df2298443192beed00900aff44d2bf167183ee0879b36dc4fe063e577a",
     "scripts/test_review_v024.py": "1829870e33579efdd21285eb91dbcfe53d052ac93d328fee63db3ad1168943d4",
     "scripts/test_interop_external.py": "4f4af1d2520119ec5f4fe2cbd26cdee0d93042f0a3af8cb6b8782e41498e49f0",
-    "tests/fixtures/verification_v022/inventory.json": "bc7df5a796828b9e8c52a9c96c7c62a5f2e6ffa2ff8532dd4b480f0f3e604031",
-    "corpus/manifest.json": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
-    "corpus/semantic_faults/manifest.json": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
+    "tests/fixtures/verification_v022/inventory.json": "244ddde73b9ea5bfcee5c1830f097de44f1cabf8df493862ba2ba9cae25e387d",
+    "corpus/manifest.json": "639333c1a9c504b0e0878d089a51584706863890cfbd90459a7fc94709957626",
+    "corpus/semantic_faults/manifest.json": "fcf27c18154d7ff4647bfa4beb040a6b370343cd1254c7a350670c379b0e104b",
     "scripts/test_connections.py": "13d1141094054933fcc3e281da0078d8e1433e26cc3ca836db630f80f266f991"
   },
   "final_checks": {

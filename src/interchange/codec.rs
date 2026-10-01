@@ -1,9 +1,7 @@
 //! Explicit versioned wire fields, independent of Rust struct evolution.
 use super::json::Value;
 use super::{Decoder, Encoder, Error, Result};
-use crate::contract::{BasisType, FunctionEvidence};
 use crate::ir::*;
-use std::sync::Arc;
 
 pub(super) trait Codec: Sized {
     fn write(&self, context: &mut Encoder) -> Result<Value>;
@@ -20,1001 +18,116 @@ impl<T: Codec> Codec for Vec<T> {
         v.array()?.iter().map(|x| T::read(x, c)).collect()
     }
 }
-impl Codec for bool {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        Ok(Value::Bool(*self))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        v.boolean()
-    }
-}
-impl Codec for u8 {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        let n = u32::from(*self);
-        Ok(Value::Number(u64::from(n)))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        let n =
-            u32::try_from(v.number()?).map_err(|_| Error::format("integer exceeds wire u32"))?;
-        u8::try_from(n).map_err(|_| Error::format("integer outside field range"))
-    }
-}
-impl Codec for u16 {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        let n = u32::from(*self);
-        Ok(Value::Number(u64::from(n)))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        let n =
-            u32::try_from(v.number()?).map_err(|_| Error::format("integer exceeds wire u32"))?;
-        u16::try_from(n).map_err(|_| Error::format("integer outside field range"))
-    }
-}
-impl Codec for u32 {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        let n = *self;
-        Ok(Value::Number(u64::from(n)))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        let n =
-            u32::try_from(v.number()?).map_err(|_| Error::format("integer exceeds wire u32"))?;
-        Ok(n)
-    }
-}
-impl Codec for usize {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        let n = u32::try_from(*self).map_err(|_| Error::format("integer exceeds wire u32"))?;
-        Ok(Value::Number(u64::from(n)))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        let n =
-            u32::try_from(v.number()?).map_err(|_| Error::format("integer exceeds wire u32"))?;
-        usize::try_from(n).map_err(|_| Error::format("integer outside field range"))
-    }
-}
-impl Codec for TokenId {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        self.0.write(c)
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        Ok(Self(u32::read(v, c)?))
-    }
-}
-impl Codec for WireId {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        self.0.write(c)
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        Ok(Self(u32::read(v, c)?))
-    }
-}
-impl Codec for ClassicalId {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        self.0.write(c)
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        Ok(Self(u32::read(v, c)?))
-    }
-}
-impl Codec for Effect {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        Ok(Value::String(
-            match self {
-                Self::Unitary => "unitary",
-                Self::Iso => "iso",
-                Self::Observe => "observe",
+mod evidence;
+mod operations;
+mod scalars;
+
+// Explicit wire keys and field evaluation order are specified together. This
+// removes duplicate read/write lists without deriving a format from Rust names.
+macro_rules! record_codec {
+    ($ty:ty { $($field:ident => $key:literal),+ $(,)? }) => {
+        impl Codec for $ty {
+            fn write(&self, c: &mut Encoder) -> Result<Value> {
+                c.charge(1)?;
+                Ok(Value::object([$(($key, self.$field.write(c)?)),+]))
             }
-            .into(),
-        ))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        match v.text()? {
-            "unitary" => Ok(Self::Unitary),
-            "iso" => Ok(Self::Iso),
-            "observe" => Ok(Self::Observe),
-            _ => Err(Error::format("unknown enum spelling")),
+            fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
+                v.fields(&[$($key),+])?;
+                Ok(Self { $($field: Codec::read(v.field($key)?, c)?),+ })
+            }
         }
-    }
-}
-impl Codec for SingleGate {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        Ok(Value::String(
-            match self {
-                Self::H => "h",
-                Self::X => "x",
-                Self::Z => "z",
-                Self::T => "t",
-            }
-            .into(),
-        ))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        match v.text()? {
-            "h" => Ok(Self::H),
-            "x" => Ok(Self::X),
-            "z" => Ok(Self::Z),
-            "t" => Ok(Self::T),
-            _ => Err(Error::format("unknown enum spelling")),
-        }
-    }
-}
-impl Codec for ScalarPhase {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        Ok(Value::String(
-            match self {
-                Self::MinusOne => "minus_one",
-                Self::EighthTurn => "eighth_turn",
-            }
-            .into(),
-        ))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        match v.text()? {
-            "minus_one" => Ok(Self::MinusOne),
-            "eighth_turn" => Ok(Self::EighthTurn),
-            _ => Err(Error::format("unknown enum spelling")),
-        }
-    }
-}
-impl Codec for ProtectedRegion {
-    fn write(&self, _: &mut Encoder) -> Result<Value> {
-        Ok(Value::String(
-            match self {
-                Self::Source => "source",
-                Self::Ancilla => "ancilla",
-            }
-            .into(),
-        ))
-    }
-    fn read(v: &Value, _: &Decoder<'_>) -> Result<Self> {
-        match v.text()? {
-            "source" => Ok(Self::Source),
-            "ancilla" => Ok(Self::Ancilla),
-            _ => Err(Error::format("unknown enum spelling")),
-        }
-    }
-}
-impl Codec for BasisShape {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([("bits", self.bits.write(c)?)]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["bits"])?;
-        Ok(Self {
-            bits: Codec::read(v.field("bits")?, c)?,
-        })
-    }
-}
-impl Codec for QuantumPort {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("token", self.token.write(c)?),
-            ("wires", self.wires.write(c)?),
-            ("shape", self.shape.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["token", "wires", "shape"])?;
-        Ok(Self {
-            token: Codec::read(v.field("token")?, c)?,
-            wires: Codec::read(v.field("wires")?, c)?,
-            shape: Codec::read(v.field("shape")?, c)?,
-        })
-    }
-}
-impl Codec for RawProgram {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("quantum_inputs", self.quantum_inputs.write(c)?),
-            ("classical_inputs", self.classical_inputs.write(c)?),
-            ("operations", self.operations.write(c)?),
-            ("quantum_outputs", self.quantum_outputs.write(c)?),
-            ("classical_outputs", self.classical_outputs.write(c)?),
-            ("declared_effect", self.declared_effect.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&[
-            "quantum_inputs",
-            "classical_inputs",
-            "operations",
-            "quantum_outputs",
-            "classical_outputs",
-            "declared_effect",
-        ])?;
-        Ok(Self {
-            quantum_inputs: Codec::read(v.field("quantum_inputs")?, c)?,
-            classical_inputs: Codec::read(v.field("classical_inputs")?, c)?,
-            operations: Codec::read(v.field("operations")?, c)?,
-            quantum_outputs: Codec::read(v.field("quantum_outputs")?, c)?,
-            classical_outputs: Codec::read(v.field("classical_outputs")?, c)?,
-            declared_effect: Codec::read(v.field("declared_effect")?, c)?,
-        })
-    }
-}
-impl Codec for BitControl {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("index", self.index.write(c)?),
-            ("when_one", self.when_one.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["index", "when_one"])?;
-        Ok(Self {
-            index: Codec::read(v.field("index")?, c)?,
-            when_one: Codec::read(v.field("when_one")?, c)?,
-        })
-    }
-}
-impl Codec for CircuitStep {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("controls", self.controls.write(c)?),
-            ("action", self.action.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["controls", "action"])?;
-        Ok(Self {
-            controls: Codec::read(v.field("controls")?, c)?,
-            action: Codec::read(v.field("action")?, c)?,
-        })
-    }
-}
-impl Codec for ProtectedBit {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("region", self.region.write(c)?),
-            ("index", self.index.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["region", "index"])?;
-        Ok(Self {
-            region: Codec::read(v.field("region")?, c)?,
-            index: Codec::read(v.field("index")?, c)?,
-        })
-    }
-}
-impl Codec for Control {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("bit", self.bit.write(c)?),
-            ("when_one", self.when_one.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["bit", "when_one"])?;
-        Ok(Self {
-            bit: Codec::read(v.field("bit")?, c)?,
-            when_one: Codec::read(v.field("when_one")?, c)?,
-        })
-    }
-}
-impl Codec for TargetTransition {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("input", self.input.write(c)?),
-            ("output", self.output.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["input", "output"])?;
-        Ok(Self {
-            input: Codec::read(v.field("input")?, c)?,
-            output: Codec::read(v.field("output")?, c)?,
-        })
-    }
-}
-impl Codec for QuantumPhi {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("then_token", self.then_token.write(c)?),
-            ("else_token", self.else_token.write(c)?),
-            ("output", self.output.write(c)?),
-            ("output_wires", self.output_wires.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["then_token", "else_token", "output", "output_wires"])?;
-        Ok(Self {
-            then_token: Codec::read(v.field("then_token")?, c)?,
-            else_token: Codec::read(v.field("else_token")?, c)?,
-            output: Codec::read(v.field("output")?, c)?,
-            output_wires: Codec::read(v.field("output_wires")?, c)?,
-        })
-    }
-}
-impl Codec for ClassicalPhi {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(Value::object([
-            ("then_id", self.then_id.write(c)?),
-            ("else_id", self.else_id.write(c)?),
-            ("output", self.output.write(c)?),
-        ]))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        v.fields(&["then_id", "else_id", "output"])?;
-        Ok(Self {
-            then_id: Codec::read(v.field("then_id")?, c)?,
-            else_id: Codec::read(v.field("else_id")?, c)?,
-            output: Codec::read(v.field("output")?, c)?,
-        })
-    }
-}
-impl Codec for RawOp {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        match self {
-            Self::CertifiedCompute {
-                source,
-                source_out,
-                ancilla_wires,
-                function,
-                use_steps,
-                logical_steps,
-            } => Ok(Value::object([
-                ("tag", Value::String("certified_compute".into())),
-                ("source", source.write(c)?),
-                ("source_out", source_out.write(c)?),
-                ("ancilla_wires", ancilla_wires.write(c)?),
-                ("function", function.write(c)?),
-                ("use_steps", use_steps.write(c)?),
-                ("logical_steps", logical_steps.write(c)?),
-            ])),
-            Self::ApplyUnitary {
-                input,
-                output,
-                steps,
-            } => Ok(Value::object([
-                ("tag", Value::String("apply_unitary".into())),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-                ("steps", steps.write(c)?),
-            ])),
-            Self::Init0 { output, wire } => Ok(Value::object([
-                ("tag", Value::String("init0".into())),
-                ("output", output.write(c)?),
-                ("wire", wire.write(c)?),
-            ])),
-            Self::Gate {
-                gate,
-                input,
-                output,
-            } => Ok(Value::object([
-                ("tag", Value::String("gate".into())),
-                ("gate", gate.write(c)?),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::Cnot {
-                control,
-                target,
-                control_out,
-                target_out,
-            } => Ok(Value::object([
-                ("tag", Value::String("cnot".into())),
-                ("control", control.write(c)?),
-                ("target", target.write(c)?),
-                ("control_out", control_out.write(c)?),
-                ("target_out", target_out.write(c)?),
-            ])),
-            Self::Toffoli {
-                control_a,
-                control_b,
-                target,
-                control_a_out,
-                control_b_out,
-                target_out,
-            } => Ok(Value::object([
-                ("tag", Value::String("toffoli".into())),
-                ("control_a", control_a.write(c)?),
-                ("control_b", control_b.write(c)?),
-                ("target", target.write(c)?),
-                ("control_a_out", control_a_out.write(c)?),
-                ("control_b_out", control_b_out.write(c)?),
-                ("target_out", target_out.write(c)?),
-            ])),
-            Self::QuantumIf {
-                control,
-                target,
-                control_out,
-                target_out,
-                zero_ops,
-                one_ops,
-            } => Ok(Value::object([
-                ("tag", Value::String("quantum_if".into())),
-                ("control", control.write(c)?),
-                ("target", target.write(c)?),
-                ("control_out", control_out.write(c)?),
-                ("target_out", target_out.write(c)?),
-                ("zero_ops", zero_ops.write(c)?),
-                ("one_ops", one_ops.write(c)?),
-            ])),
-            Self::Split {
-                input,
-                left,
-                right,
-                left_bits,
-            } => Ok(Value::object([
-                ("tag", Value::String("split".into())),
-                ("input", input.write(c)?),
-                ("left", left.write(c)?),
-                ("right", right.write(c)?),
-                ("left_bits", left_bits.write(c)?),
-            ])),
-            Self::Join {
-                left,
-                right,
-                output,
-            } => Ok(Value::object([
-                ("tag", Value::String("join".into())),
-                ("left", left.write(c)?),
-                ("right", right.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::LiftBasis {
-                input,
-                output,
-                output_wires,
-                table,
-            } => Ok(Value::object([
-                ("tag", Value::String("lift_basis".into())),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-                ("output_wires", output_wires.write(c)?),
-                ("table", table.write(c)?),
-            ])),
-            Self::MeasureZ { input, output } => Ok(Value::object([
-                ("tag", Value::String("measure_z".into())),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::Reset {
-                input,
-                output,
-                fresh_wire,
-            } => Ok(Value::object([
-                ("tag", Value::String("reset".into())),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-                ("fresh_wire", fresh_wire.write(c)?),
-            ])),
-            Self::Discard { input } => Ok(Value::object([
-                ("tag", Value::String("discard".into())),
-                ("input", input.write(c)?),
-            ])),
-            Self::ClassicalConst { value, output } => Ok(Value::object([
-                ("tag", Value::String("classical_const".into())),
-                ("value", value.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::ClassicalNot { input, output } => Ok(Value::object([
-                ("tag", Value::String("classical_not".into())),
-                ("input", input.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::ClassicalXor {
-                left,
-                right,
-                output,
-            } => Ok(Value::object([
-                ("tag", Value::String("classical_xor".into())),
-                ("left", left.write(c)?),
-                ("right", right.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::ClassicalAnd {
-                left,
-                right,
-                output,
-            } => Ok(Value::object([
-                ("tag", Value::String("classical_and".into())),
-                ("left", left.write(c)?),
-                ("right", right.write(c)?),
-                ("output", output.write(c)?),
-            ])),
-            Self::ClassicalBranch {
-                condition,
-                then_ops,
-                else_ops,
-                quantum_phis,
-                classical_phis,
-            } => Ok(Value::object([
-                ("tag", Value::String("classical_branch".into())),
-                ("condition", condition.write(c)?),
-                ("then_ops", then_ops.write(c)?),
-                ("else_ops", else_ops.write(c)?),
-                ("quantum_phis", quantum_phis.write(c)?),
-                ("classical_phis", classical_phis.write(c)?),
-            ])),
-            Self::ComputeUseUncompute {
-                source,
-                source_out,
-                targets,
-                ancilla_wires,
-                function,
-                use_ops,
-            } => Ok(Value::object([
-                ("tag", Value::String("compute_use_uncompute".into())),
-                ("source", source.write(c)?),
-                ("source_out", source_out.write(c)?),
-                ("targets", targets.write(c)?),
-                ("ancilla_wires", ancilla_wires.write(c)?),
-                ("function", function.write(c)?),
-                ("use_ops", use_ops.write(c)?),
-            ])),
-        }
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        match v.field("tag")?.text()? {
-            "certified_compute" => {
-                v.fields(&[
-                    "tag",
-                    "source",
-                    "source_out",
-                    "ancilla_wires",
-                    "function",
-                    "use_steps",
-                    "logical_steps",
-                ])?;
-                Ok(Self::CertifiedCompute {
-                    source: Codec::read(v.field("source")?, c)?,
-                    source_out: Codec::read(v.field("source_out")?, c)?,
-                    ancilla_wires: Codec::read(v.field("ancilla_wires")?, c)?,
-                    function: Codec::read(v.field("function")?, c)?,
-                    use_steps: Codec::read(v.field("use_steps")?, c)?,
-                    logical_steps: Codec::read(v.field("logical_steps")?, c)?,
-                })
-            }
-            "apply_unitary" => {
-                v.fields(&["tag", "input", "output", "steps"])?;
-                Ok(Self::ApplyUnitary {
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                    steps: Codec::read(v.field("steps")?, c)?,
-                })
-            }
-            "init0" => {
-                v.fields(&["tag", "output", "wire"])?;
-                Ok(Self::Init0 {
-                    output: Codec::read(v.field("output")?, c)?,
-                    wire: Codec::read(v.field("wire")?, c)?,
-                })
-            }
-            "gate" => {
-                v.fields(&["tag", "gate", "input", "output"])?;
-                Ok(Self::Gate {
-                    gate: Codec::read(v.field("gate")?, c)?,
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "cnot" => {
-                v.fields(&["tag", "control", "target", "control_out", "target_out"])?;
-                Ok(Self::Cnot {
-                    control: Codec::read(v.field("control")?, c)?,
-                    target: Codec::read(v.field("target")?, c)?,
-                    control_out: Codec::read(v.field("control_out")?, c)?,
-                    target_out: Codec::read(v.field("target_out")?, c)?,
-                })
-            }
-            "toffoli" => {
-                v.fields(&[
-                    "tag",
-                    "control_a",
-                    "control_b",
-                    "target",
-                    "control_a_out",
-                    "control_b_out",
-                    "target_out",
-                ])?;
-                Ok(Self::Toffoli {
-                    control_a: Codec::read(v.field("control_a")?, c)?,
-                    control_b: Codec::read(v.field("control_b")?, c)?,
-                    target: Codec::read(v.field("target")?, c)?,
-                    control_a_out: Codec::read(v.field("control_a_out")?, c)?,
-                    control_b_out: Codec::read(v.field("control_b_out")?, c)?,
-                    target_out: Codec::read(v.field("target_out")?, c)?,
-                })
-            }
-            "quantum_if" => {
-                v.fields(&[
-                    "tag",
-                    "control",
-                    "target",
-                    "control_out",
-                    "target_out",
-                    "zero_ops",
-                    "one_ops",
-                ])?;
-                Ok(Self::QuantumIf {
-                    control: Codec::read(v.field("control")?, c)?,
-                    target: Codec::read(v.field("target")?, c)?,
-                    control_out: Codec::read(v.field("control_out")?, c)?,
-                    target_out: Codec::read(v.field("target_out")?, c)?,
-                    zero_ops: Codec::read(v.field("zero_ops")?, c)?,
-                    one_ops: Codec::read(v.field("one_ops")?, c)?,
-                })
-            }
-            "split" => {
-                v.fields(&["tag", "input", "left", "right", "left_bits"])?;
-                Ok(Self::Split {
-                    input: Codec::read(v.field("input")?, c)?,
-                    left: Codec::read(v.field("left")?, c)?,
-                    right: Codec::read(v.field("right")?, c)?,
-                    left_bits: Codec::read(v.field("left_bits")?, c)?,
-                })
-            }
-            "join" => {
-                v.fields(&["tag", "left", "right", "output"])?;
-                Ok(Self::Join {
-                    left: Codec::read(v.field("left")?, c)?,
-                    right: Codec::read(v.field("right")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "lift_basis" => {
-                v.fields(&["tag", "input", "output", "output_wires", "table"])?;
-                Ok(Self::LiftBasis {
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                    output_wires: Codec::read(v.field("output_wires")?, c)?,
-                    table: Codec::read(v.field("table")?, c)?,
-                })
-            }
-            "measure_z" => {
-                v.fields(&["tag", "input", "output"])?;
-                Ok(Self::MeasureZ {
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "reset" => {
-                v.fields(&["tag", "input", "output", "fresh_wire"])?;
-                Ok(Self::Reset {
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                    fresh_wire: Codec::read(v.field("fresh_wire")?, c)?,
-                })
-            }
-            "discard" => {
-                v.fields(&["tag", "input"])?;
-                Ok(Self::Discard {
-                    input: Codec::read(v.field("input")?, c)?,
-                })
-            }
-            "classical_const" => {
-                v.fields(&["tag", "value", "output"])?;
-                Ok(Self::ClassicalConst {
-                    value: Codec::read(v.field("value")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "classical_not" => {
-                v.fields(&["tag", "input", "output"])?;
-                Ok(Self::ClassicalNot {
-                    input: Codec::read(v.field("input")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "classical_xor" => {
-                v.fields(&["tag", "left", "right", "output"])?;
-                Ok(Self::ClassicalXor {
-                    left: Codec::read(v.field("left")?, c)?,
-                    right: Codec::read(v.field("right")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "classical_and" => {
-                v.fields(&["tag", "left", "right", "output"])?;
-                Ok(Self::ClassicalAnd {
-                    left: Codec::read(v.field("left")?, c)?,
-                    right: Codec::read(v.field("right")?, c)?,
-                    output: Codec::read(v.field("output")?, c)?,
-                })
-            }
-            "classical_branch" => {
-                v.fields(&[
-                    "tag",
-                    "condition",
-                    "then_ops",
-                    "else_ops",
-                    "quantum_phis",
-                    "classical_phis",
-                ])?;
-                Ok(Self::ClassicalBranch {
-                    condition: Codec::read(v.field("condition")?, c)?,
-                    then_ops: Codec::read(v.field("then_ops")?, c)?,
-                    else_ops: Codec::read(v.field("else_ops")?, c)?,
-                    quantum_phis: Codec::read(v.field("quantum_phis")?, c)?,
-                    classical_phis: Codec::read(v.field("classical_phis")?, c)?,
-                })
-            }
-            "compute_use_uncompute" => {
-                v.fields(&[
-                    "tag",
-                    "source",
-                    "source_out",
-                    "targets",
-                    "ancilla_wires",
-                    "function",
-                    "use_ops",
-                ])?;
-                Ok(Self::ComputeUseUncompute {
-                    source: Codec::read(v.field("source")?, c)?,
-                    source_out: Codec::read(v.field("source_out")?, c)?,
-                    targets: Codec::read(v.field("targets")?, c)?,
-                    ancilla_wires: Codec::read(v.field("ancilla_wires")?, c)?,
-                    function: Codec::read(v.field("function")?, c)?,
-                    use_ops: Codec::read(v.field("use_ops")?, c)?,
-                })
-            }
-            _ => Err(Error::format("unknown node tag")),
-        }
-    }
-}
-impl Codec for CircuitAction {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        match self {
-            Self::Contract {
-                indices,
-                evidence,
-                adjoint,
-            } => Ok(Value::object([
-                ("tag", Value::String("contract".into())),
-                ("indices", indices.write(c)?),
-                ("evidence", evidence.write(c)?),
-                ("adjoint", adjoint.write(c)?),
-            ])),
-            Self::Hadamard { target } => Ok(Value::object([
-                ("tag", Value::String("hadamard".into())),
-                ("target", target.write(c)?),
-            ])),
-            Self::Monomial {
-                indices,
-                permutation,
-                phases,
-            } => Ok(Value::object([
-                ("tag", Value::String("monomial".into())),
-                ("indices", indices.write(c)?),
-                ("permutation", permutation.write(c)?),
-                ("phases", phases.write(c)?),
-            ])),
-        }
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        match v.field("tag")?.text()? {
-            "contract" => {
-                v.fields(&["tag", "indices", "evidence", "adjoint"])?;
-                Ok(Self::Contract {
-                    indices: Codec::read(v.field("indices")?, c)?,
-                    evidence: Codec::read(v.field("evidence")?, c)?,
-                    adjoint: Codec::read(v.field("adjoint")?, c)?,
-                })
-            }
-            "hadamard" => {
-                v.fields(&["tag", "target"])?;
-                Ok(Self::Hadamard {
-                    target: Codec::read(v.field("target")?, c)?,
-                })
-            }
-            "monomial" => {
-                v.fields(&["tag", "indices", "permutation", "phases"])?;
-                Ok(Self::Monomial {
-                    indices: Codec::read(v.field("indices")?, c)?,
-                    permutation: Codec::read(v.field("permutation")?, c)?,
-                    phases: Codec::read(v.field("phases")?, c)?,
-                })
-            }
-            _ => Err(Error::format("unknown node tag")),
-        }
-    }
-}
-impl Codec for ProtectedUse {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        match self {
-            Self::ProtectedGate { bit, gate } => Ok(Value::object([
-                ("tag", Value::String("protected_gate".into())),
-                ("bit", bit.write(c)?),
-                ("gate", gate.write(c)?),
-            ])),
-            Self::ControlledTargetGate {
-                controls,
-                target_index,
-                gate,
-            } => Ok(Value::object([
-                ("tag", Value::String("controlled_target_gate".into())),
-                ("controls", controls.write(c)?),
-                ("target_index", target_index.write(c)?),
-                ("gate", gate.write(c)?),
-            ])),
-            Self::ControlledPhase { controls, phase } => Ok(Value::object([
-                ("tag", Value::String("controlled_phase".into())),
-                ("controls", controls.write(c)?),
-                ("phase", phase.write(c)?),
-            ])),
-        }
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        match v.field("tag")?.text()? {
-            "protected_gate" => {
-                v.fields(&["tag", "bit", "gate"])?;
-                Ok(Self::ProtectedGate {
-                    bit: Codec::read(v.field("bit")?, c)?,
-                    gate: Codec::read(v.field("gate")?, c)?,
-                })
-            }
-            "controlled_target_gate" => {
-                v.fields(&["tag", "controls", "target_index", "gate"])?;
-                Ok(Self::ControlledTargetGate {
-                    controls: Codec::read(v.field("controls")?, c)?,
-                    target_index: Codec::read(v.field("target_index")?, c)?,
-                    gate: Codec::read(v.field("gate")?, c)?,
-                })
-            }
-            "controlled_phase" => {
-                v.fields(&["tag", "controls", "phase"])?;
-                Ok(Self::ControlledPhase {
-                    controls: Codec::read(v.field("controls")?, c)?,
-                    phase: Codec::read(v.field("phase")?, c)?,
-                })
-            }
-            _ => Err(Error::format("unknown node tag")),
-        }
-    }
-}
-impl Codec for UnitaryStep {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        match self {
-            Self::Gate { gate, target_index } => Ok(Value::object([
-                ("tag", Value::String("gate".into())),
-                ("gate", gate.write(c)?),
-                ("target_index", target_index.write(c)?),
-            ])),
-            Self::Cnot {
-                control_index,
-                target_index,
-            } => Ok(Value::object([
-                ("tag", Value::String("cnot".into())),
-                ("control_index", control_index.write(c)?),
-                ("target_index", target_index.write(c)?),
-            ])),
-            Self::Toffoli {
-                control_a_index,
-                control_b_index,
-                target_index,
-            } => Ok(Value::object([
-                ("tag", Value::String("toffoli".into())),
-                ("control_a_index", control_a_index.write(c)?),
-                ("control_b_index", control_b_index.write(c)?),
-                ("target_index", target_index.write(c)?),
-            ])),
-            Self::ScalarPhase(phase) => Ok(Value::object([
-                ("tag", Value::String("scalar_phase".into())),
-                ("phase", phase.write(c)?),
-            ])),
-        }
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        match v.field("tag")?.text()? {
-            "gate" => {
-                v.fields(&["tag", "gate", "target_index"])?;
-                Ok(Self::Gate {
-                    gate: Codec::read(v.field("gate")?, c)?,
-                    target_index: Codec::read(v.field("target_index")?, c)?,
-                })
-            }
-            "cnot" => {
-                v.fields(&["tag", "control_index", "target_index"])?;
-                Ok(Self::Cnot {
-                    control_index: Codec::read(v.field("control_index")?, c)?,
-                    target_index: Codec::read(v.field("target_index")?, c)?,
-                })
-            }
-            "toffoli" => {
-                v.fields(&["tag", "control_a_index", "control_b_index", "target_index"])?;
-                Ok(Self::Toffoli {
-                    control_a_index: Codec::read(v.field("control_a_index")?, c)?,
-                    control_b_index: Codec::read(v.field("control_b_index")?, c)?,
-                    target_index: Codec::read(v.field("target_index")?, c)?,
-                })
-            }
-            "scalar_phase" => {
-                v.fields(&["tag", "phase"])?;
-                Ok(Self::ScalarPhase(Codec::read(v.field("phase")?, c)?))
-            }
-            _ => Err(Error::format("unknown node tag")),
-        }
-    }
+    };
 }
 
-impl Codec for BasisType {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        c.charge(1)?;
-        Ok(match self {
-            Self::Unit => Value::object([("tag", Value::String("unit".into()))]),
-            Self::Bit => Value::object([("tag", Value::String("bit".into()))]),
-            Self::Pair(a, b) => Value::object([
-                ("tag", Value::String("pair".into())),
-                ("left", a.write(c)?),
-                ("right", b.write(c)?),
-            ]),
-            Self::Tuple(fields) => {
-                if fields.len() < 3 {
-                    return Err(Error::format("tuple type requires at least three fields"));
-                }
-                Value::object([
-                    ("tag", Value::String("tuple".into())),
-                    ("fields", fields.write(c)?),
-                ])
-            }
-        })
-    }
-    fn read(v: &Value, _c: &Decoder<'_>) -> Result<Self> {
-        match v.field("tag")?.text()? {
-            "unit" => {
-                v.fields(&["tag"])?;
-                Ok(Self::Unit)
-            }
-            "bit" => {
-                v.fields(&["tag"])?;
-                Ok(Self::Bit)
-            }
-            "pair" => {
-                v.fields(&["tag", "left", "right"])?;
-                Ok(Self::pair(
-                    Self::read(v.field("left")?, _c)?,
-                    Self::read(v.field("right")?, _c)?,
-                ))
-            }
-            "tuple" => {
-                v.fields(&["tag", "fields"])?;
-                let fields = Vec::<Self>::read(v.field("fields")?, _c)?;
-                if fields.len() < 3 {
-                    return Err(Error::format("tuple type requires at least three fields"));
-                }
-                Ok(Self::Tuple(fields))
-            }
-            _ => Err(Error::format("unknown basis type")),
-        }
-    }
-}
-impl Codec for Arc<FunctionEvidence> {
-    fn write(&self, c: &mut Encoder) -> Result<Value> {
-        Ok(Value::Number(c.evidence(self)? as u64))
-    }
-    fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
-        let i = usize::read(v, c)?;
-        c.evidence
-            .get(i)
-            .and_then(Option::as_ref)
-            .cloned()
-            .ok_or_else(|| Error::format("unchecked or invalid evidence reference"))
-    }
-}
+record_codec!(BasisShape { bits => "bits" });
+record_codec!(QuantumPort { token => "token", wires => "wires", shape => "shape" });
+record_codec!(RawProgram {
+    quantum_inputs => "quantum_inputs",
+    classical_inputs => "classical_inputs",
+    operations => "operations",
+    quantum_outputs => "quantum_outputs",
+    classical_outputs => "classical_outputs",
+    declared_effect => "declared_effect",
+});
+record_codec!(BitControl { index => "index", when_one => "when_one" });
+record_codec!(CircuitStep { controls => "controls", action => "action" });
+record_codec!(ProtectedBit { region => "region", index => "index" });
+record_codec!(Control { bit => "bit", when_one => "when_one" });
+record_codec!(TargetTransition { input => "input", output => "output" });
+record_codec!(QuantumPhi {
+    then_token => "then_token",
+    else_token => "else_token",
+    output => "output",
+    output_wires => "output_wires",
+});
+record_codec!(ClassicalPhi {
+    then_id => "then_id",
+    else_id => "else_id",
+    output => "output",
+});
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::contract::exact::Budget;
     use crate::contract::meaning::{FiniteMeaning, MeaningEvidence};
-    use crate::contract::{DEFAULT_EXACT_WORK, FunctionIdentity};
+    use crate::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionIdentity};
     use crate::interchange::Version;
+
+    #[test]
+    fn wire_integer_bounds_retain_field_range_and_u32_error_precedence() {
+        let decoder = Decoder { evidence: &[] };
+        assert_eq!(u8::read(&Value::Number(255), &decoder).unwrap(), 255);
+        assert_eq!(u16::read(&Value::Number(65535), &decoder).unwrap(), 65535);
+        assert_eq!(
+            usize::read(&Value::Number(u64::from(u32::MAX)), &decoder).unwrap(),
+            u32::MAX as usize
+        );
+        for error in [
+            u8::read(&Value::Number(256), &decoder).unwrap_err(),
+            u16::read(&Value::Number(65536), &decoder).unwrap_err(),
+        ] {
+            assert_eq!(error.code, "format");
+            assert_eq!(error.message, "integer outside field range");
+        }
+        let overflow = Value::Number(u64::from(u32::MAX) + 1);
+        for error in [
+            u8::read(&overflow, &decoder).unwrap_err(),
+            u16::read(&overflow, &decoder).unwrap_err(),
+            u32::read(&overflow, &decoder).unwrap_err(),
+            usize::read(&overflow, &decoder).unwrap_err(),
+        ] {
+            assert_eq!(error.code, "format");
+            assert_eq!(error.message, "integer exceeds wire u32");
+        }
+    }
+
+    #[test]
+    fn record_wire_fields_and_work_are_stable_and_unknown_fields_are_rejected() {
+        let mut encoder = Encoder::new(Version::V2);
+        let decoder = Decoder { evidence: &[] };
+        let port = QuantumPort {
+            token: TokenId(7),
+            wires: vec![WireId(19), WireId(3)],
+            shape: BasisShape { bits: 2 },
+        };
+        let before = encoder.remaining;
+        let encoded = port.write(&mut encoder).unwrap();
+        // One port, two vector entries, one shape; IDs have no node charge.
+        assert_eq!(before - encoder.remaining, 4);
+        assert_eq!(
+            super::super::json::encode(&encoded).unwrap(),
+            b"{\"shape\":{\"bits\":2},\"token\":7,\"wires\":[19,3]}\n"
+        );
+        let Value::Object(mut fields) = encoded else {
+            panic!("port must be a wire object")
+        };
+        fields.insert("extra".into(), Value::Null);
+        assert!(QuantumPort::read(&Value::Object(fields.clone()), &decoder).is_err());
+        fields.remove("extra");
+        fields.remove("token");
+        assert!(QuantumPort::read(&Value::Object(fields), &decoder).is_err());
+    }
 
     #[test]
     fn every_frozen_raw_operation_and_action_preserves_its_fields() {

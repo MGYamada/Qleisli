@@ -5,7 +5,7 @@ test frontend::project::source_file::tests::macos_openat_retains_parent_identity
 test frontend::project::source_file::tests::macos_fifo_source_replacement_is_rejected_without_a_writer ... ok
 test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
 
-test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 62 filtered out; finished in 0.00s
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 65 filtered out; finished in 0.01s
 
    Compiling equivalent v1.0.2
    Compiling hashbrown v0.17.1
@@ -21,6 +21,6 @@ test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 62 filtered out; fin
    Compiling toml_datetime v0.6.11
    Compiling toml_edit v0.22.27
    Compiling toml v0.8.23
-   Compiling qleisli v0.2.4 (/private/tmp/qleisli-bug-candidate)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.09s
-     Running unittests src/lib.rs (target/debug/deps/qleisli-ab5dde78da953738)
+   Compiling qleisli v0.2.5 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.58s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-f4f1b769037778eb)

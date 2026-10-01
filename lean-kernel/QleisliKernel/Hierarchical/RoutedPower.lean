@@ -109,7 +109,7 @@ structure Pending where
 No repeat is expanded. The provider's contents are not accepted by this entry. -/
 def inspect (artifact : Artifact) (index : Nat) (request : Request)
     (wiringOrder : Array Nat) (remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || request.width = 0 || request.width > 8 ||
+  if remaining > Limits.maxVisits || request.width = 0 || request.width > 8 ||
       request.exponent > 12 || !u32 request.provider then .error .limit else
   match project artifact index request.provider with
   | none => .error .contract
@@ -184,6 +184,6 @@ theorem inspect_conditions (artifact : Artifact) (index : Nat) (request : Reques
                 have budget := (Wiring.inspect_sound artifact order _ wiring checked).2.1
                 simp only [Bool.or_eq_true,decide_eq_true_eq,not_or] at bounded
                 exact ⟨project_bound artifact index request.provider view found,by simpa using valid,
-                  checked,by simpa using routes,rfl,by dsimp only; omega,by omega⟩
+                  checked,by simpa using routes,rfl,by dsimp only; omega,by simp only [Limits.maxVisits] at *; omega⟩
 
 end QleisliKernel.Hierarchical.RoutedPower

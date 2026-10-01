@@ -8,7 +8,9 @@ The Rust frontend produces IR that an independent Rust verifier checks before
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Package version: **0.2.4**.
+Package version: **0.2.5**. See the
+[release record](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/releases/v0.2.5.md)
+for the checked profile and publication evidence.
 **Qleisli language edition: `"2026"` for all current
 `.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
 The version-specific release record distinguishes the
@@ -25,10 +27,11 @@ inaccessible descriptor path produces a targeted runtime diagnostic.
 ## Install and run
 
 Install from a source checkout with
-`cargo install --path . --locked --bin qleisli`. For registry installation, use:
+`cargo install --path . --locked --bin qleisli`. Install this version from
+crates.io with:
 
 ```sh
-cargo install qleisli --version 0.2.4 --locked
+cargo install qleisli --version 0.2.5 --locked
 ```
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -88,7 +91,7 @@ Add this dependency to your Rust project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-qleisli = "0.2.4"
+qleisli = "0.2.5"
 ```
 
 The [API documentation](https://docs.rs/qleisli) provides a runnable
@@ -121,7 +124,7 @@ checked programs become `VerifiedProgram` values.
 The published 0.2.1 first registry release adopted the name `qleisli` in place of
 the earlier Git/path package `qleisli-core` and Rust import `qleisli_core`.
 Those consumers must update dependency/import names or use the documented
-[Cargo alias](https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/crates-io-release.md#name-migration-from-github-releases-through-020).
+[Cargo alias](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/crates-io-release.md#name-migration-from-github-releases-through-020).
 This user-selected identity migration is a narrow exception; other 0.2.x
 contracts stay compatible except for the explicitly selected v0.2.3 requirement
 to add an edition manifest to filesystem source trees. The planned 0.3.0
@@ -130,19 +133,18 @@ breaking-change boundary.
 
 ## Documentation
 
-- [Language editions and qrate migration](https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/language-editions.md)
+- [Language editions and qrate migration](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/language-editions.md)
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/qli-quick-reference.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/interop-m1.1.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.4/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.4/TRUST_BOUNDARY.md)
-- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.4/docs/releases/v0.2.4.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/qli-quick-reference.md)
+- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/interop-m1.1.md)
+- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.5/python/README.md)
+- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.5/TRUST_BOUNDARY.md)
+- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.5/docs/releases/v0.2.5.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Documentation links identify the `v0.2.4` source tag. The
-[GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4) and
-release record distinguish source verification, registry upload and publication
-results; packaged files retain this version's specifications and validation account.
+Version-pinned documentation links above target the `v0.2.5` source tag.
+Packaged files contain the current specifications and release record;
+source validation, tagging and publication are recorded separately.
 
 ## License
 

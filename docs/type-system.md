@@ -2,7 +2,7 @@
 
 Status: **normative for product 0.2.0**, 2026-09-29. This document is
 the consolidated type contract. The [grammar](syntax-v0.md),
-[typing/effect rules](source-typing-rules.md), [ownership rules](source-resource-rules.md)
+[typing/effect rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md), [ownership rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md)
 and [tuple migration](tuple-shapes.md) refine its syntax, judgments and migration.
 Current implementation evidence is recorded in [conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
 This specification is not a claim of a general compiler soundness proof.

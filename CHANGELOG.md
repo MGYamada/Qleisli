@@ -6,6 +6,12 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+## 0.2.5 — 2026-10-01
+
+Publication to crates.io and GitHub authorized on 2026-10-01. Exact-source
+validation and publication outcomes are recorded in the
+[release record](docs/releases/v0.2.5.md).
+
 - Repair 0.2.4 review findings (#160): fold exact terminal phase words, export
   negative controls and controlled H/phases, and represent bit-axis permutations.
   QFT2/QFT3 now export with explicit clean synthesis workspace counted against
@@ -24,10 +30,56 @@ separately in [release milestones](docs/release-milestones.md).
 - Align crate-level documentation links with the selected package version and
   check package-facing version pins in the documentation linter (#147).
 
+- Synchronize release version 0.2.5 for compatible internal refactoring;
+  synchronize Rust, the lockfile, both Lean packages, Python and the std qrate.
+- Share CLI source checking, compilation, reference execution and seeded
+  sampling between text and JSON output. Consolidate canonical decimal argument
+  parsing and sample-result JSON transport; separate sized argument validation
+  from its checking/execution adapter. Preserve public contracts and limits.
+- Separate finite numerical state management from deterministic circuit
+  execution; share ordered wire-axis lookup within the simulator. Encapsulate
+  static circuit flattening state and unify checked logical-circuit emission.
+- Consolidate explicit QIRF record/enum field maps and bounded integer codecs;
+  separate operations and evidence transport. Extract strict native hierarchy
+  response/process handling and share final reconstruction-report assembly.
+  Retain exact field order, diagnostics, work accounting and independent checks.
+
+- Share Lean conditional transitions, finite/ordinary dispatch and invariant
+  proofs while preserving existing public declarations and successful/failing
+  results. Name existing hierarchical capacities once, share equality-field
+  accounting and replace deeply nested proof projections with named facts.
+- Separate Lean protocol/CLI modules, sharing strict framing and IO/error
+  handling. Extend source/import and compiled-origin audits and registry source
+  binding to every transport submodule; keep pure reference/checker boundaries.
+
+Earlier development checks and remaining gates are recorded in the
+[0.2.5 release record](docs/releases/v0.2.5.md).
+
+- Retire 17 obsolete docs and condense repeated specification/proof/plan prose;
+  retain current contracts, goals, migration gates and executable evidence.
+  Historical links use the exact pre-cleanup Git revision (#48).
+- Expand the finite corpus from 48 to 54, eighteen cases per approved source:
+  CZ/Toffoli, inclusive/strict comparisons, mixed-sign rotations and a two-wire
+  QAOA mixer. Preserve first sources, the actual CZ repair, frozen provenance
+  and six new valid-source semantic counterexamples.
+- Move pure raw ownership/effect checking and bounded actual-body extraction
+  into the Mathlib-free Lean kernel. Cover eleven straight-line constructors,
+  retained raw body pairs and both compute forms; prove actual structural,
+  reference/matrix and finite zero-return laws. Prove every constructor's
+  extraction agrees with an independent original-operation trace, including
+  output order and matrix spaces; prove literal local embedding coefficients.
+  Complete independent complex raw action, non-dense protected zero return and
+  exact retained signature/body/name/source binding with fresh dependency graphs
+  and published capacity limits. Add native Rust/rational/source, 180 trace and
+  146 attachment/capacity comparisons. Evaluate protected coefficients directly
+  without imposing a combined data/auxiliary dense-width restriction on functions.
+  Production Rust authority, VM-26–29
+  integration and general source soundness stay separate.
+
 ## 0.2.4 — 2026-10-01
 
 Publication authorized on 2026-10-01; outcomes are recorded in the
-[release record](docs/releases/v0.2.4.md).
+[release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md).
 
 - Add sealed `s`, `sdg`, `tdg`, `id` and `phase_eighth` aliases using existing
   finite IR (#130). Remove two private QFT wrappers and modernize ten active
@@ -104,13 +156,13 @@ Publication authorized on 2026-10-01; outcomes are recorded in the
 - Preserve three AI-generated logo concepts for v0.4.0 discussion in
   [assets](assets/logo-concepts/v0.4.0/README.md), with the original commit history.
 
-The [release record](docs/releases/v0.2.3.md) and
+The [release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.3.md) and
 [status ledger](docs/current-status.md) hold validation and proof status.
 
 ## 0.2.2 — 2026-09-30
 
 Compatible corpus, verification preparation and bounded source/QPE additions.
-Publication results are recorded separately in the [release record](docs/releases/v0.2.2.md).
+Publication results are recorded separately in the [release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md).
 
 - Bound grouped-import prefix copying per module before allocation, including
   nested groups and separate `use` items. Check both identifier count and name
@@ -614,7 +666,7 @@ and [GitHub publication evidence](https://github.com/MGYamada/Qleisli/releases/t
   frontend/trusted-boundary review dispositions, an independent 4,608-case exact
   phase/layout/control/adjoint sweep, successful exact-commit Linux CI and clean
   package/complete-source-archive checks. Publication remains separate.
-- A [code-driven continuation procedure](docs/code-driven-development.md), with
+- A [code-driven continuation procedure](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/code-driven-development.md), with
   source-grounded obstacles A020-17–20 and bounded work packets for the
   user-selected 0.2.0 direction. It adopts no future grammar or checker rule.
 - A clean-commit distribution checker for the verified production package and

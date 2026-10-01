@@ -18,13 +18,16 @@ open Lean
 
 namespace QleisliKernelAudit
 
+def transportModule (name : Name) : Bool :=
+  name == `Main || (`Protocol).isPrefixOf name || (`Cli).isPrefixOf name
+
 def ownedModule (name : Name) : Bool :=
-  (`QleisliKernel).isPrefixOf name || name == `Main || name == `Protocol
+  (`QleisliKernel).isPrefixOf name || transportModule name
 
 def allowedModule (name : Name) (transport : Bool) : Bool :=
   (`Init).isPrefixOf name || (`Std).isPrefixOf name ||
   (`QleisliKernel).isPrefixOf name ||
-  (transport && (name == `Main || name == `Protocol || (`Lean).isPrefixOf name))
+  (transport && (transportModule name || (`Lean).isPrefixOf name))
 
 -- Inspect the compiled import graph, not Audit.lean's own metaprogram imports.
 partial def checkImports (env : Environment) (name : Name) (transport : Bool)

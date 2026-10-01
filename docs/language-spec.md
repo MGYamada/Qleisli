@@ -68,12 +68,12 @@ k = 2..64 immediate fields, with explicit nesting
 
 Write the judgment for an ordinary expression as `Γ ; Δ ⊢ e : T ⊣ Δ' ! ε`. `Γ` contains classical bindings that may be copied or discarded; `Δ` contains linear bindings and their quantum tokens and subsystem IDs; `Δ'` contains bindings remaining in the environment after evaluation. Ownership in the returned value is disjoint from `Δ'`. Mixed values are managed as linear bindings. The basis-expression judgment `Ξ ⊢basis e : A` uses a separate static context and cannot capture runtime `Γ` or `Δ`.
 
-The [type, effect, name, and scope supplement](source-typing-rules.md) expands
+The [type, effect, name, and scope supplement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) expands
 these judgments for every current syntax case, together with the resource
 calculus's pending frames, binding identities, and complete branch interfaces.
 Its local paper lemmas do not establish general compiler correctness.
 
-The [mixed-value interpretation](source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)
+The [mixed-value interpretation](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-semantics.md#1-mixed-values-and-ordered-quantum-interfaces)
 defines a classical record `C(T)` and ordered quantum leaves `Q(T)`. The
 whole-computation judgment in [formal-core.md](formal-core.md#1-scope-and-judgments)
 uses the classical results and the complete quantum output interface, including
@@ -108,7 +108,7 @@ left-associated binary operators. For example,
 The Boolean operation itself changes only the classical record, acting as the
 identity on the whole quantum state and any reference. Operand evaluation
 retains its own quantum effects and full frame. See rules `C-CONST`, `C-NOT`,
-and `C-BOOL` in the [typing supplement](source-typing-rules.md).
+and `C-BOOL` in the [typing supplement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md).
 
 Every function explicitly declares its parameter types, result type, and effect classification; local `let` types are inferred. An ordinary function is declared `unitary fn`, `iso fn`, or `observe fn`. Its body must consume or return every quantum parameter and local resource, and its result must match the declared type. The same rules apply to bundled ordinary `.qli` definitions.
 
@@ -259,7 +259,7 @@ Include the effects of the input expressions in the overall effect. `qif` evalua
 
 The IR is `ApplyUnitary`: translate the checked body into a finite sequence of Hadamards and basis permutations carrying eighth-root phases. Inversion reverses the order, permutations, and phases; repetition expands finitely; control is constructed by basis control of the two arms. Account for the function's output axis order. The verifier rechecks axis bounds and distinctness, disjointness from controls, table totality and bijectivity, and phases.
 
-`adjoint(t,q)` and `repeat_static(0,h,q)` are accepted. `repeat_static(0,missing,q)`, `adjoint(init0,q)`, static transformation of a `choose` with classical arguments, and `qif(q,q){…}` are rejected. See the [static-operation judgments, examples, and verification record](static-operations.md) and [conditional exact-operator proofs](static-semantics.md). These local proofs do not establish full source soundness or Rust compiler correctness.
+`adjoint(t,q)` and `repeat_static(0,h,q)` are accepted. `repeat_static(0,missing,q)`, `adjoint(init0,q)`, static transformation of a `choose` with classical arguments, and `qif(q,q){…}` are rejected. See the [static-operation judgments, examples, and verification record](static-operations.md) and [conditional exact-operator proofs](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md). These local proofs do not establish full source soundness or Rust compiler correctness.
 
 <a id="9-限定された補助計算"></a>
 
@@ -280,7 +280,7 @@ frame and is available again after the computed scope. For example, an outer
 explicitly consumed afterward. The ordinary `let` prohibition on overwriting
 a live binding does not forbid this separate private scope. Other masked outer
 names continue to hide callable names inside the body unless shadowed by a
-valid local binding. See [COMPUTED](source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
+valid local binding. See [COMPUTED](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
 for the complete environment and frame rule.
 
 Accepted bodies include `with_computed(q,f){|a| z(a)}`, the identity `a`, and `t(z(a))` wrapped in ordinary functions. Rejected bodies include `h(a)`, `h(h(a))`, measurement, classical branching, and capture of another quantum value. Although `adjoint(t,a)` and `repeat_static(2,z,a)` are diagonal, they produce `ApplyUnitary` and are rejected by this v0 evidence format. Classical literals or Boolean operators inside the body emit classical SSA instructions and are also outside this certificate, even if their results are unused. Copying an existing classical value emits no instruction and is allowed. There is no extensional acceptance rule based on matrix equivalence.
@@ -387,7 +387,7 @@ actual verifier into Lean.
 
 Report type, ownership, and effect violations, noninjective lifts, unsupported auxiliary evidence, unknown names, recursion, and capacity overflow with source locations. With multiple violations, diagnostic ordering and exact wording are not normative. Implementation error codes and numerical/capacity limits are given in the [implementation profile](frontend-v0.md#診断と上限). Capacity overflow must not be handled by changing meaning, such as truncating repetitions or implicitly discarding resources.
 
-The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness. The [translation contract](source-ir-correspondence.md) specifies the correspondence required of tables, primitive choices, ordered interfaces, and complete phis: raw-IR validity alone does not establish equality with the source meaning.
+The reference executor numerically approximates the finite ideal semantics. Hardware compilation and device-capability checks are separate responsibilities; unsupported mid-circuit measurement, feedback, or other features cannot be treated as implemented. Rust memory safety, agreement on finite tests, and the existence of independent IR checks do not replace a proof of source soundness. The [translation contract](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-ir-correspondence.md) specifies the correspondence required of tables, primitive choices, ordered interfaces, and complete phis: raw-IR validity alone does not establish equality with the source meaning.
 
 <a id="11-変更方針と次の工程"></a>
 
@@ -395,6 +395,6 @@ The reference executor numerically approximates the finite ideal semantics. Hard
 
 The scope and acceptance/rejection rules of this edition are fixed as the v0 baseline. A future change to syntax, types, effects, ownership, semantics, or sealed APIs must update the specification, grammar, conformance checks, and IR correspondence together and record its compatibility impact. Adding experimental ordinary library definitions does not by itself add language forms or sealed operations.
 
-The [inference-rule supplement](source-typing-rules.md) and resource calculus cover the baseline and add a separate `CERTIFIED-COMPUTED` rule for this extension. [Ideal soundness Q1–Q3](source-soundness.md) gives the baseline paper proof and an explicit conditional extension case using the [SC local argument](semantic-contracts-v0.1.md). These statements concern mathematical derivations; neither finite tests nor adding this case proves Rust source-checker adequacy or compiler correctness. [Source semantics and conditional IR correspondence](source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition. The finite function-contract path now connects reusable contracts to actual source dependencies and final transformed IR; the general implementation proofs remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
+The [inference-rule supplement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) and resource calculus cover the baseline and add a separate `CERTIFIED-COMPUTED` rule for this extension. [Ideal soundness Q1–Q3](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-soundness.md) gives the baseline paper proof and an explicit conditional extension case using the [SC local argument](semantic-contracts-v0.1.md). These statements concern mathematical derivations; neither finite tests nor adding this case proves Rust source-checker adequacy or compiler correctness. [Source semantics and conditional IR correspondence](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-semantics.md) develops source values and environments, function-boundary substitution, frame extension, and phi composition. The finite function-contract path now connects reusable contracts to actual source dependencies and final transformed IR; the general implementation proofs remain open. The [Stage 1 completion criteria](../ROADMAP.md#1-言語仕様) remain in force. Sized types, operation parameters, algorithm skeletons, and extensions to the standard vocabulary belong to subsequent specifications.
 
-The [English language evolution framework](language-evolution.md) organizes future specification records and imaginary-code notation. It adds no accepted syntax. Complete the six-draft pre-0.2.0 design prerequisite before implementing size or operation generalization.
+The [English language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md) organizes future specification records and imaginary-code notation. It adds no accepted syntax. Complete the six-draft pre-0.2.0 design prerequisite before implementing size or operation generalization.

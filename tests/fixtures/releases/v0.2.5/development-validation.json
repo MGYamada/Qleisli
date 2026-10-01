@@ -1,0 +1,201 @@
+{
+  "format": "qleisli.development-validation",
+  "version": 1,
+  "project_version": "0.2.5",
+  "created_utc": "2026-10-01T06:44:56.093703+00:00",
+  "base_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "tree_state": "Working tree; no commit, tag, upload or hosted release performed",
+  "scope": "Compatible private CLI refactoring and synchronized version metadata; no acceptance/proof/source-language changes",
+  "toolchains": {
+    "rust": "1.98.1",
+    "msrv": "1.85.0",
+    "python": "3.14.5",
+    "lean_mathlib": "4.30.0"
+  },
+  "changed_code_and_metadata_sha256": {
+    "Cargo.toml": "b9618a7c95a66f66a6926af0cf0d3ad97d0f20a7fc4573943723e22b9147f747",
+    "Cargo.lock": "3066e53ad1f23876f5e59578a1bf5b5cc964eba543599e9c54da9714b63056dc",
+    "lean/lakefile.toml": "6a3e1ea05fd7de0beda10b886ec48210e82fda8b62fbd3a8d8fb004d75dfe02c",
+    "lean-kernel/lakefile.toml": "057b227d3998a58a840ec60d37eaad262f27629d3747a46e95718d2a768586ef",
+    "python/pyproject.toml": "3cf36bd4a8e16105cc8d15d8da7ffb968afd80c4737f3198d9be30c31859e77c",
+    "python/qleisli/__init__.py": "a5814ec5cd72a556f23c660379bd59de054c28870f52a8a272ebd8aba7b63dcb",
+    "stdlib/Qargo.toml": "1210c40a96977241fa96e1b7a6c42ce88301c4fd9f8ed8661503a8c97b611d82",
+    "src/bin/qleisli.rs": "20412e8d467aa3573db0aa5901aab852e05a76e204106f3922a41b32b6e60750",
+    "src/bin/qleisli/source_commands.rs": "5f111199e3c8b9c2cc8075aeecae63679a196fb01fc39cedc9ff157ec7be91e6",
+    "src/bin/qleisli/options.rs": "b474fbbb29c0fc4a857364a8845fea91d00a133b4f1356c52cadb855816fd96c",
+    "src/bin/qleisli/json.rs": "ec29fb65845d70c20bebd2015003c75a775cea6130d6222e254eb4a1cc69c3f6",
+    "src/bin/qleisli/interop.rs": "aa179180bd09f421980ac9bdaefb26ec6508a8add70e1ee5f5dc4b306cd104cc",
+    "src/bin/qleisli/sized.rs": "9bdd8df2b972ffb03d82d8d3d96dd45b742df68a707f6b5f2fff414f41a3cea6",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "scripts/test_cli_json.py": "3338452b5b23e97bbe7b4a46b731f06689c0e4147bd79c3796ab823f92f87f30"
+  },
+  "checks": [
+    {
+      "command": "cargo test --offline --locked --all-targets",
+      "exit_code": 0,
+      "passed": 542,
+      "ignored": 34
+    },
+    {
+      "command": "rustup run 1.85.0 cargo test --offline --locked --all-targets",
+      "exit_code": 0,
+      "passed": 542,
+      "ignored": 34
+    },
+    {
+      "command": "cargo clippy --offline --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "rustup run 1.85.0 cargo clippy --offline --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --offline --locked --doc",
+      "exit_code": 0,
+      "passed": 1
+    },
+    {
+      "command": "RUSTDOCFLAGS=-D warnings cargo doc --offline --locked --no-deps",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_cli_json.py /tmp/qleisli-v025-after-bin",
+      "exit_code": 0,
+      "passed": 11,
+      "skipped": 1,
+      "skip_reason": "Linux-only filesystem/stdout test on macOS"
+    },
+    {
+      "command": "python3 scripts/check_installation.py /tmp/qleisli-v025-after-bin",
+      "exit_code": 0,
+      "scope": "Bell text/JSON check/run/sample, embedded QFT2, measured-owner rejection; empty helper-tool PATH"
+    },
+    {
+      "command": "QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo test --offline --locked --test sized_cli -- --ignored",
+      "exit_code": 0,
+      "passed": 2,
+      "scope": "Small source check/run/fresh samples and independent-request rejection"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "command": "python3 scripts/test_check_editions.py",
+      "exit_code": 0,
+      "passed": 6
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "qli": 749,
+      "qlt": 5,
+      "manifests": 18
+    },
+    {
+      "command": "python3 scripts/test_check_imaginary_v1_examples.py",
+      "exit_code": 0,
+      "passed": 18
+    },
+    {
+      "command": "python3 scripts/check_imaginary_v1_examples.py",
+      "exit_code": 0,
+      "assertions": 58,
+      "scope": "Finite mathematical examples; imaginary source not compiled"
+    },
+    {
+      "command": "python3 scripts/test_check_semantic_contract_examples.py",
+      "exit_code": 0,
+      "passed": 11
+    },
+    {
+      "command": "python3 scripts/check_semantic_contract_examples.py",
+      "exit_code": 0,
+      "assertions": 39
+    },
+    {
+      "command": "python3 scripts/test_check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "passed": 11
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "scope": "Template and three pilots; form/links only"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "passed": 17
+    },
+    {
+      "command": "python3 scripts/test_test_verification_baseline.py",
+      "exit_code": 0,
+      "passed": 8
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "constructors": 232,
+      "source_snapshots": 141,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "exit_code": 0,
+      "passed": 11
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_lean_kernel.py",
+      "exit_code": 0,
+      "source_modules": 60
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "exit_code": 0,
+      "passed": 25
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "local_links": 3297,
+      "markdown_anchors": 394,
+      "rust_declarations": 135,
+      "rust_tests": 105,
+      "lean_root_modules": 126
+    }
+  ],
+  "evidence": {
+    "cli_comparison": "cli-comparison.json",
+    "registry": "registry-validation.json",
+    "frozen_baseline": "baseline-validation.json",
+    "source_differential": "source-differential.json",
+    "finite_corpus": "corpus-validation.json"
+  },
+  "registry_review": "Only the two package-version source pins and derived source revision differ. Checker/theorem types, IDs, domains and all three external-disabled entries are identical.",
+  "inventory_review": "Six body/version pins refreshed, two private CLI modules inventoried; existing public signatures, constructors and capacity constants equal their prior snapshots. Original comparison bytes/pins, corpus prefix and historical reports unchanged.",
+  "not_performed": [
+    "Hosted candidate CI",
+    "Clean distribution/package rehearsal",
+    "Tagging or publication",
+    "PyPI or platform binary distribution",
+    "Full optional QIR/LLVM/Python-host connection suite",
+    "Maximum-size corpus generation/validation",
+    "General VM-25 acceptance or soundness proof"
+  ],
+  "limits": "Local macOS development validation. Opt-in base tests are ignored except the two explicitly run sized CLI tests. No production authority transfer, new schema enablement or general source preservation claim."
+}

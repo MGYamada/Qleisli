@@ -1,0 +1,652 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T06:58:24.149856+00:00",
+  "project_version": "0.2.5",
+  "compiler_sha256": "80c7425b27514d77e1981c411dd0bbf703a74e90b58d9d5de18b526bb9571f4e",
+  "oracle_script_sha256": "e12c067629fc94ac538d278d4ce0898d3520f7c3416448ec98a5e762d44a22f8",
+  "manifest_sha256": "ec657996cf4722b9879debc4f3ee4937de121296018bfb363d6bbd6ade77652f",
+  "source_sha256": {
+    "quantum_katas/global_phase/kernel.qli": "5937d1db8abf6b82d8a23610ffe67cd2e1bfa48eb7653ce2489cb57fd58eae44",
+    "quantum_katas/global_phase/main.qli": "70c5a477eeb03177ef95e4493c8da6861398487e5d93735697e91fa39891e406",
+    "quantum_katas/ghz3/kernel.qli": "f0d93807854ec7721b138c11b299f269cd31fbc86d2e8e55183940e1fbb2a6cd",
+    "quantum_katas/ghz3/main.qli": "f1cd1ca0216398d40a87e6ed7edf924064343ec6fd5a12ed0924b105bb53027a",
+    "quantum_katas/measure_plus/kernel.qli": "47e1ee57f5449d746e6b2ef88364b6650b2acb426ef90fa495646f50fd38ef57",
+    "quantum_katas/measure_plus/main.qli": "0d41c21beaff789f0288e81a26ca15418ffcef7372cbe2cd72feb3c1373f1a0b",
+    "quantum_katas/teleport/kernel.qli": "1d181d4e8877f22df905571f44300318e71281c78ba5536ed65f64fca6c92f0d",
+    "quantum_katas/teleport/main.qli": "d784808cdd07a2bda54e067f5da14027127188ecc7addad038162d4781a9e59d",
+    "quantum_katas/dense_coding/kernel.qli": "51fb6ca95d0205223d339df3ddd25df0b67a42f4a59b47ce0ebbc4c7c1fb70c6",
+    "quantum_katas/dense_coding/main.qli": "3337b2794d55a73f52e2583cb1b9c0dfd2c3ac33645eea7a316573e57e0761ba",
+    "quantum_katas/bernstein_vazirani/kernel.qli": "bff0cce9d231beca913f07eb44ca787318cef6cc2b7726ae572ccd68a25d8017",
+    "quantum_katas/bernstein_vazirani/main.qli": "a78dbc690b80d1c2eb94ce5ce07952d4cda3fb5d75280ba0d4188fcdca9cba02",
+    "quantum_katas/grover2/kernel.qli": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "quantum_katas/grover2/main.qli": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+    "quantum_katas/qpe3/kernel.qli": "7bf19c837512d27e44a3a23085ded55faef863e727ffc1fc9cab4c08feeb2fee",
+    "quantum_katas/qpe3/main.qli": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0",
+    "qualtran/add2/kernel.qli": "d312954923927e79ca31ce1d3dae1ab3d376f5cb0848ee38af052d19d0b1a6c6",
+    "qualtran/add2/main.qli": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73",
+    "qualtran/xor2/kernel.qli": "64a2334b8f5e3e3d6d0d404d3f0f9c958c208fac17c4dcd5989224e31acaa0a3",
+    "qualtran/xor2/main.qli": "5c2d083d13df1a02c6050a91e5630e1d39910eace3be7202de401e8bc0fda74c",
+    "qualtran/less_than2/kernel.qli": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20",
+    "qualtran/less_than2/main.qli": "b68a775682d106dc41b12e56dbb177e798967a78423ca84ba41f238182b973f1",
+    "qualtran/qrom2/kernel.qli": "517c2c9e1ddddd6474d170d337362ed05b76b907df859ebdbeb13577cc410443",
+    "qualtran/qrom2/main.qli": "28d39ce78b31897c7837c4722c1e8351b1d908bce8896c9236f13a1b1d694d35",
+    "qualtran/and_phase/kernel.qli": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1",
+    "qualtran/and_phase/main.qli": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8",
+    "qualtran/qft2/kernel.qli": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a",
+    "qualtran/qft2/main.qli": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747",
+    "qualtran/qpe2/kernel.qli": "f92af9bedac5237a91854f606588a205480a09e67ab779e0c17d0855ba94e75a",
+    "qualtran/qpe2/main.qli": "87e2ad98b19655b910309d25426e6c5817fe42974116a9f2d9e774864822e91e",
+    "qualtran/reflection2/kernel.qli": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e",
+    "qualtran/reflection2/main.qli": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf",
+    "pennylane_demos/qubit_rotation/kernel.qli": "f47149d434e7db85529d2fb20b13061e6cedba23fa58ae17f3b83fc65b8daf1b",
+    "pennylane_demos/qubit_rotation/main.qli": "427cc5c47839612ccd79271e851f819e3ed3160d554ba80d85e7dd0bb045654d",
+    "pennylane_demos/teleport/kernel.qli": "84078ef3a93141f893230fbbadd8d42b1f48ea9e3d9f1eb7fc7f0a034dbfa614",
+    "pennylane_demos/teleport/main.qli": "5ea3e260683d1483461980f4685f6bddc08d7c55e0aec6cfda413caa7a2f6a57",
+    "pennylane_demos/qaoa_vertex_cover/kernel.qli": "80c3382c46fec5d20893d3a8ba9ebc38d2bd423194faa30afd3ed6fb2c8c5118",
+    "pennylane_demos/qaoa_vertex_cover/main.qli": "9ed1d5273bf06eb266a78c48a5274ef5545e57a644819ff2474e2493d1c68c31",
+    "pennylane_demos/qaoa_maxcut/kernel.qli": "baad3cd880f1fcea80d69b57e24842317e14376cdf684b403183a4cfecdcc9a4",
+    "pennylane_demos/qaoa_maxcut/main.qli": "af1e74619f4682388feefee7419dceac859cfa5aa5a433f34536acf0c7926945",
+    "pennylane_demos/vqe_excitation/kernel.qli": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37",
+    "pennylane_demos/vqe_excitation/main.qli": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090",
+    "pennylane_demos/classifier_layer/kernel.qli": "67973d9db14af1cc242610ce5e7a219759ec3aff46aab5da8c8db81a7365ce75",
+    "pennylane_demos/classifier_layer/main.qli": "78eea282bdb75fc4d9c26d74cf42faab028c11eb36b9d9930499eb34835a2584",
+    "pennylane_demos/qpe3/kernel.qli": "19075932c37f442aafd63ee47e76aa37a3472b6879fae98e3468fd139fc23dcf",
+    "pennylane_demos/qpe3/main.qli": "d76df3145897833f290ff26660ac0641bff6a699d90aa1d94596db4f365a714e",
+    "pennylane_demos/phase_lock/kernel.qli": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78",
+    "pennylane_demos/phase_lock/main.qli": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa",
+    "quantum_katas/deutsch_jozsa3/kernel.qli": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257",
+    "quantum_katas/deutsch_jozsa3/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+    "quantum_katas/bell_measure/kernel.qli": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287",
+    "quantum_katas/bell_measure/main.qli": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+    "qualtran/add_constant3/kernel.qli": "919e0a13fb82450d067ea24c7cf2c27d6040b7794010c0a241c126d37c2fe518",
+    "qualtran/add_constant3/main.qli": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+    "qualtran/equals2/kernel.qli": "f90a3d88e538f7b6b32cd944017fd1683d85a93cc41853b91c99be7c625427e5",
+    "qualtran/equals2/main.qli": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+    "pennylane_demos/lcu_projector/kernel.qli": "2e545374d28ce5949c0b4dec9f5ba5ace2a405fce330166644b2940d0793bb77",
+    "pennylane_demos/lcu_projector/main.qli": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+    "pennylane_demos/kernel_overlap2/kernel.qli": "7a0a853c0a0d706eff7cffef6e726465a524ebf8f265444b932033a6a786f40b",
+    "pennylane_demos/kernel_overlap2/main.qli": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875",
+    "quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
+    "quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+    "quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
+    "quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+    "qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
+    "qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+    "qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
+    "qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+    "pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
+    "pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
+    "pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+    "quantum_katas/odd_parity3/kernel.qli": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d",
+    "quantum_katas/odd_parity3/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+    "quantum_katas/bell_singlet2/kernel.qli": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77",
+    "quantum_katas/bell_singlet2/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+    "qualtran/less_than_constant2/kernel.qli": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f",
+    "qualtran/less_than_constant2/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+    "qualtran/equals_constant2/kernel.qli": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27",
+    "qualtran/equals_constant2/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+    "pennylane_demos/ry_quarter/kernel.qli": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986",
+    "pennylane_demos/ry_quarter/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+    "pennylane_demos/ising_zz_quarter2/kernel.qli": "f37fb2390062640645c70a92c3c18fedf112060a98637ab1ebb34d125b4896f0",
+    "pennylane_demos/ising_zz_quarter2/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d",
+    "quantum_katas/zero_control_x2/kernel.qli": "1733046b23a824a30f85be7336328758389c1020e092f3aa44424ad5d64d1042",
+    "quantum_katas/zero_control_x2/main.qli": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+    "quantum_katas/bell_change_zx2/kernel.qli": "5b361a8ae3d27bfa0a28e6ee775c9762141d77751131b7a5328576c1d533cb7d",
+    "quantum_katas/bell_change_zx2/main.qli": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+    "qualtran/add_minus_one2/kernel.qli": "404ed4fb916643d034fca8f65f546bc185ad91f3c3243f9f3306eeaf0a19dd9c",
+    "qualtran/add_minus_one2/main.qli": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+    "qualtran/qrom1/kernel.qli": "12831e0cdb2776176b8e1215a74d44f61d5f3f5e03b06093c5427f7cea5fc671",
+    "qualtran/qrom1/main.qli": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+    "pennylane_demos/rx_negative_quarter/kernel.qli": "8e5a2c4dfd83c8b3a577ca56a6404c38cf9cec26ce2ed8a66d771f51b0094346",
+    "pennylane_demos/rx_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "pennylane_demos/ry_negative_quarter/kernel.qli": "0706725fb5e88108dda3564c45c36db571c7371b4b4772c37862b714946b4f64",
+    "pennylane_demos/ry_negative_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+  },
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "cases": [
+    {
+      "id": "quantum_katas/global_phase",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/ghz3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/measure_plus",
+      "semantic_probes": 6,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/teleport",
+      "semantic_probes": 9,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/dense_coding",
+      "semantic_probes": 4,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bernstein_vazirani",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/grover2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/qpe3",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/add2",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/xor2",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/less_than2",
+      "semantic_probes": 2080,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/qrom2",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/and_phase",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/qft2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/qpe2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/reflection2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/qubit_rotation",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/teleport",
+      "semantic_probes": 9,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/qaoa_vertex_cover",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0,
+        "cost_expectation": 1.6653345369377348e-16
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_maxcut",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0,
+        "expected_cut_edges": 2.000000000000001
+      }
+    },
+    {
+      "id": "pennylane_demos/vqe_excitation",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "pennylane_demos/classifier_layer",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/qpe3",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1
+      }
+    },
+    {
+      "id": "pennylane_demos/phase_lock",
+      "semantic_probes": 2080,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "quantum_katas/deutsch_jozsa3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_measure",
+      "semantic_probes": 13,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/add_constant3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals2",
+      "semantic_probes": 2080,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/lcu_projector",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1,
+        "zero_selector_probability": 0
+      }
+    },
+    {
+      "id": "pennylane_demos/kernel_overlap2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0,
+        "kernel_overlap": 0.2500000000000001
+      }
+    },
+    {
+      "id": "quantum_katas/swap2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/fredkin3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/xor_constant2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/bitwise_not2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/rx_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/phase_kickback1",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1
+      }
+    },
+    {
+      "id": "quantum_katas/odd_parity3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_singlet2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/less_than_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/ry_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_quarter2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "quantum_katas/zero_control_x2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/bell_change_zx2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/add_minus_one2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/qrom1",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/rx_negative_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/ry_negative_quarter",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "effect",
+      "exit_code": 1
+    },
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "majority_replaced_by_parity",
+      "reference": "quantum_katas/deutsch_jozsa3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/deutsch_jozsa3 column 0: (False, True, False): 0 != 0.25"
+    },
+    {
+      "id": "swapped_bell_labels",
+      "reference": "quantum_katas/bell_measure",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_measure Bell-label-False-True: (True, False): 1 != 0"
+    },
+    {
+      "id": "missing_add_two",
+      "reference": "qualtran/add_constant3",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/add_constant3 column 0: (True, True, False): 0 != 1.0"
+    },
+    {
+      "id": "low_bit_equality_only",
+      "reference": "qualtran/equals2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals2 column 2: (False, True, False, False, True): 1 != 0.0"
+    },
+    {
+      "id": "missing_lcu_unprepare",
+      "reference": "pennylane_demos/lcu_projector",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/lcu_projector column 0: (True, False): 0.5000000000000001 != 0.0"
+    },
+    {
+      "id": "erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+    },
+    {
+      "id": "incomplete_swap",
+      "reference": "quantum_katas/swap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/swap2 column 2: (True, False): 0 != 1.0"
+    },
+    {
+      "id": "unconditional_fredkin",
+      "reference": "quantum_katas/fredkin3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/fredkin3 column 2: (False, True, False): 0 != 1.0"
+    },
+    {
+      "id": "xor_constant_wrong_bit",
+      "reference": "qualtran/xor_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/xor_constant2 column 0: (False, True): 1 != 0.0"
+    },
+    {
+      "id": "partial_bitwise_not",
+      "reference": "qualtran/bitwise_not2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/bitwise_not2 column 0: (True, False): 1 != 0.0"
+    },
+    {
+      "id": "rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "kickback_wrong_secret",
+      "reference": "pennylane_demos/phase_kickback1",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/phase_kickback1 column 0: (True, False): 1 != 0.0"
+    },
+    {
+      "id": "parity_prepared_even",
+      "reference": "quantum_katas/odd_parity3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/odd_parity3 column 0: (True, False, True): 0.2500000000000001 != 0"
+    },
+    {
+      "id": "singlet_phase_after_flip",
+      "reference": "quantum_katas/bell_singlet2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_singlet2 entry 1,1 x: (True, True, False): 0.7285533905932741 != 0.02144660940672623"
+    },
+    {
+      "id": "threshold_wrong_polarity",
+      "reference": "qualtran/less_than_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/less_than_constant2 column 0: (False, False, False): 1 != 0.0"
+    },
+    {
+      "id": "equals_constant_wrong_endian",
+      "reference": "qualtran/equals_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals_constant2 column 1: (True, False, True): 0 != 1.0"
+    },
+    {
+      "id": "ry_second_column_sign",
+      "reference": "pennylane_demos/ry_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ry_quarter entry 0,1 x: (True, False): 0.02144660940672623 != 0.7285533905932733"
+    },
+    {
+      "id": "zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "id": "negative_control_changed_to_positive",
+      "reference": "quantum_katas/zero_control_x2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/zero_control_x2 column 0: (False, True): 0 != 1.0"
+    },
+    {
+      "id": "bell_change_reversed_phase",
+      "reference": "quantum_katas/bell_change_zx2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/bell_change_zx2 entry 0,1 x: (False, False, False): 0 != 0.9999999999999996"
+    },
+    {
+      "id": "subtract_wrong_borrow_order",
+      "reference": "qualtran/add_minus_one2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/add_minus_one2 column 0: (True, False): 1 != 0.0"
+    },
+    {
+      "id": "qrom_reversed_target_bits",
+      "reference": "qualtran/qrom1",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/qrom1 column 0: (False, True, False): 1 != 0.0"
+    },
+    {
+      "id": "negative_rx_missing_scalar",
+      "reference": "pennylane_demos/rx_negative_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_negative_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "id": "negative_ry_wrong_sign",
+      "reference": "pennylane_demos/ry_negative_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ry_negative_quarter entry 1,0 x: (False, True): 0.7285533905932741 != 0.02144660940672623"
+    }
+  ],
+  "semantic_fault_manifest_sha256": "0f95206b03549840e5cba9b793d4d856b0796148677f82152aec925f854f6b7c",
+  "semantic_fault_source_sha256": {
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": "17c8cc4bc5ef631d733f5bc624fc71abe8333ee9a28350bab8b0ddad5698782a",
+    "semantic_faults/majority_replaced_by_parity/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+    "semantic_faults/swapped_bell_labels/kernel.qli": "33792a7bea6f0532966be06c041e3fd3f58460082ef366f32169f948598f41b8",
+    "semantic_faults/swapped_bell_labels/main.qli": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+    "semantic_faults/missing_add_two/kernel.qli": "9556a77b70769fee377fa7bb3fcaae721cf16b4962faa6e3697275b68a70bbf7",
+    "semantic_faults/missing_add_two/main.qli": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+    "semantic_faults/low_bit_equality_only/kernel.qli": "5235aec86b9e0de10108633c2b9bbc7bb9cbf4a602c4ceb7e41b959a33f89d00",
+    "semantic_faults/low_bit_equality_only/main.qli": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+    "semantic_faults/missing_lcu_unprepare/kernel.qli": "8708134788ae9bbbc0224ed85359da2c0426664007a0516de4a2ede043242495",
+    "semantic_faults/missing_lcu_unprepare/main.qli": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+    "semantic_faults/erased_rotation_scalar/kernel.qli": "f5d5a00a71b5f9a274afc6df177de1467a89eea5bd120670b176be0e97ab6d68",
+    "semantic_faults/erased_rotation_scalar/main.qli": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875",
+    "semantic_faults/incomplete_swap/kernel.qli": "eabd4424976075585bf57fa5fadf83e712743352d535678062553fa0cb4c0c44",
+    "semantic_faults/incomplete_swap/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+    "semantic_faults/unconditional_fredkin/kernel.qli": "5710ed89d9d534dbcc48a14167fa423b231bab4f36a3b87db740a442f53b085b",
+    "semantic_faults/unconditional_fredkin/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+    "semantic_faults/xor_constant_wrong_bit/kernel.qli": "e062d5d9dc4d97cd16b042abf62dc25df4f8c5b17531e00881662ab9d6f8566c",
+    "semantic_faults/xor_constant_wrong_bit/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+    "semantic_faults/partial_bitwise_not/kernel.qli": "e3b7f2a5968744457ab08d26f3bd0784cffa79700176c12897509fe4d0b2a0d7",
+    "semantic_faults/partial_bitwise_not/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+    "semantic_faults/rx_missing_scalar/kernel.qli": "3f8a24387c68ebddae05041f23be2ce27ff54040d16c3ed7186650fd0f189014",
+    "semantic_faults/rx_missing_scalar/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "semantic_faults/kickback_wrong_secret/kernel.qli": "afcf3f847b32a26121b6f61f2c2b6a887d7c5bdb37f683d12ad2e5d533cf2b55",
+    "semantic_faults/kickback_wrong_secret/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+    "semantic_faults/parity_prepared_even/kernel.qli": "224edd2720c3229aa3c42ddd229094f566d8cea250a6032e0b804b0ff03b52b3",
+    "semantic_faults/parity_prepared_even/main.qli": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+    "semantic_faults/singlet_phase_after_flip/kernel.qli": "85a3df9326bafa672b669969e0f9612040f86648ff6296d746adc4ef9648ade6",
+    "semantic_faults/singlet_phase_after_flip/main.qli": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+    "semantic_faults/threshold_wrong_polarity/kernel.qli": "317c055e9b4fefe85911247e552ee9cff93ae53e02fd7a09654daef098b64e55",
+    "semantic_faults/threshold_wrong_polarity/main.qli": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+    "semantic_faults/equals_constant_wrong_endian/kernel.qli": "87b03e799b6a3abc6d24f6740daf7f3e895df46193bd4d20b476cc4f9bea0f29",
+    "semantic_faults/equals_constant_wrong_endian/main.qli": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+    "semantic_faults/ry_second_column_sign/kernel.qli": "8cbc23b19a16cfbe9652747d3aa4eca875de2221bbe0bf1df2e6748e72ccbc8a",
+    "semantic_faults/ry_second_column_sign/main.qli": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+    "semantic_faults/zz_erased_scalar/kernel.qli": "146c773dc671e295e31b9e9cf619261f7a0d34db8801c34c7ff8c7b1fec4f0f4",
+    "semantic_faults/zz_erased_scalar/main.qli": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d",
+    "semantic_faults/negative_control_changed_to_positive/kernel.qli": "ea12917b7fe17b955bd38bf8a472afbac0921e69172ab39c12a9ba60cbe10c2d",
+    "semantic_faults/negative_control_changed_to_positive/main.qli": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+    "semantic_faults/bell_change_reversed_phase/kernel.qli": "898e189d772f87a6f8b5fb6c4c6255c479af32e4ef8d771fa9e1e22c31e038e6",
+    "semantic_faults/bell_change_reversed_phase/main.qli": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+    "semantic_faults/subtract_wrong_borrow_order/kernel.qli": "d8d5f46fcb87024bb03c7ebcd4c4571cadeb5086a5c53aa1123dd54ca488afb1",
+    "semantic_faults/subtract_wrong_borrow_order/main.qli": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+    "semantic_faults/qrom_reversed_target_bits/kernel.qli": "6c91fb7fed6f899de5a7aaba54c4a05125d5df6e67d77663ea309ce77ee84117",
+    "semantic_faults/qrom_reversed_target_bits/main.qli": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": "93ca56300f737fd097c367eccc41f1415af59f28249cf4cae12f57eb8eb9477e",
+    "semantic_faults/negative_rx_missing_scalar/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+    "semantic_faults/negative_ry_wrong_sign/kernel.qli": "170331d79ba227b89019b3944e9e6d9e619b139bd12f7c915735a7f55e0776f6",
+    "semantic_faults/negative_ry_wrong_sign/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+  }
+}

@@ -26,6 +26,13 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
+The six 0.2.5 additions are CZ, Toffoli, inclusive/strict one-bit comparisons, mixed-sign
+RX/RY and a two-wire QAOA mixer, all on 1–3 data qubits. The
+[0.2.5 session](authoring/v025-small/README.md) preserves complete first sources,
+the real missing-CZ-import diagnostic and its qif repair. Five first checks and
+all six repaired checks pass; 490 new complex-entry probes and six semantic
+faults exercise their complete contracts.
+
 The [adopted policy](POLICY.md) permits only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos. [Manifest](manifest.json) pins commits, original paths/hashes,
 symbols, contracts, specializations and exclusions. New cases reuse reviewed
@@ -169,13 +176,18 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | qualtran | [equals_constant2](qualtran/equals_constant2/README.md) | XOR [x=1] into an arbitrary target and restore mixed-polarity controls. |
 | pennylane_demos | [ry_quarter](pennylane_demos/ry_quarter/README.md) | RY(pi/2) with its signed second column; params=(0,pi/2). |
 | pennylane_demos | [ising_zz_quarter2](pennylane_demos/ising_zz_quarter2/README.md) | One U_C edge exp(-i*pi*Z0*Z1/4), including absolute scalar phase. |
-
 | quantum_katas | [zero_control_x2](quantum_katas/zero_control_x2/README.md) | Flip the target iff the retained control is zero; amplitude +1. |
 | quantum_katas | [bell_change_zx2](quantum_katas/bell_change_zx2/README.md) | ZX on the first Bell wire, retaining its sign on all inputs and under control. |
 | qualtran | [add_minus_one2](qualtran/add_minus_one2/README.md) | Subtract one modulo four, including zero underflow; explicit borrow order. |
 | qualtran | [qrom1](qualtran/qrom1/README.md) | XOR data=[2,1] into an arbitrary two-bit target, retaining a one-bit address. |
 | pennylane_demos | [rx_negative_quarter](pennylane_demos/rx_negative_quarter/README.md) | RX(-pi/2)=(I+iX)/sqrt(2), including absolute scalar phase. |
 | pennylane_demos | [ry_negative_quarter](pennylane_demos/ry_negative_quarter/README.md) | RY(-pi/2) with signed columns and Z-after-H ordering. |
+| quantum_katas | [controlled_z2](quantum_katas/controlled_z2/README.md) | CZ on arbitrary inputs, including its sign on 11 and coherent control. |
+| quantum_katas | [toffoli3](quantum_katas/toffoli3/README.md) | Both retained controls must be one to XOR the arbitrary target; scalar +1. |
+| qualtran | [less_equal1](qualtran/less_equal1/README.md) | XOR [a≤b] into either target value, including equality, restoring both inputs. |
+| qualtran | [greater_than1](qualtran/greater_than1/README.md) | XOR [a>b] into either target value and restore the negative control. |
+| pennylane_demos | [rotation_mixed_sign](pennylane_demos/rotation_mixed_sign/README.md) | RY(-pi/2) RX(pi/2), chronological RX then RY, with full scalar phase. |
+| pennylane_demos | [qaoa_mixer2](pennylane_demos/qaoa_mixer2/README.md) | Two-wire U_B(pi/4)=RX(pi/2) tensor RX(pi/2); excludes cost/preparation/optimization. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -195,11 +207,11 @@ not passed checks or proved theorems.
 
 | Finite examples | Unitary examples | Observing examples | Semantic faults |
 | --- | --- | --- | --- |
-| 48 | 43 | 5 | 24 |
+| 54 | 49 | 5 | 30 |
 
 <!-- corpus-inventory:end -->
 
-[Current validation](validation-v0.2.4.json) binds its actual commands,
+[Current validation](validation-v0.2.5.json) binds its actual commands,
 probe results and source identities. Historical reports remain reproducibility
 observations for their own snapshots: [0.2.4](validation-v0.2.4.json),
 [0.2.3](validation-v0.2.3.json), [0.2.2](validation-v0.2.2.json),
@@ -232,7 +244,7 @@ cannot adopt semantics or substitute for a new validation run.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
-- The current [type-correct semantic faults](semantic_faults/README.md) must pass source
+- Twenty-four [type-correct semantic faults](semantic_faults/README.md) must pass source
   checking and then fail the mathematical oracle. They test majority/parity,
   Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
   The six 0.2.2 faults additionally test incomplete SWAP, unconditional Fredkin,

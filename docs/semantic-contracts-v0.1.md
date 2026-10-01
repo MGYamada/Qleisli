@@ -51,7 +51,7 @@ is required to change coordinates.
 
 Operator-level evidence describes ordered axes. A source contract additionally
 requires exact source type trees, ordered quantum holders, effect, and the
-[source/IR boundary relation](source-ir-correspondence.md). A bit width is not
+[source/IR boundary relation](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-ir-correspondence.md). A bit width is not
 a source type or an ownership proof. In particular, `Q<Unit>` remains a linear
 holder even though its Hilbert space has dimension one. All ordinary source
 and raw-IR ownership checks remain mandatory.

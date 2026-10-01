@@ -277,7 +277,7 @@ structure Checked where
 /-- The caller must also check every child body and all semantic obligations.
 No cache, body count or finite payload is trusted by this local check. -/
 def check (artifact : Artifact) (index remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match artifact.definitions[index]? with
   | none => .error .invalidIr
   | some definition =>
@@ -333,7 +333,7 @@ private theorem preparedCharge_le (original : Nat) (interface : Interface) :
     preparedCharge original interface ≤ original := Nat.min_le_left _ _
 
 private def preparedCheck (artifact : Artifact) (index remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match artifact.definitions[index]? with
   | none => .error .invalidIr
   | some definition =>
@@ -378,10 +378,10 @@ private theorem preparedCheck_conditions (artifact : Artifact) (headers : Header
               simpa only [preparedConditions_eq artifact headers definition (headers.1 index definition hd)] using checked
 
 private def preparedStep (artifact : Artifact) (used index : Nat) : Except Failure Nat :=
-  match preparedCheck artifact index (2000000 - used) with
+  match preparedCheck artifact index (Limits.maxVisits - used) with
   | .error kind => .error ⟨kind, some ⟨.definition,index⟩⟩
   | .ok checked =>
-    if used + checked.visits > 2000000 then .error ⟨.limit, some ⟨.definition,index⟩⟩
+    if used + checked.visits > Limits.maxVisits then .error ⟨.limit, some ⟨.definition,index⟩⟩
     else .ok (used + checked.visits)
 
 private def preparedScan (artifact : Artifact) (indices : List Nat) (used : Nat) : Except Failure Nat :=
@@ -415,10 +415,10 @@ private theorem preparedScan_conditions (artifact : Artifact) (headers : Headers
 
 /-- Charge each shared definition once, including bodies used zero times. -/
 def step (artifact : Artifact) (used index : Nat) : Except Failure Nat :=
-  match check artifact index (2000000 - used) with
+  match check artifact index (Limits.maxVisits - used) with
   | .error kind => .error ⟨kind, some ⟨.definition,index⟩⟩
   | .ok checked =>
-    if used + checked.visits > 2000000 then .error ⟨.limit, some ⟨.definition,index⟩⟩
+    if used + checked.visits > Limits.maxVisits then .error ⟨.limit, some ⟨.definition,index⟩⟩
     else .ok (used + checked.visits)
 
 def scan (artifact : Artifact) (indices : List Nat) (used : Nat) : Except Failure Nat :=
@@ -474,7 +474,7 @@ def checkAll (artifact : Artifact) (order : Array Nat) : Except Failure Typed :=
   | .error failure => .error failure
   | .ok prepared =>
     let start := prepared.totalVisits + 3 * artifact.definitions.size
-    if start > 2000000 then .error ⟨.limit,none⟩ else
+    if start > Limits.maxVisits then .error ⟨.limit,none⟩ else
       match preparedScan artifact (List.range artifact.definitions.size) start with
       | .error failure => .error failure
       | .ok total => .ok ⟨prepared,total⟩

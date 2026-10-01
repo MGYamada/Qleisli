@@ -74,7 +74,7 @@ structure Checked where
   deriving Repr
 
 def check (request : Request) (packet : Packet) (remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 || scanCharge request packet > remaining then .error .limit
+  if remaining > Limits.maxVisits || scanCharge request packet > remaining then .error .limit
   else if headerCharge request packet > remaining then .error .limit
   else if workCharge request packet > remaining then .error .limit
   else if valid request packet then .ok ⟨workCharge request packet⟩ else .error .contract

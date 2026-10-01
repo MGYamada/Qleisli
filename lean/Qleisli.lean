@@ -2,6 +2,12 @@ import Qleisli.Resource
 import Qleisli.Exact
 import Qleisli.ExactMatrix
 import Qleisli.Finite
+import Qleisli.Raw
+import Qleisli.RawDenotation
+import Qleisli.RawProtected
+import Qleisli.RawProtectedEvaluation
+import Qleisli.RawFunction
+import Qleisli.RawPure
 import Qleisli.Scope
 import Qleisli.Transition
 import Qleisli.Phi

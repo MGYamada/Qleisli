@@ -203,7 +203,7 @@ theorem inspectAux_succ (artifact : Artifact) (precision n index remaining : Nat
         | .ok child => .ok ⟨cost+child.visits⟩) := rfl
 
 def inspect (artifact : Artifact) (precision width index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || precision = 0 || precision > 8 || width > precision then .error .limit
+  if remaining > Limits.maxVisits || precision = 0 || precision > 8 || width > precision then .error .limit
   else inspectAux artifact precision width index remaining
 
 theorem inspectAux_sound (artifact : Artifact) (precision width index remaining : Nat)

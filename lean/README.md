@@ -16,6 +16,13 @@ correctness is not required for the proved Lean replacement. Production
 evidence/transport integration remains in later packets; see the
 [packet's precise coverage](../tests/fixtures/verification_v023/README.md).
 
+The [VM-25 pure bridge](Qleisli/RawPure.lean) covers all eleven straight-line pure
+constructors, independent complex raw action, fresh retained graph/binding and
+both clean-release forms. [Non-dense protected cleanup](Qleisli/RawProtected.lean)
+holds on arbitrary correlated complex amplitudes; [bounded denotation](Qleisli/RawDenotation.lean)
+retains literal physical circuits, phase, interfaces and output order. See the
+[completion scope](../tests/fixtures/verification_v025/completion/README.md).
+
 The executable **Mathlib-free** kernel is in [lean-kernel](../lean-kernel/README.md).
 This directory remains the separate Mathlib proof/model package. The
 [staged migration](../docs/lean-kernel-migration.md) now includes an
@@ -121,7 +128,7 @@ predicate is noncomputable; equality with Rust's finite-map scan is a paper
 correspondence supported by finite implementation checks, not a mechanized
 compiler-correctness theorem. See the
 [scope definitions and theorems](Qleisli/Scope.lean)
-and [Rust lowering-state refinement](../docs/lowering-state-refinement.md).
+and [Rust lowering-state refinement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/lowering-state-refinement.md).
 
 The build treats warnings as errors. The audit permits only `propext`,
 `Classical.choice`, and `Quot.sound`; it rejects `sorryAx`, native-evaluation

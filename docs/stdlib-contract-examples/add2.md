@@ -44,7 +44,7 @@ input/output agreement cannot rule out an extra relative phase.
 Logical source model: four live data qubits, zero scratch, one Toffoli and two
 CNOT applications, three splits and three joins. The carry uses the original
 low bits before overwriting `b0`. Physical synthesis/depth and a quantitative
-bound theorem are pending; [arithmetic scope](../arithmetic-order-finding.md)
+bound theorem are pending; [arithmetic scope](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/arithmetic-order-finding.md)
 does not imply a general efficient adder.
 
 ## Validation and proof status
@@ -68,7 +68,7 @@ tests in this documentation packet.
 
 This is existing A002, not a generalized standard adder. Read its carry ordering,
 the [corpus client](../../corpus/qualtran/add2/main.qli) and the
-[arithmetic/order-finding explanation](../arithmetic-order-finding.md) together.
+[arithmetic/order-finding explanation](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/arithmetic-order-finding.md) together.
 For a future scratch-using adder, document the encoded zero-scratch entry and
 all-state cleanup equation separately from whole-space unitarity. Preserve
 Apache-2.0 source and Qualtran client notices. Future adoption still needs

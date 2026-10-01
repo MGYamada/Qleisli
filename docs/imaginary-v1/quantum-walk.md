@@ -1,24 +1,10 @@
 # Imaginary Qleisli 1.0: a Szegedy quantum walk
 
-Status: **initial design draft; uncompiled imaginary code** (2026-09-27).
-No syntax, operation parameter, sized type, or API introduced here belongs to
-the current language. This draft uses the [shared future notation](../language-evolution.md)
-and preserves the current [ownership and effect constraints](../language-spec.md).
-It supplies a walk body and requirements for the pre-0.2.0 design corpus;
-it is not an implementation, a compiler test, or a speedup claim.
+Imaginary uncompiled symmetric-chain Szegedy walk sampler. It is not a classical-walk sampler, hitting-time/search result, speedup claim or current API.
 
 ## 1. Chosen task and input model
 
-The task is to sample the two vertex labels after a specified finite number
-of steps of a **two-reflection Szegedy walk for a symmetric stochastic matrix**.
-It is a baseline on which a later marked-set detection or spectral algorithm
-could be built. Sampling this walk is not itself a claim to solve a hitting-time
-problem or to sample the classical distribution after the same number of steps.
-
-Let `1 <= N <= 2^n`, with finite static `n`, and let `P` be an `N x N` real
-matrix with nonnegative entries, each row summing to one, and `P = P^T`.
-The two registers have basis `Bits<n>` in the order `(left, right)`; bit `k`
-has weight `2^k`. Define the transition on the entire register alphabet by
+Finite 1<=N<=2^n; nonnegative row-stochastic symmetric P. Registers ordered left/right with low-weight-first labels. Pad by identity rows outside N. Coherent phase-fixed controlled-row Urow and inverse/full-space extension are supplied implementations, not free classical-sampling access. VertexPrep prepares normalized support x<N; width/ownership alone proves no support promise. [Szegedy](https://arxiv.org/abs/quant-ph/0401053) fixes reflection order.
 
 ```text
 Pbar[x,y] = P[x,y]   if x < N and y < N,
@@ -26,35 +12,14 @@ Pbar[x,y] = P[x,y]   if x < N and y < N,
             0       otherwise.
 ```
 
-The required access is a phase-fixed unitary `Urow` on both registers,
-including a unitary extension outside the zero-input subspace, with
-
 ```text
 Urow |x,0^n> = |x> sum_y sqrt(Pbar[x,y]) |y> = E_A |x>,
 Urow = sum_x |x><x| tensor T_x,       T_x unitary.
 ```
 
-The amplitudes in this equation are the nonnegative square roots with exactly
-the stated phase. Classical sampling access to a row does not provide this
-coherent operation, its inverse, or an efficient circuit. The provider must
-supply an implementation and its access/cost contract. A `VertexPrep` unitary
-on `Bits<n>` prepares `sum_(x<N) beta_x |x>` from zero, with
-`sum_x |beta_x|^2 = 1`. The initial edge state is `E_A sum_x beta_x |x>`.
-The entry support is a semantic premise, not something inferred from the
-register width or from separate ownership of its components.
-
-This specialization follows the reflection order in Szegedy's
-[Definition 1, Sections 3 and 6](https://arxiv.org/pdf/quant-ph/0401053):
-the first row-subspace reflection is followed by the swapped-subspace
-reflection. The code and the padding, ownership, and observation contracts
-below are this project's design, not source code supplied by that paper.
-
 ## 2. Visible preparation, reflections, iteration, and observation
 
-`UnitaryOp` parameters are static descriptions without captured live quantum
-owners. `split` and `join` below explicitly move between one product owner and
-its component owners; they do not create aliases or assert separability.
-`reflect_zero_plus<n>` means `2|0^n><0^n| - I`, including its sign.
+Static descriptions capture no owners. Split/join/swap move full interfaces without separability. Every finite fold, including steps=0, checks bodies. Fresh preparation is Iso; both consuming measurements make the sampler Observe.
 
 ```text
 // IMAGINARY QLEISLI 1.0 — does not compile in v0.1.2.
@@ -108,16 +73,9 @@ observe fn sample_walk[static n, static steps,
 }
 ```
 
-`steps` is a finite static natural; zero steps still require all operation
-bodies and contracts to be checked. `init_zero<n>` and `measure_bits` are
-proposed ordinary register definitions over fresh preparation and consuming
-single-bit measurement. `CBits<n>` is the proposed classical measured bit
-vector; `Bits<n>` is a basis type and `Q<Bits<n>>` denotes ownership.
-Their detailed future typing rules remain a specification question.
-
 ## 3. Exact operator and outcome contracts
 
-Let `Pi0 = I_left tensor |0^n><0^n|_right`, let `S|x,y> = |y,x>`, and set
+Execute R_A then swapped R_A, giving W=R_B R_A. Signs/output permutation matter under later control; W†=R_A R_B. Exact support and row equations make valid-label subspace invariant; all padded states retain defined meaning. Whole-space/reference evolution and complete K_xy measurement branches follow the displayed equations. Hide a label only by summing measured branches or explicit discard. Neither live edge register is clean on arbitrary walk states; provider scratch has a separate exact factorization.
 
 ```text
 Pi_A = E_A E_A† = Urow Pi0 Urow†,
@@ -127,33 +85,9 @@ R_B = S R_A S,
 W = R_B R_A = S R_A S R_A.
 ```
 
-Statements execute top to bottom, so `walk_step` has exactly this operator
-order. Since both projectors are orthogonal, each reflection is a unitary
-involution and `W† = R_A R_B`. Returning registers in swapped order is part
-of the operator; a later inverse or coherent control must retain that
-permutation. Replacing one reflection by its negative changes `W` to `-W`
-and changes a later controlled walk. This draft fixes both signs even though
-this closed sampling experiment cannot observe the global sign alone.
-
-The formulas define the action on **all** `2^(2n)` basis states, including
-padded labels. They do not make unspecified states disappear. The span of
-`|x,y>` with `x,y<N` is invariant under both reflections: padded row states
-are orthogonal to it, and each valid row state lies in it. It follows that
-the specified preparation produces no padded-label outcomes. This conclusion
-requires the exact support and row-preparation equations. It is not implied
-by the source signature.
-
-For an arbitrary edge density operator `rho_ER`, including entanglement with
-a reference `R`, the step contract is
-
 ```text
 rho_ER -> (W tensor I_R) rho_ER (W† tensor I_R).
 ```
-
-Here the pure meaning-contract embeddings are identities on the entire edge
-register. For preparation, the isometric embedding is `E_A`; its specified
-zero-input equation must be bound to the actual `Urow`. After `t` steps and
-measurement of both labels, the unnormalized reference output for `(x,y)` is
 
 ```text
 K_xy = (<x,y| W^t) tensor I_R,
@@ -161,50 +95,13 @@ E_xy(rho_ER) = K_xy rho_ER K_xy†,
 sum_(x,y) K_xy† K_xy = I_ER.
 ```
 
-For the closed preparation, the reported probability is
-`|<x,y| W^t E_A sum_z beta_z|z>|^2`. If only the left label is reported,
-the right label is hidden by summing its CP branches; it must still be measured
-or explicitly discarded. A caller may classify `x` using a total classical
-predicate, but that does not add a marked-set detection guarantee.
-
-The two edge registers are live data throughout. In particular, applying
-`Urow†` inside a reflection does **not** show that the right register becomes
-zero on arbitrary walk states. No edge owner is purely released. Any private
-workspace in `T_x`, `VertexPrep`, or a zero-reflection implementation needs its
-own exact factorization with zero output for every admitted input and reference.
-The final two measurements are `Observe`, consuming all edge ownership.
-
 ## 4. Access, approximation, and cost
 
-One step uses two `Urow` calls, two `Urow†` calls, two zero reflections, and
-two swaps of `n`-bit halves. Preparation adds one `VertexPrep` and one `Urow`.
-Thus `t` steps use `2t+1` forward row calls and `2t` inverse calls, followed
-by `2n` measurements. The abstract logical width is `2n`, plus the separately
-declared workspace of the providers. Swaps can become wire permutations in
-IR; physical routing cost is backend dependent and must not be called zero
-merely because the source uses `join` in a different order.
-
-Circuit generation must account for the finite fold and provider expansion.
-Neither an arbitrary dense `P` nor its square roots have a free preparation
-algorithm. Classical storage, loading, amplitude synthesis, and gate precision
-are provider costs. This draft makes no oracle separation or asymptotic
-speedup claim.
-
-The primary contract is exact. For a separately justified approximate unitary
-implementation with `||Wtilde-W|| <= eta` in operator norm, telescoping gives
-`||Wtilde^t-W^t|| <= t eta`. If the prepared normalized state differs by at
-most `epsilon_prep` in Euclidean norm, the measured distributions differ by
-at most `epsilon_prep + t eta` in total variation (capped at one). Deriving
-`eta` from a concrete preparation or gate compiler is a separate obligation.
-Small probability on padded labels or small workspace leakage does not prove
-exact support or authorize pure workspace release. This sampling task has no
-additional success/failure promise; a search task would need one.
+Each step uses two Urow, two Urow†, two zero reflections and two swaps; preparation uses VertexPrep and Urow once. Include 2n plus scratch, provider loading/synthesis/routing and generation. For justified operator error eta and preparation-vector error epsilon, t steps differ in outcome TV <=min(1, epsilon+t eta). Approximate support/leakage proves no exact cleanup, and no extra sampling success guarantee is claimed.
 
 ## 5. Proposed facilities and intended acceptance boundaries
 
-All statuses in this table are **proposed, unimplemented**. These local IDs
-are requirements for later language/API selection, not additions to the
-current standard-library contract ledger.
+Proposed facilities and acceptance obligations, without compiler/adoption claims.
 
 | ID / facility / classification | Types, ownership, effect, and intended IR route | Intended acceptance and rejection |
 | --- | --- | --- |
@@ -215,6 +112,8 @@ current standard-library contract ledger.
 | WALK-5: support and accuracy evidence; unresolved evidence schema | Record `N`, exact row/support equations, implementation identity, reference extension, and optional operator-norm bounds independently of ownership. Verify at the source/IR boundary; bounds must name the actual operator. | Accept a valid-domain preparation with a full-space step. Reject inferring coherent access from probabilities, treating approximate support as exact cleanup, or inferring a search speedup from `P=P^T`. |
 
 ## 6. Open questions and review targets
+
+Open review items below remain pending. Nonsymmetric/time-reversal, marked-set detection, generic evidence and efficient access require separately selected contracts.
 
 - **WALK-O1:** Select a representation and independent checker for symbolic
   stochastic matrices, square roots, coherent row access, and valid support.
@@ -231,7 +130,3 @@ current standard-library contract ledger.
   swap, padded labels, `t=0`, entangled input edges, and one sign-flipped
   reflection under control. These are proposed future checks, not checks
   executed by this document.
-
-The draft body and mathematical obligations are recorded; general syntax,
-API adoption, lowering, independent evidence validation, implementation,
-execution tests, and formal proofs remain pending.

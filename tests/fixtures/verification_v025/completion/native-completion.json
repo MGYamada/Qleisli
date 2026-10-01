@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "native_cases": 146,
+  "rust_comparisons": 31,
+  "independent_matrices": 79,
+  "max_semantic_qubits": 3,
+  "wide_cases": "metadata only; no vectors, matrices or maximum-size corpus",
+  "native_bindings": {
+    "native_binary_sha256": "94abf5a1afac84c0f5131ac85edf3246ade76494958ad030135a5c370b7d06a9",
+    "native_input_sha256": "df1ea9125b7daf2ce604b3b3773ddd7ac7b04d021f6d29987a7ee60928adf341",
+    "native_stdout_sha256": "03d6a19700b0e7195d1eab881c023e101c5beff0fc99581fa410872e1ce88289",
+    "rust_binary_sha256": "ebad6b3948724e5e466c5575fd4e11aa5fc1cf177751827dbb57d2cc7bde5337",
+    "rust_stdout_sha256": "0e4b30b522742a34b6e2e0812579740fcd742e5be1571feee647e403e9c324fa"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "raw-completion"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: raw_completion_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+    "lean-kernel/QleisliKernel/Raw/ProtectedEvaluation.lean": "19f3b780bbedd7f78d900fb68f8593683dc3d110e108ee4c61c7de80f9b4e20d",
+    "lean-kernel/QleisliKernel/Raw/Protected.lean": "1792118b9824adb2c18d8a5c6d52b2f2c6479176a460185b316ca0ad6c5d5ac0",
+    "lean-kernel/QleisliKernel/Raw/Pure.lean": "83c6c70ce4f34c06a56f9438662aef1cddfc69eb32d114b5d2b6c8adaef6a466",
+    "lean-kernel/QleisliKernel/Raw/Trace.lean": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d",
+    "lean-kernel/QleisliKernel/Raw/Function.lean": "6eafada4f9ab878470a28735daad5106026ba70a6cb83f0bd49004dba540c740",
+    "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+    "lean-kernel/QleisliKernel/Semantics/Function.lean": "119ed5646e8098dd0e6c0a569a16e517b71c6833d2b4265cb1e0bb114cd6cacc",
+    "lean-kernel/QleisliKernel/Semantics/Protected.lean": "9a145100d2a3b839551a9af480eeb36697d19a33da5c5b561569c6c4d775d5e0",
+    "lean-kernel/Protocol/Raw.lean": "4c0150990aeaee510136b8a9ef281f6812298fa91e4882b27c6b69469ea1dd26",
+    "scripts/test_lean_raw_completion.py": "0c353fd8092b5f27c92a172b3fdd896a2ff64c07d3648eb31ac59070323770bb"
+  }
+}

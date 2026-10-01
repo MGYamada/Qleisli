@@ -85,11 +85,11 @@ structure Pending where
   deriving Repr
 
 def inspect (artifact : Artifact) (index remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match project artifact index with
   | none => .error .contract
   | some r =>
-    if r.program.size > 16777216 || scan r > remaining then .error .limit else
+    if r.program.size > Limits.maxPayloadBytes || scan r > remaining then .error .limit else
     let cost := charge r
     if cost > remaining then .error .limit else
     if !shape r then .error .contract else .ok ⟨r,cost⟩

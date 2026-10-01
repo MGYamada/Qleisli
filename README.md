@@ -8,10 +8,10 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Version: 0.2.4. Qleisli language edition: `"2026"`.**
+**Selected release: 0.2.5. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
-and the [0.2.4 release record](docs/releases/v0.2.4.md).
+and the [0.2.5 release record](docs/releases/v0.2.5.md).
 The Rust CLI and library run with Rust alone.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
@@ -22,7 +22,7 @@ The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
 Version 0.2.4 was published on 2026-10-01: [crates.io](https://crates.io/crates/qleisli/0.2.4)
 and [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4).
-The [release record](docs/releases/v0.2.4.md#successful-publication-2026-10-01)
+The [release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01)
 binds the verified source, registry package and complete GitHub downloads.
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
@@ -31,7 +31,7 @@ binds the verified source, registry package and complete GitHub downloads.
 ## Language edition and qrate management
 
 The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
-each source. Compiler version `0.2.4`, Qleisli edition `"2026"` and the Rust
+each source. Compiler version `0.2.5`, Qleisli edition `"2026"` and the Rust
 implementation's Cargo edition `"2024"` are independent. See the
 [edition contract](docs/language-editions.md) for manifest validation and migration.
 
@@ -86,13 +86,20 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Install this registry version:
+Install the latest published registry version:
 
 ```sh
 cargo install qleisli --version 0.2.4 --locked
 ```
 
-The [release record](docs/releases/v0.2.4.md) binds the source and package to
+The selected 0.2.5 release includes compatible refactoring, documentation
+reduction and small finite corpus additions. Its registry command is:
+
+```sh
+cargo install qleisli --version 0.2.5 --locked
+```
+
+The [0.2.4 release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md) binds the published source and package to
 validation and publication results.
 [Hosted API documentation](https://docs.rs/qleisli/0.2.4/qleisli/) is built separately after upload.
 
@@ -207,15 +214,21 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
+The selected release is **0.2.5**, with compatible refactoring
+across Rust and the Lean kernel, documentation reduction and six finite corpus
+additions; see its
+[release record](docs/releases/v0.2.5.md). Final source verification and
+publication are authorized and tracked there.
 The latest published version is **0.2.4**, which began with documentation
 reduction and six small finite corpus additions. The
-[release record](docs/releases/v0.2.4.md#successful-publication-2026-10-01)
+[release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01)
 distinguishes source validation from completed publication and distribution checks.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and
 [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain current work targets. Rust retains production acceptance authority;
-external schemas remain disabled. The [VM-24 finite component](tests/fixtures/verification_v024/README.md)
-is implemented and checked; raw-IR/hierarchy/production integration remains VM-25–VM-29.
+external schemas remain disabled. The [VM-25 pure raw-IR profile](tests/fixtures/verification_v025/completion/README.md)
+has actual-checker complex-denotation, cleanup and retained-body binding proofs.
+Observing raw IR, hierarchy and production integration remain VM-26–VM-29.
 
 Future type-system breaks use v0.3.0; QLT implementation remains deferred to
 v0.4.0 or later. These targets do not establish the three general theorems or
@@ -327,7 +340,7 @@ Start with quantum programs written as they ought to be expressed, then grow
 the language with AI so it can express and check them. This
 [development method](docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
 uses desired source, executable translations and concrete failures to guide
-language design. The [code-driven development procedure](docs/code-driven-development.md)
+language design. The [code-driven development procedure](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/code-driven-development.md)
 defines the 0.1.x foundation, concrete obstacles and acceptance experiments for
 the user-selected continuation from 0.2.0 onward.
 

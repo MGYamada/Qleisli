@@ -180,6 +180,6 @@ General operation parameters, classical-port or heterogeneous static operations,
 general source borrowing signatures, and open-program reference execution remain
 outside the implementation. The simulator implements the factored effective
 operator of `ComputeUseUncompute`; it does not independently execute and inspect
-every auxiliary wire's zero return. The [conditional finite-IR paper argument](finite-core-proof.md)
+every auxiliary wire's zero return. The [conditional finite-IR paper argument](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md)
 is not machine verification of the Rust checker. Compiling a `.qli` program does
 not establish a proved guarantee of physical hardware correctness.

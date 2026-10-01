@@ -143,6 +143,7 @@ jobs:
         run: |
           lake env lean -DwarningAsError=true Audit.lean
           lake env lean -DwarningAsError=true Tests.lean
+          lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
       - name: Replay the compiled project definitions through Lean's kernel
         working-directory: lean-kernel
         run: |
@@ -170,6 +171,10 @@ jobs:
         run: python3 scripts/test_lean_exact.py
       - name: VM-24 native finite circuits, fresh encoded equations and original serialized matrices
         run: python3 scripts/test_lean_finite.py
+      - name: VM-25 pure raw owners, actual bodies and finite structured cleanup
+        run: python3 scripts/test_lean_raw.py
+      - name: VM-25 retained bindings, capacity boundaries and non-dense cleanup
+        run: python3 scripts/test_lean_raw_completion.py --record /tmp/qleisli-vm25-completion.json
       - name: Symbolic QFT paths and independent Fourier coefficients
         run: python3 scripts/test_lean_qft.py
       - name: Small QFT semantic-path matcher and nonliteral candidates

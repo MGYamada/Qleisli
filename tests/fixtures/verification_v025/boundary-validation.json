@@ -1,0 +1,286 @@
+{
+  "format": "qleisli.vm25-boundary-validation",
+  "version": 1,
+  "date": "2026-10-01",
+  "status": "passed",
+  "scope": "Pure original RawProgram structural checking and bounded actual-body matrix reconstruction; component checks passed, complete VM-25 general denotation gate pending.",
+  "project_version": "0.2.5",
+  "base_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "source_identity": "Uncommitted workspace contents pinned below; no tag or publication performed.",
+  "authority": "Rust production; bounded Lean components experimental",
+  "moved_component": {
+    "pure_constructors": 11,
+    "original_ports_operations_effects": "independently checked in Mathlib-free Lean",
+    "retained_function_bodies": "implementation and specification reconstructed from original data with fresh checked-prefix dependencies",
+    "compute_cleanup": "full finite physical compute/use/inverse-compute equation checked against logical map and zero encoding",
+    "source_bridge": "six actual Rust observing artifacts; only original straight-line prefixes before terminal measurement rechecked",
+    "structural_register_capacity": 12,
+    "finite_matrix_profile_qubits": 6,
+    "largest_semantic_validation_qubits": 3
+  },
+  "native_results": {
+    "native_cases": 121,
+    "rust_comparisons": 104,
+    "independent_matrices": 85,
+    "rust_source_prefixes": 6
+  },
+  "compatibility": {
+    "existing_lean_declarations": 5550,
+    "missing_or_incompatible_types": 0,
+    "legacy_transport_comparisons": 1435,
+    "legacy_oracle_tests": 40,
+    "public_rust_ir_evidence_cli_semantics": "unchanged in this boundary continuation",
+    "external_schemas_enabled": 0
+  },
+  "actual_definition_proofs": [
+    "prepare_safety: actual input/transition validity, freshness, complete final owner coverage and effect consistency",
+    "inspect_fresh: complete empty-cache original evidence traversal and actual reconstruction",
+    "literal map coefficients and arbitrary-reference composition/norm preservation",
+    "finite computed-body cleanup factors through logical map and actual zero encoding including dirty rows",
+    "phase-exact equality to the independently supplied required operator"
+  ],
+  "performed_commands": [
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_lean_raw.py",
+        "--record",
+        "tests/fixtures/verification_v025/native-validation.json"
+      ],
+      "exit_code": 0,
+      "report": "native-validation.json"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--write",
+        "--report",
+        "tests/fixtures/verification_v025/registry-validation.json"
+      ],
+      "exit_code": 0,
+      "report": "registry-validation.json",
+      "coverage": "both package builds, both compiled declaration/axiom audits, runtime source policy, fresh QleisliKernel replay, compiled schema type export"
+    },
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": "lean-kernel",
+      "argv": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "exit_code": 0,
+      "tests": 27,
+      "skipped": 0
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "tests": 17
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "tests": 24
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_lean_exact.py",
+        "--record",
+        "tests/fixtures/verification_v025/arithmetic/exact-replay.json"
+      ],
+      "exit_code": 0,
+      "report": "arithmetic/exact-replay.json"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_lean_finite.py",
+        "--record",
+        "tests/fixtures/verification_v025/finite/finite-replay.json"
+      ],
+      "exit_code": 0,
+      "report": "finite/finite-replay.json"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_verification_baseline.py",
+        "target/debug/qleisli",
+        "--kernel",
+        "lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--report",
+        "tests/fixtures/verification_v025/frozen-baseline.json"
+      ],
+      "exit_code": 0,
+      "report": "frozen-baseline.json",
+      "scope": "unchanged frozen VM-22 inputs and historical profile labels; later raw component cases recorded separately"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/test_kernel_compatibility.py",
+        "--before",
+        "/tmp/qleisli-v025-kernel-before/qleisli-kernel",
+        "--report",
+        "tests/fixtures/verification_v025/transport-compatibility.json"
+      ],
+      "exit_code": 0,
+      "report": "transport-compatibility.json",
+      "execution": "standalone final retry; 40 tests passed in 77.463 seconds"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/check_docs.py",
+        "--write-status"
+      ],
+      "exit_code": 0,
+      "stdout": "Checked 2573 local links, 200 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 139 Lean root modules.\n"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout": "VM-22: 232 constructors, 161 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"6c81d3e14f7a85ed95a534b80f4e6e2ff3e25baf6ea05b35a66af2780795f309\", \"mode\": \"source-identity-only\", \"source_revision\": \"e76367a6c8ff3e2c6c4d7da1c8f55c1e18b42151a0ea998bff550705c7ef1da1\", \"status\": \"passed\", \"version\": 1}\n"
+    },
+    {
+      "cwd": ".",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": ""
+    }
+  ],
+  "repaired_preflight_findings": [
+    "Generated partial helper from a recursive register type builder: replaced with explicit total Nat.rec; compiled origin audit and fresh replay pass.",
+    "Protected-use logical expansion before finite capacity checks: retained original uses until bounded event reconstruction; oversized-event reductions pass without allocation.",
+    "Selected QIRF embedded source metadata is empty: actual source files, bundled library and manifests now pinned separately; all 121 native cases replayed.",
+    "A concurrent transport comparison exceeded the five-second limit in the unchanged baseline binary; final standalone retry passes all 40 tests and 1435 comparisons."
+  ],
+  "remaining_gates": [
+    "VM-25 general per-constructor raw denotation/refinement theorem",
+    "VM-25 non-dense structural protected-cleanup proof beyond the finite inspection profile",
+    "Complete FunctionIdentity/source/expanded-step/capacity receipt binding",
+    "VM-26 pure classical control, branches and observing/instrument semantics",
+    "VM-27 hierarchy and root closure",
+    "VM-28/29 native packaging, byte-level transport refinement, fail-closed production dual checking and execution of the exact accepted artifact"
+  ],
+  "not_performed_here": [
+    "Full Rust all-target/Clippy/MSRV suites or package checks (Rust implementation unchanged in this boundary continuation; prior v0.2.5 refactor records retain those results).",
+    "Hosted CI, registry upload, tagging or publication."
+  ],
+  "prior_rust_validation": "tests/fixtures/releases/v0.2.5/refactoring-validation.json",
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean": "2e431a95a1cb871931a24c68834242abbc3c833fdbcf6d29d210e9105df6e24c",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "f2c73042502b2fec1bf7b84da7175808f27ac5b2564ec6e47d8176369f8ac8bd",
+    "lean-kernel/Protocol/Raw.lean": "225ee6b7262d1b51dd9e3e3122431d7038af52d53f88c2746bb630306f76f46c",
+    "lean/Qleisli/Raw.lean": "df97a32de2779c4641b44a876a7082ae98911a4d3ce283d7f41dfd628e8570a2",
+    "scripts/test_lean_raw.py": "f49ed83317d5b27d7c89ad086dd6953848c5326593610274d4c7384db4918eb5",
+    "lean-kernel/QleisliKernel.lean": "9e9611e91168f1ea0d5e1d2c3c7228dce81e7da11117cca48c73ec2768f8d7f9",
+    "lean-kernel/Protocol.lean": "30e1e7950aa7c3c491398c98d08aba9ad3ae8208e048c67ebd7e6ac4c3272485",
+    "lean-kernel/Tests.lean": "6ef9a114f751a943a4fc28630b0a06f96d05843a92871709bb376625a1c7c086",
+    "lean/Qleisli.lean": "6762630f87a2cb5a433b8dae3b75a95387776ed2cc147449997ecc058d6581e1",
+    ".github/workflows/ci.yml": "0de5ecd435f51dee8225896bf298e7af548bee2e4a613dc225ce97037417810a",
+    "tests/fixtures/verification_v022/inventory.json": "1ab30a9016c6ec6e27f08658fb91be0aa34ad3e5aede2fa77e5822641cd40df7",
+    "docs/project-status.json": "b23ce030b7e0cce5adcbb20d9502d037a83d58dfcd7f3705d8c42286841f3594",
+    "docs/current-status.md": "92ca306bcf8e73e7c346ed5c7e7e4205275685bc03451b98a37b85205980c7c5",
+    "docs/rule-inventory.md": "75552b42b14bf4cb623ea7dbac74d2bc32a42a7879df14891cb283b2c5b6662c",
+    "docs/verification-migration-v0.2.md": "7e8f55b46e4752a063f128b7976c90ba83aff445b268c2f120d2b4d8b21b9afc",
+    "docs/lean-kernel-migration.md": "75e7ca7e3eba00fc0aa23c81ef4bf293a280409d08ec7953cf7a67ef40ca9de6",
+    "docs/formal-core.md": "a748dbb4549e33c0f157f2b2a17db99bf17807b2bcef4bc2761c2133d7dfdf7a",
+    "docs/releases/v0.2.5.md": "a46da185cabff4a991836f3a77ec1c902660c5290ae6d4d5d61b2025d9f91423",
+    "lean-kernel/README.md": "a5808afc9021dc6fd58a0c0ea6deecba117063fe2cb2513735af2fccbf06e47b",
+    "tests/fixtures/verification_v025/README.md": "ba37215e6570b7787c23a1a672e2eed89349da9f2bf79cb5bdbcf1a55c6a5a0e",
+    "CHANGELOG.md": "a419327d116e5d05d6c88c18c0918d8fe33fa29d7f67ceb0cbd4199bc533de57"
+  },
+  "reports_sha256": {
+    "native-validation.json": "bfb0910188e2ac348fddba903ba52992b4a2933844946d2225e72aabc4e87226",
+    "registry-validation.json": "d393f9e14cf2f3d8291f418a9a196eaf6556104bfa63105c02c7c69d83dff5da",
+    "arithmetic/exact-replay.json": "cf794b6c4c14266a33f5e759a4cacccdb9134c6b459eb3e72f8a35a1607344ed",
+    "finite/finite-replay.json": "68e6cfde1e5ae84c473ce8bb22beeebe949f41789bccefede08978a4df41f4de",
+    "frozen-baseline.json": "6fd1f11d6f5feaae6120b3a87b1e89e7c4997c71ba68e6eded5d7fbd39683423",
+    "transport-compatibility.json": "ed9253fa3b7017b4422415f816ad2c7a7537de72e0f16a9e2616cfcade43f1b2",
+    "public-type-review.json": "c055852aa5e02363b449e23f09a47d09dbf0b3e4d7c7314b5bf8cd47eb7ff499",
+    "inventory-review.json": "f75f4213d091e225b840d3ffe3c882c00b691e46a82a4529ffb7ab5e16de6cb1",
+    "final-checks.json": "b8737a2b910fb01ede24de48ea2494449bfc540accd449243f61612ee140c00b"
+  },
+  "input_artifacts_sha256": {
+    "native-inputs.json": "9348e0ed1615ed68bdcd3b0fe5ce82913504d4fd45c2b25834d58ba553e5c4db",
+    "finite/native-inputs.json": "0e9afdfbd8cd8e619932b1598653bf7fbfb29e0ddffd642260dd4bf06e6962b5",
+    "source-ir/0.qirf.json": "0cb09eea37f4637ecf31c39db2891d75ef321dbf1b46b0c66459a354cb299fa0",
+    "source-ir/1.qirf.json": "62d5fa46b4e8bee2f491e1dcea38bf14377f3036462b22c3f85863ef44d1c007",
+    "source-ir/2.qirf.json": "5d4e2dbabbd9daceb21d3b51081cf2eb687cda3ae70af6687be930948eff7284",
+    "source-ir/3.qirf.json": "aed99899d58f869f1d8f8ab13c54b420a0debb7b6efe30810fcd7ab69f84cbad",
+    "source-ir/4.qirf.json": "0d80ae0338e11ea1b80a659717ca4f9498185c40c2abb7aa9b736ebf83c24983",
+    "source-ir/5.qirf.json": "350c5735111597f19cd2d49784d54f93d162735dce8861d814cea11d56419d2e"
+  },
+  "native_bindings": {
+    "lean_binary_sha256": "409db7177304b632427eb02ed81bf2100a4c24d493da67821866392eca2fdc4a",
+    "lean_input_sha256": "4e71125f148531510439672f9831971b1f3ca14b65536a92bb17c48c538ff733",
+    "lean_stdout_sha256": "b177dbd5962f77ee6ad425179a4d7d97d99d8729842fd29f4f0f8e66626a8d6e",
+    "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "lean_exit": 0,
+    "rust_binary_sha256": "46cca617cacea6f9c7512a88846e92e1d8831cc1a70d612ddb57789b637811f2",
+    "rust_stdout_sha256": "41e5e5f5ca0d3ea023038b18021db036134dc137b9c8f8cf523f57489f5a923b"
+  },
+  "production_binaries_sha256": {
+    "rust": "f38a4e577b92c2286319a7338f80c68f2e1e81ab4bcb3b1a2d11b386ee2b1d74",
+    "lean": "2504401d3e0c62204099c490c3de6a309df6b8d756250f498da89ef59cea7d77"
+  }
+}

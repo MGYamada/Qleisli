@@ -44,6 +44,22 @@ class RuntimeSourcePolicy(unittest.TestCase):
     def test_separate_transport_imports_are_allowed(self):
         self.assertEqual(check_kernel(self.root), ([], 4))
 
+    def test_nested_transport_is_owned_and_keeps_the_pure_boundary(self):
+        self.write("Protocol.lean", "import Protocol.Reader\n")
+        self.write("Protocol/Reader.lean", "import Lean.Data.Json\n")
+        self.write("Main.lean", "import QleisliKernel\nimport Cli.Run\n")
+        self.write("Cli/Run.lean", "import Protocol\n")
+        self.assertEqual(self.errors(), [])
+        for module in ["Protocol.Reader", "Cli.Run"]:
+            with self.subTest(module=module):
+                self.write("QleisliKernel/Check.lean", f"import {module}\n")
+                self.assertTrue(any("pure kernel imports transport" in e for e in self.errors()))
+        self.write("QleisliKernel/Check.lean", "import Std\n")
+        self.write("Cli/Unused.lean", "def unused := true\n")
+        self.assertTrue(any("absent from root import/audit: Cli.Unused" in e for e in self.errors()))
+        self.write("Cli/Run.lean", "import Protocol\nunsafe def value := 1\n")
+        self.assertTrue(any("unsafe" in e and "Cli/Run.lean" in e for e in self.errors()))
+
     def test_reference_semantics_cannot_depend_on_checkers(self):
         self.write("QleisliKernel/Check.lean", "import QleisliKernel.Semantics.Word\ndef check := true\n")
         self.write("QleisliKernel/Semantics/Word.lean", "import Std\ndef meaning := true\n")
@@ -191,7 +207,7 @@ class CompiledAudit(unittest.TestCase):
         cls.audit_source = (ROOT / "lean-kernel/Audit.lean").read_text(encoding="utf-8")
 
     def audit(self, body, main="import QleisliKernel\ndef main : IO Unit := pure ()\n",
-              *, module="QleisliKernel"):
+              *, module="QleisliKernel", transport=False):
         """Compile mutations without the source scanner to test metadata independently."""
         with tempfile.TemporaryDirectory(prefix="qleisli-kernel-audit-") as directory:
             root = Path(directory)
@@ -201,9 +217,12 @@ class CompiledAudit(unittest.TestCase):
             source.write_text("import Init\n" + body, encoding="utf-8")
             modules = [module]
             if module != "QleisliKernel":
-                (root / "QleisliKernel.lean").write_text(f"import {module}\n", encoding="utf-8")
+                (root / "QleisliKernel.lean").write_text(
+                    "import Init\ndef seed := true\n" if transport else f"import {module}\n",
+                    encoding="utf-8")
                 modules.append("QleisliKernel")
-            (root / "Main.lean").write_text(main, encoding="utf-8")
+            (root / "Main.lean").write_text(
+                f"import {module}\n" + main if transport else main, encoding="utf-8")
             (root / "Audit.lean").write_text(self.audit_source, encoding="utf-8")
             for name in [*modules, "Main"]:
                 relative = name.replace(".", "/")
@@ -253,6 +272,21 @@ class CompiledAudit(unittest.TestCase):
                 self.assertNotEqual(code, 0, output)
                 self.assertIn(expected, output)
                 self.assertIn("Outside", output)
+
+    def test_transport_helpers_are_audited_by_origin_module(self):
+        for module in ["Protocol.Reader", "Cli.Run"]:
+            with self.subTest(module=module):
+                code, output = self.audit("def value : Nat := 1\n", module=module, transport=True)
+                self.assertEqual(code, 0, output)
+                # The namespace deliberately differs from the transport module.
+                code, output = self.audit(
+                    "namespace Outside\nprivate unsafe def value : Nat := 1\nend Outside\n",
+                    module=module, transport=True)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn("unsafe project", output)
+                code, output = self.audit("def value : Nat := 1\n", module=module)
+                self.assertNotEqual(code, 0, output)
+                self.assertIn("forbidden runtime import", output)
 
     def test_axiom_free_theorems_do_not_authorize_runtime_replacements(self):
         for prefix, expected in [

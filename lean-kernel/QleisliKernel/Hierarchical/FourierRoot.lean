@@ -65,7 +65,7 @@ enter/suffix; every required root must be present in the freshly computed cache.
 All scans, body inspection and wiring share one remaining structural budget. -/
 def inspect (artifact : Artifact) (request : Request) (order : Array Nat)
     (remaining : Nat) : Except Error Pending :=
-  if remaining > 2000000 || request.width = 0 || request.width > 8 then .error .limit else
+  if remaining > Limits.maxVisits || request.width = 0 || request.width > 8 then .error .limit else
   match artifact.definitions[artifact.entry.implementation]? with
   | none => .error .invalidIr
   | some d =>
@@ -127,6 +127,7 @@ theorem inspect_conditions (artifact : Artifact) (request : Request) (order : Ar
       Wiring.inspect artifact order (remaining-charge request d-pending.body.visits) = .ok pending.wiring ∧
       routes request.width shell pending.wiring.cache = some pending.codes := by
   unfold inspect at accepted
+  simp only [Limits.maxVisits] at accepted
   split at accepted
   next exceeded => contradiction
   next bounded =>
@@ -137,7 +138,6 @@ theorem inspect_conditions (artifact : Artifact) (request : Request) (order : Ar
       split at accepted
       next exceeded => contradiction
       next scanned =>
-        dsimp only at accepted
         split at accepted
         next exceeded => contradiction
         next costBound =>
@@ -182,7 +182,7 @@ Fourier inspection. Neither caller-provided typed flags nor reset budgets occur.
 def checkAll (artifact : Artifact) (order : Array Nat) (request : Request)
     (wiringOrder : Array Nat) : Except Failure Checked := do
   let checked ← Conditional.checkAll artifact order
-  let binding ← match inspect artifact request wiringOrder (2000000-checked.state.visits) with
+  let binding ← match inspect artifact request wiringOrder (Limits.maxVisits-checked.state.visits) with
     | .error kind => .error ⟨kind,none⟩
     | .ok pending => .ok pending
   -- Full endpoint comparisons are prepaid by the inspector's header charge.

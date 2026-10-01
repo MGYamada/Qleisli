@@ -291,7 +291,7 @@ private def fullCharge (artifact : Artifact) (value : Subject) : Nat :=
   scan + 16 * (1 + value.bodyCharge + value.headerCost sideCharge artifact) + value.mapsCost artifact
 
 def check (artifact : Artifact) (ref : Ref) (remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match subject artifact ref with
   | none => .error .invalidIr
   | some value =>
@@ -336,10 +336,10 @@ theorem check_conditions (artifact : Artifact) (ref : Ref) (remaining : Nat) (ch
                   by simpa using valid⟩
 
 def step (artifact : Artifact) (used : Nat) (ref : Ref) : Except Failure Nat :=
-  match check artifact ref (2000000 - used) with
+  match check artifact ref (Limits.maxVisits - used) with
   | .error kind => .error ⟨kind, some ref⟩
   | .ok checked =>
-    if used + checked.visits > 2000000 then .error ⟨.limit,some ref⟩
+    if used + checked.visits > Limits.maxVisits then .error ⟨.limit,some ref⟩
     else .ok (used + checked.visits)
 
 def scan (artifact : Artifact) (refs : List Ref) (used : Nat) : Except Failure Nat :=
@@ -429,7 +429,7 @@ private theorem preparedCharge_le (original : Nat) (interface : Interface) :
     preparedCharge original interface ≤ original := Nat.min_le_left _ _
 
 private def preparedCheck (artifact : Artifact) (ref : Ref) (remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match subject artifact ref with
   | none => .error .invalidIr
   | some value =>
@@ -497,7 +497,7 @@ private def reused (artifact : Artifact) (ref : Ref) (remaining : Nat) : Option 
     if cost > fullCharge artifact (.meaning meaning) then none else some cost
 
 private def checkTyped (artifact : Artifact) (ref : Ref) (remaining : Nat) : Except Error Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match reused artifact ref remaining with
   | some cost => .ok ⟨cost⟩
   | none => preparedCheck artifact ref remaining
@@ -551,10 +551,10 @@ private theorem checkTyped_conditions (artifact : Artifact) (headers : Headers a
       exact ⟨bound,Nat.le_of_not_gt bounded,valid⟩
 
 private def stepTyped (artifact : Artifact) (used : Nat) (ref : Ref) : Except Failure Nat :=
-  match checkTyped artifact ref (2000000-used) with
+  match checkTyped artifact ref (Limits.maxVisits-used) with
   | .error kind => .error ⟨kind,some ref⟩
   | .ok checked =>
-    if used + checked.visits > 2000000 then .error ⟨.limit,some ref⟩
+    if used + checked.visits > Limits.maxVisits then .error ⟨.limit,some ref⟩
     else .ok (used + checked.visits)
 
 private def scanTyped (artifact : Artifact) (refs : List Ref) (used : Nat) : Except Failure Nat :=
@@ -593,7 +593,7 @@ def checkAll (artifact : Artifact) (order : Array Nat) : Except Failure Typed :=
   | .error failure => .error failure
   | .ok nodes =>
     let start := nodes.totalVisits + 6 * (artifact.meanings.size + artifact.encodings.size)
-    if start > 2000000 then .error ⟨.limit,none⟩ else
+    if start > Limits.maxVisits then .error ⟨.limit,none⟩ else
       match scanTyped artifact (subjects artifact) start with
       | .error failure => .error failure
       | .ok total => .ok ⟨nodes,total⟩

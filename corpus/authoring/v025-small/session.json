@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "task": "Add six small finite corpus translations for v0.2.5 from already frozen inputs",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.5",
+  "baseline_commit": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read adopted design, corpus policy, pinned source symbols and existing driver/oracle patterns. All full sources are saved and hashed before first checking. Existing compatible aliases are known. Informed authoring, not controlled model evaluation or upstream execution.",
+  "created_utc": "2026-10-01T07:42:38.527400+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete untouched first source before compiler checks",
+      "sha256": {
+        "quantum_katas/controlled_z2/kernel.qli": "9206a31949ee7f54cf952d98c107c1dccec9c61e9208436245e1b83000b55eec",
+        "quantum_katas/controlled_z2/main.qli": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18",
+        "quantum_katas/toffoli3/kernel.qli": "277ad25095503cf3ad5563a7151e77f5d789c275c485776c64816d28531651de",
+        "quantum_katas/toffoli3/main.qli": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c",
+        "qualtran/less_equal1/kernel.qli": "4f291ff35098f69bd6c3880b89a47b98f2d5791e883833e94771ff050f53238e",
+        "qualtran/less_equal1/main.qli": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea",
+        "qualtran/greater_than1/kernel.qli": "410404f79d76713bfc3c9966e547f17fe24a54cd96224cd37bac678dd1c39bfc",
+        "qualtran/greater_than1/main.qli": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5",
+        "pennylane_demos/rotation_mixed_sign/kernel.qli": "31e3b49049e06ef03c965513a85f7e03d03c8bcf1fc658366310eeb409c37632",
+        "pennylane_demos/rotation_mixed_sign/main.qli": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b",
+        "pennylane_demos/qaoa_mixer2/kernel.qli": "0ba51a680cf6085dd0a867b23a0b031cd15184082e26b11d2c65f458fab5ac4d",
+        "pennylane_demos/qaoa_mixer2/main.qli": "d4706196e878cbb481016b84fa0865cc45aae968f32cf2128c26d471ae409a5c"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Real check rejected nonexistent controlled_z; express the same CZ using existing qif with id/z. Correct QAOA attribution against frozen metadata. All full revised projects saved before rechecking.",
+      "sha256": {
+        "quantum_katas/controlled_z2/kernel.qli": "9f3a91e7f6ce1140cf39978e3f8f51125ecdba402f798f72ceae96a0aa33fda6",
+        "quantum_katas/controlled_z2/main.qli": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18",
+        "quantum_katas/toffoli3/kernel.qli": "277ad25095503cf3ad5563a7151e77f5d789c275c485776c64816d28531651de",
+        "quantum_katas/toffoli3/main.qli": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c",
+        "qualtran/less_equal1/kernel.qli": "4f291ff35098f69bd6c3880b89a47b98f2d5791e883833e94771ff050f53238e",
+        "qualtran/less_equal1/main.qli": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea",
+        "qualtran/greater_than1/kernel.qli": "410404f79d76713bfc3c9966e547f17fe24a54cd96224cd37bac678dd1c39bfc",
+        "qualtran/greater_than1/main.qli": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5",
+        "pennylane_demos/rotation_mixed_sign/kernel.qli": "31e3b49049e06ef03c965513a85f7e03d03c8bcf1fc658366310eeb409c37632",
+        "pennylane_demos/rotation_mixed_sign/main.qli": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b",
+        "pennylane_demos/qaoa_mixer2/kernel.qli": "1b13c7de6f499ea5debb62752bc4f7d890231cfff748ab01cd7d3d5feb151914",
+        "pennylane_demos/qaoa_mixer2/main.qli": "6be799967a57541d8dcb3fa64382d743bb6dc885aa194ead3728aef803df8047"
+      },
+      "observations": [
+        "check-repaired.json",
+        "semantic-validation.json"
+      ],
+      "created_utc": "2026-10-01T07:43:36.318850+00:00"
+    }
+  ]
+}

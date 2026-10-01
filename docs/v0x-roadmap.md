@@ -1,7 +1,7 @@
 # Qleisli milestones toward v1
 
-Current development version: [**0.2.4**](releases/v0.2.4.md). Latest published
-release: [**0.2.3**](releases/v0.2.3.md#successful-publication-2026-10-01).
+Current development version: [**0.2.4**](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md). Latest published
+release: [**0.2.3**](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.3.md#successful-publication-2026-10-01).
 The [current plan](v0.2.2-plan.md) and [VM-22–VM-29](verification-migration-v0.2.md)
 replace old release work plans. Product versions follow [compatibility](versioning.md):
 compatible changes use PATCH in 0.y.z, public breaks use MINOR. Milestone IDs
@@ -126,7 +126,7 @@ evidence; the old maintenance schedule is no longer active.
 | B019 | Completed finite maintenance checkpoint; not a prerequisite to ship patches in numerical order. |
 | G020-1 / G020-2 / G020-3 | Extension specification / implementation / validation, with separate fixed-width and sized profiles. |
 | G013-S0–S2 / G013-S3 | Research artifacts / production integration obligation. |
-| X1–X6 / CD-1–CD-4 | Finite interfaces and [program-first packets](code-driven-development.md). |
+| X1–X6 / CD-1–CD-4 | Finite interfaces and [program-first packets](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/code-driven-development.md). |
 | K0–K4 / VM-22–VM-29 | Lean migration axis / current eight verification packets. |
 | M0–M5 / A/L / SPEC | Dependency milestones / work areas / historical specification labels; no mechanical renumbering. |
 | R01–R14 / V01-C / V1-C | Requirements and finite/v1 acceptance identities. |

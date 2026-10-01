@@ -1,0 +1,57 @@
+{
+  "recorded_at": "2026-10-01 10:49:25 UTC",
+  "pull_request": "https://github.com/MGYamada/Qleisli/pull/155",
+  "state": "open",
+  "merged": false,
+  "head_sha": "2d06e2e00e8497d6f73588ece480ac16d262603b",
+  "base_sha": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+  "issue_comments": [
+    "https://github.com/MGYamada/Qleisli/issues/146#issuecomment-5929753003",
+    "https://github.com/MGYamada/Qleisli/issues/147#issuecomment-5929779574"
+  ],
+  "workflow_run": "https://github.com/MGYamada/Qleisli/actions/runs/36850899946",
+  "jobs": [
+    {
+      "name": "macos-source",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "distribution",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "interop",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "rust",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "lean",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "lean-kernel",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "name": "docs",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "rust-msrv",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "macos_scope": "macOS loader regressions and an Intel build with MACOSX_DEPLOYMENT_TARGET=10.12 passed; execution on an old macOS installation was not performed.",
+  "publication": "No merge, tag or package publication was performed."
+}

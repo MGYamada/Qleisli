@@ -52,12 +52,10 @@ theorem ordinary_sound (artifact : Artifact) (context : Context artifact) (proof
 
 /-- Complete equality scans are linear in serialized endpoint fields. All
 uniqueness, type-tree and permutation predicates remain in the earlier pass. -/
-def sideFields (side : Side) : Nat :=
-  1 + side.quantum.foldl (fun n p => n + 3 + 2*p.basis.size + p.axes.size) 0 +
-    side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0
+def sideFields (side : Side) : Nat := Artifact.sideFields side
 
 def check (artifact : Artifact) (index remaining : Nat) : Except Error Rule.Checked :=
-  if remaining > 2000000 then .error .limit else
+  if remaining > Limits.maxVisits then .error .limit else
   match artifact.proofs[index]? with
   | none => .error .invalidIr
   | some proof =>

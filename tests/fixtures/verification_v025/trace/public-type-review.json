@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.kernel-public-type-review",
+  "version": 1,
+  "status": "passed",
+  "existing_declarations": 5550,
+  "missing": [],
+  "incompatible_types": [],
+  "before_export_sha256": "8f45a33ef390597d037f0bd9f13f82e8ef5b077fd76cb049c66b4b396ef5166f",
+  "after_export_sha256": "0f4b8e7334a5e0be59f681c41fb65ea8625b23c8ce6cf96f3b29591c568d46f9",
+  "normalization": [
+    "module-generated hygienic binder names",
+    "universe-parameter alpha renaming",
+    "five transparent Nat capacity abbreviations"
+  ],
+  "scope": "non-private compiled declarations including constructors, fields and legacy equation/congruence lemmas; compiler match/proof/simp helpers are implementation details audited separately"
+}

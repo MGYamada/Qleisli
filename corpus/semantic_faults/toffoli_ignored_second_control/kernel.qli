@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/BasicGates/ReferenceImplementation.qs
+// Selected symbol(s): ToffoliGate_Reference
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+// Deliberate type-correct semantic mutation: Replace Toffoli by CNOT from the first control, violating the second-control-zero block.
+
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, target) = split(q);
+    let (a, b) = split(ab);
+    let (a, target) = cnot(a, target);
+    join(join(a, b), target)
+}

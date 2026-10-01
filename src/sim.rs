@@ -10,11 +10,12 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 use crate::VerifiedProgram;
-use crate::ir::{
-    BitControl, CircuitAction, CircuitStep, ClassicalId, ClassicalPhi, Control, ProtectedBit,
-    ProtectedRegion, ProtectedUse, QuantumPhi, RawOp, ScalarPhase, SingleGate, TokenId,
-    UnitaryStep, WireId,
-};
+use crate::ir::{ClassicalPhi, QuantumPhi, RawOp, SingleGate, WireId};
+
+mod circuit;
+mod state;
+use circuit::{apply_gate, run_circuit, run_protected_use, run_qif_arm};
+use state::{Complex, Component};
 
 mod sampling;
 pub use sampling::{RandomSource, Sample, SampleError, SampleLimits, SplitMix64, sample_closed};
@@ -102,197 +103,6 @@ impl ExecutionBudget {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default)]
-struct Complex {
-    re: f64,
-    im: f64,
-}
-
-impl Complex {
-    const ZERO: Self = Self { re: 0.0, im: 0.0 };
-    const ONE: Self = Self { re: 1.0, im: 0.0 };
-
-    fn scaled(self, factor: f64) -> Self {
-        Self {
-            re: self.re * factor,
-            im: self.im * factor,
-        }
-    }
-
-    fn norm_squared(self) -> f64 {
-        self.re * self.re + self.im * self.im
-    }
-}
-
-impl std::ops::Add for Complex {
-    type Output = Self;
-
-    fn add(self, rhs: Self) -> Self {
-        Self {
-            re: self.re + rhs.re,
-            im: self.im + rhs.im,
-        }
-    }
-}
-
-impl std::ops::AddAssign for Complex {
-    fn add_assign(&mut self, rhs: Self) {
-        *self = *self + rhs;
-    }
-}
-
-impl std::ops::Sub for Complex {
-    type Output = Self;
-
-    fn sub(self, rhs: Self) -> Self {
-        Self {
-            re: self.re - rhs.re,
-            im: self.im - rhs.im,
-        }
-    }
-}
-
-impl std::ops::Mul for Complex {
-    type Output = Self;
-
-    fn mul(self, rhs: Self) -> Self {
-        Self {
-            re: self.re * rhs.re - self.im * rhs.im,
-            im: self.re * rhs.im + self.im * rhs.re,
-        }
-    }
-}
-
-#[derive(Clone, Debug)]
-struct Component {
-    /// Axis 0 is the least significant bit in the state-vector index.
-    axes: Vec<WireId>,
-    amplitudes: Vec<Complex>,
-    tokens: BTreeMap<TokenId, Vec<WireId>>,
-    classical: BTreeMap<ClassicalId, bool>,
-}
-
-impl Component {
-    fn vacuum() -> Self {
-        Self {
-            axes: Vec::new(),
-            amplitudes: vec![Complex::ONE],
-            tokens: BTreeMap::new(),
-            classical: BTreeMap::new(),
-        }
-    }
-
-    fn position(&self, wire: WireId) -> Result<usize, SimulationError> {
-        self.axes
-            .iter()
-            .position(|candidate| *candidate == wire)
-            .ok_or(SimulationError::InconsistentVerifiedIr(
-                "wire axis is missing",
-            ))
-    }
-
-    fn take(&mut self, token: TokenId) -> Result<Vec<WireId>, SimulationError> {
-        self.tokens
-            .remove(&token)
-            .ok_or(SimulationError::InconsistentVerifiedIr("token is missing"))
-    }
-
-    fn classical(&self, id: ClassicalId) -> Result<bool, SimulationError> {
-        self.classical
-            .get(&id)
-            .copied()
-            .ok_or(SimulationError::InconsistentVerifiedIr(
-                "classical value is missing",
-            ))
-    }
-
-    fn add_zero_wire(
-        &mut self,
-        wire: WireId,
-        limits: SimulationLimits,
-    ) -> Result<(), SimulationError> {
-        check_dimension(self.axes.len() + 1, limits)?;
-        check_amplitude_cells(self.amplitudes.len() * 2, limits)?;
-        self.axes.push(wire);
-        self.amplitudes
-            .resize(self.amplitudes.len() * 2, Complex::ZERO);
-        Ok(())
-    }
-
-    /// Project one wire, then remove its axis. The probability weight remains
-    /// in the norm of the resulting vector.
-    fn project_remove(&self, wire: WireId, outcome: bool) -> Result<Self, SimulationError> {
-        let axis = self.position(wire)?;
-        let mask = 1usize << axis;
-        let mut projected = vec![Complex::ZERO; self.amplitudes.len() / 2];
-        for (old_index, amplitude) in self.amplitudes.iter().copied().enumerate() {
-            if (old_index & mask != 0) == outcome {
-                let low = old_index & (mask - 1);
-                let high = old_index >> (axis + 1);
-                projected[low | (high << axis)] = amplitude;
-            }
-        }
-        let mut component = Self {
-            axes: self.axes.clone(),
-            amplitudes: projected,
-            tokens: self.tokens.clone(),
-            classical: self.classical.clone(),
-        };
-        component.axes.remove(axis);
-        Ok(component)
-    }
-
-    fn weight(&self) -> f64 {
-        self.amplitudes.iter().map(|z| z.norm_squared()).sum()
-    }
-
-    fn remove_certified_zero(&self, wire: WireId) -> Result<Self, SimulationError> {
-        let axis = self.position(wire)?;
-        let mut scale = 0.0_f64;
-        let mut total_weight = 0.0;
-        for amplitude in &self.amplitudes {
-            scale = scale.max(amplitude.re.abs()).max(amplitude.im.abs());
-            total_weight += amplitude.norm_squared();
-        }
-        // Retain the non-finite-weight alarm, including overflow from finite
-        // amplitudes, which the scaled diagnostic calculation could hide.
-        if !total_weight.is_finite() {
-            return Err(SimulationError::InconsistentVerifiedIr(
-                "non-finite amplitude weight during certified auxiliary cleanup",
-            ));
-        }
-        if scale > 0.0 {
-            // Ensemble components are unnormalized. Scale only this ratio
-            // calculation so squaring tiny amplitudes cannot erase leakage.
-            // Divide directly: even a finite subnormal scale may have an
-            // infinite reciprocal. Stored amplitudes remain untouched.
-            let mut kept_weight = 0.0;
-            let mut leaked_weight = 0.0;
-            for (index, amplitude) in self.amplitudes.iter().enumerate() {
-                let weight = Complex {
-                    re: amplitude.re / scale,
-                    im: amplitude.im / scale,
-                }
-                .norm_squared();
-                if bit(index, axis) {
-                    leaked_weight += weight;
-                } else {
-                    kept_weight += weight;
-                }
-            }
-            if leaked_weight / (kept_weight + leaked_weight) > AUXILIARY_LEAKAGE_ALARM {
-                return Err(SimulationError::InconsistentVerifiedIr(
-                    "certified auxiliary has nonzero numerical leakage",
-                ));
-            }
-        }
-        // Exact raw-IR evidence is the only permission to release. Preserve
-        // the projected amplitudes, including their numerical mass; do not
-        // renormalize the component or turn this alarm into postselection.
-        self.project_remove(wire, false)
-    }
-}
-
 fn check_dimension(required: usize, limits: SimulationLimits) -> Result<(), SimulationError> {
     let max = limits.max_qubits.min(MAX_SIMULATED_QUBITS);
     if required > max {
@@ -331,279 +141,6 @@ fn local_label(index: usize, axes: &[usize]) -> usize {
     axes.iter().enumerate().fold(0, |label, (place, axis)| {
         label | (usize::from(bit(index, *axis)) << place)
     })
-}
-
-fn apply_gate(
-    amplitudes: &mut [Complex],
-    axis: usize,
-    gate: SingleGate,
-    enabled: impl Fn(usize) -> bool,
-) {
-    let mask = 1usize << axis;
-    let inv_sqrt_2 = std::f64::consts::FRAC_1_SQRT_2;
-    let t_phase = Complex {
-        re: inv_sqrt_2,
-        im: inv_sqrt_2,
-    };
-    for zero_index in 0..amplitudes.len() {
-        if zero_index & mask != 0 || !enabled(zero_index) {
-            continue;
-        }
-        let one_index = zero_index | mask;
-        let zero = amplitudes[zero_index];
-        let one = amplitudes[one_index];
-        let (new_zero, new_one) = match gate {
-            SingleGate::H => (
-                (zero + one).scaled(inv_sqrt_2),
-                (zero - one).scaled(inv_sqrt_2),
-            ),
-            SingleGate::X => (one, zero),
-            SingleGate::Z => (zero, one.scaled(-1.0)),
-            SingleGate::T => (zero, one * t_phase),
-        };
-        amplitudes[zero_index] = new_zero;
-        amplitudes[one_index] = new_one;
-    }
-}
-
-fn protected_value(
-    index: usize,
-    protected: ProtectedBit,
-    source_axes: &[usize],
-    function: &[u16],
-) -> bool {
-    match protected.region {
-        ProtectedRegion::Source => bit(index, source_axes[usize::from(protected.index)]),
-        ProtectedRegion::Ancilla => {
-            let x = local_label(index, source_axes);
-            (function[x] >> protected.index) & 1 != 0
-        }
-    }
-}
-
-fn controls_match(
-    index: usize,
-    controls: &[Control],
-    source_axes: &[usize],
-    function: &[u16],
-) -> bool {
-    controls.iter().all(|control| {
-        protected_value(index, control.bit, source_axes, function) == control.when_one
-    })
-}
-
-fn run_protected_use(
-    component: &mut Component,
-    source_axes: &[usize],
-    target_wires: &[WireId],
-    function: &[u16],
-    operations: &[ProtectedUse],
-) -> Result<(), SimulationError> {
-    for operation in operations {
-        match operation {
-            ProtectedUse::ProtectedGate { bit, gate } => {
-                let phase = match gate {
-                    SingleGate::Z => Complex { re: -1.0, im: 0.0 },
-                    SingleGate::T => Complex {
-                        re: std::f64::consts::FRAC_1_SQRT_2,
-                        im: std::f64::consts::FRAC_1_SQRT_2,
-                    },
-                    _ => {
-                        return Err(SimulationError::InconsistentVerifiedIr(
-                            "non-diagonal protected gate",
-                        ));
-                    }
-                };
-                for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                    if protected_value(index, *bit, source_axes, function) {
-                        *amplitude = *amplitude * phase;
-                    }
-                }
-            }
-            ProtectedUse::ControlledTargetGate {
-                controls,
-                target_index,
-                gate,
-            } => {
-                let target = target_wires.get(*target_index).ok_or(
-                    SimulationError::InconsistentVerifiedIr("protected target is missing"),
-                )?;
-                let axis = component.position(*target)?;
-                apply_gate(&mut component.amplitudes, axis, *gate, |index| {
-                    controls_match(index, controls, source_axes, function)
-                });
-            }
-            ProtectedUse::ControlledPhase { controls, phase } => {
-                let factor = match phase {
-                    ScalarPhase::MinusOne => Complex { re: -1.0, im: 0.0 },
-                    ScalarPhase::EighthTurn => Complex {
-                        re: std::f64::consts::FRAC_1_SQRT_2,
-                        im: std::f64::consts::FRAC_1_SQRT_2,
-                    },
-                };
-                for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                    if controls_match(index, controls, source_axes, function) {
-                        *amplitude = *amplitude * factor;
-                    }
-                }
-            }
-        }
-    }
-    Ok(())
-}
-
-fn run_qif_arm(
-    component: &mut Component,
-    target_axes: &[usize],
-    control_axis: usize,
-    when_one: bool,
-    steps: &[UnitaryStep],
-) {
-    let mut axes = target_axes.to_vec();
-    axes.push(control_axis);
-    for step in steps {
-        let mut step = step.to_circuit_step();
-        step.controls.push(BitControl {
-            index: target_axes.len(),
-            when_one,
-        });
-        // QuantumIf precharges both arms before consuming either owner. This
-        // compatibility adapter must neither charge again nor create evidence.
-        run_circuit_precharged(component, &axes, &[step]);
-    }
-}
-
-fn phase_factor(exponent: u8) -> Complex {
-    let s = std::f64::consts::FRAC_1_SQRT_2;
-    let (re, im) = [
-        (1.0, 0.0),
-        (s, s),
-        (0.0, 1.0),
-        (-s, s),
-        (-1.0, 0.0),
-        (-s, -s),
-        (0.0, -1.0),
-        (s, -s),
-    ][usize::from(exponent)];
-    Complex { re, im }
-}
-
-fn run_circuit(
-    component: &mut Component,
-    axes: &[usize],
-    steps: &[CircuitStep],
-    budget: &mut ExecutionBudget,
-) -> Result<(), SimulationError> {
-    // Charge the transitive cost before cloning or expanding dependencies.
-    for step in steps {
-        budget.charge(match &step.action {
-            CircuitAction::Contract { evidence, .. } => evidence.expanded_steps(),
-            _ => 1,
-        })?;
-    }
-    run_circuit_precharged(component, axes, steps);
-    Ok(())
-}
-
-fn run_circuit_precharged(component: &mut Component, axes: &[usize], steps: &[CircuitStep]) {
-    for step in steps {
-        let enabled = |index| {
-            step.controls
-                .iter()
-                .all(|c| bit(index, axes[c.index]) == c.when_one)
-        };
-        match &step.action {
-            CircuitAction::Contract {
-                indices,
-                evidence,
-                adjoint,
-            } => {
-                // Execute the checked extracted circuit, which may contain
-                // proved cleanup substitutions. Retain every outer control
-                // and remap the function's ordered interface axes.
-                let mut body = evidence.circuit().steps().to_vec();
-                if *adjoint {
-                    crate::contract::invert_steps(&mut body);
-                }
-                for inner in &mut body {
-                    for control in &mut inner.controls {
-                        control.index = indices[control.index];
-                    }
-                    inner.controls.extend(step.controls.iter().cloned());
-                    match &mut inner.action {
-                        CircuitAction::Hadamard { target } => *target = indices[*target],
-                        CircuitAction::Monomial {
-                            indices: targets, ..
-                        }
-                        | CircuitAction::Contract {
-                            indices: targets, ..
-                        } => {
-                            for target in targets {
-                                *target = indices[*target];
-                            }
-                        }
-                    }
-                }
-                run_circuit_precharged(component, axes, &body);
-            }
-            CircuitAction::Hadamard { target } => {
-                apply_gate(
-                    &mut component.amplitudes,
-                    axes[*target],
-                    SingleGate::H,
-                    enabled,
-                );
-            }
-            CircuitAction::Monomial {
-                indices,
-                permutation,
-                phases,
-            } => {
-                // Retain in-place execution for the small gates emitted by
-                // compatibility adapters. Canonicalization must not allocate
-                // another full state vector for an X, Z, T or scalar phase.
-                let gate = match (
-                    indices.as_slice(),
-                    permutation.as_slice(),
-                    phases.as_slice(),
-                ) {
-                    ([_], [1, 0], [0, 0]) => Some(SingleGate::X),
-                    ([_], [0, 1], [0, 4]) => Some(SingleGate::Z),
-                    ([_], [0, 1], [0, 1]) => Some(SingleGate::T),
-                    _ => None,
-                };
-                if let Some(gate) = gate {
-                    apply_gate(&mut component.amplitudes, axes[indices[0]], gate, enabled);
-                    continue;
-                }
-                if indices.is_empty() {
-                    let factor = phase_factor(phases[0]);
-                    for (index, amplitude) in component.amplitudes.iter_mut().enumerate() {
-                        if enabled(index) {
-                            *amplitude = *amplitude * factor;
-                        }
-                    }
-                    continue;
-                }
-                let targets: Vec<_> = indices.iter().map(|i| axes[*i]).collect();
-                let mut amplitudes = vec![Complex::ZERO; component.amplitudes.len()];
-                for (index, amplitude) in component.amplitudes.iter().copied().enumerate() {
-                    if !enabled(index) {
-                        amplitudes[index] += amplitude;
-                        continue;
-                    }
-                    let label = local_label(index, &targets);
-                    let mut output = index;
-                    for (place, axis) in targets.iter().enumerate() {
-                        output = (output & !(1 << axis))
-                            | (((usize::from(permutation[label]) >> place) & 1) << axis);
-                    }
-                    amplitudes[output] += amplitude * phase_factor(phases[label]);
-                }
-                component.amplitudes = amplitudes;
-            }
-        }
-    }
 }
 
 fn relabel_branch(
@@ -662,10 +199,7 @@ fn execute_op(
             ..
         } => {
             let wires = component.take(*source)?;
-            let data_axes = wires
-                .iter()
-                .map(|wire| component.position(*wire))
-                .collect::<Result<Vec<_>, _>>()?;
+            let data_axes = component.positions(&wires)?;
             let auxiliary = ancilla_wires[0];
             component.add_zero_wire(auxiliary, limits)?;
             let aux_axis = component.position(auxiliary)?;
@@ -692,10 +226,7 @@ fn execute_op(
             steps,
         } => {
             let wires = component.take(*input)?;
-            let axes = wires
-                .iter()
-                .map(|wire| component.position(*wire))
-                .collect::<Result<Vec<_>, _>>()?;
+            let axes = component.positions(&wires)?;
             run_circuit(&mut component, &axes, steps, budget)?;
             component.tokens.insert(*output, wires);
         }
@@ -769,10 +300,7 @@ fn execute_op(
             let control_wires = component.take(*control)?;
             let target_wires = component.take(*target)?;
             let control_axis = component.position(control_wires[0])?;
-            let target_axes = target_wires
-                .iter()
-                .map(|wire| component.position(*wire))
-                .collect::<Result<Vec<_>, _>>()?;
+            let target_axes = component.positions(&target_wires)?;
             run_qif_arm(&mut component, &target_axes, control_axis, false, zero_ops);
             run_qif_arm(&mut component, &target_axes, control_axis, true, one_ops);
             component.tokens.insert(*control_out, control_wires);
@@ -805,10 +333,7 @@ fn execute_op(
             table,
         } => {
             let input_wires = component.take(*input)?;
-            let input_axes = input_wires
-                .iter()
-                .map(|wire| component.position(*wire))
-                .collect::<Result<Vec<_>, _>>()?;
+            let input_axes = component.positions(&input_wires)?;
             let added = output_wires.len() - input_wires.len();
             check_dimension(component.axes.len() + added, limits)?;
             let old_len = component.amplitudes.len();
@@ -942,10 +467,7 @@ fn execute_op(
             budget.charge(use_ops.len())?;
             check_dimension(component.axes.len() + ancilla_wires.len(), limits)?;
             let source_wires = component.take(*source)?;
-            let source_axes = source_wires
-                .iter()
-                .map(|wire| component.position(*wire))
-                .collect::<Result<Vec<_>, _>>()?;
+            let source_axes = component.positions(&source_wires)?;
             let mut target_wires = Vec::with_capacity(targets.len());
             for target in targets {
                 let wires = component.take(target.input)?;

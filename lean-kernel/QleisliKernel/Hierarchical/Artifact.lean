@@ -259,6 +259,12 @@ def sideCharge (side : Side) : Nat :=
   1 + 4 * ports * ports + side.quantum.foldl (fun cost p => cost + 4 * p.basis.size + 4 * p.axes.size) 0 +
     side.classical.foldl (fun cost p => cost + 4 * p.basis.size) 0
 
+/-- Complete serialized fields used for equality-only scans. This does not
+validate types, uniqueness, permutations or quantum ownership. -/
+def sideFields (side : Side) : Nat :=
+  1 + side.quantum.foldl (fun n p => n + 3 + 2*p.basis.size + p.axes.size) 0 +
+    side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0
+
 def sideValid (side : Side) : Bool :=
   if side.quantum.foldl (fun count p => count + p.axes.size) 0 > 16 then false else
   side.quantum.all (fun p => u32 p.owner && p.axes.size ≤ 16 && basisValid p.basis &&
@@ -405,10 +411,10 @@ def flattenRefs (artifact : Artifact) (refs : Array Ref) : Option (List Nat) :=
 
 def add (artifact : Artifact) (atNode : Ref) (state : Projection) (referenceCount scan bytes : Nat)
     (charge : Unit → Nat) (refs : Unit → Array Ref) (valid : Unit → Bool) : Except Failure Projection := do
-  if state.visits + scan + 4 * referenceCount + 1 > 2000000 then throw ⟨.limit, some atNode⟩
+  if state.visits + scan + 4 * referenceCount + 1 > Limits.maxVisits then throw ⟨.limit, some atNode⟩
   let visits := state.visits + scan + charge () + 4 * referenceCount + 1
   let payloadBytes := state.payloadBytes + bytes
-  if visits > 2000000 || payloadBytes > 16777216 then throw ⟨.limit, some atNode⟩
+  if visits > Limits.maxVisits || payloadBytes > Limits.maxPayloadBytes then throw ⟨.limit, some atNode⟩
   if !valid () then throw ⟨.invalidIr, some atNode⟩
   let some edges := flattenRefs artifact (refs ()) | throw ⟨.invalidIr, some atNode⟩
   return ⟨state.nodes.push edges, visits, payloadBytes⟩
@@ -460,7 +466,7 @@ private def projectProof (artifact : Artifact) (state : Projection) (i : Nat) :
 /-- Projection reads all node constructors and proof fields itself. Definitions
 inside count-zero repeats and all finite bytes remain present for later checks. -/
 def project (artifact : Artifact) : Except Failure Projection := do
-  if totalNodes artifact = 0 || totalNodes artifact > 100000 then throw ⟨.limit, none⟩
+  if totalNodes artifact = 0 || totalNodes artifact > Limits.maxNodes then throw ⟨.limit, none⟩
   let state ← projectRows (projectDefinition artifact) artifact.definitions.size 0 {}
   let state ← projectRows (projectMeaning artifact) artifact.meanings.size 0 state
   let state ← projectRows (projectEncoding artifact) artifact.encodings.size 0 state
@@ -581,11 +587,11 @@ def finish (artifact : Artifact) (projected : Projection) (order : Array Nat) : 
         if proof.implementation != artifact.entry.implementation then
           .error ⟨.contract, some ⟨.proof, artifact.entry.proof⟩⟩
         else match Graph.checkWithBudget projected.nodes [implementation, proofIndex] order
-            (2000000 - projected.visits) with
+            (Limits.maxVisits - projected.visits) with
           | .error failure => .error ⟨if failure.kind == .limit then .limit else .invalidIr, none⟩
           | .ok schedule =>
             let totalVisits := projected.visits + schedule.stats.visits
-            if totalVisits > 2000000 then .error ⟨.limit, none⟩
+            if totalVisits > Limits.maxVisits then .error ⟨.limit, none⟩
             else .ok ⟨projected, schedule, totalVisits⟩
 
 /-- Structural preparation only. No function returns semantic evidence here. -/

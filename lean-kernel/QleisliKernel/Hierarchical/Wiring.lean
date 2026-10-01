@@ -102,7 +102,7 @@ def step (artifact : Artifact) (remaining : Nat) (state : State) (index : Nat) :
 
 def inspect (artifact : Artifact) (order : Array Nat) (remaining : Nat) : Except Error State :=
   let cost := 16 + artifact.definitions.size + order.size
-  if remaining > 2000000 || cost > remaining then .error .limit else
+  if remaining > Limits.maxVisits || cost > remaining then .error .limit else
   order.toList.foldlM (step artifact remaining)
     ⟨Array.replicate artifact.definitions.size none,cost⟩
 
@@ -180,7 +180,7 @@ theorem inspect_sound (artifact : Artifact) (order : Array Nat) (remaining : Nat
       intro i code found
       simp [Array.getElem?_replicate] at found
       split at found <;> simp_all
-    have result := fold_sound artifact order.toList remaining _ result empty (by dsimp; omega) accepted
-    exact ⟨result.1,result.2,by omega⟩
+    have result := fold_sound artifact order.toList remaining _ result empty (by dsimp; simp only [Limits.maxVisits] at *; omega) accepted
+    exact ⟨result.1,result.2,by simp only [Limits.maxVisits] at *; omega⟩
 
 end QleisliKernel.Hierarchical.Wiring
