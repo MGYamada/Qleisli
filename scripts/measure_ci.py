@@ -42,7 +42,9 @@ def summarize(run: dict, jobs: dict, validation: dict | None = None) -> dict:
     )
     for job in jobs["jobs"]:
         seconds = None
-        if job.get("started_at") and job.get("completed_at"):
+        if job["conclusion"] == "skipped":
+            seconds = 0
+        elif job.get("started_at") and job.get("completed_at"):
             seconds = (timestamp(job["completed_at"]) - timestamp(job["started_at"])).total_seconds()
             if seconds < 0:
                 raise ValueError("inconsistent job timestamps")

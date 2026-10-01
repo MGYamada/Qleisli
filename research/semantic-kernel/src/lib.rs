@@ -7,3 +7,5 @@
 
 pub mod adapter;
 pub mod kernel;
+
+// CI latency probe: comment-only source edit; compilation and tests unchanged.

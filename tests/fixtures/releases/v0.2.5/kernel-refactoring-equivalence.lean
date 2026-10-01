@@ -119,3 +119,5 @@ example (side : QleisliKernel.Hierarchical.Artifact.Side) :
         side.classical.foldl (fun n p => n + 2 + 2*p.basis.size) 0 := rfl
 example : QleisliKernel.Hierarchical.TypedRule.sideFields =
     QleisliKernel.Hierarchical.Artifact.sideFields := rfl
+
+-- CI latency probe: comment-only proof edit; equivalence obligations unchanged.
