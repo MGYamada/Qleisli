@@ -4,7 +4,7 @@ Authoritative Cargo-compatible version policy, adopted 2026-09-28. [Cargo.toml](
 
 ## Version identity
 
-Development 0.2.5 covers compatible refactoring, documentation reduction and finite corpus additions; latest published is 0.2.4. Synchronize Cargo/lockfile, both Lean lakefiles, Python metadata/__version__ and std Qargo version, never dependencies. Use MAJOR.MINOR.PATCH and annotated vMAJOR.MINOR.PATCH; synchronize prerelease suffixes. Accumulate Unreleased changes and do not bump per task. Product, edition, specification and ledger identifiers are separate. Narrow user exceptions retain their migration: 0.2.1 package/import identity to qleisli, and 0.2.3 explicit schema-2 edition manifests. They authorize no other incompatible PATCH.
+Current release 0.2.5 includes compatible refactoring, documentation reduction and finite corpus additions; crates.io/GitHub publication is verified in its release record. Synchronize Cargo/lockfile, both Lean lakefiles, Python metadata/__version__ and std Qargo version, never dependencies. Use MAJOR.MINOR.PATCH and annotated vMAJOR.MINOR.PATCH; synchronize prerelease suffixes. Accumulate Unreleased changes and do not bump per task. Product, edition, specification and ledger identifiers are separate. Narrow user exceptions retain their migration: 0.2.1 package/import identity to qleisli, and 0.2.3 explicit schema-2 edition manifests. They authorize no other incompatible PATCH.
 
 ## Choosing the next version
 

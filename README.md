@@ -8,7 +8,7 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Selected release: 0.2.5. Qleisli language edition: `"2026"`.**
+**Published version: 0.2.5. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
 and the [0.2.5 release record](docs/releases/v0.2.5.md).
@@ -20,10 +20,10 @@ its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-Version 0.2.4 was published on 2026-10-01: [crates.io](https://crates.io/crates/qleisli/0.2.4)
-and [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4).
-The [release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01)
-binds the verified source, registry package and complete GitHub downloads.
+Version 0.2.5 was published on 2026-10-02 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.5)
+and [GitHub Releases](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.5).
+The [release record](docs/releases/v0.2.5.md#successful-publication-2026-10-02)
+binds the verified source, registry installation and complete GitHub downloads.
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
 [Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
@@ -89,19 +89,11 @@ cargo install --path . --locked --bin qleisli
 Install the latest published registry version:
 
 ```sh
-cargo install qleisli --version 0.2.4 --locked
-```
-
-The selected 0.2.5 release includes compatible refactoring, documentation
-reduction and small finite corpus additions. Its registry command is:
-
-```sh
 cargo install qleisli --version 0.2.5 --locked
 ```
 
-The [0.2.4 release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md) binds the published source and package to
-validation and publication results.
-[Hosted API documentation](https://docs.rs/qleisli/0.2.4/qleisli/) is built separately after upload.
+The [0.2.5 release record](docs/releases/v0.2.5.md) binds source, package and validation.
+[Hosted API documentation](https://docs.rs/qleisli/0.2.5/qleisli/) is verified separately.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)
@@ -214,15 +206,10 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-The selected release is **0.2.5**, with compatible refactoring
-across Rust and the Lean kernel, documentation reduction and six finite corpus
-additions; see its
-[release record](docs/releases/v0.2.5.md). Final source verification and
-publication are authorized and tracked there.
-The latest published version is **0.2.4**, which began with documentation
-reduction and six small finite corpus additions. The
-[release record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md#successful-publication-2026-10-01)
-distinguishes source validation from completed publication and distribution checks.
+The current release is **0.2.5**, with compatible Rust/Lean refactoring,
+documentation reduction, six finite corpus additions and reviewed bug repairs.
+Its [release record](docs/releases/v0.2.5.md) separates verification from the
+completed registry/GitHub publication and installation checks.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and
 [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain current work targets. Rust retains production acceptance authority;

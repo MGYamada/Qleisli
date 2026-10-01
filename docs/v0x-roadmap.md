@@ -1,7 +1,7 @@
 # Qleisli milestones toward v1
 
-Current development version: [**0.2.4**](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.4.md). Latest published
-release: [**0.2.3**](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.3.md#successful-publication-2026-10-01).
+Current product version and latest published release:
+[**0.2.5**](releases/v0.2.5.md#successful-publication-2026-10-02).
 The [current plan](v0.2.2-plan.md) and [VM-22–VM-29](verification-migration-v0.2.md)
 replace old release work plans. Product versions follow [compatibility](versioning.md):
 compatible changes use PATCH in 0.y.z, public breaks use MINOR. Milestone IDs
