@@ -2869,7 +2869,7 @@
     },
     {
       "path": "src/frontend/sized/fourier.rs",
-      "sha256": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
+      "sha256": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2900,7 +2900,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
+      "sha256": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -2977,7 +2977,7 @@
     },
     {
       "path": "src/frontend/sized/qpe.rs",
-      "sha256": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19",
+      "sha256": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -4242,7 +4242,7 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "5d291e54376fcff004146fab52a6f7d1aa7328ce11f46195cce001464778e531",
+      "tests/sized_source.rs": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "2a40c090af36ac1da8571797d9436c612f4c41c54628903b2fa24ac85a3507a6",
       "tests/hierarchical_qpe_host.rs": "b3d53d5f61c05d661cb498514a699a4a6e1a59e9b502a02df61120a6c581b81d",
@@ -4254,7 +4254,9 @@
       "tests/sized_review_diagnostics.rs": "5ae10ddceafb9d8dfa1dcdb68cd1c98c58ca2f72965556bf1720865b06c96ab6",
       "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
       "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
-      "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9"
+      "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
+      "tests/fixtures/qpe_capacity_v023/Profile.lean": "7aceb8cb9607a0833df0951b57e297e990baf539a0771110bf4503634cd64905",
+      "tests/fixtures/qpe_capacity_v023/run_profile.py": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564"
     },
     "reference": "scripts/test_verification_baseline.py: direct complex basis columns with explicit scratch cleanup; fixed source distributions; never issues evidence",
     "commands": [

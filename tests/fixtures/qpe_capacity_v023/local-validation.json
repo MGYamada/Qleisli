@@ -1,0 +1,267 @@
+{
+  "format": "qleisli.v023-qpe-local-validation",
+  "version": 1,
+  "recorded_at_utc": "2026-10-01T00:02:18.554298+00:00",
+  "base_commit": "8d1046c39737a8b514719d4b383be0cca5e53516",
+  "source_state": "reviewed working tree over the base commit; current code pins bind results",
+  "status": "passed",
+  "source_sha256": {
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/lower.rs": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "tests/sized_source.rs": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103",
+    ".github/workflows/ci.yml": "3c4b38ee0de7d0792a797575a70ee64e2441e4e5582482d23c3fb2fdb61b79c4",
+    "scripts/test_connections.py": "1d91c0ea28599daf3f2ef967fa26e9f0e8cc36d605e01602092b8b4249aa90d8",
+    "corpus/manifest.json": "6053a05bcb9d5f06440ef0cbf065e3027af4c408d76ba5b178740a840f72bd82",
+    "tests/fixtures/verification_v022/inventory.json": "888e96084c0e0a5ee426de5368ec9a34f1c401fbe72ddaf462d06da7a13f86f4"
+  },
+  "reviewed_guard_updates": [
+    {
+      "path": "src/frontend/sized/fourier.rs",
+      "before": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
+      "after": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1"
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "before": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
+      "after": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56"
+    },
+    {
+      "path": "src/frontend/sized/qpe.rs",
+      "before": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19",
+      "after": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83"
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "before": "5d291e54376fcff004146fab52a6f7d1aa7328ce11f46195cce001464778e531",
+      "after": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103"
+    }
+  ],
+  "commands": [
+    {
+      "name": "v023-final-rust-all",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:55:49.660464+00:00",
+      "duration_seconds": 70.505,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-rust-all.log",
+      "log_sha256": "d119072a9e3b4606c198d3d8aba16e7b51adf396c0510c090d8d05dd0765b0cc",
+      "passed": 531,
+      "failed": 0,
+      "ignored": 34
+    },
+    {
+      "name": "v023-final-msrv-all",
+      "command": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--offline",
+        "--all-targets"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:55:49.841779+00:00",
+      "duration_seconds": 70.687,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-msrv-target",
+        "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-msrv-all.log",
+      "log_sha256": "9694ed83bf354471e21bca0e6063ef1f331cc2019f0b10c7801cb6333cc24e09",
+      "passed": 531,
+      "failed": 0,
+      "ignored": 34
+    },
+    {
+      "name": "v023-final-rust-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:58:30.626244+00:00",
+      "duration_seconds": 7.003,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-rust-clippy.log",
+      "log_sha256": "2df3ddf1499d530187f40e556f2108d376ef7c7193996d0cd9a2b9960248b689"
+    },
+    {
+      "name": "v023-final-msrv-clippy",
+      "command": [
+        "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:58:29.550533+00:00",
+      "duration_seconds": 5.925,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-msrv-target",
+        "RUSTC": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-msrv-clippy.log",
+      "log_sha256": "44425d88b9865fe3ad5fe0aa3630e1eb4df7ce9b6e7f1aa08a60c3cdcab43054"
+    },
+    {
+      "name": "v023-final-native-source",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_source",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-10-01T00:00:26.078495+00:00",
+      "duration_seconds": 3.75,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-native-source.log",
+      "log_sha256": "5f6ccc53422f2720e6b6c3ee1fd8e37d7d8737a2b48bc6f060a9772d7a5ee625",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "v023-final-native-qpe",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "native_named_qpe",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-10-01T00:00:26.761525+00:00",
+      "duration_seconds": 3.295,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-native-qpe.log",
+      "log_sha256": "d80bd165d4c5bf53b4b27ad1976d08aa7438ea25ca4b827be5a07ac8e2d17762",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "v023-final-native-cli",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_cli",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-09-30T23:58:27.233997+00:00",
+      "duration_seconds": 3.611,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-native-cli.log",
+      "log_sha256": "d0cd9422cda462562b4b03e985dc919f83bdd2987a5311becf84f70d8bf1a7d0",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "name": "v023-final-dialects",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "sized_review_dialects",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "timestamp_utc": "2026-10-01T00:00:26.488307+00:00",
+      "duration_seconds": 1.841,
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-v023-final-target",
+        "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "log_path": "/private/tmp/qleisli-review-validation/v023-final-dialects.log",
+      "log_sha256": "f2dd2a353546d4bcd1f6b8db413b24fe4236391a7c209e572b00c528a5ec817d",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "summary": {
+    "rust_1_98_1_active": 531,
+    "rust_1_85_0_active": 531,
+    "explicit_optional_tests": 34,
+    "changed_native_tests_run": 8,
+    "python_dialect_tests_run": 4,
+    "named_qpe_accepted": [
+      [
+        1,
+        2
+      ],
+      [
+        1,
+        3
+      ]
+    ],
+    "source_schedules": [
+      "textbook",
+      "delayed"
+    ],
+    "provider_phase_faults_rejected": 4,
+    "finite_h_x_reference_circuits": 6,
+    "fourier_graphs": 12,
+    "independent_closed_fourier_bindings": 6,
+    "maximum_complex_error": 1.3947004136484323e-15,
+    "maximum_new_quantum_width": 4
+  },
+  "scope": {
+    "acceptance_caps_changed": false,
+    "lean_acceptance_definitions_changed": false,
+    "public_api_changed": false,
+    "source_preservation_proved": false,
+    "production_authority_transferred": false,
+    "vm24_started": false,
+    "historical_records_rewritten": false
+  },
+  "additional_checks": {
+    "fmt": "passed",
+    "inventory": "passed",
+    "inventory_mutations": 17,
+    "docs": "passed",
+    "docs_tests": 24,
+    "editions": "passed: 628 .qli, 5 .qlt, 18 manifests",
+    "runtime_source_policy": "passed: 58 kernel/transport modules",
+    "registry_source_identity": "passed: three disabled schemas"
+  },
+  "integration_checks": "Final commit Linux CI and clean distribution are separately required before integration; no tag or publication performed."
+}

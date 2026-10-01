@@ -113,6 +113,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Install the tested Rust toolchain for native host comparisons
         run: rustup toolchain install 1.98.1 --profile minimal
+      - name: Fetch Rust dependencies before offline native host comparisons
+        run: cargo +1.98.1 fetch
       - name: Reject kernel/backend source escape hatches and unaudited imports
         run: python3 scripts/check_lean_kernel.py
       - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1

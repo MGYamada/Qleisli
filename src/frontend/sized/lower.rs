@@ -888,17 +888,20 @@ impl Lower<'_> {
             };
             let canonical = self.graph.nodes[child].before.clone();
             let a = self.graph.rename(target.clone(), canonical.clone())?;
-            let b = self.graph.rename(canonical, target.clone())?;
-            child = self.graph.sequence(vec![a, child, b])?;
-            let node = if step.kind() == "controlled" {
-                self.control(before.clone(), child)?
-            } else {
-                child
-            };
             let after = self.output_ports(
                 step.output(),
                 before.iter().map(|p| p.axes.clone()).collect(),
             )?;
+            if step.kind() != "controlled" {
+                // The operation is closed at its canonical frame. Return
+                // directly to the checked source's actual result ports rather
+                // than routing through the consumed argument owners first.
+                let b = self.graph.rename(canonical, after.clone())?;
+                return Ok((self.graph.sequence(vec![a, child, b])?, after));
+            }
+            let b = self.graph.rename(canonical, target.clone())?;
+            child = self.graph.sequence(vec![a, child, b])?;
+            let node = self.control(before.clone(), child)?;
             let rename = self.graph.rename(before, after.clone())?;
             return Ok((self.graph.sequence(vec![node, rename])?, after));
         }
@@ -940,7 +943,10 @@ impl Lower<'_> {
             }
             Primitive::H | Primitive::X => {
                 let after = self.output_ports(step.output(), vec![before[0].axes.clone()])?;
-                let node = self.gate(
+                // Bind the exact finite program to these actual source ports.
+                // Canonical leaf adapters add owner routes and an extra
+                // composition without changing the primitive's meaning.
+                let node = self.finite_gate(
                     if name == Primitive::H {
                         SingleGate::H
                     } else {

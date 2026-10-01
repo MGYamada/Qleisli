@@ -1228,6 +1228,66 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
 }
 
 #[test]
+#[ignore = "requires the separately built and audited Lean kernel"]
+fn direct_finite_source_gates_preserve_entangled_h_x_references() {
+    use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
+    let kernel =
+        Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("select audited kernel"));
+    let input = [[0.3, 0.2], [0.4, -0.1], [-0.2, 0.5], [0.1, 0.3]];
+    for (body, expected_kind) in [
+        ("h(q)", "H"),
+        ("x(q)", "X"),
+        ("h(h(q))", "I"),
+        ("x(x(q))", "I"),
+        ("h(x(h(q)))", "Z"),
+        ("h(x(h(x(q))))", "ZX"),
+    ] {
+        let text = format!(
+            "use std::quantum::h; use std::quantum::x; pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {body} }}"
+        );
+        let p = ParsedProgram::parse(sources(&text))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap();
+        let checked = kernel
+            .check_against(p.payload(), p.comparison_request())
+            .unwrap();
+        let actual = checked
+            .execute(
+                &input,
+                2,
+                ExecutionLimits {
+                    max_amplitudes: 4096,
+                    max_steps: 1_000_000,
+                },
+            )
+            .unwrap();
+        let expected: Vec<_> = input
+            .chunks_exact(2)
+            .flat_map(|pair| {
+                let [a, b] = [pair[0], pair[1]];
+                match expected_kind {
+                    "H" => [
+                        [(a[0] + b[0]) / 2.0f64.sqrt(), (a[1] + b[1]) / 2.0f64.sqrt()],
+                        [(a[0] - b[0]) / 2.0f64.sqrt(), (a[1] - b[1]) / 2.0f64.sqrt()],
+                    ],
+                    "X" => [b, a],
+                    "I" => [a, b],
+                    "Z" => [a, [-b[0], -b[1]]],
+                    "ZX" => [b, [-a[0], -a[1]]],
+                    _ => unreachable!(),
+                }
+            })
+            .collect();
+        close(&actual.amplitudes, &expected);
+    }
+}
+
+#[test]
 fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
     for (n, m) in [(1, 1), (1, 3), (2, 2)] {
         let p = proposal("measurement::qpe", &[("n", n), ("m", m)], evolution(n));

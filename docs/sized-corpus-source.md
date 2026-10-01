@@ -430,7 +430,9 @@ describes the proposal itself; it is not an independent named-QPE specification,
 source-preservation proof, production seal or external-schema enablement.
 Proposal construction is bounded by 10,000 definitions, 16 MiB retained graph
 descriptor/cache text and 16 MiB per serialized payload/request/precursor, with
-1,024 observing call visits and depth 16. H/X leaves are shared and independently reconstructed.
+1,024 observing call visits and depth 16. H/X primitives use finite leaves at
+their actual source ports; Fourier components share their canonical H leaf.
+Each actual finite request is independently reconstructed.
 Small native regressions cover QFT widths 1–3, arbitrary coherent QPE inputs,
 measured QPE `(n,m) = (1,1),(1,2),(1,3),(2,2)`, order readout, zero-width owners and
 the phase-sensitive Grover provider and amplitude readout `(1,2)` including its
@@ -439,6 +441,11 @@ Fourier factoring compares complete phase-sensitive traces, including root
 definitions. It permits exchanges of disjoint actions and diagonal phases,
 while preserving the order of noncommuting actions, exact phase, axes and output
 routing. Equivalent schedules produce the same bounded candidate shape.
+The producer emits direct primitive leaves and removes redundant identity and
+owner-renaming shells while retaining explicit structural owners and axes.
+Named QPE `(1,3)` with either tested Fourier schedule checks within the unchanged
+2,000,000 structural allowance; the small-system
+[capacity record](../tests/fixtures/qpe_capacity_v023/README.md) gives actual costs.
 Export compacts reachable definitions and remaps source-event
 references; `lowering_precursor` retains the original source-derived table.
 Fixed-seed shots from both actual source clients feed validated modular-order

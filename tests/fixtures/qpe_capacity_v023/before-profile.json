@@ -1,0 +1,258 @@
+{
+  "format": "qleisli.named-qpe-capacity-profile",
+  "version": 1,
+  "recorded_at_utc": "2026-09-30T23:56:59.254411+00:00",
+  "producer_base_commit": "0630f91d75c85c4a96c6b99e74b62356300610cc",
+  "producer_state": "committed",
+  "profile": "before",
+  "aggregate_budget": 2000000,
+  "quantum_widths": [
+    3,
+    4
+  ],
+  "source_preservation_proved": false,
+  "production_authority_transferred": false,
+  "isolated_diagnostic": "Separate inspectors use the existing 2M ceiling; their sum is not an accepted receipt.",
+  "kernel_sha256": "53c035ecebb23498aa2e20c4d838a1f89ee7be443b01b838187fe12979d2573f",
+  "profile_binary_sha256": "9cc525ec0d9b63b07fbed14f8615fdd9e1e7caa5c74548be8e60c1144272cc0b",
+  "profile_source_sha256": "7aceb8cb9607a0833df0951b57e297e990baf539a0771110bf4503634cd64905",
+  "script_sha256": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564",
+  "current_source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "a07b8dd52cfb4458d1d852208022a75a784cef3196a5b480139976af907e7262",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "cd52c3b2d8e19ad719822611fd4780fea1004585cc3339980f46a303fac894d7",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "e71c395de4aaf128322d1cfea94b34708bd2c15ed85eae2b89866a250bd2253a",
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "53cf7085c8e105d7d34a9a1f3e6931b85d19f4cc5874d2dc3b0fae60ee511898",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "af909f47f285eeb643f2ec80f6fd0b06210a93145559fd4d6d42ea37e2033170",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "33eb6bff842c32b4a5c81526e1b414064f1f1bef6fea35e21fbca2f0941e9e05",
+    "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "1c8ab5b7220dde22258f011a860b3216834585ae4cf9c1a09ee7f7bde31bf3fc",
+    "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "204ba5ba2cc42ff834628d34be9a2f5e2bda1c7ad5e41408bb02a3baec5e5d0e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "bebadb3fe717b5e3cd5085eb0649d49c60c64dc95af760177b85935396ac4064",
+    "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "0a067004c3c0743d7c391eecb9b87357970d0c36fb9a79ac8ffbecf807f3eae6",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "00c2e4a4021ebac73967ff0cb9eadc50964bb8df882e95897b464c8057e6864b",
+    "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "2b49fd751b1a13768c95e5f076df0b841c0e9e89b203aa3772ae567ac014a05e",
+    "lean-kernel/Protocol.lean": "a82cfe890134ff5cb45569dd817841545103df32c85a33a72d3569362d12720d",
+    "lean-kernel/Main.lean": "4b30a889020c4df940ca96ea4d4f623cea5d21903e5039a2406f19a878f5464b",
+    "src/frontend/sized/lower.rs": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/interchange/hierarchical.rs": "66f5c02036a56865b47dfb9a3187f997f9d3e0941ce59f82e41e0bb1423928f5",
+    "tests/sized_source.rs": "b0165fa6b0eaca41db345fb07cca4af1ecb1fc4ae34a6ee8e7a4cb31abb1d103",
+    "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "corpus/sized/measured_qpe/measurement.qli": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+    "corpus/sized/qualtran_qpe/estimation.qli": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "corpus/sized/qualtran_qft/fourier.qli": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+  },
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "run",
+        "--offline",
+        "--manifest-path",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/Cargo.toml",
+        "--",
+        "/private/tmp/qleisli-qpe-perf-before",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/capture.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/.lake/build/bin/qpe-capacity-profile",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/n1-m2-textbook.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/n1-m2-delayed.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/n1-m3-textbook.bin",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-qpe-profile-0p52gceq/n1-m3-delayed.bin"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "cases": {
+    "n1-m2-textbook": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1242723,
+        "exact_work": 354,
+        "finite_equations": 3,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 3
+      },
+      "graph_counts": [
+        133,
+        133,
+        95,
+        133,
+        494
+      ],
+      "conditional": {
+        "total": 880162,
+        "contract_typing": 643016,
+        "node_typing": 420861,
+        "preparation": 69125,
+        "finite_obligations": 3
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 14304,
+        "instrument": 10688
+      },
+      "provider": 7795,
+      "schedule": 274446,
+      "powers": 4954,
+      "inverse_fourier": 16253,
+      "trace": 238935,
+      "preparation": 24672,
+      "readout": 44480,
+      "isolated_diagnostic_total": 1242723,
+      "diagnostic_budget_margin": 757277,
+      "provider_request_sha256": "f577bbcdc71f9904bce48f4423340a8c3503f1b4e0866e7e57dc33630e3b9276",
+      "bridge_sha256": "c0f0b0136365bd9d88427a780a66566bd27c71ee8ae1cb4124d895412f79f82d",
+      "input_sha256": {
+        "payload": "ed36c6887126d2cb988d519fbf6df5888f325e9704eaf3aa477e2fcb70097214",
+        "request": "64c17e0a1a8c28ccfcf6d013a5651c44d3ae065c995a58d97ad7c90de59e1671",
+        "candidate": "76feb4fa1dba83c4286a34d976dca3d51d6bdefd8430606055dfb4519d695541",
+        "precursor": "3a0fdbe7c24ef6e8e71c0049813f08430189f00de8bd7f92a75e22a23c563ef8"
+      }
+    },
+    "n1-m2-delayed": {
+      "service": {
+        "status": "accepted",
+        "structural_work": 1242723,
+        "exact_work": 354,
+        "finite_equations": 3,
+        "provider_finite_pairs": 0,
+        "hadamard_roles": 3
+      },
+      "graph_counts": [
+        133,
+        133,
+        95,
+        133,
+        494
+      ],
+      "conditional": {
+        "total": 880162,
+        "contract_typing": 643016,
+        "node_typing": 420861,
+        "preparation": 69125,
+        "finite_obligations": 3
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 14304,
+        "instrument": 10688
+      },
+      "provider": 7795,
+      "schedule": 274446,
+      "powers": 4954,
+      "inverse_fourier": 16253,
+      "trace": 238935,
+      "preparation": 24672,
+      "readout": 44480,
+      "isolated_diagnostic_total": 1242723,
+      "diagnostic_budget_margin": 757277,
+      "provider_request_sha256": "f577bbcdc71f9904bce48f4423340a8c3503f1b4e0866e7e57dc33630e3b9276",
+      "bridge_sha256": "c0f0b0136365bd9d88427a780a66566bd27c71ee8ae1cb4124d895412f79f82d",
+      "input_sha256": {
+        "payload": "ed36c6887126d2cb988d519fbf6df5888f325e9704eaf3aa477e2fcb70097214",
+        "request": "64c17e0a1a8c28ccfcf6d013a5651c44d3ae065c995a58d97ad7c90de59e1671",
+        "candidate": "76feb4fa1dba83c4286a34d976dca3d51d6bdefd8430606055dfb4519d695541",
+        "precursor": "0ce7396e2a44455e959e991eaa7dda8886a44a9178a4865966404171aeb117ed"
+      }
+    },
+    "n1-m3-textbook": {
+      "service": {
+        "status": "limit"
+      },
+      "graph_counts": [
+        185,
+        185,
+        131,
+        185,
+        686
+      ],
+      "conditional": {
+        "total": 1405443,
+        "contract_typing": 1051605,
+        "node_typing": 703130,
+        "preparation": 108201,
+        "finite_obligations": 4
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 21536,
+        "instrument": 15584
+      },
+      "provider": 7795,
+      "schedule": 481053,
+      "powers": 7587,
+      "inverse_fourier": 30329,
+      "trace": 421601,
+      "preparation": 49888,
+      "readout": 93120,
+      "isolated_diagnostic_total": 2053363,
+      "diagnostic_budget_margin": -53363,
+      "provider_request_sha256": "ca60b84e08dda20c34015b42f5a0eb6c4106c211d3e1e7574512adf805b95a64",
+      "bridge_sha256": "7c21ddaee16116652ea8c6ea35ace918a4d38d9b004bac51b43475fabae5d2cc",
+      "input_sha256": {
+        "payload": "5c1566dd7f73b266106da65b6ee6b1ef52508a3e3d37139552fbe93fe397afa1",
+        "request": "fc93b272d875c5557bf223625bad8ad1da0c4fc794c5a8bbaa442c9449e42573",
+        "candidate": "f576a60d3b1af2f83ebdcbe272079ef26486000a1209f296107496323f0d83f5",
+        "precursor": "f3c3d74a07fd19c036566cda8d1bd4ba51fd9906fdb15c108467e8dcd85563b4"
+      }
+    },
+    "n1-m3-delayed": {
+      "service": {
+        "status": "limit"
+      },
+      "graph_counts": [
+        185,
+        185,
+        131,
+        185,
+        686
+      ],
+      "conditional": {
+        "total": 1405443,
+        "contract_typing": 1051605,
+        "node_typing": 703130,
+        "preparation": 108201,
+        "finite_obligations": 4
+      },
+      "charges": {
+        "root": 480,
+        "schedule": 21536,
+        "instrument": 15584
+      },
+      "provider": 7795,
+      "schedule": 481053,
+      "powers": 7587,
+      "inverse_fourier": 30329,
+      "trace": 421601,
+      "preparation": 49888,
+      "readout": 93120,
+      "isolated_diagnostic_total": 2053363,
+      "diagnostic_budget_margin": -53363,
+      "provider_request_sha256": "ca60b84e08dda20c34015b42f5a0eb6c4106c211d3e1e7574512adf805b95a64",
+      "bridge_sha256": "7c21ddaee16116652ea8c6ea35ace918a4d38d9b004bac51b43475fabae5d2cc",
+      "input_sha256": {
+        "payload": "5c1566dd7f73b266106da65b6ee6b1ef52508a3e3d37139552fbe93fe397afa1",
+        "request": "fc93b272d875c5557bf223625bad8ad1da0c4fc794c5a8bbaa442c9449e42573",
+        "candidate": "f576a60d3b1af2f83ebdcbe272079ef26486000a1209f296107496323f0d83f5",
+        "precursor": "fe87efddada3b5a0b88ad5e98a7f62b5d210a710cbb7fc8fba0014dcef735d72"
+      }
+    }
+  },
+  "original_producer_source_sha256": {
+    "src/frontend/sized/lower.rs": "0934da2b628c0dcd76378a69e9975c2cb22d3a092a687adb24706b63363bf9fd",
+    "src/frontend/sized/fourier.rs": "834e1840f8a178519d4a2e73abe0cc6e0d94fe353d32d1543e981ecbf602f7c8",
+    "src/frontend/sized/qpe.rs": "e7bff3fb39f5eb12bbbe5b048e303e53bc3f20c52f9ebb4f24e9076f166dcf19"
+  }
+}

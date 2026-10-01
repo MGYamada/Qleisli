@@ -29,6 +29,8 @@ separately in [release milestones](docs/release-milestones.md).
   source spans on arithmetic and solver-limit diagnostics (#95).
 - Recognize QFT traces across commuting gate reorderings and factor root
   definitions, preserving original source, phase, axes and output ports.
+- Reduce redundant primitive and Fourier routing in generated IR. Named QPE
+  `(1,3)` now checks with both tested QFT schedules under the existing budget.
 - Diagnose forbidden `with_computed` captures separately from consumed owners,
   with a concrete `join`/data-binder repair hint.
 - Preflight sized lowering root signatures with an additive API and precise

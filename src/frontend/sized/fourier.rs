@@ -552,37 +552,57 @@ impl Builder<'_, '_> {
         self.lower.graph.sequence(children)
     }
     fn reversal(&mut self, register: Port) -> Result<usize> {
+        self.reverse_axes(register, true)
+    }
+    // Keep the reversed coordinate labels in each recursive tail's actual
+    // structural output. Only the outer boundary restores its original frame;
+    // no intermediate owner/axis renaming is needed to perform the reversal.
+    fn reverse_axes(&mut self, register: Port, close: bool) -> Result<usize> {
         let width = register.axes.len();
         if width <= 1 {
             return self.lower.graph.identity(vec![register]);
         }
         let bit = self.fresh(true, register.axes[..1].to_vec())?;
         let rest = self.fresh(false, register.axes[1..].to_vec())?;
-        let result = Port {
-            axes: register.axes[1..]
-                .iter()
-                .chain(&register.axes[..1])
-                .copied()
-                .collect(),
-            ..register.clone()
-        };
         let take = self.lower.graph.structural(
             vec![register.clone()],
             vec![bit.clone(), rest.clone()],
             "take_bit",
             &[width as u32, 0],
         )?;
-        let idle = self.lower.graph.identity(vec![bit.clone()])?;
-        let reverse = self.reversal(rest.clone())?;
-        let middle = self.lower.graph.tensor(idle, reverse)?;
+        let mut children = vec![take];
+        // Reversing a one-axis tail changes no coordinate. Retain its owner
+        // through the adjacent take/put boundaries without proposing a tensor
+        // of two identity rewires for the native checker to prove again.
+        let reversed_rest = if width > 2 {
+            let idle = self.lower.graph.identity(vec![bit.clone()])?;
+            let reverse = self.reverse_axes(rest.clone(), false)?;
+            let after = self.lower.graph.nodes[reverse].after[0].clone();
+            children.push(self.lower.graph.tensor(idle, reverse)?);
+            after
+        } else {
+            rest
+        };
+        let result = Port {
+            axes: reversed_rest
+                .axes
+                .iter()
+                .chain(&bit.axes)
+                .copied()
+                .collect(),
+            ..register.clone()
+        };
         let put = self.lower.graph.structural(
-            vec![bit, rest],
+            vec![bit, reversed_rest],
             vec![result.clone()],
             "put_bit",
             &[width as u32, (width - 1) as u32],
         )?;
-        let rename = self.lower.graph.rename(vec![result], vec![register])?;
-        self.lower.graph.sequence(vec![take, middle, put, rename])
+        children.push(put);
+        if close {
+            children.push(self.lower.graph.rename(vec![result], vec![register])?);
+        }
+        self.lower.graph.sequence(children)
     }
 }
 impl Lower<'_> {
@@ -850,6 +870,48 @@ mod tests {
         let original = lower.graph.sequence(vec![enter, child, restore]).unwrap();
         let candidate = lower.factor_fourier(original).unwrap();
         (lower, original, candidate)
+    }
+    #[test]
+    fn direct_finite_gates_bind_actual_ports_and_reuse_identical_headers() {
+        let source = source(SOURCE, 1);
+        let (mut lower, _, _) = factor(&source);
+        let input = Port {
+            owner: 900,
+            bit: true,
+            axes: vec![7],
+        };
+        let output = Port {
+            owner: 901,
+            ..input.clone()
+        };
+        for gate in [SingleGate::H, SingleGate::X] {
+            let node = lower.finite_gate(gate, &input, &output).unwrap();
+            assert_eq!(lower.finite_gate(gate, &input, &output).unwrap(), node);
+            assert_eq!(lower.graph.nodes[node].before, std::slice::from_ref(&input));
+            assert_eq!(lower.graph.nodes[node].after, std::slice::from_ref(&output));
+            let definition = json::parse(lower.graph.nodes[node].definition.as_bytes()).unwrap();
+            let program = definition
+                .field("body")
+                .unwrap()
+                .field("program")
+                .unwrap()
+                .text()
+                .unwrap();
+            let imported = interchange::import(program.as_bytes(), None).unwrap();
+            assert_eq!(
+                imported.program.raw().operations,
+                [RawOp::Gate {
+                    gate,
+                    input: TokenId(input.owner),
+                    output: TokenId(output.owner),
+                }]
+            );
+            let different = Port {
+                owner: 902,
+                ..output.clone()
+            };
+            assert_ne!(lower.finite_gate(gate, &input, &different).unwrap(), node);
+        }
     }
     #[test]
     fn actual_source_fourier_factoring_preserves_complete_phase_trace() {

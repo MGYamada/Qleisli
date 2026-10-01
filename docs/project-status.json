@@ -25,7 +25,7 @@
     {
       "topic": "v0.2.2 review repairs",
       "state": "Compatible frontend and QFT repairs in development 0.2.3",
-      "detail": "[Issue 102](https://github.com/MGYamada/Qleisli/issues/102) and [validation](../tests/fixtures/review_v022/validation.json) record 530 passing all-target tests on Rust 1.98.1/1.85.0. Repairs cover the stdin race, capture diagnostics, commuting QFT schedules/root factoring, lowering preflight and corpus providers. The 4,000-case ownership comparison agrees; paired Rust/Python checking retains explicit scope differences. Native QFT widths 1\u20133 and QPE (1,2) match; named (1,3) retains its capacity rejection."
+      "detail": "[Issue 102](https://github.com/MGYamada/Qleisli/issues/102) and [validation](../tests/fixtures/review_v022/validation.json) record 530 passing all-target tests on Rust 1.98.1/1.85.0. Repairs cover the stdin race, capture diagnostics, commuting QFT schedules/root factoring, lowering preflight and corpus providers. The 4,000-case ownership comparison agrees; paired Rust/Python checking retains explicit scope differences. Native QFT widths 1\u20133 match. [QPE capacity repair](../tests/fixtures/qpe_capacity_v023/README.md) accepts both tested (1,3) schedules at 1,996,759 structural/708 exact units under the unchanged 2,000,000 cap. Final Rust/MSRV all-target checks pass 531 tests; 34 optional tests are explicit."
     },
     {
       "topic": "Finite corpus development",
@@ -34,7 +34,7 @@
     },
     {
       "topic": "Verification migration",
-      "state": "VM-22/VM-23 gates satisfied in the working tree",
+      "state": "VM-22/VM-23 implementation and proof gates satisfied",
       "detail": "[VM-23 exact boundary](../tests/fixtures/verification_v023/README.md) has actual scalar/matrix meaning, canonicality, reference/isometry, capacity and aggregate-work proofs; 815 native comparisons pass. Rust arithmetic is a compatibility comparison path, not a general formal-proof prerequisite. [Scope correction](../tests/fixtures/verification_v023/scope-review.json) removes the overly broad extra blocker. VM-24\u2013VM-29 remain open; production Rust authority and disabled schemas are preserved."
     },
     {
@@ -566,7 +566,7 @@
     },
     {
       "rule": "[0.2.2\u20130.2.9 verification migration plan](verification-migration-v0.2.md)",
-      "implementation": "VM-22 freezes APIs/boundaries; [VM-23 arithmetic packet](../tests/fixtures/verification_v023/README.md) implements bounded R8 coefficients/matrices and shared work in the pure Lean kernel. Its adopted arithmetic/comparison gates are satisfied in the working tree. Production evidence/transport and VM-24\u2013VM-29 remain pending.",
+      "implementation": "VM-22 freezes APIs/boundaries; [VM-23 arithmetic packet](../tests/fixtures/verification_v023/README.md) implements bounded R8 coefficients/matrices and shared work in the pure Lean kernel. Its adopted arithmetic/comparison gates are satisfied in the 0.2.3 implementation. Production evidence/transport and VM-24\u2013VM-29 remain pending.",
       "tests": "[Current native/capacity comparison](../tests/fixtures/verification_v023/runtime-capacity-contract.json): 815 Rust/Lean decisions, 551 independent rational and 75 matrix checks, 24 capacity/order probes and seven calibrated faults; ordinary matrix dimension at most four. Both package builds/audits and fresh kernel replay pass; historical reports and first-source diagnostics remain intact.",
       "proof": "[Scalar bridge](../lean/Qleisli/Exact.lean), [general matrix/reference bridge](../lean/Qleisli/ExactMatrix.lean), [canonical storage and exact shared-work proofs](../lean-kernel/QleisliKernel/ExactMatrix.lean) and [capacity proofs](../lean-kernel/QleisliKernel/ExactCapacity.lean) establish the actual Lean arithmetic profile. A general correctness proof of old Rust arithmetic is not required for replacement; compiler/runtime assumptions remain explicit. [Scope correction](../tests/fixtures/verification_v023/scope-review.json) records that distinction. Later evidence/transport/source obligations remain separate; no production transfer or enabled schema."
     },
