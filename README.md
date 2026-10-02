@@ -20,9 +20,9 @@ its [source contract](docs/sized-corpus-source.md#additive-rust-source-pipeline)
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-Version 0.2.6 was published on 2026-10-02 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.6)
-and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.6).
-[Publication evidence](tests/fixtures/releases/v0.2.6/publication.json) binds the immutable source,
+Version 0.2.7 was published on 2026-10-03 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.7)
+and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.7).
+[Publication evidence](tests/fixtures/releases/v0.2.7/publication.json) binds the immutable source,
 registry artifact, fresh installation, hosted docs and complete GitHub downloads.
 
 [Quick reference](docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](docs/frontend-v0.md) ·
@@ -94,7 +94,7 @@ cargo install qleisli --version 0.2.7 --locked
 
 The [0.2.7 release record](docs/releases/v0.2.7.md) separates candidate validation
 from publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.7/qleisli/)
-are publication targets, verified separately after publication.
+were verified after publication, including a fresh exact-version registry install.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)
@@ -207,10 +207,10 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-Selected development version **0.2.7** reduces docs by approximately 55% while retaining
+Published version **0.2.7** reduces docs by approximately 55% while retaining
 plans and imaginary-v1, and grows the finite corpus from 60 to 69 translations.
-The [candidate record](docs/releases/v0.2.7.md) records local validation; tagging
-and publication remain separate. The latest published version is 0.2.6.
+The [release record](docs/releases/v0.2.7.md) records exact-source full CI,
+tagging and verified crates.io/GitHub publication. The latest published version is 0.2.7.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and
 [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain current work targets. Rust retains production acceptance authority;

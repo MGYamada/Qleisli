@@ -143,7 +143,7 @@ breaking-change boundary.
 - [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Version-pinned documentation links above target the pending `v0.2.7` source tag.
+Version-pinned documentation links above target the immutable `v0.2.7` source tag.
 Packaged files contain the current specifications and release record;
 source validation, tagging and publication are recorded separately.
 

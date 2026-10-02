@@ -1,0 +1,13 @@
+{
+  "format": 1,
+  "head": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+  "event": "workflow_dispatch",
+  "ref": "refs/heads/codex/release-v0.2.7",
+  "base": null,
+  "profile": "full",
+  "proof_lane": "full",
+  "reason": "release ref; fresh full validation",
+  "paths": [],
+  "dependency_cache": "enabled",
+  "project_build_cache": "disabled"
+}

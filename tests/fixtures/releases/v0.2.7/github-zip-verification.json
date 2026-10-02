@@ -1,0 +1,21 @@
+{
+  "archive_root": "MGYamada-Qleisli-7eb7703",
+  "artifact": "/private/tmp/qleisli-v027-github.zip",
+  "bytes_match": true,
+  "checked_utc": "2026-10-02T15:14:12.134318+00:00",
+  "complete_inventory_matches_git": true,
+  "compressed_bytes": 8532928,
+  "excluded_tracked_files": [],
+  "file_count": 2643,
+  "format": "qleisli.downloaded-artifact-validation",
+  "git_modes_match": null,
+  "observed_posix_modes": [
+    "0o0"
+  ],
+  "permission_comparison": "ZIP omits POSIX modes; all Git files are non-executable. Permissions checked independently in source tar.",
+  "release": "0.2.7",
+  "sha256": "18c1ad5f53f6c0f77b8bb6bb0804bf53bced787ddd4b93c0d35fa980b4dc014d",
+  "source_commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+  "status": "passed",
+  "version": 1
+}

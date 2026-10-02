@@ -2,7 +2,7 @@
 
 # Qleisli release procedure
 
-Cargo/version synchronization under [versioning](versioning.md); [theorem gates](release-milestones.md) separate. Selected0.2.7 unpublished/latest [0.2.6 evidence](../tests/fixtures/releases/v0.2.6/publication.json). Publication requires current authorization.
+Cargo/version synchronization under [versioning](versioning.md); [theorem gates](release-milestones.md) separate. Latest published0.2.7 [evidence](../tests/fixtures/releases/v0.2.7/publication.json). Publication requires current authorization.
 
 ## Release sequence
 1. Select manifests/Unreleased/status/candidate,not publication.

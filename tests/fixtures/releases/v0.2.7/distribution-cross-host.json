@@ -1,0 +1,20 @@
+{
+  "actual_ci_artifact_bytes_and_inventories_verified": true,
+  "artifact": "/private/tmp/qleisli-v027-ci-distribution/qleisli-distribution.json",
+  "candidate": {
+    "clean": true,
+    "commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+    "tree": "fd2dbee60211050eecf0553697bcc283e0147b12"
+  },
+  "checked_utc": "2026-10-02T14:54:43.320470+00:00",
+  "crate_sha256": "1f7a4cc19edc4c6965d72dbe4f2bea84b4a042bbf33aa4d9120706ba6fae9955",
+  "format": "qleisli.downloaded-artifact-validation",
+  "hosted_rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "local_rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+  "release": "0.2.7",
+  "source_commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+  "source_files": 2643,
+  "source_tar_sha256": "b8f30d200cbb53fb7e858c08b78618ec59a6529b9f69c12c2b73eac2e471246e",
+  "status": "passed",
+  "version": 1
+}
