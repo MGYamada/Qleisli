@@ -457,3 +457,22 @@ example : (match QleisliKernel.Raw.prepare [] (identity 12) with
     | .error _ => false
     | .ok prepared => QleisliKernel.Semantics.RawTrace.run (identity 12) == some prepared.reference) = true := by decide +kernel
 end RawPureTests
+
+namespace RawObservationTests
+open QleisliKernel.Semantics.Observation
+private def nested : Nat → List Op
+  | 0 => []
+  | n+1 => [.branch 0 (nested n) [] [] []]
+private def program (depth : Nat) : Program :=
+  ⟨[],[0],nested depth,[],[0],.unitary⟩
+private def accepts (value : Program) : Bool :=
+  match (QleisliKernel.Raw.Observation.verify [] value).run 1000000 with
+  | (.ok _,_) => true
+  | _ => false
+-- Depth and owner sentinels inspect structure only; no quantum matrices.
+example : accepts (program 64) = true := by decide +kernel
+example : accepts (program 65) = false := by decide +kernel
+example : accepts ⟨[⟨0,[],0⟩],[0],[.branch 0 [] [] [] []],[],[],.unitary⟩ = false := by decide +kernel
+example : accepts ⟨[⟨0,[],0⟩],[0],
+    [.branch 0 [] [] [⟨0,0,1,[]⟩] []],[1],[],.unitary⟩ = true := by decide +kernel
+end RawObservationTests

@@ -135,7 +135,7 @@ This two-bit Deutsch–Jozsa example uses the balanced predicate `a xor b`.
 The output is `11` with probability one. `with_computed` computes a clean flag,
 applies its phase and uncomputes it. Its two-argument form admits expanded
 identity/Z/T flag bodies; other pure bodies need the explicit logical-operation
-contract of the [three-argument form](semantic-contracts-v0.1.md).
+contract of the [three-argument form](finite-contracts.md).
 
 ```qli
 use std::quantum::init0;

@@ -290,6 +290,22 @@ def reference_column(case, column):
     state = [complex(i == column) for i in range(dim)]
     if name == "global_phase":
         return [-a for a in state]
+    if name == "phased_uniform2":
+        return [(-1) ** ((column & row).bit_count() + (row & 1))
+                * 1j ** (row >> 1) / 2 for row in range(4)]
+    if name == "graph_state2":
+        return [(-1) ** ((column & row).bit_count() + (row & 1) * (row >> 1))
+                / 2 for row in range(4)]
+    if name == "reflection_minus1":
+        return [complex(row == column ^ 1) for row in range(2)]
+    if name == "control_zero_reflection2":
+        return permute(state, lambda i: i ^ (2 if not i & 1 else 0))
+    if name == "rotation_half_y":
+        matrix = [[1j, -1], [1, -1j]]
+        return [matrix[row][column] / math.sqrt(2) for row in range(2)]
+    if name == "ising_zz_negative2":
+        return [a * cmath.exp(1j * math.pi / 4 * (-1) ** i.bit_count())
+                for i, a in enumerate(state)]
     if name == "controlled_z2":
         return [a * (-1 if i == 3 else 1) for i, a in enumerate(state)]
     if name == "toffoli3":

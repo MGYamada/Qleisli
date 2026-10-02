@@ -1,0 +1,113 @@
+{
+  "run_id": 36921368873,
+  "attempt": 1,
+  "url": "https://github.com/MGYamada/Qleisli/actions/runs/36921368873",
+  "event": "pull_request",
+  "head_sha": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+  "conclusion": "success",
+  "queue_reference": "2026-10-01T20:24:47Z",
+  "initial_queue_seconds": 3.0,
+  "feedback_seconds": 1413.0,
+  "execution_elapsed_seconds": 1410.0,
+  "runner_seconds": 2854.0,
+  "runner_minutes": 47.567,
+  "cache_observation": "observed required-check outputs; project build cache disabled",
+  "jobs": [
+    {
+      "name": "changes",
+      "conclusion": "success",
+      "runner_seconds": 12.0
+    },
+    {
+      "name": "check-interop",
+      "conclusion": "success",
+      "runner_seconds": 62.0
+    },
+    {
+      "name": "check-lean-kernel",
+      "conclusion": "success",
+      "runner_seconds": 1363.0
+    },
+    {
+      "name": "check-rust",
+      "conclusion": "success",
+      "runner_seconds": 299.0
+    },
+    {
+      "name": "check-macos-source",
+      "conclusion": "success",
+      "runner_seconds": 59.0
+    },
+    {
+      "name": "check-lean",
+      "conclusion": "success",
+      "runner_seconds": 582.0
+    },
+    {
+      "name": "check-rust-msrv",
+      "conclusion": "success",
+      "runner_seconds": 160.0
+    },
+    {
+      "name": "check-docs",
+      "conclusion": "success",
+      "runner_seconds": 28.0
+    },
+    {
+      "name": "check-distribution",
+      "conclusion": "success",
+      "runner_seconds": 193.0
+    },
+    {
+      "name": "lean",
+      "conclusion": "success",
+      "runner_seconds": 7.0
+    },
+    {
+      "name": "lean-kernel",
+      "conclusion": "success",
+      "runner_seconds": 19.0
+    },
+    {
+      "name": "distribution",
+      "conclusion": "success",
+      "runner_seconds": 11.0
+    },
+    {
+      "name": "rust",
+      "conclusion": "success",
+      "runner_seconds": 13.0
+    },
+    {
+      "name": "macos-source",
+      "conclusion": "success",
+      "runner_seconds": 6.0
+    },
+    {
+      "name": "interop",
+      "conclusion": "success",
+      "runner_seconds": 29.0
+    },
+    {
+      "name": "rust-msrv",
+      "conclusion": "success",
+      "runner_seconds": 4.0
+    },
+    {
+      "name": "docs",
+      "conclusion": "success",
+      "runner_seconds": 7.0
+    }
+  ],
+  "validated_sha": "2f912f81625b917e1f683151f9b43f3fced355f3",
+  "profile": "full",
+  "dependency_cache": {
+    "check-rust": "unavailable",
+    "check-rust-msrv": "unavailable",
+    "check-macos-source": "unavailable",
+    "check-interop": "unavailable",
+    "check-lean": "unavailable",
+    "check-lean-kernel": "unavailable",
+    "check-distribution": "unavailable"
+  }
+}

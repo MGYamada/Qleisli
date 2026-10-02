@@ -24,6 +24,9 @@ private theorem phase_meaning (k : Nat) : scalar (QleisliKernel.Exact.Scalar.pha
   generalize k % 8 = r at *
   interval_cases r <;> simp [scalar,rational,Coefficient.integer,Qleisli.Semantics.Finite.halfRoot] <;> ring
 
+theorem phaseValue_meaning (exponent : Nat) :
+    scalar (phaseValue exponent) = Qleisli.Semantics.Finite.phase exponent := phase_meaning exponent
+
 theorem multiply_meaning (value factor result : Scalar) (work left : Nat)
     (ok : (multiply value factor).run work = (.ok result,left)) :
     scalar result = scalar value * scalar factor := by

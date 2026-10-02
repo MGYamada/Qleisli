@@ -13,16 +13,12 @@ Keep the fixed [trust partition](../TRUST_BOUNDARY.md). Rust produces untrusted 
 
 ## Algorithm contracts and pipeline consolidation review
 
-Consolidate actual algorithm contracts around one checking boundary. A component proof or Rust success flag does not prove full source/IR/instrument binding. [R14](imaginary-v1/requirements.md#scaling-prerequisite-for-r14) and H1–H5 stay required for generalized hierarchy/source integration.
+Finite Rust remains production-compatible; hierarchy/Rust sized source aim at one
+independently checked boundary. Python sized/research kernels remain differential
+oracles, lean-kernel the Mathlib-free executable checker, lean the independent intended
+semantics. R14/H1–H5, source/IR/instrument binding and actual-definition proofs remain
+separate gates; a component proof or Rust success flag is insufficient.
 
-| Current path | Proposed consolidation duty; not yet implemented |
-| --- | --- |
-| Finite Rust | Published production compatibility profile during VM migration. |
-| Hierarchical interchange / Rust sized | Converge on the shared source path and checked profile boundary. |
-| Python sized compiler | Independent differential oracle, not production authority. |
-| Research semantic kernel | Experimental oracle, not a second production checker. |
-| Mathlib-free `lean-kernel/` | Executable generic acceptance and actual-definition proofs. |
-| Mathlib `lean/` | Independent intended-meaning specifications and library/semantic bridges. |
 
 ## Pipeline migration with a stable IR verification boundary
 
@@ -42,8 +38,9 @@ complex action for all eleven pure constructors and final output order. It also
 proves original compute/use/compute cleanup for arbitrary correlated inputs,
 with protected coefficient evaluation that does not construct an auxiliary-space
 matrix, and binds fresh function graphs to retained inputs and source identities.
-Observing raw IR, hierarchy and production integration remain VM-26–VM-29;
-Rust retains production authority.
+[VM-26](../tests/fixtures/verification_v026/README.md) extends this boundary to
+observation, SSA/phis, retained branch-functions and matrix-free CP/TNI/TP
+against original complex actions. VM-27–29 remain open; Rust is authoritative.
 
 ## External search and the LeafRealizer checker
 
@@ -64,24 +61,25 @@ By v1 implement a substantive proved Lean backend, including correctness-critica
 
 K0–K4 are integration boundaries alongside M0–M5, not release deadlines or permission for public breaks. VM-22–29 brings K1/K2 implementation earlier; v0.3 types, v0.4 review preparation, v0.5 Soundness/authority and later PR/RS preservation retain their gates. Preserve Rust-only installation/APIs in compatible PATCH.
 
-| Stage and intended boundary | Implementation | Gate before advancing |
-| --- | --- | --- |
-| **K0 / shipped 0.2.0 foundation, 0.2.2 inventory** | Reuse the separate Mathlib-free package, actual component theorems, experimental protocols, Rust launcher and audits. VM-22 inventories every existing acceptance path and fixes the next boundary contracts. | Shipped components remain reproducible. New M2 rules stay disabled until actual-checker proofs, binding and H1–H5 pass; hierarchy closure is assigned to VM-27, not inferred from K0 or the 0.2.2 version. |
-| **K1 / 0.2.3–0.2.4: exact meanings and contracts** | VM-23/24 migrate canonical exact scalars, bounded matrices/leaves, contract equations and evidence reconstruction, with separate complex interpretation proofs over the same definitions. | Equality and operations agree with interpretation; phase/type/axis/source mutations reject. Preserve public arithmetic/capacity failure behavior and aggregate work limits. Raw-program evidence also requires K2 extraction. |
-| **K2 / 0.2.5–0.2.9: complete checking and dual integration** | VM-25/26 migrate pure/observing raw IR, ownership, effects, SSA, complete phi/frames and cleanup. VM-27 closes supported hierarchy/finite/root obligations; VM-28/29 integrate and audit the complete opt-in dual path. | Individual-rule proofs cover every migrated variant with no substitute Rust-checker premise. Both checkers receive the same immutable artifact/request; either failure or disagreement rejects that path. Complete native/adversarial/platform checks and record remaining full-theorem/review obligations for S05. Preserve compatible Rust-only installation and APIs in 0.2.x. |
-| **K3 / 0.5.0: Qleisli Soundness Theorem and production authority** | Prove the named theorem for the complete declared production IR profile, integrating K1/K2 results. Transfer acceptance to Lean after fresh serialized reconstruction; Rust becomes a producer/oracle. Prepare the community development foundation. | Complete [S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050), including independent review, proof reproduction, full coverage and artifact binding. Package the audited kernel on supported platforms; validate failures, parity and capacity migration. No unproved Rust-checker premise or silent fallback. |
-| **K4 / 0.6.0 onward, through v1: translations, realizability and resource preservation** | Validate Rust source lowering; implement correctness-critical backend lowering, optimization, gate-realization checking and emission in Lean with proofs about those actual definitions; retain external synthesis search behind the proved `LeafRealizer` checker. Derive CPTP semantics from soundness, construct its isometric dilation and synthesize it for the target profile. Retire duplicated Rust acceptance code through versioned migration, with broader contributors and reviewers. | Preserve S05-C1–C5 and complete [PR-C1–C4](release-milestones.md#physical-realizability-theorem-v1) and [RS-C1–C5](release-milestones.md#resource-safety-theorem-v1) by v1 alongside V1-C1–C5. Bind emitted artifacts to checked meanings and resource contracts under explicit cost models; distinguish exact synthesis, certified approximation and device assumptions. Retain reproducible audits, native compiler/runtime assumptions, diagnostics and migrations. |
+| Stage | Boundary and advancement gate |
+| --- | --- |
+| K0 | Shipped seed and VM-22 inventory; reproduce components, keep new M2 rules disabled pending actual proofs/binding/H1–H5. |
+| K1 | VM-23/24 exact scalars/equations/reconstruction; prove interpretation, preserve phase/type/axes/source binding, failures/capacities/work. Raw extraction also needs K2. |
+| K2 | VM-25–29 pure/observing raw IR, hierarchy/root closure and selected dual integration. Prove every migrated variant with no Rust-checker substitute; immutable common inputs, either rejection/disagreement fails, native/adversarial/platform validation and coverage audit. |
+| K3 | v0.5 complete production [Soundness S05-C1–C5](release-milestones.md#qleisli-soundness-theorem-v050), independent review/reproduction/artifact binding, supported audited packaging, explicit compatible migration; only then transfer authority, with no fallback. |
+| K4 | v0.6 onward through v1 actual source/backend lowering/optimization/realization/emission proofs, CPTP dilation, target synthesis and [PR/RS gates](release-milestones.md). Preserve meaning/resource contracts under declared cost models, exact/approximate/device distinctions and runtime assumptions. Retire duplicated acceptance only through versioned migration. |
+
 
 ## First executable slice
 
 The initial phase256 word profile proves cyclic X/phase normalization and actual acceptance against separate summaries. Both phase entries remain, including global phase. It is not full IR/ownership/instrument or native/compiler/source soundness. Later layout/DAG/phase/hierarchy/finite/QPE components have explicit narrower scope in [kernel README](../lean-kernel/README.md) and [rule inventory](rule-inventory.md).
 
-| Contract | Implementation/proof status | Adoption boundary |
-| --- | --- | --- |
-| Valid word and canonical summaries | `wordValid_iff`, `verify_conditions`, `normalize_valid` proved. At most 4096 gates; phases in 0..255. | Experimental `phase256-word-v1`; not a general circuit format. |
-| Normalized meaning equals execution | `normalize_correct` proved for every word, bit and initial natural phase. | Cyclic phase semantics only; complex interpretation bridge pending. |
-| Actual acceptance implies requested action | `verify_sound` proved for `verify word claimed expected`; both the computed claim and separate expected summary must match. | Does not prove transport parsing, native compilation, source adequacy or full quantum soundness. |
-| Native transport and Rust launch | Bounded parser/process adapter with independent positive, mutation and failure tests. | No `VerifiedProgram`, QIRF receipt or standard-library API is issued. |
+The seed proves wordValid_iff/verify_conditions/normalize_valid, normalize_correct
+for cyclic phase execution and verify_sound for both computed claim and independent
+expectation. It proves neither complex/full-IR semantics, ownership/instruments,
+source adequacy nor native/decoder correspondence, and issues no VerifiedProgram or
+QIRF/std receipt. [Kernel README](../lean-kernel/README.md) records component scopes.
+
 
 ### Experimental wire contract
 

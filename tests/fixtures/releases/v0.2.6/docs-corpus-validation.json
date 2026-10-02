@@ -1,0 +1,253 @@
+{
+  "format": 1,
+  "product_version": "0.2.6",
+  "state": "validated-development-worktree",
+  "created_utc": "2026-10-01T19:52:35.089351+00:00",
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "tagging_performed": false,
+  "publication_performed": false,
+  "docs": {
+    "scope": "docs/**/*.md plus docs/project-status.json; includes new working-tree documents, excludes ignored OS metadata",
+    "before": {
+      "files": 58,
+      "bytes": 816905,
+      "sha256": {
+        "docs/machine-interface-spec.md": "6e43dde4f3a7a3f86cdccb8f1537d6bfafa6696b3d8def08daab7ed727d2895b",
+        "docs/versioning.md": "22ed7a17a4619f19fd704b943127a7c5d0b6252178694e8079c4e036b4ff4b62",
+        "docs/rule-inventory.md": "51a4989051d59335ea9b2efcb7d3495a5fc84f1b369179d9efdf567bad993682",
+        "docs/algorithm-routines.md": "98209457e266231fddd73eb27708b8afc6bc56c630089a03588882cf0fe084ba",
+        "docs/tuple-shapes.md": "09ba1590d74d712a49a111d2e75d751e6198f278c269ca59520e85536a2b5b0e",
+        "docs/quantum-language-requirements.md": "7c81d63089447559b599cecc75b272127dd9eb68bbf9ad797cb64e631d5a0ca6",
+        "docs/distribution-validation.md": "d547f4f91e2d9d8a4f49582a4854287915bb0cc93e4958534c2618a64ca00368",
+        "docs/type-system.md": "834d48931654639ebb5ee26aa3e9493408851e734d28d6342f94fcc86ad92867",
+        "docs/interoperability-roadmap.md": "d5a8261d348f03242493afa34031033cd7548fcd97cce967515002a824c4f202",
+        "docs/algorithm-structure-goal.md": "f0fae8976edeff205604dfbf72a5c94b93cc83b94e4f9f61573d4b770ad8fa3c",
+        "docs/stdlib-contract-template.md": "75f4a638a5e23233cbf190cd1442cad74b0bc985c421ef6c8d18e081e81148c9",
+        "docs/hierarchical-ir-spec.md": "a72dca7222b3aa2426bfc7b9609b35bbc232b7f999b92dea4b40285084d35d9c",
+        "docs/standard-library.md": "d19a00aa8ad54fb13e4c7580a20408ed8cff234e75b4a036b2bf90e5452d9f61",
+        "docs/verification-migration-v0.2.md": "a694c79e2e7f4d37b6ec7076a3c5082c29778ed7c4229835dfadc6572474720c",
+        "docs/size-expressions.md": "8a71b4ee1117af333b1af982defb33002d5fd4414c6358c5b8ec3f06322ec78f",
+        "docs/implementation-architecture.md": "ea8ad51f33ef8de54a7ffc3a239e1ef4f3f2c05e4d27e1a8f514331f6107bc27",
+        "docs/sized-corpus-source.md": "9cf0e8eea0445b4a38e878075029da264ea0845a2edc00d99388e862720edbe0",
+        "docs/ai-era-goal.md": "65467be603e40b32fecd50300cf4f7f3ba8078b6c9b25116eec36464d9558718",
+        "docs/syntax-v0.md": "2b85d2fcab20dc799267e744dc9c81501473657386523a3fc8f7b9d8e0d7f1ee",
+        "docs/stdlib-contracts.md": "e4085e33c4789dd5dfb01d9b6a65856fcaa2d79bc94009d4d3735d86a90cbdee",
+        "docs/language-editions.md": "c487f2f5ed657c8bcc8228cd076d40bb69a08e7a73e7fb33c2eb9f5a11aed1ad",
+        "docs/static-operations.md": "4b03bb9b1d5cbc8bc5b50adcd97c75f5530441cf9a62283eff195ebc3bd1878b",
+        "docs/stdlib-roadmap.md": "0906dc9379e4d8af9ca11a60782b0df0402b7b7b1350434f980c6733a1980c4f",
+        "docs/language-spec.md": "765969d415c0ebf1851eeab34d1b5916eaa6d28e291d132baf31b2dee4f234b9",
+        "docs/formal-core.md": "b485993232eed4491e332a5b7c06f5a32acfa7eca5b1cebcae63efca9fa56964",
+        "docs/terminology.md": "43aa1ad52719f85105cb3179e902a00e832e7da4c2c85ef02a9c5ff27edd10bc",
+        "docs/ir-prototype.md": "af0ac9252dffd9c002faf71568641859a20397c1f549d42082ded04971eaa96c",
+        "docs/lean-kernel-migration.md": "2b6808cc710ead220b1af3506a4117b710a54238a400bae3fe937abb3f506249",
+        "docs/v0.2.2-plan.md": "570fea2786b0c6a4df163a50b0b40a8d26918507c51ee6c743fb251722276c78",
+        "docs/semantic-contracts-v0.1.md": "55ec4057194c90a54b50a4adea62600c4692234a15f44d776d6ed01aebe52e80",
+        "docs/coefficient-domains.md": "3cef639854b8f6c44a42d0a495f4178e81f7af6fa78b25c12167c32dd47fd61a",
+        "docs/v0x-roadmap.md": "2a49298ab54ed10a2215952a1e0c30a5e71fc9249342b3c64d3cd8973aa03eab",
+        "docs/documentation-comments.md": "9970306765745bda516a8d35edd651853033bcc4f23e7e471e417e514a6631a2",
+        "docs/qli-quick-reference.md": "0de82662fc93e5de38d957ef7bc07d947f1b6fa80447e50d615a3e4d213fe311",
+        "docs/frontend-v0.md": "82162b511f35123ea4ed90fc34f8e74d9287a3a0ddfe43adbed64f6cfd84d9e2",
+        "docs/current-status.md": "f9040d39f6f7f821f00e8c2b1e4dda75b237e2deb22c7d4c4c29e738a0923fd3",
+        "docs/next-minor-spec.md": "0822be506819e929c5b8794328ae2a023083ff7a9eafde1ec970b32e63991cd5",
+        "docs/documentation-map.md": "88d0c29ae38548d7455a856f70b2cd55eadddf015a7d9873bd8d7964527203da",
+        "docs/function-contracts-v0.1.md": "02630f26db3ed42f32572634b25e98769802aa6a21e2dd76437ee432798ccdaf",
+        "docs/design-philosophy.md": "1a84fd4ef97a0b4e32df5d147b833e2fe8a7b4d93d2ff7308d240b9284cabe1b",
+        "docs/resource-semantics.md": "98174d82107b66cc8280029cfdd80b70a5c8d7df1cc28ff5c9e2b101f4894d6e",
+        "docs/crates-io-release.md": "ac2009f1194338d252aff272432d8dc313d77a0d47d490d714332cb8361b3cba",
+        "docs/release-milestones.md": "73e443d0200e983ea6afa93c17d1ae4e3ac5b8e9b34d3d4f5d5d7a386389eaad",
+        "docs/qli-authoring-feedback.md": "576879408b7c93f26f638f28992830e814425c13f052e2bb262f3ef00e36b316",
+        "docs/interop-m1.1.md": "09d69d089b2b99f107526530458b1248ded8766ae13942032d0ac006abb8ce1a",
+        "docs/releases/v0.2.5.md": "ea1993ef1832a081607fec2512b3ee210e2444d81e2297352d94d634ce916875",
+        "docs/stdlib-contract-examples/and-phase.md": "5459c55b9d5ba554133d2348f75bf8b24ef00dddd6edbf92312e3751b24ee0b9",
+        "docs/stdlib-contract-examples/add2.md": "d9d65975d2878080d890b39871549d701a2e5fdacfaaca5eb86f9d37e09bde99",
+        "docs/stdlib-contract-examples/qft2.md": "cd9781b9407a49981559766483ca268e70fde05171dd65271a299666442a91d6",
+        "docs/imaginary-v1/grover.md": "2c33e3af0fa528bb75c3f84838bb4db1d4959df6b5c1840dcb7d74bab0571d16",
+        "docs/imaginary-v1/qpe.md": "8c1dc5c4c7780f810bd9fb60ea3c04e99f4a67f0ce6ba1bb17e6749775a67036",
+        "docs/imaginary-v1/requirements.md": "ea9ecbd3d04b01d304cd3885eec6fd800bcb6a92b0a107dd8bf7b15ad7adff67",
+        "docs/imaginary-v1/qsvt.md": "ac018b2c182f3ce24a4e265d799cc6fc0545f96e88115ec4cec3042806e5eaaf",
+        "docs/imaginary-v1/README.md": "93a709d933b7183ac33443ca92f4e94b5cf680b33877da6db8eb39fde26ed835",
+        "docs/imaginary-v1/shor.md": "2288098b538fee65154510c2f17cd363e5e6708842c21db53614a3b9a5d43a57",
+        "docs/imaginary-v1/quantum-walk.md": "96fb7bc0bfc5d688dfc6d107394af23deaf07abfc0716e2def75bea095b57906",
+        "docs/imaginary-v1/amplitude-estimation.md": "9b01f7d4c62275829a4024d8d78f946172fe976d247132a1013d83ba0c623e5c",
+        "docs/project-status.json": "0ca36bc1b231230f1fe5ffd75d4aa71cb4f5292bee27f2699d387d616a93475d"
+      }
+    },
+    "after": {
+      "files": 51,
+      "bytes": 407677,
+      "sha256": {
+        "docs/ai-era-goal.md": "847483195591f62e72658e9e7aa56e991018446144bd2b372222247547849cf0",
+        "docs/algorithm-routines.md": "fafabec6f222449298869299c7b0c25dec3f975fc55763b9be7746afddcec685",
+        "docs/algorithm-structure-goal.md": "339f9206ce01246c5d2187444c156f6025ee29001b4b3abae16b1d60dec3c66d",
+        "docs/coefficient-domains.md": "4945ddcfeb5672f84d1458124f92f5544e3d682f85796c94870914349f8d5953",
+        "docs/crates-io-release.md": "bc15796dfa5d4e50bc57f169384ed4edb737b33761b5771efb56264c74821a99",
+        "docs/current-status.md": "ffb1b4d69cfa765de3dac449b0e55ae95b205e35f8ba0b905952b91516db1104",
+        "docs/design-philosophy.md": "1a84fd4ef97a0b4e32df5d147b833e2fe8a7b4d93d2ff7308d240b9284cabe1b",
+        "docs/distribution-validation.md": "d2bbbd974de6506ec6bd6b0e902630814d15b2fddc02bf45e9cc899cc30fb61d",
+        "docs/documentation-comments.md": "7ba74d29f9585b40f169e4abc4abd52e8c59af5bd56a72cbc5dbb2d079dfe838",
+        "docs/documentation-map.md": "abdb542d8e6cff1fde973e876fa3d77d355b0a11f8544da8da0b7e786fcb4c4a",
+        "docs/finite-contracts.md": "77a81f5f61889fd0746b712e60df5fde484ade27910a81666917bd32f8baef52",
+        "docs/formal-core.md": "d80b9005dbe66644f26e17f6cb95c6df18f01ddda3f586a19bbe969989d53f16",
+        "docs/frontend-v0.md": "7eb1b4a7605dacbe451a97754102ef071b861ab6d9f64e1008b5e006cb9f0a6d",
+        "docs/hierarchical-ir-spec.md": "5d977add089407d54a5ce7a1c163f7236b575b7155d60f2be42d19e74c0c5174",
+        "docs/imaginary-v1/README.md": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d",
+        "docs/imaginary-v1/requirements.md": "537fe4d76c5c9094941f8b67bf7e2ba5cfab1fa019af5d8fa3519abf2c9696dd",
+        "docs/implementation-architecture.md": "891b1ae9d47ee91fbd33c4aea3184659976c1a062f8cd3e1e5ddb03540a5da01",
+        "docs/interop-m1.1.md": "09d69d089b2b99f107526530458b1248ded8766ae13942032d0ac006abb8ce1a",
+        "docs/interoperability-roadmap.md": "a2fe0a7f7cbbabec3c3f865780754e511d5f1b3a646e275a0d90be329e289896",
+        "docs/ir-prototype.md": "d916d575b69618c89c4033f6b8c3198526e4d53d84ddb6f6b81322cba60057f6",
+        "docs/language-editions.md": "a8a1ce90d86250850256277c6134554578926a3bf1d4df8a92f593b1ce90d7f0",
+        "docs/language-spec.md": "9158deca0b8cf4e7e56d99eb476ec46d48a797b652992421ec897da73a7611e3",
+        "docs/lean-kernel-migration.md": "25b6f8420d2cf350954cbc4e25a4d2fd5ea11e897d81ca5921414166217d289f",
+        "docs/machine-interface-spec.md": "bfad08fa598bc432cdbbb83dec62b3cc5cd93f3cd00f38245392a5fb785a06f7",
+        "docs/next-minor-spec.md": "57ac9ee774a69ffc93fd7ba44eb7e0a3af3d868f3aaa48af3def162a0bdea5db",
+        "docs/qli-authoring-feedback.md": "2f537200028aefcdf39bb71dde07a7cb5cc1fcc4d7da1716665d8cefee858a19",
+        "docs/qli-quick-reference.md": "7f1f280d8847a52f51d42396f93481fbb67c38373c4d80a82b8d8ea74da5e3df",
+        "docs/quantum-language-requirements.md": "94293c6684a51f2790f31d41140f2323d6bde9e07d9fb3a385e4b40671254604",
+        "docs/release-milestones.md": "6f4b7217b539b0dd895f217a0153947d3ba8179ce0321257ed58d670dca2953f",
+        "docs/releases/v0.2.6.md": "a4c832cec451c817059c980daf0d82ec18dc6dee6147f4765db1454dbc6706b1",
+        "docs/resource-semantics.md": "98174d82107b66cc8280029cfdd80b70a5c8d7df1cc28ff5c9e2b101f4894d6e",
+        "docs/rule-inventory.md": "2c2d9b546c5a51a8ae24c10653e0e9bb480c0a7e9fb56d1e8008b84189560df3",
+        "docs/size-expressions.md": "62d2d0bac20fe18050005d0d482a665bb796c209f15a6e7fa19307c87a5a43df",
+        "docs/sized-corpus-source.md": "9cf0e8eea0445b4a38e878075029da264ea0845a2edc00d99388e862720edbe0",
+        "docs/standard-library.md": "76f438f73fbe23070d7a116ff6d31c9dd5d0f6b494106468e568e3532706842e",
+        "docs/static-operations.md": "10d06da4988061585e42c4c2cd45531a63cfda4aa9db2b59a1bb90c623fa4305",
+        "docs/stdlib-contract-examples/add2.md": "0197be25c2846856b859858b2d35d4fdae02d2c14f0e1906164166c57eb2089b",
+        "docs/stdlib-contract-examples/and-phase.md": "7c6cae5694dbcd352187ee3ba9fa6ac5d1c962b8a0eb467f6ca80c50ecff310a",
+        "docs/stdlib-contract-examples/qft2.md": "5b7bd810d8ffcfb1c539ba5e4accbf62888a4e4d9471e9d7cc8c89f7ea170b11",
+        "docs/stdlib-contract-template.md": "75f4a638a5e23233cbf190cd1442cad74b0bc985c421ef6c8d18e081e81148c9",
+        "docs/stdlib-contracts.md": "98d8e7e0fc47e36d0817bb7562d15d583a45bc4f2327c1e18d36ae1b1fd5ed0b",
+        "docs/stdlib-roadmap.md": "2976312ede9e34aa2aa113558974ea055ccddc9bbe69c65470e0d4af0d1beb5d",
+        "docs/syntax-v0.md": "3af96479c50a2409c73d9a4c0cc99ace7e987dc07d8237729529f5dbe10bccbb",
+        "docs/terminology.md": "c5f2876fc2ee9d9a21fe2f017e6a741df72832881f6226db06d86ea9468d3c7b",
+        "docs/tuple-shapes.md": "ea9a3f9e7032fd13c34d30178ed48cac3898a1131a7212a1ce6dad79870084b6",
+        "docs/type-system.md": "6a9c5acb04380352d29ddeabd544de66be6d91701c51edaffdd4ae8faa32a274",
+        "docs/v0.2.2-plan.md": "a448073762a56bf029949358fcb93c3baa1c1b1aa870edaca6a558eb9efddd70",
+        "docs/v0x-roadmap.md": "01de5f18118f490bf6d2a3cc8683ca1b26527dac77bfe910270f176d8b1d2a4d",
+        "docs/verification-migration-v0.2.md": "860a73bddc3e2a1f6cf6aaeb2dd63907819a7b40b9d9bc4366244f2d34fc9705",
+        "docs/versioning.md": "22ed7a17a4619f19fd704b943127a7c5d0b6252178694e8079c4e036b4ff4b62",
+        "docs/project-status.json": "af95eaf3373cbb5f37d9a007882b4645844dd374dbd86630d9b8e1256c0e9b8b"
+      }
+    },
+    "reduction_percent": 50.09493147918056,
+    "markdown": {
+      "before_files": 57,
+      "before_bytes": 724689,
+      "before_lines": 8167,
+      "after_files": 50,
+      "after_bytes": 350410,
+      "after_lines": 4694,
+      "reduction_percent": 51.64684437048168
+    },
+    "retired": [
+      "docs/function-contracts-v0.1.md",
+      "docs/imaginary-v1/amplitude-estimation.md",
+      "docs/imaginary-v1/grover.md",
+      "docs/imaginary-v1/qpe.md",
+      "docs/imaginary-v1/qsvt.md",
+      "docs/imaginary-v1/quantum-walk.md",
+      "docs/imaginary-v1/shor.md",
+      "docs/releases/v0.2.5.md",
+      "docs/semantic-contracts-v0.1.md"
+    ],
+    "grammar_and_m1_example_fence_sha256": {
+      "docs/syntax-v0.md": [
+        "29ed4d74b8fb2b0ec53bc3f4cf84288ed530361f67d06f41b65ef82e43ab684d",
+        "9c5bb90a4309ca268010a295c2dfb1cb9e5ebe7ac85d98e506212d5023cd7476"
+      ],
+      "docs/next-minor-spec.md": [
+        "ddea3017314e6405cf76c31d7a5638df9eec28e33a1da04239b799fb10ad3184",
+        "0c611f0e956f196a2a5d5be96f198631cdceacb0ddc031bc52b317ba99aa8762"
+      ]
+    },
+    "cleanup_issue": "https://github.com/MGYamada/Qleisli/issues/48",
+    "archives_created": false
+  },
+  "corpus": {
+    "before_cases": 54,
+    "after_cases": 60,
+    "new_cases": [
+      "pennylane_demos/ising_zz_negative2",
+      "pennylane_demos/rotation_half_y",
+      "qualtran/control_zero_reflection2",
+      "qualtran/reflection_minus1",
+      "quantum_katas/graph_state2",
+      "quantum_katas/phased_uniform2"
+    ],
+    "new_semantic_probes": 164,
+    "all_semantic_probes": 13547,
+    "semantic_faults_detected": 36,
+    "negative_cases": 4,
+    "all_shipped_mains": "passed",
+    "new_data_qubits_max": 2,
+    "upstream_frameworks_executed": false,
+    "source_bytes_pins_notices_unchanged": true,
+    "previous_54_case_manifest_entries_unchanged": true,
+    "report": "corpus/validation-v0.2.6.json",
+    "report_sha256": "cf82b762349e1f7b99bd6c98e32bf446d3cc840fcc60ac568f8f38b71b3cd7d7"
+  },
+  "rust_checks": [
+    {
+      "command": "cargo build --locked --bin qleisli",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --all-targets --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --all-targets --locked -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo test --doc --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --no-deps --locked",
+      "exit_code": 0
+    }
+  ],
+  "documentation_job": {
+    "commands": 21,
+    "passed": true,
+    "record": "documentation-checks.json"
+  },
+  "lean_checks": {
+    "both_packages_built": true,
+    "compiled_axiom_and_runtime_audits": "passed",
+    "fresh_kernel_replay": "passed",
+    "schema_registry": "schema-registry.json",
+    "externally_enabled": 0
+  },
+  "vm22": {
+    "snapshot_refreshes": [
+      "python/qleisli/__init__.py __version__ only",
+      "src/lib.rs version-pinned documentation URLs only"
+    ],
+    "public_surfaces_unchanged": true,
+    "comparison_bytes_unchanged": true,
+    "replay": "vm22-replay.json",
+    "finite_comparisons": 12,
+    "source_decisions": 12,
+    "native_decisions": 0
+  },
+  "remaining": {
+    "VM-26": "pending; version selection does not implement observing/SSA/branch proofs",
+    "VM-27-29": "pending hierarchy closure and production integration",
+    "authority": "Rust production; external schemas disabled",
+    "new_maximum_size_corpus_checks": false,
+    "kernel_implementation_changed": false,
+    "general_source_Rust_native_backend_soundness": "open"
+  },
+  "not_performed": [
+    "tagging, push or registry/GitHub publication",
+    "clean-candidate distribution gate (worktree remains uncommitted)",
+    "Linux/MSRV matrix and external LLVM/framework execution",
+    "broad native migration suites (kernel/proof implementation unchanged)"
+  ]
+}

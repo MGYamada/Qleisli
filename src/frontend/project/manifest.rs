@@ -39,10 +39,13 @@ pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic> {
     let mut selected = root;
     let mut count = 0;
     for component in Path::new(relative).components() {
-        let Component::Normal(name) = component else {
-            return Err(fail(
-                "[source].root must be a nonempty relative directory path without parent traversal",
-            ));
+        let name = match component {
+            Component::CurDir => continue,
+            Component::Normal(name) => name,
+            Component::ParentDir => {
+                return Err(fail("[source].root cannot contain parent traversal"));
+            }
+            _ => return Err(fail("[source].root must be a relative directory path")),
         };
         if name == "target" {
             return Err(fail("[source].root cannot select a target build directory"));
@@ -84,7 +87,7 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
             "qrate" => &["name", "version", "edition"],
             "source" | "tests" | "docs" => &["root"],
             _ => {
-                unused.push(key);
+                unused.push((key, false));
                 continue;
             }
         };
@@ -93,13 +96,19 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
                 .keys()
                 .filter(|nested| !allowed.contains(&nested.as_str()))
             {
-                unused.push(format!("{key}.{nested}"));
+                unused.push((format!("{key}.{nested}"), false));
             }
+        } else {
+            unused.push((key, true));
         }
     }
     unused.sort();
-    Ok(unused.into_iter().map(|key| located_error(&path,&source,
+    Ok(unused.into_iter().map(|(key, non_table)| located_error(&path,&source,
         Span{start:0,end:source.len()},"project",
-        format!("unused manifest key `{key}` in {}; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)",path.display()))
+        if non_table {
+            format!("manifest key `{key}` must be a table; this Qleisli command ignores it; check the schema-2 spelling")
+        } else {
+            format!("unused manifest key `{key}` in {}; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)",path.display())
+        })
         .into_diagnostic()).collect())
 }

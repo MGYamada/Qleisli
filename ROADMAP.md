@@ -16,7 +16,7 @@ hierarchy response/process handling. Refactor the Lean conditional checker,
 capacity constants and protocol/CLI modules with compatibility proofs and audits.
 Retire 17 obsolete docs, condense current specifications and add six small
 translations from frozen corpus inputs, bringing the count to 54. The
-[development record](docs/releases/v0.2.5.md) records actual checks.
+[development record](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md) records actual checks.
 VM-25 pure raw-IR migration retains its separate proof/binding gates;
 refactoring does not complete that packet or publish a release.
 
@@ -60,8 +60,9 @@ checking, execution and measured clients, with scoped R14/H1–H5 evidence.
 Remaining validation uses small qubit systems; maximum cases are waived rather
 than claimed passed. General source/runtime correspondence and full-profile
 migration remain separate. No external schema is enabled;
-VM-25 straight-line pure checking is complete; VM-26–VM-29 integration gates
-remain open. The bounded 0.2.2 scope is now
+[VM-26 observing checking](tests/fixtures/verification_v026/README.md), including
+original complex instrument refinement, matrix-free CP/TNI/TP and retained
+branch-functions, is checked; VM-27–29 integration remains open. The bounded 0.2.2 scope is now
 [published and verified](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md#successful-publication-2026-09-30).
 
 ## v0.3.0: Qleisli type-system specification
@@ -188,7 +189,7 @@ Represent ownership tokens, logical wire IDs, effects, phases, and checkable con
 
 Implement parsing, module resolution, and type/effect/ownership checking under Stage 0 file rules, producing verified IR.
 
-Within the finite-core v0 profile, all-declaration name resolution, call-cycle rejection, type/effect/linear-ownership checking, and IR generation are implemented. Ordinary calls are expanded. The original two-argument `with_computed` path restricts/rechecks expanded bodies to identity and Z/T sequences; the later explicit logical-contract path is specified in [SC](docs/semantic-contracts-v0.1.md). Classical branches merge results and surrounding live resources through φ. Public entry points are `check_project`, `compile_project`, and `qleisli check/run`; all generated IR passes independent `verify`. Static adjoints/control/repetition lower to ApplyUnitary in the finite implementation. The [frontend reference](docs/frontend-v0.md) records rules, diagnostic codes, limits, and unsupported features.
+Within the finite-core v0 profile, all-declaration name resolution, call-cycle rejection, type/effect/linear-ownership checking, and IR generation are implemented. Ordinary calls are expanded. The original two-argument `with_computed` path restricts/rechecks expanded bodies to identity and Z/T sequences; the later explicit logical-contract path is specified in [SC](docs/finite-contracts.md). Classical branches merge results and surrounding live resources through φ. Public entry points are `check_project`, `compile_project`, and `qleisli check/run`; all generated IR passes independent `verify`. Static adjoints/control/repetition lower to ApplyUnitary in the finite implementation. The [frontend reference](docs/frontend-v0.md) records rules, diagnostic codes, limits, and unsupported features.
 
 Review work limited internal values/types to 4,096 nodes and depth 64, charging copied trees to the work budget. Ordinary-call argument errors point to caller actual arguments or the call expression. Regressions include reproducers and accepted in-limit cases.
 

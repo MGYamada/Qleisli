@@ -201,37 +201,42 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             Ok(root.clone())
         };
         if let Err(error) = selected {
+            root = std::fs::canonicalize(&root).unwrap_or(root);
             Err(error)
         } else if root.to_str().is_none() {
             Err(failure("project", "source root is not valid UTF-8"))
         } else {
             let mut options = options;
             root = selected.expect("checked root selection");
+            root = std::fs::canonicalize(&root).unwrap_or(root);
             options.path = root.clone();
-            if options.command != "verify-ir" {
-                warnings = qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
-            }
-            if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-                // Keep source spans from emission separate from artifact pointers.
-                root = std::fs::canonicalize(&root).unwrap_or(root);
-                match super::artifacts::execute(&options) {
-                    Ok(super::artifacts::Success::Emitted(path)) => {
-                        Ok(format!("{{\"path\":{}}}", quoted(&path)))
-                    }
-                    Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
-                        "{{\"verified\":true,\"request_checked\":{request}}}"
-                    )),
-                    Err(super::artifacts::Failure::Source(error)) => Err(error),
-                    Err(super::artifacts::Failure::Artifact(error)) => {
-                        artifact_pointer = Some(error.json_pointer);
-                        Err(failure(error.code, error.message))
-                    }
-                }
+            if root.to_str().is_none() {
+                Err(failure("project", "source root is not valid UTF-8"))
             } else {
-                // Use the same canonical root for compilation and relative identities.
-                // Failed canonicalization remains a handled project-load error.
-                root = std::fs::canonicalize(&root).unwrap_or(root);
-                execute(&options, &root)
+                if options.command != "verify-ir" {
+                    warnings =
+                        qleisli::frontend::project::manifest_warnings(&root).unwrap_or_default();
+                }
+                if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
+                    // Keep source spans from emission separate from artifact pointers.
+                    match super::artifacts::execute(&options) {
+                        Ok(super::artifacts::Success::Emitted(path)) => {
+                            Ok(format!("{{\"path\":{}}}", quoted(&path)))
+                        }
+                        Ok(super::artifacts::Success::Verified(request)) => Ok(format!(
+                            "{{\"verified\":true,\"request_checked\":{request}}}"
+                        )),
+                        Err(super::artifacts::Failure::Source(error)) => Err(error),
+                        Err(super::artifacts::Failure::Artifact(error)) => {
+                            artifact_pointer = Some(error.json_pointer);
+                            Err(failure(error.code, error.message))
+                        }
+                    }
+                } else {
+                    // The final canonical root also supplies relative identities.
+                    // Failed canonicalization remains a handled project-load error.
+                    execute(&options, &root)
+                }
             }
         }
     } else {

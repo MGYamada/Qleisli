@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "issue": "https://github.com/MGYamada/Qleisli/issues/145",
+  "issue_state": "closed",
+  "issue_state_reason": "completed",
+  "issue_closed_at": "2026-10-01T21:27:20Z",
+  "pull_request": "https://github.com/MGYamada/Qleisli/pull/199",
+  "implementation_commit": "ddf45f56820cd5d3a44e319ada9c8a705febfd44",
+  "validation_run": "https://github.com/MGYamada/Qleisli/actions/runs/36925847575",
+  "validated_pr_merge_sha": "686a2b743fa60f33c7c64bb9a9b4372c48ab5acc",
+  "merged_at": "2026-10-01T21:27:19Z",
+  "main_merge_commit": "05866209f7c68894e86a51e8bedbf336f8cad1cb",
+  "probe_pull_requests_closed": [200, 201],
+  "note": "PR validation binds the synthetic PR merge SHA. The main merge commit is separately recorded; this record does not claim its subsequent push run was observed. No version, tag or publication was selected by the CI change."
+}

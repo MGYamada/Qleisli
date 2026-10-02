@@ -1855,8 +1855,14 @@
     },
     {
       "path": "lean-kernel/Protocol.lean",
-      "sha256": "30e1e7950aa7c3c491398c98d08aba9ad3ae8208e048c67ebd7e6ac4c3272485",
+      "sha256": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/BranchFunction.lean",
+      "sha256": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+      "group": "raw-core",
       "surface": null
     },
     {
@@ -1884,14 +1890,26 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/Observation.lean",
+      "sha256": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/Raw.lean",
       "sha256": "4c0150990aeaee510136b8a9ef281f6812298fa91e4882b27c6b69469ea1dd26",
       "group": "raw-core",
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/StreamedObservation.lean",
+      "sha256": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "1b26f07882e53e17f342cc16dfad1be63b1a2b1871abde03a01388de3e837e82",
+      "sha256": "622d37989d041401ee62a030795de5ab36be7c4ade41533788f00e3d9dcb3515",
       "group": "hierarchy",
       "surface": null
     },
@@ -2148,6 +2166,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/ObservationBinding.lean",
+      "sha256": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/PathSum.lean",
       "sha256": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
       "group": "hierarchy",
@@ -2196,6 +2220,18 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Raw/BranchFunction.lean",
+      "sha256": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Coefficient.lean",
+      "sha256": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Raw/Finite.lean",
       "sha256": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
       "group": "raw-core",
@@ -2204,6 +2240,18 @@
     {
       "path": "lean-kernel/QleisliKernel/Raw/Function.lean",
       "sha256": "6eafada4f9ab878470a28735daad5106026ba70a6cb83f0bd49004dba540c740",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Instrument.lean",
+      "sha256": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "sha256": "2097f2d760ecf8d09a1fc425cd7ea2bb27efff88127efa553bd0a6c2b64ad2c1",
       "group": "raw-core",
       "surface": null
     },
@@ -2222,6 +2270,12 @@
     {
       "path": "lean-kernel/QleisliKernel/Raw/Pure.lean",
       "sha256": "83c6c70ce4f34c06a56f9438662aef1cddfc69eb32d114b5d2b6c8adaef6a466",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean",
+      "sha256": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
       "group": "raw-core",
       "surface": null
     },
@@ -2264,6 +2318,18 @@
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Function.lean",
       "sha256": "119ed5646e8098dd0e6c0a569a16e517b71c6833d2b4265cb1e0bb114cd6cacc",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Observation.lean",
+      "sha256": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean",
+      "sha256": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
       "group": "raw-core",
       "surface": null
     },
@@ -2311,13 +2377,31 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "bdbe7c401e51ae1a2ebbaa15179078467af0ceae054cb77b1d46f6e8358fc5b4",
+      "sha256": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli.lean",
+      "sha256": "6b5c2e5be53703e6f3a2646c34c717ac755c95db2da1f00d3368a9a79b045140",
+      "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/Raw.lean",
       "sha256": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawBranchFunction.lean",
+      "sha256": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawCoefficient.lean",
+      "sha256": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
       "group": "raw-core",
       "surface": null
     },
@@ -2334,6 +2418,18 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/RawInstrument.lean",
+      "sha256": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawInstrumentDenotation.lean",
+      "sha256": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/RawProtected.lean",
       "sha256": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
       "group": "raw-core",
@@ -2341,13 +2437,31 @@
     },
     {
       "path": "lean/Qleisli/RawProtectedEvaluation.lean",
-      "sha256": "8e8867b618a5b4cb21ae40364edb32c3c821d5a89f94f5d16ccff0cc2179b577",
+      "sha256": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean/Qleisli/RawPure.lean",
       "sha256": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawStreamedInstrument.lean",
+      "sha256": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/ObservingAction.lean",
+      "sha256": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/ObservingFunction.lean",
+      "sha256": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
       "group": "raw-core",
       "surface": null
     },
@@ -2382,6 +2496,12 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/Semantics/RawInstrument.lean",
+      "sha256": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/Semantics/RawPure.lean",
       "sha256": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
       "group": "raw-core",
@@ -2389,7 +2509,7 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "a5814ec5cd72a556f23c660379bd59de054c28870f52a8a272ebd8aba7b63dcb",
+      "sha256": "5fa599b91dcf21c673c0b81b1e68785494aae15fd6f43eaacc8c83a56fc90798",
       "group": "foreign",
       "surface": null
     },
@@ -2412,6 +2532,18 @@
       "surface": null
     },
     {
+      "path": "scripts/test_lean_branch_function.py",
+      "sha256": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_lean_observation.py",
+      "sha256": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "scripts/test_lean_raw.py",
       "sha256": "4da68f09466e89b9cd456fc8298ead0e4486c9f82deb184ce6aab6dc78ff1c17",
       "group": "raw-core",
@@ -2420,6 +2552,12 @@
     {
       "path": "scripts/test_lean_raw_completion.py",
       "sha256": "0c353fd8092b5f27c92a172b3fdd896a2ff64c07d3648eb31ac59070323770bb",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "scripts/test_lean_streamed_instrument.py",
+      "sha256": "faee06c25a15f8b40489b007aff83f4fb73db176e17369ffe74455b88cb24943",
       "group": "raw-core",
       "surface": null
     },
@@ -2455,7 +2593,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "e5003c2bee0fb19902c2edaeaf63a59587883314336ca6460c1c45d2c600e2a3",
+      "sha256": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2465,7 +2603,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "07f991ef89b9870e18a30a024488d21c68a7b5bb4b6d2228ba020b2517985d4f",
+      "sha256": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2733,7 +2871,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
+      "sha256": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2753,7 +2891,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
+      "sha256": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2773,7 +2911,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
+      "sha256": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2803,7 +2941,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
+      "sha256": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2987,7 +3125,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
+      "sha256": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3474,7 +3612,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "02ab1b657b14b2e736a12bbd7108955e0643d5f599835761817b75381f184cf9",
+      "sha256": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3646,7 +3784,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "1e64fa6893a89d2fed0dd4051a09e96b6d683843d56bbb76445379b696bb06e7",
+      "sha256": "7b6feae210a048b64f976c60200828ad054351f48d8f44041f4155e721280544",
       "group": "raw-core",
       "surface": {
         "declarations": [

@@ -12,7 +12,7 @@ v0.3.0 specifies the type system and any explicitly adopted public migrations; c
 
 ## 0.2.2–0.2.9 verification implementation targets
 
-[VM-22–29](verification-migration-v0.2.md) cover inventory, exact/finite, pure/observing raw IR, hierarchy and opt-in dual integration. VM-22–25 are checked for their declared profiles; VM-26–29 remain open. Complete implementation/dual checking in 0.2.9 does not transfer Lean-only authority.
+[VM-22–29](verification-migration-v0.2.md) cover inventory, exact/finite, pure/observing raw IR, hierarchy and opt-in dual integration. VM-22–26 are checked for their declared profiles; VM-27–29 remain open. Complete implementation/dual checking in 0.2.9 does not transfer Lean-only authority.
 
 ## Qleisli Soundness Theorem (v0.5.0)
 
@@ -86,14 +86,18 @@ E_in† E_in = I,   E_out† E_out = I,   U† U = I,
 U E_in = E_out u.
 ```
 
-| ID | Minimum acceptance condition | Current status |
-| --- | --- | --- |
-| V01-C1 | Specify finite contract/evidence forms with well-typed spaces, checked isometric encodings, entry evidence, exact logical meaning, full ownership interfaces, and phase. Record source-to-IR attachment and trust boundaries. | Met in the declared finite profile: [SC specification](semantic-contracts-v0.1.md), [FC specification](function-contracts-v0.1.md), checked encodings, and exact source signatures. General encoded-state handles remain outside this profile. |
-| V01-C2 | Implement an independent evidence checker with primitive identities, sequential/tensor composition, explicitly qualified inverse/control rules, and bounded exact matrix comparison. Record a soundness argument for its rules. Proof search is outside the trusted checker; failure to find/check evidence never authorizes a contract or cleanup. | Met: bounded exact checker, identity and compositional constructors; SC/FC paper soundness arguments and [kernel regressions](../tests/semantic_contracts.rs). Rust implementation is not formally proved. |
-| V01-C3 | Bind evidence to the actual source/function contract and final IR, including parameters, output ordering and dependencies. Check transformations or recheck their results. Preserve existing type, ownership, effect and independent raw-IR validation. | Met: raw `CertifiedCompute` rechecks retained W/u; `FunctionEvidence` independently checks both complete raw functions and binds their frozen source/dependency snapshots. Final contract actions retain this evidence under axis remapping, adjoint, control, and repetition. [Raw evidence regressions](../tests/function_evidence.rs) cover binding and extraction. |
-| V01-C4 | Through the implemented compiler/checker, certify a phase oracle, auxiliary H;H, and the f(x)=x data/auxiliary simultaneous X example using the same evidence rules. Establish exact zero return and separation over all encoded inputs and arbitrary references. | Met: [certified source tests](../tests/certified_source.rs) and [runnable examples](../examples/semantic_contracts/README.md) use the same exact full-column equation; the reference extension follows by tensoring that equation with identity. Numerical reference tests supplement it. |
-| V01-C5 | Publish concrete function contracts that can be reused compositionally. Exchange at least two implementations of one fixed phase-oracle contract while leaving its logical client unchanged. Independently check the resulting IR, including reuse under coherent control and with a correlated reference. Different private auxiliary layouts must be hidden by checked interfaces. | Met: `apply_contract` fixes the client's specification. [One unchanged client](../tests/function_contracts.rs) accepts direct Z and two private-auxiliary implementations, with coherent control and an entangled reference. Calls share immutable evidence; nested composition and static transforms retain it. [Executable example](../examples/function_contracts/README.md). |
-| V01-C6 | Reject auxiliary-only X, incorrect phase/predicate, incompatible encoding or layout, missing entry evidence, invalid inverse/control premises, stale or mismatched certificates, and lost/duplicated ownership. Record exact checks, limits, diagnostics, assumptions, and proof/implementation/test status separately. | Met in the bounded profile: kernel, source, and raw-function rejection tests, changed-source/dependency tests, and finite checking/execution budgets. Exact proof checks and approximate reference results are separately recorded in the [ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). |
+The completed V01-C1–C6 profile covers explicit finite spaces/encodings/entry/phase;
+independent exact identity/sequence/tensor/qualified inverse/control and finite comparison;
+actual source/function/final-IR/body/dependency binding through transformations;
+phase-oracle/H;H/simultaneous data-auxiliary X with exact arbitrary-reference cleanup;
+unchanged-client substitution including control/correlated references/private layout;
+and rejection of wrong phase/predicate/layout/encoding/entry/premises/stale evidence/
+lost or copied ownership. [SC/FC](finite-contracts.md) remains the full current contract.
+[Exact tests](../tests/semantic_contracts.rs), [source](../tests/certified_source.rs),
+[function binding](../tests/function_evidence.rs) and [client substitutions](../tests/function_contracts.rs)
+retain evidence. This completed bounded foundation is not a general Rust implementation
+proof or general encoded-state API; finite approximate regressions remain separate.
+
 
 <a id="v019-maintenance-boundary"></a>
 
@@ -107,11 +111,10 @@ The completed B019 checkpoint is [historical evidence](https://github.com/MGYama
 
 Real Shor/QPE/Grover source must compile and execute, reuse definitions across supported sizes/operations and carry checked meaning through implementation substitution. Shor reuses QPE and validates GCD/period/factors with explicit sampling/retry behavior; r>0 and a^r mod N=1 do not establish minimal order. Factor extraction needs even r, nontrivial a^(r/2), and nontrivial GCDs. A full simulator distribution cannot replace samples. PR-C1–C4 and RS-C1–C5 are additional v1 gates.
 
-| Algorithm | Structure visible in its implementation source | Contracts visible at the relevant interface |
-| --- | --- | --- |
-| Grover | Prepare the search state; apply the marked-state phase oracle and the reflection about the prepared state; repeat the amplification step under an explicit iteration policy; measure and check the candidate. | Preparation and inverse access where required, the predicate and exact reflection/oracle phases, search size, iteration/success assumptions, and resource/effect boundaries. |
-| QPE | Prepare the phase register; compose controlled powers of the input operation; apply inverse QFT; measure and decode the phase estimate. | Phase-fixed controlled/power access, register size/precision, bit order, approximation and statistical guarantees where used, and the outcome/residual-state instrument. Eigenstate promises must be explicit; general inputs have a distribution over eigencomponents. |
-| Shor | Perform classical preprocessing and select a base; construct the modular-multiplication operation; obtain order information through the shared QPE structure; reconstruct and validate a period candidate; extract and validate factors; handle unsuccessful samples and retry according to a declared policy. | Coprimality and arithmetic domains including behavior outside the valid residue subspace, controlled modular powers, phase precision, classical reconstruction, failure conditions and resource/cost assumptions. A host retry boundary is explicit if used. |
+[Algorithm-structure goal](algorithm-structure-goal.md#release-targets-and-criteria-for-algorithm-structure)
+fixes the visible Shor/QPE/Grover stages and their size/access/phase/success/ownership/
+instrument/retry contracts; all three must satisfy every gate below.
+
 
 | ID | v1 acceptance condition |
 | --- | --- |

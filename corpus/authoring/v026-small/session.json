@@ -1,0 +1,56 @@
+{
+  "format": 1,
+  "task": "Add six small finite corpus translations for v0.2.6 from already frozen inputs",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.6",
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read adopted design, corpus policy, frozen source symbols and prior driver/oracle patterns. Complete first sources saved and hashed before checking. Existing aliases, qif and restricted cleanup are known; informed authoring, not a controlled model evaluation or upstream execution.",
+  "created_utc": "2026-10-01T19:14:13.436719+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete untouched first sources before compiler checks",
+      "sha256": {
+        "quantum_katas/phased_uniform2/kernel.qli": "aebbed75f118d05ff3eefb54f824519c0daa35f7ecdc7628592330777a91b11a",
+        "quantum_katas/phased_uniform2/main.qli": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8",
+        "quantum_katas/graph_state2/kernel.qli": "06e85903b74cbb2cfea124bc767e7a97a91541e343113651030981bad091443f",
+        "quantum_katas/graph_state2/main.qli": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373",
+        "qualtran/reflection_minus1/kernel.qli": "4551b6874e7a15eb06c0188407e7d124a577545fea6d08d29ca30a203c8e3e0a",
+        "qualtran/reflection_minus1/main.qli": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c",
+        "qualtran/control_zero_reflection2/kernel.qli": "bf9e21f5202ce08f74ba709448cf9d02b3a1792719a172b5b45b4ffb6b195495",
+        "qualtran/control_zero_reflection2/main.qli": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80",
+        "pennylane_demos/rotation_half_y/kernel.qli": "773bf5c4f3a75147fbf60f4b83a51aee42c2bc1b4e5369026e13321d6c2234bb",
+        "pennylane_demos/rotation_half_y/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+        "pennylane_demos/ising_zz_negative2/kernel.qli": "96759c5279570da1eb0b65da316b5017bcba1c2720580b8ade9efbc6fe54f5a8",
+        "pennylane_demos/ising_zz_negative2/main.qli": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Actual parser rejects the mistaken repeat_static argument order in two reflection sources; put the count first as specified. Save all complete projects before rechecking.",
+      "sha256": {
+        "quantum_katas/phased_uniform2/kernel.qli": "aebbed75f118d05ff3eefb54f824519c0daa35f7ecdc7628592330777a91b11a",
+        "quantum_katas/phased_uniform2/main.qli": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8",
+        "quantum_katas/graph_state2/kernel.qli": "06e85903b74cbb2cfea124bc767e7a97a91541e343113651030981bad091443f",
+        "quantum_katas/graph_state2/main.qli": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373",
+        "qualtran/reflection_minus1/kernel.qli": "3744de242c1fafd0f4e9e1f2e1692d87f99edb92d59de4bc8881babccca36c24",
+        "qualtran/reflection_minus1/main.qli": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c",
+        "qualtran/control_zero_reflection2/kernel.qli": "3d5818827242495d3663697f257004c0bffe7f54ca97c1972346d4197f862b5b",
+        "qualtran/control_zero_reflection2/main.qli": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80",
+        "pennylane_demos/rotation_half_y/kernel.qli": "773bf5c4f3a75147fbf60f4b83a51aee42c2bc1b4e5369026e13321d6c2234bb",
+        "pennylane_demos/rotation_half_y/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+        "pennylane_demos/ising_zz_negative2/kernel.qli": "96759c5279570da1eb0b65da316b5017bcba1c2720580b8ade9efbc6fe54f5a8",
+        "pennylane_demos/ising_zz_negative2/main.qli": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9"
+      },
+      "observations": [
+        "check-repaired.json",
+        "semantic-validation.json"
+      ],
+      "created_utc": "2026-10-01T19:14:48.112364+00:00"
+    }
+  ]
+}

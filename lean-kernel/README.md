@@ -15,7 +15,8 @@ remain separate.
 | [Reference data](QleisliKernel/Semantics/Exact.lean) and [finite circuits](QleisliKernel/Semantics/Finite.lean) | Independent data and interpretation interfaces; no checker, transport, capacity or producer dependency |
 | [Exact arithmetic](QleisliKernel/Exact.lean), [matrix proofs](QleisliKernel/ExactMatrix.lean) and [capacity proofs](QleisliKernel/ExactCapacity.lean) | Canonical R8 coefficients, bounded actual operations and precise work accounting |
 | [Finite reconstruction](QleisliKernel/Finite.lean) | Fresh circuit/dependency reconstruction, independently required encoded equations and whole-space inspection |
-| [Pure raw checking](QleisliKernel/Raw/Pure.lean), [retained binding](QleisliKernel/Raw/Function.lean) and [finite extraction](QleisliKernel/Raw/Finite.lean) | Eleven original straight-line pure constructors, complete owners/effects, fresh original bodies/attachments and finite/non-dense clean scopes; VM-26 retains classical branches/observation |
+| [Pure raw checking](QleisliKernel/Raw/Pure.lean), [retained binding](QleisliKernel/Raw/Function.lean) and [finite extraction](QleisliKernel/Raw/Finite.lean) | Eleven original straight-line pure constructors, complete owners/effects, fresh original bodies/attachments and finite/non-dense clean scopes |
+| [Observing raw checking](QleisliKernel/Raw/Observation.lean) and [finite instruments](QleisliKernel/Raw/Instrument.lean) | All nineteen constructors, global SSA freshness, lexical scopes, complete quantum phis and exact unnormalized hidden histories; [VM-26 scope and remaining gates](../tests/fixtures/verification_v026/README.md) |
 | [Hierarchical artifacts](QleisliKernel/Hierarchical/Artifact.lean), [graph schedules](QleisliKernel/Hierarchical/Graph.lean), [node typing](QleisliKernel/Hierarchical/NodeTyping.lean) and [contract typing](QleisliKernel/Hierarchical/ContractTyping.lean) | Actual dependencies, ordered endpoints, type trees, ownership and effects; structural checks alone do not prove leaf meanings |
 | [Conditional derivations](QleisliKernel/Hierarchical/Conditional.lean) and [root binding](QleisliKernel/Hierarchical/Root.lean) | Supported rule closure with every finite obligation retained; binding to a separately supplied meaning graph |
 | [Fourier root](QleisliKernel/Hierarchical/FourierRoot.lean), [QPE root](QleisliKernel/Hierarchical/QpeRoot.lean), [instrument](QleisliKernel/Hierarchical/Instrument.lean) and [QPE instrument](QleisliKernel/Hierarchical/QpeInstrument.lean) | Actual algorithm geometry/provider binding and initialization/readout composition, retaining component obligations |
@@ -50,6 +51,18 @@ action, fresh retained graph/attachment semantics and non-dense protected zero
 return. The [completion record](../tests/fixtures/verification_v025/completion/README.md)
 retains small native Rust/rational/source comparisons. Production seal, QIRF
 transport, source preservation and default CLI authority remain separate.
+
+The [VM-26 component](../tests/fixtures/verification_v026/README.md) extends that
+original-body boundary to observation and classical branches. A data-only reader
+retains full quantum frames and every measurement/reset/discard history. Actual
+exact Gram acceptance yields [CP/TNI per outcome and total TP](../lean/Qleisli/RawInstrument.lean)
+with arbitrary finite references. General structural checking keeps twelve-bit
+owners. [StreamedInstrument](QleisliKernel/Raw/StreamedInstrument.lean) verifies
+all exact coefficients without a global dense matrix or global six-bit cap;
+[RawStreamedInstrument](../lean/Qleisli/RawStreamedInstrument.lean) proves original
+complex refinement and CP/TNI/TP. [BranchFunction](QleisliKernel/Raw/BranchFunction.lean)
+freshly binds complete closed classical-branch bodies. Verification remains
+exponential and budgeted; production integration is VM-28/29 work.
 
 The phase-word/shared-DAG profiles prove cyclic actions, typed layouts prove
 permutation/reference round trips, and interference normalization proves its

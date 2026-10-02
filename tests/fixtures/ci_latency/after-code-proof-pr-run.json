@@ -1,0 +1,11 @@
+{
+  "conclusion": "success",
+  "created_at": "2026-10-01T20:33:21Z",
+  "event": "pull_request",
+  "head_sha": "a715bf306c52be383e47613d24492fb66ebbb7c7",
+  "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36922430423",
+  "id": 36922430423,
+  "run_attempt": 1,
+  "run_started_at": "2026-10-01T20:33:21Z",
+  "status": "completed"
+}

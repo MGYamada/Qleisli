@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "head": "2988f984b26d1618ad0a4483ce02d574ab21fba7",
+  "event": "pull_request",
+  "ref": "refs/pull/201/merge",
+  "base": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+  "profile": "full",
+  "reason": "protected executable/policy input: research/semantic-kernel/src/lib.rs",
+  "paths": [
+    "research/semantic-kernel/src/lib.rs",
+    "scripts/measure_ci.py",
+    "scripts/test_measure_ci.py",
+    "tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean"
+  ],
+  "dependency_cache": "enabled",
+  "project_build_cache": "disabled",
+  "policy_sha256": "f3658ef3ee4695bca7897cf60129835bde29b9ecc6a83585d1d54835fd0f81ae"
+}

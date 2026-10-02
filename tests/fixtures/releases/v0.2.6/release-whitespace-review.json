@@ -1,0 +1,14 @@
+[
+  {
+    "path": "lean/Qleisli/RawCoefficient.lean",
+    "before": "84103cef42094a1e053f886eecbed399183b93c23da24cb7258478a8f636bec4",
+    "after": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
+    "change": "Remove one extra EOF newline; declarations/types/definitions unchanged."
+  },
+  {
+    "path": "lean/Qleisli/RawStreamedInstrument.lean",
+    "before": "d70eda37df46a32a686807baaa0dc2e3bb45b1bd94f39331060c1d88be1104a7",
+    "after": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+    "change": "Remove one extra EOF newline; declarations/types/definitions unchanged."
+  }
+]

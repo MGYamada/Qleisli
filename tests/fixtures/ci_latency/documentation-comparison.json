@@ -1,0 +1,175 @@
+{
+  "format": 1,
+  "before": {
+    "run_id": 36882335467,
+    "attempt": 1,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/36882335467",
+    "event": "pull_request",
+    "head_sha": "50126415c52f13d31495c3ddc4b4b60cb5e91366",
+    "conclusion": "success",
+    "queue_reference": "2026-10-01T15:11:44Z",
+    "initial_queue_seconds": 4.0,
+    "feedback_seconds": 1024.0,
+    "execution_elapsed_seconds": 1020.0,
+    "runner_seconds": 2242.0,
+    "runner_minutes": 37.367,
+    "cache_observation": "unavailable",
+    "jobs": [
+      {
+        "name": "rust",
+        "conclusion": "success",
+        "runner_seconds": 261.0
+      },
+      {
+        "name": "lean",
+        "conclusion": "success",
+        "runner_seconds": 500.0
+      },
+      {
+        "name": "docs",
+        "conclusion": "success",
+        "runner_seconds": 29.0
+      },
+      {
+        "name": "rust-msrv",
+        "conclusion": "success",
+        "runner_seconds": 151.0
+      },
+      {
+        "name": "lean-kernel",
+        "conclusion": "success",
+        "runner_seconds": 1018.0
+      },
+      {
+        "name": "distribution",
+        "conclusion": "success",
+        "runner_seconds": 182.0
+      },
+      {
+        "name": "interop",
+        "conclusion": "success",
+        "runner_seconds": 50.0
+      },
+      {
+        "name": "macos-source",
+        "conclusion": "success",
+        "runner_seconds": 51.0
+      }
+    ]
+  },
+  "after": {
+    "run_id": 36921724567,
+    "attempt": 1,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/36921724567",
+    "event": "pull_request",
+    "head_sha": "87da8aa0cd0d1fc6cd174e0b5b7f76a4ccfe5915",
+    "conclusion": "success",
+    "queue_reference": "2026-10-01T20:27:40Z",
+    "initial_queue_seconds": 13.0,
+    "feedback_seconds": 56.0,
+    "execution_elapsed_seconds": 43.0,
+    "runner_seconds": 76.0,
+    "runner_minutes": 1.267,
+    "cache_observation": "observed required-check outputs; project build cache disabled",
+    "jobs": [
+      {
+        "name": "changes",
+        "conclusion": "success",
+        "runner_seconds": 8.0
+      },
+      {
+        "name": "check-docs",
+        "conclusion": "success",
+        "runner_seconds": 18.0
+      },
+      {
+        "name": "check-rust",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-distribution",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-lean",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-macos-source",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-interop",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-rust-msrv",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "check-lean-kernel",
+        "conclusion": "skipped",
+        "runner_seconds": 0
+      },
+      {
+        "name": "interop",
+        "conclusion": "success",
+        "runner_seconds": 7.0
+      },
+      {
+        "name": "docs",
+        "conclusion": "success",
+        "runner_seconds": 6.0
+      },
+      {
+        "name": "lean-kernel",
+        "conclusion": "success",
+        "runner_seconds": 7.0
+      },
+      {
+        "name": "rust",
+        "conclusion": "success",
+        "runner_seconds": 7.0
+      },
+      {
+        "name": "distribution",
+        "conclusion": "success",
+        "runner_seconds": 5.0
+      },
+      {
+        "name": "rust-msrv",
+        "conclusion": "success",
+        "runner_seconds": 6.0
+      },
+      {
+        "name": "macos-source",
+        "conclusion": "success",
+        "runner_seconds": 6.0
+      },
+      {
+        "name": "lean",
+        "conclusion": "success",
+        "runner_seconds": 6.0
+      }
+    ],
+    "validated_sha": "7df26890993f4f0c8b633e984ce2e0bedaba445b",
+    "profile": "docs",
+    "dependency_cache": {
+      "check-rust": "unavailable",
+      "check-rust-msrv": "unavailable",
+      "check-macos-source": "unavailable",
+      "check-interop": "unavailable",
+      "check-lean": "unavailable",
+      "check-lean-kernel": "unavailable",
+      "check-distribution": "unavailable"
+    }
+  },
+  "statistical_benchmark": false,
+  "billing_minutes": false
+}

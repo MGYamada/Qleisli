@@ -5,7 +5,7 @@
 
 use super::super::{CompileError, ErrorCode, MAX_BITS, Ty};
 use super::{Lowerer, Slot, Value};
-use crate::frontend::ast::Span;
+use crate::frontend::ast::{Expr, ExprKind, Span};
 use crate::ir::{CircuitAction, CircuitStep, Effect, RawOp, SingleGate};
 use std::collections::BTreeSet;
 
@@ -18,18 +18,6 @@ impl Lowerer<'_, '_> {
         bit_only: bool,
     ) -> Result<Slot, CompileError> {
         let Value::Quantum(slot, basis) = value else {
-            if let Some(origin) = self
-                .tuple_binding_origins
-                .get(&value.quantum_slots())
-                .filter(|origin| origin.ty == value.ty())
-            {
-                let use_site = self
-                    .compiler
-                    .error(module, span, ErrorCode::TypeMismatch, "");
-                return Err(self.error(&origin.module, origin.span, ErrorCode::TypeMismatch,
-                    format!("binding `{}` contains a tuple of owners: expected `{}`, found `{}` at {}:{}:{}; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
-                        origin.name, if bit_only {"Q<Bit>"} else {"Q<A>"}, origin.ty, use_site.path.display(), use_site.line, use_site.column)));
-            }
             return Err(self.error(
                 module,
                 span,
@@ -55,13 +43,58 @@ impl Lowerer<'_, '_> {
         Ok(*slot)
     }
 
+    fn quantum_argument(
+        &self,
+        module: &str,
+        span: Span,
+        value: &Value,
+        bit_only: bool,
+        argument: Option<&Expr>,
+    ) -> Result<Slot, CompileError> {
+        // Only a directly named tuple in the current lexical frame can carry
+        // binding-specific help. Equal slots in returned/reconstructed tuples
+        // do not establish the identity of a still-visible source binding.
+        if !matches!(value, Value::Quantum(..)) && value.owns_quantum() {
+            if let Some(Expr {
+                kind: ExprKind::Name(name),
+                ..
+            }) = argument
+            {
+                if let Some(origin) = self
+                    .tuple_binding_origins
+                    .iter()
+                    .rev()
+                    .find_map(|scope| scope.get(&name.text))
+                    .and_then(Option::as_ref)
+                {
+                    return Err(self.error(&origin.module, origin.span, ErrorCode::TypeMismatch,
+                        format!("binding `{}` contains a tuple of owners: expected `{}`, found `{}`; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
+                            origin.name, if bit_only {"Q<Bit>"} else {"Q<A>"}, value.ty())));
+                }
+            }
+        }
+        self.quantum(module, span, value, bit_only)
+    }
+
     pub(super) fn sealed(
         &mut self,
         module: &str,
         span: Span,
         namespace: &str,
         name: &str,
+        args: Vec<Value>,
+    ) -> Result<Value, CompileError> {
+        self.sealed_with_source(module, span, namespace, name, args, &[])
+    }
+
+    pub(super) fn sealed_with_source(
+        &mut self,
+        module: &str,
+        span: Span,
+        namespace: &str,
+        name: &str,
         mut args: Vec<Value>,
+        source_args: &[Expr],
     ) -> Result<Value, CompileError> {
         let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
             self.error(
@@ -103,7 +136,8 @@ impl Lowerer<'_, '_> {
             }
             "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" => {
                 let value = args.pop().expect("one argument");
-                let slot = self.quantum(module, span, &value, true)?;
+                let slot =
+                    self.quantum_argument(module, span, &value, true, source_args.first())?;
                 let gate = match name {
                     "h" => SingleGate::H,
                     "x" => SingleGate::X,
@@ -131,7 +165,8 @@ impl Lowerer<'_, '_> {
             }
             "id" | "phase_eighth" => {
                 let value = args.pop().expect("one argument");
-                let slot = self.quantum(module, span, &value, false)?;
+                let slot =
+                    self.quantum_argument(module, span, &value, false, source_args.first())?;
                 if name == "phase_eighth" {
                     let output = self.token();
                     let reg = self.registers.get_mut(&slot).expect("owned register");
@@ -156,7 +191,10 @@ impl Lowerer<'_, '_> {
             "cnot" | "toffoli" => {
                 let slots = args
                     .iter()
-                    .map(|arg| self.quantum(module, span, arg, true))
+                    .enumerate()
+                    .map(|(index, arg)| {
+                        self.quantum_argument(module, span, arg, true, source_args.get(index))
+                    })
                     .collect::<Result<Vec<_>, _>>()?;
                 if slots.iter().collect::<BTreeSet<_>>().len() != slots.len() {
                     return Err(self.error(
@@ -203,7 +241,8 @@ impl Lowerer<'_, '_> {
             }
             "split" => {
                 let value = args.pop().expect("one input");
-                let slot = self.quantum(module, span, &value, false)?;
+                let slot =
+                    self.quantum_argument(module, span, &value, false, source_args.first())?;
                 let reg = self.registers.remove(&slot).expect("owned register");
                 let Ty::Pair(a, b) = reg.basis else {
                     return Err(self.error(
@@ -229,8 +268,9 @@ impl Lowerer<'_, '_> {
                 Ok(Value::pair(left, right))
             }
             "join" => {
-                let a = self.quantum(module, span, &args[0], false)?;
-                let b = self.quantum(module, span, &args[1], false)?;
+                let a =
+                    self.quantum_argument(module, span, &args[0], false, source_args.first())?;
+                let b = self.quantum_argument(module, span, &args[1], false, source_args.get(1))?;
                 if a == b {
                     return Err(self.error(
                         module,
@@ -262,7 +302,13 @@ impl Lowerer<'_, '_> {
             }
             "measure_z" | "reset" | "discard" => {
                 let value = args.pop().expect("one input");
-                let slot = self.quantum(module, span, &value, name != "discard")?;
+                let slot = self.quantum_argument(
+                    module,
+                    span,
+                    &value,
+                    name != "discard",
+                    source_args.first(),
+                )?;
                 let reg = self.registers.remove(&slot).expect("owned register");
                 if name == "measure_z" {
                     let output = self.classical();

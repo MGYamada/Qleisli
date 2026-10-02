@@ -1,0 +1,976 @@
+{
+  "format": 1,
+  "issue": 145,
+  "state": "merged through PR 199; issue 145 closed as completed; all representative validations passed",
+  "runner_minutes_definition": "Sum of actual non-skipped job wall time, excluding initial queue; not GitHub billed minutes or OS-weighted cost",
+  "cache_scope": "Cargo dependency archives only; project source/targets/Lean outputs never restored",
+  "baseline_cache": "Unknown; no inference from timing",
+  "first_full_cache": "check-rust log explicitly says Cache not found for cargo-archives-v1-Linux-X64-1.98.1; old empty miss outputs retained as unavailable",
+  "input_probes": "Real comment-only edits to compiled research Rust source and compiled Lean equivalence fixture; no change to mathematical meanings",
+  "release_probe": "Manual full workflow on exact author commit with Cargo archive cache disabled; no release tag/publication",
+  "comparison_limit": "Representative observed runs, not a statistical or controlled machine-performance benchmark; before/after full profiles may differ in project-cache use",
+  "runs": [
+    {
+      "run_id": 36882335467,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36882335467",
+      "event": "pull_request",
+      "head_sha": "50126415c52f13d31495c3ddc4b4b60cb5e91366",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T15:11:44Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 1024.0,
+      "execution_elapsed_seconds": 1020.0,
+      "runner_seconds": 2242.0,
+      "runner_minutes": 37.367,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 261.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 500.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 29.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 151.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1018.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 182.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 50.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 51.0
+        }
+      ],
+      "case": "before-documentation-pr"
+    },
+    {
+      "run_id": 36876133918,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36876133918",
+      "event": "pull_request",
+      "head_sha": "487a01be81718c02d068a1a411447393dfdec694",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T14:24:51Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 1068.0,
+      "execution_elapsed_seconds": 1064.0,
+      "runner_seconds": 2387.0,
+      "runner_minutes": 39.783,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1063.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 278.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 197.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 539.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 71.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 164.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 27.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 48.0
+        }
+      ],
+      "case": "before-code-release-pr"
+    },
+    {
+      "run_id": 36878200911,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36878200911",
+      "event": "push",
+      "head_sha": "487a01be81718c02d068a1a411447393dfdec694",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T14:40:34Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 1364.0,
+      "execution_elapsed_seconds": 1360.0,
+      "runner_seconds": 2797.0,
+      "runner_minutes": 46.617,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 165.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 27.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 82.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 185.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 610.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 302.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 68.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1358.0
+        }
+      ],
+      "case": "before-release-tag"
+    },
+    {
+      "run_id": 36814448188,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36814448188",
+      "event": "push",
+      "head_sha": "86ce29552696133de989ce2d61893f64cd23d3f5",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T04:17:54Z",
+      "initial_queue_seconds": 3.0,
+      "feedback_seconds": 1177.0,
+      "execution_elapsed_seconds": 1174.0,
+      "runner_seconds": 2243.0,
+      "runner_minutes": 37.383,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 148.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 442.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 160.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1174.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 25.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 49.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 245.0
+        }
+      ],
+      "case": "before-issue-baseline"
+    },
+    {
+      "run_id": 36882297820,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36882297820",
+      "event": "push",
+      "head_sha": "50126415c52f13d31495c3ddc4b4b60cb5e91366",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T15:11:27Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 1319.0,
+      "execution_elapsed_seconds": 1315.0,
+      "runner_seconds": 2455.0,
+      "runner_minutes": 40.917,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 251.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 55.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 375.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 53.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 195.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 49.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 167.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1310.0
+        }
+      ],
+      "case": "before-duplicate-doc-push"
+    },
+    {
+      "run_id": 36921724567,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36921724567",
+      "event": "pull_request",
+      "head_sha": "87da8aa0cd0d1fc6cd174e0b5b7f76a4ccfe5915",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T20:27:40Z",
+      "initial_queue_seconds": 13.0,
+      "feedback_seconds": 56.0,
+      "execution_elapsed_seconds": 43.0,
+      "runner_seconds": 76.0,
+      "runner_minutes": 1.267,
+      "cache_observation": "observed required-check outputs; project build cache disabled",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 8.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 18.0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        }
+      ],
+      "validated_sha": "7df26890993f4f0c8b633e984ce2e0bedaba445b",
+      "profile": "docs",
+      "dependency_cache": {
+        "check-rust": "unavailable",
+        "check-rust-msrv": "unavailable",
+        "check-macos-source": "unavailable",
+        "check-interop": "unavailable",
+        "check-lean": "unavailable",
+        "check-lean-kernel": "unavailable",
+        "check-distribution": "unavailable"
+      },
+      "case": "after-documentation-pr"
+    },
+    {
+      "run_id": 36921368873,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36921368873",
+      "event": "pull_request",
+      "head_sha": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T20:24:47Z",
+      "initial_queue_seconds": 3.0,
+      "feedback_seconds": 1413.0,
+      "execution_elapsed_seconds": 1410.0,
+      "runner_seconds": 2854.0,
+      "runner_minutes": 47.567,
+      "cache_observation": "observed required-check outputs; project build cache disabled",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 12.0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "success",
+          "runner_seconds": 62.0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1363.0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "success",
+          "runner_seconds": 299.0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "success",
+          "runner_seconds": 59.0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "success",
+          "runner_seconds": 582.0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 160.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 28.0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "success",
+          "runner_seconds": 193.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 19.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 11.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 13.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 29.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 4.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        }
+      ],
+      "validated_sha": "2f912f81625b917e1f683151f9b43f3fced355f3",
+      "profile": "full",
+      "dependency_cache": {
+        "check-rust": "unavailable",
+        "check-rust-msrv": "unavailable",
+        "check-macos-source": "unavailable",
+        "check-interop": "unavailable",
+        "check-lean": "unavailable",
+        "check-lean-kernel": "unavailable",
+        "check-distribution": "unavailable"
+      },
+      "case": "after-full-cold"
+    },
+    {
+      "run_id": 36922430423,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36922430423",
+      "event": "pull_request",
+      "head_sha": "a715bf306c52be383e47613d24492fb66ebbb7c7",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T20:33:21Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 1423.0,
+      "execution_elapsed_seconds": 1419.0,
+      "runner_seconds": 2773.0,
+      "runner_minutes": 46.217,
+      "cache_observation": "observed required-check outputs; project build cache disabled",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 8.0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 165.0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1393.0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "success",
+          "runner_seconds": 47.0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "success",
+          "runner_seconds": 192.0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "success",
+          "runner_seconds": 90.0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "success",
+          "runner_seconds": 623.0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "success",
+          "runner_seconds": 188.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 26.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 4.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 4.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        }
+      ],
+      "validated_sha": "2988f984b26d1618ad0a4483ce02d574ab21fba7",
+      "profile": "full",
+      "dependency_cache": {
+        "check-rust": "unavailable",
+        "check-rust-msrv": "unavailable",
+        "check-macos-source": "unavailable",
+        "check-interop": "unavailable",
+        "check-lean": "unavailable",
+        "check-lean-kernel": "unavailable",
+        "check-distribution": "unavailable"
+      },
+      "case": "after-code-proof-pr"
+    },
+    {
+      "run_id": 36922474123,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36922474123",
+      "event": "workflow_dispatch",
+      "head_sha": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T20:33:43Z",
+      "initial_queue_seconds": 5.0,
+      "feedback_seconds": 1401.0,
+      "execution_elapsed_seconds": 1396.0,
+      "runner_seconds": 2810.0,
+      "runner_minutes": 46.833,
+      "cache_observation": "observed required-check outputs; project build cache disabled",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 8.0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1373.0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "success",
+          "runner_seconds": 46.0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "success",
+          "runner_seconds": 104.0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "success",
+          "runner_seconds": 260.0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "success",
+          "runner_seconds": 201.0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 148.0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "success",
+          "runner_seconds": 600.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 27.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 4.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 4.0
+        }
+      ],
+      "validated_sha": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+      "profile": "full",
+      "dependency_cache": {
+        "check-rust": "unavailable",
+        "check-rust-msrv": "unavailable",
+        "check-macos-source": "unavailable",
+        "check-interop": "unavailable",
+        "check-lean": "unavailable",
+        "check-lean-kernel": "unavailable",
+        "check-distribution": "unavailable"
+      },
+      "case": "after-release-no-cache"
+    },
+    {
+      "run_id": 36921630911,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36921630911",
+      "event": "pull_request",
+      "head_sha": "23e99a54c38c9a9b4e39a92ebfc3485d05926554",
+      "conclusion": "cancelled",
+      "queue_reference": "2026-10-01T20:26:56Z",
+      "initial_queue_seconds": 4.0,
+      "feedback_seconds": 53.0,
+      "execution_elapsed_seconds": 49.0,
+      "runner_seconds": 86.0,
+      "runner_minutes": 1.433,
+      "cache_observation": "unavailable",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 8.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 27.0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "skipped",
+          "runner_seconds": 0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        }
+      ],
+      "case": "after-superseded-doc-pr"
+    },
+    {
+      "run_id": 36925847575,
+      "attempt": 1,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/36925847575",
+      "event": "pull_request",
+      "head_sha": "ddf45f56820cd5d3a44e319ada9c8a705febfd44",
+      "conclusion": "success",
+      "queue_reference": "2026-10-01T21:01:46Z",
+      "initial_queue_seconds": 3.0,
+      "feedback_seconds": 1399.0,
+      "execution_elapsed_seconds": 1396.0,
+      "runner_seconds": 3075.0,
+      "runner_minutes": 51.25,
+      "cache_observation": "observed required-check outputs; project build cache disabled",
+      "jobs": [
+        {
+          "name": "changes",
+          "conclusion": "success",
+          "runner_seconds": 8.0
+        },
+        {
+          "name": "check-rust",
+          "conclusion": "success",
+          "runner_seconds": 285.0
+        },
+        {
+          "name": "check-rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 193.0
+        },
+        {
+          "name": "check-lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 1374.0
+        },
+        {
+          "name": "check-docs",
+          "conclusion": "success",
+          "runner_seconds": 20.0
+        },
+        {
+          "name": "check-macos-source",
+          "conclusion": "success",
+          "runner_seconds": 96.0
+        },
+        {
+          "name": "check-distribution",
+          "conclusion": "success",
+          "runner_seconds": 147.0
+        },
+        {
+          "name": "check-lean",
+          "conclusion": "success",
+          "runner_seconds": 851.0
+        },
+        {
+          "name": "check-interop",
+          "conclusion": "success",
+          "runner_seconds": 52.0
+        },
+        {
+          "name": "docs",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "interop",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "lean-kernel",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "rust-msrv",
+          "conclusion": "success",
+          "runner_seconds": 5.0
+        },
+        {
+          "name": "macos-source",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "distribution",
+          "conclusion": "success",
+          "runner_seconds": 7.0
+        },
+        {
+          "name": "rust",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        },
+        {
+          "name": "lean",
+          "conclusion": "success",
+          "runner_seconds": 6.0
+        }
+      ],
+      "validated_sha": "686a2b743fa60f33c7c64bb9a9b4372c48ab5acc",
+      "profile": "full",
+      "dependency_cache": {
+        "check-rust": "hit",
+        "check-rust-msrv": "hit",
+        "check-macos-source": "hit",
+        "check-interop": "hit",
+        "check-lean": "unavailable",
+        "check-lean-kernel": "hit",
+        "check-distribution": "hit"
+      },
+      "case": "after-full-warm"
+    }
+  ],
+  "implementation_commit": "ddf45f56820cd5d3a44e319ada9c8a705febfd44",
+  "warm_cache": "All six Cargo archive consumers explicitly report hit; check-lean has no Cargo archive cache. Project build outputs remain disabled.",
+  "preflight_record": "local-validation.json is the initial 5e0f351 preflight, not a digest of later final workflow changes",
+  "main_merge_commit": "05866209f7c68894e86a51e8bedbf336f8cad1cb"
+}

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
+from check_docs import check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -24,6 +24,21 @@ class DocumentationReferences(unittest.TestCase):
 
     def check(self, markdown):
         return check_links(self.root, [self.write("docs/rules.md", markdown)])
+
+    def test_agents_budget_accepts_exact_limits_and_rejects_hidden_extra_lines(self):
+        self.write("AGENTS.md", "x" * 5900 + "\n" * 100)
+        self.assertEqual(check_agents_budget(self.root), [])
+        self.write("AGENTS.md", "<!--\n" + "\n" * 99 + "-->\n")
+        errors = check_agents_budget(self.root)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("101 lines exceeds 100", errors[0])
+
+    def test_agents_budget_counts_utf8_bytes_and_requires_the_file(self):
+        self.assertIn("AGENTS.md:", check_agents_budget(self.root)[0])
+        self.write("AGENTS.md", "あ" * 2001 + "\n")
+        errors = check_agents_budget(self.root)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("6004 UTF-8 bytes exceeds 6000", errors[0])
 
     def test_corpus_links_are_part_of_normal_document_discovery(self):
         self.write("corpus/source/case/README.md", "[missing](deleted.qli)\n")
@@ -49,6 +64,15 @@ class DocumentationReferences(unittest.TestCase):
         path = self.write("corpus/README.md", "historical prose\n")
         self.assertIn("markers", check_corpus_overview(self.root, write=True)[0])
         self.assertEqual(path.read_text(), "historical prose\n")
+
+    def test_swapped_corpus_markers_reject_without_rewriting_in_both_modes(self):
+        self.write("corpus/manifest.json", '{"cases": []}')
+        self.write("corpus/semantic_faults/manifest.json", '{"cases": []}')
+        original = "intro\n<!-- corpus-inventory:end -->\nprose between\n<!-- corpus-inventory:start -->\nend\n"
+        path = self.write("corpus/README.md", original)
+        for write in (False, True):
+            self.assertIn("markers out of order", check_corpus_overview(self.root, write=write)[0])
+            self.assertEqual(path.read_text(), original)
 
     def test_package_doc_links_reject_previous_and_future_tags(self):
         self.write("Cargo.toml", '[package]\nversion = "0.2.5"\n')
@@ -165,6 +189,16 @@ class DocumentationReferences(unittest.TestCase):
         self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
         self.write("docs/rule-inventory.md", render_status(self.root, inventory_only=True))
         errors, _ = check_links(self.root, [self.root / "docs/rule-inventory.md"])
+        self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
+
+    def test_compact_status_still_validates_secondary_ledger_references(self):
+        data = self.status_fixture()
+        data["inventory"][0]["tests"] = (
+            "[`present_test`](../tests/rules.rs), [`deleted_test`](../tests/rules.rs)"
+        )
+        self.write("docs/project-status.json", json.dumps(data))
+        self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
+        errors = check_status(self.root, write=True)
         self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
 
     def test_direct_declarations_methods_and_attributed_tests(self):

@@ -1,0 +1,374 @@
+{
+  "format": "qleisli.vm26-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-01T21:59:49.495759+00:00",
+  "state": "validated-observing-component; full VM-26 gates open",
+  "product_version": "0.2.6",
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "production_authority": "Rust",
+  "external_schemas_enabled": false,
+  "publication_performed": false,
+  "checks": [
+    {
+      "name": "kernel-build",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "Build completed successfully (166 jobs)."
+    },
+    {
+      "name": "math-build",
+      "cwd": "lean",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "Build completed successfully (3503 jobs)."
+    },
+    {
+      "name": "runtime-source-policy",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_lean_kernel.py"
+      ],
+      "exit_code": 0,
+      "observed": "Checked 84 executable kernel/transport source modules; no external Lake dependencies."
+    },
+    {
+      "name": "compiled-origin-audit",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Audited 10338 kernel/transport declarations; allowed axioms propext, Classical.choice, Quot.sound."
+    },
+    {
+      "name": "math-axiom-audit",
+      "cwd": "lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Audited 3055 Qleisli declarations; allowed axioms propext, Classical.choice, Quot.sound."
+    },
+    {
+      "name": "kernel-reduction-tests",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0; includes structural branch depths 64/65 and Unit phi coverage."
+    },
+    {
+      "name": "fresh-kernel-replay",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0."
+    },
+    {
+      "name": "fresh-transport-replay",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0."
+    },
+    {
+      "name": "compiled-policy-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "exit_code": 0,
+      "observed": "27 tests passed."
+    },
+    {
+      "name": "current-source-inventory",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "observed": "232 constructors, 189 source snapshots, 18 boundaries; Rust authority unchanged."
+    },
+    {
+      "name": "inventory-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "observed": "17 tests passed."
+    },
+    {
+      "name": "documentation-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "observed": "31 tests passed."
+    },
+    {
+      "name": "CI-profile-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_ci_profiles.py"
+      ],
+      "exit_code": 0,
+      "observed": "4 tests passed."
+    },
+    {
+      "name": "authoring-record-integrity",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "observed": "15 records, 23 snapshots, 44 observations; no recorded commands executed."
+    },
+    {
+      "name": "original-native-bodies",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_lean_observation.py",
+        "--record",
+        "tests/fixtures/verification_v026/native-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "150 native cases; 143 Rust comparisons; 145 exact Kraus operators; 145 retained histories."
+    },
+    {
+      "name": "registry-rebuild-and-fresh-replay",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--write",
+        "--report",
+        "tests/fixtures/verification_v026/registry-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "Both builds and compiled audits, fresh kernel replay and exported component types pass; 3 entries, 0 externally enabled."
+    },
+    {
+      "name": "registry-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_schema_registry.py"
+      ],
+      "exit_code": 0,
+      "observed": "12 tests passed."
+    },
+    {
+      "name": "registry-source-identity",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "observed": "Current source revision and manifest agree; 0 external entries enabled."
+    },
+    {
+      "name": "generated-docs-and-links",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_docs.py",
+        "--write-status"
+      ],
+      "exit_code": 0,
+      "observed": "2213 local links, 139 Markdown anchors, 4 Rust declarations, 14 Rust tests, 163 Lean root modules checked."
+    },
+    {
+      "name": "authoring-integrity-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "observed": "7 tests passed."
+    },
+    {
+      "name": "CI-measurement-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_measure_ci.py"
+      ],
+      "exit_code": 0,
+      "observed": "4 tests passed."
+    },
+    {
+      "name": "patch-whitespace",
+      "cwd": ".",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0."
+    },
+    {
+      "name": "edition-and-manifest-coverage",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "observed": "847 .qli and 5 .qlt files covered by 20 edition-2026 manifests; no repository-root manifest."
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Semantics/Observation.lean": "b429662efa9c0c00fe061df0af568da0e2ea28686f9439acf38939f6a99f3fa0",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "7202e06474dbae42b04e340e042795440daf18a848200f684e56f20c2a67c0d1",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "92f3e02d9912daa654829533d2cdda1a89a282c9b2bb8168f39c1f19b2ccef54",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+    "lean-kernel/Tests.lean": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+    "lean-kernel/QleisliKernel.lean": "c5a74912cbc1ac606a9fb68d980d3c61ad1732407c7af04721fa52e2626a493b",
+    "lean-kernel/Protocol.lean": "6df028cb7023dc485da5c731608922fc37473a718599e97514f9542e7ef1809a",
+    "lean/Qleisli.lean": "8485e4b3ca5645e06464f340c64937afd1c19070e778c9f28756ca5a34260ddf",
+    "scripts/test_lean_observation.py": "e0b22599a68e416237712eeebf524edf0f2da76093736f34cba92147dde07d84",
+    "tests/fixtures/verification_v022/inventory.json": "0af4098609a80df49d42e4e20c79320687c4bdb3f9457d65be0199a74c47919f",
+    ".github/workflows/ci.yml": "a70226512bf364f5644e4dda3e26ae2c149f041caae734b91ee745aac1bb6c27"
+  },
+  "report_sha256": {
+    "native-validation.json": "3eff67d94ebd70f5598834327112c329c856089b3f9c276ff09e6827ae39eff7",
+    "native-inputs.json": "b0f68bdd8488347d9c062152873d077b919605deb2ff842c2a7af7beb6f796da",
+    "native-observed.json": "3a57791c383edf5ffceaeba0182974bee2069e763469c5f69589c0c53f240745",
+    "registry-validation.json": "90a64a963e52fd467551db03e3f520abaead8c1caf8ecb1754a3de6c5a60baac"
+  },
+  "native_bindings": {
+    "lean_binary_sha256": "ea3d002d3241e5e5dacbae694befc0bbf3c35602f32bfa3292907f96dad7499c",
+    "lean_input_sha256": "64e9d4cec7fe3e963e937cddebb18bf442ec1f3b797f022ae41330800cc305d2",
+    "lean_stdout_sha256": "f628b5d667fcdbeb2e677a591b9da3406a0a1d34354c1e9f35e05e9285de7fa4",
+    "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rust_binary_sha256": "231567abb22473b4b99f2f40994a4477510cbb07820851d179e5d737afe739ea",
+    "rust_stdout_sha256": "2965bfe27e627278a646736117ee04abb8839f7d67ce83e285cc4194f3e26217"
+  },
+  "remaining": [
+    "general non-dense instrument theorem",
+    "complete original-operation complex-denotation refinement",
+    "retained function evidence containing classical branches",
+    "native/decoder correspondence",
+    "VM-27 hierarchy closure",
+    "VM-28/29 packaging and production dual integration"
+  ],
+  "skipped": [
+    "new maximum-size corpus generation/execution",
+    "production authority transfer, tagging and registry/GitHub publication",
+    "remote CI for this uncommitted boundary snapshot; local checks are recorded"
+  ],
+  "docs_snapshot": {
+    "scope": "docs/**/*.md plus docs/project-status.json; excludes ignored OS metadata",
+    "baseline_bytes": 816905,
+    "bytes": 407643,
+    "markdown_bytes": 350448,
+    "files": 51,
+    "sha256": {
+      "docs/ai-era-goal.md": "847483195591f62e72658e9e7aa56e991018446144bd2b372222247547849cf0",
+      "docs/algorithm-routines.md": "fafabec6f222449298869299c7b0c25dec3f975fc55763b9be7746afddcec685",
+      "docs/algorithm-structure-goal.md": "339f9206ce01246c5d2187444c156f6025ee29001b4b3abae16b1d60dec3c66d",
+      "docs/coefficient-domains.md": "4945ddcfeb5672f84d1458124f92f5544e3d682f85796c94870914349f8d5953",
+      "docs/crates-io-release.md": "bc15796dfa5d4e50bc57f169384ed4edb737b33761b5771efb56264c74821a99",
+      "docs/current-status.md": "c6a7672d83fde30726b2f2be899024f615065b7811705c1d48790333292a5ab9",
+      "docs/design-philosophy.md": "1a84fd4ef97a0b4e32df5d147b833e2fe8a7b4d93d2ff7308d240b9284cabe1b",
+      "docs/distribution-validation.md": "d2bbbd974de6506ec6bd6b0e902630814d15b2fddc02bf45e9cc899cc30fb61d",
+      "docs/documentation-comments.md": "7ba74d29f9585b40f169e4abc4abd52e8c59af5bd56a72cbc5dbb2d079dfe838",
+      "docs/documentation-map.md": "abdb542d8e6cff1fde973e876fa3d77d355b0a11f8544da8da0b7e786fcb4c4a",
+      "docs/finite-contracts.md": "77a81f5f61889fd0746b712e60df5fde484ade27910a81666917bd32f8baef52",
+      "docs/formal-core.md": "ce2c2a676a6cbc13a89b756bfc83c345940850f1e1b91e17ed2b48a767c734d1",
+      "docs/frontend-v0.md": "7eb1b4a7605dacbe451a97754102ef071b861ab6d9f64e1008b5e006cb9f0a6d",
+      "docs/hierarchical-ir-spec.md": "5d977add089407d54a5ce7a1c163f7236b575b7155d60f2be42d19e74c0c5174",
+      "docs/imaginary-v1/README.md": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d",
+      "docs/imaginary-v1/requirements.md": "537fe4d76c5c9094941f8b67bf7e2ba5cfab1fa019af5d8fa3519abf2c9696dd",
+      "docs/implementation-architecture.md": "891b1ae9d47ee91fbd33c4aea3184659976c1a062f8cd3e1e5ddb03540a5da01",
+      "docs/interop-m1.1.md": "09d69d089b2b99f107526530458b1248ded8766ae13942032d0ac006abb8ce1a",
+      "docs/interoperability-roadmap.md": "a2fe0a7f7cbbabec3c3f865780754e511d5f1b3a646e275a0d90be329e289896",
+      "docs/ir-prototype.md": "d916d575b69618c89c4033f6b8c3198526e4d53d84ddb6f6b81322cba60057f6",
+      "docs/language-editions.md": "a8a1ce90d86250850256277c6134554578926a3bf1d4df8a92f593b1ce90d7f0",
+      "docs/language-spec.md": "9158deca0b8cf4e7e56d99eb476ec46d48a797b652992421ec897da73a7611e3",
+      "docs/lean-kernel-migration.md": "3b393949a6bbc5e5f336c98004cb3a9ddb6e37723d1923b6a942228b633d2767",
+      "docs/machine-interface-spec.md": "bfad08fa598bc432cdbbb83dec62b3cc5cd93f3cd00f38245392a5fb785a06f7",
+      "docs/next-minor-spec.md": "57ac9ee774a69ffc93fd7ba44eb7e0a3af3d868f3aaa48af3def162a0bdea5db",
+      "docs/project-status.json": "5d60f9304f25dc7c7f021dcfad629b51eefde523b1ba8b7ce957849ddbafbbd8",
+      "docs/qli-authoring-feedback.md": "9b08ca2ef236c12b6a754bcdb27a927280c1b2698044d088df8c6f5579ef5fa1",
+      "docs/qli-quick-reference.md": "7f1f280d8847a52f51d42396f93481fbb67c38373c4d80a82b8d8ea74da5e3df",
+      "docs/quantum-language-requirements.md": "94293c6684a51f2790f31d41140f2323d6bde9e07d9fb3a385e4b40671254604",
+      "docs/release-milestones.md": "6f4b7217b539b0dd895f217a0153947d3ba8179ce0321257ed58d670dca2953f",
+      "docs/releases/v0.2.6.md": "bb4cbc4672e3636405b19920f2c7ff1b1171538c0402a84e0f17ea1a120365bd",
+      "docs/resource-semantics.md": "98174d82107b66cc8280029cfdd80b70a5c8d7df1cc28ff5c9e2b101f4894d6e",
+      "docs/rule-inventory.md": "5026cef4b801db5fd6365d3e96dfd261160574aa6460f82d97991238e980509d",
+      "docs/size-expressions.md": "62d2d0bac20fe18050005d0d482a665bb796c209f15a6e7fa19307c87a5a43df",
+      "docs/sized-corpus-source.md": "9cf0e8eea0445b4a38e878075029da264ea0845a2edc00d99388e862720edbe0",
+      "docs/standard-library.md": "76f438f73fbe23070d7a116ff6d31c9dd5d0f6b494106468e568e3532706842e",
+      "docs/static-operations.md": "10d06da4988061585e42c4c2cd45531a63cfda4aa9db2b59a1bb90c623fa4305",
+      "docs/stdlib-contract-examples/add2.md": "0197be25c2846856b859858b2d35d4fdae02d2c14f0e1906164166c57eb2089b",
+      "docs/stdlib-contract-examples/and-phase.md": "7c6cae5694dbcd352187ee3ba9fa6ac5d1c962b8a0eb467f6ca80c50ecff310a",
+      "docs/stdlib-contract-examples/qft2.md": "5b7bd810d8ffcfb1c539ba5e4accbf62888a4e4d9471e9d7cc8c89f7ea170b11",
+      "docs/stdlib-contract-template.md": "75f4a638a5e23233cbf190cd1442cad74b0bc985c421ef6c8d18e081e81148c9",
+      "docs/stdlib-contracts.md": "98d8e7e0fc47e36d0817bb7562d15d583a45bc4f2327c1e18d36ae1b1fd5ed0b",
+      "docs/stdlib-roadmap.md": "2976312ede9e34aa2aa113558974ea055ccddc9bbe69c65470e0d4af0d1beb5d",
+      "docs/syntax-v0.md": "3af96479c50a2409c73d9a4c0cc99ace7e987dc07d8237729529f5dbe10bccbb",
+      "docs/terminology.md": "c5f2876fc2ee9d9a21fe2f017e6a741df72832881f6226db06d86ea9468d3c7b",
+      "docs/tuple-shapes.md": "ea9a3f9e7032fd13c34d30178ed48cac3898a1131a7212a1ce6dad79870084b6",
+      "docs/type-system.md": "6a9c5acb04380352d29ddeabd544de66be6d91701c51edaffdd4ae8faa32a274",
+      "docs/v0.2.2-plan.md": "a448073762a56bf029949358fcb93c3baa1c1b1aa870edaca6a558eb9efddd70",
+      "docs/v0x-roadmap.md": "01de5f18118f490bf6d2a3cc8683ca1b26527dac77bfe910270f176d8b1d2a4d",
+      "docs/verification-migration-v0.2.md": "d5b8c3127f08a45b8e87155e44961e79ea37d98c56247ea25a16a82b1fb2f570",
+      "docs/versioning.md": "22ed7a17a4619f19fd704b943127a7c5d0b6252178694e8079c4e036b4ff4b62"
+    }
+  },
+  "agents_snapshot": {
+    "lines": 96,
+    "bytes": 5967,
+    "limits": {
+      "lines": 100,
+      "bytes": 6000
+    }
+  },
+  "kernel_binary_sha256": "22a2e2fc8ffb2af39e5b3d690411ef04ae93c93d8d12dd4c99d48bcd11523ebd"
+}

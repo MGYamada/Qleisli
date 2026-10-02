@@ -1,58 +1,30 @@
-# Arity-preserving tuples in 0.2.0
+# Arity-preserving tuples
 
-Status: adopted for 0.2.0 on 2026-09-29, superseding the 0.1.8
-left-folding syntax rule and the earlier 0.2.0 plan's preservation of that rule.
-This is a breaking source/public-AST change. Historical release and authoring
-records retain their original meaning.
+Adopted breaking v0.2.0 migration replaces earlier left folding; frozen records retain
+old meanings. Current [type contract](type-system.md) fixes structural equality.
 
 ## Types, values and patterns
 
-A tuple has an ordered list of **2 through 64 immediate fields**. Each field
-may itself be a tuple. Equality requires equal arity and recursively equal
-field types; no associativity, flattening or Unit elimination is implicit.
-In particular `(Bit,Bit,Bit)`, `((Bit,Bit),Bit)` and `(Bit,(Bit,Bit))` are three
-different basis types. This also applies inside `Q`, to classical/mixed values,
-ordinary and basis expressions, `let`, coherent-lift and basis-parameter patterns,
-function results, branch results, static operation arguments and exact contracts.
-Two-field tuples retain their existing binary meaning. Function argument lists
-remain separate from tuples. Unit `()` and expression grouping `(e)` retain
-their meanings; singleton tuples and trailing commas remain unsupported.
+Ordered immediate arity2..64, nested fields retained everywhere: types/Q, basis/ordinary
+values, lets/lifts/basis parameters, function/branch/static/evidence interfaces. Flat
+triple and either binary nesting differ; no reassociation/flattening/Unit erasure.
+Binary meanings unchanged, arguments distinct from tuples; () Unit/(e) grouping,
+no singleton/trailing commas. Fields evaluate once left-to-right, joining effects;
+all-classical tuples copy, mixed tuples move. Patterns match full shape/order without
+duplicated names/discarded owners, including zero width. Basis labels may be ignored
+but lifted complete map still needs injectivity.
 
-Tuple expressions evaluate their immediate fields once, left to right, passing
-the remaining ownership context to the next field and joining all effects.
-A tuple is copyable exactly when all fields are classical. A mixed tuple moves
-as a whole. Patterns require the same immediate arity and nested shape as the
-value, visit fields left to right, and cannot duplicate names or discard owners.
-This includes zero-width quantum ownership. Basis patterns bind labels only;
-ignoring a basis label still requires whole-domain injectivity for a quantum lift.
+First field low, label=sum_i label_i*2^(sum_(j<i) bits(Aj)); Unit zero axes remains
+node. Equal widths/encodings/matrices do not coerce trees. AST Tuple(Vec) retains
+fields/spans; separate arity64/nesting64 and existing work/node/width budgets. Values
+retain shape before ordered IR ports; no new gate/raw instruction.
 
-The basis width is the sum of field widths. Its integer label is
-`sum_i label_i * 2^(sum_{j<i} bits(A_j))`: the first field occupies the lowest
-axes. Unit fields contribute zero axes but remain in the type. A flat tuple and
-a nested tuple can have the same width and numerical encoding while having
-different types. Equality of dimensions or matrices does not authorize coercion.
-
-Tuple notation is a **language form**, not a new quantum operation. The public
-AST stores `Tuple(Vec<...>)`, preserving immediate fields and spans. Flat arity
-has its own 64-field bound; genuine nesting retains the 64-level AST bound.
-Existing work, type/value-node and finite quantum-width bounds still apply.
-Runtime values retain tuple shape before outputs are flattened into ordered IR
-ports. Finite basis tables and existing wire operations suffice for execution;
-no new gate or raw quantum instruction is introduced.
-
-Exact evidence retains binary `BasisType::Pair` for two fields and a distinct
-`BasisType::Tuple` for three or more. Both shape and semantics must match an
-independently required contract. `Tuple` with fewer than three fields is
-noncanonical and rejected, never normalized into Pair or Unit. The finite
-interchange type encoding adds `{"tag":"tuple","fields":[...]}`; unknown
-fields, noncanonical arity and existing depth/node limits reject. The format
-is introduced in 0.2.0; old binary encodings keep
-their meaning. The selected M2 interface must likewise retain ordered arity,
-rather than recover it from widths or flattened ports.
+Evidence Pair is exactly binary, Tuple at least3; noncanonical smaller Tuple rejects,
+never normalizes. [QIRF](machine-interface-spec.md) encodes tuple fields, rejecting
+unknown fields/arity/limits. Old binary encodings retain meaning; M2 also preserves
+full arity, never reconstructs from widths.
 
 ## Explicit conversion and migration
-
-These are ordinary checked definitions, not implicit casts:
 
 ```text
 basis fn flatten3(((a,b),c): ((Bit,Bit),Bit)) -> (Bit,Bit,Bit) { (a,b,c) }
@@ -65,30 +37,11 @@ unitary fn to_nested(q: Q<(Bit,Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {
 }
 ```
 
-Their tables are identity permutations on labels, checked as total injections;
-the full quantum state and reference correlations are retained. An actual
-permutation of fields has a different table and must not pass an identity
-contract just because its result type is well formed.
-
-The 0.2.1 [canonical reshape experiment](size-expressions.md) checks explicit
-single-owner adapter metadata by comparing ordered non-Unit leaves and actual
-axes, with an inductive encoding proof. It is not a shipped source API or a
-replacement for the ordinary definitions above. Unit-only owners persist,
-sized atoms are not expanded, and production lowering must use existing
-independently checked structural operations. Type equality remains unchanged.
-
-To preserve the old type of a flat spelling, write its former binary tree
-explicitly: `(a,b,c,d)` becomes `(((a,b),c),d)`, in matching types and patterns.
-To adopt true n-ary types, update producer/consumer signatures and patterns
-together and use explicit conversions at binary interfaces. Existing binary
-`split`/`join`, tensor/control operation constructors and sealed `toffoli`
-result shapes retain their contracts. A flat three-field pattern therefore
-cannot destructure `toffoli`'s `((Q<Bit>,Q<Bit>),Q<Bit>)` result.
-
-Reject a flat value returned as a nested declared type, a flat pattern on a
-nested value, mismatched branches, mismatched static-operation/meaning shapes,
-and equal-width differently shaped external evidence. The
-[first source and original acceptance](../tests/fixtures/tuple_shapes/baseline.json)
-preserve the semantic counterexample that motivated this correction.
-General frontend adequacy is still open; existing binary Lean models do not
-by themselves prove this source extension.
+Ordinary definitions above check total identity-label injections, preserving complete
+state/reference phase+1. Field permutation is another table, not identity evidence.
+[Intact reshape](size-expressions.md) is an explicit single-owner metadata adapter,
+not implicit equality or owner merging. Keep Toffoli's nested return until versioned
+migration; flat return is tracked in [#15](https://github.com/MGYamada/Qleisli/issues/15).
+Historical source/public AST migrations stay in immutable releases, current callers
+must select exact trees and explicit conversion. [Tuple fixtures](../tests/fixtures/tuple_shapes/README.md)
+retain positive/counterexample evidence; no general source adequacy proof is claimed.

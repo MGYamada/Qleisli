@@ -1,3 +1,5 @@
+import QleisliKernel.Raw.StreamedInstrument
+import QleisliKernel.Raw.BranchFunction
 import QleisliKernel.PhaseWord
 import QleisliKernel.Exact
 import QleisliKernel.ExactCapacity
@@ -8,6 +10,8 @@ import QleisliKernel.Raw.Function
 import QleisliKernel.Raw.ProtectedEvaluation
 import QleisliKernel.Raw.Protected
 import QleisliKernel.Raw.Pure
+import QleisliKernel.Raw.Observation
+import QleisliKernel.Raw.Instrument
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
 import QleisliKernel.LayoutDag

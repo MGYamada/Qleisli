@@ -34,7 +34,6 @@ struct TupleBindingOrigin {
     module: String,
     span: Span,
     name: String,
-    ty: Ty,
 }
 
 fn verification_error(
@@ -71,7 +70,7 @@ struct Lowerer<'c, 'p> {
     operations: Vec<RawOp>,
     operation_sources: OperationSources,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
-    tuple_binding_origins: BTreeMap<Vec<Slot>, TupleBindingOrigin>,
+    tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
     next_token: u32,
     next_wire: u32,
     next_classical: u32,
@@ -205,7 +204,10 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.depth += 1;
+        // A callee's lexical binders cannot explain the caller's operands.
+        let caller_origins = std::mem::take(&mut self.tuple_binding_origins);
         let result = self.call_user_inner(key, args, site);
+        self.tuple_binding_origins = caller_origins;
         self.depth -= 1;
         result
     }
@@ -344,6 +346,18 @@ impl Lowerer<'_, '_> {
     }
 
     fn block(&mut self, module: &str, block: &Block, env: &mut Env) -> Result<Value, CompileError> {
+        self.tuple_binding_origins.push(BTreeMap::new());
+        let result = self.block_inner(module, block, env);
+        self.tuple_binding_origins.pop();
+        result
+    }
+
+    fn block_inner(
+        &mut self,
+        module: &str,
+        block: &Block,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
         self.compiler
             .charge(module, block.span, env_size(env).saturating_mul(2))?;
         let mut entry = env.clone();
@@ -426,15 +440,18 @@ impl Lowerer<'_, '_> {
                         "binding would hide unconsumed quantum ownership",
                     ));
                 }
-                if matches!(&value, Value::Pair(..) | Value::Tuple(_)) && value.owns_quantum() {
-                    self.tuple_binding_origins.insert(
-                        value.quantum_slots(),
-                        TupleBindingOrigin {
-                            module: module.to_owned(),
-                            span: name.span,
-                            name: name.text.clone(),
-                            ty: value.ty(),
-                        },
+                if let Some(origins) = self.tuple_binding_origins.last_mut() {
+                    // Names (including non-tuples) shadow outer diagnostic
+                    // metadata. No quantum slot/type tree is copied here.
+                    origins.insert(
+                        name.text.clone(),
+                        matches!(&value, Value::Pair(..) | Value::Tuple(_)).then(|| {
+                            TupleBindingOrigin {
+                                module: module.to_owned(),
+                                span: name.span,
+                                name: name.text.clone(),
+                            }
+                        }),
                     );
                 }
                 env.insert(name.text.clone(), Binding::Live(value));
@@ -850,7 +867,7 @@ impl Lowerer<'_, '_> {
                                 "sealed operations have no static parameters",
                             ));
                         }
-                        self.sealed(module, expr.span, &namespace, &name, values)
+                        self.sealed_with_source(module, expr.span, &namespace, &name, values, args)
                     }
                 }
             }
@@ -1009,7 +1026,7 @@ impl Lowerer<'_, '_> {
             registers: BTreeMap::new(),
             operations: vec![],
             operation_sources: BTreeMap::new(),
-            tuple_binding_origins: BTreeMap::new(),
+            tuple_binding_origins: Vec::new(),
             next_token: 0,
             next_wire: 0,
             next_classical: 0,
@@ -1296,7 +1313,7 @@ fn lower_function_inner(
         registers: BTreeMap::new(),
         operations: Vec::new(),
         operation_sources: BTreeMap::new(),
-        tuple_binding_origins: BTreeMap::new(),
+        tuple_binding_origins: Vec::new(),
         next_token: 0,
         next_wire: 0,
         next_classical: 0,

@@ -1,35 +1,22 @@
 # Documentation map
 
-## docs/ cleanup boundary at v0.3.0
+English production rules/contracts/names/comments/examples are authoritative;
+Japanese discussion and dated records support them. Separate proposals/adoption,
+implementation/tests/proofs and version/tag/upload/publication.
 
-Retain active v0.2.x goals and migration plans. Delete obsolete documentation
-actively; all remaining pre-v0.3.0 files expire at v0.3.0, when the documentation
-will be written from scratch. Do not archive or transplant the legacy tree.
-Git history supplies historical lookup; executable evidence and required notices
-outside `docs/` remain. See the [cleanup plan](v0x-roadmap.md#documentation-discipline-for-v030).
-
-## Temporary v0.2.x navigation
-
-English is authoritative for production specifications and public library names,
-contracts, comments and examples. Supporting Japanese discussions and dated
-records remain historical material. A proposed design does not override current
-rules; adoption, implementation, testing and proof are separate states.
-
-| Read for | Documents |
+| Read for | Current references |
 | --- | --- |
-| First use | [README](../README.md#try-it), [copyable source reference](qli-quick-reference.md), [frontend guide](frontend-v0.md) |
-| Current language | [Language v0](language-spec.md), [types](type-system.md), [grammar](syntax-v0.md), [standard modules](standard-library.md), [static operations](static-operations.md) |
-| Meaning and evidence | [Semantic contracts](semantic-contracts-v0.1.md), [function contracts](function-contracts-v0.1.md), [library ledger](stdlib-contracts.md), [trust boundary](../TRUST_BOUNDARY.md) |
-| Formal rules and proof scope | [Formal core](formal-core.md), [current source rules](language-spec.md), [actual proofs](../lean/README.md) and [kernel definitions](../lean-kernel/README.md). Retired mathematical expositions remain in Git history. |
-| Implementation/proof scope | [Architecture](implementation-architecture.md), [Lean modules and scope](../lean/README.md), [finite IR](ir-prototype.md), [machine interfaces](machine-interface-spec.md), [experimental hierarchy](hierarchical-ir-spec.md) |
-| Current state | [Short status](current-status.md), [rule inventory](rule-inventory.md), [0.2.2 plan](v0.2.2-plan.md), [verification packets](verification-migration-v0.2.md) |
-| Future work | [Milestones](v0x-roadmap.md), [Lean migration policy](lean-kernel-migration.md), [imaginary source drafts](imaginary-v1/README.md), [Issues](https://github.com/MGYamada/Qleisli/issues) |
-| Library contributions | [STDLIB.md](../STDLIB.md), [contract template](stdlib-contract-template.md), [library direction](stdlib-roadmap.md), [corpus policy](../corpus/POLICY.md) |
-| Compatibility and releases | [Versioning](versioning.md), [acceptance gates](release-milestones.md), [release procedure](crates-io-release.md), [current development record](releases/v0.2.5.md) |
+| First source | [Quick reference](qli-quick-reference.md), [frontend](frontend-v0.md) |
+| Language | [Rules](language-spec.md), [types](type-system.md), [grammar](syntax-v0.md), [modules](standard-library.md), [static forms](static-operations.md) |
+| Meaning | [SC/FC](finite-contracts.md), [stdlib ledger](stdlib-contracts.md), [trust](../TRUST_BOUNDARY.md) |
+| Implementation/proofs | [IR](ir-prototype.md), [machine formats](machine-interface-spec.md), [hierarchy](hierarchical-ir-spec.md), [formal scope](formal-core.md), [Lean](../lean/README.md)/[kernel](../lean-kernel/README.md) |
+| Current work | [Status](current-status.md), [inventory](rule-inventory.md), [continuation](v0.2.2-plan.md), [VM plan](verification-migration-v0.2.md) |
+| Future | [Milestones](v0x-roadmap.md), [theorem gates](release-milestones.md), [draft index](imaginary-v1/README.md), [Issues](https://github.com/MGYamada/Qleisli/issues) |
+| Contributions/releases | [STDLIB.md](../STDLIB.md), [versioning](versioning.md), [release procedure](crates-io-release.md), [0.2.6 record](releases/v0.2.6.md) |
 
-`Cargo.toml` selects the current version. Edit `project-status.json` and regenerate
-its two temporary views with `python3 scripts/check_docs.py --write-status`.
-Historical narratives and the backlog are retired; use Issues for active work
-and keep actual validation beside its fixtures. Current contracts remain usable
-during v0.2.x; they have no exemption from the v0.3.0 cleanup boundary.
-[Issue #48](https://github.com/MGYamada/Qleisli/issues/48) tracks current cleanup and the later Reference.
+Cargo selects version; edit project-status.json and regenerate both views using
+python3 scripts/check_docs.py --write-status. [#48](https://github.com/MGYamada/Qleisli/issues/48)
+tracks aggressive retirement: keep active v0.2.x goals/migration usable, historical
+lookup through Git/tags, no archival/redirect stubs. At v0.3 discard remaining legacy
+docs and write from adopted rules/code/proofs/examples. Preserve outside-docs source,
+attempts, failures, evidence/proofs/notices. No duplicated backlog; Issues track work.

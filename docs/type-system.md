@@ -1,171 +1,81 @@
 # Type system: current finite source contract
 
-Status: **normative for product 0.2.0**, 2026-09-29. This document is
-the consolidated type contract. The [grammar](syntax-v0.md),
-[typing/effect rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md), [ownership rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md)
-and [tuple migration](tuple-shapes.md) refine its syntax, judgments and migration.
-Current implementation evidence is recorded in [conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
-This specification is not a claim of a general compiler soundness proof.
-
-**Design default: when uncertain about type or ownership discipline, follow
-Rust.** The [adopted policy](design-philosophy.md#follow-rust-for-type-and-ownership-discipline)
-applies to future design and unresolved choices. An intentional difference
-must name the quantum-semantic or evidence obligation and the corresponding
-checking rule. The current rules below remain explicit, including linear
-quantum ownership and the smaller implemented syntax.
-
-## Planned v0.3.0 specification
-
-**User decision, 2026-09-29:** formulate the Qleisli type system in the
-**v0.3.0 breaking-change release**, as recorded in the
-[release plan](v0x-roadmap.md#v030-qleisli-type-system-specification).
-The concrete changes and migration remain to be specified; the current finite
-rules below continue to govern implemented source. This does not adopt new
-type syntax, weaken ownership/evidence rules or authorize incompatible changes
-in 0.2.1. QLT implementation is deferred to **v0.4.0 or later**, after this work.
+Normative finite source rules, unchanged in 0.2.6. [Language](language-spec.md),
+[grammar](syntax-v0.md) and [tuple migration](tuple-shapes.md) refine this contract.
+Follow [Rust](design-philosophy.md#follow-rust-for-type-and-ownership-discipline)
+for unresolved discipline; each intentional difference needs a quantum/evidence
+obligation and checking rule. General compiler soundness remains open.
 
 ## Formation and equality
-
-The implemented source types are exactly these finite trees, where a tuple
-has `2 <= k <= 64` immediate fields:
 
 ```text
 Basis     A ::= Unit | Bit | (A1,...,Ak)
 Ordinary  T ::= Unit | CBit | Q<A> | (T1,...,Tk)
-Classical C ::= Unit | CBit | (C1,...,Ck)
+Classical C ::= Unit | CBit | (C1,...,Ck)        2 <= k <= 64
 ```
 
-| Form | Meaning and permitted context |
-| --- | --- |
-| `Unit` | One basis label, or the ordinary value `()`. No physical bit. |
-| `Bit` | A basis label, `0` or `1`; permitted in basis declarations and inside `Q`. It is not an ordinary runtime parameter/result type. |
-| `CBit` | A copyable runtime measurement/Boolean value, `false` or `true`. It is not a basis type. |
-| `Q<A>` | Linear ownership of one register whose ordered basis has type A. A may contain Unit factors and nested tuples. A cannot contain CBit or Q. |
-| `(T1,...,Tk)` | An ordered product retaining immediate arity and every nested field. It is classical iff every field is classical. |
+Unit has one label and zero bits; its ordinary value is `()`. Bit labels 0/1
+occur only in basis declarations or Q; ordinary CBit values false/true are
+copyable, never basis values. Q<A> owns one ordered register, with no CBit/Q
+inside A. A product is classical exactly when every field is classical.
 
-Type equality is structural, not equality of dimensions, underlying machine
-bits, numerical encodings or isomorphic mathematical spaces:
-
-```text
-Unit = Unit; Bit = Bit; CBit = CBit
-Q<A> = Q<B>                       iff A = B
-(A1,...,Ak) = (B1,...,Bj)          iff k = j and Ai = Bi for every i
-```
-
-No different constructors compare equal. In particular:
-
-```text
-(Bit,Bit,Bit) != ((Bit,Bit),Bit) != (Bit,(Bit,Bit))
-(Unit,Bit) != Bit
-Q<(Bit,Bit)> != (Q<Bit>,Q<Bit>)
-Unit != Q<Unit>
-Bit != CBit
-```
-
-There are no type aliases, subtyping rules, implicit casts, inferred type
-parameters or implicit product reassociation in the current language. Parameter
-and result annotations are required; local values are checked with derived
-types. Plain `(T)` is not a type production. Expression `(e)` groups an expression;
-`() : Unit`; singleton tuples, empty tuple types and trailing commas are absent.
-
-This arity/nesting distinction agrees with [Rust tuple types](https://doc.rust-lang.org/reference/types/tuple.html).
-The grammars are not identical: Rust also accepts singleton `(T,)` tuples,
-optional trailing commas and `()` as the unit type; Qleisli currently uses
-`Unit` as the type name and `()` as its value, and accepts only 2–64-field
-tuple constructors. Rust's parenthesized type `(T)` and numeric tuple access
-such as `value.0` are also outside the current Qleisli grammar. This comparison
-does not adopt Rust's full type system or ownership rules.
+Equality compares constructors, immediate tuple arity, nesting and every field.
+Q<A>=Q<B> iff A=B. Equal dimension, encoding or isomorphism is insufficient:
+flat/nested triples, (Unit,Bit)/Bit, Q<(Bit,Bit)>/(Q<Bit>,Q<Bit>), Unit/Q<Unit>
+and Bit/CBit differ. No aliases, subtyping, casts, inferred type parameters,
+implicit reassociation, singleton tuples, trailing commas, `(T)` types or numeric
+field access. Parameters/results require annotations; local types are derived.
+Rust tuple discipline is the default, not adoption of its full grammar.
 
 ## Ownership, effects and exact interfaces
 
-A classical value may be copied or unused. An ordinary value containing any
-`Q` moves as a whole; a pattern may expose classical and quantum fields, but
-cannot silently discard a quantum field. Every `Q<A>` is one owner, even when
-`bits(A)=0`. For example `Q<(Unit,Unit,Unit)>` has one zero-wire owner, whereas
-`(Q<Unit>,Q<Unit>,Q<Unit>)` has three. Neither can be copied or dropped implicitly.
-This counts operation rights, not tensor-factor independence: different owners
-may be entangled with each other and with an unmentioned reference.
+Classical values may be copied/unused. Any ordinary value containing Q moves
+as a whole; exact patterns may expose fields but cannot discard owners. Every
+Q<A> has one owner even at width zero: Q<(Unit,Unit,Unit)> has one, three Q<Unit>
+fields have three. Ownership does not assert independence from other registers
+or arbitrary references. Observation consumes/replaces ownership by its contract.
 
-`Unitary`, `Iso` and `Observe` are **function effects**, ordered
-`Unitary <= Iso <= Observe`; they are not value-type constructors. `Q<A>` is an
-ownership type, not an effect. An observation consumes or replaces ownership
-according to its primitive contract; `measure_z : Q<Bit> -> CBit` does not return
-the old owner. A function with a Unit-only signature can still have an observing
-declared effect. Typing alone promises no eigenstate, zero ancilla, separability,
-algorithmic success or hardware accuracy.
+Unitary <= Iso <= Observe are function effects, not types. Declared effects
+remain obligations even with Unit-only ports. Typing proves no eigenstate,
+cleanup, success or hardware accuracy. Tuple fields evaluate once left to right;
+branches retain earlier fields/pending owners. Branch result types and complete
+result/surviving-frame phis must match, including zero-width owners.
 
-Tuple expressions evaluate fields once, left to right. Their effects join and
-their owners remain live while later fields are evaluated, including through
-classical branches. A tuple pattern must match exact immediate arity and nested
-structure. Branch results must have identical full types, and phi transport
-must cover every result and surviving frame owner, including zero-width owners.
+Basis labels may be copied/ignored. `do p <- q; pure e` consumes Q<A> and issues
+Q<B> only after a total full-domain injective table check. Equal-width explicit
+reshape has coefficient +1; it changes representation, not type equality.
 
-Basis values are labels, not quantum states, and may be copied/ignored while
-defining a total finite basis function. `do p <- q; pure e` consumes `Q<A>` and
-returns `Q<B>` only after independently checking the induced table is injective
-on all input labels. Explicit equal-width reshaping is a unitary basis mapping;
-it is not a type equality. Its phase is fixed to +1 per mapped basis state.
-
-Function signatures retain an ordered parameter list **separate from** each
-parameter's type. `f(a,b,c)` has three arguments; `f((a,b,c))` has one tuple
-argument. Destructuring a basis parameter does not change its argument count.
-Ordinary function parameters remain names. The legacy internal aggregation of
-multiple basis parameters into a binary domain for predicate tables remains an
-encoding convention, not a conversion of a single n-ary parameter into several
-arguments. Binary `split`/`join` and other sealed signatures remain explicit;
-they do not flatten arbitrary tuples.
-
-Static `Op<A>` and `Op<A,m>` are compile-time operation-description parameters,
-not ordinary values. They retain exact A and require separately declared
-Apply/Adjoint/Controlled access. Evidence for the right width but a different
-type tree does not satisfy a request. See the [operation contract](next-minor-spec.md).
+Parameter lists remain separate from parameter types: f(a,b,c) has three
+arguments, f((a,b,c)) one. Basis patterns do not change arity; their internal
+left-associated multi-parameter table domain does not unpack an ordinary tuple.
+Sealed split/join are binary. [Static Op](next-minor-spec.md) parameters are
+compile-time descriptions with separate Apply/Adjoint/Controlled capabilities,
+exact A and no captured owners; they are not ordinary values.
 
 ## Basis order, representation and limits
 
-`bits(Unit)=0`, `bits(Bit)=1`, and
-`bits((A1,...,Ak)) = sum_i bits(Ai)`. Within a tuple the first field occupies
-the lowest axes. The encoding is
-`label = sum_i label_i * 2^(sum_{j<i} bits(Aj))`, recursively within fields.
-Unit fields contribute no axes, but remain type nodes. Numerical identity
-between two encodings authorizes only a checked explicit conversion, never
-erasure of their type distinction or of ownership.
+bits(Unit)=0, bits(Bit)=1, product widths sum. First field occupies low axes:
+label=sum_i label_i*2^(sum_(j<i) bits(Aj)), recursively. Unit remains a node.
+AST/source checking and finite evidence retain exact trees; raw ordered widths
+alone do not establish source preservation. Current arity 64, nesting 64,
+width 12 and type/value nodes 4096 coexist with stricter [finite evidence](finite-contracts.md)
+(six bits, 128 nodes, depth 32), byte/work and execution limits. Count empty nodes;
+capacity rejection is distinct from mathematical type formation.
 
-The AST retains immediate fields; the compiler retains exact type/value shapes.
-Raw wire-level execution can use existing finite lifts, split/join and ordered
-ports. Evidence-bearing finite interfaces additionally retain their full
-`BasisType` trees, including the distinct n-ary constructor. Untyped raw wire
-widths alone do not establish preservation of source types; translation
-validation and general frontend adequacy remain open obligations.
+## Planned v0.3.0 specification
 
-The current source profile limits tuple arity to 64, AST/type/value nesting to
-their documented 64 levels, basis width to 12 bits and internal type/value
-trees to 4096 nodes. Contract checking has the stricter 6-bit/128-node/depth-32
-finite profile. Source byte and aggregate work limits also apply. Well-formed
-types may therefore be rejected by a particular execution/evidence capacity;
-mathematical type formation and implementation capacity are distinct claims.
-Counts include zero-width type nodes. Boundaries are not inferred from width alone.
+v0.3.0 specifies the type system and public migrations; concrete changes remain
+open. QLT implementation waits until v0.4.0 or later. Compatible PATCH work
+retains this contract.
 
 ## Adopted future types
 
-The [0.2.1 common-QPE plan](v0.2.2-plan.md) selects `Bits<n>` as a basis register type
-and `CBits<m>` as a copyable measured-bit sequence. **Neither is implemented
-source syntax yet.** A future extension must specify static argument formation,
-bounds including zero width, ordering, explicit conversions and evidence binding
-before enabling acceptance. The experimental Lean DAG's `Bits0`/`Bits1` tags
-are not source types. They do not supply type parameters or these source APIs.
-
-The adopted [linear-size and reshape direction](size-expressions.md) restricts
-size obligations to a specified quantifier-free linear fragment, including
-constant multiplication and guarded subtraction. Proved equality may reconcile
-indices of the same constructor; it does not equate different constructors or
-product trees. `Q<Bits<n+m>>` to `Q<(Bits<n>,Bits<m>)>` is an explicit ordered
-bit-segment adapter. Bit reversal and changes in owner count remain separate
-explicit operations. Symbolic arrays are a future structural direction, not
-an implemented alternative spelling for a nonlinear flat register.
-
-`Iso<A,B>`, `Unitary<A,B>` and generalized type/size notation in design drafts
-are metanotation unless a normative implemented extension says otherwise.
-Future additions must update this inventory, formation/equality rules,
-ownership/effects, explicit conversions, source/IR mapping, capacity and
-migration rules, plus independent acceptance/rejection and semantic tests.
-Isomorphism must never silently become type equality during such an extension.
+Bits<n>/CBits<m> are adopted register/measured-sequence directions, implemented
+only in the [experimental sized path](sized-corpus-source.md), not general source
+syntax. [Linear sizes](size-expressions.md) permit constant multiplication and
+guarded subtraction; equality reconciles indices of the same constructor only.
+Bit/Bits<1>, Unit/Bits<0>, flat/nested trees remain distinct. Register segmentation,
+bit reversal and owner conversion require explicit separately checked operations.
+Arrays and generalized Iso<A,B>/Unitary<A,B> draft notation remain future APIs.
+Each extension needs formation/equality, ownership/effects, encoding/lowering,
+capacities, migration and independent positive/negative semantic checks.

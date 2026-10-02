@@ -6,13 +6,39 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-- Reduce duplicate/superseded CI runs and use fail-closed documentation profiles with stable required checks and complete release validation (#145).
+## 0.2.6 — 2026-10-02
+
+- Synchronize Rust, both Lean packages, Python and the std qrate to 0.2.6.
+- Extend the independent Lean boundary to all raw constructors, observing
+  operations, classical SSA and complete branch phis. Prove CP/TNI and total TP
+  from actual matrix-free coefficients refining original complex actions;
+  bind freshly reconstructed functions including closed classical branches.
+- Reduce active docs while preserving current contracts, v0.2.x plans and
+  evidence outside docs; historical lookup uses Git history (#48).
+- Add six small finite translations from the same three frozen input sources,
+  with first-source records, full complex-entry oracles and six semantic faults.
+- Replace AGENTS.md histories and repeated specifications with working rules;
+  enforce a 100-line, 6,000-byte limit in the documentation check.
+- Remove duplicate branch-push/PR CI runs, cancel superseded ordinary PRs and
+  select docs-only checks conservatively while preserving all required contexts
+  and exact-source release validation (#145).
+- Repair review bugs #180, #182–184 and #187–189: scope tuple hints to direct
+  lexical names, restore canonical JSON root validation and
+  manifest locations, accept leading `./`, warn on ignored non-table metadata,
+  correct doc usage and reject reversed inventory markers without rewriting.
+- Remove host paths from tuple-owner messages (#186), preserving public
+  diagnostic types and the existing structured primary location.
+- Require exact failure framing in every Lean runtime mode, including nonzero
+  process exits (#193); no checker authority or acceptance semantics change.
+
+Validation and publication are recorded in the [release record](docs/releases/v0.2.6.md).
+VM-26 is checked; VM-27–29 remain open. Production acceptance remains in Rust.
 
 ## 0.2.5 — 2026-10-02
 
 Published to crates.io and GitHub on 2026-10-02 (Asia/Tokyo), following
 authorization on 2026-10-01. Exact-source validation and publication outcomes are recorded in the
-[release record](docs/releases/v0.2.5.md).
+[release record](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md).
 
 - Repair 0.2.4 review findings (#160): fold exact terminal phase words, export
   negative controls and controlled H/phases, and represent bit-axis permutations.
@@ -55,7 +81,7 @@ authorization on 2026-10-01. Exact-source validation and publication outcomes ar
   binding to every transport submodule; keep pure reference/checker boundaries.
 
 Earlier development checks and remaining gates are recorded in the
-[0.2.5 release record](docs/releases/v0.2.5.md).
+[0.2.5 release record](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md).
 
 - Retire 17 obsolete docs and condense repeated specification/proof/plan prose;
   retain current contracts, goals, migration gates and executable evidence.

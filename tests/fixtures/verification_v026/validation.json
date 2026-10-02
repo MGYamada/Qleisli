@@ -1,0 +1,562 @@
+{
+  "format": "qleisli.vm26-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-02T00:06:12.389850+00:00",
+  "state": "completed-VM-26 declared original-raw instrument profile; VM-27–29 open",
+  "product_version": "0.2.6",
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "production_authority": "Rust",
+  "external_schemas_enabled": false,
+  "tagging_performed": false,
+  "publication_performed": false,
+  "scope": {
+    "original_raw_constructors": 19,
+    "structural_checker": "both arms, global ID issuance, lexical SSA, complete simultaneous quantum/classical phis, effects and original-reader binding",
+    "retained_function_checker": "fresh dependency prefixes from original implementation/specification bodies and full identity/type/body bindings; closed classical branches; published finite function capacities retained",
+    "general_instrument_checker": "actual matrix-free exact coefficient closures and complete streamed Kraus Gram equation; no global six-bit frame limit",
+    "semantic_refinement": "actual executable coefficient, retained-function and adaptive-instrument definitions refine independent original complex operation/program semantics",
+    "instrument_theorems": "actual acceptance implies Kraus completeness, CP/TNI per public outcome and TP overall on arbitrary finite reference systems",
+    "performance": "finite budgeted coordinate/history enumeration is exponential; no scalability claim",
+    "native_comparison_max_data_qubits": 3,
+    "all_declared_VM26_gates_complete": true
+  },
+  "checks": [
+    {
+      "name": "runtime-source-policy",
+      "cwd": ".",
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_lean_kernel.py"
+      ],
+      "exit_code": 0,
+      "observed": "Checked 91 executable kernel/transport source modules; no external Lake dependencies.\n",
+      "seconds": 0.427,
+      "stdout_sha256": "35651efb37d0e9fa268e70e2d43072368faa2aefaef613ee063f3ee3b97d456d",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "kernel-build",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "Build completed successfully (180 jobs).\n",
+      "seconds": 0.154,
+      "stdout_sha256": "0a2eca5853b20218a1e1e8c3eff386307947dc88d1923ef8b8f9246c7a3a7f71",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "compiled-origin-audit",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Audited 10577 kernel/transport declarations, 1111 pure import modules and 1121 executable import modules; axioms used: [propext,\n Classical.choice,\n Quot.sound]\n",
+      "seconds": 1.933,
+      "stdout_sha256": "e5815b283787c467e37a31707f2c08efc9c14702196fbdba0d734ced1b7eb002",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "math-build",
+      "cwd": "lean",
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "observed": "Build completed successfully (3515 jobs).\n",
+      "seconds": 3.669,
+      "stdout_sha256": "8ea5d0d32bf9bf7b7e3529407f023416c02e4bbce1f45373a222a3dfba3bc291",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "math-axiom-audit",
+      "cwd": "lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Audit.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Audited 3266 Qleisli declarations; axioms used: [propext, Classical.choice, Quot.sound]\n",
+      "seconds": 40.782,
+      "stdout_sha256": "967efc9ca44a7d64239a9797aa77c6be58491ec6502e28b77ac007f11e3340e7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "fresh-kernel-replay",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "exit_code": 0,
+      "observed": "",
+      "seconds": 59.059,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "exported-component-types",
+      "cwd": "lean",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "SchemaExport.lean"
+      ],
+      "exit_code": 0,
+      "observed": "{\"checker\":{\"declaration\":\"QleisliKernel.Schema.check\",\"module\":\"QleisliKernel.Schema\",\"readable_type\":\"QleisliKernel.Schema.Request → QleisliKernel.Schema.Proposal → Option.{0} QleisliKernel.Schema.Receipt\",\"type\":[\"forall\",\"request\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Request\",[]],[\"forall\",\"proposal\",\"explicit\",[\"constant\",\"QleisliKernel.Schema.Proposal\",[]],[\"apply\",[\"constant\",\"Option\",[[\"zero\"]]],[\"constant\",\"QleisliKernel.Schema.Receipt\",[]]]]],\"universe_parameters\":[]},\"entries\":[{\"id\":\"qft-dyadic8/1\",\"theorem\":{\"declaration\":\"Qleisli.Schema.qft_sound\",\"module\":\"Qleisli.Schema\",\"readable_type\":\"∀ (width : Nat) (proposal : QleisliKernel.Schema.Proposal) (receipt : QleisliKernel.Schema.Receipt),\\n  @Eq.{1} (Option.{0} QleisliKernel.Schema.Receipt)\\n      (QleisliKernel.Schema.check (QleisliKernel.Schema.Request.qft width) proposal)\\n      (@Option.some.{0} QleisliKernel.Schema.Receipt receipt) →\\n    ∀ (definitions : List.{0} QleisliKernel.QftGraph.Definition) (entry : Nat),\\n      @Eq.{1} QleisliKernel.Schema.Witness proposal.witness (QleisliKernel.Schema.Witness.qft definitions entry) →\\n        ∃ actual,\\n          And\\n            (@Eq.{1} (Option.{0} QleisliKernel.QftGraph.Action) (QleisliKernel.QftGraph.denote definitions entry)\\n              (@Option.some.{0} QleisliKernel.QftGraph.Action actual))\\n            (And\\n              (@Eq.{1} (Matrix.{0, 0, 0} (Fin width → Bool) (Fin width → Bool) Complex)\\n                (@HMul.hMul.{0, 0, 0} (Matrix.{0, 0, 0} (Fin width → Bool) (Fin width → Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width → Bool) (Fin width → Bool) Complex)\\n                  (Matrix.{0, 0, 0} (Fin width → Bool) (Fin width → Bool) Complex)\\n                  (@Matrix.instHMulOfFintypeOfMulOfAddCommMonoid.{0, 0, 0, 0} (Fin width → Bool) (Fin width → Bool)\\n                    (Fin width → Bool) Complex\\n                    (@Pi.instFintype.{0, 0} (Fin width) (fun a => Bool) (instDecidableEqFin width) (Fin.fintype width)\\n                      fun a => Bool.fintype)\\n                    Complex.instMul\\n                    (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                      (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                        (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                          (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                            (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                              (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                  (@Matrix.conjTranspose.{0, 0, 0} (Fin width → Bool) (Fin width → Bool) Complex\\n                    (@InvolutiveStar.toStar.{0} Complex\\n                      (@StarAddMonoid.toInvolutiveStar.{0} Complex\\n                        (@AddCommMonoid.toAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocSemiring.toAddCommMonoid.{0} Complex\\n                            (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                              (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                                (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\n                                  (@NonUnitalNormedCommRing.toNonUnitalCommRing.{0} Complex\\n                                    (@NormedCommRing.toNonUnitalNormedCommRing.{0} Complex\\n                                      (@NormedField.toNormedCommRing.{0} Complex Complex.instNormedField))))))))\\n                        (@StarRing.toStarAddMonoid.{0} Complex\\n                          (@NonUnitalNonAssocRing.toNonUnitalNonAssocSemiring.{0} Complex\\n                            (@NonUnitalNonAssocCommRing.toNonUnitalNonAssocRing.{0} Complex\\n                              (@NonUnitalCommRing.toNonUnitalNonAssocCommRing.{0} Complex\\",
+      "seconds": 7.222,
+      "stdout_sha256": "f42bab5070273d64611934e6d55246047343df5254342bc602195b629da8f269",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "kernel-reduction-tests",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Tests.lean"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0; includes structural branch depths 64/65 and Unit phi coverage."
+    },
+    {
+      "name": "fresh-transport-replay",
+      "cwd": "lean-kernel",
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0."
+    },
+    {
+      "name": "compiled-policy-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "exit_code": 0,
+      "observed": "27 tests passed."
+    },
+    {
+      "name": "current-source-inventory",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "observed": "232 constructors, 206 source snapshots, 18 boundaries; Rust authority unchanged."
+    },
+    {
+      "name": "inventory-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "observed": "17 tests passed."
+    },
+    {
+      "name": "documentation-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "observed": "31 tests passed."
+    },
+    {
+      "name": "CI-profile-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_ci_profiles.py"
+      ],
+      "exit_code": 0,
+      "observed": "4 tests passed."
+    },
+    {
+      "name": "authoring-record-integrity",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "observed": "15 records, 23 snapshots, 44 observations; no recorded commands executed."
+    },
+    {
+      "name": "original-native-bodies",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_lean_observation.py",
+        "--record",
+        "tests/fixtures/verification_v026/native-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "150 native cases; 143 Rust comparisons; 145 exact Kraus operators; 145 retained histories; at most 3 data qubits.",
+      "evidence": "native-validation.json"
+    },
+    {
+      "name": "registry-rebuild-and-fresh-replay",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--write",
+        "--report",
+        "tests/fixtures/verification_v026/registry-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "Both builds and compiled audits, fresh kernel replay and exported component types pass; 3 entries, 0 externally enabled.",
+      "evidence": "registry-validation.json"
+    },
+    {
+      "name": "registry-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_schema_registry.py"
+      ],
+      "exit_code": 0,
+      "observed": "12 tests passed."
+    },
+    {
+      "name": "registry-source-identity",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "observed": "Current source revision and manifest agree; 0 external entries enabled."
+    },
+    {
+      "name": "generated-docs-and-links",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_docs.py",
+        "--write-status"
+      ],
+      "exit_code": 0,
+      "observed": "2224 local links, 139 Markdown anchors, 4 Rust declarations, 14 Rust tests, 177 Lean root modules checked."
+    },
+    {
+      "name": "authoring-integrity-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "observed": "7 tests passed."
+    },
+    {
+      "name": "CI-measurement-regressions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_measure_ci.py"
+      ],
+      "exit_code": 0,
+      "observed": "4 tests passed."
+    },
+    {
+      "name": "patch-whitespace",
+      "cwd": ".",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "observed": "Exit 0."
+    },
+    {
+      "name": "edition-and-manifest-coverage",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "observed": "847 .qli and 5 .qlt files covered by 20 edition-2026 manifests; no repository-root manifest."
+    },
+    {
+      "name": "original-branch-functions",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_lean_branch_function.py",
+        "--record",
+        "tests/fixtures/verification_v026/branch-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "51 native cases; 45 Rust comparisons; 69 independent exact original operators; at most 2 data qubits.",
+      "evidence": "branch-validation.json"
+    },
+    {
+      "name": "original-streamed-instruments",
+      "cwd": ".",
+      "command": [
+        "python3",
+        "scripts/test_lean_streamed_instrument.py",
+        "--record",
+        "tests/fixtures/verification_v026/streamed-validation.json"
+      ],
+      "exit_code": 0,
+      "observed": "154 native cases; 143 Rust comparisons; 147 independent Kraus operators/hidden histories; 5 complete source roots; at most 3 data qubits.",
+      "evidence": "streamed-validation.json"
+    }
+  ],
+  "source_sha256": {
+    ".github/workflows/ci.yml": "424c811117a764c0cbeeaf434ae5c1a972b8dad3378ee6aecb52222465030b30",
+    "AGENTS.md": "9cf5b2ab4e61e0bd3d1a4ffc4d370dde8116ed3ae0a0912033f413ad723dd7c3",
+    "Cargo.lock": "9b172aff5612367e16185d9ce802e51108d61f8ca2bae8e4df7525d2c94b304f",
+    "Cargo.toml": "962b8fb1325242520ec38c6c7480bc12cec5fb4add37401f15239494cc2161d5",
+    "lean-kernel/Protocol.lean": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
+    "lean-kernel/Protocol/BranchFunction.lean": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean-kernel/Protocol/StreamedObservation.lean": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+    "lean-kernel/QleisliKernel.lean": "622d37989d041401ee62a030795de5ab36be7c4ade41533788f00e3d9dcb3515",
+    "lean-kernel/QleisliKernel/ObservationBinding.lean": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+    "lean-kernel/QleisliKernel/Raw/BranchFunction.lean": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+    "lean-kernel/QleisliKernel/Raw/Coefficient.lean": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "2097f2d760ecf8d09a1fc425cd7ea2bb27efff88127efa553bd0a6c2b64ad2c1",
+    "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+    "lean-kernel/QleisliKernel/Semantics/Observation.lean": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+    "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+    "lean-kernel/Tests.lean": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+    "lean-kernel/lakefile.toml": "24992e159ffb52941199833116ee126fc6ee74a3d9d003b0bfb943dba736bd4a",
+    "lean/Qleisli.lean": "6b5c2e5be53703e6f3a2646c34c717ac755c95db2da1f00d3368a9a79b045140",
+    "lean/Qleisli/RawBranchFunction.lean": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+    "lean/Qleisli/RawCoefficient.lean": "84103cef42094a1e053f886eecbed399183b93c23da24cb7258478a8f636bec4",
+    "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+    "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+    "lean/Qleisli/RawProtectedEvaluation.lean": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
+    "lean/Qleisli/RawStreamedInstrument.lean": "d70eda37df46a32a686807baaa0dc2e3bb45b1bd94f39331060c1d88be1104a7",
+    "lean/Qleisli/Semantics/ObservingAction.lean": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+    "lean/Qleisli/Semantics/ObservingFunction.lean": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
+    "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+    "lean/lakefile.toml": "173e5e116ebffacf2e549262a87c344f0a9af19201e2bea78c78aa6d32bd1d33",
+    "python/pyproject.toml": "284d00ff9406e0aa8f23c4fb615a641fe2473fd0fe860f08a6877ec0f36d4089",
+    "python/qleisli/__init__.py": "5fa599b91dcf21c673c0b81b1e68785494aae15fd6f43eaacc8c83a56fc90798",
+    "scripts/check_docs.py": "99590426c8425b48b9a8ec1964c70b821e170e6faa47e137d3fd53126f658742",
+    "scripts/check_lean_kernel.py": "82ba6adb2f1822fd3ab0207cf24eae02c9174a642e3b1e3e08abd8304220c85f",
+    "scripts/check_schema_registry.py": "88862a0127048436e4b9268d4e421ec42c138748ac33016dc5eff3c17e040e32",
+    "scripts/check_verification_inventory.py": "75cfb7b61e640d48660727a18ba869e43cdfde3e547c7ad25dad778e53b0d1c9",
+    "scripts/test_check_docs.py": "5ab68fbc99e6b304008492795719fa2351d5470156ac4481bfd2d19e8380d3d5",
+    "scripts/test_check_lean_kernel.py": "5c3c9aeaeebd0db8cf3ea2e16420d809ea8b1043b1f4aff53f3b1f519ad1c888",
+    "scripts/test_check_schema_registry.py": "2c499bf1e85ee5eb857cf4225ad24d7585ef92b860a0d8113b098597abb43c07",
+    "scripts/test_check_verification_inventory.py": "12586177c9ca1b580a36a80c5ad1d376fffc94ccb3fdca597490c77a7b6812a0",
+    "scripts/test_lean_branch_function.py": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc",
+    "scripts/test_lean_observation.py": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9",
+    "scripts/test_lean_streamed_instrument.py": "faee06c25a15f8b40489b007aff83f4fb73db176e17369ffe74455b88cb24943",
+    "stdlib/Qargo.toml": "25327ff42ce68e9b930fe35e7d0f3e07a06cc61d040c380d08d0557ecc94f86a",
+    "tests/fixtures/verification_v022/inventory.json": "d4c6c131b04d0f1af58c27123ad8873034af3db7114acdf3ceb9c27e2a6855e8",
+    "tests/fixtures/verification_v026/README.md": "92929a29d931c48c9e9cbdb1b88f45b323cd96c5f3a30aa049ffe7fb07d62d96"
+  },
+  "report_sha256": {
+    "branch-inputs.json": "ceeef4b1faa6c52f64711e9ab691e8add4e2795b74830b41f49f58b18d26acb2",
+    "branch-observed.json": "35e31016385587ebef994d60eeb334c8d179acb0bbbcd1fbb40bd5b95116f4e6",
+    "branch-validation.json": "3587117b5606f8b2d4c93d8b80961543340784f57666aeca55fbc27c1c168eb8",
+    "finite-checkpoint.json": "9bd4ea068863d62b51693a9e69bb228ae433a58b783c22e7b3fdd066e36c2351",
+    "native-inputs.json": "b0f68bdd8488347d9c062152873d077b919605deb2ff842c2a7af7beb6f796da",
+    "native-observed.json": "5ecf158abf1efbe565408c08655d4312ce54edde2656fd6c4a44d2938a60cddc",
+    "native-validation.json": "4d57f3a30f152c3ba3cfbcf2b7fc38d185a5d17fc9494db342310f613a2838e1",
+    "registry-validation.json": "b4a6c7be8616f3e0505b5c3a2505f2be55580038b157ae4ec47b0bd448ae1fee",
+    "streamed-inputs.json": "3c5fa2f13f62213c6fddeb0b6963c9971a5803d40c8bcaea5a01de2941555b5e",
+    "streamed-observed.json": "af55ffcc0eb051eb1399218a94203aa9bab9450f9dfaeeef7cae5c89a5433def",
+    "streamed-validation.json": "22876da8f415d8b8948e861a4c14fb2a3f65a7bb132dc7a6f708007b95b41736"
+  },
+  "registry_binding": {
+    "source_revision": "6bd95b5c0ffa425a985fc9728e431b226f2151b9e5465609edda828f1d917a9d",
+    "manifest_sha256": "54be618d32212215239bf6a738417d49b2c1b5f672a72b3b1d533ed517962886",
+    "entries": 3,
+    "externally_enabled": 0
+  },
+  "native_bindings": {
+    "native": {
+      "lean_binary_sha256": "68018719e4379b6cfdabb96b69566e2fcf1a843346fee73722df5c61b8b8fcf7",
+      "lean_input_sha256": "64e9d4cec7fe3e963e937cddebb18bf442ec1f3b797f022ae41330800cc305d2",
+      "lean_stdout_sha256": "384b28ee8ae2b1c0fe86d3b37dc51966b9189277ed830bededf56b02d4832cde",
+      "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust_binary_sha256": "5d8e6c98990329dca2eb197584a897bd552ac806c79966173bb822868a22920e",
+      "rust_stdout_sha256": "2965bfe27e627278a646736117ee04abb8839f7d67ce83e285cc4194f3e26217"
+    },
+    "branch": {
+      "native_binary_sha256": "6f21f79b0940e4572a618a7abbc5d0991eab2b51e786e7f13ac8d1bc3b0a7e74",
+      "native_input_sha256": "a44424a7eca739be133ecd561f11744927d58f2c558251f7dab504d43f1bfea7",
+      "native_stdout_sha256": "cd98f1d36c2d7102466c9356b16acfbe209ee6f464244d0fa65d15ef9208621d",
+      "rust_binary_sha256": "2fe5e89f03862e42f8664b29c0d60146111c44040be8e5ec2b09bb17f6d982bb",
+      "rust_stdout_sha256": "ed01f0b0be47925f259a649a1e1dcdda5b7fc8c6a665ddacf358b1d333ac18c0"
+    },
+    "streamed": {
+      "lean_binary_sha256": "bce0c0cc40149c83a7c7ead7f73f75113a485335cbfe4a5749a5ba9088f3e243",
+      "lean_input_sha256": "7bed7d802a5df3a44a5eccdd54b96eccebc2049988f618d5b7da1c1877a9af67",
+      "lean_stdout_sha256": "2428ac5c6419d9c96b7a246636e3d04bf4cea557d0aa966447b139f37f36136c",
+      "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rust_binary_sha256": "7ab5ab401c74698354a3fb1aa077faac1b27e9ca2b027aefee02f336efa191cd",
+      "rust_stdout_sha256": "2965bfe27e627278a646736117ee04abb8839f7d67ce83e285cc4194f3e26217"
+    }
+  },
+  "native_results": {
+    "finite_observation": {
+      "native_cases": 150,
+      "rust_checks": 144,
+      "rust_comparisons": 143,
+      "independent_operators": 145,
+      "hidden_histories": 145,
+      "complete_observing_sources": 5,
+      "max_semantic_qubits": 3
+    },
+    "retained_branch_functions": {
+      "native_cases": 51,
+      "rust_comparisons": 45,
+      "exact_original_operators": 69,
+      "max_semantic_qubits": 2
+    },
+    "streamed_instruments": {
+      "native_cases": 154,
+      "rust_comparisons": 143,
+      "independent_operators": 147,
+      "hidden_histories": 147,
+      "complete_observing_sources": 5,
+      "retained_branch_dependency_cases": 4,
+      "max_semantic_qubits": 3
+    }
+  },
+  "earlier_release_checks": {
+    "scope": "Earlier dated Rust/corpus/release-development checkpoint, preserved as performed then; its pre-VM26 remaining list is historical. Final Lean/VM26 state is this record.",
+    "reports_sha256": {
+      "tests/fixtures/releases/v0.2.6/docs-corpus-validation.json": "bf82f95cf30dea6902f5d4efd8bcdee34080147249d60492e87d0d0ced6fc97b",
+      "corpus/validation-v0.2.6.json": "cf82b762349e1f7b99bd6c98e32bf446d3cc840fcc60ac568f8f38b71b3cd7d7"
+    },
+    "rust": "fmt, all-target locked tests, Clippy with denied warnings, doctests, warning-free API docs and compiler build passed at the earlier checkpoint; Rust/corpus source unchanged by subsequent Lean proof work",
+    "corpus": {
+      "before_cases": 54,
+      "after_cases": 60,
+      "semantic_probes": 13547,
+      "semantic_faults_detected": 36,
+      "new_case_max_data_qubits": 2
+    }
+  },
+  "remaining": [
+    "VM-27 hierarchy and root closure",
+    "VM-28/29 decoder/native correspondence, immutable production transport/distribution and opt-in dual integration",
+    "source/backend preservation and S05 production-wide Soundness gates",
+    "independent shared-QPE/R14/H1–H5 and Physical Realizability/Resource Safety goals"
+  ],
+  "skipped": [
+    "new maximum-size corpus generation/execution",
+    "production authority transfer, tagging and registry/GitHub publication",
+    "remote CI for this uncommitted boundary snapshot; local checks are recorded"
+  ],
+  "docs_snapshot": {
+    "scope": "docs/**/*.md plus docs/project-status.json; includes new working-tree documents, excludes ignored OS metadata",
+    "baseline_bytes": 816905,
+    "bytes": 407700,
+    "reduction_percent": 50.0921159743177,
+    "markdown_bytes": 350549,
+    "files": 51,
+    "sha256": {
+      "docs/ai-era-goal.md": "847483195591f62e72658e9e7aa56e991018446144bd2b372222247547849cf0",
+      "docs/algorithm-routines.md": "fafabec6f222449298869299c7b0c25dec3f975fc55763b9be7746afddcec685",
+      "docs/algorithm-structure-goal.md": "339f9206ce01246c5d2187444c156f6025ee29001b4b3abae16b1d60dec3c66d",
+      "docs/coefficient-domains.md": "4945ddcfeb5672f84d1458124f92f5544e3d682f85796c94870914349f8d5953",
+      "docs/crates-io-release.md": "bc15796dfa5d4e50bc57f169384ed4edb737b33761b5771efb56264c74821a99",
+      "docs/current-status.md": "99bee32e9add173c54eb3fb4eb0d0e4eeb7f4d2a5b9a168b601b8e00a549a81f",
+      "docs/design-philosophy.md": "1a84fd4ef97a0b4e32df5d147b833e2fe8a7b4d93d2ff7308d240b9284cabe1b",
+      "docs/distribution-validation.md": "d2bbbd974de6506ec6bd6b0e902630814d15b2fddc02bf45e9cc899cc30fb61d",
+      "docs/documentation-comments.md": "7ba74d29f9585b40f169e4abc4abd52e8c59af5bd56a72cbc5dbb2d079dfe838",
+      "docs/documentation-map.md": "abdb542d8e6cff1fde973e876fa3d77d355b0a11f8544da8da0b7e786fcb4c4a",
+      "docs/finite-contracts.md": "77a81f5f61889fd0746b712e60df5fde484ade27910a81666917bd32f8baef52",
+      "docs/formal-core.md": "93df7bb329ab7855cc7bf75a4f4288eb9ea9527373c91f33ee5782707f450085",
+      "docs/frontend-v0.md": "7eb1b4a7605dacbe451a97754102ef071b861ab6d9f64e1008b5e006cb9f0a6d",
+      "docs/hierarchical-ir-spec.md": "5d977add089407d54a5ce7a1c163f7236b575b7155d60f2be42d19e74c0c5174",
+      "docs/imaginary-v1/README.md": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d",
+      "docs/imaginary-v1/requirements.md": "537fe4d76c5c9094941f8b67bf7e2ba5cfab1fa019af5d8fa3519abf2c9696dd",
+      "docs/implementation-architecture.md": "891b1ae9d47ee91fbd33c4aea3184659976c1a062f8cd3e1e5ddb03540a5da01",
+      "docs/interop-m1.1.md": "09d69d089b2b99f107526530458b1248ded8766ae13942032d0ac006abb8ce1a",
+      "docs/interoperability-roadmap.md": "a2fe0a7f7cbbabec3c3f865780754e511d5f1b3a646e275a0d90be329e289896",
+      "docs/ir-prototype.md": "d916d575b69618c89c4033f6b8c3198526e4d53d84ddb6f6b81322cba60057f6",
+      "docs/language-editions.md": "a8a1ce90d86250850256277c6134554578926a3bf1d4df8a92f593b1ce90d7f0",
+      "docs/language-spec.md": "9158deca0b8cf4e7e56d99eb476ec46d48a797b652992421ec897da73a7611e3",
+      "docs/lean-kernel-migration.md": "ba2d8319ec060855779c28255f6fe6fd3dbcb2cdb1687ec3b961aa472a075ff3",
+      "docs/machine-interface-spec.md": "bfad08fa598bc432cdbbb83dec62b3cc5cd93f3cd00f38245392a5fb785a06f7",
+      "docs/next-minor-spec.md": "57ac9ee774a69ffc93fd7ba44eb7e0a3af3d868f3aaa48af3def162a0bdea5db",
+      "docs/project-status.json": "f1127c579cbc9965376c8378bfda7e2f79dc84479b7f9b87b20affc4104dd6b9",
+      "docs/qli-authoring-feedback.md": "9b08ca2ef236c12b6a754bcdb27a927280c1b2698044d088df8c6f5579ef5fa1",
+      "docs/qli-quick-reference.md": "7f1f280d8847a52f51d42396f93481fbb67c38373c4d80a82b8d8ea74da5e3df",
+      "docs/quantum-language-requirements.md": "94293c6684a51f2790f31d41140f2323d6bde9e07d9fb3a385e4b40671254604",
+      "docs/release-milestones.md": "7fa84908ecf9810537f3e821fa3bfbf40032cf23658df5f77e341f1be2fba08d",
+      "docs/releases/v0.2.6.md": "a3164d2e2e746f226ac0290ebe55bed15532097500192e419214914e7099bda9",
+      "docs/resource-semantics.md": "98174d82107b66cc8280029cfdd80b70a5c8d7df1cc28ff5c9e2b101f4894d6e",
+      "docs/rule-inventory.md": "ec347ee07490de5221d417d7c451dfd1ee833d32ae7e475db51e8ed56d7a392c",
+      "docs/size-expressions.md": "62d2d0bac20fe18050005d0d482a665bb796c209f15a6e7fa19307c87a5a43df",
+      "docs/sized-corpus-source.md": "9cf0e8eea0445b4a38e878075029da264ea0845a2edc00d99388e862720edbe0",
+      "docs/standard-library.md": "76f438f73fbe23070d7a116ff6d31c9dd5d0f6b494106468e568e3532706842e",
+      "docs/static-operations.md": "10d06da4988061585e42c4c2cd45531a63cfda4aa9db2b59a1bb90c623fa4305",
+      "docs/stdlib-contract-examples/add2.md": "0197be25c2846856b859858b2d35d4fdae02d2c14f0e1906164166c57eb2089b",
+      "docs/stdlib-contract-examples/and-phase.md": "7c6cae5694dbcd352187ee3ba9fa6ac5d1c962b8a0eb467f6ca80c50ecff310a",
+      "docs/stdlib-contract-examples/qft2.md": "5b7bd810d8ffcfb1c539ba5e4accbf62888a4e4d9471e9d7cc8c89f7ea170b11",
+      "docs/stdlib-contract-template.md": "75f4a638a5e23233cbf190cd1442cad74b0bc985c421ef6c8d18e081e81148c9",
+      "docs/stdlib-contracts.md": "98d8e7e0fc47e36d0817bb7562d15d583a45bc4f2327c1e18d36ae1b1fd5ed0b",
+      "docs/stdlib-roadmap.md": "2976312ede9e34aa2aa113558974ea055ccddc9bbe69c65470e0d4af0d1beb5d",
+      "docs/syntax-v0.md": "3af96479c50a2409c73d9a4c0cc99ace7e987dc07d8237729529f5dbe10bccbb",
+      "docs/terminology.md": "c5f2876fc2ee9d9a21fe2f017e6a741df72832881f6226db06d86ea9468d3c7b",
+      "docs/tuple-shapes.md": "ea9a3f9e7032fd13c34d30178ed48cac3898a1131a7212a1ce6dad79870084b6",
+      "docs/type-system.md": "6a9c5acb04380352d29ddeabd544de66be6d91701c51edaffdd4ae8faa32a274",
+      "docs/v0.2.2-plan.md": "a448073762a56bf029949358fcb93c3baa1c1b1aa870edaca6a558eb9efddd70",
+      "docs/v0x-roadmap.md": "01de5f18118f490bf6d2a3cc8683ca1b26527dac77bfe910270f176d8b1d2a4d",
+      "docs/verification-migration-v0.2.md": "d87c792ce4742c97ee6c3ca5cfe43d392afc8f7fe00f275c6ed01ca27f7f138e",
+      "docs/versioning.md": "22ed7a17a4619f19fd704b943127a7c5d0b6252178694e8079c4e036b4ff4b62"
+    }
+  },
+  "agents_snapshot": {
+    "lines": 96,
+    "bytes": 5967,
+    "limits": {
+      "lines": 100,
+      "bytes": 6000
+    },
+    "enforcement": "scripts/check_docs.py"
+  },
+  "kernel_binary_sha256": "7e6c6c73f736222239f462143fa149ca315e921ba649cecc1a32cb7da67ec8a8"
+}

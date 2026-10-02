@@ -1,101 +1,54 @@
 # Current QLI authoring observations
 
-This is an informed source-authoring account, not a measured model benchmark.
-[Session procedure](../tests/fixtures/authoring_sessions/README.md) requires
-complete first sources before checking, real diagnostics and revisions, and
-independent semantic checks. Historical narratives belong in Git history;
-source attempts, counterexamples and validation records remain with fixtures.
-The [quick reference](qli-quick-reference.md) supplies copyable, CI-checked
-current examples. Filesystem projects now require an enclosing `Qargo.toml`
-selecting [edition 2026](language-editions.md).
+Informed source authoring, not a measured model benchmark. The [session procedure](../tests/fixtures/authoring_sessions/README.md)
+requires untouched complete first sources before checks, real diagnostics/revisions
+and independent semantic outcomes. [Quick reference](qli-quick-reference.md) is
+copyable and CI-checked; filesystem trees explicitly select edition 2026.
 
 ## Finite corpus authoring
 
-The [three-source corpus](../corpus/README.md) contains 54 finite translations,
-18 each from the approved QuantumKatas, Qualtran and PennyLane sources.
-The [0.2.5 session](../corpus/authoring/v025-small/README.md) adds CZ/Toffoli,
-inclusive/strict one-bit comparisons, mixed-sign rotations and a two-wire QAOA
-mixer. Complete first sources were saved before checking. Five of six initial
-checks pass; the missing controlled_z import is repaired using existing qif.
-The second snapshot also corrects a demo author notice from frozen metadata;
-all six repaired checks pass. Known syntax/gate/driver patterns were available,
-so this is no estimate of unaided model success.
-
-All 490 new probes check complete complex entries against independent formulas.
-Six valid-source faults include equal-input comparison errors, lost input
-restoration, noncommuting order and CZ/mixer phase errors invisible to ordinary
-basis probabilities. [Full replay](../corpus/validation-v0.2.5.json) now detects
-all 30 faults across 54 cases. Initial CZ diagnostic and repair are retained;
-[Issue 19](https://github.com/MGYamada/Qleisli/issues/19) and
-[Issue 21](https://github.com/MGYamada/Qleisli/issues/21) track control and exact
-phase obligations. New source does not adopt additional syntax or std APIs.
-
-The [0.2.4 alias migration](../tests/fixtures/review_v023/README.md) removes
-ten active workarounds while preserving original attempts and VM-22 sources.
-The [0.2.3](../corpus/authoring/v023-small/README.md) and
-[0.2.4](../corpus/authoring/v024-small/README.md) sessions retain their original
-first-check and phase-sensitive results. Historical frozen spellings remain
-exceptions, not recommended patterns.
+[Corpus](../corpus/README.md) now has 60 finite translations, 20 per approved source.
+The [0.2.6 session](../corpus/authoring/v026-small/README.md) adds phased uniform/graph
+states, phase-fixed and zero-control reflections, mixed noncommuting rotations and
+negative ZZ evolution. Four first checks pass; two reflection sources initially
+reverse repeat_static's count/operation arguments. Actual diagnostics and corrected
+snapshots are retained; all six pass after repair. Independent full-complex checks
+pass 164 new probes; six valid-source faults expose phase/sign/edge/order errors.
+[Full replay](../corpus/validation-v0.2.6.json) passes 13,547 probes and detects 36 faults.
+Known syntax/oracles were available; do not infer unaided model performance.
+Historical sessions/results remain beside their sources, not repeated here.
 
 ## Shared source and measured QPE
 
-The [sized source experiments](../corpus/sized/README.md) retain one definition
-per component instead of width-specific algorithm copies. Register-tail
-adapters avoided whole-register expansion for Xor/GHZ. Shared gradient calls
-avoid duplicated QFT storage/checking, while repeated execution still incurs
-its actual gate count. The [arithmetic source](../corpus/sized/qualtran_arithmetic/README.md)
-uses transparent recursive controls, explicit owner groups and input restoration.
-Its first missing-provider and work-budget diagnostics remain in the
-[arithmetic session](../tests/fixtures/authoring_sessions/sized-arithmetic-v021/session.json).
-Successful compaction did not relax the checker budget.
-
-The [order/amplitude clients](../tests/fixtures/sized_clients/README.md) reuse
-coherent QPE with operation forwarding. Provider identity must include nested
-operations: an expected phase histogram alone can hide a wrong residual target.
-The [source session](../tests/fixtures/authoring_sessions/sized-qpe-clients-v021/session.json)
-and independent full-state checks preserve that obligation.
-
-The [measured-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md)
-now records the bounded source/CLI slice, explicit initialization/readout,
-packed `CBits`, named independent provider requests, residual-reference maps,
-execution and fresh-shot classical clients. Its initial missing `init_zero`
-diagnostic is historical, not the current implemented state. Small named widths
-pass; named (2,4) still exceeds the unchanged structural budget. General source,
-native/decoder correspondence and full-profile migration remain open. Further
-maximum-size runs are waived; they are not successful capacity checks.
+[Sized corpus](../corpus/sized/README.md) shares actual register-tail, QFT, QPE and
+arithmetic definitions. Sharing saves storage/checking, not repeated execution cost.
+[Measured checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md)
+retains preparation/readout, packed CBits, independent named provider requests,
+residual/reference maps, shots and classical clients. Small named widths pass;
+(2,4) still exceeds unchanged structural work. Further maximum runs are waived,
+not successful capacity claims. Source/native/decoder/full-profile gates remain open.
 
 ## Current ergonomic obligations
 
-| Authoring obligation | Evidence and current boundary |
-| --- | --- |
-| Explicit product trees and owner packaging | [Tuple contract](tuple-shapes.md), [type system](type-system.md) and [reshape first source](../tests/fixtures/authoring_sessions/reshape-v021/session.json). Flat and nested products are distinct. `split`/`join` and explicit adapters route owners; arithmetic width equality does not reorder axes or erase an owner. |
-| Controlled access and operation identity | [Static-operation contract](static-operations.md) and [operation clients](../examples/operation_algorithms/README.md). Inverse/control/repetition require the declared capability and preserve scalar phase; mathematical unitarity alone does not supply an implementation. [Issue 45](https://github.com/MGYamada/Qleisli/issues/45) tracks the future capability calculus. |
-| Exact rotation phase | [RX source](../corpus/pennylane_demos/rx_quarter/kernel.qli) and [ZZ source](../corpus/pennylane_demos/ising_zz_quarter2/kernel.qli). Exact finite rotations use explicit scalar completion such as `phase_eighth`; gate order and phase remain author obligations. [Issue 39](https://github.com/MGYamada/Qleisli/issues/39) tracks exact literals; no continuous-angle API is implied. |
-| Total basis computation and unary meaning predicates | [Source fixtures](../tests/fixtures/qli_authoring/README.md). Product patterns work, but a multi-argument predicate cannot silently become a unary product contract. [Issue 25](https://github.com/MGYamada/Qleisli/issues/25) and [Issue 30](https://github.com/MGYamada/Qleisli/issues/30) track unresolved design. |
-| Helpful diagnostics for generated source | [Parser prefix regressions](../tests/parser.rs), [repair regressions](../tests/repair_diagnostics.rs) and [review sources](../tests/fixtures/review_v021/README.md) cover truncated input, effect provenance and grouped imports. [Issue 95](https://github.com/MGYamada/Qleisli/issues/95) tracks lost size-error spans. |
-| Evidence separate from source success | [Semantic faults](../corpus/semantic_faults/README.md), [protocol/reference tests](../examples/protocols/README.md) and [measured-QPE checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md). A checked source or inverse round trip is not its intended algorithm equation. |
-
-These obligations select bounded experiments under the
-[program-first method](design-philosophy.md#start-with-the-quantum-programs-we-want-to-write).
-Removing punctuation, sharing source or proving a checker component must be
-reported separately from eliminating a user obligation. Record unresolved
-friction in its GitHub Issue with concrete source, an obligation and a checking
-experiment; no duplicate backlog record is required.
+Exact tuple/owner packaging and explicit reshape remain author obligations
+([types](type-system.md), [first reshape source](../tests/fixtures/authoring_sessions/reshape-v021/session.json)).
+Control/inverse access and full nested provider identity need separate capabilities
+([#45](https://github.com/MGYamada/Qleisli/issues/45)); scalar-completed rotations still
+need explicit phase/order ([#39](https://github.com/MGYamada/Qleisli/issues/39)).
+Total predicates do not implicitly turn multiple parameters into a unary product
+([#25](https://github.com/MGYamada/Qleisli/issues/25), [#30](https://github.com/MGYamada/Qleisli/issues/30)).
+Size-error spans remain [#95](https://github.com/MGYamada/Qleisli/issues/95).
+Checked syntax, inverse round trips or phase histograms do not establish intended
+algorithm/reference instruments; [faults](../corpus/semantic_faults/README.md) test this.
+Record source/design evidence, the obligation to remove and checking experiment in
+its Issue, with no duplicate backlog. Proof-only work does not remove source routing.
 
 ## Proof and tooling evidence
 
-Proof-only work does not reduce manual source routing by itself. The
-[generated rule inventory](rule-inventory.md), [kernel package](../lean-kernel/README.md)
-and [formal obligations](formal-core.md) identify actual component definitions,
-proof scopes and executable harnesses. Original first sources and diagnostics
-remain under [Lean fixtures](../tests/fixtures/lean_kernel/README.md) and
-[hierarchy fixtures](../tests/fixtures/hierarchical_ir/README.md).
-Production Rust authority, disabled external schemas and the
-[staged VM-22–VM-29 migration](verification-migration-v0.2.md) remain explicit.
-
-[QLT design sources](../tests/fixtures/qlt_design/README.md) preserve future
-mathematical tests and deliberate phase/reversal/domain faults. Their subjects
-can be checked today; QLT execution is deferred to v0.4.0 or later. Future
-benchmarking must record model/version, context, untouched first source,
-diagnostics, repairs and semantic outcome, without turning these informed
-sessions or external timing reports into controlled measurements.
+[Ledger](rule-inventory.md), [formal core](formal-core.md) and [kernel](../lean-kernel/README.md)
+record bounded component scopes. Rust remains authoritative, schemas disabled,
+[VM-26 component](../tests/fixtures/verification_v026/README.md) checked; wider gates pending.
+[Observing-source replay](../tests/fixtures/authoring_sessions/raw-observing-v026/session.json)
+records late metadata honestly. [QLT source/faults](../tests/fixtures/qlt_design/README.md) remain future
+v0.4+ tooling. Controlled benchmarks must record model/version/context, untouched
+first source, diagnostics, repairs and semantics separately from these informed studies.

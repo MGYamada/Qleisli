@@ -1,72 +1,24 @@
 # Selected M1 machine interfaces
 
-Status: **X1 retained; X2–X6 implemented in the 0.2.0 finite profile**
-(updated 2026-09-29). See the executed checks and publication evidence in the
-[release record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md). These are independently
-shippable slices of [M1](next-minor-spec.md), versioned by
-[compatibility](versioning.md), with X1 first implemented in 0.1.7. Formats below
-have their own versions; product/package versions never change their meaning.
-Current `check`/`run`, Rust IR and exhaustive reference simulation stay intact.
+X1–X6 are implemented in the finite profile; [0.2.0 evidence](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md)
+records execution. Formats have independent versions: product bumps do not reinterpret
+them. Existing check/run/Rust IR/exhaustive execution remain compatible.
+[Interop](interop-m1.1.md) separately specifies Python/OpenQASM/QIR; QIRF below is
+Qleisli JSON, not LLVM QIR. [Phase-word](lean-kernel-migration.md#first-executable-slice)
+and hierarchy protocols are experimental, not production receipts. Rust remains
+authoritative. Desugaring emits untrusted, meaning-preserving existing-core IR;
+future domains/approximations need separate bound contracts, not extra implicit tags.
 
-The later [interoperability direction](interoperability-roadmap.md) adds future
-Python, OpenQASM 3 and QIR entry points. The bounded OpenQASM input/output
-and QIR output now have a separate [M1.1-A contract and implementation](interop-m1.1.md);
-Python orchestration and optional terminal QIR input are implemented there;
-adaptive extensions remain pending. They do not change X1–X6 below. This document's **QIRF**
-is Qleisli's JSON interchange, not QIR Alliance LLVM IR.
-
-The [Lean migration](lean-kernel-migration.md) adds a separate experimental
-[phase-word protocol](lean-kernel-migration.md#first-executable-slice): canonical
-LF text `.qpk` artifacts and independently supplied `.qpr` requirements, with
-a fixed JSON result. It is not QIRF1/2, a new QIRF tag, or a production evidence
-receipt. Existing QIRF import and `check`/`run` remain Rust-authoritative.
-Later migration must reconstruct evidence from data, bind the same immutable
-artifact and requested contract, and fail explicitly when a required Lean
-checker is unavailable or rejects; a Rust seal or supplied digest is no proof.
-
-For these adapters, **[desugaring](terminology.md#desugaring-layer)** means
-meaning-preserving translation of convenient representations to already
-specified core operations, emitting untrusted IR/evidence without new primitive
-meanings or checker rules. Parsing and approximate synthesis are separate.
-The [coefficient-domain recommendation](coefficient-domains.md) requires future
-domain/approximation extensions to bind their domain version, interpretation
-and error claims explicitly. It does not add fields or tags to X1–X6 or permit
-arbitrary-domain arithmetic in the current finite format.
-
-The 0.1.8 authoring continuation enriches explanatory `message` text with
-expected/actual exact types and a restricted-cleanup repair hint. It changes
-neither JSON v1 fields nor category, location or exit-code contracts. Consumers
-should use the structured category rather than matching full message prose.
-[Repair tests](../tests/repair_diagnostics.rs) exercise text and JSON paths.
-
-The 0.1.9 compatible review update also locates effect failures at a causal
-expression and names derived/declared effects; import/provider and snapshot-limit
-messages explain repairs or causes. Truncated static arguments produce a located
-`parse` error at EOF, exit 1 and one JSON envelope instead of panicking.
-Fields, categories, coordinate conventions and success results are unchanged.
-Multiple-error recovery remains future work even though the envelope contains
-a diagnostics array.
 
 ## Diagnostics
 
-**Implemented scope:** `check`, `run`, `sample`, `emit-ir` and `verify-ir`.
-`doc` remains Markdown-only and rejects `--format=json` as usage.
-
-Add the opt-in flag `--format=json` to `check`, `run`, `sample`, `emit-ir` and
-`verify-ir`. Flags may precede/follow positional arguments; duplicates, unknown
-flags and missing values are usage errors. With this flag, stdout is exactly
-one UTF-8 JSON object plus LF, also on failure. Diagnostic prose is never mixed
-into stdout. Stderr is empty for handled results; an OS-level failure to write
-the JSON document may use stderr and exits 1. No NDJSON/progress stream is used.
-Human mode for the two existing commands preserves existing output/exit rules.
-The supported spelling is exactly `--format=json`, once, anywhere in the argument
-list (including before the command). `--format`, `--format=`, separate format
-values and other formats are usage errors. If the exact JSON flag appears,
-handled usage errors also use JSON. Otherwise usage stays on stderr. A path
-starting with `-` must be written with a `./` prefix so it is not a flag.
-The envelope's `command` is the first argument remaining after removing exact
-JSON flags; use the empty string if absent or non-UTF-8. Unknown UTF-8 command
-names are preserved as JSON strings, never executed.
+check/run/sample/emit-ir/verify-ir opt into exactly --format=json, once anywhere,
+including before command; other spellings/formats, duplicates, unknown flags/missing
+values are usage. doc remains Markdown-only. Handled JSON results emit exactly one
+UTF-8 object+LF, stderr empty; write failure may use stderr and exits1. No progress/
+NDJSON/prose mixture. Exact JSON flag makes handled usage JSON; otherwise usage uses
+stderr. Prefix a leading-dash path with ./. command is first remaining argument,
+empty if absent/non-UTF-8; preserve unknown UTF-8 names without executing them.
 
 ```json
 {"format":"qleisli.result","version":1,"command":"check","outcome":"error",
@@ -75,65 +27,36 @@ names are preserved as JSON strings, never executed.
  "related":[]}],"result":null}
 ```
 
-All displayed fields are required. `outcome` is `ok` or `error`; success has
-no error diagnostic, failure has at least one and a null result. Severity is
-`error` or `warning`. `message` is explanatory text, not a stable API. A primary
-location may be null for usage, I/O or artifact-wide errors. Related entries
-are `{message,location}` with the same location schema. Spans are half-open
-UTF-8 byte offsets into the original unnormalized source; empty EOF spans are
-allowed. Line/column are one-based Unicode scalar positions, matching the
-current frontend. Paths are project-relative with `/`, or `std://` for bundled
-sources. Non-UTF-8 filesystem paths produce `project` with null location;
-never lossy-encode an identity. Artifact errors use `json_pointer` in a related
-entry's message when no source location exists; they do not invent source spans.
+All fields required. outcome ok/error; success has no error diagnostics, failure
+has at least one/null result. severity error/warning; message explanatory, unstable.
+primary may be null for usage/I/O/artifact-wide errors. related={message,location},
+same location schema. Original unnormalized UTF-8 spans are half-open, empty EOF
+allowed; line/column one-based Unicode scalars. Paths project-relative slash or std://;
+non-UTF-8 path yields project/null, never lossy identity. Artifact related messages
+carry json_pointer/null location, no invented source span.
 
-Version 1 codes are `usage`, `project`, `parse`, `unknown_name`, `recursive_call`,
-`type_mismatch`, `arity`, `ownership`, `effect`, `invalid_entry`, `unsupported`,
-`limit`, `invalid_ir`, `contract`, `capability`, `format`, `simulation`,
-`random_source`, and `numerical`. Existing CompileError codes map to their
-snake_case spellings; parser/load, new access/contract and runtime errors map
-to the corresponding additional codes. CLI exit is 0 for successful command
-execution, 2 for usage and 1 for other failure. Retry exhaustion is a successful
-trial-run result, not a simulator error; clients inspect its typed outcome.
-Version/tag/code additions require a new format version for this closed schema.
+Closed v1 codes: usage,project,parse,unknown_name,recursive_call,type_mismatch,arity,
+ownership,effect,invalid_entry,unsupported,limit,invalid_ir,contract,capability,format,
+simulation,random_source,numerical. Code/tag/version additions require format version.
+Legacy CompileError snake_case categories remain (parser/load Project, existing contract
+failures InvalidIr); new access/meaning checks use their defined categories. Capacity
+runtime failure is limit, other runtime simulation. Exits0 success/2 usage/1 other;
+typed retry exhaustion is successful trial result, not simulator error.
 
-Success result schemas: `check` is `{verified:true}`; `run` is
-`{distribution:[{bits:[bool,...],probability:number},...]}` in lexicographic
-bit-vector order; `emit-ir` is `{path:string}`; `verify-ir` is
-`{verified:true,request_checked:bool}`; `sample` is specified below. Probabilities
-are finite numbers in [0,1]; reference floating output is not an exact proof.
-The envelope only reports the check actually performed.
+Success: check={verified:true}; run={distribution:[{bits:[bool,...],probability:number},...]}
+lexicographic bit order; emit-ir={path:string}; verify-ir={verified:true,request_checked:bool};
+sample below. Probabilities finite in[0,1]; endpoint clamp only within inclusive2^-40,
+otherwise numerical/null/exit1. No distribution renormalization or positive-weight
+cutoff; f64 residuals do not prove ideal support or weaken exact certification.
 
-The JSON adapter clamps reference probabilities to [0,1] only when endpoint
-roundoff is at most 2^-40, inclusive. Nonfinite values or larger excursions
-produce `numerical`, exit 1 and no partial distribution. It does not renormalize
-the distribution, change the underlying simulator or weaken exact evidence.
-Both text and JSON `run` retain every positive computed weight: ideal-zero
-outcomes may appear as roundoff residues (for example about `6.16e-33` for
-`H; T^8; H` on zero). Listing an outcome does not prove it has nonzero ideal
-probability. No automatic display cutoff hides genuinely rare outcomes;
-[A020-13](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-13--numerical-zero-outcomes-obscure-ideal-deterministic-examples)
-tracks a separately specified, optional display summary.
-Simulation capacity errors map to `limit`; other current runtime failures map
-to `simulation`. Existing compiler codes, including contract failures currently
-classified as `InvalidIr`, retain their specified snake_case category. Future
-`contract`/`capability` codes are reserved for their corresponding new checks.
+check_project_diagnostic/compile_project_diagnostic return Diagnostic{code,message,
+primary?} through the same legacy checker. SourceLocation retains PathBuf, Span,
+line/column from loaded provenance, never message parsing/later file read. Located
+load failures retain spans; I/O/path/missing main null. Source failures have no related
+locations. Ordinary unused manifest-key warnings use project/warning, outcome ok/exit0;
+unknown metadata remains accepted. --qrate selects explicit source root, default
+root-relative behavior unchanged. Legacy public error shapes/categories remain.
 
-The additive Rust functions `check_project_diagnostic` and
-`compile_project_diagnostic` use the same checker as the legacy entry points,
-returning `frontend::diagnostic::Diagnostic` (`code`, `message`, optional
-`primary`). `SourceLocation` retains a `PathBuf`, `Span`, line and column;
-portable relative/`std://` rendering belongs to the CLI. Parser provenance and
-coordinates are retained from the loaded source rather than inferred from
-message text or a later file read. Load failures with source spans retain them;
-I/O/path failures and a missing entry point have null locations. Source errors still produce no related locations. Successful ordinary-source
-commands may include unused-manifest-key warnings with code `project` and
-severity `warning`; the closed version-1 code list is unchanged;
-outcome remains `ok` and exit status zero. Unknown metadata remains accepted
-for PATCH compatibility. `--qrate` selects the explicit `[source].root` without
-changing default root-relative module discovery. Artifact errors attach their
-JSON pointer with a null location. Legacy `CompileError`, `ErrorCode` and `ProjectError`
-shapes/categories remain unchanged, including parser failures as `Project`.
 
 ## Portable finite IR and evidence
 
@@ -282,98 +205,47 @@ format, not capacity changes to existing Rust constructors.
 
 ### Reconstructed finite unitary leaves
 
-The additive Rust API [interchange::finite_leaf](../src/interchange/finite_leaf.rs)
-reuses the finite verifier and exact checker for an explicit transitional
-leaf premise. `UnitaryBoundary::new` requires a complete legacy `BasisType`
-tree and one input/output `QuantumPort`, including each owner ID, shape and
-ordered wire list. Both endpoints have that exact type; zero-width `Unit`
-still has an owner. Equal widths do not identify distinct type trees or
-authorize an implicit Bit/Bits conversion.
+[finite_leaf](../src/interchange/finite_leaf.rs) is transitional Rust verification,
+not Lean/hierarchy authority. UnitaryBoundary::new requires full legacy BasisType
+and input/output QuantumPorts (owner, shape, ordered wires), same exact tree at both
+ends, including zero-width Unit owner. Equal width does not convert Bit/Bits or trees.
+check_unitary(payload,boundary,meaning,budget) freshly imports all QIRF1/2 and evidence,
+requires declared/derived Unitary/no classical ports, matching retained trees/actual
+final port, and extracts/checks the exact whole-space ordered matrix against independent
+meaning including phase and isometry. Closed internal classical control is allowed;
+six bits/dimension64 and arithmetic/circuit limits unchanged.
 
-`check_unitary(payload, boundary, meaning, budget)` freshly imports all QIRF1/2
-programs and embedded evidence. It requires declared and derived `Unitary`,
-no external classical ports, the exact retained root type trees, the requested
-input port and the verifier's actual final output port. It extracts the exact
-whole-space matrix in those ordered axes, checks equality to the independently
-required matrix including global phase, and checks its isometry. Internal
-closed classical control is allowed by the existing finite contract. The
-six-bit/64-dimensional, arithmetic and circuit limits remain unchanged.
-
-The caller supplies the same `Budget` for all leaves of one artifact. Imports,
-embedded receipts, matrix extraction/comparison and isometry checks consume
-that allowance; the adapter neither resets it nor accepts an allowance above
-the existing 10,000,000-unit ceiling. QIRF byte/graph limits still apply to each
-packet; the future hierarchy host must also enforce its aggregate transport
-limits and reconstruct each bound packet. Capacity exhaustion returns `limit`;
-malformed QIRF and failed equations retain the existing `format`/`contract`
-diagnostics.
-
-`CheckedUnitaryLeaf` has private fields and retains immutable complete bytes,
-the required boundary, checked program and exact matrix. Its `matches` method
-compares complete bytes and structural values, never addresses or digests.
-Different whitespace can encode the same program, but constitutes a distinct
-byte binding. This result has no serialized authority form. It is not a Lean
-theorem, a hierarchy seal or a proof of the Rust implementation. The
-[migration plan](lean-kernel-migration.md) retains that Rust correspondence
-premise until K1/K2. The pure [hierarchical request projection](hierarchical-ir-spec.md#finite-reconstruction-requests)
-now retains actual indexed program/meaning bytes and identity-encoded endpoints.
-The [fresh hierarchy host](hierarchical-ir-spec.md#external-field-encoding-and-reconstruction-host)
-now reconstructs the actual returned indices from the same immutable artifact.
-Its additive [independent request API](hierarchical-ir-spec.md#independently-requested-roots)
-also checks the supported conditional root against a separate meaning graph.
-Its [singleton Fourier path](hierarchical-ir-spec.md#fourier-request-host) now
-uses the same API and request envelope for a closed single-`Bits<n>` QFT. A fresh
-composite Lean check binds the actual circuit to the independent Fourier
-contract, and Rust reconstructs both ordinary finite proofs and the additional
-phase-fixed H obligations on the same bytes and exact budget. Private `QLF1`
-framing and pending output are transport data, not producer evidence.
-Complete production integration, rectangular isometries, instruments and
-multi-owner leaves remain pending.
+Caller Budget is shared across every import, receipt, extraction/equality/isometry,
+not reset or allowed above10,000,000. Transport bounds still apply. Exhaustion limit,
+malformed format, failed equation contract. CheckedUnitaryLeaf privately retains complete
+immutable bytes/boundary/program/matrix; matches compares full bytes/structural values,
+not addresses/digests (different whitespace changes binding). No serialized seal.
+[Hierarchy](hierarchical-ir-spec.md) projects actual indexed requests/reconstructs fresh
+obligations, including Fourier H under one budget; reader/native/decoder/production
+correspondence remains explicit. Multi-owner/rectangular production integration is open.
 
 ### Exact finite matrix descriptions
 
-The additive `interchange::finite_matrix` transport encodes a mathematical
-matrix independently of its implementation. Its version-one envelope is
-exactly `{format:"qleisli.finite-matrix",version:1,domain:"zeta8-dyadic-v1",
-rows,cols,entries}`. Rows and columns are unsigned integers in 1–64; `entries`
-is a row-major array with exactly `rows*cols` scalars. Rectangular matrices are
-valid descriptions, but the unitary-leaf adapter requires the square dimension
-specified by its independently required type. A description is not evidence.
+[finite_matrix](../src/interchange/finite_matrix.rs) envelope exactly
+{format:"qleisli.finite-matrix",version:1,domain:"zeta8-dyadic-v1",rows,cols,entries}.
+Rows/cols1..64, exactly rows*cols row-major entries; rectangular descriptions are
+valid but unary unitary leaf needs independently required square dimension.
+Each scalar [a,b,c,d] means a+b*sqrt(2)+i*(c+d*sqrt(2)); each dyadic exactly
+{numerator:string,denominator_bits:integer}, numerator/2^denominator_bits.
+Canonical signed decimal i128:0 or nonzero decimal without leading zeros, optional
+minus; no plus/negative-zero/whitespace/float. Exponents0..126 independently, zero
+exponent0/nonzero odd numerator when exponent>0. Never rescale all four to one exponent.
+Out-of-capacity numeral/exponent/dimension limit; malformed/noncanonical format.
+Unknown fields/domains/versions/duplicate keys reject. Descriptions are not evidence.
 
-Each scalar is an array of four dyadics in the fixed order `a,b,c,d`, denoting
-`a + b*sqrt(2) + i*(c + d*sqrt(2))`. A dyadic is exactly
-`{numerator:string,denominator_bits:integer}`, denoting `numerator/2^denominator_bits`.
-The numerator is canonical signed decimal i128 text: `0`, a nonzero positive
-decimal without leading zeros, or `-` followed by such a positive decimal.
-No plus sign, negative zero, whitespace or floating-point number is allowed.
-The exponent is 0–126. Zero requires exponent zero; a nonzero numerator must be
-odd when the exponent is positive. The four exponents are independent; an
-encoder must not rescale all coefficients to a common denominator. The complete
-existing exact scalar capacity is retained. Out-of-range numerators/exponents
-or dimensions return `limit`; malformed/noncanonical representations return
-`format`. Unknown fields, domains, versions and duplicate keys are rejected.
+encode deterministic JSON+LF. decode uses strict16MiB/depth128/million-value reader,
+checks dimensions/count and charges4/entry before scalar construction, no refund on
+failure, shared budget<=10M. No equation/isometry meaning proof from decoding.
+check_serialized_unitary first bounds combined payload+description<=16MiB, decodes,
+then invokes check_unitary. Private result retains complete description and payload;
+matches binds both exact byte strings/boundary, work includes both stages. No receipt
+or whole-root guarantee; hierarchy shares aggregate payload/work and rechecks indices.
 
-`finite_matrix::encode(matrix)` produces deterministic JSON and a trailing LF.
-`decode(description, budget)` uses the existing bounded strict JSON reader
-(16 MiB, depth 128, one million values), checks dimensions and entry count,
-then charges four units per entry before constructing scalars. Failed scalar
-decoding does not refund that charge. The same caller budget is shared with
-leaf reconstruction and cannot exceed 10,000,000 units. Tokenization has its
-separate existing transport limits. Decoding performs no equation/isometry
-check and does not establish that a matrix is a supported program meaning.
-
-`finite_leaf::check_serialized_unitary(payload, boundary, description, budget)`
-first requires the combined payload and description size to be at most 16 MiB,
-decodes the description and invokes `check_unitary` with that exact matrix.
-`CheckedSerializedUnitaryLeaf` privately retains the checked leaf and the
-complete description bytes. `matches` compares both complete byte strings and
-the required boundary; altered whitespace changes the binding even if decoding
-is equal. Its work count includes decoding and reconstruction. All equation,
-phase, ownership and embedded-evidence checks of `check_unitary` still apply.
-This is a transitional finite Rust result, not a serialized authority token or
-a whole-hierarchy result. The reconstruction host now binds it to actual Lean
-request indices and shares aggregate work and payload accounting. Independent
-production root contracts and decoder correspondence remain separate obligations.
 
 ### Independently supplied finite requests
 
@@ -392,13 +264,9 @@ snapshots. Here “closed unary” means no free inputs beyond the one declared
 quantum port, not a zero-input simulator entry point. It does not recompile
 source or establish source adequacy. A valid but different contract is rejected.
 
-For example, a one-bit identity root declared with input/output `Bit` satisfies
-an identity request on `Bit`, but rejects identity requests on `(Unit,Bit)` or
-`(Bit,Unit)`. An identity root declared with `(Unit,Bit)` at both ports instead
-satisfies the matching `(Unit,Bit)` request. Changing only its output tree to
-`Bit` rejects that request; replacing the interface with null also rejects it.
-A declared two-bit tree on that one-bit root is internally invalid even without
-`--against`. Equal matrix dimensions never establish equality of type trees.
+Equal-width Bit/(Unit,Bit)/(Bit,Unit) requests differ. Either root-tree mismatch
+or null interface rejects --against; a tree wider than its port is internally invalid.
+
 
 M1's new meaning/evidence action uses **QIRF version 2**, with a distinct
 profile `finite-meaning-v1`. It inherits all version-1 fields/rules and extends
@@ -413,48 +281,28 @@ Hierarchy requires another profile/version; it is never squeezed into v1/v2.
 
 ## Sampling and typed trials
 
-Add `sample_closed(program, random, limits) -> Result<Sample, SampleError>`
-as a **host Rust API**, taking a VerifiedProgram, a mutable fallible random
-source returning uniform u64 words, and explicit limits. Sample owns
-`bits: Vec<bool>` in the same output order as `run_closed` and
-`execution_steps: u64`. It returns no live quantum owner. The input program
-must have no external quantum/classical inputs and no quantum outputs.
-Errors distinguish not-closed, limit, random-source failure, numerical failure
-and inconsistent verified IR. No error is returned as an ordinary outcome bit.
-Keep the existing exhaustive simulator/API unchanged.
+Host sample_closed(VerifiedProgram,RandomSource,SampleLimits) returns Sample{bits,
+execution_steps} or typed not-closed/limit/RNG/numerical/inconsistent-IR error, never
+an error bit/live owner. Require no external ports/quantum outputs; retain exhaustive
+API. RandomSource supplies fallible uniform u64 words, a caller premise.
 
-Use one normalized pure-state trajectory, starting from empty state on every
-call. At measurement, compute p0 by ascending basis index, draw
-`u=(word>>11)*2^-53`, select zero iff u<p0, collapse and renormalize the chosen
-branch. Clamp a probability outside [0,1] only within 2^-40; otherwise return
-numerical failure. After each deterministic IR operation, require finite
-amplitudes, positive finite norm² and
-`|norm²−1| ≤ 2^-40 + 16 × f64::EPSILON × executed_steps`, then renormalize.
-Here `executed_steps` is work charged by that operation since the previous
-normalization, including nested circuit/contract steps; unused configured
-capacity contributes nothing. Before each observation, after collapse and at
-completion, use the base `2^-40` norm guard and renormalize within tolerance.
-Never continue from a zero-norm selected branch. Renormalization consumes no
-random word or extra IR execution step. This empirical roundoff guard is not
-a certified forward-error bound and does not authorize evidence. Deterministic observations still consume a
-word. Reset/discard use a hidden computational-basis measurement, then remove
-the old wire and optionally allocate fresh zero; this reproduces the ensemble
-partial trace, including entangled inputs. Consume hidden draws in program and
-ascending wire order. Runtime classical branches execute only the selected arm.
-This sampling algorithm is approximate reference execution, not a proof of
-exact semantics or a guarantee of hardware distributions.
+Fresh normalized trajectory each call. Measurement sums p0 in ascending basis order,
+draws u=(word>>11)*2^-53, selects0 iff u<p0, collapses/renormalizes; deterministic
+observations also draw. Clamp only within2^-40 endpoints, else fail. After each
+deterministic operation finite positive norm² must differ from1 by at most
+2^-40+16*f64::EPSILON*actual_steps since previous normalization, including nested work,
+not unused configured allowance. Before observation/after collapse/completion use
+base2^-40; zero selected norm fails. Renormalization uses no draw/extra IR step.
+Reset/discard hidden computational measurements remove old wire/optionally allocate
+fresh zero, preserving partial-trace behavior; hidden draws follow program/ascending
+wire order. Only selected classical arm executes. Runtime tolerance is not certified
+forward error or evidence/hardware guarantee.
 
-Defaults: max live qubits 16 (hard maximum 20), amplitude cells 1,048,576,
-execution steps 1,000,000 per sample. Charge each executed primitive/branch
-dispatch and each repeated/called step, including hidden observations; symbolic
-counts never make execution free. No ensemble-component limit is needed for
-one trajectory. Aggregate CLI work is at most 10,000,000 executed steps across
-all shots; error atomically with no partial success document if exceeded.
-
-CLI syntax is `qleisli sample <project> --shots=N --seed=S [--format=json]`.
-Both are required: 1≤N≤1,000,000 and 0≤S<2^64, decimal canonical integers.
-Use a single sequential generator stream across fresh shots. Generator profile
-`splitmix64-v1` is specified by this exact unsigned-64 wrapping algorithm:
+Defaults16 qubits(hard20),1,048,576 cells,1M executed steps/sample; charge primitives,
+branch dispatch/repeated calls/hidden observations. One trajectory needs no ensemble
+cap. CLI aggregate10M steps/all shots; failure returns no partial document.
+sample <project> --shots=N --seed=S [--format=json], both canonical decimal required,
+N1..1M, S0..2^64-1. One sequential splitmix64-v1 stream across fresh shots, seed=state:
 
 ```text
 state = state + 0x9e3779b97f4a7c15
@@ -464,44 +312,28 @@ z = (z xor (z >> 27)) * 0x94d049bb133111eb
 word = z xor (z >> 31)
 ```
 
-Seed initializes state directly. The host API may supply a different uniform
-source; the CLI has no implicit time-based seed. Same seed/profile/program and
-numeric backend reproduce a trace; cross-platform floating rounding can change
-a boundary decision and is not promised bit-for-bit. JSON result is
-`{rng:"splitmix64-v1",seed:string,shots:[{bits,execution_steps},...],
-execution_steps:integer}`; seed is decimal text to avoid JSON-client precision
-loss. Human output is one bitstring (or `()`) per shot. This is an actual draw,
-not returning every branch of `run_closed`.
+Unsigned64 wrapping. Host may choose another uniform source; no implicit time seed.
+Same backend/profile/program/seed reproduces trace, cross-platform rounding need not.
+JSON {rng:"splitmix64-v1",seed:string,shots:[{bits,execution_steps},...],execution_steps:integer};
+seed decimal text avoids client precision loss. Human mode one bitstring or() per shot.
 
-Provide the independent host combinator `run_trials(max_attempts, trial)`.
-The callback receives a one-based attempt index and returns
-`Result<TrialDecision<T,R>, E>`, where TrialDecision is `Accepted(T)` or
-`Retry(R)`. R is the caller's typed retry reason. Result is
-`Result<TrialRun<T,R>, TrialFailure<R,E>>`; TrialRun is
-`Accepted{value,attempts,retries}` or `Exhausted{attempts,retries}`.
-TrialFailure is `InvalidLimit{requested,max}` or
-`Execution{attempts_started,error:E,retries}`. InvalidLimit invokes no callback.
-`retries` is an ordered
-list of `{attempt,reason}`. A callback error aborts immediately and is never
-counted as a retry; acceptance stops immediately. Zero attempts yields
-Exhausted with zero attempts without invoking the callback. Maximum accepted
-bound is 1,000,000. Each quantum callback must invoke fresh preparation/sampling;
-the combinator does not reuse a collapsed state or secretly choose a new seed.
+run_trials(max_attempts,trial) invokes one-based callback -> Result<TrialDecision<T,R>,E>.
+Decision Accepted(T)/Retry(R); result TrialRun Accepted{value,attempts,retries} or
+Exhausted{attempts,retries}; TrialFailure InvalidLimit{requested,max} or
+Execution{attempts_started,error,retries}. retries ordered{attempt,reason}. Invalid
+bound invokes nothing; max1M; zero gives exhausted0. Acceptance stops, callback error
+aborts without becoming retry. Each quantum callback freshly prepares/samples;
+no collapsed-state reuse/secret seed change.
 
-The first Shor host integration keeps `invalid_candidate`, `odd_period`, and
-`trivial_factor` as distinct retry reasons. Before reporting a period, check
-r>0, a^r mod N=1 and minimality by prime-divisor reduction of r. Before reporting
-factors check 1<p,q<N and p*q=N with checked arithmetic; an unverified continued
-fraction denominator is only a candidate. Select the bounded reference host
-profile 2≤N<2^32, 1<a<N, gcd(a,N)=1 and 1≤m≤32. Enumerate convergents of y/2^m
-in order, test denominators 1≤r<N, reduce successful r by trial-dividing its
-prime factors in increasing order, then apply the standard even-r gcd tests.
-No successful denominator yields invalid_candidate; no fabricated period.
-Arithmetic uses checked u128, Euclidean gcd and square-and-multiply modular
-power. At most 1,000,000 arithmetic loop iterations per trial; exhaustion is
-an execution limit error. Classical prechecks (even N/nontrivial gcd) report
-validated classical factors separately, without claiming a quantum trial.
-This specifies integration behavior; general efficient number theory is M4.
+Bounded Shor client distinguishes invalid_candidate/odd_period/trivial_factor.
+Profile2<=N<2^32,1<a<N,gcd(a,N)=1,m1..32. Enumerate convergents y/2^m in order,
+denominators1<=r<N; require positive r and a^r modN=1, reduce by increasing prime
+divisors for minimality, then even-period gcd tests. No successful denominator means
+invalid_candidate. Validate1<p,q<N,p*q=N before reporting; continued fractions only
+propose. Checked u128, Euclidean gcd/square-and-multiply, <=1M arithmetic iterations/
+trial or limit error. Even-N/gcd prechecks report validated classical factors separately,
+not quantum trials. General efficient arithmetic remains M4.
+
 
 ## Source input capacities and migration
 
@@ -533,12 +365,11 @@ projects is explicit opt-in legacy loading or larger bounds. 0.1.5 adds no cap.
 | X5 trials | Accept on first/later attempt, all retries, zero bound, injected RNG/runtime/numerical failure, invalid/odd periods, trivial gcds and checked factors; count preparation/attempts precisely. |
 | X6 migration/capacity | Boundary byte sizes, multibyte UTF-8, many small files, bundle accounting, overflow and legacy override; old source/IR behavior preserved through explicit adapters. |
 
-The original documentation release did not execute these tests. X1 check/run
-now has [Rust CLI regressions](../tests/cli_json.rs),
-[structured location checks](../tests/diagnostics.rs) and an
-[independent JSON decoder suite](../scripts/test_cli_json.py); execution results
-belong in the [0.1.7 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.1.7.md). X2–X6's implementation and
-validation are recorded separately in the [0.2.0 record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/releases/v0.2.0.md).
+Executed evidence is retained with [CLI tests](../tests/cli_json.rs),
+[location tests](../tests/diagnostics.rs), [decoder tests](../scripts/test_cli_json.py)
+and the immutable 0.2.0 release record linked above. This specification is not a
+fresh test report or source-adequacy theorem.
+
 
 ## 0.2.0 host API mapping
 

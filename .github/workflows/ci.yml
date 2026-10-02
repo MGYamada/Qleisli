@@ -281,6 +281,12 @@ jobs:
         run: python3 scripts/test_lean_raw.py
       - name: VM-25 retained bindings, capacity boundaries and non-dense cleanup
         run: python3 scripts/test_lean_raw_completion.py --record /tmp/qleisli-vm25-completion.json
+      - name: VM-26 original observing bodies, SSA, phis and exact residual instruments
+        run: python3 scripts/test_lean_observation.py --record /tmp/qleisli-vm26.json
+      - name: VM-26 retained original classical-branch functions and full bindings
+        run: python3 scripts/test_lean_branch_function.py --record /tmp/qleisli-vm26-branches.json
+      - name: VM-26 matrix-free original instruments and exact hidden histories
+        run: python3 scripts/test_lean_streamed_instrument.py --record /tmp/qleisli-vm26-streamed.json
       - name: Symbolic QFT paths and independent Fourier coefficients
         run: python3 scripts/test_lean_qft.py
       - name: Small QFT semantic-path matcher and nonliteral candidates
