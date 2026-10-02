@@ -1,0 +1,7 @@
+{
+  "format": "qleisli.ci-documentation-probe",
+  "issue": 206,
+  "purpose": "Observe result-only PR routing against the proposed CI implementation, without changing code or proofs.",
+  "expected_profile": "docs",
+  "measurement_status": "pending"
+}
