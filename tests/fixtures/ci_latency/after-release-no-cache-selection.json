@@ -1,0 +1,12 @@
+{
+  "format": 1,
+  "head": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+  "event": "workflow_dispatch",
+  "ref": "refs/heads/codex/ci-latency-145",
+  "base": null,
+  "profile": "full",
+  "reason": "release, manual or unrecognized event",
+  "paths": [],
+  "dependency_cache": "disabled",
+  "project_build_cache": "disabled"
+}

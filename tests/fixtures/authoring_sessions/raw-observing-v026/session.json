@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Replay preserved measurement-driven branch source against the VM-26 raw boundary",
+  "author": "Codex; informed repository implementation context, not controlled model evaluation",
+  "project_version": "0.2.6",
+  "baseline_commit": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Unchanged byte-for-byte replay of first/main.qli; session metadata assembled after its initial check",
+      "sha256": {
+        "main.qli": "981b416a86f7e8cdbcc1136d953239f2dbb3b49119314113b43be43ad0fff812"
+      },
+      "observations": [
+        "replay.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "retained-first",
+      "reason": "Original source preserved before checking; no retrospective pre-check context claim",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/raw-observing-v026/first/main.qli": "981b416a86f7e8cdbcc1136d953239f2dbb3b49119314113b43be43ad0fff812"
+      }
+    }
+  ]
+}

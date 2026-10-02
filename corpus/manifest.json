@@ -1136,6 +1136,100 @@
         0,
         1
       ]
+    },
+    {
+      "id": "quantum_katas/phased_uniform2",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "AllBasisVectorsWithPhases_TwoQubits_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "U[y,x]=(-1)^(x dot y+y0) i^y1/2, with wire 0 the first/low leaf. Prepares |- > tensor |+i> on zero, retaining every signed input column.",
+      "limitations": "Exactly two wires; preserves the selected preparation circuit as a whole-space unitary. No generic array preparation.",
+      "project": "quantum_katas/phased_uniform2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/graph_state2",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "AllBasisVectorWithPhaseFlip_TwoQubits_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "CZ (H tensor H); U[y,x]=(-1)^(x dot y+y0*y1)/2. Zero input has the negative |11> coefficient; absolute phase and all columns are retained.",
+      "limitations": "Exactly one two-wire graph edge; no scalable graph-state API or general state-preparation inverse.",
+      "project": "quantum_katas/graph_state2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/reflection_minus1",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/reflections/reflection_using_prepare.py",
+      "symbol": "ReflectionUsingPrepare",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "With PREPARE=H and global_phase=-1, 2|+><+|-I=X on the whole one-wire space, including coherent control and arbitrary references.",
+      "limitations": "One-wire specialization. A clean predicate flag implements I-2|+><+| before its explicit -1 completion; no general PrepareOracle or cost-equivalence claim.",
+      "project": "qualtran/reflection_minus1",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "qualtran/control_zero_reflection2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/reflections/reflection_using_prepare.py",
+      "symbol": "ReflectionUsingPrepare",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "|c,t> -> |c,t xor [c=0]> with amplitude +1. PREPARE=H, global_phase=-1 and control_val=0, retaining both owners.",
+      "limitations": "One control and one selection wire. The global phase is relative inside the control-zero block; one private clean flag is proved by restricted with_computed. No general upstream decomposition/resource equivalence.",
+      "project": "qualtran/control_zero_reflection2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/rotation_half_y",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "RY(pi) RX(pi/2)=[[i,-1],[1,-i]]/sqrt(2), in upstream gate order with exact scalar phase.",
+      "limitations": "Fix params=(pi/2,pi); gate kernel only. Excludes optimization and a continuous-angle API; main measures Z.",
+      "project": "pennylane_demos/rotation_half_y",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/ising_zz_negative2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_C(gamma), single-edge factor",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "exp(+i*pi*Z0*Z1/4), gamma=-pi/2; diagonal coefficient exp(+i*pi*(-1)^(a+b)/4) for each basis input.",
+      "limitations": "One isolated edge of the original graph; no mixer, preparation, optimizer or complete QAOA port. Includes the RZ scalar under an extra control.",
+      "project": "pennylane_demos/ising_zz_negative2",
+      "default_input": [
+        0,
+        1
+      ]
     }
   ],
   "authoring_sessions": [
@@ -1144,7 +1238,8 @@
     "authoring/v022-simple/session.json",
     "authoring/v023-small/session.json",
     "authoring/v024-small/session.json",
-    "authoring/v025-small/session.json"
+    "authoring/v025-small/session.json",
+    "authoring/v026-small/session.json"
   ],
   "sized_experiments": [
     {

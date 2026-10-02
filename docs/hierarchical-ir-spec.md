@@ -99,49 +99,46 @@ Proof fields are `kind,rule,premises,implementation,meaning,input_encoding,outpu
 | conjugation | Actual sequence V†; controlled W; V, with V/V† matched and disjoint control; whole-space v w v† rule or explicit admitted-encoding premises |
 | schema | Only the fixed registry entry, static arguments, premise proofs and exact IR structural witness described below |
 
-### Finite reconstruction requests
+### Constructed component coverage
 
-[Finite.inspect](../lean-kernel/QleisliKernel/Hierarchical/Finite.lean) extracts actual indexed proof/definition/meaning bytes, interfaces, proof and four endpoints. Version-one leaf equations require empty premises/witness, actual identity encodings, matching legacy unary trees ≤six axes; Bits needs explicit adapter even at zero width. Check headers/binding under remaining structural budget, ≤16 MiB aggregate payload. Binding/uniqueness/conditions/identity theorems prove no opaque byte semantics. Rust [finite reconstruction](machine-interface-spec.md#reconstructed-finite-unitary-leaves) freshly verifies QIRF1/2, independently decodes matrix and checks actual final ports/bytes under aggregate exact work. Changed bytes yield changed requests. Standalone Derivation still rejects finite rules; no submitted receipt or production seal is admitted.
+[Rule ledger](rule-inventory.md) and [kernel](../lean-kernel/README.md)/[math bridges](../lean/README.md)
+index actual finite/conditional/gradient/Fourier/wiring/call/rule/constructed-denotation
+proofs. Detailed retained [packets](../tests/fixtures/hierarchical_ir/README.md) state
+component premises/limits and counterexamples. The closed external contracts above
+remain separate from these bounded proofs. Check actual complete contents from empty
+state under one remaining structural budget; no submitted hash/cache/flag/environment
+or Rust success is evidence. Unsupported leaves fail even at zero powers.
 
-### Conditional finite derivations
+Finite requests bind actual indices/bytes/proof/four identity-encoded endpoints,
+empty premises/witness, unary legacy trees <=six axes with explicit Bits adapters,
+aggregate payload<=16MiB. [Finite inspector](../lean-kernel/QleisliKernel/Hierarchical/Finite.lean)
+issues pending equations, not opaque-byte semantics; standalone Derivation rejects
+finite rules. Fresh [Rust reconstruction](machine-interface-spec.md#reconstructed-finite-unitary-leaves)
+remains a correspondence premise until VM closure. Full common-leaf unitarity is
+required for inverse/reference laws, not merely equality.
 
-[Conditional.checkAll](../lean-kernel/QleisliKernel/Hierarchical/Conditional.lean) first checks all actual artifact/node/contract tables, then traverses the actual schedule from empty cache/request array. Finite dispatch calls inspect, ordinary dispatch uses TypedRule from that typing success, schemas use Rule; every premise already has a derivation. Ordered endpoints/phase/rule and shared-once processing, zero-repeat bodies, prepaid scans and one remaining two-million structural budget are retained. Pending means conclusions conditional on every bound request; no producer flags/cache or leaf predicate silently True.
+Named Fourier request is existing envelope equation/unitary/entry0 with exactly one
+qft(width) meaning and identical closed Bits(width) endpoints. [FourierRoot](../lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean)
+checks width1..8/outer sequence3..16: identity route, actual recursive body, actual
+reversal; complete types/maps/empty owners/phase remain. Recursive H requests bind
+actual bytes/ports and independently phase-fixed H, rejecting X/-H. QLF1 runs complete
+Conditional/namedBoundary and returns every ordinary finite proof/H index. Reconstruct
+union once under shared exact work; omissions/duplicates/bad counts/nonleaf indices
+reject. CheckedRequest retains both originals, never serialized producer success.
+[Root theorem](../lean/Qleisli/HierarchicalFourierRoot.lean) derives full positive Fourier
+conditionally on exact readers/native/decoder; TP-005 remains audited. Encoded/computed/
+full-schema/provider/source/production and complete Soundness gates remain pending.
 
-[Finite interpretation](../lean/Qleisli/HierarchicalFiniteEvaluation.lean) reads implementation/meaning bytes/interfaces independently of proof metadata. Equality of both partial readers yields unique equal full entry matrices/reference action; absent/unsupported leaves fail at zero powers too. [Unitarity](../lean/Qleisli/HierarchicalFiniteUnitary.lean) additionally needs each common leaf full UnitaryInterface and derives both inverse laws. Reader/native/transport correspondence and production binding remain explicit.
-
-### Shared phase-gradient laws
-
-[Diagonal laws](../lean/Qleisli/HierarchicalDiagonal.lean) retain full complex phase, actual repeat counts, low-axis-first tensor/control, inverse routing and arbitrary references. [Sparse helpers](../lean-kernel/QleisliKernel/PhasePolynomial/Operations.lean) scale modulo 256/add positive control without increasing term count; their laws do not check scope, ownership, canonicality or budget. Callers must, and controlled-gradient laws need their actual bound child premise.
-
-### Actual shared-gradient inspection
-
-[Gradient inspector](../lean-kernel/QleisliKernel/Hierarchical/Gradient.lean) checks actual empty identity or split-high/tensor(phase, child)/rejoin recursion, complete interfaces/children/phase/routing, consistent renaming and Bits(0). Arity/header checks precede traversal; 1≤precision≤8, 0≤width≤precision, one remaining structural budget plus complete artifact typing. [Bridge](../lean/Qleisli/HierarchicalGradient.lean) derives exp(2πix/2^precision) from independent low-bit integer coordinates, uniqueness/reference laws, with no supplied child matrix/environment. Direct control/power may omit count-one repeat; inspection alone issues no seal.
-
-### Actual Fourier-stage coefficients
-
-[Fourier coefficient derivation](../lean/Qleisli/HierarchicalFourier.lean) defines positive low-bit Fourier independently. H/controlled-gradient/recursive tensor has exact recursive coefficient including negative H entry; body gives reversed output, actual reversal gives F with references. [Stage inspector](../lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean) checks five actual nodes (four in one-bit base), complete trees/register/Bit ports, identity routes, take/put coordinates and both positional maps; lower width 1–7, full typing/remaining budget. [Bridge](../lean/Qleisli/HierarchicalFourierStage.lean) derives identity children, with exact H/gradient/recursive equations pending until body inspection.
-
-### Complete recursive Fourier body
-
-[Body inspector](../lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean) uses total Nat recursion for 1≤width≤precision≤8 under one budget. Base retains Bits(0); exactly width H requests retain actual bytes/interface/index. Check H rename to independent matrix, positive control/count 2^(precision-width), top count-one omission. [Induction](../lean/Qleisli/HierarchicalFourierBody.lean) constructs reversedFourier; gradient/recursive operators are derived, only exact partial-reader H equations remain. Fresh Rust H checks share remaining exact work and reject X/-H. Reference phase retained; no runtime override, schema enablement or production seal.
-
-### Actual shared wiring
-
-[Wiring](../lean-kernel/QleisliKernel/Hierarchical/Wiring.lean) checks actual rewire/structural/tensor/sequence in dependency order from empty cache, square routes ≤16 axes, empty-owner validity. Missing/duplicate deps, cycles, unsupported nodes/widths/axes or omitted root reject. Charge fields/allocation/routing/composition to remaining budget; no producer routes/repeat expansion or H/phase-as-identity. Full typing remains mandatory. [Bridge](../lean/Qleisli/HierarchicalWiring.lean) derives phase-free routing coefficients/reference identity without a leaf/environment premise; routing alone is no ownership seal.
-
-### Actual outer Fourier request
-
-[FourierRoot](../lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean) independently receives width/full positive low-bit interface. Component widths 1–8, outer sequence 3–16 do not reduce general capacities. Exact unitary quantum-only entry, first identity route, second inspected recursive body and remaining actual bit-reversal wiring are mandatory. Fresh cache rejects missing roots; disjoint SWAP order may differ. Full typing and prepaid metadata/comparisons/routes share remaining work. Returned bound H obligations must reject X/-H. [Root coefficients/reference theorem](../lean/Qleisli/HierarchicalFourierRoot.lean) derives actual F from those H equations. Source/native/reader/production and remaining QPE/profile gates stay open; TP-005 API remains audited.
-
-### Fourier request host
-
-Named Fourier request uses existing envelope, kind equation/effect unitary/entry 0, exactly one qft(width) meaning and full closed identical single Bits(width) boundary; dimension/Bit adapter is insufficient. Rust proposes wiring; private QLF1 rechecks singleton form; FourierRoot.checkAll runs Conditional and namedBoundary with prepaid endpoints/remaining budget. Fresh native reply names all ordinary finite proofs and H indices. Reconstruct each exact equation/H once under shared budget; count mismatch, omissions/duplicates/invalid/nonleaf indices reject. CheckedRequest privately retains both raw inputs; no serialized result/cache is accepted. [Host packet](../tests/fixtures/hierarchical_ir/fourier-host-packet.md) and root theorem bind matrix/interface/reference inverse laws conditional on readers/native/decoder. This does not complete source integration or issue production seals.
-
-### Whole-space derivation implementation
-
-Untrusted [call lowering](../lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean) emits two rewires/three-child sequence, preserving shared children. [Coordinate theorem](../lean/Qleisli/CallLowering.lean) gives U(output_map⁻¹(y), input_map(x)), unitary/reference preservation under original call typing and consistent fresh rename; source/external translation validation remains.
-
-Rule matches actual identity-encoded unitary rewire/structural/phase/sequence/tensor/inverse/control/repeat/direct-power equations; version 1 ordinary witnesses have empty arrays, ordered actual premise endpoints and checked zero bodies. Derivation checks structural schedules then premises from empty cache under one budget; powerEntry independently matches exponent/provider and its proof. [Semantics](../lean/Qleisli/HierarchicalSemantics.lean), [operators](../lean/Qleisli/HierarchicalOperators.lean) and [constructed evaluator](../lean/Qleisli/HierarchicalEvaluation.lean) derive equal unique actual denotations from independent body readers/decreasing fuel without global environment; unsupported children fail under zero repeats. Mathematical sums are not executable simulation. Remaining encoded/computed/schema/provider/full-profile and execution correspondence gate Soundness.
+<a id="finite-reconstruction-requests"></a>
+<a id="conditional-finite-derivations"></a>
+<a id="shared-phase-gradient-laws"></a>
+<a id="actual-shared-gradient-inspection"></a>
+<a id="actual-fourier-stage-coefficients"></a>
+<a id="complete-recursive-fourier-body"></a>
+<a id="actual-shared-wiring"></a>
+<a id="actual-outer-fourier-request"></a>
+<a id="fourier-request-host"></a>
+<a id="whole-space-derivation-implementation"></a>
 
 ## Fixed schema import boundary
 
@@ -155,25 +152,35 @@ Direct controlled-power/1 matches actual control(repeat(2^k, provider), true) to
 
 QPE witness: fresh m-bit zero, H each bit, controlled U^(2^k) by bit k, inverse positive QFT, ascending Z readout, retained target. Bind every actual power/stage/dimension, prove full instrument. [Dispatcher](../lean-kernel/QleisliKernel/Schema.lean) only checks closed IDs/versions/parameters; theorem/importer/tests/native/transport/finite-leaf gates still precede enablement. Alternative efficient power providers are separate.
 
-### Dependency scheduling implementation
+### Typed preparation and dependency scheduling
 
-[Graph](../lean-kernel/QleisliKernel/Hierarchical/Graph.lean) checks complete index-permutation schedule, actual edges decrease rank, reachability/depth. Project edges from all actual tables including zero bodies; table order need not be topological. Limits: 100, 000 nodes, 1, 000, 000 refs, depth 256, 2, 000, 000 visits. Charge10*nodes+5*refs+3*roots covers scans/arrays/lookups/schedule/reachability; preparation debits first. Stop refs before over-budget visit and roots after at most nodes+1 entries. No expansion/matrix; acyclicity is not semantic evidence.
+[Graph](../lean-kernel/QleisliKernel/Hierarchical/Graph.lean) checks a complete schedule
+permutation, decreasing rank on every actual edge, reachability/depth, including
+zero bodies. Bound nodes100,000, refs1,000,000, depth256, visits2,000,000;
+charge10*nodes+5*refs+3*roots, with preparation prepaid. Stop references before excess
+and roots after nodes+1. Acyclicity establishes no semantics.
 
-### Typed artifact preparation
+[Artifact](../lean-kernel/QleisliKernel/Hierarchical/Artifact.lean) retains four tables,
+entry and full witness/endpoints, bounds references by their own domains, precharges
+size/quadratic-port work and finite payload <=16 MiB. Equation cannot observe;
+instrument requires QPE meaning/identity boundaries. [Ports](../lean-kernel/QleisliKernel/Hierarchical/Ports.lean)
+checks complete typed owner/axis/classical bijections/inverse laws, preserving empty
+owners and IDs as labels; charge before coordinate allocation and debit in caller.
+Side-map success proves no cross-call freshness/body equation.
 
-[Artifact](../lean-kernel/QleisliKernel/Hierarchical/Artifact.lean) retains four typed tables, full endpoints/witnesses and entry pair. Check tagged references against their own bounds before projection; actual premises/witness/encoding/zero-body edges enter graph. Prefix trees/unique owners-wires/width/effect/angle/count/four endpoint equality checks retain classical CBit/CBits and empty owners. Equation cannot observe; instrument requires QPE meaning/identity boundaries. Precharge size/quadratic-port work before traversal, charge repeated shared comparisons; graph continues remaining two-million budget, aggregate finite payload ≤16 MiB. Prepared shape is not finite/schema/derivation/request evidence.
+[NodeTyping](../lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean) checks every
+actual node/header/effect/frame and consistent fresh two-sided call maps, including
+zero bodies. [ContractTyping](../lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean)
+then checks meanings/encodings under the same remaining work, no implicit type
+coercion/expansion. Computed shape matches C/W/u/E and fresh scratch but still needs
+unitarity, finite reconstruction and actual cleanup/request equations. Type/graph
+success does not enable external schemas or issue semantic evidence.
 
-### Complete side-map checker
-
-[Ports](../lean-kernel/QleisliKernel/Hierarchical/Ports.lean) checks complete owner/axis/classical bijections and inverse laws in actual slot order, exact tuple/Unit/Bits structure, ID-label distinction, arbitrary references. Classical boundary maps preserve types; they do not prohibit internal classical copies. Array/width checks precede coordinate allocation, returned charge must be debited by enclosing pass. One-side mapping proves no cross-call freshness/body/equation.
-
-### Definition-node typing
-
-[NodeTyping](../lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean) checks actual child fields/headers, both-side fresh call renaming, exact sequence/effect joins, disjoint tensor, unitary repeat/inverse, leading distinct control, complete phase/init/measure frames. checkAll prepares and checks every definition, including zero bodies, under one remaining budget. Computed shape matches C/W/u/E and zero scratch; semantics still require their unitarity/equation, finite reconstruction and independent request.
-
-### Meaning and encoding typing
-
-[ContractTyping](../lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean) first invokes actual node pass then every meaning/encoding, charging allocation/header/maps against same remaining allowance without expansion. Control target types cannot coerce; consistent same-tree local renaming allowed. Structural success does not prove finite descriptions, provider/compute unitarity, zero return, equations/schema/request meaning. External entries remain disabled.
+<a id="dependency-scheduling-implementation"></a>
+<a id="typed-artifact-preparation"></a>
+<a id="complete-side-map-checker"></a>
+<a id="definition-node-typing"></a>
+<a id="meaning-and-encoding-typing"></a>
 
 ## First QPE profile and exact angles
 

@@ -74,10 +74,8 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
                 Some("format") => "format",
                 _ => return Err(Error::format("unknown runtime failure")),
             };
-            if matches!(mode, Mode::QpeInstrument)
-                && (lines.next() != Some("") || lines.next().is_some())
-            {
-                return Err(Error::format("trailing QPE runtime failure data"));
+            if lines.next() != Some("") || lines.next().is_some() {
+                return Err(Error::format("trailing runtime failure data"));
             }
             let detail = if code == "limit" {
                 "a checking capacity was exceeded; aggregate structural-work allowance is 2000000; required work is unavailable in the native failure reply"
@@ -211,6 +209,89 @@ fn invoke(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Vec<u8>> {
 #[cfg(test)]
 mod response_diagnostics_tests {
     use super::{Mode, response_indices};
+
+    #[cfg(unix)]
+    #[test]
+    fn nonzero_runtime_exit_preserves_framing_errors_and_checker_rejections() {
+        use std::{
+            fs,
+            os::unix::fs::PermissionsExt,
+            time::{SystemTime, UNIX_EPOCH},
+        };
+        let directory = std::env::temp_dir().join(format!(
+            "qleisli-runtime-frame-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir(&directory).unwrap();
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(directory.clone());
+        let executable = directory.join("checker");
+        for mode in [
+            Mode::Inspect,
+            Mode::Request,
+            Mode::Fourier,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            let good = format!("{}\nerror\ncontract\n", mode.header());
+            for (reply, expected) in [
+                (good.clone(), "contract"),
+                (format!("{good}extra\n"), "format"),
+                (good.trim_end().to_owned(), "format"),
+            ] {
+                fs::write(
+                    &executable,
+                    format!("#!/bin/sh\nprintf '%s' '{reply}'\nexit 1\n"),
+                )
+                .unwrap();
+                fs::set_permissions(&executable, fs::Permissions::from_mode(0o700)).unwrap();
+                let error = super::check(&executable, vec![], mode).err().unwrap();
+                assert_eq!(error.code, expected, "{}", error.message);
+            }
+        }
+    }
+
+    #[test]
+    fn every_failure_mode_requires_exact_eof_after_the_final_newline() {
+        for mode in [
+            Mode::Inspect,
+            Mode::Request,
+            Mode::Fourier,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            for code in ["limit", "contract", "invalid_ir", "format"] {
+                let reply = format!("{}\nerror\n{code}\n", mode.header());
+                assert_eq!(
+                    response_indices(reply.as_bytes(), mode).err().unwrap().code,
+                    code
+                );
+                for malformed in [
+                    reply.trim_end().to_owned(),
+                    format!("{reply}extra\n"),
+                    format!("{reply}x"),
+                    format!("{reply}\n"),
+                ] {
+                    let error = response_indices(malformed.as_bytes(), mode).err().unwrap();
+                    assert_eq!(error.code, "format");
+                    assert!(
+                        error.message.contains("runtime failure data"),
+                        "{}",
+                        error.message
+                    );
+                }
+            }
+        }
+    }
 
     #[test]
     fn framed_obligations_remain_mode_specific_and_reject_malformed_counts() {

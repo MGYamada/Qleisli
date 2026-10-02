@@ -1,0 +1,42 @@
+[
+  {
+    "path": "src/bin/qleisli/json.rs",
+    "before": "e5003c2bee0fb19902c2edaeaf63a59587883314336ca6460c1c45d2c600e2a3",
+    "after": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b"
+  },
+  {
+    "path": "src/bin/qleisli/options.rs",
+    "before": "07f991ef89b9870e18a30a024488d21c68a7b5bb4b6d2228ba020b2517985d4f",
+    "after": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69"
+  },
+  {
+    "path": "src/frontend/compile/lower/certified.rs",
+    "before": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
+    "after": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e"
+  },
+  {
+    "path": "src/frontend/compile/lower/mod.rs",
+    "before": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
+    "after": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e"
+  },
+  {
+    "path": "src/frontend/compile/lower/primitives.rs",
+    "before": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
+    "after": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906"
+  },
+  {
+    "path": "src/frontend/compile/lower/value.rs",
+    "before": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
+    "after": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba"
+  },
+  {
+    "path": "src/frontend/project/manifest.rs",
+    "before": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
+    "after": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453"
+  },
+  {
+    "path": "src/interchange/hierarchical/runtime.rs",
+    "before": "02ab1b657b14b2e736a12bbd7108955e0643d5f599835761817b75381f184cf9",
+    "after": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f"
+  }
+]

@@ -1,0 +1,189 @@
+{
+  "format": "qleisli.v026-review-bugs-followup",
+  "version": 1,
+  "date": "2026-10-02",
+  "scope": "Review bug fixes integrated into the existing uncommitted v0.2.6 development tree; existing VM-26 proof records remain historical checkpoints.",
+  "production_authority": "Rust",
+  "fully_addressed_issues": [
+    180,
+    182,
+    183,
+    184,
+    187,
+    188,
+    189,
+    193
+  ],
+  "partially_addressed_issues": {
+    "186": "Remove host paths from tuple messages; structured secondary locations remain open without a public diagnostic struct change."
+  },
+  "outside_this_patch": [
+    181,
+    192
+  ],
+  "pull_request": {
+    "url": "https://github.com/MGYamada/Qleisli/pull/203",
+    "draft": true,
+    "commit": "0ef5d3492a6717b300062dd011475ee65c8c47a9",
+    "base": "05866209f7c68894e86a51e8bedbf336f8cad1cb",
+    "version_on_base": "0.2.5",
+    "validation_record": "tests/fixtures/review_v026/validation.json",
+    "rust_tests_passed": 562,
+    "rust_tests_ignored": 34,
+    "ci_at_inspection": {
+      "success": [
+        "check-macos-source",
+        "check-interop",
+        "check-docs",
+        "changes",
+        "check-rust-msrv"
+      ],
+      "in_progress": [
+        "check-lean",
+        "check-distribution",
+        "check-rust",
+        "check-lean-kernel"
+      ],
+      "recorded_utc": "2026-10-02T00:29:01.035521+00:00"
+    }
+  },
+  "development_tree": {
+    "version": "0.2.6",
+    "checks_performed": [
+      {
+        "command": [
+          "cargo",
+          "fmt",
+          "--check"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--all-targets",
+          "--locked",
+          "--quiet"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "cargo",
+          "clippy",
+          "--all-targets",
+          "--locked",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        "exit_code": 0
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/test_cli_json.py",
+          "target/debug/qleisli"
+        ],
+        "exit_code": 0,
+        "tests": 14,
+        "skipped": 2
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/test_check_docs.py"
+        ],
+        "exit_code": 0,
+        "tests": 32
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/check_docs.py",
+          "--write-status"
+        ],
+        "exit_code": 0,
+        "links": 2224,
+        "anchors": 139,
+        "rust_declarations": 4,
+        "rust_tests": 14,
+        "lean_root_modules": 177
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        "exit_code": 0,
+        "constructors": 232,
+        "source_snapshots": 206,
+        "boundaries": 18
+      },
+      {
+        "command": [
+          "python3",
+          "scripts/check_schema_registry.py",
+          "--source-only"
+        ],
+        "exit_code": 0,
+        "entries": 3,
+        "enabled": 0,
+        "source_revision": "6bd95b5c0ffa425a985fc9728e431b226f2151b9e5465609edda828f1d917a9d"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0
+      }
+    ],
+    "source_sha256": {
+      "CHANGELOG.md": "fe34824130f0660ca9d7b69ba2f5d4ddea275f3c2586da58ef0d290d577497bf",
+      "scripts/check_docs.py": "18b139776d8e9ed5846391f32bacfac043efdf385c351b62387b4eb71155e519",
+      "scripts/test_check_docs.py": "1eb9f5e65286a2299c8074c0c43e16a1044a263545af7d715f1f7c1e57268b3c",
+      "scripts/test_cli_json.py": "2ed979634dca972657a6400611ca7e8dcbac0afc179e1c2c702762913a4e0859",
+      "src/bin/qleisli/json.rs": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b",
+      "src/bin/qleisli/options.rs": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
+      "src/frontend/compile/lower/certified.rs": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+      "src/frontend/compile/lower/mod.rs": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+      "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+      "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+      "src/frontend/project/manifest.rs": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453",
+      "src/interchange/hierarchical/runtime.rs": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f",
+      "tests/fixtures/review_followup_v024/usage.txt": "0f157e8d419403ed3d471f4a690ce3d205417c7d79471a59b4e68b48c5283953",
+      "tests/fixtures/verification_v022/inventory.json": "49f43d846bf89c48a664b8c2adf105206c326e2dc39cadd1ca3f2aadfcd1a0f3",
+      "tests/review_v026.rs": "6c3691b4cf2365e8276a87f5d9452fd6237961db715bb1050aefc6085a58dcb1",
+      "docs/documentation-comments.md": "b4e34bb7a98ae42ef2026ddd67b988aa10707d931cd1383d1eb911da191b9b2e",
+      "Cargo.toml": "962b8fb1325242520ec38c6c7480bc12cec5fb4add37401f15239494cc2161d5",
+      "AGENTS.md": "9cf5b2ab4e61e0bd3d1a4ffc4d370dde8116ed3ae0a0912033f413ad723dd7c3"
+    },
+    "same_source_as_pr": [
+      "scripts/test_cli_json.py",
+      "src/bin/qleisli/json.rs",
+      "src/bin/qleisli/options.rs",
+      "src/frontend/compile/lower/certified.rs",
+      "src/frontend/compile/lower/mod.rs",
+      "src/frontend/compile/lower/primitives.rs",
+      "src/frontend/compile/lower/value.rs",
+      "src/frontend/project/manifest.rs",
+      "src/interchange/hierarchical/runtime.rs",
+      "tests/fixtures/review_followup_v024/usage.txt",
+      "tests/review_v026.rs"
+    ],
+    "docs_scope": "docs/**/*.md plus docs/project-status.json; excludes ignored OS metadata",
+    "docs_bytes": 407713,
+    "docs_baseline_bytes": 816905,
+    "agents_bytes": 5967,
+    "agents_lines": 96
+  },
+  "not_performed_this_followup": [
+    "New Lean builds, axiom audits, or native differential suites; the bug patch does not modify Lean definitions",
+    "Linux-only JSON cases on macOS; pending Linux CI",
+    "New maximum-size corpus generation",
+    "Merge, manual issue closure, tagging, publication, or authority transfer"
+  ]
+}

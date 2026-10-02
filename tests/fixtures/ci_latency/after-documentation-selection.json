@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "head": "7df26890993f4f0c8b633e984ce2e0bedaba445b",
+  "event": "pull_request",
+  "ref": "refs/pull/200/merge",
+  "base": "5e0f351f800cd8cb5e5594e43c5cf3204674b4b8",
+  "profile": "docs",
+  "reason": "only explicitly listed descriptive documents/result records",
+  "paths": [
+    "tests/fixtures/ci_latency/docs-probe.json"
+  ],
+  "dependency_cache": "enabled",
+  "project_build_cache": "disabled",
+  "policy_sha256": "f3658ef3ee4695bca7897cf60129835bde29b9ecc6a83585d1d54835fd0f81ae"
+}

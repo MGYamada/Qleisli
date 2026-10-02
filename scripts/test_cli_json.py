@@ -230,6 +230,42 @@ class JsonCliTests(unittest.TestCase):
         result = self.invoke(b"check\xff", self.root, "--format=json", status=2)
         self.assertEqual(result["command"], "")
 
+    def test_qrate_selection_locations_are_independent_of_root_spelling(self):
+        self.source("observe fn main()->Unit{()}")
+        alias = self.root / "alias"
+        alias.symlink_to(self.root, target_is_directory=True)
+        diagnostics = []
+        for path in [self.root.resolve(), self.root.relative_to(self.root.parent), alias]:
+            output = subprocess.run([BINARY, "check", str(path), "--qrate", "--format=json"], cwd=self.root.parent, capture_output=True)
+            self.assertEqual(output.returncode, 1)
+            diagnostic = json.loads(output.stdout)["diagnostics"][0]
+            self.assertEqual(diagnostic["code"], "project")
+            self.assertIsNotNone(diagnostic["primary"])
+            self.assertEqual(diagnostic["primary"]["path"], "Qargo.toml")
+            diagnostics.append(diagnostic["primary"])
+        self.assertEqual(diagnostics, [diagnostics[0]] * 3)
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "non-UTF-8 filesystem names")
+    def test_canonical_non_utf8_source_roots_are_rejected_in_json(self):
+        root = os.fsencode(self.root) + b"/invalid-\xff"
+        os.mkdir(root)
+        for name, data in [(b"main.qli", b"observe fn main()->Unit{()}"), (b"Qargo.toml", b"schema-version=2\n[qrate]\nedition='2026'\n[source]\nroot='src'\n")]:
+            with open(root + b"/" + name, "wb") as file:
+                file.write(data)
+        os.mkdir(root + b"/src")
+        with open(root + b"/src/main.qli", "wb") as file:
+            file.write(b"observe fn main()->Unit{()}")
+        alias = self.root / "alias"
+        os.symlink(root, alias)
+        for path, cwd, options in [(alias, self.root, []), (".", root, []), (alias, self.root, ["--qrate"])]:
+            for command, extra in [("check", []), ("run", []), ("sample", ["--shots=1", "--seed=0"])]:
+                output = subprocess.run([BINARY, command, str(path), "--format=json", *options, *extra], cwd=cwd, capture_output=True)
+                self.assertEqual(output.returncode, 1, output)
+                diagnostic = json.loads(output.stdout)["diagnostics"][0]
+                self.assertEqual(diagnostic["code"], "project")
+                self.assertEqual(diagnostic["message"], "source root is not valid UTF-8")
+                self.assertIsNone(diagnostic["primary"])
+
     @unittest.skipUnless(sys.platform.startswith("linux"), "non-UTF-8 filesystem names")
     def test_existing_non_utf8_path_and_stdout_write_failure(self):
         root = os.fsencode(self.root) + b"/invalid-\xff"

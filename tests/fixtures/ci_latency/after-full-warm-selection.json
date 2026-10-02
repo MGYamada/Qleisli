@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "head": "686a2b743fa60f33c7c64bb9a9b4372c48ab5acc",
+  "event": "pull_request",
+  "ref": "refs/pull/199/merge",
+  "base": "b316a5065527c84f3dbcb059750637e2b14b0965",
+  "profile": "full",
+  "reason": "protected executable/policy input: .github/ci/profiles.json",
+  "paths": [
+    ".github/ci/profiles.json",
+    ".github/workflows/ci.yml",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "scripts/ci_profiles.py",
+    "scripts/measure_ci.py",
+    "scripts/test_ci_profiles.py",
+    "scripts/test_measure_ci.py",
+    "tests/fixtures/ci_latency/local-validation.json"
+  ],
+  "dependency_cache": "enabled",
+  "project_build_cache": "disabled",
+  "policy_sha256": "f3658ef3ee4695bca7897cf60129835bde29b9ecc6a83585d1d54835fd0f81ae"
+}

@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "documentation_only": [
+    "AGENTS.md",
+    "CHANGELOG.md",
+    "docs/current-status.md",
+    "docs/rule-inventory.md",
+    "docs/project-status.json",
+    "docs/qli-authoring-feedback.md",
+    "docs/documentation-map.md"
+  ],
+  "result_records": [
+    "docs/releases/v[0-9]*.md",
+    "tests/fixtures/releases/v[0-9]*/publication.json",
+    "tests/fixtures/ci_latency/*.json"
+  ]
+}

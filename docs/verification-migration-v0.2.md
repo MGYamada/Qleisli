@@ -1,6 +1,10 @@
 # Verification migration through 0.2.2–0.2.9
 
-VM-22/23, the VM-24 finite component and [VM-25 straight-line pure raw checking](../tests/fixtures/verification_v025/completion/README.md) are implemented and checked. VM-26–29 retain classical branches/observation, hierarchy closure and production integration. Release [0.2.5](releases/v0.2.5.md) is published; the declared VM-25 profile is checked separately from later integration gates. The user assigned verification migration to 0.2.2–0.2.9, superseding the old K1/K2 dates. 0.2.9 targets complete implementation plus explicitly selected dual checking; Lean-only authority still requires v0.5 S05-C1–C5.
+VM-22–25 are checked components. [VM-26](../tests/fixtures/verification_v026/README.md)
+completes observation/SSA/branch checking, original complex refinement,
+matrix-free CP/TNI/TP and retained branch-functions.
+The adopted 0.2.2–0.2.9 staging supersedes K1/K2 dates. VM-29 targets complete
+implementation and selected dual checking; Lean-only authority requires S05-C1–C5.
 
 ## Scope and starting point
 
@@ -33,39 +37,37 @@ Freeze serialization, domains/phase interpretation, reference definitions, encod
 | **0.2.8 / VM-28** | Integrate audited native packaging, bounded transport and opt-in dual verification into real producer/consumer paths. | Both checkers receive the same immutable artifact/request; either rejection, disagreement or transport failure blocks that path. Execution/emission binds to the checked artifact. Clean distribution and supported-platform checks pass. |
 | **0.2.9 / VM-29** | Finish the coverage audit and reproducible migration candidate; exercise the complete Lean replacement through the selected production dual path. | Every published acceptance path and variant has Lean coverage or an explicitly recorded unfinished blocker. Publish composed-proof obligations and S05 readiness/review records. An incomplete replacement is reported as pending, never declared complete. |
 
-### VM-22: inventory and one bounded comparison harness
+### Completed components and remaining gates
 
-[VM-22 fixtures and inventory](../tests/fixtures/verification_v022/README.md) cover constructor/API/CLI/import/capacity producers, consumers, obligations and replacements, including raw-only variants, QuantumIf, broad ComputeUseUncompute and zero-width owners. CI detects drift; packaging remains separately selected.
+[VM-22](../tests/fixtures/verification_v022/README.md) freezes the full constructor/
+producer/API/CLI/capacity inventory and comparison bytes. [VM-23](../tests/fixtures/verification_v023/README.md)
+proves actual bounded canonical arithmetic/complex interpretation. [VM-24](../tests/fixtures/verification_v024/README.md)
+reconstructs actual finite equations; original RawProgram extraction is separate.
+[VM-25](../tests/fixtures/verification_v025/completion/README.md) proves all eleven
+straight-line pure constructors against independent original-operation traces,
+complete owners/interfaces, phase/reference action, actual cleanup for correlated
+inputs, and fresh function graphs with full body/name/source attachment. Broad
+certified scopes use local finite equations, protected uses non-dense coefficient
+semantics; twelve-bit structural capacities remain. Native reports are experimental,
+not production QIRF authority. Pure classical branches remain VM-26.
 
-### VM-23: exact meanings without a domain change
+VM-26 now checks all raw constructors, global IDs across both arms, lexical SSA,
+zero owners and complete phis. The actual finite Kraus sum proves CP/TNI per
+selected outcome and TP overall, retaining hidden and residual/reference states.
+Matrix-free coefficient evaluation proves original complex refinement and
+general finite-reference CP/TNI/TP; fresh retained functions include closed
+classical branches. VM-26 is checked. VM-27–29 retain hierarchy/root closure,
+native/decoder correspondence, immutable-artifact dual integration and full
+coverage audit. General source preservation and S05 remain separate.
 
-[VM-23](../tests/fixtures/verification_v023/README.md) proves actual bounded R8 scalar/matrix operations, canonical equality, complex interpretation, reference behavior, costs and failures. Signed-i128 and machine-index bounds stay compatible. It neither proves old Rust arithmetic nor adds a coefficient domain or production transport.
-
-### VM-24: reconstruct evidence, not producer conclusions
-
-[VM-24](../tests/fixtures/verification_v024/README.md) reconstructs original finite data and independently required equations, with full-space inverse/reference/clean-return laws. Actual RawProgram extraction remains VM-25/26; native graph accounting is experimental. A handle, hash, cached success or Rust acceptance flag is not evidence.
-
-### VM-25: pure raw IR and clean auxiliary release
-
-Cover every pure raw constructor: complete token/wire freshness and output coverage, exact interfaces/effects, injective lifts, structural changes, gates/control/ApplyUnitary, retained evidence and both computed forms with actual-body extraction. Prove phase/reference laws and exact cleanup factorization. Preserve raw legacy forms or independently validate a versioned adapter. Pure classical branches still need VM-26.
-
-The [completed packet](../tests/fixtures/verification_v025/completion/README.md) covers all eleven straight-line pure constructors, complete owners/interfaces, actual extraction and independent complex raw action. General checking uses local finite equations for broad certified scopes and non-dense original protected uses; twelve-bit structural capacities remain. Actual acceptance proves exact zero return on arbitrary correlated amplitudes, complete fresh function-graph semantics and exact signature/body/name/source attachment, with literal and dependency-expanded capacity checks. Native comparisons cover the original trace, phase-exact matrices, actual Rust corpus prefixes and identity/capacity faults. Pure classical branches remain VM-26. The private component envelope is not production QIRF, source preservation or a transferred authority.
-
-### VM-26: observing instruments and complete branches
-
-Cover initialization, measurement/reset/discard, classical SSA and Boolean operations, branch scopes and complete classical/quantum phi/caller/frame interfaces. Keep seen IDs across exclusive arms, dead-owner nonrevival and Q<Unit>. Prove complete instruments on correlated systems: each outcome CP/TNI, summed TP, residual/reference states and hidden-history addition. Prove actual executable definitions, not only existing Resource/Phi projections.
-
-### VM-27: remove transitional hierarchy premises
-
-Connect exact/finite/raw results to actual shared hierarchy and constructed denotations. Discharge Rust finite-reader/equality premises, independently bind roots/providers/encodings and complete selected observing/transformation rules. QPE needs the full preparation/powers/inverse-QFT/readout instrument with completeness and retained target/reference. Keep zero-repeat body checking, phase, reversal, sharing and R14/H1–H5. External schemas remain disabled until their own gates pass.
-
-### VM-28: bind decisions to real production artifacts
-
-Bind both checkers to the same immutable complete artifact/request and bind execution/emission to accepted bytes. Audit packaging and provenance; reject either failure, disagreement, malformed/truncated/extra/stale result, absent/crashed/timed-out kernel. No fallback to Rust success in the dual path. Cover supported platforms and source/raw/QIRF/hierarchy/host producers and consumers.
-
-### VM-29: declare the actual completed and open scope
-
-Inventory every production dispatch/variant and complete Lean coverage, or record an unfinished blocker. Publish composed-proof and S05 readiness/review evidence; parity or an implementation-language change alone proves no theorem or authority transfer.
+<a id="vm-22-inventory-and-one-bounded-comparison-harness"></a>
+<a id="vm-23-exact-meanings-without-a-domain-change"></a>
+<a id="vm-24-reconstruct-evidence-not-producer-conclusions"></a>
+<a id="vm-25-pure-raw-ir-and-clean-auxiliary-release"></a>
+<a id="vm-26-observing-instruments-and-complete-branches"></a>
+<a id="vm-27-remove-transitional-hierarchy-premises"></a>
+<a id="vm-28-bind-decisions-to-real-production-artifacts"></a>
+<a id="vm-29-declare-the-actual-completed-and-open-scope"></a>
 
 ## Common acceptance and recording rules
 

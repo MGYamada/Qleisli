@@ -26,7 +26,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 54)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 60)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))

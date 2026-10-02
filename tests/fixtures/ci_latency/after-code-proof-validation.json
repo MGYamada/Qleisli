@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "head": "2988f984b26d1618ad0a4483ce02d574ab21fba7",
+  "needs": {
+    "changes": {
+      "result": "success",
+      "outputs": {
+        "profile": "full",
+        "head": "2988f984b26d1618ad0a4483ce02d574ab21fba7"
+      }
+    },
+    "check-rust": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-rust-msrv": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-macos-source": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-interop": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-lean": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-lean-kernel": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-distribution": {
+      "result": "success",
+      "outputs": {}
+    },
+    "check-docs": {
+      "result": "success",
+      "outputs": {}
+    }
+  }
+}

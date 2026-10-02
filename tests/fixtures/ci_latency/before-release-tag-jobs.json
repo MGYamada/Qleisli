@@ -1,0 +1,1111 @@
+{
+  "jobs": [
+    {
+      "completed_at": "2026-10-01T14:43:23Z",
+      "conclusion": "success",
+      "id": 110422963788,
+      "name": "rust-msrv",
+      "started_at": "2026-10-01T14:40:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:39Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:41Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:50Z",
+          "conclusion": "success",
+          "name": "Install the minimum supported Rust toolchain",
+          "started_at": "2026-10-01T14:40:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.85.0 test --all-targets",
+          "started_at": "2026-10-01T14:40:50Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:21Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:22Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:33Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.85.0 clippy --all-targets -- -D warnings",
+          "started_at": "2026-10-01T14:42:22Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:15Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "started_at": "2026-10-01T14:42:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:21Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "started_at": "2026-10-01T14:43:15Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:21Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:43:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:21Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:43:21Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:41:06Z",
+      "conclusion": "success",
+      "id": 110422964223,
+      "name": "docs",
+      "started_at": "2026-10-01T14:40:39Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:40Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Check edition 2026 coverage of every Qleisli source and QLT draft",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_docs.py",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_lean_kernel.py",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_schema_registry.py",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_schema_registry.py --source-only",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_docs.py",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:59Z",
+          "conclusion": "success",
+          "name": "Verification inventory coverage and independent oracle calibration",
+          "started_at": "2026-10-01T14:40:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:59Z",
+          "conclusion": "success",
+          "name": "Standard-library contract-writing conventions and mutation checks",
+          "started_at": "2026-10-01T14:40:59Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:00Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_authoring_sessions.py",
+          "started_at": "2026-10-01T14:40:59Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:00Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_authoring_sessions.py",
+          "started_at": "2026-10-01T14:41:00Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:02Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_input_corpus.py",
+          "started_at": "2026-10-01T14:41:00Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_input_corpus.py",
+          "started_at": "2026-10-01T14:41:02Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_distribution.py",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_imaginary_v1_examples.py",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_imaginary_v1_examples.py",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_semantic_contract_examples.py",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_semantic_contract_examples.py",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:03Z",
+          "conclusion": "success",
+          "name": "Check whitespace throughout the committed tree",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:04Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:41:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:04Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:41:04Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:42:07Z",
+      "conclusion": "success",
+      "id": 110422964272,
+      "name": "macos-source",
+      "started_at": "2026-10-01T14:40:45Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:47Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:46Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:51Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:47Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:00Z",
+          "conclusion": "success",
+          "name": "Install MSRV and Intel macOS compilation target",
+          "started_at": "2026-10-01T14:40:51Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:23Z",
+          "conclusion": "success",
+          "name": "Exercise descriptor-relative source loading on macOS",
+          "started_at": "2026-10-01T14:41:00Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:41Z",
+          "conclusion": "success",
+          "name": "Check source budgets, project loading and edition manifests",
+          "started_at": "2026-10-01T14:41:23Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:03Z",
+          "conclusion": "success",
+          "name": "Build with Rust's existing Intel macOS minimum",
+          "started_at": "2026-10-01T14:41:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:04Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:42:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:04Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:42:04Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:43:43Z",
+      "conclusion": "success",
+      "id": 110422964318,
+      "name": "distribution",
+      "started_at": "2026-10-01T14:40:38Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:39Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:38Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:41Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:50Z",
+          "conclusion": "success",
+          "name": "Install the tested Rust toolchain",
+          "started_at": "2026-10-01T14:40:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:51Z",
+          "conclusion": "success",
+          "name": "Fetch package dependencies before offline distribution checks",
+          "started_at": "2026-10-01T14:40:50Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:39Z",
+          "conclusion": "success",
+          "name": "Verify clean package and complete source archive",
+          "started_at": "2026-10-01T14:40:51Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:41Z",
+          "conclusion": "success",
+          "name": "Retain candidate hashes, archives and command logs",
+          "started_at": "2026-10-01T14:43:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:41Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:43:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:43:41Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:43:41Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:50:49Z",
+      "conclusion": "success",
+      "id": 110422964399,
+      "name": "lean",
+      "started_at": "2026-10-01T14:40:39Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:45:41Z",
+          "conclusion": "success",
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:46:51Z",
+          "conclusion": "success",
+          "name": "Audit every project declaration for forbidden axioms",
+          "started_at": "2026-10-01T14:45:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:50:47Z",
+          "conclusion": "success",
+          "name": "Bind shipped schema types to rebuilt declarations and audited executable sources",
+          "started_at": "2026-10-01T14:46:51Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:50:47Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:50:47Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:50:47Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:50:47Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:45:42Z",
+      "conclusion": "success",
+      "id": 110422964581,
+      "name": "rust",
+      "started_at": "2026-10-01T14:40:40Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:43Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:52Z",
+          "conclusion": "success",
+          "name": "Install the tested Rust toolchain",
+          "started_at": "2026-10-01T14:40:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:53Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 fmt --check",
+          "started_at": "2026-10-01T14:40:52Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:09Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "started_at": "2026-10-01T14:40:53Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:10Z",
+          "conclusion": "success",
+          "name": "Sized Rust and Python source dialect comparisons on small inputs",
+          "started_at": "2026-10-01T14:42:09Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:41Z",
+          "conclusion": "success",
+          "name": "Sized primitive omissions must fail compilation",
+          "started_at": "2026-10-01T14:42:10Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:44Z",
+          "conclusion": "success",
+          "name": "Build public API documentation without warnings",
+          "started_at": "2026-10-01T14:42:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Execute public API documentation examples",
+          "started_at": "2026-10-01T14:42:44Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:45Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:46Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "started_at": "2026-10-01T14:42:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:47Z",
+          "conclusion": "success",
+          "name": "Seeded source differential checks with an independent complex oracle",
+          "started_at": "2026-10-01T14:42:46Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:48Z",
+          "conclusion": "success",
+          "name": "Frozen VM-22 finite/source comparison inputs",
+          "started_at": "2026-10-01T14:42:47Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:44:52Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+          "started_at": "2026-10-01T14:42:48Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:44:57Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 clippy --all-targets -- -D warnings",
+          "started_at": "2026-10-01T14:44:52Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:44:57Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check",
+          "started_at": "2026-10-01T14:44:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:45:33Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "started_at": "2026-10-01T14:44:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:45:39Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "started_at": "2026-10-01T14:45:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:45:39Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:45:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:45:39Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:45:39Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T14:41:47Z",
+      "conclusion": "success",
+      "id": 110422964604,
+      "name": "interop",
+      "started_at": "2026-10-01T14:40:39Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:40Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:14Z",
+          "conclusion": "success",
+          "name": "Install validators and the tested Rust toolchain",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:29Z",
+          "conclusion": "success",
+          "name": "Run cargo +1.98.1 build --example interop --bin qleisli",
+          "started_at": "2026-10-01T14:41:14Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:41Z",
+          "conclusion": "success",
+          "name": "Independently parse OpenQASM and verify QIR with LLVM",
+          "started_at": "2026-10-01T14:41:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:45Z",
+          "conclusion": "success",
+          "name": "Installed Python API and independently authored QIR input",
+          "started_at": "2026-10-01T14:41:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:45Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:41:45Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:41:45Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T14:41:45Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T15:03:18Z",
+      "conclusion": "success",
+      "id": 110422965146,
+      "name": "lean-kernel",
+      "started_at": "2026-10-01T14:40:40Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T14:40:42Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T14:40:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:50Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T14:40:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:57Z",
+          "conclusion": "success",
+          "name": "Install the tested Rust toolchain for native host comparisons",
+          "started_at": "2026-10-01T14:40:50Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:58Z",
+          "conclusion": "success",
+          "name": "Fetch Rust dependencies before offline native host comparisons",
+          "started_at": "2026-10-01T14:40:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:40:59Z",
+          "conclusion": "success",
+          "name": "Reject kernel/backend source escape hatches and unaudited imports",
+          "started_at": "2026-10-01T14:40:58Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:22Z",
+          "conclusion": "success",
+          "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+          "started_at": "2026-10-01T14:40:59Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:42:52Z",
+          "conclusion": "success",
+          "name": "Audit axioms, unsafe/partial declarations and runtime replacements",
+          "started_at": "2026-10-01T14:42:22Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:46:50Z",
+          "conclusion": "success",
+          "name": "Replay the compiled project definitions through Lean's kernel",
+          "started_at": "2026-10-01T14:42:52Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:47:32Z",
+          "conclusion": "success",
+          "name": "Reject backend unsafe, implemented_by, extern and partial counterexamples",
+          "started_at": "2026-10-01T14:46:50Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:47:57Z",
+          "conclusion": "success",
+          "name": "Shared DAG semantics, binding, limits and zero-width owners",
+          "started_at": "2026-10-01T14:47:32Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:48:07Z",
+          "conclusion": "success",
+          "name": "Typed owner and axis permutations with independent requests",
+          "started_at": "2026-10-01T14:47:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:48:13Z",
+          "conclusion": "success",
+          "name": "Shared typed calls, ordered composition and independent graph oracle",
+          "started_at": "2026-10-01T14:48:07Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:48:28Z",
+          "conclusion": "success",
+          "name": "Typed dyadic phases, controlled conditions and layout composition",
+          "started_at": "2026-10-01T14:48:13Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:48:29Z",
+          "conclusion": "success",
+          "name": "Sparse phase powers and coherent controls match independent integer oracles",
+          "started_at": "2026-10-01T14:48:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:48:56Z",
+          "conclusion": "success",
+          "name": "Actual shared-gradient binding, phase semantics and remaining budgets",
+          "started_at": "2026-10-01T14:48:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:49:25Z",
+          "conclusion": "success",
+          "name": "Actual Fourier-stage geometry, complex coefficients and shared budgets",
+          "started_at": "2026-10-01T14:48:56Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:49:42Z",
+          "conclusion": "success",
+          "name": "Native interference normalization and independent joint amplitudes",
+          "started_at": "2026-10-01T14:49:25Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:50:09Z",
+          "conclusion": "success",
+          "name": "VM-23 native exact arithmetic, Rust capacities and independent rational matrices",
+          "started_at": "2026-10-01T14:49:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:50:55Z",
+          "conclusion": "success",
+          "name": "VM-24 native finite circuits, fresh encoded equations and original serialized matrices",
+          "started_at": "2026-10-01T14:50:09Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:51:33Z",
+          "conclusion": "success",
+          "name": "VM-25 pure raw owners, actual bodies and finite structured cleanup",
+          "started_at": "2026-10-01T14:50:55Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:25Z",
+          "conclusion": "success",
+          "name": "VM-25 retained bindings, capacity boundaries and non-dense cleanup",
+          "started_at": "2026-10-01T14:51:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:27Z",
+          "conclusion": "success",
+          "name": "Symbolic QFT paths and independent Fourier coefficients",
+          "started_at": "2026-10-01T14:52:25Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:29Z",
+          "conclusion": "success",
+          "name": "Small QFT semantic-path matcher and nonliteral candidates",
+          "started_at": "2026-10-01T14:52:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:43Z",
+          "conclusion": "success",
+          "name": "Typed QFT graph binding and independent paths",
+          "started_at": "2026-10-01T14:52:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:50Z",
+          "conclusion": "success",
+          "name": "QPE plans and independent residual instruments",
+          "started_at": "2026-10-01T14:52:43Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:52:53Z",
+          "conclusion": "success",
+          "name": "Coherent controlled powers and exact joint-reference matrices",
+          "started_at": "2026-10-01T14:52:50Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:02Z",
+          "conclusion": "success",
+          "name": "Full-profile graph schedules, cycles and aggregate capacities",
+          "started_at": "2026-10-01T14:52:53Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:04Z",
+          "conclusion": "success",
+          "name": "Typed artifact dependencies, endpoints and shared work budget",
+          "started_at": "2026-10-01T14:53:02Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:06Z",
+          "conclusion": "success",
+          "name": "Actual node ownership, effects, call names and zero-repeat bodies",
+          "started_at": "2026-10-01T14:53:04Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:10Z",
+          "conclusion": "success",
+          "name": "Meaning and encoding types, QPE providers and zero-scratch shapes",
+          "started_at": "2026-10-01T14:53:06Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:14Z",
+          "conclusion": "success",
+          "name": "Check explicit structural conversions",
+          "started_at": "2026-10-01T14:53:10Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:20Z",
+          "conclusion": "success",
+          "name": "Canonical reshape metadata and independent tree encoding",
+          "started_at": "2026-10-01T14:53:14Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:29Z",
+          "conclusion": "success",
+          "name": "Actual readout nodes, classical assembly and residual/reference branches",
+          "started_at": "2026-10-01T14:53:20Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:34Z",
+          "conclusion": "success",
+          "name": "Actual fresh-zero nodes and retained reference coefficients",
+          "started_at": "2026-10-01T14:53:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:53:35Z",
+          "conclusion": "success",
+          "name": "Composed instrument boundaries and retained finite obligations",
+          "started_at": "2026-10-01T14:53:34Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:54:44Z",
+          "conclusion": "success",
+          "name": "Composed instrument transport, finite discharge and small source clients",
+          "started_at": "2026-10-01T14:53:35Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:54:54Z",
+          "conclusion": "success",
+          "name": "Checked hierarchy execution and full complex measurement branches",
+          "started_at": "2026-10-01T14:54:44Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:54:54Z",
+          "conclusion": "success",
+          "name": "Source graph compaction preserves phase, sharing and empty owners",
+          "started_at": "2026-10-01T14:54:54Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:01Z",
+          "conclusion": "success",
+          "name": "Ordinary measured QPE and classical-result clients on small systems",
+          "started_at": "2026-10-01T14:54:54Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:03Z",
+          "conclusion": "success",
+          "name": "Shared QPE source through structural readout on small systems",
+          "started_at": "2026-10-01T14:55:01Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:08Z",
+          "conclusion": "success",
+          "name": "Bind controlled powers to actual bodies and provider obligations",
+          "started_at": "2026-10-01T14:55:03Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:16Z",
+          "conclusion": "success",
+          "name": "Actual source controlled powers through checked owner renames",
+          "started_at": "2026-10-01T14:55:08Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:27Z",
+          "conclusion": "success",
+          "name": "Actual shared circuit routes and ordered phase-sensitive atom traces",
+          "started_at": "2026-10-01T14:55:16Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:55:36Z",
+          "conclusion": "success",
+          "name": "Check actual QPE schedule components",
+          "started_at": "2026-10-01T14:55:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:04Z",
+          "conclusion": "success",
+          "name": "Check QPE root and provider binding",
+          "started_at": "2026-10-01T14:55:36Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:31Z",
+          "conclusion": "success",
+          "name": "Check actual QPE initialization and ordered readout",
+          "started_at": "2026-10-01T14:56:04Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:37Z",
+          "conclusion": "success",
+          "name": "Native checking of Rust sized-source proposals",
+          "started_at": "2026-10-01T14:56:31Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:40Z",
+          "conclusion": "success",
+          "name": "Rust GHZ and arithmetic corpus with independent small-system oracles",
+          "started_at": "2026-10-01T14:56:37Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:41Z",
+          "conclusion": "success",
+          "name": "Sized-source CLI checking, execution and sampling",
+          "started_at": "2026-10-01T14:56:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:56:53Z",
+          "conclusion": "success",
+          "name": "Rust source to named QPE with independent phase and reference probes",
+          "started_at": "2026-10-01T14:56:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:57:14Z",
+          "conclusion": "success",
+          "name": "Check actual provider derivations from an empty proof cache",
+          "started_at": "2026-10-01T14:56:53Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:57:19Z",
+          "conclusion": "success",
+          "name": "Shared call expansion, typed adapters and independent phase oracle",
+          "started_at": "2026-10-01T14:57:14Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:57:21Z",
+          "conclusion": "success",
+          "name": "Finite requests retain actual bytes, types, ports and endpoint indices",
+          "started_at": "2026-10-01T14:57:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:57:32Z",
+          "conclusion": "success",
+          "name": "Conditional derivations retain every shared finite obligation",
+          "started_at": "2026-10-01T14:57:21Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:58:38Z",
+          "conclusion": "success",
+          "name": "Independently requested hierarchy roots and untrusted pair proposals",
+          "started_at": "2026-10-01T14:57:32Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:59:11Z",
+          "conclusion": "success",
+          "name": "Fresh hierarchy transport and finite reconstruction",
+          "started_at": "2026-10-01T14:58:38Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:59:13Z",
+          "conclusion": "success",
+          "name": "Frozen VM-22 comparisons with the experimental native word component",
+          "started_at": "2026-10-01T14:59:11Z"
+        },
+        {
+          "completed_at": "2026-10-01T14:59:40Z",
+          "conclusion": "success",
+          "name": "One-bit Fourier bases and fresh phase-fixed H reconstruction",
+          "started_at": "2026-10-01T14:59:13Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:00:11Z",
+          "conclusion": "success",
+          "name": "Complete recursive Fourier bodies and bound H obligations",
+          "started_at": "2026-10-01T14:59:40Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:00:39Z",
+          "conclusion": "success",
+          "name": "Actual shared wiring, outer QFT permutations and aggregate budgets",
+          "started_at": "2026-10-01T15:00:11Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:20Z",
+          "conclusion": "success",
+          "name": "Actual outer Fourier requests and bound phase-fixed H obligations",
+          "started_at": "2026-10-01T15:00:39Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:41Z",
+          "conclusion": "success",
+          "name": "Complete Fourier requests through fresh native and exact host checks",
+          "started_at": "2026-10-01T15:01:20Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:42Z",
+          "conclusion": "success",
+          "name": "Sized Xor and GHZ source corpus with independent native and semantic checks",
+          "started_at": "2026-10-01T15:01:41Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:46Z",
+          "conclusion": "success",
+          "name": "Shared QFT source, named Fourier contracts, inverse and shared calls",
+          "started_at": "2026-10-01T15:01:42Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:48Z",
+          "conclusion": "success",
+          "name": "Rust source Fourier factoring with exact traces and fresh native checks",
+          "started_at": "2026-10-01T15:01:46Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:51Z",
+          "conclusion": "success",
+          "name": "Small-system coherent QPE source and phase/reference diagnostics",
+          "started_at": "2026-10-01T15:01:48Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:01:57Z",
+          "conclusion": "success",
+          "name": "Small-system shared AddK and Equals sources, restoration and phase checks",
+          "started_at": "2026-10-01T15:01:51Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:02:01Z",
+          "conclusion": "success",
+          "name": "Shared QPE order and amplitude clients with operation forwarding",
+          "started_at": "2026-10-01T15:01:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:02:06Z",
+          "conclusion": "success",
+          "name": "QFT hierarchy widths one through four and retained width-eight capacity case",
+          "started_at": "2026-10-01T15:02:01Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:02:22Z",
+          "conclusion": "success",
+          "name": "Shared-gradient QFT hierarchies at every supported width",
+          "started_at": "2026-10-01T15:02:06Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:03:16Z",
+          "conclusion": "success",
+          "name": "Differential and process-boundary checks",
+          "started_at": "2026-10-01T15:02:22Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:03:16Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T15:03:16Z"
+        },
+        {
+          "completed_at": "2026-10-01T15:03:16Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T15:03:16Z"
+        }
+      ]
+    }
+  ],
+  "total_count": 8
+}

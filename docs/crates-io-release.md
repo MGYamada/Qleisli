@@ -1,6 +1,6 @@
 # Qleisli release procedure
 
-Reusable procedure illustrated with published 0.2.5; substitute the next selected candidate consistently. [Latest publication](releases/v0.2.5.md#successful-publication-2026-10-02) has immutable evidence. Cargo selects the version; [versioning](versioning.md) and feature/proof gates govern release. Ship edition 2026 manifests, full std qrate and checked quickstarts.
+Reusable procedure illustrated with published 0.2.5; substitute the next selected candidate consistently. [Latest publication](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md#successful-publication-2026-10-02) has immutable evidence. Cargo selects the version; [versioning](versioning.md) and feature/proof gates govern release. Ship edition 2026 manifests, full std qrate and checked quickstarts.
 
 ## Release sequence
 

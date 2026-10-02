@@ -1,0 +1,11 @@
+{
+  "conclusion": "cancelled",
+  "created_at": "2026-10-01T20:26:56Z",
+  "event": "pull_request",
+  "head_sha": "23e99a54c38c9a9b4e39a92ebfc3485d05926554",
+  "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/36921630911",
+  "id": 36921630911,
+  "run_attempt": 1,
+  "run_started_at": "2026-10-01T20:26:56Z",
+  "status": "completed"
+}

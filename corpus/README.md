@@ -26,12 +26,12 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
-The six 0.2.5 additions are CZ, Toffoli, inclusive/strict one-bit comparisons, mixed-sign
-RX/RY and a two-wire QAOA mixer, all on 1–3 data qubits. The
-[0.2.5 session](authoring/v025-small/README.md) preserves complete first sources,
-the real missing-CZ-import diagnostic and its qif repair. Five first checks and
-all six repaired checks pass; 490 new complex-entry probes and six semantic
-faults exercise their complete contracts.
+The six 0.2.6 additions cover phased uniform/graph preparation, signed and
+negative-controlled reflections, half-turn Y composition and negative-angle ZZ.
+The [session](authoring/v026-small/README.md) retains four accepted first sources,
+two real count-order parse failures, complete repairs and 164 new full-entry
+probes with six paired semantic faults. All new kernels use one or two data
+qubits. Earlier sessions and source records remain intact.
 
 The [adopted policy](POLICY.md) permits only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos. [Manifest](manifest.json) pins commits, original paths/hashes,
@@ -207,7 +207,7 @@ not passed checks or proved theorems.
 
 | Finite examples | Unitary examples | Observing examples | Semantic faults |
 | --- | --- | --- | --- |
-| 54 | 49 | 5 | 30 |
+| 60 | 55 | 5 | 36 |
 
 <!-- corpus-inventory:end -->
 

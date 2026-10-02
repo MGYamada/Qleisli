@@ -6,7 +6,7 @@ acceptance rule or proof. The original baseline comparisons use at most three qu
 
 [inventory.json](inventory.json) freezes 232 public enum constructors (including
 all 19 `RawOp` forms), public signatures and capacity constants in 155 reviewed
-source snapshots, including VM-23 arithmetic and the VM-24 finite component.
+source snapshots at that checkpoint, including VM-23 arithmetic and the VM-24 finite component.
 Thirty-six coverage groups give producers, consumers, obligations,
 replacement packets and executable positive/negative references. Eighteen boundary
 contracts distinguish validity from independent semantic requests and retain
@@ -51,7 +51,7 @@ pins. Added cases have their own first-source and numerical reports in
 [the 0.2.3 session](../../../corpus/authoring/v023-small/session.json).
 No behavior or comparison artifact is regenerated.
 
-The [v0.2.5 internal refactoring](../../../docs/releases/v0.2.5.md) reviews eleven
+The [v0.2.5 internal refactoring](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md) reviews eleven
 changed private-body/version hashes and adds eight private modules. Shared CLI
 execution, frontend flattening state, finite numerical state/circuit execution,
 explicit QIRF field maps and native hierarchy response handling retain published
@@ -62,7 +62,7 @@ eight bounded-capacity/transport modules. Existing public types, legacy rewrite
 names, actual result/work behavior and all original comparison bytes remain.
 Source/import and compiled-origin policy explicitly cover each transport child;
 registry identity includes its complete source. [Universal equality and native
-comparisons](../../../docs/releases/v0.2.5.md#lean-kernel-continuation) record the
+comparisons](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md#lean-kernel-continuation) record the
 review without enabling schemas or claiming later migration gates.
 The v0.2.2 review repairs explicitly refresh thirteen checking-source snapshots
 and two current harness pins, then add eight regression/source pins. Public
@@ -158,3 +158,17 @@ body pins for additive phase/identity aliases and the equivalent bundled QFT
 source. Public Rust/IR/Lean declarations and capacities are unchanged. Original
 36-case/12-fault comparison sources, bytes and reports remain frozen; later
 active corpus improvements preserve first attempts in their own sessions.
+
+The 2026-10-02 selection of v0.2.6 refreshes the Python host and crate-root
+source pins for synchronized `__version__` and version-pinned documentation URLs. Public APIs, checking bodies,
+capacities, frozen comparison artifacts/requests and historical results are
+unchanged. The new six corpus cases and their first sources are recorded
+separately in [the v0.2.6 session](../../../corpus/authoring/v026-small/README.md).
+
+The [VM-26 component](../verification_v026/README.md) explicitly refreshes the
+kernel/transport/proof import roots, reviewed runtime/proof helpers and tests,
+and inventories observation, matrix-free and retained-branch components. The
+current census is
+recorded by inventory.json. Original public enum surfaces, capacity constants,
+comparison bytes, corpus prefixes and historical reports remain unchanged.
+The new component adds no production authority or enabled external schema.

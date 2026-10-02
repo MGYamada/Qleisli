@@ -1,320 +1,113 @@
 <a id="a2-有限の静的操作変換"></a>
-
-# A2: Finite static operation transformations
-
-Status: **Finite subset implemented and checked on finite examples**
-(2026-09-26). Function names are resolved at compile time; operations are not
-first-class values. All three constructs below are language forms, not ordinary
-higher-order functions or additional sealed gates. This English edition is the
-authoritative contract and reference for this document, replacing its earlier
-Japanese edition. The review revision additionally supports closed classical
-computations and deterministic branch selection within a static target. The
-[finite core specification](language-spec.md) supplies the surrounding rules.
-The [static semantics](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md) gives local phase-preserving proofs;
-general source-to-IR meaning preservation and Rust implementation correctness
-remain open.
-
-The 0.1.8 [M1 supplement](next-minor-spec.md) additionally permits static
-parameter names in these three forms, requiring Adjoint, Apply, and Controlled
-access respectively. Its six-bit operation profile is separate from the
-existing twelve-bit closed named-function profile below. `apply_contract` and
-both computed forms keep their original closed name operands. Static operation
-constructors use bracket arguments; they are not runtime closures.
-
 <a id="表層の契約"></a>
+<a id="位相を保持する有限ir"></a>
+<a id="最初の利用対象"></a>
+<a id="通常定義と公開契約"></a>
+<a id="確認した結果"></a>
+
+# Finite static operation transformations
+
+Normative compatible finite profile; general Rust/source preservation remains
+open. [Language](language-spec.md) fixes ownership/effects; [M1](next-minor-spec.md)
+adds static parameters with explicit access. Named closed targets use the
+12-bit profile; M1 uses six bits. Contracts/computed forms keep closed operands.
 
 ## Surface contracts
 
-A target `u` is a known `unitary fn u(q: Q<A>) -> Q<A>` or one of the sealed
-single-qubit gates `h/x/z/t/s/sdg/tdg`, or `id/phase_eighth` on the exact finite basis `A`. The initial subset requires one register, identical
-input/output basis type trees, and no classical parameters. Expand and check
-the ordinary body for types, effects, and ownership, independently verify its
-IR, and only then transform it.
+Targets: declared unary unitary Q<A>→Q<A>, no classical ports; sealed
+h/x/z/t/s/sdg/tdg on Bit, id/phase_eighth on exact finite A. Same complete trees,
+normal body/ownership/effect/cycle checking and independent unary IR verification
+precede extraction. No caller capture; an iso identity is ineligible.
 
-| Form | Type, ownership, and effect | Acceptance, rejection, and meaning |
-| --- | --- | --- |
-| `adjoint(u, q)` | `Q<A> -> Q<A>`, `Unitary`; consume and return the input ownership. | `U†` for the known body. Reject `Iso`, observation, classical parameters, or different input/output types. |
-| `repeat_static(n, u, q)` | The same interface. `n` is a decimal static natural-number literal. | `U^n`; zero repetitions give identity but still check the target name, type, and body. Reject a dynamic count or capacity-budget overflow. |
-| `qif(c, q) { 0 => u0, 1 => u1 }` | Arguments `Q<Bit>,Q<A>` return `(Q<Bit>,Q<A>)`, `Unitary`; consume and return both ownerships. | `\|0⟩⟨0\|⊗U0 + \|1⟩⟨1\|⊗U1`. Require distinct ownership and preserve both arms' phases. |
+| Form | Ownership and exact action |
+| --- | --- |
+| adjoint(u,q) | Consume/return Q<A>; U† |
+| repeat_static(n,u,q) | Consume/return Q<A>; U^n, even zero checks target/body |
+| qif(c,q){0=>u0,1=>u1} | Distinct Q<Bit>/Q<A> owners in/out; \|0><0\|⊗U0+\|1><1\|⊗U1 |
 
-The table gives each form's own effect. Join it with the effects of its input
-expressions; applying a static unitary does not erase an input's `Iso` or
-`Observe` effect. Quantum arguments are evaluated from left to right. The same
-ownership cannot be supplied twice. Distinctness concerns logical ownership
-slots as well as disjoint physical wire sets: `Q<Unit>` remains linear even
-though its wire list is empty. Different ownerships may be entangled.
-
-Resolve names through explicit imports and the current module. A local binding,
-including a spent binding, hides a same-named function. Recursion is rejected,
-including call-graph edges from static target references. Function names cannot
-be returned as values or passed as ordinary arguments.
-
-The implementation limits `n` to 4,096 and disallows leading zeroes except for
-`0` itself. Basis literals elsewhere remain only `0/1`. The existing total work
-budget and depth limit also apply to static expansion, including nested
-repetitions.
+Own effect Unitary joins input effects. Quantum arguments evaluate left-to-right;
+resolve targets after inputs in residual environment. Live/spent locals hide
+callables; static references participate in acyclic dependency checking.
+Q<Unit> remains linear/disjoint despite empty wires. Counts canonical decimal
+0..4,096; nested expansion/depth/work limits still apply.
 
 ### Static target judgment
 
-Use the environments, opaque pending-value frame `F`, and register store `R`
-from the [source resource rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md). `E` retains spent
-bindings as unavailable entries. Write
-
-```text
-D ; E |- StaticTarget(u,A) => S
-```
-
-when declaration context `D` and the current residual environment `E` resolve
-`u` to a checked finite circuit `S` on `bits(A)` axes. This is metanotation,
-not a new source type or API. The premises are:
-
-1. `u` is absent from `dom(E)`, including spent entries; resolve it using the
-   current module and its explicit imports.
-2. Either it names a declaration whose **declared** classification is
-   `unitary`, with exactly the signature `(Q<A>) -> Q<A>`, or it names sealed
-   `std::quantum::h/x/z/t/s/sdg/tdg` and `A=Bit`, or `id/phase_eighth` on the exact finite basis `A`. Exact type-tree equality is required;
-   equal wire width alone is insufficient. An `iso` identity is ineligible.
-3. Check the whole body from one fresh symbolic input in a separate register
-   store. Enforce normal calls, types, ownership closure, effect bounds, and
-   the acyclic dependency rule. It must return one `Q<A>` and no leftover
-   ownership. A static target cannot access caller values.
-4. Independently verify the resulting unary IR with declared effect `Unitary`;
-   flatten only supported finite constructors into `S`, including the final
-   output-axis permutation. All width, expansion, and work limits must hold.
-
-Closed internal `CBit` constants, Boolean operators, and classical branches
-are supported. With no classical ports or observations, their values are
-statically determined. After both arms pass source and IR verification,
-flattening selects the arm, transfers its complete simultaneous phi interface,
-and retains output order and phase. This does not enable classical parameters
-or measurement-dependent static targets. See [F2](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md#3-f2-flattening-and-final-output-order).
-
-Thus a signature alone is insufficient. These premises are required even for
-zero repetitions and both arms of a `qif`. The emitted enclosing IR is also
-independently verified; static-body verification does not replace that check.
+A signature alone supplies no body evidence. Fresh symbolic input must return
+exact Q<A> with no leftovers; check unused bodies, both qif targets and zero
+repetitions. Closed deterministic CBit work/branches may flatten only after
+both arms validate; retain simultaneous complete phi and final output axes.
 
 ### Expression rules and evaluation order
 
-Abbreviate a successful resource judgment as
-`D ; E ; F ; R |- e => v:T ! eps ; E' ; R'`. Freshness history is implicit
-here and must satisfy the full resource rules. For a circuit `S`, `Inv(S)`
-inverts it and `Repeat(n,S)` concatenates `n` copies, with an empty sequence
-for `n=0`.
-
-```text
-D ; E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
-D ; E1 |- StaticTarget(u,A) => S
----------------------------------------------------------------------- ADJOINT
-D ; E ; F ; R |- adjoint(u,e) => q(s,A):Q<A> ! max(eps,Unitary) ; E1 ; R2
-
-D ; E ; F ; R |- e => q(s,A):Q<A> ! eps ; E1 ; R1
-D ; E1 |- StaticTarget(u,A) => S       n is a permitted static literal
----------------------------------------------------------------------- REPEAT
-D ; E ; F ; R |- repeat_static(n,u,e)
-    => q(s,A):Q<A> ! max(eps,Unitary) ; E1 ; R2
-```
-
-`R2` is `R1` with a fresh token for slot `s` and the same ordered wires and
-basis type. Emit `ApplyUnitary` with `Inv(S)` or `Repeat(n,S)`. These rules
-resolve the target **after** evaluating `e`, using `E1`. Zero repetitions
-still evaluate `e`, check `StaticTarget`, and pass its ownership through once.
-
-```text
-D ; E  ; F        ; R  |- ec => c:Q<Bit> ! eps_c ; E1 ; R1
-D ; E1 ; F ++ [c] ; R1 |- eq => q:Q<A>   ! eps_q ; E2 ; R2
-own(c) and own(q) are disjoint; their live wire sets are disjoint
-D ; E2 |- StaticTarget(u0,A) => S0
-D ; E2 |- StaticTarget(u1,A) => S1
----------------------------------------------------------------------- QIF
-D ; E ; F ; R |- qif(ec,eq){0=>u0,1=>u1}
-    => (c',q'):(Q<Bit>,Q<A>) ! max(eps_c,eps_q,Unitary) ; E2 ; R3
-```
-
-First evaluate and check the control as `Q<Bit>`, then evaluate the target
-with the control held in the opaque pending frame. If the target expression
-contains a classical branch, its complete phi interface must include that
-control; its register metadata can change while the pending holder survives.
-Resolve and check `u0`, then `u1`, in the same residual environment `E2`.
-Neither target becomes unchecked because of a known control state. Only after
-both checks, emit `Join; ApplyUnitary; Split`, returning the control and target
-in that order. The joins/splits create new slots/tokens while preserving the
-logical wire interface. Remap each target axis `j` to joined axis `j+1` and
-add a control at axis `0`, false for `S0` and true for `S1`.
-
-Accepted examples are `adjoint(t,q)` and `repeat_static(0,h,q)` on a live
-`Q<Bit>`. Rejected examples include `repeat_static(0,missing,q)`,
-`adjoint(init0,q)`, static transformation of a function with a classical
-parameter, and `qif(q,q){0=>h,1=>h}`. In
-`unitary fn bad(u:Q<Bit>)->Q<Bit>{adjoint(u,u)}`, evaluating the input spends
-local `u`; its tombstone still hides any same-named function, so the static
-target is rejected. Invalid function bodies and invalid second `qif` targets
-are rejected even when a run would not use their operation.
-
-<a id="位相を保持する有限ir"></a>
+adjoint/repeat evaluate input once, check residual target, emit ApplyUnitary
+with fresh token on same ordered wires/type. qif holds evaluated control in
+pending frame while evaluating target; target branches may rename that complete
+frame. Resolve both branches in same residual environment; emit Join,
+ApplyUnitary, Split. Target j maps to j+1, control axis 0, false/true polarity.
+Return control then target. Reject aliases, missing zero targets, spent target
+names, classical-port targets or stronger declared effects.
 
 ## Phase-preserving finite IR
 
-The target representation is `ApplyUnitary` with a flat sequence of
-`CircuitStep`s. Each step has distinct basis controls and either a Hadamard or
-a finite monomial operator. On its specified ordered axes, a monomial means
+ApplyUnitary contains CircuitSteps: distinct basis controls and Hadamard,
+finite monomial or retained contract action. Monomial M|x>=ζ8^phase[x]|p(x)>;
+p is total bijective, exponents 0..7, ordered axes distinct/in range and disjoint
+from controls. Empty-axis table [0] may carry scalar phase; no arbitrary matrix
+primitive. Inverse reverses steps, H unchanged, p_inv[p[x]]=x and
+phase_inv[p[x]]=-phase[x] mod 8. Control adds exact predicates. Normalize output
+coordinate permutations before inverse/control; never erase phase/order.
 
-```text
-M|x⟩ = exp(iπ phase[x]/4) |permutation[x]⟩.
-```
+Equal-width injective lifts are permutations. Legacy compute must pass its
+Z/T structural rule; certified compute contributes independently checked logical
+u only after actual W Ef=Ef u, retaining physical evidence. Contract actions
+retain the same FunctionEvidence under remap/control/repetition; inverse toggles
+adjoint. No unconditional auxiliary release. Raw QuantumIf remains compatible;
+source static forms emit ApplyUnitary. Register transformation cap 12 bits
+(control+target together), distinct from live-wire cap; copied tables/controls
+spend work, all enclosing raw IR is independently checked.
 
-The verifier checks a total permutation table, phase exponents in `0..7`,
-axis bounds and uniqueness, and disjoint control/action axes. The empty-axis
-table `[0]` can also carry a phase, so scalar phases on `Q<Unit>` survive.
-This representation does not accept arbitrary matrices.
+For interfaces ≤6 bits, independent function extraction (separate from frontend
+flattening) yields the original exact matrix: adjoint/qif compare their emitted
+operator/full controlled block. Above six, existing structural checks remain,
+with no larger matrix. Static parameters use issued checked receipts; generic
+checking defers concrete comparison to specialization, never assumes names.
 
-Inversion reverses step order, leaves Hadamards unchanged, and uses
-`p⁻¹[p[x]]=x` and `phase_inv[p[x]]=-phase[x] mod 8`. Control adds the
-corresponding basis control to every step. Output-axis reordering caused by
-`split/join` is part of the operator and is normalized before inversion or
-control. The [static semantics](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md) states the exact operator
-lemmas for flattening, adjoint, control, finite repetition, and computed phases,
-including their premises and limits.
-
-Existing injective lifts can be transformed only at equal width, when their
-tables are permutations. Two-argument `with_computed` must pass its existing
-structural certificate before conversion to a finite phase action. The
-[three-argument semantic extension](semantic-contracts-v0.1.md) first passes
-independent checking of its retained W and logical u, then contributes u's
-steps on the source axes. Adjoint/control/repetition act on that checked
-logical circuit, including output order and scalar phase. This substitution
-uses `C_f† W C_f E_0=E_0 u`; finite regression evidence does not prove every
-Rust transformation correct. No unconditional
-auxiliary-release instruction is introduced. Existing `QuantumIf` IR remains
-available; the new surface forms use `ApplyUnitary` to represent finite bodies.
-
-An explicit [function-contract call](function-contracts-v0.1.md) remains a
-`CircuitAction::Contract` referencing the same checked evidence. Flattening
-remaps its ordered interface, reversal toggles its adjoint flag, and coherent
-control appends disjoint predicates. Repetition reuses the evidence. Its exact
-meaning and retained implementation therefore remain inspectable in final IR.
-An ordinary contract invocation reuses its receipt; transforming a circuit is
-subject to the comparison below.
-
-Each statically transformed register is limited to 12 bits; `qif` counts the
-control and target together. This is separate from the program's live-wire
-limit. Duplicated step tables and controls count against the work budget. Raw
-IR is rechecked regardless of its origin. General machine-checked meaning
-preservation for the transformation remains an open obligation.
-
-**Current finite translation checks (0.2.2 review repair):** for concrete
-interfaces of at most six bits, independently extract the original phase-fixed
-matrix from verified raw IR, separately from frontend flattening. `adjoint`
-compares the emitted steps to its adjoint; `qif` compares the full control-block
-matrix including phase. Their matrix capacities remain. Cache the original
-closed meaning by resolved identity; static parameters use their checked
-receipt. Abstract generic checking defers concrete comparison to instantiation.
-Interfaces above six bits retain the existing structural checks and build no
-larger matrix. No function name grants acceptance.
-
-For `repeat_static`, first compare **one** emitted body with that independent
-meaning. Then check that the actual candidate is exactly n ordered copies of
-the same complete circuit, including phase tables, axes, control polarities and
-issued receipt identities. Length and every copy must match; zero repetition
-is empty but still checks the target and body. The reference meaning is U^n by
-serial composition. The checker no longer constructs the product matrix U^n
-for this source form. Mutation regressions reject wrong count, phase, control
-and axis. Ordinary raw IR is still independently verified after lowering.
-
-This avoids coefficient growth caused solely by re-evaluating the repeated
-product: TH counts 400, 512, 1000 and 1024 now pass and agree with an independent
-one-qubit recurrence and an explicit 1024-call body. This is a bounded Rust
-translation-validation repair, not a machine-checked proof of all frontend
-preservation or a new production hierarchy rule. Flat IR still expands in
-proportion to the gate count. The base extractor retains its six-bit,
-1024-step/dependency bounds, i128 coefficients and dyadic denominator exponent
-limit 126. A long base, an explicit matrix contract, `repeat_op`'s declared matrix
-meaning, or adjoint/qif over a long body can still exhaust exact capacity.
-
-All existing step and shared work limits remain; structural comparisons spend
-the charged expansion work. Exhaustion rejects without approximate evidence.
-[A020-03](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md#a020-03--precision-and-repetition-duplicate-algorithm-bodies)
-and [VM-24–27](verification-migration-v0.2.md) retain actual-body/request binding,
-proved hierarchical serial composition and the remaining QPE scaling duties.
-The original 0.2.0/0.2.1 product-matrix failures remain dated history; the
-[0.2.1 review response](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) records the new scope precisely.
-
-<a id="最初の利用対象"></a>
+repeat_static compares one emitted body to independent original meaning, then
+checks actual candidate equals n ordered complete copies: axes, phases,
+polarities and receipt identities. Zero candidate is empty but body still checks.
+This avoids forming U^n for this source form, while flat IR still expands and
+spends work. Base extractor stays six bits/1,024 steps and its dependency limits,
+i128/exponent126 exact arithmetic. Long bases/explicit matrix contracts,
+repeat_op matrix meanings or long adjoint/qif can still exhaust. No widened
+capacity, approximation fallback or proved general Rust transform follows.
 
 ## Initial applications
 
-Fixed-width QFT and two-/three-bit QPE are implemented as ordinary `.qli`
-definitions. Angles are exact symbolic multiples of `π/4`, using integer
-repetitions of the existing `T`. Arbitrary angles, sized types, and general
-operation parameters are deferred. QPE measures and consumes its phase
-register and returns the target ownership after measurement.
-
-<a id="通常定義と公開契約"></a>
-
 ### Ordinary definitions and public contracts
 
-| Classification and name | Type, ownership, and effect | Meaning, acceptance, rejection, and IR |
-| --- | --- | --- |
-| Ordinary definition `std::transforms::qft2` | `Q<(Bit,Bit)> -> Q<(Bit,Bit)>`, `Unitary`; consume and return the input. | `F_4`. Accept the two-bit type; reject other types and reused ownership. Expand to H, controlled T, and Split/Join. |
-| Ordinary definition `std::transforms::qft3` | `Q<((Bit,Bit),Bit)> -> Q<((Bit,Bit),Bit)>`, `Unitary`; the same ownership rule. | `F_8`. Accept the three-bit type; reject other types and reused ownership. Expand ordinary calls and ApplyUnitary. |
-| Example ordinary definition `evolution::evolve` | `Q<Bit> -> Q<Bit>`, `Unitary`. | The initial body is T. Replace its body to specify the QPE target statically. Reject a body containing observation. |
-| Example ordinary definition `estimation::phase2` | `Q<Bit> -> ((CBit,CBit),Q<Bit>)`, `Observe`. | Two-bit QPE. Measure and consume only the phase register, returning the target. Accepted as an instrument without an eigenstate premise. Reject a call in a Unitary context or implicit discard of the returned target. |
-| Example ordinary definition `estimation::phase3` | `Q<Bit> -> (((CBit,CBit),CBit),Q<Bit>)`, `Observe`. | Three-bit QPE with the same type, resource, and effect conditions. Expand to controlled powers, `adjoint(qft3,...)`, and MeasureZ. |
-
-The QFT convention is
-`F_M|x⟩=Σ_y exp(2πixy/M)|y⟩/√M`. Bits have weights `1,2,4` from left to
-right. Apply `U^(2^j)` controlled by phase bit `j`, then the inverse QFT.
-For `U|u⟩=exp(2πiφ)|u⟩`, the probability of result `y` is
-`|Σ_(r=0)^(M-1) exp(2πir(φ-y/M))/M|²`. The
-[planned QPE contract](stdlib-roadmap.md#42-phase_estimate-位相に関するインストルメント)
-specifies the post-measurement action on general inputs and reference systems.
-See the [primary phase-estimation reference, §5](https://arxiv.org/abs/quant-ph/9708016).
-
-Private helpers in `transforms` are the ordinary unitaries
-`identity:Q<Bit>->Q<Bit>` and `phase_quarter:Q<Bit>->Q<Bit>`, applying identity
-and two T gates respectively. The QPE example's private helpers are an identity
-of the same type and `square`/`fourth`, which apply `evolve` two/four times.
-All receive the same checks.
-
-QPE is a finite example with replaceable static source dependencies, not yet a
-general standard-library skeleton. It supplies no size parameters, arbitrary
-angles, eigenstate proofs, or automatic choice of precision and failure rate.
-
-<a id="確認した結果"></a>
+[Bundled ledger](stdlib-contracts.md) fixes qft2:F4 on Q<(Bit,Bit)> and qft3:F8
+on Q<((Bit,Bit),Bit)>, positive Fourier including reversal, low-weight-first
+bits. Example phase2 returns ((CBit,CBit),Q<Bit>), phase3 returns
+(((CBit,CBit),CBit),Q<Bit>), Observe, consuming phase and retaining target.
+Controlled U^(2^j) then inverse QFT yields complete
+K_y=M^-1 Σr exp(-2πiry/M)U^r on general target/reference inputs; eigenstate
+probabilities follow the Dirichlet kernel. No eigenpromise is needed for valid
+instrument acceptance. Arbitrary angles/general QPE APIs remain separate.
 
 ### Verification record
+
+[Static regressions](../tests/static_operations.rs), [exact translation checks](../tests/static_semantics.rs)
+and [serial-copy repairs](../tests/review_v021.rs) cover inverse axes, controlled
+signs/empty scalars, zero/body/count limits, QPE phases/off-grid/reference
+coherence, malformed tables/control overlaps and altered copies. Their recorded
+finite numerical/exact results do not prove arbitrary-source adequacy.
 
 ```sh
 cargo run --bin qleisli -- run examples/phase_estimation
 cargo test --test static_operations
 ```
 
-The published example uses T's eigenstate `|1⟩` and returns `1001` with
-probability one. Its first `100` encodes integer 1 and phase `1/8`; the final
-`1` is a Z measurement of the returned target. This display is not conventional
-most-significant-bit-first binary notation.
-
-The [12 static-operation tests](../tests/static_operations.rs) cover all eight
-phases, the distribution of a non-grid phase with two-bit QPE, correlations
-with an external reference, coherence within degenerate phase subspaces,
-inversion of output-axis reordering, positive/negative reflections under
-control, empty-register phases, repetition counts `0/1/4,096`, and rejection
-of type, effect, resource, and dependency-cycle errors. They also check static
-expansion depth and work limits on a 2 MiB stack. Raw IR with incomplete or
-noninjective tables, out-of-range phases, duplicated or out-of-range axes, or
-control/action overlap is rejected.
-
-These numerical comparisons use tolerance `1e-12`. Success on one input does
-not establish general machine-checked meaning preservation or arbitrary-
-precision QPE. The additional [exact finite matrix checks](../tests/static_semantics.rs)
-exercise the static-translation correspondence described in
-[static-semantics.md](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md). They preserve exact phases on their
-finite cases; they do not prove correctness for arbitrary source programs.
-
-**Historical A2 validation (2026-09-26):** `cargo test --all-targets` passed
-all 92 tests (algorithms 7, compiler 17, parser 8, project 8, reference execution
-13, static operations 12, IR verification 27). `cargo fmt --check`,
-`cargo clippy --all-targets -- -D warnings`, and `git diff --check` also passed.
-Documentation links, column counts of new tables, and the nine public bundled
-definitions present at that milestone were checked. These are the A2 milestone
-counts, not the current repository totals; see the
-[conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) for subsequent validation.
+The T-eigenstate example returns 1001 (phase bits 100 mean integer 1/8;
+last bit measures retained target). Historical test censuses use Git history;
+current evidence is beside fixtures and in the generated inventory.

@@ -1,0 +1,18 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/Superposition/ReferenceImplementation.qs
+// Selected symbol(s): AllBasisVectorWithPhaseFlip_TwoQubits_Reference
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::id;
+use std::quantum::z;
+use std::quantum::split;
+use std::quantum::join;
+
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    let (a, b) = qif(h(a), h(b)) { 0 => id, 1 => z };
+    join(a, b)
+}

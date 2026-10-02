@@ -161,7 +161,7 @@ impl Lowerer<'_, '_> {
             registers: BTreeMap::new(),
             operations: vec![],
             operation_sources: BTreeMap::new(),
-            tuple_binding_origins: BTreeMap::new(),
+            tuple_binding_origins: Vec::new(),
             next_token: 0,
             next_wire: 0,
             next_classical: 0,

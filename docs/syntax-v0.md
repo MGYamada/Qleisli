@@ -2,198 +2,85 @@
 
 # `.qli` surface syntax v0
 
-Status: **normative grammar for finite core v0** (2026-09-26). This document
-specifies the lexical rules, grammar, names, and scopes of the
-[v0 language specification](language-spec.md). Read it with the
-[module rules](standard-library.md). Syntactic acceptance, acceptance of types,
-effects and evidence, and execution within implementation limits are distinct.
-The [conformance record](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) tracks their status separately.
-This English edition is authoritative and replaces the earlier Japanese edition.
-This revision extends v0 with patterned coherent-lift binders and runtime
-`CBit` literals and Boolean expressions. It reserves `true` and `false`, a source
-compatibility change described below. The import-path grammar and Unicode
-comment policy clarify existing parser behavior.
-
-The later finite-contract extensions add the three-argument computed form
-and [`apply_contract`](function-contracts-v0.1.md). The latter reserves a new
-keyword; source identifiers with that spelling must be renamed. Their exact
-evidence requirements and capacity limits are separate from parsing.
-
-The 2026-09-28 [documentation-comment extension](documentation-comments.md)
-adds Rust-style line/block documentation and nested ordinary block comments.
-It is retained in product 0.1.6 by the user's explicit version-policy exception.
-Attachment and line-ending changes have migration guidance in that specification;
-docstrings carry no quantum meaning or evidence authority.
-
-The 0.1.8 [fixed-width operation supplement](next-minor-spec.md) additionally
-specifies meaning declarations, static parameters/arguments, access constraints
-and operation constructors. These are language forms, not runtime values or
-sealed gates. Their complete normative productions and reserved words are in
-that supplement; they extend the base EBNF below. Follow its source/Rust
-migration and exact checking rules. `adjoint`, `repeat_static` and `qif` also
-accept eligible static parameter names with the corresponding declared access.
-
-This is the current **Qleisli edition 2026** grammar. Edition selection is
-source-tree configuration in [Qargo.toml](language-editions.md), not a new
-`.qli` language form, built-in operation or ordinary definition.
+English normative edition-2026 finite grammar. [Language](language-spec.md),
+[types](type-system.md), [modules](standard-library.md), [documentation comments](documentation-comments.md)
+and [M1 static forms](next-minor-spec.md) supply separate semantic/extension rules.
+Parsing does not establish types/effects/evidence/execution or general compiler
+adequacy. [Qargo](language-editions.md) selects edition per source tree.
 
 ## Grouped imports added in product 0.2.2
 
-`use std::quantum::{h,x};` and nested groups such as
-`use std::{quantum::{h,x,},observe::measure_z};` expand in source order to
-ordinary single-name imports. Every leaf must include a module and a name.
-Groups are nonempty, allow a trailing comma and obey the 64-level group nesting
-limit. Before each prefix copy, the parser checks a shared per-module expansion
-budget of 65,536 copied identifiers and 1,048,576 copied UTF-8 name bytes.
-Copies within nested groups and separate `use` items spend the same budget;
-excess rejects with a located parse error before allocation. Original path
-tokens do not spend this budget. Ungrouped path length retains its existing
-iterative parsing behavior.
-The `basis` and `observe` keywords are admitted only directly after `std` as
-module components, including within a group. Aliases, glob imports and `self`
-imports remain unsupported. Existing visibility, duplicate-name, cycle and
-reserved-module checks apply to every expanded leaf.
+use std::{quantum::{h,x,},observe::measure_z}; expands nonempty nested groups
+in source order into existing UseDecl leaves. Each leaf contains module+name;
+trailing commas only in groups, nesting≤64. Before copying prefixes, one shared
+per-module budget checks 65,536 identifiers and 1,048,576 UTF-8 name bytes across
+nested/separate uses; original path tokens do not spend it. Ungrouped paths stay
+iterative. basis/observe are keyword components only immediately after std.
+No aliases/globs/self; normal duplicate/visibility/cycle rules still apply.
 
-This is a language form with no runtime inputs, outputs, owners or effects;
-it emits the existing `UseDecl` leaves and no IR operation. The public AST
-shape stays unchanged. Each leaf retains the full original use-item span and
-its own identifier spans; documentation preceding a group attaches to every
-leaf. Additional documentation copies have separate per-module budgets of
-65,536 comments and 1,048,576 UTF-8 text bytes, checked before cloning.
-Ungrouped documentation moves without copying. Malformed, empty and duplicate
-groups reject with located diagnostics. Markdown renders each original `use`
-item once rather than repeating the group for every expanded leaf.
-[Parser/resolver regressions](../tests/review_v021.rs) also check nested groups,
-private-name rejection, documentation and ungrouped-path compatibility.
+Each leaf retains the full use-item span plus identifier spans. Group docs attach
+to every leaf; copied documentation has separate per-module limits of 65,536
+comments/1,048,576 text bytes checked before clones. Ungrouped docs move without
+copy. Render each original use once. No runtime ownership/effect/IR is introduced.
 
 ## Authoring forms added in product 0.1.8
 
-Product 0.1.8 introduced n-ary spelling by left-folding it into binary pairs.
-**Product 0.2.0 supersedes that equality:** tuple types, values and patterns
-retain 2..64 immediate fields. `(a,b,c)`, `((a,b),c)` and `(a,(b,c))` have
-different shapes. This applies to ordinary/basis expressions, types including
-`Q<A>`, `let`, coherent-lift and basis-parameter patterns. See the normative
-[type system](type-system.md) and [tuple migration](tuple-shapes.md).
-The AST stores each immediate field separately with its own span; the outer
-span includes parentheses. Evaluation visits fields once from left to right,
-preserving effects, ownership, phase and result/axis order. Raw wire operations
-are unchanged; evidence type metadata retains n-ary shape.
+Current tuples retain 2..64 immediate fields in types/values/patterns; flat and
+nested products differ (0.2.0 supersedes the old left-fold spelling). Each AST
+field has its own span; outer span includes parentheses. Evaluate once in order.
+Basis parameter names/_/nested products match exact trees; names across all
+parameters distinct, ignored components remain in domain. One tuple parameter
+is one source argument, with no implicit packing. Ordinary parameters are names.
+No unit/singleton patterns or trailing commas; () expression/grouping retains
+meaning. Nested syntax depth≤64.
 
-`basis fn f((a,b): (Bit,Bit)) -> Bit { a xor b }` has **one** parameter.
-Names, `_` and nested product patterns use the existing finite basis-binding
-judgment, with distinct names across all parameters. Names can bind subtrees;
-`_` discards basis information, not quantum ownership. Pattern/type mismatches
-reject even in unused functions. Calls do not implicitly pack/unpack parameters.
-Ordinary `iso`/`unitary`/`observe` parameter declarations still require names.
-There are no unit/singleton patterns or trailing commas; expression grouping
-and the Unit expression `()` retain their old meanings. Flat arity is bounded
-by 64 fields; nested products share the existing 64-level AST limit.
-
-For example, accept `basis fn swap((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}`;
-reject `basis fn bad((a,a):(Bit,Bit))->Bit{a}` (duplicate name), a pair pattern
-on `Bit` (shape mismatch), and `swap(0,1)` (two arguments to a unary function).
-The [source corpus](../tests/fixtures/ergonomics/README.md) checks these forms
-and retained whole-domain injectivity, including ignored components and Unit.
-Product-basis parameter patterns are language forms, not sealed operations or
-stdlib definitions. Their elaboration binds finite labels with existing rules
-and emits the same basis tables; ordinary compilation and independent table/
-evidence verification remain required. General frontend adequacy is unproved.
+Accept basis fn swap((a,b):(Bit,Bit))->(Bit,Bit){(b,a)}; reject duplicate a,
+pair pattern on Bit and swap(0,1). These elaborate existing label bindings/tables,
+not owner duplication or new primitives. [Fixtures](../tests/fixtures/ergonomics/README.md)
+retain whole-domain injection tests.
 
 <a id="構文と組み込みの境界"></a>
 
 ## Boundary between syntax and built-in operations
 
-| Notation | Classification | Types, ownership, and effects | IR translation |
-| --- | --- | --- | --- |
-| `//`, `/* ... */`, `///`, `//!`, `/** ... */`, `/*! ... */` | Lexical language forms; documentation metadata where marked | No value type, ownership, effect or proof authority. Doc comments have independently validated syntactic attachment. | Ordinary comments disappear; doc text is available through a sidecar API and emits no IR. |
-| `use`, `pub`, the four kinds of `fn`, `let`, `if` | Language forms | `basis` declares a total finite basis function; `iso` a pure isometry; `unitary` a pure unitary; `observe` permits observation. `let` rebinds linear ownership, and `if` branches exclusively on a `CBit`. | Resolve declarations/imports; represent `let` by SSA bindings and `if` by `ClassicalBranch`. |
-| `do p <- q; pure e` | Language form | Consume `q:Q<A>` once. Match the name/wildcard/tuple pattern `p` against the exact basis tree `A`; its names are coherent basis labels, not measurements. Produce `Q<B>` only when `e:B` defines a total injection over the whole input basis. | Destructure each finite input label according to `p`, check the full table, and emit `LiftBasis`. |
-| `true`, `false`, `not e`, `e1 and e2`, `e1 xor e2` | Language forms | Literals return `CBit`; Boolean operators require and return `CBit`. They have own effect `Unitary` and preserve quantum ownership themselves. Evaluate operands eagerly from left to right, retaining their effects and resource transitions. | Emit classical SSA `ClassicalConst`, `ClassicalNot`, `ClassicalAnd`, or `ClassicalXor`; independently verify input visibility and fresh outputs. |
-| `with_computed(q, f) { \|a\| body }` | Language form | Require `q:Q<A>`, a total `f:A -> Bit`, and temporary `a:Q<Bit>`. The body returns that temporary ownership and, after ordinary call expansion, contains only an auxiliary `Z/T` chain or an empty chain. The outer result is the original `Q<A>`. | Emit one certified `ComputeUseUncompute`; never emit a standalone `Release0`. |
-| `with_computed(q,f,u) { \|d,a\| body }` | Language form | Consume `Q<A>` once, expose private data/auxiliary ownership, return both in order, and check `W Ef=Ef u` for a fixed logical unitary. Return `Q<A>` with own effect `Unitary`. | Retain actual W, f, and u in independently checked `CertifiedCompute`. |
-| `apply_contract(implementation,specification,q)` | Language form | Both names denote ordinary declared unitaries with exactly `Q<A>->Q<A>`. Evaluate q once, consume and return its ownership, and require exact operator equality. Join q's effect with `Unitary`. | `ApplyUnitary` contains a retained `CircuitAction::Contract` with immutable independently checked function evidence. |
-| `adjoint(u,q)`, `repeat_static(n,u,q)` | Language forms | Invert or finitely repeat a statically resolved unitary with identical input/output type. Consume and return the quantum ownership once. | Translate to `ApplyUnitary` and independently reverify, following the [finite static-operation rules](static-operations.md). |
-| `qif(c,q) { 0 => u0, 1 => u1 }` | Language form | Consume and return both control and target. Require distinct ownership and static unitary branches with the same input/output type. | Emit flat controlled `ApplyUnitary` steps, preserving branch phases. |
-| `init0`, gates, `split/join`, `measure_z/reset/discard` | Sealed built-in operations | Follow the [public contracts](standard-library.md). Observation operations have effect `observe`; `measure_z` returns only `CBit`. | Resolve the public names to IR constructors with fixed meanings. |
-| `xor2`, `and2`, `s`, `measure_x`, and similar helpers | Ordinary `.qli` definitions | Apply the same type, effect, and ownership rules as for user definitions. | Check each body and translate calls or their expansion to IR. |
-
-`Q<A>` is an ownership type; `iso` and the other classifications above are
-static function effects. `Iso<A,B>` and `Unitary<A,B>` are not first-class value
-types. Earlier documents' `lift(e)` denotes the meaning of `LiftBasis`; the v0
-surface form introducing it is `do x <- q; pure e(x)`. A direct `lift(e)` source
-form is not part of v0.
+Declarations/imports/bindings, classical literals/Booleans, do/pure, both
+with_computed forms, apply_contract, adjoint/repeat/qif and M1 forms are language
+forms. Sealed init/gates/split/join/observe have fixed independently checked
+meanings ([API](standard-library.md)); ordinary helpers obey user rules.
+Comments/docstrings emit no IR or evidence. Q<A> is ownership, fn classification
+is effect; Iso<A,B>/Unitary<A,B>/lift(e) are metanotation. The source lift is
+do p<-q;pure e. The compatible s/sdg/tdg/id/phase_eighth aliases are sealed.
 
 <a id="字句と文法"></a>
 
 ## Lexical rules and grammar
 
-A `.qli` file is UTF-8. Identifiers are ASCII
-`[A-Za-z_][A-Za-z0-9_]*`, excluding the reserved words below; `_` alone is
-reserved for wildcard patterns. Token-separating whitespace is limited to
-ASCII space, tab, LF, and the CRLF sequence. A `//` comment ends at LF or end of file; block
-comments nest. `//!`/`/*! ... */` document the containing module/function and
-`///`/`/** ... */` the following supported item, under the
-[attachment rules](documentation-comments.md#lexical-forms-and-attachment).
-Doc text normalizes CRLF to LF. Since product 0.2.0, a CR not immediately
-followed by LF is rejected everywhere, including ordinary comments, at that
-original byte. Convert bare-CR files to LF or CRLF. This changes the accepted
-input set from 0.1.9; it does not silently turn previously commented text into
-executable code. Diagnostic spans retain original UTF-8 byte offsets.
-The grammar below describes executable tokens after comment extraction;
-documentation attachment is checked separately before parsing succeeds.
+UTF-8 files; identifiers ASCII [A-Za-z_][A-Za-z0-9_]* excluding keywords;
+_ alone is wildcard. Separators only ASCII space/tab/LF/CRLF. Line comments end
+at LF/EOF; block comments nest. Docs attach separately before parse success,
+normalize CRLF but retain original UTF-8 diagnostic offsets. Bare CR rejects at
+its original byte even in comments; leading BOM rejects, never strips.
 
-The following characters are forbidden both inside and outside comments:
+Forbidden everywhere, including comments: bidi controls U+061C/200E/200F,
+U+202A–202E/2066–2069; VT/FF/U+0085/2028/2029; other Unicode whitespace;
+Cc controls except tab/LF/CR in CRLF. Other Unicode comment text is allowed,
+including U+200B/U+FEFF, which neither terminate comments nor form source tokens.
+Non-ASCII identifiers are forbidden.
 
-- Bidirectional controls U+061C, U+200E, U+200F, U+202A–U+202E, and
-  U+2066–U+2069.
-- Unsupported line separators U+000B (VT), U+000C (FF), U+0085, U+2028, and
-  U+2029.
-- CR not immediately followed by LF.
-- Other Unicode whitespace, except the ASCII separators listed above.
-- Other control characters in Unicode's `Cc` category, except tab, LF, and CR
-  within CRLF.
+Reserved base: use,pub,basis,iso,unitary,observe,fn,let,if,else,do,pure,
+with_computed,adjoint,repeat_static,qif,apply_contract,true,false,not,xor,and,
+Unit,Bit,CBit,Q. M1 additionally reserves meaning,static,Op,requires,Apply,
+Adjoint,Controlled,permutation_by,phase_by,bind_op,inverse_op,then_op,tensor_op,
+controlled_op,repeat_op,conjugate_op. Rename collisions in all names/module
+components. Basis literals only 0/1; digit runs are single tokens, so 10/2 are
+invalid basis literals. Static decimal naturals have no leading zero except 0;
+counts 0..4,096. No strings/floats/arrays/user operators/general recursion.
+Recursive syntax/pattern/expression trees, including left-associated chains,
+have located depth-64 rejection.
 
-Other Unicode characters are permitted in comments. This includes ordinary
-non-ASCII text and format characters such as U+200B and U+FEFF; v0 does not ban
-all characters in Unicode's `Cf` category. These two characters do not terminate
-a comment. Outside comments, neither is a valid token or separator, so each is
-rejected as an unexpected character. In particular, a leading U+FEFF byte order
-mark (BOM) is rejected rather than stripped. Non-ASCII identifiers are not
-permitted.
-
-The base reserved words are `use`, `pub`, `basis`, `iso`, `unitary`, `observe`, `fn`,
-`let`, `if`, `else`, `do`, `pure`, `with_computed`, `adjoint`, `repeat_static`,
-`qif`, `apply_contract`, `true`, `false`, `not`, `xor`, `and`, `Unit`, `Bit`, `CBit`, and `Q`.
-The M1 supplement also reserves `meaning`, `static`, `Op`, `requires`,
-`Apply`, `Adjoint`, `Controlled`, `permutation_by`, `phase_by`, `bind_op`,
-`inverse_op`, `then_op`, `tensor_op`, `controlled_op`, `repeat_op`, and
-`conjugate_op`; rename colliding identifiers, including module components.
-The only basis `Bit`
-literals are `0` and `1`. A decimal natural number is allowed only in the count
-position of `repeat_static` or M1 `repeat_op`, with no leading zero except for `0` itself. The
-current implementation profile accepts counts from 0 through 4,096 and diagnoses
-larger counts. A consecutive run of digits is one token, so `10` and `2` remain
-invalid basis literals. Strings, floating-point numbers, arrays, general
-recursion, and user-defined operators are outside v0.
-
-The newly reserved words `true` and `false` can no longer be used as declaration,
-parameter, binding, import, or module-component names. Existing source that used
-either as an identifier must rename it; neither keyword is a basis `Bit` literal.
-The basis literals `0` and `1` remain distinct from the ordinary `CBit` literals.
-
-To protect its stack, the Rust parser imposes a depth limit of 64 on recursive
-syntax, patterns, and basis or runtime expression trees, including
-left-associated Boolean chains. This is an implementation
-limit, not a limit on the language's mathematical meaning; exceeding it produces
-a located diagnostic.
-
-The notation below is EBNF-like: `*` means zero or more repetitions, `?` means
-optional, and `|` separates alternatives. Quoted terminals are literal source
-characters or words. `Ident` is a nonreserved identifier other than `_`; `Name`
-is one such identifier visible in the current module. `Digit` is an ASCII
-character from `0` through `9`, and `NonzeroDigit` from `1` through `9`.
-Statements end with semicolons; a block's final expression does not. Parameter
-lists, argument lists, tuples, and `qif` branches do not permit trailing commas.
+EBNF *,?,| mean repetition/optional/alternatives. Ident excludes _; Name is a
+visible nonreserved identifier. Statements end in semicolons, final expressions
+do not. No trailing comma in parameter/argument/tuple/qif lists.
 
 ```ebnf
 Module       ::= (Use | Decl)*
@@ -253,151 +140,55 @@ BasisCall    ::= Name "(" BasisArgs? ")"
 BasisArgs    ::= BasisExpr ("," BasisExpr)*
 ```
 
-Only the second component of `std::basis` or `std::observe` may use those
-declaration keywords as module names. All later components, the final imported
-name, and local module components must be ordinary identifiers. The parser
-retains further identifier components: for example, `use std::basis::a::b;`
-is syntactically valid and denotes an attempted import of `b` from
-`std::basis::a`. Parsing does not establish that such a module or declaration
-exists; project resolution diagnoses unsupported standard modules or missing
-names. This does not add nested standard modules to v0.
+Import keywords basis/observe are allowed only directly after std, including
+groups; later components/imported names are identifiers. Further components
+parse without implying supported modules. Operator precedence not>and>xor,
+binary left association, eager runtime operands/left-to-right calls and tuples;
+let RHS precedes binding, statements run in order. if executes only selected arm,
+but checks both. Zero repetition checks target body.
 
-In both runtime and basis expressions, `not` binds more tightly than `and`,
-which binds more tightly than `xor`. Both binary operators associate to the
-left. Runtime Boolean operands are evaluated exactly once, eagerly from left to
-right: `false and measure_z(q)` still measures and consumes `q`, and has effect
-`Observe`. The operator's effect joins all operand effects; `and` does not
-short-circuit. `if` remains the form that conditionally executes an arm.
-Call arguments are evaluated from left to right; a `let` evaluates its
-right-hand side before binding the result.
-Function-body statements run in source order. An `if` evaluates its condition
-first and executes only the selected arm, although both arms are checked.
-All functions are nonrecursive; repetition is a finite static expansion.
-`repeat_static` checks its target even at count zero, so zero cannot hide an
-invalid target body.
-
-A `basis fn` takes and returns only `BasisType`, and its body is a total
-`BasisExpr`. Literals `0` and `1` have type `Bit`; `()` has type `Unit`.
-The primitive basis operations are `not : Bit -> Bit`,
-`xor : (Bit,Bit) -> Bit`, and `and : (Bit,Bit) -> Bit`. These are total finite
-operations, but a direct lift to `Q` separately requires the entire map to be
-injective. For example, `basis fn and2(x: Bit, y: Bit) -> Bit { x and y }` is a
-valid ordinary basis definition. The semantic domain of multiple basis
-parameters is their product type; `with_computed(q, and2)` requires
-`q:Q<(Bit,Bit)>`. A direct lift of `and2` on the whole quantum register is
-rejected because that map is not injective.
-
-Basis expressions can construct and pass tuples. A coherent lift can
-access their components by binding a name/wildcard/tuple `Pattern` after
-`do`. Pattern shape must match the input basis tree exactly; all names in one
-pattern must be distinct. `_` ignores a basis label, not quantum ownership.
-The lift still consumes one whole quantum input and checks totality and
-injectivity of the map on its **entire** basis. For example,
-`do (a,b) <- q; pure (a,xor2(a,b))` defines an injective update on a two-bit
-basis, whereas `do (a,b) <- q; pure xor2(a,b)` alone is noninjective.
-There is no `()` pattern; use `_` or a name for a `Unit` component. Basis
-function parameters remain individual names, and a basis body has no `let`
-statements or projection/indexing operator.
-
-The basis expression following `pure` extends through its complete basis
-operator expression. Parentheses close that expression before an enclosing
-runtime operator; for example, `(do p <- q; pure e)` explicitly delimits the
-lift. Runtime operators accept `CBit` operands, so applying one to that lift's
-`Q<B>` result fails type checking.
-
-Runtime classical literals are `false : CBit` and `true : CBit`.
-`not : CBit -> CBit`, `and : (CBit,CBit) -> CBit`, and
-`xor : (CBit,CBit) -> CBit` have their Boolean truth-table meanings. These are
-source expression forms, not callable standard-library function names.
-They compute classical SSA values, perform no observation themselves, and do
-not read quantum basis labels. A `CBit` can also be supplied as an ordinary
-function argument or produced by observation, then copied, returned, used in a
-Boolean expression, or used as an `if` condition. Basis and runtime values do
-not implicitly convert to each other.
-
-The `Type` production intentionally accepts more syntax than the type-formation
-rules accept in every role. Ordinary `iso`, `unitary`, and `observe` parameters
-and results cannot contain a bare `Bit`. `Bit` occurs in basis signatures,
-inside `Q<...>`, and as a coherent index in `do/pure`. There is no implicit
-conversion from `Bit` to `CBit`. A comma-separated parameter or argument list
-has its own arity; one tuple-valued argument is not multiple arguments.
-Multiple result values use tuples retaining their arity and nesting. Binding quantum ownership
-to `_`, or discarding a quantum-valued expression with `Expr;`, is syntactically
-expressible but rejected by resource checking.
-
-`ClassicalType` describes the semantic restriction on a root `main` result.
-It is a named subset of the types parsed by `Type`, not a separate production
-selected while parsing a declaration named `main`. Declaration and entry-point
-checking enforce this restriction after parsing, as specified below.
+Basis expressions are total/isolated, with no let/projection/indexing; current
+basis parameters admit patterns. do binds labels from the complete input tree,
+checks full-domain injection, and pure extends through one full BasisExpr.
+Parentheses delimit it before outer runtime operators. _ ignores labels, never
+owners; no () pattern. Basis predicates need not be injective for computed use.
+Runtime true/false and Boolean operators use CBit; 0/1 and basis Booleans use Bit.
+No implicit conversion. Type grammar is broader than ordinary type formation:
+no bare Bit in ordinary signatures. One tuple argument is not several arguments.
+Quantum _ bindings/expression discards parse but resource checking rejects.
+ClassicalType is a semantic restriction on root main, enforced after parsing.
 
 <a id="名前とスコープ"></a>
 
 ## Names and scopes
 
-- Each file is one module, with a source-root-relative module name under the
-  module rules. `use foo::bar::name;` binds the public declaration from
-  `foo/bar.qli` as `name`. `std::` is reserved for the bundled standard library.
-  Imports occur only at top level; there are no aliases, wildcards, reexports,
-  relative import paths, or cyclic imports. An import/local-definition name
-  collision produces a located diagnostic.
-- The execution entry point is the unique `observe fn main() -> T` in the
-  root's `main.qli`. `T` must satisfy `ClassicalType`, and no quantum ownership
-  may remain at exit. A library does not need a root `main`.
-- Function names resolve independently of declaration order, but the
-  function-call graph must be acyclic. Ordinary calls have form `Name(args)`;
-  operations are not ordinary argument values. Static-operation names resolve
-  at compile time and contribute to that graph. The second operand of
-  `with_computed` is a statically resolved **basis-function name**, not a runtime
-  function value. In the finite semantic-contract extension, the third
-  operand is an eligible unitary function name (ordinary or sealed H/X/Z/T), also resolved statically
-  and included in the acyclic dependency graph. The [name rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md#2-names-declarations-and-project-acceptance)
-  specify when local names hide each kind of callable.
-- Parameters and `let` bindings have lexical scope. In `let q = h(q);`, the
-  right-hand side consumes the old `q` before the new `q` enters scope.
-  Hiding a still-owned old quantum binding is an error. Quantum identity is
-  tracked by ownership tokens and logical wire IDs, not by spelling alone.
-- `apply_contract` evaluates its input expression before resolving both
-  names in the residual environment. Live or spent local names hide the
-  targets. Both must be ordinary declared unitary definitions with the exact
-  single-register signature; a sealed gate must first be wrapped in such a
-  definition. The two references participate in acyclic dependency checking.
-  No caller values are captured by either function body. The
-  [FC-SOURCE rules](function-contracts-v0.1.md#2-source-language-form) specify
-  ownership, effects, exact phase, retained evidence, and rejection boundaries.
-- Names introduced in an `if` arm expire outside that arm. The arms receive the
-  same linear input context exclusively and must merge their result types and
-  quantum ownership interfaces. The [merge rule](language-spec.md#7-古典分岐の合流)
-  uses result positions, surviving frames, and outer consumption sets; IR `φ`
-  interfaces also align wires newly allocated in an arm.
-- The names introduced by a `do` pattern are **coherent basis indices** scoped
-  over its one following `BasisExpr`. That expression's static context contains
-  exactly those pattern bindings; it captures neither outer classical nor outer
-  quantum values. Top-level basis functions remain callable. Consequently, an
-  outer runtime value named `f` does not hide a basis function `f` within this
-  isolated context, while any pattern binder named `f` does hide it. `pure` is
-  neither a general return form nor a constructor for runtime classical values.
-- The two-argument `with_computed` binder `a` is temporary `Q<Bit>` ownership scoped over its
-  body. The source register is protected and inaccessible there, as are other
-  outer quantum values; outer classical values remain usable. The body's final
-  expression must return the updated ownership of that auxiliary. The
-  [computed-scope rule](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md#6-classical-and-coherent-control-repetition-and-computed-scope)
-  masks outer linear bindings into a private frame before introducing `a`.
-  The auxiliary may have the same spelling as a masked outer name without
-  consuming or exposing that outer resource.
-- The three-argument extension `with_computed(q,f,u){|d,a| body}` binds
-  distinct private data and auxiliary owners. It captures no outer values,
-  including classical values. Both names may shadow masked outer names.
-  Return `(Q<A>,Q<Bit>)` in data/auxiliary order. The exact source types,
-  unitary effect, ownership, and `W E_f=E_f u` are checked according to the
-  [semantic-contract specification](semantic-contracts-v0.1.md).
+One source-root-relative file/module; use foo::bar::name imports pub name from
+foo/bar.qli. std is reserved. Top-level imports only, no alias/glob/reexport/
+relative path/cycle; imported/local collisions reject. Unique execution main is
+parameterless observe main in root main.qli with a classical result and empty
+quantum exit; libraries need none.
+
+Declaration order is irrelevant, dependency graph acyclic including static names.
+Runtime lexical live/spent bindings hide ordinary/static/predicate callables;
+let q=h(q) consumes old q before rebinding, while live-owner hiding rejects.
+if locals expire; merge uses complete result/frame/consumption interfaces.
+
+Do's basis Ξ contains exactly pattern labels, no runtime capture: a runtime f
+does not hide top-level basis f there, but a pattern f does. pure is not a
+runtime return form. Computed forms resolve names after input evaluation.
+Legacy computed scope masks quantum owners, retains classical values, permits
+aux binder to reuse a masked spelling while outer owner survives. Certified
+scope captures neither quantum nor classical outer values, binds distinct d/a,
+returns data/aux order. apply_contract resolves two ordinary eligible names after
+input evaluation, includes both dependencies and captures no caller values.
+[Finite contracts](finite-contracts.md) fix all evidence/effect rules.
 
 <a id="構文受理と静的拒否の例"></a>
 
 ## Examples of syntactic acceptance and static rejection
 
-These are **v0 acceptance/rejection examples** with imports omitted. See the
-[frontend profile](frontend-v0.md) for complete executable projects and the
-implemented type and ownership checks.
+Imports omitted; executable projects live in [examples](../README.md#try-it).
+Parsing and static acceptance remain separate.
 
 ```qli
 iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
@@ -435,75 +226,28 @@ observe fn bell_result() -> (CBit, CBit) {
 }
 ```
 
-Assume the appropriate `use` declarations for `z`, `measure_z`, `x`, `h`,
-`init0`, and `split`. The map `x -> (x,x)` in `entangle` is injective, and
-`z(a)` in `phase_oracle` preserves the protected auxiliary's basis label.
-The arms of `feedback` use the same input `r` exclusively. `measure_z` consumes
-the old `q` and returns only `CBit`. The two measurements in `bell_result`
-consume both logical wires produced by `split`.
-
-| Fragment | Syntax | Static decision |
-| --- | --- | --- |
-| `do x <- q; pure (x,x)` | Valid | Accept when `x -> (x,x)` is injective. |
-| `do x <- q; pure 0` | Valid | Reject the noninjective constant map `Bit -> Bit`. |
-| `do (a,b) <- q; pure (a,xor2(a,b))` | Valid | Accept for `q:Q<(Bit,Bit)>` and the total XOR basis function; the full map is injective. |
-| `do (a,b) <- q; pure xor2(a,b)` | Valid | Reject for `q:Q<(Bit,Bit)>`: XOR alone loses one input bit and is not injective. |
-| `do (_,b) <- q; pure b` | Valid | Accept for `q:Q<(Unit,Bit)>`; reject for `q:Q<(Bit,Bit)>` because ignoring a bit makes the full map noninjective. |
-| `do (a,a) <- q; pure a` | Valid | Reject duplicate names in the basis pattern. |
-| `true and not false` | Valid | Accept as `CBit` with effect `Unitary`; its value is true. |
-| `false and measure_z(q)` | Valid | Accept for owned `q:Q<Bit>` in an `observe` context; consume `q` even though the classical result is false. |
-| `not q` | Valid | Reject when `q:Q<Bit>`: a runtime Boolean operand must be `CBit`. |
-| `unitary fn f() -> CBit { 1 }` | Invalid | `1` is a basis literal, not a runtime `CBit` literal. |
-| `basis fn f() -> Bit { true }` | Invalid | `true` is a runtime literal, not a basis literal. |
-| `let pair = (q,q); pair` | Valid | Reject duplicate use of the same quantum ownership. |
-| `let b = measure_z(q); h(q)` | Valid | Reject reuse of the old `q` consumed by measurement. |
-| `iso fn bad(q: Q<Bit>) -> CBit { measure_z(q) }` | Valid | Reject an `observe` effect inside `iso`. |
-| `with_computed(q, predicate) { \|a\| h(a) }` | Valid | Reject: H does not preserve the auxiliary basis label and fails the zero-return certificate rule. |
-| `do x <- q; let y = x; pure y` | Invalid | A v0 `do` permits only one `pure BasisExpr`. |
-| `use oracle::*;` | Invalid | Wildcard imports are not part of v0. |
-
-The parser regressions
-[`reserved_std_module_keywords_allow_further_identifier_components`](../tests/parser.rs)
-and [`unicode_format_characters_are_comment_text_but_not_source_tokens`](../tests/parser.rs)
-check these import and Unicode boundaries. Additional parser tests check
-[`coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans`](../tests/parser.rs),
-[`classical_boolean_operators_have_precedence_and_left_associativity`](../tests/parser.rs),
-[`classical_literals_are_reserved_and_distinct_from_basis_bits`](../tests/parser.rs),
-and [`classical_operator_chains_and_basis_patterns_obey_depth_limits`](../tests/parser.rs).
-Parsing these cases does not establish successful module resolution, typing,
-or execution; the compilation and execution regressions are recorded in the
-[conformance ledger](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md).
+Accept injective (a,b)→(a,a xor b), coherent x→(x,x), and eager classical
+false and measure_z(q) in observe. Reject noninjective Bit→0/XOR alone,
+ignored Bit (ignored Unit may be removed), duplicate binder/owner, measured-owner
+reuse, observe inside iso, legacy auxiliary H, runtime 1/basis true, let inside
+pure continuation, and wildcard import. [Parser regressions](../tests/parser.rs)
+cover spans/Unicode/precedence/depth; checking/runtime regressions are separate.
 
 <a id="構文を保留する項目"></a>
 
 ## Deferred syntax
 
-- Runtime first-class operations, operations with classical parameters, and
-  inverses between different basis types remain deferred. Current `qif`,
-  `adjoint`, and `repeat_static` resolve function names statically and target
-  only `Q<A> -> Q<A>` unitaries with no classical arguments.
-- General `with_computed` that borrows its source while operating on a work
-  register `R`, sized registers, higher-order functions with quantum arguments,
-  dynamic loops, and runtime truth-table generation are not in this grammar.
-  Adding them requires an accompanying definition of protected wire-ID sets,
-  effects, and checkable evidence.
+Runtime operation values/closures, classical-argument inverse targets,
+different-type adjoints, general borrowed computed regions, sized registers,
+higher-order quantum functions, dynamic loops and runtime table generation need
+separate specifications/evidence. Experimental sized grammar is separate.
 
 <a id="証明と後続仕様"></a>
 
 ### Proof status and subsequent specifications
 
-The grammar, precedence, finite type rules, and branch interfaces are fixed
-for v0. The [resource calculus](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md) and
-[typing supplement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) give explicit rules, and
-[Q1–Q3](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-soundness.md) establishes paper ideal soundness for those
-mathematical derivations. Their adequacy for every Rust acceptance path and
-general source-to-IR meaning preservation remain
-[Stage 1 obligations](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md). General preservation effects
-passed through signatures or evidence belong to later specifications;
-the two-argument `with_computed` continues to use its restricted structural
-certificate. The three-argument extension has the separately specified
-[SC evidence rules](semantic-contracts-v0.1.md). Together with the
-[retained function-contract path](function-contracts-v0.1.md), it meets the
-declared finite V01-C1–C6 profile. General implementation proofs and the v1
-algorithm-structure target remain open. The [language evolution framework](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/language-evolution.md)
-organizes future design notation without adding forms to this grammar.
+Paper source rules establish ideal mathematical derivations; general agreement
+with every Rust check/lowering path remains open. [Formal scope](formal-core.md)
+and [milestones](release-milestones.md) separate finite V01 checking from v1 and
+production soundness. Neither parsing, documentation nor draft notation grants
+semantic authority.

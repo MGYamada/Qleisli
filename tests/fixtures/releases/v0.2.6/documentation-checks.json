@@ -1,0 +1,196 @@
+{
+  "created_utc": "2026-10-01T19:50:11.982853+00:00",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "edf9752d5c14314fcb85bae7e880b50a964659cf461f8530776602e31d1ff268"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "8cd46f608be3157ab928df3ba15012aef7a1dbb946ae297b2776ef4ed4df5ca3",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_editions.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "28ac24320688cdd1b685720ae2f389ef328c5441ac38e8c41077a11639833467"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f3279dbfdce557f4fa43396d431391639ba71882e909fd7af70e74c3c003b16f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "97ca578032589757803facb44779dccd3d00ca86d99c4b3235d2517734932a3b"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_schema_registry.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "1f3feb942b4f2f713695b8e23ddb04ccc13c1f8ec3cb9f3684a8ff9f45259c23"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e9f4bfa5ad05fe2bed4471d92bcd70232eb95c8cc419be2e5b25e6df0946b095",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "dee09daf3b8c6ff3467d5e058a59f9edb6e19cf801fedd9ec78497ea89bdd5ee"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5ce7a1dcf737729ba5f471a4836088f3df5a70fb35d0981cee9ab2a2a523329f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_test_verification_baseline.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "ce4f410c40bdac69984db91e3da5aa5429eca9ca19905ae4234314466e3d082a"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_stdlib_contract_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "0553528fa67f943827c5153de327449fd651055a54686b0fa097e9bc64163d6d"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_stdlib_contract_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "b88d4e472b70a7d6a260db5f88b6e13827c51286549942a11eb9435fef9a8c81",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "4784c448796f80cab2b7625b9fd54f88cd35bbe61c44536e88108801b85243f3"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "8ddd2e865a88638a5f261cf01fae0254b319d15b8b346418650ed8034561cbfc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "09a3e41c5da861da85a1a41332a84542314e6e1909eed9d9ad067abe765f3048"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "5b441493378d7ae17c566f6b037b882ae3888691792f4ab9e8b10d6972fca5fc",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_distribution.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f890bbe4c80cc616c39b7b52bd52830fbe54861a7ed9498319f7ee4389cd9d95"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_imaginary_v1_examples.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a93cfa7bf7fe0a1507bc3830da553ec02bf6af25c6d91f43ef4927e91e89b690"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_imaginary_v1_examples.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "f11aa0a7ed08a76c3a4b0a7f58d5a412188a02cf71e8c13ef01c93a764912d04",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_semantic_contract_examples.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "34a82a30511a2175a5286cff0751874e9220ce5fb08cab87b09cc04e220f6b31"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_semantic_contract_examples.py"
+      ],
+      "exit_code": 0,
+      "stdout_sha256": "0a275f313e5cb56660f9c73d903d935266517f6a7cfca149663817d3dadb56b2",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "passed": true
+}

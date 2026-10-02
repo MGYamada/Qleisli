@@ -1,0 +1,630 @@
+{
+  "jobs": [
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "success",
+      "id": 110569210470,
+      "name": "changes",
+      "started_at": "2026-10-01T20:27:53Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:27:55Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:27:54Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:57Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:27:55Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:57Z",
+          "conclusion": "success",
+          "name": "Test fail-closed routing and required-check aggregation",
+          "started_at": "2026-10-01T20:27:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:57Z",
+          "conclusion": "success",
+          "name": "Select validation from the exact commit and both sides of its diff",
+          "started_at": "2026-10-01T20:27:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:58Z",
+          "conclusion": "success",
+          "name": "Retain selection inputs and exact commit binding",
+          "started_at": "2026-10-01T20:27:57Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:58Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:27:58Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:27:59Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:27:58Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:22Z",
+      "conclusion": "success",
+      "id": 110569289779,
+      "name": "check-docs",
+      "started_at": "2026-10-01T20:28:04Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:05Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:05Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:07Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:05Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:07Z",
+          "conclusion": "success",
+          "name": "Check edition 2026 coverage of every Qleisli source and QLT draft",
+          "started_at": "2026-10-01T20:28:07Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:07Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_docs.py",
+          "started_at": "2026-10-01T20:28:07Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:07Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_lean_kernel.py",
+          "started_at": "2026-10-01T20:28:07Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:08Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_schema_registry.py",
+          "started_at": "2026-10-01T20:28:07Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:08Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_schema_registry.py --source-only",
+          "started_at": "2026-10-01T20:28:08Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:09Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_docs.py",
+          "started_at": "2026-10-01T20:28:08Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:16Z",
+          "conclusion": "success",
+          "name": "Verification inventory coverage and independent oracle calibration",
+          "started_at": "2026-10-01T20:28:09Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:16Z",
+          "conclusion": "success",
+          "name": "Standard-library contract-writing conventions and mutation checks",
+          "started_at": "2026-10-01T20:28:16Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:16Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_authoring_sessions.py",
+          "started_at": "2026-10-01T20:28:16Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:17Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_authoring_sessions.py",
+          "started_at": "2026-10-01T20:28:16Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:18Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_input_corpus.py",
+          "started_at": "2026-10-01T20:28:17Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:18Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_input_corpus.py",
+          "started_at": "2026-10-01T20:28:18Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:18Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_distribution.py",
+          "started_at": "2026-10-01T20:28:18Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_imaginary_v1_examples.py",
+          "started_at": "2026-10-01T20:28:18Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_imaginary_v1_examples.py",
+          "started_at": "2026-10-01T20:28:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/test_check_semantic_contract_examples.py",
+          "started_at": "2026-10-01T20:28:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Run python3 scripts/check_semantic_contract_examples.py",
+          "started_at": "2026-10-01T20:28:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Check whitespace throughout the committed tree",
+          "started_at": "2026-10-01T20:28:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:19Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:19Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:19Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569291713,
+      "name": "check-rust",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569291783,
+      "name": "check-distribution",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569291843,
+      "name": "check-lean",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569291863,
+      "name": "check-macos-source",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569291923,
+      "name": "check-interop",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569292134,
+      "name": "check-rust-msrv",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:01Z",
+      "conclusion": "skipped",
+      "id": 110569293457,
+      "name": "check-lean-kernel",
+      "started_at": "2026-10-01T20:28:02Z",
+      "status": "completed",
+      "steps": []
+    },
+    {
+      "completed_at": "2026-10-01T20:28:33Z",
+      "conclusion": "success",
+      "id": 110569432196,
+      "name": "interop",
+      "started_at": "2026-10-01T20:28:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:30Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:31Z",
+      "conclusion": "success",
+      "id": 110569432273,
+      "name": "docs",
+      "started_at": "2026-10-01T20:28:25Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:27Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:26Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:29Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:33Z",
+      "conclusion": "success",
+      "id": 110569432279,
+      "name": "lean-kernel",
+      "started_at": "2026-10-01T20:28:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:27Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:30Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:36Z",
+      "conclusion": "success",
+      "id": 110569432357,
+      "name": "rust",
+      "started_at": "2026-10-01T20:28:29Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:31Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:33Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:31Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:33Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:33Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:33Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:33Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:33Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:33Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:30Z",
+      "conclusion": "success",
+      "id": 110569432440,
+      "name": "distribution",
+      "started_at": "2026-10-01T20:28:25Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:27Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:26Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:29Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:32Z",
+      "conclusion": "success",
+      "id": 110569432485,
+      "name": "rust-msrv",
+      "started_at": "2026-10-01T20:28:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:30Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:32Z",
+      "conclusion": "success",
+      "id": 110569432565,
+      "name": "macos-source",
+      "started_at": "2026-10-01T20:28:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:28Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:28Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:30Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:30Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:30Z"
+        }
+      ]
+    },
+    {
+      "completed_at": "2026-10-01T20:28:32Z",
+      "conclusion": "success",
+      "id": 110569432623,
+      "name": "lean",
+      "started_at": "2026-10-01T20:28:26Z",
+      "status": "completed",
+      "steps": [
+        {
+          "completed_at": "2026-10-01T20:28:27Z",
+          "conclusion": "success",
+          "name": "Set up job",
+          "started_at": "2026-10-01T20:28:26Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:27Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Enforce complete selected validation and exact commit binding",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "skipped",
+          "name": "Retain required-check and dependency-cache observations",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "started_at": "2026-10-01T20:28:29Z"
+        },
+        {
+          "completed_at": "2026-10-01T20:28:29Z",
+          "conclusion": "success",
+          "name": "Complete job",
+          "started_at": "2026-10-01T20:28:29Z"
+        }
+      ]
+    }
+  ],
+  "total_count": 17
+}

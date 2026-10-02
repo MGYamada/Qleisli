@@ -1,0 +1,80 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-01T19:14:31.016943+00:00",
+  "project_version": "0.2.6",
+  "compiler_sha256": "c66b4ed50010115a1346c61fd49b05d3245558b2bfcc7c35866a289dfbf1c9dc",
+  "results": [
+    {
+      "project": "quantum_katas/phased_uniform2",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/quantum_katas/phased_uniform2",
+        "--format=json"
+      ]
+    },
+    {
+      "project": "quantum_katas/graph_state2",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/quantum_katas/graph_state2",
+        "--format=json"
+      ]
+    },
+    {
+      "project": "qualtran/reflection_minus1",
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected canonical static natural number\",\"primary\":{\"path\":\"kernel.qli\",\"start\":720,\"end\":732,\"line\":19,\"column\":19},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/qualtran/reflection_minus1",
+        "--format=json"
+      ]
+    },
+    {
+      "project": "qualtran/control_zero_reflection2",
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected canonical static natural number\",\"primary\":{\"path\":\"kernel.qli\",\"start\":692,\"end\":704,\"line\":17,\"column\":19},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/qualtran/control_zero_reflection2",
+        "--format=json"
+      ]
+    },
+    {
+      "project": "pennylane_demos/rotation_half_y",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/pennylane_demos/rotation_half_y",
+        "--format=json"
+      ]
+    },
+    {
+      "project": "pennylane_demos/ising_zz_negative2",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "corpus/authoring/v026-small/attempt-01/pennylane_demos/ising_zz_negative2",
+        "--format=json"
+      ]
+    }
+  ]
+}

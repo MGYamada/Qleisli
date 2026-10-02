@@ -1,102 +1,53 @@
 # Finite core formalization and soundness obligations
 
-Current general Rust acceptance/source/backend adequacy remains unproved. Completed mathematical rule/proof expositions are available in [Git history](https://github.com/MGYamada/Qleisli/tree/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs); executable models, proofs and validation remain in [lean](../lean/README.md), [lean-kernel](../lean-kernel/README.md) and fixtures. The tables distinguish paper derivations, actual-definition component theorems and implementation obligations. [Milestones](release-milestones.md) are authoritative.
+Current general source/Rust/backend adequacy is unproved. Actual models/proofs
+and validation remain in [Lean](../lean/README.md), [kernel](../lean-kernel/README.md)
+and fixtures. [Milestones](release-milestones.md) govern theorem claims; historical
+paper expositions use Git history. Rust is production-authoritative, external
+schemas disabled. Independent reference-specification review remains separate.
 
 ## 1. Scope and judgments
 
-Finite basis Unit/Bit/products, distinct tokens/wires, total termination and effects Unitary <= Iso <= Observe. Interpret local operations globally, with ordered axes and arbitrary reference identity. The complete output includes mixed returned values, residual environment and pending/caller frames. Classical outputs of pure operations depend only on classical input. Declared call effects are retained. Current [language](language-spec.md), [types](type-system.md) and [grammar](syntax-v0.md) remain normative.
-
-```text
-Gamma ; Delta_in |- P : B ; Delta_out ! epsilon
-```
-
-| Form | Resource interface | Effect and additional obligation |
-| --- | --- | --- |
-| Classical literals and Boolean operations | Change classical records only after evaluating operands once in order; preserve the complete quantum frame. | The Boolean step is `Unitary`; join operand effects. |
-| `init0` | Add a fresh `Q<Bit>` slot and logical wire. | `Iso`; prepare zero. |
-| Sealed gates | Consume input tokens and return new tokens for the same ordered wires. | `Unitary`; exact sealed matrices. |
-| `do/pure` | Consume `Q<A>`, return `Q<B>`, append fresh wires if needed. | Check the total injection; same width is `Unitary`, growing width is `Iso`. |
-| `split/join` | Partition or concatenate disjoint ordered wire lists. | `Unitary`; preserve correlations. |
-| Static inverse, repetition, `qif` | Check unary `Q<A> -> Q<A>` unitaries; return all input resources. | `Unitary`; keep exact phases, check both branches and zero repetitions. |
-| `measure_z` | Consume `Q<Bit>`, return only `CBit`. | `Observe`; no old quantum handle remains. |
-| `discard` | Consume `Q<A>`, return `Unit`. | `Observe`, including zero-width ownership. |
-| `reset` | End the old `Q<Bit>`, create a fresh logical wire and handle. | `Observe`; discard correlations with the old wire. |
-| v0 `with_computed` | Preserve the source interface and close one private auxiliary. | `Unitary`; expanded auxiliary `Z/T` chain or identity only. |
-| Certified three-argument `with_computed` | Transfer the source to private data ownership and return both data and auxiliary before certified cleanup; retain the outer frame. | `Unitary`; SC-COMPUTED requires `W Ef=Ef u` for a fixed logical unitary u, including actual output-axis order. |
-| `apply_contract` | Consume and return the same exact unary `Q<A>` interface, preserving every frame owner. | `Unitary`; [FC-APPLY](function-contracts-v0.1.md) requires independently checked equality to a fixed specification and retains immutable evidence through transforms. |
-
-```text
-Gamma ; Delta0 |- P : B ; Delta1 ! epsilon1
-Gamma, b:B ; Delta1 |- F : C ; Delta2 ! epsilon2
------------------------------------------------------------
-Gamma ; Delta0 |- let b=P; F : C ; Delta2 ! max(epsilon1,epsilon2)
-```
+Finite Unit/Bit/products; distinct fresh tokens/ordered wires; total termination;
+Unitary≤Iso≤Observe. Complete quantum interface includes returned mixed values,
+residual environment and pending/caller frames. Pure classical results depend
+only on classical input; calls retain declared effects. [Language](language-spec.md),
+[types](type-system.md) and [grammar](syntax-v0.md) fix rules.
 
 ## 2. Ideal semantics on the entire system
 
-Pure outcome maps are V rho V† with exact operator phase; Iso requires V†V=I and Unitary also VV†=I. Observations use whole-system Kraus maps. Adaptive composition uses probabilistic sums of hidden histories, preserving all outcome labels and residual/reference states. Neither disjoint ownership nor split/join asserts a product state.
-
-```text
-E[P]_(gamma,b) : L(H(Delta_in)) -> L(H(Delta_out)).
-```
-
-| Constructor | Exact interpretation | Required identity |
-| --- | --- | --- |
-| Classical constant, `not`, `and`, `xor` | Deterministically extend the classical record; quantum operator `I`. | `I†I=II†=I`; operand maps compose in order. |
-| `init0` | `V = ket(0)_q tensor I_R`, with a chosen axis order. | `V†V=I_R` |
-| Injective lift | `V_f = sum_a ket(f(a)) bra(a)` | Injectivity gives `V_f†V_f=I_A`. |
-| Sealed gate | A fixed exact operator `U`, extended to all other axes. | `U†U=UU†=I` |
-| `split/join` | The canonical tensor/axis isomorphism. | Inverse permutations compose to identity. |
-| `qif` | `ket(0)bra(0) tensor U0 + ket(1)bra(1) tensor U1` | Orthogonal projectors and unitary `Ui` give unitarity. |
-| `measure_z(q)` | `K_b=bra(b)_q tensor I_R`; `E_b(rho)=K_b rho K_b†`. | `sum_b K_b†K_b=I_(qR)` |
-| `discard(q)` | `sum_b K_b rho K_b† = tr_q(rho)`; hide the basis outcome. | Kraus completeness; extend to a wider register's full basis. |
-| `reset(q)` | `J_b=ket(0)_(q') bra(b)_q tensor I_R`; hide `b`. | `sum_b J_b†J_b=I_(qR)` |
-
-```text
-G_d = sum_c F_(d|c) composed with E[P]_(gamma,c).
-```
+Pure VρV† requires V†V=I, and VV†=I for Unitary. Every local operation extends
+by reference identity. Observe uses complete Kraus maps, CP/TNI per outcome,
+summed TP; adaptive composition sums hidden histories. [Sealed semantics](language-spec.md#6-封印された組み込み操作)
+fixes preparation/measurement/discard/reset. Split owners may remain entangled.
 
 ## 3. Evidence for pure auxiliary release
 
-Release is valid only after exact factorization for every input/reference, not from ownership, scope or a numerical zero. Restricted two-argument computed use preserves source/auxiliary labels; certified three-argument use independently checks W E_f=E_f u and actual output order. Arbitrary protected measurement/reset/discard and a detached Release0 are not permitted.
-
-```text
-F : H(Delta_in) -> H(R) tensor H(Bit)
-F = (I_R tensor ket(0)) V,       V†V=I.
-```
-
-```text
-W = sum_(x,a) |x,a⟩⟨x,a| tensor V_(x,a),
-```
-
-```text
-C_f† W C_f |x,0,r⟩ = |x,0⟩ tensor V_(x,f(x)) |r⟩.
-```
+Exact factorization F=(I tensor |0>)V for every input/reference, never lifetime
+or floating zero. Legacy compute restricts emitted Z/T; [SC](finite-contracts.md)
+checks actual W Ef=Ef u with independently fixed u/output order, giving
+Cf†WCf E0=E0u. Protected observation/reset/discard and standalone Release0 reject.
 
 ## 4. Theorem status and proof work
 
-Prioritize independent actual IR acceptance and the evidence kernel, then complete hierarchy/finite/root and instrument binding, then actual source/backend preservation. Rust remains production-authoritative; external schemas stay disabled. VM-24 proves the bounded finite component and VM-25 covers straight-line pure raw checking. [VM-26–29](verification-migration-v0.2.md) and S05/PR/RS gates remain open. Physlib needs the [separate dependency gate](../lean/README.md#future-physlib-bridge). Protocol/algorithm/hardware correctness is separate.
+Prioritize actual independent IR acceptance/evidence, then complete finite/root/
+instrument binding, then source/backend preservation. [Inventory](rule-inventory.md)
+links every inspected component and its proof scope. VM-23 proves actual bounded
+R8 arithmetic; VM-24 actual finite columns/encodings/reference/clean/inverse laws;
+[VM-25](../tests/fixtures/verification_v025/completion/README.md) straight-line pure
+raw acceptance/complex action/protected cleanup/fresh attachments and capacities.
+[VM-26](../tests/fixtures/verification_v026/README.md) checks observation/SSA/phis
+and proves original complex instrument CP/TNI/TP without a global matrix;
+retained branch-functions are checked. VM-27–29 remain pending.
 
-| Result | Current status | What it does not establish |
-| --- | --- | --- |
-| Resource Safety Theorem, RS-C1–C5 | Adopted v1 target on 2026-09-30; to prove. Resource semantics/analyzer and compilation-bound preservation are not implemented as a complete proof path. | No quantitative bound theorem follows from current ownership checks, work/step ceilings, finite probes or cost reports. |
-| Source resource accounting, R1 | Paper proof for the explicit [resource calculus](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-resource-rules.md#7-resource-preservation-theorem-and-proof), plus a declaration-boundary corollary. | General equivalence with Rust execution or the whole source specification. |
-| Source types, effects, names and scopes, T1–T3 | [Syntax-complete rule presentation](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md), local paper proofs of typed total basis evaluation, type/effect determinacy, lexical projection and conservative effects; finite boundary regressions. | Uniqueness of generated IR, full source/Rust adequacy, or general quantum soundness. |
-| R1-accounting projection | [Lean-checked](../lean/README.md) typed ownership occurrences, local resource edits, frames, complete renaming/phi, and composition. | Full source R1, lexical/effect/scope/history rules, Rust adequacy, or quantum semantics. |
-| Lexical scope projection | [Lean lookup model and Rust extraction](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/lowering-state-refinement.md): entry-domain/classical restoration, spent non-revival, and exact current quantum-footprint preservation after approval. | Every Rust trace supplies the required snapshots/rebound set, complete pending/caller holder coverage, or full source/Rust adequacy. |
-| Phi axis renaming | Local paper lemma for complete position/frame interfaces, including references. | Full source-to-IR branch correctness. |
-| Source interface semantics and S1–S4 | [Conditional local paper proofs](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-semantics.md) for evaluated-value substitution, arbitrary correlated frames, classical branch/phi and structural IR composition. | Complete typing/name/scope adequacy, every semantic leaf or Rust implementation path. |
-| Finite static transformations, F1–F5 | [Conditional exact-operator paper proofs](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/static-semantics.md) for axis transport, flattening/output order, restricted computed phases, inverse, repetition, and coherent control; exact finite matrix regressions. | General source-to-IR adequacy, acceptance of all unitary raw IR, or verified Rust algorithms. |
-| Mathematical translation, C1–C5 | [Explicit source-to-IR schemas and conditional preservation](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-ir-correspondence.md), including basis encoding, concrete leaves, auxiliary chain extraction, and complete phi construction. | Every Rust path constructs that translation, verifier implementation correctness, or exact numerical execution. |
-| Restricted auxiliary zero return | Exact local factorization above and in the resource calculus. | A general release primitive or arbitrary auxiliary-body acceptance. |
-| Executable Lean phase-word acceptance | [`normalize_correct` and `verify_sound`](../lean-kernel/QleisliKernel/PhaseWord.lean) prove the actual normalizer/checker against direct cyclic phase execution for every bit and initial phase. | Complex interpretation, wire decoding, full IR/ownership/instrument acceptance, source adequacy or native compilation correctness. |
-| Actual bounded finite equations, VM-24 | [Actual finite bridge](../lean/Qleisli/Finite.lean) proves literal reconstructed column traces, full-phase encoded equations, arbitrary-reference action, clean return from required output encodings and both whole-space inverse laws; [native/audit scope](../tests/fixtures/verification_v024/README.md). | RawProgram extraction/ownership/effects, original function/source identity, hierarchy finite discharge, native transport refinement or production authority. |
-| Straight-line pure raw checking, VM-25 | [Actual pure acceptance](../lean/Qleisli/RawPure.lean) connects all eleven constructors to independent phase-sensitive complex action and clean-scope obligations. [Bounded denotation](../lean/Qleisli/RawDenotation.lean), [non-dense protected cleanup](../lean/Qleisli/RawProtected.lean) and [fresh retained graph/binding](../lean/Qleisli/RawFunction.lean) cover original bodies, arbitrary references and exact attachments/capacities; [scope](../tests/fixtures/verification_v025/completion/README.md). | VM-26 classical branches/instruments, production hierarchy closure, source/native/execution refinement, complete S05 soundness or production authority. |
-| Canonical single-owner reshape metadata | [`encode_leaves`, `compatible_encoding`, `relabel_round_trip`, `relabel_compose`, `check_encoding`, `check_axes_owners`, `check_reference_coefficients`](../lean-kernel/QleisliKernel/Reshape.lean) prove general prefix encoding/coherence and actual bounded helper properties. | Source syntax/production, arbitrary circuit equations, general Mac Lane coherence, production evidence or H1–H5. |
-| Hierarchical operator unitarity | [Actual complex operator laws](../lean/Qleisli/HierarchicalUnitary.lean) and [typing bridges](../lean/Qleisli/HierarchicalTyping.lean) prove both inverse laws for phase/permutations and closure under sequence, tensor, inverse, coherent control and powers. [Recursive acceptance](../lean/Qleisli/HierarchicalAcceptance.lean) derives the actual entry's unitarity, including arbitrary finite reference extension, from supported internal checker success without assumed child isometries. | Finite leaves, calls/encodings/computed regions, the remaining full profile, external production verification or sized source. |
-| Finite IR ideal soundness | [Conditional paper argument](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) for its constructors and verification premises. | Verified Rust implementation, source translation, or numerical exactness. |
-| Source rule-system pure-operation and instrument soundness | [Paper Q1–Q3](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-soundness.md): pure determinacy/isometry/unitarity, finite adaptive instruments, CP and total trace preservation with arbitrary references. | Full Rust acceptance/translation correspondence, numerical exactness, protocol, algorithm, or hardware correctness. |
-| Local Kraus completeness algebra | [Lean KA-1–KA-5](../lean/Qleisli/Kraus.lean): exact matrix identities for isometries, output transport, and adaptive composition. | Positivity/trace, source derivations, arbitrary-reference extension, or the whole Q1–Q3 proof. |
+Mathematical source rule-system R1/T1–3/S1–4/F1–5/C1–5/Q1–3 paper results,
+Lean resource/lookup projections and local Kraus algebra do not prove all Rust
+paths. Hierarchy constructed denotations/unitarity/root/QPE components retain
+finite-reader/native/transport/provider premises; the seed phase-word proof is
+not production Soundness or H1–H5. [S05/PR/RS](release-milestones.md) remain targets;
+ownership/work limits prove no quantitative Resource Safety bound. Protocol/
+algorithm/hardware correctness is separate. [Physlib gate](../lean/README.md#future-physlib-bridge)
+is required before a concrete dependency bridge.
 
 ### Temporary proof markers
 
