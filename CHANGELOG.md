@@ -8,6 +8,8 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## 0.2.6 — 2026-10-02
 
+Published to crates.io and GitHub; [immutable validation and installation evidence](tests/fixtures/releases/v0.2.6/publication.json).
+
 - Synchronize Rust, both Lean packages, Python and the std qrate to 0.2.6.
 - Extend the independent Lean boundary to all raw constructors, observing
   operations, classical SSA and complete branch phis. Prove CP/TNI and total TP

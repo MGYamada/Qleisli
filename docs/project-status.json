@@ -1,6 +1,6 @@
 {
 "format": 3,
-"release_state": "Release candidate **0.2.6**, publication authorized 2026-10-02. Exact-source validation, tagging and upload pending; latest published is [0.2.5](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.5).",
+"release_state": "Published **0.2.6** on 2026-10-02: [crates.io](https://crates.io/crates/qleisli/0.2.6), [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.6); [immutable evidence](../tests/fixtures/releases/v0.2.6/publication.json).",
 "current": [
 {
 "topic": "Use today",
@@ -8,14 +8,14 @@
 "detail": "[Quickstart](../README.md#try-it); no Lean installation required. Edition 2026; explicit source-tree manifests, std qrate and future qrate migration follow [the edition contract](language-editions.md)."
 },
 {
-"topic": "Release candidate 0.2.6",
-"state": "Compatible VM-26, docs/corpus and review repairs",
-"detail": "[Release record](releases/v0.2.6.md); Rust authority unchanged, VM-27–29 open."
+"topic": "Published 0.2.6",
+"state": "VM-26, docs/corpus and compatible review repairs",
+"detail": "[Record](releases/v0.2.6.md); Rust authority unchanged, VM-27–29 open."
 },
 {
 "topic": "Latest publication",
-"state": "0.2.5 verified on 2026-10-02",
-"detail": "[Immutable source and installation evidence](../tests/fixtures/releases/v0.2.5/publication.json); PyPI/custom binaries remain separate."
+"state": "0.2.6 verified on 2026-10-02",
+"detail": "[Exact-source CI, installation, docs and archives](../tests/fixtures/releases/v0.2.6/publication.json); PyPI/custom binaries separate."
 },
 {
 "topic": "Documentation",
@@ -46,9 +46,9 @@
 "milestones": [
 {
 "id": "M0",
-"state": "Finite foundation retained; edition 2026 and 0.2.5 published",
-"evidence": "[0.2.5 release record](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md); [publication evidence](../tests/fixtures/releases/v0.2.5/publication.json)",
-"open": "VM-27–29 and later theorem gates remain pending. Exact-source CI, local/Linux distribution, crates.io/GitHub publication, fresh registry installation, hosted docs and source archive comparisons pass for 0.2.5."
+"state": "Finite foundation retained; edition 2026 and 0.2.6 published",
+"evidence": "[Release record](releases/v0.2.6.md); [publication evidence](../tests/fixtures/releases/v0.2.6/publication.json)",
+"open": "VM-27–29 and later theorem gates remain pending. Exact-source CI, matching local/Linux packages, crates.io/GitHub, fresh installation, hosted docs and complete source archives pass."
 },
 {
 "id": "M1",
