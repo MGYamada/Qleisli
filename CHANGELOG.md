@@ -6,6 +6,16 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+- Repair 0.2.5 review bugs #180, #182–184 and #187–189: restrict tuple-owner
+  hints to direct lexical names, restore canonical JSON root
+  validation and manifest locations, accept leading `./`, warn on ignored
+  non-table metadata, correct doc usage and reject reversed inventory markers
+  without rewriting. Preserve public types and source/IR acceptance.
+- Remove host paths from tuple-owner messages (#186), preserving public
+  diagnostic types and the existing structured primary location.
+- Require exact failure framing in every Lean runtime mode, including nonzero
+  process exits (#193); checker authority and meaning remain unchanged.
+
 - Reduce duplicate/superseded CI runs and use fail-closed documentation profiles with stable required checks and complete release validation (#145).
 
 ## 0.2.5 — 2026-10-02

@@ -1,0 +1,190 @@
+{
+  "format": "qleisli.review-bugs-validation",
+  "version": 1,
+  "base_commit": "05866209f7c68894e86a51e8bedbf336f8cad1cb",
+  "scope": "compatible unreleased repairs; no product-version selection or publication",
+  "production_authority": "Rust",
+  "fully_addressed_issues": [
+    180,
+    182,
+    183,
+    184,
+    187,
+    188,
+    189,
+    193
+  ],
+  "partially_addressed_issues": {
+    "186": "Remove host paths from tuple messages; structured secondary locations remain open without a public diagnostic struct change."
+  },
+  "outside_this_patch": [
+    181,
+    192
+  ],
+  "checks": [
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 1.04,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--all-targets",
+        "--locked",
+        "--quiet"
+      ],
+      "exit_code": 0,
+      "seconds": 67.266,
+      "stdout_sha256": "3ee495cd2160ac149bd53adf9c4aa29902f367296654e7ff59a93fb1afbf3c1a",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "\nrunning 71 tests\n...........................ii..........................................\ntest result: ok. 69 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.24s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s\n\n\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 30 tests\n..............................\ntest result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 9 tests\n.........\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 16 tests\n................\ntest result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.86s\n\n\nrunning 17 tests\n.................\ntest result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 19 tests\n...................\ntest result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 17 tests\niiiiiiiiiii......\ntest result: ok. 6 passed; 0 failed; 11 ignored; 0 measured; 0 filtered out; finished in 0.13s\n\n\nrunning 2 tests\nii\ntest result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s\n\n\nrunning 9 tests\n.........\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s\n\n\nrunning 17 tests\n.................\ntest result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.63s\n\n\nrunning 11 tests\n...........\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.77s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.26s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.75s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 20 tests\n....................\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 13 tests\n.............\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\nii.....\ntest result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.94s\n\n\nrunning 8 tests\niiiii...\ntest result: ok. 3 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.19s\n\n\nrunning 30 tests\ni...........i.i...............\ntest result: ok. 27 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.34s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s\n\n\nrunning 11 tests\n...........\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 29 tests\n.............................\ntest result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 4.9,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "aab529af746c3c39b54cb22e10ce0dd1664ffe003bf7d6a68071f7d29c0b408b",
+      "diagnostics": "    Checking equivalent v1.0.2\n    Checking hashbrown v0.17.1\n    Checking winnow v0.7.15\n    Checking bitflags v2.13.2\n    Checking serde_core v1.0.229\n    Checking libc v0.2.177\n    Checking errno v0.3.14\n    Checking indexmap v2.14.2\n    Checking rustix v1.1.3\n    Checking serde v1.0.229\n    Checking serde_spanned v0.6.9\n    Checking toml_datetime v0.6.11\n    Checking toml_edit v0.22.27\n    Checking toml v0.8.23\n    Checking qleisli v0.2.5 (/Users/masa/.codex/worktrees/v026-review-bugs/Qleisli)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.54s\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_cli_json.py",
+        "target/debug/qleisli"
+      ],
+      "exit_code": 0,
+      "seconds": 0.403,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "73da2b771c7ddc5cc4cd22623727e78d7566d856a0912bd5589a699774cee2dc",
+      "diagnostics": "s..s..........\n----------------------------------------------------------------------\nRan 14 tests in 0.288s\n\nOK (skipped=2)\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.257,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "f3da1c1598afeb2161f89b2d811d84531cdd42c0d457c51d9e7bb099c2149cde",
+      "diagnostics": ".............................\n----------------------------------------------------------------------\nRan 29 tests in 0.174s\n\nOK\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.101,
+      "stdout_sha256": "9f7bf46045f115abf598dad0816c669f9e3fbaae46c7bf7a7c4fa6b7266f35cb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "Checked 2647 local links, 203 Markdown anchors, 6 Rust declarations, 64 Rust tests, and 158 Lean root modules.\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.502,
+      "stdout_sha256": "5ce7a1dcf737729ba5f471a4836088f3df5a70fb35d0981cee9ab2a2a523329f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": "VM-22: 232 constructors, 183 source snapshots, 18 boundaries; Rust authority unchanged.\n"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.021,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "diagnostics": ""
+    }
+  ],
+  "source_sha256": {
+    "CHANGELOG.md": "b4108778df7b33bb6b96e31432d1bc4edcaf347193c13be05104847d623de566",
+    "scripts/check_docs.py": "e6a59aef991c3cea1f247a84eec1fa964a4aea122fa53c22b467ef416aee1ab3",
+    "scripts/test_check_docs.py": "98ef60620ff1c0ea4543c21c476771c8fad7fdbf54b7af7f1858c54143076273",
+    "scripts/test_cli_json.py": "2ed979634dca972657a6400611ca7e8dcbac0afc179e1c2c702762913a4e0859",
+    "src/bin/qleisli/json.rs": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b",
+    "src/bin/qleisli/options.rs": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
+    "src/frontend/compile/lower/certified.rs": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+    "src/frontend/compile/lower/mod.rs": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+    "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+    "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+    "src/frontend/project/manifest.rs": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453",
+    "src/interchange/hierarchical/runtime.rs": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f",
+    "tests/fixtures/review_followup_v024/usage.txt": "0f157e8d419403ed3d471f4a690ce3d205417c7d79471a59b4e68b48c5283953",
+    "tests/fixtures/verification_v022/inventory.json": "1f3a185a24faf8f9bf8500d47942ea9458517a163274cefad5a54452c2a5dfce",
+    "tests/review_v026.rs": "6c3691b4cf2365e8276a87f5d9452fd6237961db715bb1050aefc6085a58dcb1"
+  },
+  "inventory_review": [
+    {
+      "path": "src/bin/qleisli/json.rs",
+      "before": "e5003c2bee0fb19902c2edaeaf63a59587883314336ca6460c1c45d2c600e2a3",
+      "after": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b"
+    },
+    {
+      "path": "src/bin/qleisli/options.rs",
+      "before": "07f991ef89b9870e18a30a024488d21c68a7b5bb4b6d2228ba020b2517985d4f",
+      "after": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69"
+    },
+    {
+      "path": "src/frontend/compile/lower/certified.rs",
+      "before": "e9dfed5484f72cb7d0679588a2e29d534db638d198e96e01a7793c8c783f3b6e",
+      "after": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e"
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "before": "925bd8bf0d557ccf9bc69b51a6441bcf0d1f46606c8d65218e0db72f32009822",
+      "after": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e"
+    },
+    {
+      "path": "src/frontend/compile/lower/primitives.rs",
+      "before": "bacff810aaf99903f771f3760566ea54bcd13a432a71e3d3fe22920c75fe126e",
+      "after": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906"
+    },
+    {
+      "path": "src/frontend/compile/lower/value.rs",
+      "before": "5eae70f6c07a612a66ac370fbb0bac19b07afd29aa4df90608dfa2061ada0869",
+      "after": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba"
+    },
+    {
+      "path": "src/frontend/project/manifest.rs",
+      "before": "48c2734b2b3e17e222733347e53e9bbe630e2f5645645218fbd84caf86f49b56",
+      "after": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453"
+    },
+    {
+      "path": "src/interchange/hierarchical/runtime.rs",
+      "before": "02ab1b657b14b2e736a12bbd7108955e0643d5f599835761817b75381f184cf9",
+      "after": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f"
+    }
+  ],
+  "not_performed": [
+    "Linux-only JSON tests on this macOS host; CI exercises both cases",
+    "Native-dependent ignored Rust tests and new Lean builds/audits; Lean definitions unchanged",
+    "New maximum-size corpus generation/checking",
+    "Tagging, publication or production-authority transfer"
+  ]
+}

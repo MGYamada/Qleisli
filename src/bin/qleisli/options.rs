@@ -9,7 +9,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
   qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]
-  qleisli doc <source-file> [source-options]
+  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
   qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]
   interop always returns JSON; qli input takes a project directory.

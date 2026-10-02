@@ -50,6 +50,15 @@ class DocumentationReferences(unittest.TestCase):
         self.assertIn("markers", check_corpus_overview(self.root, write=True)[0])
         self.assertEqual(path.read_text(), "historical prose\n")
 
+    def test_swapped_corpus_markers_reject_without_rewriting_in_both_modes(self):
+        self.write("corpus/manifest.json", '{"cases": []}')
+        self.write("corpus/semantic_faults/manifest.json", '{"cases": []}')
+        original = "intro\n<!-- corpus-inventory:end -->\nprose between\n<!-- corpus-inventory:start -->\nend\n"
+        path = self.write("corpus/README.md", original)
+        for write in (False, True):
+            self.assertIn("markers out of order", check_corpus_overview(self.root, write=write)[0])
+            self.assertEqual(path.read_text(), original)
+
     def test_package_doc_links_reject_previous_and_future_tags(self):
         self.write("Cargo.toml", '[package]\nversion = "0.2.5"\n')
         self.write("src/lib.rs", "//! [trust](https://github.com/MGYamada/Qleisli/blob/v0.2.4/TRUST_BOUNDARY.md)\n")

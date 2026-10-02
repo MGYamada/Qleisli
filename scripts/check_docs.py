@@ -376,6 +376,8 @@ def check_corpus_overview(root: Path, write: bool = False) -> list[str]:
         text = path.read_text()
         if text.count(begin) != 1 or text.count(end) != 1:
             return ["corpus/README.md: missing or duplicate generated inventory markers"]
+        if text.index(end) < text.index(begin):
+            return ["corpus/README.md: generated inventory markers out of order"]
         start, stop = text.index(begin), text.index(end) + len(end)
         if write:
             path.write_text(text[:start] + expected + text[stop:])
