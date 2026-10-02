@@ -1,0 +1,2 @@
+["python3", "scripts/test_lean_qft.py", "--small", "--semantic"]
+{"complex_matrix_entries": 84, "direct_path_comparisons": 2580, "joint_reference_cases": 9, "kernel_dense_dimension": 0, "largest_dense_oracle_dimension": 8, "matcher": "compiled-symbolic-path", "max_error": 1.336051816485463e-13, "maximum_generated_fourier_width": 4, "modular_fourier_comparisons": 1600, "native_cases": 89}

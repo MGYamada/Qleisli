@@ -1,6 +1,6 @@
 # Milestones toward v1
 
-Selected development **0.2.6**; latest published [0.2.5](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md#successful-publication-2026-10-02).
+Current version **0.2.7**; latest published [0.2.7](releases/v0.2.7.md).
 [Continuation](v0.2.2-plan.md) and [VM-22–29](verification-migration-v0.2.md) replace
 old work plans. Milestones express dependencies, not reserved versions: compatible
 0.y.z changes use PATCH, public breaks MINOR under [versioning](versioning.md).

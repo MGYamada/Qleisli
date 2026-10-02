@@ -1,0 +1,15 @@
+   Packaging qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)
+    Packaged 2637 files, 49.6MiB (6.4MiB compressed)
+   Verifying qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling hashbrown v0.17.1
+   Compiling equivalent v1.0.2
+   Compiling winnow v0.7.15
+   Compiling indexmap v2.14.2
+   Compiling toml_datetime v0.6.11
+   Compiling serde_spanned v0.6.9
+   Compiling toml_edit v0.22.27
+   Compiling toml v0.8.23
+   Compiling qleisli v0.2.7 (/home/runner/work/_temp/qleisli-distribution-target/package/package/qleisli-0.2.7)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 15.38s

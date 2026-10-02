@@ -1,0 +1,2 @@
+["python3", "scripts/test_rust_fourier_factoring.py"]
+{"status": "pass", "artifacts": 12, "widths": [1, 2, 3], "maximum_complex_error": 1.3947004136484323e-15}

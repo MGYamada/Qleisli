@@ -1,0 +1,2 @@
+["python3", "scripts/test_hierarchical_finite.py"]
+{"binary_sha256": "5aedd58942e67f82bfa17c4cdd878619424c68238efcef8b0b7a938cb8d405ca", "cases": 67, "field_and_byte_probes": 1727, "format": "qleisli.hierarchical-finite-binding-validation", "pending": 29, "semantic_acceptances": 0, "source_sha256": "54f6f1129cc690665b142d69d417e90c7906928341165a1cfd49b753ad765f00", "status": "passed", "version": 1}

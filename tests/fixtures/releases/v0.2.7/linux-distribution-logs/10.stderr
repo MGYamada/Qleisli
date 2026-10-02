@@ -1,0 +1,13 @@
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+    Checking hashbrown v0.17.1
+    Checking equivalent v1.0.2
+    Checking winnow v0.7.15
+    Checking indexmap v2.14.2
+    Checking toml_datetime v0.6.11
+    Checking serde_spanned v0.6.9
+    Checking toml_edit v0.22.27
+    Checking toml v0.8.23
+ Documenting qleisli v0.2.7 (/home/runner/work/_temp/qleisli-distribution-artifacts-kjeabz6j/packaged-source)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.69s
+   Generated /home/runner/work/_temp/qleisli-distribution-target/package-docs/doc/qleisli/index.html

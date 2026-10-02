@@ -1,0 +1,10 @@
+["cargo", "+1.98.1", "test", "--test", "sized_review_dialects", "native", "--", "--ignored"]
+   Compiling qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.42s
+     Running tests/sized_review_dialects.rs (target/debug/deps/sized_review_dialects-b623bcda60a89559)
+
+running 1 test
+test rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 4.16s
+

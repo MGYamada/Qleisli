@@ -1,0 +1,11 @@
+["cargo", "+1.98.1", "test", "--test", "sized_cli", "--", "--ignored"]
+   Compiling qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.95s
+     Running tests/sized_cli.rs (target/debug/deps/sized_cli-7b8b8ba22c0b38d9)
+
+running 2 tests
+test sized_cli_native_source_check_run_and_fresh_sampling ... ok
+test sized_cli_separates_producer_consistency_from_independent_requests ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 1.93s
+

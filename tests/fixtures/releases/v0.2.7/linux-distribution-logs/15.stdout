@@ -1,0 +1,48 @@
+
+running 43 tests
+test adapter::tests::another_import_cannot_redefine_a_frozen_clients_z_requirement_as_x ... ok
+test adapter::tests::an_imported_requirement_allows_additional_proof_terms ... ok
+test adapter::tests::graph_edits_and_a_different_implementation_root_are_rejected ... ok
+test adapter::tests::a_zero_controlled_scalar_phase_is_not_erased ... ok
+test adapter::tests::auxiliary_x_does_not_satisfy_zero_return ... ok
+test adapter::tests::import_work_is_bounded_before_building_axis_transports ... ok
+test adapter::tests::malformed_tables_reject_before_importer_indexes_entries ... ok
+test adapter::tests::a_local_z_binds_to_actual_128_bit_raw_ir_with_only_a_one_bit_leaf ... ok
+test adapter::tests::monomial_phase_is_applied_before_its_permutation ... ok
+test adapter::tests::ordinary_ownership_checks_reject_aliasing_and_missing_unit_owner ... ok
+test adapter::tests::raw_hadamards_satisfy_a_separately_required_identity ... ok
+test adapter::tests::output_order_is_a_semantic_transport_and_a_binding_dependency ... ok
+test adapter::tests::scalar_phase_on_zero_wires_is_retained ... ok
+test adapter::tests::large_multiport_identity_binds_without_dense_leaf_checking ... ok
+test adapter::tests::unsupported_valid_pure_raw_operations_are_rejected_explicitly ... ok
+test kernel::tests::a_producer_may_append_proof_terms_without_editing_the_frozen_requirement ... ok
+test adapter::tests::physical_auxiliary_implementations_share_an_encoded_z_contract ... ok
+test adapter::tests::split_join_and_nonadjacent_gate_axes_preserve_wire_order ... ok
+test kernel::tests::a_valid_proof_cannot_answer_a_different_frozen_root_requirement ... ok
+test kernel::tests::adjoint_cannot_turn_preparation_into_unconditional_release ... ok
+test kernel::tests::appended_definitions_cannot_fill_holes_in_a_frozen_requirement ... ok
+test kernel::tests::adjoint_requires_logical_unitarity_even_when_the_implementation_is_unitary ... ok
+test kernel::tests::control_adjoint_and_repetition_reuse_the_checked_local_contract ... ok
+test kernel::tests::control_requires_the_same_encoding_not_only_the_same_dimensions ... ok
+test kernel::tests::cyclic_forward_and_dangling_graph_references_are_rejected ... ok
+test kernel::tests::exact_encoding_checks_all_output_rows_and_rejects_auxiliary_leakage ... ok
+test kernel::tests::finite_work_and_node_limits_fail_closed ... ok
+test adapter::tests::raw_toffoli_preserves_the_order_of_both_controls_and_the_target ... ok
+test kernel::tests::direct_and_compute_phase_uncompute_share_the_fixed_z_contract ... ok
+test kernel::tests::frozen_requirement_rejects_coordinated_meaning_edits_with_unchanged_ids ... ok
+test kernel::tests::invalid_phase_and_global_exact_leaf_requests_are_rejected ... ok
+test kernel::tests::implementation_and_full_graph_contents_are_bound_to_evidence ... ok
+test kernel::tests::framed_64_and_128_bit_references_do_not_allocate_global_matrices ... ok
+test kernel::tests::same_dimension_different_middle_encodings_cannot_be_composed ... ok
+test kernel::tests::rewiring_is_explicit_bijective_and_preserves_exact_type_shapes ... ok
+test kernel::tests::tensor_order_is_low_left_and_not_interchangeable ... ok
+test kernel::tests::unit_factors_are_not_silently_erased_from_encoding_domains ... ok
+test kernel::tests::shared_proof_dag_composes_without_expanding_the_circuit_or_matrices ... ok
+test kernel::tests::zero_bit_phase_is_preserved_and_control_makes_it_relative ... ok
+test kernel::tests::zero_repetition_checks_the_operand_and_the_proof ... ok
+test kernel::tests::zero_repetition_of_a_checked_unitary_is_a_valid_symbolic_rule ... ok
+test kernel::tests::non_hermitian_control_adjoint_and_repeat_match_explicit_phase_operators ... ok
+test kernel::tests::adapter_matches_independent_exact_semantics_in_5425_control_and_phase_cases ... ok
+
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.43s
+

@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.qpe-instrument-host-validation",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 21,
+  "response_faults": 11,
+  "binary_transport": {
+    "cases": 72,
+    "shared_word_budget": "rejected before semantic checking",
+    "maximum_qubit_corpus_generated": false
+  },
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_qpe_host",
+    "--",
+    "--include-ignored",
+    "--nocapture"
+  ],
+  "stdout": "\nrunning 2 tests\nQPE_HOST|small|ok|889484|268\ntest qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations ... ok\nQPE_HOST|target2|ok|943981|268\nQPE_HOST|precision3|ok|1479616|402\nQPE_HOST|finite-provider|ok|882912|268\ntest native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries ... ok\n\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.71s\n\n",
+  "stderr": "   Compiling qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.72s\n     Running tests/hierarchical_qpe_host.rs (target/debug/deps/hierarchical_qpe_host-3c5f8c9c8691826c)\n",
+  "exit_code": 0,
+  "request_origin": "provider structure frozen for mutation tests; finite H target independently specified",
+  "kernel_sha256": "cdf388fbb01f30655e9cea9d27bf251311c9e1d94ff701a118c20b620423f7a8",
+  "source_sha256": {
+    "lean-kernel/Protocol.lean": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
+    "lean-kernel/Main.lean": "325ad33b411cdca45be9ced45c842cfb52b6c2d006ee4da9361dc46fe7fd1d6d",
+    "src/interchange/hierarchical.rs": "e37f3e59c6ccf49cef0d3c4a6158326f438ef7f699c6c5b4acad3c6c085d719f",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
+    "tests/hierarchical_qpe_host.rs": "6331ec7f65a9a8842bc408022e6ff3d15683ba40cb1c68ad5d3d74c44a244609"
+  },
+  "source_preservation_proved": false,
+  "production_authority": false,
+  "external_schema_enabled": false
+}

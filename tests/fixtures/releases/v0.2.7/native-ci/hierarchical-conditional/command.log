@@ -1,0 +1,2 @@
+["python3", "scripts/test_hierarchical_conditional.py"]
+{"binary_sha256": "67ff0e828c60134d559b9c6a4e166d0adb1b17096f3ffae70ec4aba8e4dce08e", "cases": 47, "expanded_repetitions": 0, "finite_requests": 38, "format": "qleisli.conditional-derivation-validation", "pending": 30, "repeat_cost": 24271, "schema_cost": 54868, "source_sha256": "34a1ce8ab33ee58f74c5f0bf3ea6bd19b8c5ec316224d0a4a35f7b568b401c6d", "status": "passed", "version": 1}

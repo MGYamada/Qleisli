@@ -1,6 +1,6 @@
 {
   "format": 3,
-  "release_state": "0.2.7 release authorized; exact candidate/publication pending. Latest published [0.2.6](../tests/fixtures/releases/v0.2.6/publication.json).",
+  "release_state": "0.2.7 published to crates.io/GitHub on 2026-10-03 (Asia/Tokyo); [exact-source full CI and publication evidence](../tests/fixtures/releases/v0.2.7/publication.json).",
   "current": [
     {
       "topic": "Use",
@@ -9,8 +9,8 @@
     },
     {
       "topic": "0.2.7",
-      "state": "Release candidate; 69 corpus cases",
-      "detail": "[Candidate](releases/v0.2.7.md); [first attempts](../corpus/authoring/v027-small/README.md)."
+      "state": "Published; 69 corpus cases",
+      "detail": "[Release](releases/v0.2.7.md); [first attempts](../corpus/authoring/v027-small/README.md)."
     },
     {
       "topic": "Proof scope",
@@ -33,7 +33,7 @@
       "id": "M0",
       "state": "Finite foundation",
       "evidence": "[0.2.7](releases/v0.2.7.md)",
-      "open": "Publication/VM27-29 separate."
+      "open": "VM27-29 and general theorem gates remain open."
     },
     {
       "id": "M1",

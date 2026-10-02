@@ -1,0 +1,2 @@
+["python3", "scripts/test_lean_raw_completion.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-raw-completion/record.json"]
+146 native completion cases; 31 Rust comparisons; 79 independent matrices

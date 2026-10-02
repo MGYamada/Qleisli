@@ -1,0 +1,5 @@
+["cargo", "+1.98.1", "run", "--example", "lean_kernel", "--", "lean-kernel/.lake/build/bin/qleisli-kernel", "--self-test"]
+   Compiling qleisli v0.2.7 (/home/runner/work/Qleisli/Qleisli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.85s
+     Running `target/debug/examples/lean_kernel lean-kernel/.lake/build/bin/qleisli-kernel --self-test`
+Passed 1307 native Lean decisions; 341 Rust exact-matrix oracles; all 256 dyadic scalar phases.

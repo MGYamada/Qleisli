@@ -1,0 +1,18 @@
+["python3", "scripts/test_lean_hierarchy.py"]
+test_body_count_dependency_and_request_mutations (__main__.HierarchyTests.test_body_count_dependency_and_request_mutations) ... ok
+test_closed_power_against_direct_boundary_execution (__main__.HierarchyTests.test_closed_power_against_direct_boundary_execution) ... ok
+test_dag_cycles_forward_references_and_unreachable_entries (__main__.HierarchyTests.test_dag_cycles_forward_references_and_unreachable_entries) ... ok
+test_exact_shape_and_zero_width_owner_ports (__main__.HierarchyTests.test_exact_shape_and_zero_width_owner_ports) ... ok
+test_global_phase_and_all_dyadic_angles (__main__.HierarchyTests.test_global_phase_and_all_dyadic_angles) ... ok
+test_immutable_first_artifacts (__main__.HierarchyTests.test_immutable_first_artifacts) ... ok
+test_large_shared_work_and_depth_boundary (__main__.HierarchyTests.test_large_shared_work_and_depth_boundary) ... ok
+test_node_reference_and_primitive_boundaries (__main__.HierarchyTests.test_node_reference_and_primitive_boundaries) ... ok
+test_small_shared_dags_against_expanded_and_complex_oracles (__main__.HierarchyTests.test_small_shared_dags_against_expanded_and_complex_oracles) ... ok
+test_strict_transport_and_no_schema_shortcuts (__main__.HierarchyTests.test_strict_transport_and_no_schema_shortcuts) ... ok
+test_zero_repeat_checks_body_and_retains_reachability (__main__.HierarchyTests.test_zero_repeat_checks_body_and_retains_reachability) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 54.679s
+
+OK
+Native DAG decisions: 647

@@ -6,7 +6,10 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-## 0.2.7 - 2026-10-02
+## 0.2.7 - 2026-10-03
+
+Published to crates.io and GitHub; [immutable validation and installation evidence](tests/fixtures/releases/v0.2.7/publication.json).
+The candidate was selected on 2026-10-02; publication completed on 2026-10-03 (Asia/Tokyo).
 
 - Fix finite Pair/nested tuple reconstruction (#207), retain named-QPE host
   fault checks in CI (#208), reject run_elab/run_meta in kernel policy (#209),

@@ -1,6 +1,6 @@
 # Versioning and compatibility
 
-Cargo.toml authoritative, [release procedure](crates-io-release.md). Selected0.2.7 development/unpublished; latest published0.2.6 [evidence](../tests/fixtures/releases/v0.2.6/publication.json). Synchronize Cargo/lock/both lakefiles/Python metadata+runtime/std Qargo, never dependencies. Unreleased accumulates work, no per-task bump; annotated vMAJOR.MINOR.PATCH, prereleases synchronized. Edition/spec/ledger independent.
+Cargo.toml authoritative, [release procedure](crates-io-release.md). Latest published0.2.7 [evidence](../tests/fixtures/releases/v0.2.7/publication.json). Synchronize Cargo/lock/both lakefiles/Python metadata+runtime/std Qargo, never dependencies. Unreleased accumulates work, no per-task bump; annotated vMAJOR.MINOR.PATCH, prereleases synchronized. Edition/spec/ledger independent.
 
 ## Choosing the next version
 

@@ -1,0 +1,2 @@
+["python3", "scripts/test_lean_observation.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-observation/record.json"]
+150 native cases; 143 Rust comparisons; 145 exact Kraus operators; 145 retained histories

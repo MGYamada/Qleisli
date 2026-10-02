@@ -1,0 +1,2152 @@
+{
+  "authorization": "User explicitly requested 0.2.7 crates.io and GitHub release in this chat.",
+  "ci": {
+    "annotations": "Runner-image migration and Node.js action deprecation notices; no failed checks.",
+    "conclusion": "success",
+    "created_at": "2026-10-02T14:47:16Z",
+    "event": "workflow_dispatch",
+    "head": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+    "jobs": [
+      {
+        "completed_at": "2026-10-02T14:47:28Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888190918",
+        "id": 110888190918,
+        "name": "changes",
+        "started_at": "2026-10-02T14:47:21Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:23Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:22Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:24Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:25Z",
+            "conclusion": "success",
+            "name": "Test fail-closed routing and required-check aggregation",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:25Z",
+            "conclusion": "success",
+            "name": "Select validation from the exact commit and both sides of its diff",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:25Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:26Z",
+            "conclusion": "success",
+            "name": "Retain selection inputs and exact commit binding",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:25Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:26Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 10,
+            "started_at": "2026-10-02T14:47:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:26Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 11,
+            "started_at": "2026-10-02T14:47:26Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:47:55Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258664",
+        "id": 110888258664,
+        "name": "check-docs",
+        "started_at": "2026-10-02T14:47:31Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:32Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:31Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Check edition 2026 coverage of every Qleisli source and QLT draft",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_docs.py",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_lean_kernel.py",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_schema_registry.py",
+            "number": 6,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_schema_registry.py --source-only",
+            "number": 7,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:36Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_docs.py",
+            "number": 8,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:48Z",
+            "conclusion": "success",
+            "name": "Verification inventory coverage and independent oracle calibration",
+            "number": 9,
+            "started_at": "2026-10-02T14:47:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:48Z",
+            "conclusion": "success",
+            "name": "Standard-library contract-writing conventions and mutation checks",
+            "number": 10,
+            "started_at": "2026-10-02T14:47:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:48Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_authoring_sessions.py",
+            "number": 11,
+            "started_at": "2026-10-02T14:47:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:48Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_authoring_sessions.py",
+            "number": 12,
+            "started_at": "2026-10-02T14:47:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:51Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_input_corpus.py",
+            "number": 13,
+            "started_at": "2026-10-02T14:47:48Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:51Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_input_corpus.py",
+            "number": 14,
+            "started_at": "2026-10-02T14:47:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_distribution.py",
+            "number": 15,
+            "started_at": "2026-10-02T14:47:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_imaginary_v1_examples.py",
+            "number": 16,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_imaginary_v1_examples.py",
+            "number": 17,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_check_semantic_contract_examples.py",
+            "number": 18,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_semantic_contract_examples.py",
+            "number": 19,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:53Z",
+            "conclusion": "success",
+            "name": "Check whitespace throughout the committed tree",
+            "number": 20,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:54Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 40,
+            "started_at": "2026-10-02T14:47:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:54Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 41,
+            "started_at": "2026-10-02T14:47:54Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:50:24Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258671",
+        "id": 110888258671,
+        "name": "check-rust-msrv",
+        "started_at": "2026-10-02T14:47:31Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:33Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:43Z",
+            "conclusion": "success",
+            "name": "Install the minimum supported Rust toolchain",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.85.0 test --all-targets",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:43Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+            "number": 6,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+            "number": 7,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+            "number": 8,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+            "number": 9,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:20Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+            "number": 10,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:20Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+            "number": 11,
+            "started_at": "2026-10-02T14:49:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:20Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+            "number": 12,
+            "started_at": "2026-10-02T14:49:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:20Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+            "number": 13,
+            "started_at": "2026-10-02T14:49:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:20Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+            "number": 14,
+            "started_at": "2026-10-02T14:49:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:33Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.85.0 clippy --all-targets -- -D warnings",
+            "number": 15,
+            "started_at": "2026-10-02T14:49:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:14Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+            "number": 16,
+            "started_at": "2026-10-02T14:49:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:20Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+            "number": 17,
+            "started_at": "2026-10-02T14:50:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:22Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 33,
+            "started_at": "2026-10-02T14:50:20Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:22Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 34,
+            "started_at": "2026-10-02T14:50:22Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:22Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 35,
+            "started_at": "2026-10-02T14:50:22Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:50:48Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258701",
+        "id": 110888258701,
+        "name": "check-distribution",
+        "started_at": "2026-10-02T14:47:31Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:32Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:32Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:42Z",
+            "conclusion": "success",
+            "name": "Install the tested Rust toolchain",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:43Z",
+            "conclusion": "success",
+            "name": "Fetch package dependencies before offline distribution checks",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:42Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:43Z",
+            "conclusion": "success",
+            "name": "Verify clean package and complete source archive",
+            "number": 6,
+            "started_at": "2026-10-02T14:47:43Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:45Z",
+            "conclusion": "success",
+            "name": "Retain candidate hashes, archives and command logs",
+            "number": 7,
+            "started_at": "2026-10-02T14:50:43Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:45Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 13,
+            "started_at": "2026-10-02T14:50:45Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:46Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 14,
+            "started_at": "2026-10-02T14:50:45Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:46Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "started_at": "2026-10-02T14:50:46Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:48:21Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258744",
+        "id": 110888258744,
+        "name": "check-interop",
+        "started_at": "2026-10-02T14:47:32Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:33Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:36Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:57Z",
+            "conclusion": "success",
+            "name": "Install validators and the tested Rust toolchain",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:11Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 build --example interop --bin qleisli",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:57Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:14Z",
+            "conclusion": "success",
+            "name": "Independently parse OpenQASM and verify QIR with LLVM",
+            "number": 6,
+            "started_at": "2026-10-02T14:48:11Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:18Z",
+            "conclusion": "success",
+            "name": "Installed Python API and independently authored QIR input",
+            "number": 7,
+            "started_at": "2026-10-02T14:48:14Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:19Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 13,
+            "started_at": "2026-10-02T14:48:18Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:19Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 14,
+            "started_at": "2026-10-02T14:48:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:19Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "started_at": "2026-10-02T14:48:19Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:45Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258750",
+        "id": 110888258750,
+        "name": "check-lean-kernel",
+        "started_at": "2026-10-02T14:47:33Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:37Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:38Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:45Z",
+            "conclusion": "success",
+            "name": "Install the tested Rust toolchain for native host comparisons",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:38Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:46Z",
+            "conclusion": "success",
+            "name": "Fetch Rust dependencies before offline native host comparisons",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:45Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:47Z",
+            "conclusion": "success",
+            "name": "Reject kernel/backend source escape hatches and unaudited imports",
+            "number": 6,
+            "started_at": "2026-10-02T14:47:46Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:47Z",
+            "conclusion": "success",
+            "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+            "number": 7,
+            "started_at": "2026-10-02T14:47:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:51Z",
+            "conclusion": "success",
+            "name": "Audit axioms, unsafe/partial declarations and runtime replacements",
+            "number": 8,
+            "started_at": "2026-10-02T14:49:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:50:18Z",
+            "conclusion": "success",
+            "name": "Replay retained proof reductions and refactoring equivalence",
+            "number": 9,
+            "started_at": "2026-10-02T14:49:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:54:25Z",
+            "conclusion": "success",
+            "name": "Replay the compiled project definitions through Lean's kernel",
+            "number": 10,
+            "started_at": "2026-10-02T14:50:18Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:55:07Z",
+            "conclusion": "success",
+            "name": "Reject backend unsafe, implemented_by, extern and partial counterexamples",
+            "number": 11,
+            "started_at": "2026-10-02T14:54:25Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:40Z",
+            "conclusion": "success",
+            "name": "Run all retained native comparisons with bounded parallelism",
+            "number": 12,
+            "started_at": "2026-10-02T14:55:07Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:41Z",
+            "conclusion": "success",
+            "name": "Retain complete coverage, per-command timings and independent logs",
+            "number": 13,
+            "started_at": "2026-10-02T15:04:40Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:42Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 25,
+            "started_at": "2026-10-02T15:04:41Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:42Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 26,
+            "started_at": "2026-10-02T15:04:42Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:42Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 27,
+            "started_at": "2026-10-02T15:04:42Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:57:14Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258771",
+        "id": 110888258771,
+        "name": "check-lean",
+        "started_at": "2026-10-02T14:47:32Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:34Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:36Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:34Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:37Z",
+            "conclusion": "success",
+            "name": "Test registry policy and bind the exact shipped source inventory",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "skipped",
+            "name": "Compile changed mathematical proofs and audit their declarations",
+            "number": 5,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:57:12Z",
+            "conclusion": "success",
+            "name": "Bind shipped schema types to rebuilt declarations and audited executable sources",
+            "number": 6,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:57:13Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 12,
+            "started_at": "2026-10-02T14:57:12Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:57:13Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 13,
+            "started_at": "2026-10-02T14:57:13Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:48:30Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258776",
+        "id": 110888258776,
+        "name": "check-macos-source",
+        "started_at": "2026-10-02T14:47:36Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:37Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:39Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:37Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:40Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:39Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:47Z",
+            "conclusion": "success",
+            "name": "Install MSRV and Intel macOS compilation target",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:40Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:02Z",
+            "conclusion": "success",
+            "name": "Exercise descriptor-relative source loading on macOS",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:47Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:15Z",
+            "conclusion": "success",
+            "name": "Check source budgets, project loading and edition manifests",
+            "number": 6,
+            "started_at": "2026-10-02T14:48:02Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:27Z",
+            "conclusion": "success",
+            "name": "Build with Rust's existing Intel macOS minimum",
+            "number": 7,
+            "started_at": "2026-10-02T14:48:15Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:28Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 13,
+            "started_at": "2026-10-02T14:48:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:28Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 14,
+            "started_at": "2026-10-02T14:48:28Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:48:29Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 15,
+            "started_at": "2026-10-02T14:48:28Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T14:52:19Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110888258809",
+        "id": 110888258809,
+        "name": "check-rust",
+        "started_at": "2026-10-02T14:47:32Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T14:47:33Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T14:47:33Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:35Z",
+            "conclusion": "success",
+            "name": "Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 3,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:44Z",
+            "conclusion": "success",
+            "name": "Install the tested Rust toolchain",
+            "number": 4,
+            "started_at": "2026-10-02T14:47:35Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:47:45Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 fmt --check",
+            "number": 5,
+            "started_at": "2026-10-02T14:47:44Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:02Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 test --all-targets",
+            "number": 6,
+            "started_at": "2026-10-02T14:47:45Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:03Z",
+            "conclusion": "success",
+            "name": "Sized Rust and Python source dialect comparisons on small inputs",
+            "number": 7,
+            "started_at": "2026-10-02T14:49:02Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:19Z",
+            "conclusion": "success",
+            "name": "Sized primitive omissions must fail compilation",
+            "number": 8,
+            "started_at": "2026-10-02T14:49:03Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:23Z",
+            "conclusion": "success",
+            "name": "Build public API documentation without warnings",
+            "number": 9,
+            "started_at": "2026-10-02T14:49:19Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:23Z",
+            "conclusion": "success",
+            "name": "Execute public API documentation examples",
+            "number": 10,
+            "started_at": "2026-10-02T14:49:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:23Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+            "number": 11,
+            "started_at": "2026-10-02T14:49:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:23Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+            "number": 12,
+            "started_at": "2026-10-02T14:49:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+            "number": 13,
+            "started_at": "2026-10-02T14:49:23Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+            "number": 14,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+            "number": 15,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+            "number": 16,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+            "number": 17,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+            "number": 18,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:24Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+            "number": 19,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:25Z",
+            "conclusion": "success",
+            "name": "Seeded source differential checks with an independent complex oracle",
+            "number": 20,
+            "started_at": "2026-10-02T14:49:24Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:49:27Z",
+            "conclusion": "success",
+            "name": "Frozen VM-22 finite/source comparison inputs",
+            "number": 21,
+            "started_at": "2026-10-02T14:49:26Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:51:30Z",
+            "conclusion": "success",
+            "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+            "number": 22,
+            "started_at": "2026-10-02T14:49:27Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:51:36Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 clippy --all-targets -- -D warnings",
+            "number": 23,
+            "started_at": "2026-10-02T14:51:30Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:51:36Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check",
+            "number": 24,
+            "started_at": "2026-10-02T14:51:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:52:12Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+            "number": 25,
+            "started_at": "2026-10-02T14:51:36Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:52:17Z",
+            "conclusion": "success",
+            "name": "Run cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+            "number": 26,
+            "started_at": "2026-10-02T14:52:12Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:52:18Z",
+            "conclusion": "success",
+            "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+            "number": 51,
+            "started_at": "2026-10-02T14:52:17Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:52:18Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 52,
+            "started_at": "2026-10-02T14:52:18Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T14:52:18Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 53,
+            "started_at": "2026-10-02T14:52:18Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:55Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256349",
+        "id": 110895256349,
+        "name": "interop",
+        "started_at": "2026-10-02T15:04:48Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:54Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256373",
+        "id": 110895256373,
+        "name": "distribution",
+        "started_at": "2026-10-02T15:04:48Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:54Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256381",
+        "id": 110895256381,
+        "name": "docs",
+        "started_at": "2026-10-02T15:04:48Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:51Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:51Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:55Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256382",
+        "id": 110895256382,
+        "name": "rust-msrv",
+        "started_at": "2026-10-02T15:04:49Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:51Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:51Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:53Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:57Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256467",
+        "id": 110895256467,
+        "name": "lean-kernel",
+        "started_at": "2026-10-02T15:04:51Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:53Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:54Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:53Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:54Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:54Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:54Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:54Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:55Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:54Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:55Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:55Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:53Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256495",
+        "id": 110895256495,
+        "name": "rust",
+        "started_at": "2026-10-02T15:04:49Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:54Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256547",
+        "id": 110895256547,
+        "name": "lean",
+        "started_at": "2026-10-02T15:04:49Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      },
+      {
+        "completed_at": "2026-10-02T15:04:55Z",
+        "conclusion": "success",
+        "head_sha": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "html_url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738/job/110895256590",
+        "id": 110895256590,
+        "name": "macos-source",
+        "started_at": "2026-10-02T15:04:48Z",
+        "status": "completed",
+        "steps": [
+          {
+            "completed_at": "2026-10-02T15:04:50Z",
+            "conclusion": "success",
+            "name": "Set up job",
+            "number": 1,
+            "started_at": "2026-10-02T15:04:49Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 2,
+            "started_at": "2026-10-02T15:04:50Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Enforce complete selected validation and exact commit binding",
+            "number": 3,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "skipped",
+            "name": "Retain required-check and dependency-cache observations",
+            "number": 4,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+            "number": 8,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          },
+          {
+            "completed_at": "2026-10-02T15:04:52Z",
+            "conclusion": "success",
+            "name": "Complete job",
+            "number": 9,
+            "started_at": "2026-10-02T15:04:52Z",
+            "status": "completed"
+          }
+        ]
+      }
+    ],
+    "native": {
+      "artifact_hashes": "native-coverage.json",
+      "binding": {
+        "head": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "lean_pin": "leanprover/lean4:v4.30.0",
+        "lean_version": "Lean (version 4.30.0, x86_64-unknown-linux-gnu, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+        "rust_version": "rustc 1.98.1 (48a229cea 2026-09-01)"
+      },
+      "commands": 69,
+      "complete_coverage_verified": true,
+      "elapsed_seconds": 573.1450689390001,
+      "groups": 65,
+      "manifest_sha256": "c4bcec809907342bea8244ed5b44c6782b86133aa574123695293dcfaa61ee75",
+      "record": "native-ci/results.json",
+      "workers": 4
+    },
+    "run_id": 37022315738,
+    "selection": {
+      "base": null,
+      "dependency_cache": "enabled",
+      "event": "workflow_dispatch",
+      "format": 1,
+      "head": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+      "paths": [],
+      "profile": "full",
+      "project_build_cache": "disabled",
+      "proof_lane": "full",
+      "reason": "release ref; fresh full validation",
+      "ref": "refs/heads/codex/release-v0.2.7"
+    },
+    "status": "completed",
+    "updated_at": "2026-10-02T15:04:58Z",
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37022315738"
+  },
+  "docs_rs": {
+    "builds_page_sha256": "eb666cbd2d6a6db10879be18c112c4dd52383b92b997868109838621429338bc",
+    "builds_url": "https://docs.rs/crate/qleisli/0.2.7/builds",
+    "http_status": 200,
+    "rustdoc_sha256": "11d91a1b6c085819be8c4f260f92fa6e8b563374224f538897dc3f448727b3f9",
+    "status": "passed",
+    "successful_build_url": "https://docs.rs/crate/qleisli/0.2.7/builds/4681822",
+    "url": "https://docs.rs/qleisli/0.2.7/qleisli/"
+  },
+  "format": "qleisli.publication-validation",
+  "github_release": {
+    "archives": {
+      "tar.gz": {
+        "archive_root": "MGYamada-Qleisli-7eb7703",
+        "artifact": "/private/tmp/qleisli-v027-github.tar.gz",
+        "bytes_match": true,
+        "checked_utc": "2026-10-02T15:14:11.811930+00:00",
+        "complete_inventory_matches_git": true,
+        "compressed_bytes": 6867202,
+        "excluded_tracked_files": [],
+        "file_count": 2643,
+        "format": "qleisli.downloaded-artifact-validation",
+        "git_modes_match": true,
+        "observed_posix_modes": [
+          "0o664"
+        ],
+        "permission_comparison": "Git mode identity allowing only optional group-write bit.",
+        "release": "0.2.7",
+        "sha256": "9080978c15a1da48ffb655c510228a21c65e37a7975e81c6107fbd0885cc8896",
+        "source_commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "status": "passed",
+        "version": 1
+      },
+      "zip": {
+        "archive_root": "MGYamada-Qleisli-7eb7703",
+        "artifact": "/private/tmp/qleisli-v027-github.zip",
+        "bytes_match": true,
+        "checked_utc": "2026-10-02T15:14:12.134318+00:00",
+        "complete_inventory_matches_git": true,
+        "compressed_bytes": 8532928,
+        "excluded_tracked_files": [],
+        "file_count": 2643,
+        "format": "qleisli.downloaded-artifact-validation",
+        "git_modes_match": null,
+        "observed_posix_modes": [
+          "0o0"
+        ],
+        "permission_comparison": "ZIP omits POSIX modes; all Git files are non-executable. Permissions checked independently in source tar.",
+        "release": "0.2.7",
+        "sha256": "18c1ad5f53f6c0f77b8bb6bb0804bf53bced787ddd4b93c0d35fa980b4dc014d",
+        "source_commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+        "status": "passed",
+        "version": 1
+      }
+    },
+    "custom_assets": [],
+    "draft": false,
+    "id": 401923063,
+    "latest_readback": {
+      "html_url": "https://github.com/MGYamada/Qleisli/releases/tag/v0.2.7",
+      "id": 401923063,
+      "name": "Qleisli v0.2.7",
+      "published_at": "2026-10-02T15:11:21Z",
+      "tag_name": "v0.2.7"
+    },
+    "notes": "release-notes.md",
+    "notes_match": true,
+    "prerelease": false,
+    "published_at": "2026-10-02T15:11:21Z",
+    "tag": "v0.2.7",
+    "title": "Qleisli v0.2.7",
+    "url": "https://github.com/MGYamada/Qleisli/releases/tag/v0.2.7"
+  },
+  "immutability": "The tag and registry artifact remain at the exact checked source; these records are committed afterward. Earlier development records are unchanged.",
+  "local_and_linux_distribution": {
+    "actual_ci_artifact_bytes_and_inventories_verified": true,
+    "artifact": "/private/tmp/qleisli-v027-ci-distribution/qleisli-distribution.json",
+    "candidate": {
+      "clean": true,
+      "commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+      "tree": "fd2dbee60211050eecf0553697bcc283e0147b12"
+    },
+    "checked_utc": "2026-10-02T14:54:43.320470+00:00",
+    "crate_sha256": "1f7a4cc19edc4c6965d72dbe4f2bea84b4a042bbf33aa4d9120706ba6fae9955",
+    "format": "qleisli.downloaded-artifact-validation",
+    "hosted_rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "local_rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "release": "0.2.7",
+    "source_commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+    "source_files": 2643,
+    "source_tar_sha256": "b8f30d200cbb53fb7e858c08b78618ec59a6529b9f69c12c2b73eac2e471246e",
+    "status": "passed",
+    "version": 1
+  },
+  "not_performed": [
+    "PyPI publication",
+    "custom binary publication",
+    "general analytic closure/universal decoder or compiler proof",
+    "production authority transfer/VM-27 closure"
+  ],
+  "observed_failures_and_resolution": [
+    "crates.io metadata initially returned HTTP 403 for the generic curl client; identified release-verification User-Agent succeeded.",
+    "docs.rs initially returned HTTP 404 while the new version was queued; subsequent version-specific Rust API returned 200 and the build page reported success.",
+    "GitHub tar uses optional group-write permission; ZIP omits POSIX modes. Complete contents match Git, all Git files are non-executable, and permissions were independently checked in tar."
+  ],
+  "publication_local_date": "2026-10-03",
+  "publication_timezone": "Asia/Tokyo",
+  "recorded_utc": "2026-10-02T15:17:27.763827+00:00",
+  "registry": {
+    "complete_package_matches_rehearsal": true,
+    "files": 2637,
+    "fresh_install": {
+      "binary": "/private/tmp/qleisli-v027-registry-install/bin/qleisli",
+      "checks": [
+        "Bell check/run/sample in text and JSON",
+        "embedded qft2",
+        "reject measured-owner reuse"
+      ],
+      "execution": "temporary directory; empty helper-tool PATH",
+      "package": "qleisli",
+      "publication": "This checker performs no publication; the registry upload is recorded separately.",
+      "readmes": "matching Bell source and version",
+      "registry_links": "absolute; repository targets exist locally",
+      "version": "0.2.7"
+    },
+    "fresh_install_command": [
+      "env",
+      "CARGO_HOME=/private/tmp/qleisli-v027-fresh-cargo-home",
+      "cargo",
+      "install",
+      "qleisli",
+      "--version",
+      "=0.2.7",
+      "--locked",
+      "--root",
+      "/private/tmp/qleisli-v027-registry-install",
+      "--target-dir",
+      "/private/tmp/qleisli-v027-registry-target"
+    ],
+    "fresh_install_exit_code": 0,
+    "metadata": {
+      "audit_actions": [
+        {
+          "action": "publish",
+          "time": "2026-10-02T15:10:43.211059Z",
+          "user": {
+            "avatar": "https://avatars.githubusercontent.com/u/26708589?v=4",
+            "created_at": "2026-09-29T17:09:09.336472Z",
+            "github_username_matches": true,
+            "id": 442790,
+            "login": "MGYamada",
+            "name": "Masahiko G. Yamada",
+            "url": "https://github.com/MGYamada"
+          }
+        }
+      ],
+      "bin_names": [
+        "qleisli"
+      ],
+      "checksum": "1f7a4cc19edc4c6965d72dbe4f2bea84b4a042bbf33aa4d9120706ba6fae9955",
+      "crate": "qleisli",
+      "crate_size": 6739045,
+      "created_at": "2026-10-02T15:10:43.211059Z",
+      "description": "Experimental quantum language with linear ownership, exact contracts and independent finite IR verification",
+      "dl_path": "/api/v1/crates/qleisli/0.2.7/download",
+      "documentation": "https://docs.rs/qleisli",
+      "downloads": 0,
+      "edition": "2024",
+      "features": {},
+      "has_lib": true,
+      "homepage": null,
+      "id": 3384761,
+      "lib_links": null,
+      "license": "Apache-2.0",
+      "linecounts": {
+        "languages": {
+          "Lean": {
+            "code_lines": 28730,
+            "comment_lines": 2088,
+            "files": 190
+          },
+          "Python": {
+            "code_lines": 23345,
+            "comment_lines": 6201,
+            "files": 125
+          },
+          "Rust": {
+            "code_lines": 31763,
+            "comment_lines": 342,
+            "files": 79
+          }
+        },
+        "total_code_lines": 83838,
+        "total_comment_lines": 8631
+      },
+      "links": {
+        "authors": "/api/v1/crates/qleisli/0.2.7/authors",
+        "dependencies": "/api/v1/crates/qleisli/0.2.7/dependencies",
+        "version_downloads": "/api/v1/crates/qleisli/0.2.7/downloads"
+      },
+      "num": "0.2.7",
+      "published_by": {
+        "avatar": "https://avatars.githubusercontent.com/u/26708589?v=4",
+        "created_at": "2026-09-29T17:09:09.336472Z",
+        "github_username_matches": true,
+        "id": 442790,
+        "login": "MGYamada",
+        "name": "Masahiko G. Yamada",
+        "url": "https://github.com/MGYamada"
+      },
+      "readme_path": "/api/v1/crates/qleisli/0.2.7/readme",
+      "repository": "https://github.com/MGYamada/Qleisli",
+      "rust_version": "1.85",
+      "trustpub_data": null,
+      "updated_at": "2026-10-02T15:10:43.211059Z",
+      "yank_message": null,
+      "yanked": false
+    },
+    "pinned_links": [
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/TRUST_BOUNDARY.md",
+        "matches_tagged_source": true,
+        "path": "TRUST_BOUNDARY.md",
+        "sha": "7ceb9a8f6a5b428fa4c17d842768a3079852ff7f"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md",
+        "matches_tagged_source": true,
+        "path": "docs/crates-io-release.md",
+        "sha": "220a32fc2532f43106471d5ac658163ea8a7aea0"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md",
+        "matches_tagged_source": true,
+        "path": "docs/interop-m1.1.md",
+        "sha": "44112c22c6f7ebe945d13d34d619432736f0d85e"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md",
+        "matches_tagged_source": true,
+        "path": "docs/language-editions.md",
+        "sha": "48ba872cb878294c077ef4cb847e361727ee6d88"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-quick-reference.md",
+        "matches_tagged_source": true,
+        "path": "docs/qli-quick-reference.md",
+        "sha": "bf6f18458dcfffedf8cb15e98288462bd0c752ee"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md",
+        "matches_tagged_source": true,
+        "path": "docs/releases/v0.2.7.md",
+        "sha": "39fdcce8af2bd271d9f82783b960b9581dfbf993"
+      },
+      {
+        "html_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.7/python/README.md",
+        "matches_tagged_source": true,
+        "path": "python/README.md",
+        "sha": "364f11d3f61a284d349c294911d78e15d8dc639e"
+      }
+    ],
+    "publish_exit_code": 0,
+    "publish_result": "    Packaged 2637 files, 49.6MiB (6.4MiB compressed)\n   Verifying qleisli v0.2.7 (/Users/masa/git/Qleisli)\n   Compiling qleisli v0.2.7 (/Users/masa/git/Qleisli/target/package/qleisli-0.2.7)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 11.12s\n   Uploading qleisli v0.2.7 (/Users/masa/git/Qleisli)\n    Uploaded qleisli v0.2.7 to registry `crates-io`\nnote: waiting for qleisli v0.2.7 to be available at registry `crates-io`\nhelp: you may press ctrl-c to skip waiting; the crate should be available shortly\n   Published qleisli v0.2.7 at registry `crates-io`\n",
+    "rendered_readme": {
+      "sha256": "fde1782b4efb86a03913324201d026a7089f4344e3085bcba4b7c715618772ec",
+      "status": "checked"
+    },
+    "sha256": "1f7a4cc19edc4c6965d72dbe4f2bea84b4a042bbf33aa4d9120706ba6fae9955",
+    "url": "https://crates.io/crates/qleisli/0.2.7",
+    "vcs": {
+      "git": {
+        "sha1": "7844a10d63880a2b6984c093e2dc7a75033d1e1e"
+      },
+      "path_in_vcs": ""
+    }
+  },
+  "release": "0.2.7",
+  "retained_files": {
+    "ci-selection.json": "33b3884f415b7e1aabaa618d8a56bad79d04eff521488889dccecd62b8fb4561",
+    "distribution-cross-host.json": "44e48b3dcd1b213c7e36c0fdc7fafe873fbe4b75d32a6c9b984d2c74f0d2ce93",
+    "distribution-linux.json": "79794a0a47a7569472a2cc2fe5fc900cdcb4ab77363e5dbad28fd94a0fd932c7",
+    "distribution-local.json": "3a54c233424860483acb7d01afbb92c1f084cb4caf5693235c415765b705311a",
+    "documentation-reduction.json": "69e595200ea6ed957eae7d4c11bf7df308e9b0647ffaca8c975b90d1a288f5c7",
+    "github-tar-verification.json": "58fc1ef72d6ccbc1107bd0aa907c48d6428414ceab36463b9b887f698bd6fe01",
+    "github-zip-verification.json": "86009870e2d50adbd5a7d9539f848a9f5d88e491b639ad12182bb713e2befb84",
+    "linux-distribution-logs/00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/00.stdout": "2073de5abf149185c2f4d7473dc833bc921b99135560d24ae7b2293f33a9c376",
+    "linux-distribution-logs/01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/01.stdout": "9950bbb2d5c3417b1a068f0e81f6d3cac991a363193bdf2a22d447f5acf8b503",
+    "linux-distribution-logs/02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/02.stdout": "5448b292e8d201204453137c9583a50c826ba9e632616b3086ae2bcf33fff4c4",
+    "linux-distribution-logs/03.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/04.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/04.stdout": "8acd17e0a2ca02864997a24e41c3b6f99cbb089eb697554e916f263385dc2ef6",
+    "linux-distribution-logs/05.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/05.stdout": "bf1de4d40721f3a30aa5672b448cfe879d0c3fd45b13993f68275fcf6bfb66e8",
+    "linux-distribution-logs/06.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/06.stdout": "e15c88ef6fa2a7b7bcb93017337d6f49d682a8a4a58c24d71e25c04c176484a5",
+    "linux-distribution-logs/07.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/07.stdout": "ec555a23da56611d5713951f1d5e72885d071de9d61596132960dbe05665c667",
+    "linux-distribution-logs/08.stderr": "f9985bf731829d1096bac80e0fabba128073d40c7abc4ccfc8e9e689c62acc62",
+    "linux-distribution-logs/08.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/09.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/09.stdout": "57a605903aafcf57c6ab6e8566980217d934b586276fbd178ff57cb2e1179d45",
+    "linux-distribution-logs/10.stderr": "ed4801d6d9c0fa0f022d08f8b0b9d75f8012398de1959428940079fd4b3cc916",
+    "linux-distribution-logs/10.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/11.stderr": "5c1c0b3485742a5c061763493879c606e0a7d97d1cf7e5fd712990ee8bf68c38",
+    "linux-distribution-logs/11.stdout": "d3c42b326cc0c9d999834ebd7cbcd044a0415eb06d2ecb94494067ba3eb2af02",
+    "linux-distribution-logs/12.stderr": "a7f2aaa83f6a0705a7a618422d3ec310e791d43d74494fbbac1b2a837ff9247b",
+    "linux-distribution-logs/12.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/13.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/13.stdout": "51a00098bd878b172311bd8ed7b8fa777d2bb2568acd74f9f7da04ada6119726",
+    "linux-distribution-logs/14.stderr": "da74a567b066a8a560ed981387cdfbdf7c9a02263211b7f2181a7741928759f9",
+    "linux-distribution-logs/14.stdout": "326d728667c62d68b2fbe7d615b798419ee8c297c94b689abda6da03b19f0873",
+    "linux-distribution-logs/15.stderr": "4466befef503d53bf01778cae60895af6785bc9ca32f651d61394e8bd5ffacfe",
+    "linux-distribution-logs/15.stdout": "c64f5407ecc9906f65c7af14150f67ebafa542ac78d5d80e322598b2b35fef11",
+    "linux-distribution-logs/16.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "linux-distribution-logs/16.stdout": "593672caebf6578165f2cb2ce75e813fcd154302dbbc3dde79178e056e7b03a5",
+    "local-distribution-logs/00.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/00.stdout": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+    "local-distribution-logs/01.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/01.stdout": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+    "local-distribution-logs/02.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/02.stdout": "12a864abf19dd1a3c51863352ab333774237dcaf2d3b4221481b50a34dbd2da3",
+    "local-distribution-logs/03.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/04.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/04.stdout": "8acd17e0a2ca02864997a24e41c3b6f99cbb089eb697554e916f263385dc2ef6",
+    "local-distribution-logs/05.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/05.stdout": "bf1de4d40721f3a30aa5672b448cfe879d0c3fd45b13993f68275fcf6bfb66e8",
+    "local-distribution-logs/06.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/06.stdout": "e15c88ef6fa2a7b7bcb93017337d6f49d682a8a4a58c24d71e25c04c176484a5",
+    "local-distribution-logs/07.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/07.stdout": "ec555a23da56611d5713951f1d5e72885d071de9d61596132960dbe05665c667",
+    "local-distribution-logs/08.stderr": "bd99229249759b7bc528a119fa8a235ed4cbf8d397cbd416ab65578fd92297c8",
+    "local-distribution-logs/08.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/09.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/09.stdout": "fdb46bef9f599ea4a791bbdbcf5fe4d7397a87c7a9b713246c6fce15122cf825",
+    "local-distribution-logs/10.stderr": "192d261480d664acbe92bc0ed65dc08bc1985f36399b05699e67c8daa8a593bd",
+    "local-distribution-logs/10.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/11.stderr": "1f7d2bff2e060dd934d208927bacf3e0b97ba02244a2f1e2987fcbb64bf67649",
+    "local-distribution-logs/11.stdout": "113b7ea32478c41772dbe85ad07ff9042178e9f36c4d8323dc30c56c7920664c",
+    "local-distribution-logs/12.stderr": "bc8660c57abf0e025ff61eac98362c3d1504fa4cd6db456a3650801eb335808c",
+    "local-distribution-logs/12.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/13.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/13.stdout": "8e7d5a2cdff6e95cb92fe7e6153403a9d0a1501e621e41e1ff4c3186b50ee7ee",
+    "local-distribution-logs/14.stderr": "46c966c34fa1a2c37c92a217c8f0dd7eb4304ac3d7b8309ac65d109e9c8aaecb",
+    "local-distribution-logs/14.stdout": "43c3c4559650372f0638fca4bc2902d30bd12cca2353de2cac363e0cccd55a22",
+    "local-distribution-logs/15.stderr": "1b35ad4be55b971010118e57410a8798a57050c2b1503c8d5bd14591f2960bb5",
+    "local-distribution-logs/15.stdout": "d41ab3922ed73f24a88b250663c81099bd41c1da15223fc5490b3e3d52289f30",
+    "local-distribution-logs/16.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "local-distribution-logs/16.stdout": "0644a7e98bcfb61805b1e5d1fc3bab50f7fc963c68d728e32facaa8b0e8eedbe",
+    "native-ci/compact-sized-graph/command.log": "dbaeae7563b587fa9a401e0f2efd7515c34aa676416d6e7ae704a3d7e044e752",
+    "native-ci/hierarchical-artifact/command.log": "263f7dcfca87b136dbe6caefd1862c96c58ae98c28a9610c18294ea67bc973e9",
+    "native-ci/hierarchical-calls/command.log": "3856be9fd68ec0c2b6ec9758c78ce74d93d7bc4039cab4e04fe3ee76d42a4910",
+    "native-ci/hierarchical-circuit-trace/command.log": "467544c5d9a6ec5585630e76a2654da9a400c594e183c690d17434ab6fe8f26f",
+    "native-ci/hierarchical-conditional/command.log": "a6d8fb7da14ac4e8f3baa153435ce0c401c108b61611a85bb90ef17696e3347b",
+    "native-ci/hierarchical-contract-typing/command.log": "f017cd8a9a0b7b28d6c5f034e728cd8c4bbe65039120721284e7dc6b31009ad0",
+    "native-ci/hierarchical-derivation/command.log": "fb3cb8ae73920fc121b980e3b0305a332c5956707a6f6fa9a1af00cf9a544ea1",
+    "native-ci/hierarchical-execution/command.log": "839adf4150042dfde54ef21ac341b7dcd7238e9d3a51a133b16f271721d7df78",
+    "native-ci/hierarchical-finite/command.log": "6c18496a7e66777afd35917e54d6cd3cb5c9251b689485171f8a4100854892ab",
+    "native-ci/hierarchical-fourier-base/command.log": "94a9c96857acc6245798885c4957b97d4ab81e024a6bc89100475c055f8d77ed",
+    "native-ci/hierarchical-fourier-body/command.log": "29299996d367cfef5897a0bafa91019e86dd52dba84be511085775a8706e3df9",
+    "native-ci/hierarchical-fourier-host/command.log": "8ae52a0c4cd56cbaa23b38bf1f06aa6db2882417809c70793ef563432d77d561",
+    "native-ci/hierarchical-fourier-root/command.log": "4662cb8ab8767f8c15eb5981b38fbe06ae93567bc87f1f0bc25e712340fb472d",
+    "native-ci/hierarchical-fourier-stage/command.log": "06814c77a5274293fd874c2ffb3227946d89511753c50b680b292bf08ca0f1e3",
+    "native-ci/hierarchical-gradient/command.log": "814f3cf70ff750ccc31d81e271cd9efb914a89c2c6c40d9e008a55b10e03c861",
+    "native-ci/hierarchical-graph/command.log": "f4daca6092db213ddb8b117ca3a9d3e2810f7c95e4256c6fc34d373cc34f7667",
+    "native-ci/hierarchical-host/command.log": "45b5a18decfbdf4f80767ca43972c5c7f4d3c534e6ab27e0cf75e0a120f2a742",
+    "native-ci/hierarchical-host/record.json": "3430144908a746035d8935836b096131ce1e1caf5b3f488821910bb4d8599341",
+    "native-ci/hierarchical-instrument/command.log": "d584ff61cacf19c4626c2fc810968c9dda59dabe2f9fa5d153d253a72f03a3fa",
+    "native-ci/hierarchical-power/command.log": "e7ce8fc9484817d02802f648968c5aa20e94e489b4ad30e896b7ec200411387d",
+    "native-ci/hierarchical-preparation/command.log": "c597a91001c5948e99a890b25684b504c5d57c1288ddc24933a160fa90537f2e",
+    "native-ci/hierarchical-qft-shared-gradient/command.log": "35ddbb421984c76ea7e39e9bdae110e63e6286ba50216fff7ed64cf2c94ad986",
+    "native-ci/hierarchical-qft/command.log": "e156be323b1657b7c4b6ceb0b7aa3e659c4dbd6103c1585d9c4d8e6d723c0a45",
+    "native-ci/hierarchical-qpe-instrument/command.log": "b4993e9184490c340539e399f38a8ce2811c41beade3ebf43995042f2b303800",
+    "native-ci/hierarchical-qpe-instrument/record.json": "33c95a8cc8a3aeff13b73ade58c3f3d923e63e7834c2a6a01d2df85cb62e249d",
+    "native-ci/hierarchical-qpe-root/command.log": "247805ef1e5b725eb59c57a4f6f00569c6aacd8c78561225eab5faa147289be1",
+    "native-ci/hierarchical-qpe-schedule/command.log": "98243ad55ec6be2d0d8696073c1dfe103d9b477aaff1accc06d3a09b2ea7be11",
+    "native-ci/hierarchical-readout/command.log": "84bfe45d8db9142a62652ad36655fa6823c8eb7d7c8efb9bbb0e90eb55721d46",
+    "native-ci/hierarchical-request/command.log": "a638e646ea57386fbc955bafef8fb82a1e13f1e1d9020130a71ba26804386496",
+    "native-ci/hierarchical-routed-power/command.log": "7b8cbb40cf02e30c42accd482fa3534575f554087c4262d8aab8c033032b5570",
+    "native-ci/hierarchical-structural/command.log": "6ba0c35fbd56d119741f0fe4df70e94cd22efd570d1810f7925c921876dcff9c",
+    "native-ci/hierarchical-typing/command.log": "1fd46431774e326acddb295b6ce7a20ca86129212af1ee727f737f15a4a6424f",
+    "native-ci/hierarchical-wiring/command.log": "429b5e276de7b3db99849d99059c21e33f114585ef940eab7672e74f89a84f29",
+    "native-ci/instrument-host/command.log": "13ed316e73886b0b6c0d9434848807f5d398e90438c384fa89667c01d101fc75",
+    "native-ci/lean-branch-function/branch-inputs.json": "ceeef4b1faa6c52f64711e9ab691e8add4e2795b74830b41f49f58b18d26acb2",
+    "native-ci/lean-branch-function/branch-observed.json": "35e31016385587ebef994d60eeb334c8d179acb0bbbcd1fbb40bd5b95116f4e6",
+    "native-ci/lean-branch-function/command.log": "8bc9512901696402e972e6313ebfc8bbca15a951444f1c8d075cd312c50fa0c1",
+    "native-ci/lean-branch-function/record.json": "36d27de360a391fef718a5461f69553f0edc77b5b945fc414fc13451a5844331",
+    "native-ci/lean-controlled-power/command.log": "643874e1618e3ea6e3e77ead2d75a2f08eecd1a1ffe5bedaaaca443e209f6c91",
+    "native-ci/lean-exact/command.log": "4872bca7421370d262d4d9286e86d541df4d05422bf59e74da0c409179157657",
+    "native-ci/lean-finite/command.log": "312d8d4b6c3240c7bb16c3525161bd03f12d314b80e6568b3f4adf32b6c9c3a7",
+    "native-ci/lean-hierarchy/command.log": "89e4f340bebcbb700fa254db579732566cb9fd6e8410b07fb7a25a6a7c4e5b0e",
+    "native-ci/lean-interference/command.log": "0f7eb26b58ff5854a127d2e1125e2f745115854b2d41e5ed6fbad35658d2ac06",
+    "native-ci/lean-kernel-self-test/command.log": "8a932bcf81635f529747eeae75bbf7a322e14de5ee8e46bd1b38d048a3dfe811",
+    "native-ci/lean-layout-dag/command.log": "a3bfed9f53db83dd89649de02f9e6e1a3cc2fab4c0a169a8f8370640212cde07",
+    "native-ci/lean-layout/command.log": "f91e010cdf1d53a0bf5e6dd20b80a63ef7194d4a732402a0e9b8b36cd605c0b6",
+    "native-ci/lean-observation/command.log": "9ca775baec3b67849bd0e51b60addd271ca5d1a45175f35bbe9e2e98937be458",
+    "native-ci/lean-observation/native-inputs.json": "9cd0cd4e294f3b632370500b485967cf5a35365344b8df7ffea46a339e2d3d6d",
+    "native-ci/lean-observation/native-observed.json": "e5d0aeb62783022f2c3ef96ce22adfa4d813ee9847d72845cdc7939d08385039",
+    "native-ci/lean-observation/record.json": "ef3a10cf809d410c2577c50b34a9487a0f13e192eb68050a267c08fbf9238810",
+    "native-ci/lean-observation/source-ir/0.qirf.json": "a65811ddcc22bf58cc381ad04734ffd473f8af512da7ffe2ad53b5ac5ccbe12e",
+    "native-ci/lean-observation/source-ir/1.qirf.json": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "native-ci/lean-observation/source-ir/2.qirf.json": "5210a8e427f721db29f021a91ff8f01678a2011c8108202755658071ad4a7d11",
+    "native-ci/lean-observation/source-ir/3.qirf.json": "67604a5175cb4cbe2c04e48038a077e05f68017a65d9a0cfa2b2f232fd16f5c5",
+    "native-ci/lean-observation/source-ir/4.qirf.json": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+    "native-ci/lean-phase-layout/command.log": "a7638bb44295d3088bf7d390f828d51dc9e2eafd5902f7dce04010e93d9a4358",
+    "native-ci/lean-phase-operations/command.log": "7e1da00645ded573b52fe5f4332fee45c70c00a6ae83de2b6f4adfda6882e4ae",
+    "native-ci/lean-qft-graph/command.log": "bc4007e1636c6f4f74878e64df23834931af2950938d105da86796e74fe83e12",
+    "native-ci/lean-qft-semantic/command.log": "3a88a189ea0f82df61f94279bede4ffcda87ab96f6d35ba94b5c18c8fcd2c88c",
+    "native-ci/lean-qft/command.log": "55090e49e5e63663f7624cee567e5d067f4db165f0c985e9b83ac9f7b6510095",
+    "native-ci/lean-qpe/command.log": "9843383c974b674ea017f7abf0c11fbe126c30585a46b9e6866ed1b591992624",
+    "native-ci/lean-raw-completion/command.log": "7660d96d423ccc487659cd1ccfd329be9e7caca8fc2e22f28ab9c6287857d6ce",
+    "native-ci/lean-raw-completion/completion-inputs.json": "40a6369443a74040a34c638c53a385cb4b1fd73140933c7546e0b1a5ce216b26",
+    "native-ci/lean-raw-completion/record.json": "563cffbdc7b0fa8c11aba81098e485b4fadda5e82eaa35857e2427b8eb282167",
+    "native-ci/lean-raw/command.log": "f2a9e5683302ef7d0e8de488fa0465c57080718a7848848fe466b30ffb077769",
+    "native-ci/lean-reshape/command.log": "c6f3694ac4faaca92f5380d156c91547e31045ceab8f7ef08bab3e8a04fc4157",
+    "native-ci/lean-streamed-instrument/command.log": "a515656b5d7421c73e7dc434915d62645dcad2d402c3eb0a1c054d81c1fed661",
+    "native-ci/lean-streamed-instrument/record.json": "ac821c3e9722efc940e5013c767f820a5e317865f2d603a77b8304ae5102692a",
+    "native-ci/lean-streamed-instrument/source-ir/0.qirf.json": "a65811ddcc22bf58cc381ad04734ffd473f8af512da7ffe2ad53b5ac5ccbe12e",
+    "native-ci/lean-streamed-instrument/source-ir/1.qirf.json": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "native-ci/lean-streamed-instrument/source-ir/2.qirf.json": "5210a8e427f721db29f021a91ff8f01678a2011c8108202755658071ad4a7d11",
+    "native-ci/lean-streamed-instrument/source-ir/3.qirf.json": "67604a5175cb4cbe2c04e48038a077e05f68017a65d9a0cfa2b2f232fd16f5c5",
+    "native-ci/lean-streamed-instrument/source-ir/4.qirf.json": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+    "native-ci/lean-streamed-instrument/streamed-inputs.json": "811c38be77f57cabd61c2b4d28c72dfcb0881fcecb9170669f8e1c2924a0b169",
+    "native-ci/lean-streamed-instrument/streamed-observed.json": "5f68f499547251c090887a4d739c17a8b8ee3c54a0bded045c858b1ac6eb50d5",
+    "native-ci/named-qpe-native/command.log": "6bdcbcb0eac5848e3fa7522f2559d2167c116856a3aaed415cfafaa37e3357be",
+    "native-ci/results.json": "ba17694b99b428b23c2b3d4a0044cd55d76cf0e94458a58e8d668b88203927bc",
+    "native-ci/rust-fourier-factoring/command.log": "f057e7f369e9fb6a051348c3129c1888c4f1a695f8d4201c78e6b99e17945a86",
+    "native-ci/sized-arithmetic/command.log": "832d6e1b4c893364c7ebe59fae66f32f31a6c4b49971a8672b199eb2043d5bc4",
+    "native-ci/sized-cli-native/command.log": "5a56c7b71e4296f868e85cd16bc3cd320f21cb37a4e98aced88474032c2443cc",
+    "native-ci/sized-corpus/command.log": "6609d2f533814c915bfb9dab1e72e4c84cedab3d4bfd1ee096324000e216683d",
+    "native-ci/sized-instrument/command.log": "e798f05cf593371a13529a025d636e08370bdacc79e1021f4fc9b3d383070ffb",
+    "native-ci/sized-qft/command.log": "79ea3f1ea19d61e612759c65fea2270d2b0633ef9bc6773817c53d8884c22fee",
+    "native-ci/sized-qpe-clients/command.log": "70ab7b884f8d77dfc95a383ee717719b2eaf596785226fd1516b8960a48bc02d",
+    "native-ci/sized-qpe-readout/command.log": "e3bed25bd092edea53b15fec380555a88e7d1d2a5647c019f4e1c24aa54d2ecb",
+    "native-ci/sized-qpe/command.log": "69edc79f8fb0a447159be9bc3eab4bf3a9686f21f8f3ce534fb31e0fd11a77c8",
+    "native-ci/sized-review-dialects-native/command.log": "bd1f37f4438b674288bb90ffc89dd28bab92cbd04c41186974b05e3b7210ae26",
+    "native-ci/sized-source-native/command.log": "02f887ad5ebacec83c89d46f80e60577498fe592f1d0c8b6071cffe94b9977d1",
+    "native-ci/verification-baseline/command.log": "d1c0fecf0153cc2d33a962c7d43693aedd59593ec005371fd9e72677c6d30b1e",
+    "native-coverage.json": "209714355d9c1781130de6c00a0879d21fb18b5048af3bd7e480c51122675fb0",
+    "publication-command-results.json": "dfb4794a3e2b04d567e1fbeb629e38b9a19180649e6ef8d27a95a1d1c1d634c5",
+    "registry-verification.json": "d4d00b17d4a5070fda6404531f3e3507d55ab6ca4ee8e947c477fe46ff2fa96c",
+    "release-notes.md": "d0cf9b5bdc1ea616e58c115a1e5095737e47839611136a1ea7d508ad0e8bfd89",
+    "schema-registry-validation.json": "f43e6be45f4201cbd6c5d907a090cee70f46e69b08044fd6982d792b776af4d3",
+    "validation.json": "b01c96ef56e4eb6aa98ce9615378e5b6679cbaa507206160c7ff2b00bc79a5e7"
+  },
+  "source": {
+    "annotated_tag_object": "7eb770387d2be91f71a3d6813d61afe3266e9c84",
+    "annotation": "Qleisli v0.2.7; exact-source full CI 37022315738 and clean distribution validation passed",
+    "clean": true,
+    "commit": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+    "local_and_remote_peeled_commit_match": true,
+    "merge_commit": "8b865417f54d36e2ddb62ab57c8dae6d24abede1",
+    "merge_tree_matches_candidate": true,
+    "pull_request": "https://github.com/MGYamada/Qleisli/pull/235",
+    "result_record_is_after_tag": true,
+    "tag": "v0.2.7",
+    "tree": "fd2dbee60211050eecf0553697bcc283e0147b12"
+  },
+  "status": "published and verified",
+  "version": 1
+}

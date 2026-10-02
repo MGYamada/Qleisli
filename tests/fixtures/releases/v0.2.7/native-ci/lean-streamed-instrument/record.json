@@ -1,0 +1,117 @@
+{
+  "status": "passed",
+  "native_cases": 154,
+  "rust_comparisons": 143,
+  "independent_operators": 147,
+  "hidden_histories": 147,
+  "original_constructors": 19,
+  "max_semantic_qubits": 3,
+  "complete_observing_sources": 5,
+  "retained_branch_dependency_cases": 4,
+  "native_bindings": {
+    "lean_binary_sha256": "4f053b9f48a52d0fa0e776d17bcb83161e52d9d3dd8d9cdd9af067e82e29d582",
+    "lean_input_sha256": "7bed7d802a5df3a44a5eccdd54b96eccebc2049988f618d5b7da1c1877a9af67",
+    "lean_stdout_sha256": "2428ac5c6419d9c96b7a246636e3d04bf4cea557d0aa966447b139f37f36136c",
+    "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rust_binary_sha256": "55c7e5fbd2155defe0da3174b70741e8af1c51bed20a343a7cf1993bfc50205d",
+    "rust_stdout_sha256": "2965bfe27e627278a646736117ee04abb8839f7d67ce83e285cc4194f3e26217"
+  },
+  "commands": [
+    {
+      "command": [
+        "/home/runner/work/Qleisli/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/home/runner/work/Qleisli/Qleisli/tests/fixtures/authoring_sessions/raw-observing-v026/first",
+        "--output=/tmp/qleisli-observation-source-ia4x6iuk/0.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/runner/work/Qleisli/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/home/runner/work/Qleisli/Qleisli/examples/bell",
+        "--output=/tmp/qleisli-observation-source-ia4x6iuk/1.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/runner/work/Qleisli/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/home/runner/work/Qleisli/Qleisli/corpus/quantum_katas/graph_state2",
+        "--output=/tmp/qleisli-observation-source-ia4x6iuk/2.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/runner/work/Qleisli/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/home/runner/work/Qleisli/Qleisli/corpus/qualtran/control_zero_reflection2",
+        "--output=/tmp/qleisli-observation-source-ia4x6iuk/3.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/runner/work/Qleisli/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/home/runner/work/Qleisli/Qleisli/corpus/pennylane_demos/ising_zz_negative2",
+        "--output=/tmp/qleisli-observation-source-ia4x6iuk/4.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: observation_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Raw/Coefficient.lean": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+    "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+    "lean-kernel/Protocol/StreamedObservation.lean": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+    "lean/Qleisli/RawCoefficient.lean": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
+    "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+    "lean/Qleisli/Semantics/ObservingAction.lean": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+    "scripts/test_lean_streamed_instrument.py": "faee06c25a15f8b40489b007aff83f4fb73db176e17369ffe74455b88cb24943",
+    "scripts/test_lean_observation.py": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9"
+  },
+  "scope": "actual matrix-free coefficient checker; post-acceptance small operator display; exponential budgeted verification",
+  "remaining": [
+    "native/decoder correspondence and production packaging",
+    "VM-27 hierarchy/root closure",
+    "VM-28/29 immutable-artifact production dual integration"
+  ]
+}
