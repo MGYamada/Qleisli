@@ -2884,7 +2884,7 @@
   },
   "release": "0.2.7",
   "retained_files": {
-    "README.md": "ff08cb21e89a59c40b8991d23d47fde063aaf40521902f62dbbe22ce0085c32f",
+    "README.md": "2c16f8770a452ef9b72c0643967c674f7a37058f873199ff062e7e9a3b581ebc",
     "ci-selection.json": "33b3884f415b7e1aabaa618d8a56bad79d04eff521488889dccecd62b8fb4561",
     "distribution-cross-host.json": "44e48b3dcd1b213c7e36c0fdc7fafe873fbe4b75d32a6c9b984d2c74f0d2ce93",
     "distribution-linux.json": "79794a0a47a7569472a2cc2fe5fc900cdcb4ab77363e5dbad28fd94a0fd932c7",
