@@ -48,7 +48,17 @@ def summarize(run: dict, jobs: dict, validation: dict | None = None) -> dict:
             seconds = (timestamp(job["completed_at"]) - timestamp(job["started_at"])).total_seconds()
             if seconds < 0:
                 raise ValueError("inconsistent job timestamps")
-        result["jobs"].append(dict(name=job["name"], conclusion=job["conclusion"], runner_seconds=seconds))
+        steps = []
+        for step in job.get("steps", []):
+            elapsed = None
+            if step.get("conclusion") == "skipped":
+                elapsed = 0
+            elif step.get("started_at") and step.get("completed_at"):
+                elapsed = (timestamp(step["completed_at"]) - timestamp(step["started_at"])).total_seconds()
+                if elapsed < 0:
+                    raise ValueError("inconsistent step timestamps")
+            steps.append(dict(name=step["name"], conclusion=step.get("conclusion"), seconds=elapsed))
+        result["jobs"].append(dict(name=job["name"], conclusion=job["conclusion"], runner_seconds=seconds, steps=steps))
     if validation:
         # PR run.head_sha is the author branch, while jobs validate GitHub's merge
         # commit. Retain both identities rather than claiming they are identical.

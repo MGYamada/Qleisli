@@ -6,6 +6,11 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+- Schedule all 65 independent native CI comparison groups with bounded
+  concurrency and isolated records, retaining source/compiled audits, fresh
+  replay and exact schema binding. Remove the model job's redundant build and
+  audit wrapper; the unchanged registry check still performs both (#206).
+
 ## 0.2.6 — 2026-10-02
 
 Published to crates.io and GitHub; [immutable validation and installation evidence](tests/fixtures/releases/v0.2.6/publication.json).
