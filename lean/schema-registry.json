@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "6bd95b5c0ffa425a985fc9728e431b226f2151b9e5465609edda828f1d917a9d",
+    "sha256": "3e884a875b3cde525c4dc53302c7c5f69b707601464ff4b99c451163c275e0f0",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -61,7 +61,7 @@
       "lean/Qleisli/QpeComplete.lean": "c8465edcaaa46ccf2d738326c69ed3890168e2f0d7e2309776f1baf9dcbee1e2",
       "lean/Qleisli/Raw.lean": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
       "lean/Qleisli/RawBranchFunction.lean": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
-      "lean/Qleisli/RawCoefficient.lean": "84103cef42094a1e053f886eecbed399183b93c23da24cb7258478a8f636bec4",
+      "lean/Qleisli/RawCoefficient.lean": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
       "lean/Qleisli/RawDenotation.lean": "3dcfa99abe873decec825013991e403ecfd7239ebc305c5395a13d3b9a1a51e4",
       "lean/Qleisli/RawFunction.lean": "3d89ce3f86dcf17aa6090b25e3bf18b0589f10792f56f150e652ff9394a34efc",
       "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
@@ -69,7 +69,7 @@
       "lean/Qleisli/RawProtected.lean": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
       "lean/Qleisli/RawProtectedEvaluation.lean": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
       "lean/Qleisli/RawPure.lean": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
-      "lean/Qleisli/RawStreamedInstrument.lean": "d70eda37df46a32a686807baaa0dc2e3bb45b1bd94f39331060c1d88be1104a7",
+      "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
       "lean/Qleisli/Resource.lean": "6893254dfc2b6b80867df7404a85292830ea88ecd462a3df847c42b89d613c1a",
       "lean/Qleisli/Schema.lean": "ae9692c3f9d83d0f3b3579e92285b361244fa9cf66f6a3786109ab3455f9dd9d",
       "lean/Qleisli/Scope.lean": "74c28e09400d2ebed08d3c1fa339fb85772c0a6d78e8ee2abc13228e30abed24",

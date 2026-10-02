@@ -392,5 +392,3 @@ theorem accepted_outcome_trace_nonincreasing {Reference : Type} [Fintype Referen
         (2^checked.structureCheck.state.quantum.frame.length) literal i))).trace_nonneg
 
 end Qleisli.Raw.StreamedInstrument
-
-

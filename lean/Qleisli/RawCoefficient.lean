@@ -196,4 +196,3 @@ theorem erased_meaning (bits : Nat) (axes : List Nat) (outcome : Nat)
     simpa only [absent,if_false] using Exact.scalar_zero_meaning
 
 end Qleisli.Raw.Coefficient
-
