@@ -3,7 +3,7 @@
 This is an informed development regression, not a controlled authoring benchmark.
 The user selected arity-preserving tuples for unreleased 0.2.0 on 2026-09-29.
 The [type contract](../../../docs/type-system.md) defines formation, equality,
-ownership and conversions; the [migration](../../../docs/tuple-shapes.md)
+ownership and conversions; the [migration](../../../docs/type-system.md)
 supersedes the earlier left-folding rule.
 
 ## Preserved first source and independent criterion

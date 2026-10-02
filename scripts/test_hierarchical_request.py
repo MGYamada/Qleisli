@@ -172,10 +172,10 @@ def main():
         result = subprocess.run([str(binary), '--hierarchy-request-pending'], input=data,
                                 capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
-        assert lines[:1] == ['qleisli.hierarchy-request-pending 1'], (name, result)
+        assert lines[:1] == ['qleisli.hierarchy-request-pending 3'], (name, result)
         if lines[1:2] == ['pending']:
             actual = 'pending'
-            assert result.returncode == 0 and len(lines) == 5 and lines[3:] == ['0','0'], (name, lines)
+            assert result.returncode == 0 and len(lines) == 6 and lines[3:] == ['0','0','0'], (name, lines)
             assert 0 < int(lines[2]) <= 2_000_000, (name, lines)
         else:
             assert result.returncode == 1 and lines[1:2] == ['error'] and len(lines) == 3, (name, result)

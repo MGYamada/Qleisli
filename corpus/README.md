@@ -26,6 +26,12 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
+The nine 0.2.7 additions cover controlled H, selected-bit/even-label preparation,
+constant arithmetic/comparison/XOR, half-turn RX/ZZ phases and one QAOA edge layer.
+The [session](authoring/v027-small/README.md) retains first sources, the actual
+qif parse repair, 798 full-entry probes and nine paired semantic faults. All new
+kernels use one to three data qubits and the same frozen upstream inputs.
+
 The six 0.2.6 additions cover phased uniform/graph preparation, signed and
 negative-controlled reflections, half-turn Y composition and negative-angle ZZ.
 The [session](authoring/v026-small/README.md) retains four accepted first sources,
@@ -51,7 +57,7 @@ then grow a language with AI that can express and check them. These executable
 translations expose the gap between current QLI and that goal. They do not adopt
 new syntax, prove scalable algorithms, or replace the ideal-source drafts.
 
-The 2026-09-29 [tuple migration](../docs/tuple-shapes.md) spells former binary
+The 2026-09-29 [tuple migration](../docs/type-system.md) spells former binary
 trees explicitly in `qualtran/less_than2`, `pennylane_demos/vqe_excitation` and
 `pennylane_demos/phase_lock`. [Attempt 04](authoring/session.json) preserves the
 new source snapshot and real before/after checks; the
@@ -207,11 +213,11 @@ not passed checks or proved theorems.
 
 | Finite examples | Unitary examples | Observing examples | Semantic faults |
 | --- | --- | --- | --- |
-| 60 | 55 | 5 | 36 |
+| 69 | 64 | 5 | 45 |
 
 <!-- corpus-inventory:end -->
 
-[Current validation](validation-v0.2.5.json) binds its actual commands,
+[Current validation](validation-v0.2.7.json) binds its actual commands,
 probe results and source identities. Historical reports remain reproducibility
 observations for their own snapshots: [0.2.4](validation-v0.2.4.json),
 [0.2.3](validation-v0.2.3.json), [0.2.2](validation-v0.2.2.json),

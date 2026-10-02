@@ -37,6 +37,8 @@ import QleisliKernel.Hierarchical.Rule
 import QleisliKernel.Hierarchical.Derivation
 import QleisliKernel.Hierarchical.CallLowering
 import QleisliKernel.Hierarchical.Finite
+import QleisliKernel.Hierarchical.FiniteBinding
+import QleisliKernel.Qirf
 import QleisliKernel.Hierarchical.Conditional
 import QleisliKernel.Hierarchical.Root
 import QleisliKernel.Hierarchical.Gradient

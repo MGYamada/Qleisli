@@ -134,6 +134,157 @@ fn native() -> Kernel {
 }
 
 #[test]
+#[ignore = "requires separately built and audited native Lean runtime"]
+fn native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening() {
+    use qleisli::interchange::hierarchical::execution::ExecutionLimits;
+    let kernel = native();
+    let bit = r#"{"tag":"bit"}"#;
+    let unit = r#"{"tag":"unit"}"#;
+    let pair = r#"{"tag":"tuple","arity":2}"#;
+    let tuple = r#"{"tag":"tuple","arity":3}"#;
+    for (ty, atoms) in [
+        (
+            BasisType::pair(BasisType::Bit, BasisType::Bit),
+            format!("{pair},{bit},{bit}"),
+        ),
+        (
+            BasisType::pair(BasisType::Unit, BasisType::Bit),
+            format!("{pair},{unit},{bit}"),
+        ),
+        (
+            BasisType::Tuple(vec![
+                BasisType::Bit,
+                BasisType::pair(BasisType::Unit, BasisType::Bit),
+                BasisType::Bit,
+            ]),
+            format!("{tuple},{bit},{pair},{unit},{bit},{bit}"),
+        ),
+        (
+            BasisType::pair(
+                BasisType::Bit,
+                BasisType::pair(BasisType::Unit, BasisType::Bit),
+            ),
+            format!("{pair},{bit},{pair},{unit},{bit}"),
+        ),
+    ] {
+        let bits = ty.bits().unwrap();
+        let axes = [11, 3, 7][..bits].to_vec();
+        let port = QuantumPort {
+            token: TokenId(5),
+            wires: axes.iter().copied().map(WireId).collect(),
+            shape: BasisShape { bits: bits as u8 },
+        };
+        let raw = RawProgram {
+            quantum_inputs: vec![port],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![TokenId(5)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let dim = 1 << bits;
+        let identity = Matrix::new(
+            dim,
+            dim,
+            (0..dim * dim)
+                .map(|i| {
+                    if i / dim == i % dim {
+                        Exact::one()
+                    } else {
+                        Exact::zero()
+                    }
+                })
+                .collect(),
+        )
+        .unwrap();
+        let description =
+            quoted(std::str::from_utf8(&finite_matrix::encode(&identity).unwrap()).unwrap());
+        let meaning = format!(r#"{{"tag":"finite","description":{description}}}"#);
+        let axes_json = axes
+            .iter()
+            .map(u32::to_string)
+            .collect::<Vec<_>>()
+            .join(",");
+        let side = format!(
+            r#"{{"quantum":[{{"owner":5,"basis":[{atoms}],"axes":[{axes_json}]}}],"classical":[]}}"#
+        );
+        let request = request_from_meanings(vec![(side.clone(), side.clone(), meaning.clone())], 0);
+        for version in [Version::V1, Version::V2] {
+            let bytes = interchange::export(
+                &verify(raw.clone()).unwrap(),
+                Some(&RootInterface {
+                    input: ty.clone(),
+                    output: ty.clone(),
+                }),
+                version,
+            )
+            .unwrap();
+            let program = quoted(std::str::from_utf8(&bytes).unwrap());
+            let artifact = assemble(vec![(
+                side.clone(),
+                side.clone(),
+                format!(r#"{{"tag":"leaf","program":{program}}}"#),
+                meaning.clone(),
+                "finite",
+                "[]",
+            )]);
+            let native = kernel.inspect_native(&artifact).unwrap();
+            assert_eq!(native.payload(), artifact);
+            let checked = kernel.check_against(&artifact, &request).unwrap();
+            let leaf = checked.reconstruction().leaves()[0].1.leaf();
+            assert_eq!(leaf.boundary().signature(), &ty);
+            assert_eq!(leaf.payload(), bytes);
+            assert_eq!(
+                leaf.boundary().input().wires,
+                axes.iter().copied().map(WireId).collect::<Vec<_>>()
+            );
+            let input = (0..dim * 2)
+                .map(|i| [i as f64 / 17.0, (2 * i + 1) as f64 / 23.0])
+                .collect::<Vec<_>>();
+            let result = checked
+                .execute(
+                    &input,
+                    2,
+                    ExecutionLimits {
+                        max_amplitudes: 64,
+                        max_steps: 1000,
+                    },
+                )
+                .unwrap();
+            assert_eq!(result.amplitudes, input);
+            assert_eq!(result.reference_dimension, 2);
+            if bits > 1 {
+                let reversed = axes
+                    .iter()
+                    .rev()
+                    .map(u32::to_string)
+                    .collect::<Vec<_>>()
+                    .join(",");
+                let wrong = String::from_utf8(artifact.clone())
+                    .unwrap()
+                    .replace(&format!("[{axes_json}]"), &format!("[{reversed}]"));
+                let renamed = kernel.inspect(wrong.as_bytes()).unwrap();
+                assert_eq!(
+                    renamed.leaves()[0].1.leaf().boundary().input().wires,
+                    axes.iter().rev().copied().map(WireId).collect::<Vec<_>>()
+                );
+            }
+            if atoms.contains(unit) {
+                let swapped = atoms.replace(
+                    &format!("{pair},{unit},{bit}"),
+                    &format!("{pair},{bit},{unit}"),
+                );
+                let wrong_type = String::from_utf8(artifact.clone()).unwrap().replace(
+                    &format!("\"basis\":[{atoms}]"),
+                    &format!("\"basis\":[{swapped}]"),
+                );
+                assert!(kernel.inspect(wrong_type.as_bytes()).is_err());
+            }
+        }
+    }
+}
+
+#[test]
 #[ignore = "VM-22 optional comparison requires the separately built Lean runtime"]
 fn vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles() {
     let k = native();
@@ -232,6 +383,18 @@ fn external_schema_ids_cannot_enable_registry_entries() {
 #[ignore = "requires separately built and audited native Lean runtime"]
 fn native_shared_powers_reconstruct_one_bound_leaf_without_expansion() {
     let k = native();
+    let payload = family(3, 3, false, false);
+    let checked = k.inspect_native(&payload).unwrap();
+    assert_eq!(checked.payload(), payload);
+    assert!(checked.exact_work() > 0);
+    assert!(checked.request().is_none());
+    assert!(checked.candidate().is_none());
+    assert_eq!(
+        k.inspect_native(&family(0, 0, true, false))
+            .unwrap_err()
+            .code,
+        "contract"
+    );
     let mut costs = vec![];
     for count in [0, 1, 3, 4096] {
         let bytes = family(count, count, false, true);
@@ -254,7 +417,7 @@ fn native_phase_fault_remains_an_obligation_under_zero_repeat() {
     for count in [0, 3, 4096] {
         let error = k.inspect(&family(count, count, true, true)).unwrap_err();
         assert_eq!(error.code, "contract");
-        assert!(error.message.contains("does not hold"));
+        assert!(error.message.contains("Lean artifact inspection"));
     }
 }
 
@@ -509,6 +672,9 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
     for count in [0, 1, 3, 4096] {
         let a = family(count, count, false, true);
         let r = power_request(count, false, true, true);
+        let native = k.check_against_native(&a, &r).unwrap();
+        assert_eq!(native.payload(), a);
+        assert_eq!(native.request(), Some(r.as_slice()));
         let result = k.check_against(&a, &r).unwrap();
         assert_eq!(result.request(), r);
         assert_eq!(result.reconstruction().payload(), a);
@@ -516,7 +682,12 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
         costs.push((
             result.reconstruction().structural_work(),
             result.reconstruction().exact_work(),
+            result.reconstruction().native_exact_work(),
         ));
+        assert_eq!(
+            native.exact_work(),
+            result.reconstruction().native_exact_work()
+        );
         assert_eq!(
             k.check_against(&a, &power_request(count, true, true, false))
                 .unwrap_err()
@@ -531,7 +702,8 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
         );
     }
     assert!(costs.windows(2).all(|w| w[0] == w[1]));
-    assert_eq!(costs[0].1, 103);
+    assert_eq!(costs[0].1, 67);
+    assert!(costs[0].2 > costs[0].1);
     println!("independent request shared-power costs: {costs:?}");
 }
 
@@ -752,7 +924,14 @@ fn native_instrument_binds_all_stages_and_reconstructs_finite_obligations() {
         for count in [0, 1, 3] {
             let a = instrument_payload(count, false, controlled);
             let r = instrument_request(count, false, controlled);
+            let native = k.check_instrument_native(&a, &r).unwrap();
+            assert_eq!(native.payload(), a);
+            assert_eq!(native.request(), Some(r.as_slice()));
             let checked = k.check_instrument(&a, &r).unwrap();
+            assert_eq!(
+                native.exact_work(),
+                checked.reconstruction().native_exact_work()
+            );
             assert_eq!(checked.request(), r);
             assert_eq!(checked.reconstruction().payload(), a);
             assert_eq!(checked.reconstruction().leaves().len(), 1);
@@ -847,7 +1026,8 @@ fn instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations()
         "checked\n0\n0\n0\n",              // a claimed final result is not the protocol
     ] {
         let script = format!(
-            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 1\n{body}'\n"
+            "#!/bin/sh\ncat >/dev/null\nprintf '%s' 'qleisli.instrument-pending 3\n{}'\n",
+            body.replacen("pending\n0\n", "pending\n0\n0\n", 1)
         );
         std::fs::write(&executable, script).unwrap();
         std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();

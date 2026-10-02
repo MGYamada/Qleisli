@@ -1230,6 +1230,154 @@
         0,
         1
       ]
+    },
+    {
+      "id": "quantum_katas/controlled_h2",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "ControlledRotation_Reference",
+      "license": "MIT",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "CH(0,1) H(0), with the first QLI leaf the low bit; |00> becomes |00>/sqrt(2)+(|01>+|11>)/2.",
+      "limitations": "Two-wire preparation and its full unitary extension; no continuous rotation or arbitrary-width API.",
+      "project": "quantum_katas/controlled_h2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/zero_bitstring3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "ZeroAndBitstringSuperposition_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "CNOT(0,2) H(0), bits=[true,false,true]; |000> becomes (|000>+|101>)/sqrt(2).",
+      "limitations": "Fixed three-wire bit string. Upstream array positions are preserved; QLI first leaf has integer weight one. Return every owner; no postselection.",
+      "project": "quantum_katas/zero_bitstring3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/even_numbers3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "EvenOddNumbersSuperposition_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "I(0) tensor H(1) tensor H(2); prepare the uniform labels 0,2,4,6 from zero.",
+      "limitations": "Width three, isEven=true; QLI axes reverse the upstream array so the unchanged upstream last wire is the low bit. Full unitary extension retained.",
+      "project": "quantum_katas/even_numbers3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/add_one3",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|x> maps to |(x+1) mod 8>, phase +1 on all eight inputs; first leaf low bit.",
+      "limitations": "bitsize=3, k=1; explicit carry circuit, not scalable synthesis or an upstream resource-cost claim.",
+      "project": "qualtran/add_one3",
+      "default_input": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/greater_constant2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "GreaterThanConstant",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|x,t> maps to |x,t xor [x>1]>, x=a+2b, phase +1; arbitrary target retained.",
+      "limitations": "Unsigned two-bit x and val=1; translates the documented comparison contract, not the general upstream decomposition or resource count.",
+      "project": "qualtran/greater_constant2",
+      "default_input": [
+        0,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/xor_constant3",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/bitwise.py",
+      "symbol": "XorK",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|x> maps to |x xor 5>, phase +1; first leaf low bit.",
+      "limitations": "bitsize=3, k=5; no symbolic-width or signed-integer API.",
+      "project": "qualtran/xor_constant3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/rotation_half_x",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "RX(pi)=-iX, params=(pi,0), including the scalar on both columns and under control.",
+      "limitations": "Fixed exact angles; no optimizer, continuous-angle input or expectation-only equivalence.",
+      "project": "pennylane_demos/rotation_half_x",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/ising_zz_half2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_C(gamma), single-edge factor",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "exp(-i*pi*Z0*Z1/2)=-i Z0 Z1, gamma=pi; complete phase-fixed diagonal.",
+      "limitations": "One isolated edge; excludes the original four-node graph, mixer, preparation and optimization.",
+      "project": "pennylane_demos/ising_zz_half2",
+      "default_input": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "pennylane_demos/qaoa_edge_layer2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_C; U_B",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "(RX(pi/2) tensor RX(pi/2)) exp(-i*pi*Z0*Z1/4); gamma=pi/2, beta=pi/4, cost before mixer.",
+      "limitations": "Graph narrowed to one edge (0,1), two wires and one layer. No initial Hadamards, complete four-node QAOA port or optimizer.",
+      "project": "pennylane_demos/qaoa_edge_layer2",
+      "default_input": [
+        0,
+        0
+      ]
     }
   ],
   "authoring_sessions": [
@@ -1239,7 +1387,8 @@
     "authoring/v023-small/session.json",
     "authoring/v024-small/session.json",
     "authoring/v025-small/session.json",
-    "authoring/v026-small/session.json"
+    "authoring/v026-small/session.json",
+    "authoring/v027-small/session.json"
   ],
   "sized_experiments": [
     {

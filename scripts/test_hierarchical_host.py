@@ -52,11 +52,11 @@ def main():
         result = subprocess.run([str(binary), '--hierarchy-pending'], input=data,
                                 capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
-        if lines[:2] == ['qleisli.hierarchy-pending 1', 'pending']:
+        if lines[:2] == ['qleisli.hierarchy-pending 3', 'pending']:
             actual = 'pending'
-            assert result.returncode == 0 and lines[3] == '0', (name, lines)
+            assert result.returncode == 0 and lines[4] == '0', (name, lines)
         else:
-            assert lines[:2] == ['qleisli.hierarchy-pending 1', 'error'], (name, result)
+            assert lines[:2] == ['qleisli.hierarchy-pending 3', 'error'], (name, result)
             assert result.returncode != 0 and len(lines) == 3, (name, result)
             actual = lines[2]
         assert actual == expected, (name, expected, actual)

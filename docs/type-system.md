@@ -1,81 +1,36 @@
 # Type system: current finite source contract
 
-Normative finite source rules, unchanged in 0.2.6. [Language](language-spec.md),
-[grammar](syntax-v0.md) and [tuple migration](tuple-shapes.md) refine this contract.
-Follow [Rust](design-philosophy.md#follow-rust-for-type-and-ownership-discipline)
-for unresolved discipline; each intentional difference needs a quantum/evidence
-obligation and checking rule. General compiler soundness remains open.
+Normative v0.2.x; [Rust discipline](design-philosophy.md#follow-rust-for-type-and-ownership-discipline), [grammar](syntax-v0.md)/[language](language-spec.md). General compiler soundness open.
 
 ## Formation and equality
 
-```text
-Basis     A ::= Unit | Bit | (A1,...,Ak)
-Ordinary  T ::= Unit | CBit | Q<A> | (T1,...,Tk)
-Classical C ::= Unit | CBit | (C1,...,Ck)        2 <= k <= 64
-```
-
-Unit has one label and zero bits; its ordinary value is `()`. Bit labels 0/1
-occur only in basis declarations or Q; ordinary CBit values false/true are
-copyable, never basis values. Q<A> owns one ordered register, with no CBit/Q
-inside A. A product is classical exactly when every field is classical.
-
-Equality compares constructors, immediate tuple arity, nesting and every field.
-Q<A>=Q<B> iff A=B. Equal dimension, encoding or isomorphism is insufficient:
-flat/nested triples, (Unit,Bit)/Bit, Q<(Bit,Bit)>/(Q<Bit>,Q<Bit>), Unit/Q<Unit>
-and Bit/CBit differ. No aliases, subtyping, casts, inferred type parameters,
-implicit reassociation, singleton tuples, trailing commas, `(T)` types or numeric
-field access. Parameters/results require annotations; local types are derived.
-Rust tuple discipline is the default, not adoption of its full grammar.
+Basis A=Unit|Bit|(A1,...,Ak); ordinary T=Unit|CBit|Q<A>|(T1,...,Tk); classical omits Q,2<=k<=64. Unit has one label/zero bits/value(); Bit basis0/1 differs from copyable CBit false/true. Exact constructors/immediate arity/nesting/fields: flat/nested, Unit factors, Q<pair>/pair of Q, Unit/Q<Unit>,Bit/CBit differ. No aliases/subtyping/casts/implicit reassociation/singletons/trailing commas/grouped types/field indexing. Explicit signatures/local inference; unspecified Rust features not adopted.
 
 ## Ownership, effects and exact interfaces
 
-Classical values may be copied/unused. Any ordinary value containing Q moves
-as a whole; exact patterns may expose fields but cannot discard owners. Every
-Q<A> has one owner even at width zero: Q<(Unit,Unit,Unit)> has one, three Q<Unit>
-fields have three. Ownership does not assert independence from other registers
-or arbitrary references. Observation consumes/replaces ownership by its contract.
-
-Unitary <= Iso <= Observe are function effects, not types. Declared effects
-remain obligations even with Unit-only ports. Typing proves no eigenstate,
-cleanup, success or hardware accuracy. Tuple fields evaluate once left to right;
-branches retain earlier fields/pending owners. Branch result types and complete
-result/surviving-frame phis must match, including zero-width owners.
-
-Basis labels may be copied/ignored. `do p <- q; pure e` consumes Q<A> and issues
-Q<B> only after a total full-domain injective table check. Equal-width explicit
-reshape has coefficient +1; it changes representation, not type equality.
-
-Parameter lists remain separate from parameter types: f(a,b,c) has three
-arguments, f((a,b,c)) one. Basis patterns do not change arity; their internal
-left-associated multi-parameter table domain does not unpack an ordinary tuple.
-Sealed split/join are binary. [Static Op](next-minor-spec.md) parameters are
-compile-time descriptions with separate Apply/Adjoint/Controlled capabilities,
-exact A and no captured owners; they are not ordinary values.
+Classical may copy/ignore; Q-containing mixed value moves whole, exact patterns cannot discard owners. Every Q owns once even width0 (one Q<Unit tuple> differs from several Unit owners). Owners imply no separability/eigenstate/cleanup/success. Unitary<=Iso<=Observe are effects; declared effects retained. Evaluate fields once left-right, complete branch/result/pending/caller frames with empty slots. do/pure checks total full-domain injection and explicit reshape phase+1; changes representation, not type identity. Function argument count differs from tuple arity. Static Op compile-time exact interface/access, no owner capture.
 
 ## Basis order, representation and limits
 
-bits(Unit)=0, bits(Bit)=1, product widths sum. First field occupies low axes:
-label=sum_i label_i*2^(sum_(j<i) bits(Aj)), recursively. Unit remains a node.
-AST/source checking and finite evidence retain exact trees; raw ordered widths
-alone do not establish source preservation. Current arity 64, nesting 64,
-width 12 and type/value nodes 4096 coexist with stricter [finite evidence](finite-contracts.md)
-(six bits, 128 nodes, depth 32), byte/work and execution limits. Count empty nodes;
-capacity rejection is distinct from mathematical type formation.
+bits(Unit)=0,Bit=1,products sum; label=sum_i label_i*2^(sum_(j<i)bits(Aj)); first low, Unit node retained. Source/AST/evidence full trees, raw widths no source proof. Arity64/depth64/width12/type-value4096 nodes plus stricter evidence six bits/tree128/depth32 and bytes/work/execution. Pair binary/Tuple>=3, invalid small tuples reject, no normalization. All-classical tuples copy/mixed move; () Unit/(e) expression grouping, no singleton; values/types/patterns/interfaces retain exact shape/spans. Toffoli retains nested return ([#15](https://github.com/MGYamada/Qleisli/issues/15)).
+
+## Explicit conversion and migration
+
+0.2.0 replaced implicit left-fold products, frozen history retains old meanings. Explicit source conversion, no implicit packing:
+
+```text
+basis fn flatten3(((a,b),c): ((Bit,Bit),Bit)) -> (Bit,Bit,Bit) { (a,b,c) }
+unitary fn to_flat(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,Bit,Bit)> {
+    do x <- q; pure flatten3(x)
+}
+```
+
+Inverse nests same labels via injective lift, full state/reference phase+1. Field permutation needs its own table. [Fixtures](../tests/fixtures/tuple_shapes/README.md); no general lowering proof.
 
 ## Planned v0.3.0 specification
 
-v0.3.0 specifies the type system and public migrations; concrete changes remain
-open. QLT implementation waits until v0.4.0 or later. Compatible PATCH work
-retains this contract.
+Specify concrete type-system migrations at0.3; QLT>=0.4. PATCH retains present contract.
 
 ## Adopted future types
 
-Bits<n>/CBits<m> are adopted register/measured-sequence directions, implemented
-only in the [experimental sized path](sized-corpus-source.md), not general source
-syntax. [Linear sizes](size-expressions.md) permit constant multiplication and
-guarded subtraction; equality reconciles indices of the same constructor only.
-Bit/Bits<1>, Unit/Bits<0>, flat/nested trees remain distinct. Register segmentation,
-bit reversal and owner conversion require explicit separately checked operations.
-Arrays and generalized Iso<A,B>/Unitary<A,B> draft notation remain future APIs.
-Each extension needs formation/equality, ownership/effects, encoding/lowering,
-capacities, migration and independent positive/negative semantic checks.
+Bits<n>/CBits<m> only [experimental sized profile](sized-corpus-source.md); [linear sizes](size-expressions.md) allow constant multiplication/guarded subtraction. Bit/Bits1,Unit/Bits0,flat/nested distinct; segmentation/reversal/owner conversion explicit. Arrays/generalized Iso/Unitary draft APIs need complete formation/equality/owners/effects/encoding/lowering/capacity/migration and independent checks.

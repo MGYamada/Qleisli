@@ -1,4 +1,5 @@
 import Cli.Common
+import Protocol.HierarchicalFinite
 
 /-! Unproved transport adapter for the existing experimental profiles.
 Inputs remain untrusted until checked by the independently specified pure kernel.
@@ -35,10 +36,10 @@ private def failure (header code : String) : IO UInt32 := do
   return 1
 
 private def hierarchyFailure (code : String) : IO UInt32 :=
-  failure "qleisli.hierarchy-pending 1" code
+  failure "qleisli.hierarchy-pending 3" code
 
-/-- A data-only pending response from a fresh actual whole-artifact check.
-The host must reconstruct every returned finite index on this same artifact. -/
+/-- Fresh whole-artifact inspection, including native original-QIRF checks.
+The result remains experimental, not production verification authority. -/
 def runHierarchy : IO UInt32 := do
   let artifact ← match ← readPacket Protocol.Hierarchical.parse with
     | .error code => return (← hierarchyFailure code)
@@ -47,17 +48,22 @@ def runHierarchy : IO UInt32 := do
   | .error error => hierarchyFailure (match error.kind with
       | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
   | .ok pending =>
-    IO.println "qleisli.hierarchy-pending 1\npending"
+    let (result,left) := (Protocol.HierarchicalFinite.checkLeaves pending.state.requests).run 10000000
+    match result with
+    | .error error => return (← hierarchyFailure (Protocol.HierarchicalFinite.errorCode error))
+    | .ok _ => pure ()
+    IO.println "qleisli.hierarchy-pending 3\npending"
     IO.println pending.state.visits
+    IO.println (10000000 - left)
     IO.println pending.state.requests.size
     for request in pending.state.requests do IO.println request.index
     return 0
 
 private def requestFailure (code : String) : IO UInt32 :=
-  failure "qleisli.hierarchy-request-pending 1" code
+  failure "qleisli.hierarchy-request-pending 3" code
 
-/-- Fresh binding to independent requested meaning. Finite equations remain
-explicit host obligations; no request is synthesized from the artifact. -/
+/-- Fresh native binding of original QIRF leaves and independent request
+matrices under one shared exact-work allowance. -/
 def runHierarchyRequest : IO UInt32 := do
   let packet ← match ← readPacket Protocol.Hierarchical.parseRequest with
     | .error code => return (← requestFailure code)
@@ -66,8 +72,16 @@ def runHierarchyRequest : IO UInt32 := do
   | .error error => requestFailure (match error.kind with
       | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
   | .ok checked =>
-    IO.println "qleisli.hierarchy-request-pending 1\npending"
+    let (result, left) := (do
+      Protocol.HierarchicalFinite.checkLeaves checked.artifact.state.requests
+      Protocol.HierarchicalFinite.checkPairs packet.artifact
+        packet.request packet.pairs checked.binding.requests).run 10000000
+    match result with
+    | .error error => return (← requestFailure (Protocol.HierarchicalFinite.errorCode error))
+    | .ok _ => pure ()
+    IO.println "qleisli.hierarchy-request-pending 3\npending"
     IO.println (checked.artifact.state.visits + checked.binding.visits)
+    IO.println (10000000 - left)
     IO.println checked.artifact.state.requests.size
     for request in checked.artifact.state.requests do IO.println request.index
     IO.println checked.binding.requests.length
@@ -75,10 +89,10 @@ def runHierarchyRequest : IO UInt32 := do
     return 0
 
 private def fourierFailure (code : String) : IO UInt32 :=
-  failure "qleisli.hierarchy-fourier-pending 1" code
+  failure "qleisli.hierarchy-fourier-pending 3" code
 
-/-- Fresh full-artifact and named Fourier inspection. The host reconstructs
-every finite proof and every additional exact-H index on the same input. -/
+/-- Fresh full-artifact and named Fourier inspection with phase-fixed H.
+The producer cannot redefine H by changing its own finite description. -/
 def runHierarchyFourier : IO UInt32 := do
   let packet ← match ← readPacket Protocol.Hierarchical.parseFourier with
     | .error code => return (← fourierFailure code)
@@ -87,8 +101,16 @@ def runHierarchyFourier : IO UInt32 := do
   | .error error => fourierFailure (match error.kind with
       | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
   | .ok checked =>
-    IO.println "qleisli.hierarchy-fourier-pending 1\npending"
+    let (result,left) := (do
+      Protocol.HierarchicalFinite.checkLeaves checked.artifact.state.requests
+      Protocol.HierarchicalFinite.checkHadamards packet.artifact
+        (checked.binding.body.requests.map Hierarchical.Hadamard.Request.leafIndex)).run 10000000
+    match result with
+    | .error error => return (← fourierFailure (Protocol.HierarchicalFinite.errorCode error))
+    | .ok _ => pure ()
+    IO.println "qleisli.hierarchy-fourier-pending 3\npending"
     IO.println (checked.artifact.state.visits + checked.binding.visits)
+    IO.println (10000000 - left)
     IO.println checked.artifact.state.requests.size
     for request in checked.artifact.state.requests do IO.println request.index
     IO.println checked.binding.body.requests.length
@@ -128,10 +150,10 @@ def runPreparation : IO UInt32 := do
     return 0
 
 private def instrumentFailure (code : String) : IO UInt32 :=
-  failure "qleisli.instrument-pending 1" code
+  failure "qleisli.instrument-pending 3" code
 
-/-- Fresh composition of initialization, the independently requested pure root
-and readout. Every finite equation remains a mandatory host obligation. -/
+/-- Fresh composition of initialization, native finite checks and readout.
+No host finite acceptance decision is consumed by this native mode. -/
 def runInstrument : IO UInt32 := do
   let packet ← match ← readPacket Protocol.Hierarchical.parseInstrument with
     | .error code => return (← instrumentFailure code)
@@ -140,8 +162,16 @@ def runInstrument : IO UInt32 := do
   | .error error => instrumentFailure (match error.kind with
       | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
   | .ok pending =>
-    IO.println "qleisli.instrument-pending 1\npending"
+    let (result, left) := (do
+      Protocol.HierarchicalFinite.checkLeaves pending.circuit.artifact.state.requests
+      Protocol.HierarchicalFinite.checkPairs packet.packet.artifact
+        packet.request.circuit packet.packet.pairs pending.circuit.binding.requests).run 10000000
+    match result with
+    | .error error => return (← instrumentFailure (Protocol.HierarchicalFinite.errorCode error))
+    | .ok _ => pure ()
+    IO.println "qleisli.instrument-pending 3\npending"
     IO.println pending.visits
+    IO.println (10000000 - left)
     IO.println pending.circuit.artifact.state.requests.size
     for request in pending.circuit.artifact.state.requests do IO.println request.index
     IO.println pending.circuit.binding.requests.length
@@ -149,10 +179,10 @@ def runInstrument : IO UInt32 := do
     return 0
 
 private def qpeInstrumentFailure (code : String) : IO UInt32 :=
-  failure "qleisli.qpe-instrument-pending 1" code
+  failure "qleisli.qpe-instrument-pending 3" code
 
-/-- Every pure finite equation, independent provider pair and exact H role is
-returned for fresh host reconstruction. This mode enables no external schema. -/
+/-- Every original-QIRF leaf, independent provider pair and exact H role is
+checked natively. This mode enables no external schema or production seal. -/
 def runQpeInstrument : IO UInt32 := do
   let packet ← match ← readPacket Protocol.Hierarchical.parseQpeInstrument with
     | .error code => return (← qpeInstrumentFailure code)
@@ -161,14 +191,23 @@ def runQpeInstrument : IO UInt32 := do
   | .error error => qpeInstrumentFailure (match error.kind with
       | .limit => "limit" | .contract => "contract" | .invalidIr => "invalid_ir")
   | .ok pending =>
-    IO.println "qleisli.qpe-instrument-pending 1\npending"
+    let hadamards := ((packet.packet.circuit.candidate.hadamards.toList.map (·.index)) ++
+      pending.circuit.schedule.inverse.fourier.body.requests.map (·.leafIndex)).eraseDups
+    let (result, left) := (do
+      Protocol.HierarchicalFinite.checkLeaves pending.circuit.artifact.state.requests
+      Protocol.HierarchicalFinite.checkPairs packet.packet.circuit.artifact
+        packet.request.circuit.provider packet.packet.circuit.pairs pending.circuit.provider.requests
+      Protocol.HierarchicalFinite.checkHadamards packet.packet.circuit.artifact hadamards).run 10000000
+    match result with
+    | .error error => return (← qpeInstrumentFailure (Protocol.HierarchicalFinite.errorCode error))
+    | .ok _ => pure ()
+    IO.println "qleisli.qpe-instrument-pending 3\npending"
     IO.println pending.visits
+    IO.println (10000000 - left)
     IO.println pending.circuit.artifact.state.requests.size
     for request in pending.circuit.artifact.state.requests do IO.println request.index
     IO.println pending.circuit.provider.requests.length
     for index in pending.circuit.provider.requests do IO.println index
-    let hadamards := ((packet.packet.circuit.candidate.hadamards.toList.map (·.index)) ++
-      pending.circuit.schedule.inverse.fourier.body.requests.map (·.leafIndex)).eraseDups
     IO.println hadamards.length
     for index in hadamards do IO.println index
     return 0

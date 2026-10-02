@@ -52,7 +52,7 @@ fn read(path: &Path) -> Result<Vec<u8>, Failure> {
 
 /// No destination overwrite, including symlinks. The temporary file and
 /// destination share one directory/filesystem; hard-link installation is atomic.
-fn write_new(path: &Path, bytes: &[u8]) -> Result<(), Failure> {
+pub(super) fn write_new(path: &Path, bytes: &[u8]) -> Result<(), Failure> {
     static SERIAL: AtomicU64 = AtomicU64::new(0);
     struct Temporary(PathBuf);
     impl Drop for Temporary {

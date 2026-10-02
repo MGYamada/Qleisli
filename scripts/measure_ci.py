@@ -4,7 +4,7 @@
 Runner minutes are summed job wall time, not GitHub billing (OS multipliers and
 rounding differ). Initial queue and feedback elapsed time are reported separately.
 Only observed dependency-cache outputs may be labelled hits; Lean project build
-caches are disabled, with fresh source/compiled audits and replay unchanged.
+caches are disabled; proof replay is recorded separately from routine tests.
 """
 
 import argparse
@@ -48,7 +48,17 @@ def summarize(run: dict, jobs: dict, validation: dict | None = None) -> dict:
             seconds = (timestamp(job["completed_at"]) - timestamp(job["started_at"])).total_seconds()
             if seconds < 0:
                 raise ValueError("inconsistent job timestamps")
-        result["jobs"].append(dict(name=job["name"], conclusion=job["conclusion"], runner_seconds=seconds))
+        steps = []
+        for step in job.get("steps", []):
+            elapsed = None
+            if step.get("conclusion") == "skipped":
+                elapsed = 0
+            elif step.get("started_at") and step.get("completed_at"):
+                elapsed = (timestamp(step["completed_at"]) - timestamp(step["started_at"])).total_seconds()
+                if elapsed < 0:
+                    raise ValueError("inconsistent step timestamps")
+            steps.append(dict(name=step["name"], conclusion=step.get("conclusion"), seconds=elapsed))
+        result["jobs"].append(dict(name=job["name"], conclusion=job["conclusion"], runner_seconds=seconds, steps=steps))
     if validation:
         # PR run.head_sha is the author branch, while jobs validate GitHub's merge
         # commit. Retain both identities rather than claiming they are identical.
@@ -60,6 +70,7 @@ def summarize(run: dict, jobs: dict, validation: dict | None = None) -> dict:
             raise ValueError("validation artifact is not bound to the observed run")
         result["validated_sha"] = validation["head"]
         result["profile"] = outputs["profile"]
+        result["proof_lane"] = outputs.get("proof_lane", "unavailable")
         result["dependency_cache"] = {
             name: item.get("outputs", {}).get("dependency-cache", "unavailable")
             for name, item in needs.items() if name.startswith("check-") and name != "check-docs"

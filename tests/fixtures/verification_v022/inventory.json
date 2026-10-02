@@ -1843,7 +1843,7 @@
     },
     {
       "path": "lean-kernel/Cli/Hierarchical.lean",
-      "sha256": "1a4687c96dde4969e4b51c1c9ac2d3648b9f9eddc5d0f4b83874c602b3493d02",
+      "sha256": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff",
       "group": "hierarchy",
       "surface": null
     },
@@ -1873,7 +1873,7 @@
     },
     {
       "path": "lean-kernel/Protocol/FiniteCodec.lean",
-      "sha256": "6602570eac2ebec3720d53a9271af69b8f119a669903c38ede296f2ad6a3ba02",
+      "sha256": "abc49b87f81dd3e336a046ca4d777977bffad9f5c153708011fbe20c3c4c9eed",
       "group": "hierarchy",
       "surface": null
     },
@@ -1897,7 +1897,7 @@
     },
     {
       "path": "lean-kernel/Protocol/Raw.lean",
-      "sha256": "4c0150990aeaee510136b8a9ef281f6812298fa91e4882b27c6b69469ea1dd26",
+      "sha256": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
       "group": "raw-core",
       "surface": null
     },
@@ -1909,7 +1909,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "622d37989d041401ee62a030795de5ab36be7c4ade41533788f00e3d9dcb3515",
+      "sha256": "220123026b3c5eb589d52497be00e21c46fe06d7ecd2f57d2bb19e3fddb9ff29",
       "group": "hierarchy",
       "surface": null
     },
@@ -2383,7 +2383,7 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "6b5c2e5be53703e6f3a2646c34c717ac755c95db2da1f00d3368a9a79b045140",
+      "sha256": "1e3f1c5646bcfde4993b6f8dde83cb539439455ec56dabdd0eaaf371f73bc02f",
       "group": "raw-core",
       "surface": null
     },
@@ -2509,7 +2509,7 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "5fa599b91dcf21c673c0b81b1e68785494aae15fd6f43eaacc8c83a56fc90798",
+      "sha256": "cdad520034083864764f9192daee7d323ff891155595cd27fb4a941889f374d5",
       "group": "foreign",
       "surface": null
     },
@@ -2527,7 +2527,7 @@
     },
     {
       "path": "scripts/test_instrument_host.py",
-      "sha256": "d8cc64e5748c071b87421cd15a2176c99eab6005cd8ef39ee04555c9e3915e84",
+      "sha256": "1320846b61fb3b7c40adaced11f0f68fe3ccebbbbcfe0af49f9429fab29c84c0",
       "group": "instrument",
       "surface": null
     },
@@ -2573,7 +2573,7 @@
     },
     {
       "path": "src/bin/qleisli/artifacts.rs",
-      "sha256": "e771a2f5e043f7b6500ee07e22fe6b4011b03a121ef79bc8a8fef176a97f5503",
+      "sha256": "01092b80e4567e61c7980eca843c4044ef83cd44aa8a09a8cf5d4a279bfc9a22",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2593,7 +2593,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "2d6fcfd274f3ce1c37f684e180a0f95a8035000bceb7d2df1b4b997717264e9b",
+      "sha256": "dd04277da900584b2caef2be2f2b136726827617931584dd22a2768364177eb3",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2625,7 +2625,7 @@
     },
     {
       "path": "src/bin/qleisli/sized.rs",
-      "sha256": "9bdd8df2b972ffb03d82d8d3d96dd45b742df68a707f6b5f2fff414f41a3cea6",
+      "sha256": "1ea6fa657a515058ee3856fc8175134900e8e776249fa244f6b7eeb41c5a1bb0",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2951,7 +2951,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "5d76aba23f1322689afec3291a93f76e136f0a6dee84138f01b30381ad3fddfa",
+      "sha256": "fa5f7be61bca503c6efc05777c2f97c0f0e3f27ee191fd2cc3a214393416f73d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3125,7 +3125,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "ce528792d3d6c7b1d1bf8e27d8a73b9fdfd4585a4c62884e262099f9b0327453",
+      "sha256": "cdfdd5bf8abdd52ef66a5e7ff321224bfba69372360a317dbebdda5dd706865d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3432,7 +3432,7 @@
     },
     {
       "path": "src/interchange/codec.rs",
-      "sha256": "2eff8a2f58873d795c10dee8b5837da30dc3167fc5b6775b49f2bd4087277cea",
+      "sha256": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3516,7 +3516,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "a05d73e20d52be394a3a19922231eefd2bfde065e9be7123dd1d89fb7bb7237c",
+      "sha256": "e37f3e59c6ccf49cef0d3c4a6158326f438ef7f699c6c5b4acad3c6c085d719f",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3524,25 +3524,36 @@
           "CheckedQpeInstrument",
           "CheckedRequest",
           "Kernel",
+          "NativeChecked",
           "Reconstructed",
           "execution"
         ],
         "functions": [
           "pub fn candidate(&self) -> &[u8]",
+          "pub fn candidate(&self) -> Option<&[u8]>",
           "pub fn check_against(&self, payload: &[u8], request: &[u8]) -> Result<CheckedRequest>",
+          "pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
           "pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument>",
+          "pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
           "pub fn check_qpe_instrument( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<CheckedQpeInstrument>",
+          "pub fn check_qpe_instrument_native( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<NativeChecked>",
+          "pub fn exact_work(&self) -> usize",
           "pub fn exact_work(&self) -> usize",
           "pub fn executable(&self) -> &Path",
           "pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed>",
+          "pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked>",
           "pub fn instrument(&self) -> &CheckedInstrument",
           "pub fn leaves(&self) -> &[(usize, CheckedSerializedUnitaryLeaf)]",
+          "pub fn native_exact_work(&self) -> usize",
           "pub fn new(executable: impl Into<PathBuf>) -> Self",
+          "pub fn payload(&self) -> &[u8]",
           "pub fn payload(&self) -> &[u8]",
           "pub fn reconstruction(&self) -> &Reconstructed",
           "pub fn reconstruction(&self) -> &Reconstructed",
           "pub fn request(&self) -> &[u8]",
           "pub fn request(&self) -> &[u8]",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn structural_work(&self) -> usize",
           "pub fn structural_work(&self) -> usize"
         ],
         "capacity_constants": []
@@ -3550,7 +3561,7 @@
     },
     {
       "path": "src/interchange/hierarchical/bridge.rs",
-      "sha256": "26100c16f12a299cf1742d8172513d7502d95eb3e92185ae20c3f2d42ed80556",
+      "sha256": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3590,7 +3601,7 @@
     },
     {
       "path": "src/interchange/hierarchical/execution.rs",
-      "sha256": "c7f016cc1cfb4046c7e65435ef192107deb4d22ac90b3a36ca92865b41dc559e",
+      "sha256": "a1674776cbc639dff94893d455b463e65e81f4aa637378b5636b92c075b11745",
       "group": "hierarchical-execution",
       "surface": {
         "declarations": [
@@ -3612,7 +3623,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "1378df86f2102b2dfe77e8fc1821028d291ba2cafb29c9765fa115c1684b2f4f",
+      "sha256": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3784,7 +3795,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "7b6feae210a048b64f976c60200828ad054351f48d8f44041f4155e721280544",
+      "sha256": "661b2586fccb5d628247ba6a9a217dcd03169a94151b81aa1f6a4b456d1953f6",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3909,6 +3920,42 @@
       "path": "stdlib/src/transforms.qli",
       "sha256": "9116d185e214fc4fc06ead860dc91234cd20f62878b4dad4f5f1c61ad0d67eab",
       "group": "source",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
+      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/Qirf.lean",
+      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean",
+      "sha256": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf.lean",
+      "sha256": "31209fef8f9f0270260f3c0d145dbbec8ec9597a058053f521fb7b99d287601d",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Qirf.lean",
+      "sha256": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeHierarchy.lean",
+      "sha256": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
+      "group": "hierarchy",
       "surface": null
     }
   ],
@@ -4700,7 +4747,7 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
       "tests/verification_boundary.rs": "f30839949806b3206b4c4a293d8969c154051f2f099de6a4fb90776b4c1e4ee2",
-      "tests/hierarchical_host.rs": "81d5dae3c8b987827370a473bd336063bce109adf247e4b96fbfa3ab96ca8654",
+      "tests/hierarchical_host.rs": "fe1e1a5c83a822ef360323f81ebaef15290b170f01ba1bc8e24ffc97d89f6c43",
       "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded",
       "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
       "scripts/compile_sized_corpus.py": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed",
@@ -4712,13 +4759,13 @@
       "scripts/test_compact_sized_graph.py": "c242e5468b3da433c24a76bd00b8a425b30babc7b9d86d88780e8ad59d49fee8",
       "scripts/test_hierarchical_instrument.py": "d51ff8e84b6b5e66d09b518f06a89f111b479685c7b3f8a620b46abd07849d43",
       "tests/sized_corpus.rs": "78ebff4a5dc00aec6e06497b7c632d5df65fae4fa6cff3547d2a55ad90371832",
-      "scripts/test_instrument_host.py": "d8cc64e5748c071b87421cd15a2176c99eab6005cd8ef39ee04555c9e3915e84",
+      "scripts/test_instrument_host.py": "1320846b61fb3b7c40adaced11f0f68fe3ccebbbbcfe0af49f9429fab29c84c0",
       "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
       "scripts/test_hierarchical_contract_typing.py": "1c4bc5213f62e11ed85f97e5a13abf1f882db436daaed707907298ba1c8d7392",
-      "scripts/test_hierarchical_request.py": "4c770b8577143444b4d76c22d1475c56da8c3022ca253ece72a70548632d3773",
+      "scripts/test_hierarchical_request.py": "498f141cfc29868d8a89cc0f567763db88fcc9357c4f2b53bf3ea191be719d8c",
       "scripts/test_hierarchical_routed_power.py": "746d772fa7b2be51885e12f910a79548aa2ce4909607c3546f321fbaec02898d",
-      "scripts/test_hierarchical_execution.py": "e09d73d29694339af439ba279af9f0d8eb29f5c0d505211a4a7e7d78723eb1c7",
-      "tests/hierarchical_execution.rs": "1a1f95f8faf26f3799e5864c50e978384a8c38e58c07f4dbd8112ab7641603bf",
+      "scripts/test_hierarchical_execution.py": "f3fb1b727fa22a608c1c7fae5fc6923ddb7d3216e92c50d6df7c216f5044431d",
+      "tests/hierarchical_execution.rs": "95352738bbcc67bb3736e05b89bf42dee1707c03b78f769b05142080d0e209bb",
       "scripts/test_hierarchical_circuit_trace.py": "5214be5ad0baf5bcb0681bd8854516737e4f9b575c6b0e021aa8fce2480d25a8",
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
@@ -4726,13 +4773,13 @@
       "tests/sized_source.rs": "e772fe9384a04ce23c0ba3e6d44ae7cb53329f781bf17fdf18902a4d6783e296",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
-      "tests/hierarchical_qpe_host.rs": "b3d53d5f61c05d661cb498514a699a4a6e1a59e9b502a02df61120a6c581b81d",
-      "scripts/test_qpe_instrument_host.py": "6ba0570287c733d295b54d3840b49b9099bd9cec6c7603e58c0735c1ab495b13",
+      "tests/hierarchical_qpe_host.rs": "6331ec7f65a9a8842bc408022e6ff3d15683ba40cb1c68ad5d3d74c44a244609",
+      "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
       "tests/connections.rs": "263ff9fcea227374b09f6b0300506816182526bcff583220795ca0dcc3afa4d4",
       "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/with_computed_diagnostics.rs": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc",
       "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
-      "tests/sized_review_diagnostics.rs": "5ae10ddceafb9d8dfa1dcdb68cd1c98c58ca2f72965556bf1720865b06c96ab6",
+      "tests/sized_review_diagnostics.rs": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
       "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
       "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
       "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",

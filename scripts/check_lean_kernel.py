@@ -22,7 +22,7 @@ FORBIDDEN = {
     "unsafe", "partial", "axiom", "sorry", "admit", "native_decide",
     "noncomputable", "implemented_by", "extern", "csimp", "run_cmd",
     "elab", "elab_rules", "macro", "macro_rules", "initialize",
-    "builtin_initialize",
+    "builtin_initialize", "run_elab", "run_meta",
 }
 TOKEN = re.compile(r"[^\W\d][\w'.]*", re.UNICODE)
 

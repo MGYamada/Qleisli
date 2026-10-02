@@ -1,0 +1,19 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/bitwise.py
+// Selected symbol: XorK; bitsize=3, k=5
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use kernel::kernel;
+
+observe fn main() -> (CBit, CBit, CBit) {
+    let q = join(join(init0(), init0()), init0());
+    let q = kernel(q);
+    let (prefix2, w2) = split(q);
+    let (w0, w1) = split(prefix2);
+    (measure_z(w0), measure_z(w1), measure_z(w2))
+}

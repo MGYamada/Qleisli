@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.hierarchy-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_sha256": "ff667e22ebe78c3185a12a2ada4d022ca7fd672a75f626e498d0d1a3c6a3810f",
+  "binary_cases": 362,
+  "seconds": 20.644,
+  "host_command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 12 tests\ntest native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ok\ntest native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ok\ntest native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ok\ntest native_phase_fault_remains_an_obligation_under_zero_repeat ... ok\ntest native_request_permits_different_sharing_in_both_directions ... ok\ntest native_actual_counts_premises_and_encodings_are_checked ... ok\ntest vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles ... ok\nshared power costs: [(24271, 67), (24271, 67), (24271, 67), (24271, 67)]\ntest native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ok\ntest native_request_detects_coordinated_body_changes_and_wrong_headers ... ok\nindependent request shared-power costs: [(28792, 67, 167), (28792, 67, 167), (28792, 67, 167), (28792, 67, 167)]\ntest native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ok\ncomposed instrument costs: [(false, 0, 32870, 67), (false, 1, 32870, 67), (false, 3, 32870, 67), (true, 0, 58216, 67), (true, 1, 58216, 67), (true, 3, 58216, 67)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\ntest native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening ... ok\n\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 2.10s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4e9f49ec2b413a3f)\n"
+}

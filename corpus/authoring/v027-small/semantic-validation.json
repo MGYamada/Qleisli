@@ -1,0 +1,148 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-02T04:36:50.574479+00:00",
+  "project_version": "0.2.7",
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "cases": [
+    {
+      "id": "quantum_katas/controlled_h2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/zero_bitstring3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/even_numbers3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/add_one3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/greater_constant2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/xor_constant3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/rotation_half_x",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": -1
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_half2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_edge_layer2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "controlled_h_unconditional",
+      "reference": "quantum_katas/controlled_h2",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/controlled_h2 column 0: (False, True): 0.2500000000000001 != 0.0"
+    },
+    {
+      "id": "bitstring_wrong_target",
+      "reference": "quantum_katas/zero_bitstring3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/zero_bitstring3 column 0: (True, False, True): 0 != 0.4999999999999999"
+    },
+    {
+      "id": "even_numbers_wrong_low_bit",
+      "reference": "quantum_katas/even_numbers3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/even_numbers3 column 0: (True, True, False): 0.2500000000000001 != 0"
+    },
+    {
+      "id": "increment_wrong_carry_order",
+      "reference": "qualtran/add_one3",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/add_one3 column 1: (False, True, False): 0 != 1.0"
+    },
+    {
+      "id": "greater_constant_wrong_threshold",
+      "reference": "qualtran/greater_constant2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/greater_constant2 column 1: (True, False, True): 1 != 0.0"
+    },
+    {
+      "id": "xor_constant_missing_high_bit",
+      "reference": "qualtran/xor_constant3",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/xor_constant3 column 0: (True, False, True): 0 != 1.0"
+    },
+    {
+      "id": "half_rx_missing_scalar",
+      "reference": "pennylane_demos/rotation_half_x",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_half_x entry 1,0 x: (False, True): 1 != 0.4999999999999998"
+    },
+    {
+      "id": "half_zz_missing_scalar",
+      "reference": "pennylane_demos/ising_zz_half2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_half2 entry 0,0 x: (False, False, False): 1 != 0.4999999999999998"
+    },
+    {
+      "id": "edge_layer_reversed_order",
+      "reference": "pennylane_demos/qaoa_edge_layer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_edge_layer2 entry 0,1 x: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+    }
+  ],
+  "compiler_sha256": "9fc6c883035e556f5eaf77e548046f46d0d95deaa8418cfb462d739dea40ec26",
+  "oracle_script_sha256": "85dd8e408c3eb2b15ed3d6e7750e8a82db0dd0228402ba257f6e72cd81f9fcbe",
+  "source_sha256": {
+    "quantum_katas/controlled_h2/kernel.qli": "4304d7ca885f446b786326c7d2bfaa53263d59550b2018b236dbe774cab36dba",
+    "quantum_katas/controlled_h2/main.qli": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12",
+    "quantum_katas/zero_bitstring3/kernel.qli": "de1149594b906961996014862d0775585b7e3c0810ea0c987afea35a0749e980",
+    "quantum_katas/zero_bitstring3/main.qli": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3",
+    "quantum_katas/even_numbers3/kernel.qli": "1871f97fc3c01980ad0be31ef12f9f49d6da14567ae3963666801517b0cf7e4f",
+    "quantum_katas/even_numbers3/main.qli": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8",
+    "qualtran/add_one3/kernel.qli": "500d7ad78ec32b4690194340e32a1167e6478c36ef3ed515366b7971aa25039d",
+    "qualtran/add_one3/main.qli": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304",
+    "qualtran/greater_constant2/kernel.qli": "e99c417397dd916a46384df22833be50e6c891bdd4a50ae45a060479741b7ae4",
+    "qualtran/greater_constant2/main.qli": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c",
+    "qualtran/xor_constant3/kernel.qli": "1c3c20f325096f22aa6bf7801d4bd74bbab7b87c14e317057bb3be17e04fcb27",
+    "qualtran/xor_constant3/main.qli": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6",
+    "pennylane_demos/rotation_half_x/kernel.qli": "abc920f1d9c2345ee919bf4812518e9409b528da874446396c1348800b1f63bd",
+    "pennylane_demos/rotation_half_x/main.qli": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f",
+    "pennylane_demos/ising_zz_half2/kernel.qli": "50428259af64ee53e93a809c6146e78e56107a5e204f2b689ffe05909e3d9a68",
+    "pennylane_demos/ising_zz_half2/main.qli": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a",
+    "pennylane_demos/qaoa_edge_layer2/kernel.qli": "39f9602d9cba52668e8d250672cac70020681bf324c607a525ecc8dc3c87a148",
+    "pennylane_demos/qaoa_edge_layer2/main.qli": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90"
+  }
+}

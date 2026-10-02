@@ -6,6 +6,14 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Current targets and implementation boundaries below do not adopt future syntax or imply completed proofs. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
+## Selected v0.2.7: documentation and finite corpus
+
+Development selection on 2026-10-02: docs reduced by approximately 55% in tracked
+UTF-8 bytes, plans and imaginary-v1 retained, nine small translations added
+(69 finite cases). [Candidate](docs/releases/v0.2.7.md) records local checks.
+This version does not complete VM-27 or publish a release; existing migration
+and theorem acceptance gates below remain in force.
+
 ## Published v0.2.6: observing verification and finite corpus
 
 Published on 2026-10-02: VM-26 observing/SSA/branch-function checking and proofs,
@@ -90,7 +98,7 @@ obligations and public migrations before implementation; the
 builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current release is 0.2.6; the type-system decision remains future work.
+Current development version is 0.2.7; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
@@ -156,7 +164,7 @@ actual first sources, counterexamples, proofs and validation fixtures remain int
 
 ## 0. Source and standard-library organization
 
-First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-language requirements](docs/quantum-language-requirements.md). The [Stage 0 design](docs/standard-library.md) selects:
+First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-language requirements](docs/quantum-language-requirements.md). The [Stage 0 design](docs/frontend-v0.md) selects:
 
 - The role/encoding of `.qli`, one-file/one-module correspondence, top-level declarations, visibility, imports, and entry functions.
 - Minimal standard-library modules and automatically available names; boundaries between ordinary `.qli`, sealed operations, and language forms.
@@ -165,7 +173,7 @@ First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-langu
 
 **Completion:** consistent documented choices, with examples readable under the same module rules. Grammar/type-checker implementation is not a Stage 0 condition.
 
-Stage 0 organization is selected in the [standard-library specification](docs/standard-library.md). Multifile Bell/phase-oracle examples follow its public declarations and root-relative `use` rules. Final grammar and execution validation belong to later stages.
+Stage 0 organization is selected in the [standard-library specification](docs/frontend-v0.md). Multifile Bell/phase-oracle examples follow its public declarations and root-relative `use` rules. Final grammar and execution validation belong to later stages.
 
 <a id="1-言語仕様"></a>
 
@@ -188,7 +196,7 @@ The [finite-core v0 specification](docs/language-spec.md) and [normative grammar
 
 ## 2. Typed IR
 
-Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](docs/ir-prototype.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) records constructor semantics and implementation obligations.
+Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](docs/frontend-v0.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) records constructor semantics and implementation obligations.
 
 **Completion:** accept valid small IR and reject intentionally constructed duplication, implicit discard, invalid release, and effect violations. Apply the same verifier to handwritten/external IR regardless of origin, and show that accepted IR meaning satisfies Stage 1 theorem premises.
 
@@ -210,7 +218,7 @@ Review work limited internal values/types to 4,096 nodes and depth 64, charging 
 
 Execute instruments including measurement/reset/discard using finite-dimensional vectors and density operators or an equivalent mixed-state representation. The Rust prototype runs verified closed IR as ensembles of unnormalized pure states. Bell, phase-oracle, and feedback projects compile from `.qli` and match expected distributions; finite IR tests for partial discard/reset are retained. Values are approximate `f64`; exact zero probabilities and an independent literal execution check of auxiliary wires remain open.
 
-The [finite algorithm examples](docs/algorithm-routines.md) check all two-bit Grover targets/iteration counts, all BV hidden strings, reference correlations in bit-flip correction, and parity-measurement coherence. Their success conditions are separate from type/resource safety.
+The [finite algorithm examples](docs/stdlib-contracts.md) check all two-bit Grover targets/iteration counts, all BV hidden strings, reference correlations in bit-flip correction, and parity-measurement coherence. Their success conditions are separate from type/resource safety.
 
 **Completion:** execute compiled closed `.qli` programs and match analytically known distributions, distinguishing finite checks from general soundness proofs.
 

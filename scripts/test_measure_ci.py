@@ -47,6 +47,9 @@ class Measurements(unittest.TestCase):
         self.assertEqual(result["head_sha"], "a" * 40)
         self.assertEqual(result["validated_sha"], "b" * 40)
         self.assertEqual(result["dependency_cache"]["check-rust"], "true")
+        self.assertEqual(result["proof_lane"], "unavailable")
+        report["needs"]["changes"]["outputs"]["proof_lane"] = "tests"
+        self.assertEqual(summarize(self.run, self.jobs, report)["proof_lane"], "tests")
 
     def test_reruns_do_not_count_the_previous_attempt_or_manual_wait_as_queue(self):
         self.run["run_attempt"] = 2
@@ -54,6 +57,16 @@ class Measurements(unittest.TestCase):
         self.run["run_started_at"] = "2026-10-02T00:00:00Z"
         self.assertEqual(summarize(self.run, self.jobs)["initial_queue_seconds"], 10)
         self.assertEqual(summarize(self.run, self.jobs)["feedback_seconds"], 140)
+
+    def test_step_timings_retain_missing_and_skipped_observations(self):
+        steps = [dict(name="build", conclusion="success", started_at="2026-10-02T00:00:10Z", completed_at="2026-10-02T00:00:40Z"),
+                 dict(name="audit", conclusion="skipped"), dict(name="unknown", conclusion="cancelled")]
+        self.jobs["jobs"][0]["steps"] = steps
+        observed = summarize(self.run, self.jobs)["jobs"][0]["steps"]
+        self.assertEqual([step["seconds"] for step in observed], [30, 0, None])
+        steps[0]["completed_at"] = "2026-10-02T00:00:00Z"
+        with self.assertRaises(ValueError):
+            summarize(self.run, self.jobs)
 
 
 if __name__ == "__main__":

@@ -7,11 +7,21 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
+      validation:
+        description: Test harness or fresh full proof validation
+        type: choice
+        options: [full, tests]
+        default: full
       cache:
         description: Cargo dependency archives (all validation still runs)
         type: choice
         options: [enabled, disabled]
         default: enabled
+      native_workers:
+        description: Native comparison concurrency (1 retains the fresh serial route)
+        type: choice
+        options: ['4', '2', '1']
+        default: '4'
 
 # Only ordinary PRs supersede each other. Release PRs, tags and manual full runs
 # have unique groups, so even pending exact-source validation is never cancelled.
@@ -27,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       profile: ${{ steps.select.outputs.profile }}
+      proof_lane: ${{ steps.select.outputs.proof_lane }}
       head: ${{ steps.select.outputs.head }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -36,6 +47,7 @@ jobs:
         run: |
           python3 scripts/test_ci_profiles.py
           python3 scripts/test_measure_ci.py
+          python3 scripts/test_run_native_ci.py
       - name: Select validation from the exact commit and both sides of its diff
         id: select
         run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
@@ -201,16 +213,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Test registry policy and bind the exact shipped source inventory
+        run: |
+          python3 scripts/test_check_schema_registry.py
+          python3 scripts/check_schema_registry.py --source-only
       - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        if: needs.changes.outputs.proof_lane != 'tests'
         with:
           lake-package-directory: lean
           auto-config: 'false'
           use-github-cache: 'false'
-          build: 'true'
-      - name: Audit every project declaration for forbidden axioms
+          build: 'false'
+      - name: Compile changed mathematical proofs and audit their declarations
+        if: needs.changes.outputs.proof_lane == 'model'
         working-directory: lean
-        run: lake env lean -DwarningAsError=true Audit.lean
+        run: |
+          lake build
+          lake env lean -DwarningAsError=true Audit.lean
       - name: Bind shipped schema types to rebuilt declarations and audited executable sources
+        if: needs.changes.outputs.proof_lane == 'full'
         run: python3 scripts/check_schema_registry.py
   check-lean-kernel:
     needs: changes
@@ -246,177 +267,30 @@ jobs:
           use-mathlib-cache: 'false'
       - name: Audit axioms, unsafe/partial declarations and runtime replacements
         working-directory: lean-kernel
+        run: lake env lean -DwarningAsError=true Audit.lean
+      - name: Replay retained proof reductions and refactoring equivalence
+        if: needs.changes.outputs.proof_lane == 'full'
+        working-directory: lean-kernel
         run: |
-          lake env lean -DwarningAsError=true Audit.lean
           lake env lean -DwarningAsError=true Tests.lean
           lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
       - name: Replay the compiled project definitions through Lean's kernel
+        if: needs.changes.outputs.proof_lane == 'full'
         working-directory: lean-kernel
         run: |
           lake env leanchecker --fresh QleisliKernel
           lake env leanchecker --fresh Main
       - name: Reject backend unsafe, implemented_by, extern and partial counterexamples
         run: python3 scripts/test_check_lean_kernel.py --compiled
-      - name: Shared DAG semantics, binding, limits and zero-width owners
-        run: python3 scripts/test_lean_hierarchy.py
-      - name: Typed owner and axis permutations with independent requests
-        run: python3 scripts/test_lean_layout.py
-      - name: Shared typed calls, ordered composition and independent graph oracle
-        run: python3 scripts/test_lean_layout_dag.py
-      - name: Typed dyadic phases, controlled conditions and layout composition
-        run: python3 scripts/test_lean_phase_layout.py
-      - name: Sparse phase powers and coherent controls match independent integer oracles
-        run: python3 scripts/test_lean_phase_operations.py
-      - name: Actual shared-gradient binding, phase semantics and remaining budgets
-        run: python3 scripts/test_hierarchical_gradient.py
-      - name: Actual Fourier-stage geometry, complex coefficients and shared budgets
-        run: python3 scripts/test_hierarchical_fourier_stage.py
-      - name: Native interference normalization and independent joint amplitudes
-        run: python3 scripts/test_lean_interference.py
-      - name: VM-23 native exact arithmetic, Rust capacities and independent rational matrices
-        run: python3 scripts/test_lean_exact.py
-      - name: VM-24 native finite circuits, fresh encoded equations and original serialized matrices
-        run: python3 scripts/test_lean_finite.py
-      - name: VM-25 pure raw owners, actual bodies and finite structured cleanup
-        run: python3 scripts/test_lean_raw.py
-      - name: VM-25 retained bindings, capacity boundaries and non-dense cleanup
-        run: python3 scripts/test_lean_raw_completion.py --record /tmp/qleisli-vm25-completion.json
-      - name: VM-26 original observing bodies, SSA, phis and exact residual instruments
-        run: python3 scripts/test_lean_observation.py --record /tmp/qleisli-vm26.json
-      - name: VM-26 retained original classical-branch functions and full bindings
-        run: python3 scripts/test_lean_branch_function.py --record /tmp/qleisli-vm26-branches.json
-      - name: VM-26 matrix-free original instruments and exact hidden histories
-        run: python3 scripts/test_lean_streamed_instrument.py --record /tmp/qleisli-vm26-streamed.json
-      - name: Symbolic QFT paths and independent Fourier coefficients
-        run: python3 scripts/test_lean_qft.py
-      - name: Small QFT semantic-path matcher and nonliteral candidates
-        run: python3 scripts/test_lean_qft.py --small --semantic
-      - name: Typed QFT graph binding and independent paths
-        run: python3 scripts/test_lean_qft_graph.py
-      - name: QPE plans and independent residual instruments
-        run: python3 scripts/test_lean_qpe.py
-      - name: Coherent controlled powers and exact joint-reference matrices
-        run: python3 scripts/test_lean_controlled_power.py
-      - name: Full-profile graph schedules, cycles and aggregate capacities
-        run: python3 scripts/test_hierarchical_graph.py
-      - name: Typed artifact dependencies, endpoints and shared work budget
-        run: python3 scripts/test_hierarchical_artifact.py
-      - name: Actual node ownership, effects, call names and zero-repeat bodies
-        run: python3 scripts/test_hierarchical_typing.py
-      - name: Meaning and encoding types, QPE providers and zero-scratch shapes
-        run: python3 scripts/test_hierarchical_contract_typing.py
-      - name: Check explicit structural conversions
-        run: python3 scripts/test_hierarchical_structural.py
-      - name: Canonical reshape metadata and independent tree encoding
-        run: python3 scripts/test_lean_reshape.py
-      - name: Actual readout nodes, classical assembly and residual/reference branches
-        run: python3 scripts/test_hierarchical_readout.py
-      - name: Actual fresh-zero nodes and retained reference coefficients
-        run: python3 scripts/test_hierarchical_preparation.py
-      - name: Composed instrument boundaries and retained finite obligations
-        run: python3 scripts/test_hierarchical_instrument.py
-      - name: Composed instrument transport, finite discharge and small source clients
-        run: python3 scripts/test_instrument_host.py
-      - name: Checked hierarchy execution and full complex measurement branches
-        run: python3 scripts/test_hierarchical_execution.py
-      - name: Source graph compaction preserves phase, sharing and empty owners
-        run: python3 scripts/test_compact_sized_graph.py
-      - name: Ordinary measured QPE and classical-result clients on small systems
-        run: python3 scripts/test_sized_instrument.py
-      - name: Shared QPE source through structural readout on small systems
-        run: python3 scripts/test_sized_qpe_readout.py
-      - name: Bind controlled powers to actual bodies and provider obligations
-        run: python3 scripts/test_hierarchical_power.py
-      - name: Actual source controlled powers through checked owner renames
-        run: python3 scripts/test_hierarchical_routed_power.py
-      - name: Actual shared circuit routes and ordered phase-sensitive atom traces
-        run: python3 scripts/test_hierarchical_circuit_trace.py
-      - name: Check actual QPE schedule components
-        run: python3 scripts/test_hierarchical_qpe_schedule.py
-      - name: Check QPE root and provider binding
-        run: python3 scripts/test_hierarchical_qpe_root.py
-      - name: Check actual QPE initialization and ordered readout
-        run: python3 scripts/test_hierarchical_qpe_instrument.py
-      - name: Native checking of Rust sized-source proposals
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_source -- --ignored
-      - name: Rust GHZ and arithmetic corpus with independent small-system oracles
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_review_dialects native -- --ignored
-      - name: Sized-source CLI checking, execution and sampling
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --test sized_cli -- --ignored
-      - name: Rust source to named QPE with independent phase and reference probes
-        run: QLEISLI_HIERARCHY_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo +1.98.1 test --lib native_named_qpe -- --ignored
-      - name: Check actual provider derivations from an empty proof cache
-        run: python3 scripts/test_hierarchical_derivation.py
-      - name: Shared call expansion, typed adapters and independent phase oracle
-        run: python3 scripts/test_hierarchical_calls.py
-      - name: Finite requests retain actual bytes, types, ports and endpoint indices
-        run: python3 scripts/test_hierarchical_finite.py
-      - name: Conditional derivations retain every shared finite obligation
-        run: python3 scripts/test_hierarchical_conditional.py
-      - name: Independently requested hierarchy roots and untrusted pair proposals
-        run: python3 scripts/test_hierarchical_request.py
-      - name: Fresh hierarchy transport and finite reconstruction
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_host.py
-      - name: Frozen VM-22 comparisons with the experimental native word component
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: |
-          cargo build --bin qleisli
-          python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel
-      - name: One-bit Fourier bases and fresh phase-fixed H reconstruction
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_fourier_base.py
-      - name: Complete recursive Fourier bodies and bound H obligations
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_fourier_body.py
-      - name: Actual shared wiring, outer QFT permutations and aggregate budgets
-        run: python3 scripts/test_hierarchical_wiring.py
-      - name: Actual outer Fourier requests and bound phase-fixed H obligations
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_fourier_root.py
-      - name: Complete Fourier requests through fresh native and exact host checks
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_fourier_host.py
-      - name: Sized Xor and GHZ source corpus with independent native and semantic checks
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_sized_corpus.py --small
-      - name: Shared QFT source, named Fourier contracts, inverse and shared calls
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_sized_qft.py --small
-      - name: Rust source Fourier factoring with exact traces and fresh native checks
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_rust_fourier_factoring.py
-      - name: Small-system coherent QPE source and phase/reference diagnostics
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_sized_qpe.py
-      - name: Small-system shared AddK and Equals sources, restoration and phase checks
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_sized_arithmetic.py
-      - name: Shared QPE order and amplitude clients with operation forwarding
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_sized_qpe_clients.py
-      - name: QFT hierarchy widths one through four and retained width-eight capacity case
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_qft.py
-      - name: Shared-gradient QFT hierarchies at every supported width
-        env:
-          RUSTUP_TOOLCHAIN: 1.98.1
-        run: python3 scripts/test_hierarchical_qft.py --construction shared-gradient
-      - name: Differential and process-boundary checks
-        run: cargo +1.98.1 run --example lean_kernel -- lean-kernel/.lake/build/bin/qleisli-kernel --self-test
+      - name: Run all retained native comparisons with bounded parallelism
+        run: python3 scripts/run_native_ci.py --workers "${{ inputs.native_workers || '4' }}" --output "$RUNNER_TEMP/native-comparisons"
+      - name: Retain complete coverage, per-command timings and independent logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-comparisons-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-comparisons/
+          if-no-files-found: error
   check-distribution:
     needs: changes
     if: needs.changes.outputs.profile == 'full'

@@ -1,0 +1,116 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-02T04:29:53.449262+00:00",
+  "project_version": "0.2.7",
+  "compiler_sha256": "9fc6c883035e556f5eaf77e548046f46d0d95deaa8418cfb462d739dea40ec26",
+  "results": [
+    {
+      "project": "pennylane_demos/ising_zz_half2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/pennylane_demos/ising_zz_half2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/qaoa_edge_layer2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/pennylane_demos/qaoa_edge_layer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rotation_half_x",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/pennylane_demos/rotation_half_x",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/add_one3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/qualtran/add_one3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/greater_constant2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/qualtran/greater_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/xor_constant3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/qualtran/xor_constant3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/controlled_h2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/quantum_katas/controlled_h2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `)`, found `,`\",\"primary\":{\"path\":\"kernel.qli\",\"start\":563,\"end\":564,\"line\":13,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/even_numbers3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/quantum_katas/even_numbers3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/zero_bitstring3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/authoring/v027-small/attempt-01/quantum_katas/zero_bitstring3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

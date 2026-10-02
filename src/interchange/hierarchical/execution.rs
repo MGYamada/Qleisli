@@ -1192,6 +1192,7 @@ mod tests {
         // Capability-only fixtures, not values returned by a native check.
         // No fake report can enter the public execution API outside this module.
         let report = Reconstructed {
+            native_exact_work: 0,
             payload: std::sync::Arc::from([]),
             leaves: vec![],
             structural_work: 0,

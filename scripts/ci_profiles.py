@@ -2,8 +2,9 @@
 """Fail-closed CI selection and required-check aggregation (Issue #145).
 
 This selects validation work, not acceptance authority or constitutional policy.
-Only explicit descriptive documents/result records may skip compiler/proof work.
-Every other path, missing diff and release/manual run uses the complete profile.
+Only explicit descriptive documents/result records may skip executable tests.
+Routine validation is test-oriented; proof maintenance and fresh full replay
+are separately selected. Missing/unknown inputs still select full proof replay.
 """
 
 import argparse
@@ -75,16 +76,76 @@ def git(root: Path, *args: str) -> str:
     return subprocess.run(["git", *args], cwd=root, check=True, capture_output=True).stdout.decode("utf-8")
 
 
+def proof_lane(paths: list[str], policy: dict | None = None,
+               registry_source_only: bool = False) -> str:
+    """Kernel proofs compile with the executable; Mathlib proofs need their own build."""
+    if not paths:
+        return "full"
+    policy = policy or load_policy(ROOT)
+    model = False
+    for path in paths:
+        if path == "lean/schema-registry.json" and registry_source_only:
+            continue
+        if not valid_path(path) or path.startswith(".github/") or path in {
+            "TRUST_BOUNDARY.md", "CONSTITUTION.md",
+            "scripts/ci_profiles.py", "scripts/run_native_ci.py",
+            "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",
+            "lean/schema-registry.json",
+        } or path.endswith(("lean-toolchain", "lakefile.toml", "lake-manifest.json")):
+            return "full"
+        if classify([path], policy)[0] == "docs":
+            continue
+        if path.startswith("lean/") or path in NORMATIVE_DOCS:
+            model = True
+        elif not (path.startswith(("src/", "tests/", "lean-kernel/", "corpus/",
+                                   "stdlib/", "python/", "research/", "examples/",
+                                   "scripts/test_", "scripts/check_input_corpus"))
+                  or path in {"Cargo.toml", "Cargo.lock", "CHANGELOG.md", "README.md",
+                              "README.crates.md", "LICENSE", "NOTICE", "ROADMAP.md"}):
+            return "full"
+    return "model" if model else "tests"
+
+
+def registry_binding_only(root: Path, base: str, head: str) -> bool:
+    """Only source identity may change without rebuilding exported theorem types."""
+    from check_schema_registry import RegistryError, read_json
+    try:
+        versions = [read_json(git(root, "show", f"{revision}:lean/schema-registry.json").encode())
+                    for revision in (base, head)]
+        for manifest in versions:
+            if not isinstance(manifest, dict) or set(manifest) != {
+                "format", "version", "profile", "lean_toolchain", "source_revision", "checker", "entries"
+            } or type(manifest["version"]) is not int or manifest["version"] != 1 or (
+                manifest["format"] != "qleisli.schema-registry"
+                or manifest["profile"] != "qpe-dyadic8-v1"
+                or manifest["lean_toolchain"] != "leanprover/lean4:v4.30.0"
+            ):
+                return False
+        return ({key: value for key, value in versions[0].items() if key != "source_revision"}
+                == {key: value for key, value in versions[1].items() if key != "source_revision"})
+    except (RegistryError, OSError, ValueError, subprocess.CalledProcessError, UnicodeError):
+        return False
+
+
 def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) -> dict:
     policy = load_policy(root)
     head = git(root, "rev-parse", "HEAD").strip()
     if not SHA.fullmatch(expected_sha) or head != expected_sha:
         raise ValueError("checkout differs from the exact event commit")
     result = dict(format=1, head=head, event=event_name, ref=ref, base=None,
-                  profile="full", reason="release, manual or unrecognized event", paths=[],
+                  profile="full", proof_lane="full", reason="release, manual or unrecognized event", paths=[],
                   dependency_cache=event.get("inputs", {}).get("cache", "enabled"),
                   project_build_cache="disabled")
-    if event_name not in {"pull_request", "push"} or ref.startswith("refs/tags/"):
+    if ref.startswith(("refs/tags/", "refs/heads/codex/release-", "refs/heads/release/")):
+        result["reason"] = "release ref; fresh full validation"
+        return result
+    if event_name == "workflow_dispatch":
+        requested = event.get("inputs", {}).get("validation", "full")
+        if requested not in {"tests", "full"}:
+            raise ValueError("unknown manual validation lane")
+        result["proof_lane"] = requested
+        return result
+    if event_name not in {"pull_request", "push"}:
         return result
     if event_name == "pull_request":
         base = event.get("pull_request", {}).get("base", {}).get("sha")
@@ -111,6 +172,11 @@ def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) 
             result["reason"] = "nonregular/executable artifact or mode change; full validation required"
             return result
     result["profile"], result["reason"] = classify(result["paths"], policy)
+    source_only = "lean/schema-registry.json" in result["paths"] and registry_binding_only(root, base, head)
+    result["registry_source_only_change"] = source_only
+    result["proof_lane"] = "tests" if result["profile"] == "docs" else proof_lane(result["paths"], policy, source_only)
+    if event_name == "pull_request" and event.get("pull_request", {}).get("head", {}).get("ref", "").startswith(("codex/release-", "release/")):
+        result.update(profile="full", proof_lane="full", reason="release branch; fresh full validation")
     result["policy_sha256"] = hashlib.sha256((root / ".github/ci/profiles.json").read_bytes()).hexdigest()
     return result
 
@@ -124,6 +190,10 @@ def check_needs(needs: dict, expected_sha: str) -> str:
     profile = outputs.get("profile")
     if selection.get("result") != "success" or profile not in {"docs", "full"}:
         raise ValueError("validation selection failed or has an unknown profile")
+    if outputs.get("proof_lane") not in {"tests", "model", "full"}:
+        raise ValueError("missing or unknown proof-maintenance lane")
+    if profile == "docs" and outputs["proof_lane"] != "tests":
+        raise ValueError("inconsistent documentation lane")
     if not SHA.fullmatch(expected_sha) or outputs.get("head") != expected_sha:
         raise ValueError("validation selection is not bound to this commit")
     for name in SUITES:
@@ -144,7 +214,8 @@ def main() -> int:
             if args.report:
                 args.report.write_text(json.dumps(dict(format=1, head=os.environ["GITHUB_SHA"], needs=needs), indent=2) + "\n", encoding="utf-8")
             profile = check_needs(needs, os.environ["GITHUB_SHA"])
-            print(f"Required checks passed for exact commit {os.environ['GITHUB_SHA']} ({profile} profile).")
+            lane = needs["changes"]["outputs"]["proof_lane"]
+            print(f"Required checks passed for exact commit {os.environ['GITHUB_SHA']} (suites: {profile}; proof lane: {lane}).")
             return 0
         event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
         result = plan(ROOT, os.environ["GITHUB_EVENT_NAME"], event, os.environ["GITHUB_SHA"], os.environ["GITHUB_REF"])
@@ -152,7 +223,7 @@ def main() -> int:
         if args.report:
             args.report.write_text(encoded, encoding="utf-8")
         with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-            output.write(f"profile={result['profile']}\nhead={result['head']}\n")
+            output.write(f"profile={result['profile']}\nproof_lane={result['proof_lane']}\nhead={result['head']}\n")
         if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
             with Path(summary).open("a", encoding="utf-8") as output:
                 output.write(f"CI profile: **{result['profile']}**. Commit `{result['head']}`.\n\n")

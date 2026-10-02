@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Fresh checked Rust execution versus independent small complex coefficient oracles.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
-Includes bounded fresh-shot clients; no maximum-size, named QPE or source proof.
+Includes named QPE and bounded fresh-shot clients; no maximum-size or source proof.
 """
 import argparse
 import hashlib
@@ -19,6 +19,7 @@ from test_sized_instrument import sources
 from test_sized_qft import SOURCE, INVERSE_SOURCE, canonical_boundary, request, expected as fourier
 from test_sized_qpe import expected as qpe
 from test_sized_qpe_clients import expected as client
+from test_qpe_instrument_host import documents as named_documents
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -133,13 +134,23 @@ def main():
                 result=qpe(1,2,{x<<2:z for x,z in c.items()},provider=provider)
                 return {(x%4,x>>2):z for x,z in result.items()}
             rows.append(write_case(directory,'qpe-'+provider,'instrument',artifact,required,columns(1),1,1,2,oracle))
+        for n,m in ((1,1),(1,2),(1,3),(2,2)):
+            proposal=compile_instrument(modules,'measurement::qpe',dict(n=n,m=m),
+                {'U':Operation('evolution::evolve',(n,1,3))})
+            artifact,required,candidate=named_documents(proposal,n,m)
+            name=f'named-qpe-{n}-{m}'
+            (directory/f'{name}.candidate.json').write_text(json.dumps(candidate))
+            def oracle(c,n=n,m=m):
+                result=qpe(n,m,{x<<m:z for x,z in c.items()})
+                return {(x%(1<<m),x>>m):z for x,z in result.items()}
+            rows.append(write_case(directory,name,'named',artifact,required,columns(n),n,n,m,oracle))
         (directory/'cases.tsv').write_text(''.join(f"{r['name']}\t{r['kind']}\t{r['reference_dimension']}\t{r['output_qubits']}\t{r['measured_bits']}\n" for r in rows))
         (directory/'sampling.tsv').write_text(''.join(f"{r['name']}\t{r['client']}\t{r['reference_dimension']}\t{r['output_qubits']}\t{r['measured_bits']}\t{r['shots']}\t{r['seed']}\n" for r in sampling_rows))
         command=['cargo','test','--test','hierarchical_execution','--','--ignored','--nocapture']
         run=subprocess.run(command,cwd=ROOT,env=os.environ|{'QLEISLI_HIERARCHY_KERNEL':str(args.kernel.resolve()),
             'QLEISLI_HIERARCHICAL_EXECUTION':str(directory)},text=True,capture_output=True,timeout=180)
         report=dict(format='qleisli.hierarchical-execution-validation',version=1,
-            status='passed' if run.returncode==0 else 'failed',scope='small checked reference execution; no source or named QPE proof',
+            status='passed' if run.returncode==0 else 'failed',scope='native-only decisions and independent small full hierarchy/named-QPE reference coefficients; no source/runtime proof',
             cases=rows,sampling_cases=sampling_rows,command=command,exit_code=run.returncode,stdout=run.stdout,stderr=run.stderr,
             kernel_sha256=hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
             source_sha256={name:hashlib.sha256(source.encode()).hexdigest() for name,source in modules.items()},
@@ -149,6 +160,9 @@ def main():
                  'scripts/compile_sized_instrument.py','scripts/compact_sized_graph.py',
                  'scripts/test_instrument_host.py','scripts/test_sized_qft.py',
                  'scripts/test_sized_qpe.py','scripts/test_sized_qpe_clients.py']})
+        report['native_only_acceptance']=True
+        report['named_qpe_cases']=4
+        report['max_combined_semantic_qubits']=4
         report['sampling_contract']={
             'entry':'CheckedInstrument::sample_normalized_shots',
             'input':'explicit finite positive-norm normalization; original norm squared returned',

@@ -172,3 +172,19 @@ current census is
 recorded by inventory.json. Original public enum surfaces, capacity constants,
 comparison bytes, corpus prefixes and historical reports remain unchanged.
 The new component adds no production authority or enabled external schema.
+
+The [VM-27 native slice](../verification_v027/README.md) explicitly refreshes
+reviewed QIRF/request/H checker, transport, compatible host and version-only
+source pins, and inventories four new native modules. Native-only reports are
+additive; existing sealed handles remain independently rebuilt. Native response
+version 3 is fail-closed, and native versus legacy work counts are separate.
+Original public enum families, capacities, comparison artifact/request bytes,
+corpus prefixes and historical reports remain unchanged.
+
+The subsequent [VM-27 semantics/decoder extension](../verification_v027/README.md)
+reviews seven current checker/import/test-helper sources, inventories two
+mathematical bridges, and refreshes the two whole-hierarchy execution harness
+pins for native-only acceptance and named-QPE comparisons. It aligns existing
+QIRF wire integer bounds; no public Rust shape or capacity changes. Original
+comparison artifact/request bytes and previous validation snapshots remain
+unchanged. Complete analytic reader-to-operator closure remains open.

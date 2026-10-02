@@ -1,0 +1,46 @@
+{
+  "status": "passed",
+  "native_cases": 51,
+  "rust_comparisons": 45,
+  "exact_original_operators": 69,
+  "max_semantic_qubits": 2,
+  "native_bindings": {
+    "native_binary_sha256": "80a4c7605f34dda31ddc0a552612d5f530b0d08f140b62c75fc9b35bcefd859b",
+    "native_input_sha256": "a44424a7eca739be133ecd561f11744927d58f2c558251f7dab504d43f1bfea7",
+    "native_stdout_sha256": "cd98f1d36c2d7102466c9356b16acfbe209ee6f464244d0fa65d15ef9208621d",
+    "rust_binary_sha256": "f09e70e34add333ca832ad0ef4f844ce7fb2cbdf8a341622e39ebaf34af3c657",
+    "rust_stdout_sha256": "ed01f0b0be47925f259a649a1e1dcdda5b7fc8c6a665ddacf358b1d333ac18c0"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "branch-functions"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: branch_function_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ObservationBinding.lean": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+    "lean-kernel/QleisliKernel/Raw/BranchFunction.lean": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+    "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+    "lean-kernel/Protocol/BranchFunction.lean": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+    "lean/Qleisli/RawBranchFunction.lean": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+    "lean/Qleisli/Semantics/ObservingFunction.lean": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
+    "scripts/test_lean_branch_function.py": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc"
+  }
+}

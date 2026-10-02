@@ -1,0 +1,186 @@
+{
+  "format": "qleisli.vm27-native-leaf-h-validation",
+  "version": 1,
+  "date": "2026-10-02",
+  "status": "passed-local-selected-boundary",
+  "candidate": "Dirty uncommitted development tree; no hosted CI, tag, publication or clean-CI source binding",
+  "scope": "Original QIRF1/2 graph and leaf reconstruction; native request pairs; phase-fixed Fourier/QPE H; native-only report APIs; retained compatible Rust sealed handles",
+  "kernel_binary_sha256": "5ad138d0910ecd42b91c1b552acaa51c630f452ba7442668733df62c89edec54",
+  "schema_source_revision": "503aa281a485db44ab886b6a4e876371b8cbab73285121467f8a1353cc555a91",
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Qirf.lean": "9a07072e8f76015627d94127ae9f564c74475fe615fa57832b7332eaba04294a",
+    "lean-kernel/Protocol/Qirf.lean": "aa8b7a83e6df337ee57fac5fbdb6a038f545d7e2d5969749ae23d23deaefe510",
+    "lean-kernel/Protocol/FiniteCodec.lean": "abc49b87f81dd3e336a046ca4d777977bffad9f5c153708011fbe20c3c4c9eed",
+    "lean-kernel/Protocol/HierarchicalFinite.lean": "7359e947efd959073292a49979eab2663ef4e001aed94aef93ead5cc668bc501",
+    "lean-kernel/Cli/Hierarchical.lean": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff",
+    "src/interchange/hierarchical.rs": "28610265f7bcc0365d469e43d0cf97410bc08512cdcdfed8bd1f43e84a2b0094",
+    "src/interchange/hierarchical/runtime.rs": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
+    "scripts/test_hierarchical_finite_binding.py": "c973108eec2988fe3459d4fc221ba339145d92af4655572acb44bc948a925047",
+    "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
+    "tests/hierarchical_host.rs": "e93c5717d9d73d9d04b98e6d215bc32e1a5664f8b683e33b2e9decbfe4e9acc0",
+    "tests/hierarchical_qpe_host.rs": "6331ec7f65a9a8842bc408022e6ff3d15683ba40cb1c68ad5d3d74c44a244609",
+    "tests/qft_hierarchy.rs": "b9a37a732b4528706901c8f2431941d96e8168bcbc99f42790e98d95ea3c5b5d",
+    "tests/fixtures/verification_v022/inventory.json": "67090dcd80f730b239e923d0bc49c8a205f411236564dda09ebc0b890529360d",
+    ".github/ci/native-comparisons.json": "2efb6183678a56f9f83c3e3360722d6540c87eb8f98df41fae438f96193b154f"
+  },
+  "checks": [
+    {
+      "command": "lake build (lean-kernel)",
+      "exit_code": 0,
+      "jobs": 188
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report /private/tmp/qleisli-v027-native-registry-current.json",
+      "exit_code": 0,
+      "record": "native-schema-registry-validation.json",
+      "scope": "Both packages build/Audit, source policy, fresh QleisliKernel and type export; external schemas disabled"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main (lean-kernel)",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_lean_kernel.py",
+      "exit_code": 0,
+      "modules": 95
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "exit_code": 0,
+      "tests": 27
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_finite_binding.py",
+      "exit_code": 0,
+      "native_cases": 57,
+      "rust_checker_invoked": false
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_host.py",
+      "exit_code": 0,
+      "summary": {
+        "binary_cases": 362
+      },
+      "kernel_sha256": "5ad138d0910ecd42b91c1b552acaa51c630f452ba7442668733df62c89edec54"
+    },
+    {
+      "command": "python3 scripts/test_qpe_instrument_host.py",
+      "exit_code": 0,
+      "summary": {
+        "native_cases": 21,
+        "response_faults": 11
+      },
+      "kernel_sha256": "5ad138d0910ecd42b91c1b552acaa51c630f452ba7442668733df62c89edec54"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_fourier_host.py",
+      "exit_code": 0,
+      "summary": {
+        "binary_cases": 187,
+        "host_cases": 39
+      },
+      "kernel_sha256": "5ad138d0910ecd42b91c1b552acaa51c630f452ba7442668733df62c89edec54"
+    },
+    {
+      "command": "python3 scripts/test_instrument_host.py",
+      "exit_code": 0,
+      "binary_cases": 772,
+      "kernel_revision": "before final source-index preflight/linear metadata bitmap"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_request.py",
+      "exit_code": 0,
+      "cases": 820,
+      "kernel_revision": "before final source-index preflight/linear metadata bitmap"
+    },
+    {
+      "command": "native shared-gradient Fourier, widths 1/2/3",
+      "exit_code": 0,
+      "scope": "Independently written native request; no maximum-width rerun"
+    },
+    {
+      "command": "cargo test --all-targets --quiet",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "source_snapshots": 210,
+      "public_enum_constructors": 232,
+      "original_comparison_artifacts_unchanged": true
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "tests": 17
+    },
+    {
+      "command": "python3 scripts/test_test_verification_baseline.py",
+      "exit_code": 0,
+      "tests": 8
+    },
+    {
+      "command": "python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel",
+      "exit_code": 0,
+      "finite_comparisons": 12,
+      "source_decisions": 12,
+      "native_components": 5,
+      "maximum_qubits": 3
+    },
+    {
+      "command": "CI selector/runner/measurement/registry mutation tests",
+      "exit_code": 0,
+      "tests": {
+        "ci_profiles": 6,
+        "run_native_ci": 8,
+        "measure_ci": 5,
+        "schema_registry": 12
+      }
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0,
+      "local_links": 1846,
+      "markdown_anchors": 74,
+      "lean_root_modules": 181,
+      "agents_lines": 97,
+      "agents_utf8_bytes": 5998
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "native_budget": 10000000,
+  "legacy_handle_budget": 10000000,
+  "attempts": {
+    "full_native_inventory": "All 65 groups/67 commands dispatched locally on an earlier candidate; 58 groups passed, five failed Homebrew cargo +toolchain syntax, one stale source inventory, one legacy H-work expectation. This is not an all-pass CI record.",
+    "corrections": "Five toolchain-qualified commands passed using the same Homebrew rustc 1.98.1; source inventory and comparison harness pins reviewed without rewriting original artifact/request bytes; baseline passed; legacy H expectation fixed and small-width native Fourier plus full affected host suites passed. A transient sized-CLI failure during concurrent builds passed on finalized-build reruns.",
+    "proof_reductions": "Whole-project retained reductions/equivalence were not rerun; builds, both Audit checks and fresh executable-root replay passed."
+  },
+  "not_performed": [
+    "No hosted CI, new PR/merge, MSRV/cross-platform or clean exact-source release validation.",
+    "The full shared-gradient QFT command was not rerun at maximum widths; final focused native checks use widths 1/2/3.",
+    "No new maximum-qubit corpus or benchmark fixture."
+  ],
+  "remaining": [
+    "JSON/QIRF adapter correspondence, native compiler/runtime correspondence and source preservation are not proved.",
+    "Total hierarchy/schema soundness, VM28/29 and S05 transfer remain open; no claim of full VM27 closure.",
+    "Old executable reports retain a separate independent Rust sealed-handle gate; native-only reports cannot execute or create VerifiedProgram.",
+    "Issue 223 remains a progressive mid-term CI migration; full release/manual/risk proof lane is retained."
+  ],
+  "production_authority": "Rust",
+  "external_schemas_enabled": false
+}

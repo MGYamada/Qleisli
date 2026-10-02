@@ -34,7 +34,15 @@ private def phase (value : Json) : Except String Phase := do
   | _ => throw "unknown raw phase"
 
 private def steps (value : Json) : Except String (List Step) := do
-  return (← FiniteCodec.circuit (Json.mkObj [("basis",Json.arr #[Json.str "unit"]),("steps",value)])).steps
+  let steps := (← FiniteCodec.circuit (Json.mkObj [("basis",Json.arr #[Json.str "unit"]),("steps",value)])).steps
+  let bounded := steps.all fun step =>
+    step.controls.all (fun control => control.index ≤ 4294967295) && match step.action with
+      | .hadamard target => target ≤ 4294967295
+      | .monomial indices permutation phases => indices.all (· ≤ 4294967295) &&
+          permutation.all (· ≤ 65535) && phases.all (· ≤ 255)
+      | .contract indices evidence _ => indices.all (· ≤ 4294967295) && evidence ≤ 4294967295
+  if !bounded then throw "finite step integer outside wire field range"
+  return steps
 
 private def unitary (value : Json) : Except String UnitaryStep := do
   match ← text value "tag" with
@@ -116,8 +124,10 @@ def operation (value : Json) : Except String Op := do
     return .applyUnitary (← n value "input") (← n value "output") (← steps (← field value "steps"))
   | "certified_compute" =>
     fields value ["tag","source","source_out","ancilla_wires","function","use_steps","logical_steps"]
+    let function ← ns value "function"
+    if !function.all (· ≤ 65535) then throw "computed table exceeds u16"
     return .certifiedCompute (← n value "source") (← n value "source_out") (← ns value "ancilla_wires")
-      (← ns value "function") (← steps (← field value "use_steps")) (← steps (← field value "logical_steps"))
+      function (← steps (← field value "use_steps")) (← steps (← field value "logical_steps"))
   | "compute_use_uncompute" =>
     fields value ["tag","source","source_out","targets","ancilla_wires","function","use_ops"]
     let targets ← (← array (← field value "targets")).mapM fun target => do

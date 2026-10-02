@@ -1,0 +1,202 @@
+{
+  "format": "qleisli.vm27-semantic-validation",
+  "version": 1,
+  "date": "2026-10-02",
+  "status": "passed",
+  "context": "local dirty development checkout; not hosted CI or exact-source release validation",
+  "production_authority": "Rust",
+  "externally_enabled_schemas": 0,
+  "vm27_complete": false,
+  "source_binding": {
+    "schema_source_revision": "1b8e5369c357981253ef608f3a23bbee1f9cf092c61b05a7714972e93cff27b9",
+    "sha256": {
+      "tests/fixtures/verification_v022/inventory.json": "fa0479d3288de793772c80c0d8d30159523a5a94ed1e3839b08cbbb023cfd538",
+      "lean-kernel/.lake/build/bin/qleisli-kernel": "ff667e22ebe78c3185a12a2ada4d022ca7fd672a75f626e498d0d1a3c6a3810f",
+      "lean/Qleisli/Qirf.lean": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
+      "lean/Qleisli/NativeHierarchy.lean": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
+      ".github/ci/native-comparisons.json": "a7c45b630c274251cd3cbf129734c363014674307aca78200e5d46d28d23734c",
+      "scripts/test_run_native_ci.py": "5f2bde584c9ba200559e2b54eb2d2dc4f083937c799b05cc95c699e8d65738ed"
+    }
+  },
+  "proofs": [
+    "Qirf.checkGraph_fresh and checkGraph_schedule: actual fresh original-index graph from empty receipt slots; complete reachable bounded schedule.",
+    "Qleisli.Qirf.reconstruct_semantics: actual original root BodyMeaning, exact endpoints/full final ports and both complex inverse laws.",
+    "Qleisli.Qirf.reconstruct_reference_laws: arbitrary finite entangled reference; no separability/normalization premise.",
+    "HierarchicalFinite.checkLeaves_each/checkPairs_each/checkHadamards_each: no omitted actual native obligation; fixed phase-exact H.",
+    "NativeHierarchy.conditional_derives/requested_pairs/checkHadamards_semantics: original-body leaf/H semantic discharge and independent pair binding."
+  ],
+  "decoder": {
+    "record": "decoder-validation.json",
+    "cases": 362,
+    "raw_constructors": 19,
+    "hierarchy_definitions": 13,
+    "hierarchy_meanings": 12,
+    "encodings": 4,
+    "structural_forms": 10,
+    "enabled_rule_forms": 12,
+    "wire_range_regressions": 8,
+    "before_fix": "decoder-before-bounds.json",
+    "scope": "actual lossless decoded field comparison, with actual Rust serialized RawOps/QLH1 bridge; not universal parser/compiler correctness"
+  },
+  "whole_hierarchy": {
+    "record": "semantics-validation.json",
+    "cases": 19,
+    "named_qpe_cases": 4,
+    "complex_coefficients": 912,
+    "max_combined_semantic_qubits": 4,
+    "max_absolute_error": 1.0547118733938987e-15,
+    "tolerance": 1e-11,
+    "native_only_acceptance": true,
+    "fresh_shot_clients": 3,
+    "seeded_outcomes": 768,
+    "scope": "independent numerical coefficient tests of checked retained Rust execution, all outcomes/residual/reference; not a general runtime/analytic proof"
+  },
+  "independent_native_replay": [
+    {
+      "harness": "scripts/test_hierarchical_finite_binding.py",
+      "exit_code": 0,
+      "cases": 57,
+      "kernel_sha256": "ff667e22ebe78c3185a12a2ada4d022ca7fd672a75f626e498d0d1a3c6a3810f"
+    },
+    {
+      "record": "raw-validation.json",
+      "exit_code": 0,
+      "native_cases": 121,
+      "rust_comparisons": 104,
+      "independent_rational_matrices": 85,
+      "independent_raw_trace_programs": 180,
+      "max_semantic_qubits": 3
+    },
+    {
+      "record": "observation-validation.json",
+      "exit_code": 0,
+      "native_cases": 150,
+      "rust_comparisons": 143,
+      "independent_kraus_operators": 145,
+      "hidden_histories": 145,
+      "max_semantic_qubits": 3
+    },
+    {
+      "record": "branch-function-validation.json",
+      "exit_code": 0,
+      "native_cases": 51,
+      "rust_comparisons": 45,
+      "exact_original_operators": 69,
+      "max_semantic_qubits": 2
+    },
+    {
+      "record": "qpe-host-validation.json",
+      "exit_code": 0,
+      "native_cases": 21,
+      "response_faults": 11,
+      "binary_transport_cases": 72
+    }
+  ],
+  "performed": [
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report <semantic-schema-registry-validation.json>",
+      "exit_code": 0,
+      "record": "semantic-schema-registry-validation.json"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py",
+      "exit_code": 0,
+      "tests": 27,
+      "skipped": 8
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "exit_code": 0,
+      "tests": 27,
+      "skipped": 0
+    },
+    {
+      "command": "cargo test --all-targets --quiet",
+      "exit_code": 0,
+      "note": "normal suite; ignored native fixtures separately exercised by relevant harnesses"
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --all -- --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "source_snapshots": 212,
+      "constructors": 232,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "tests": 17
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "exit_code": 0,
+      "tests": 6
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "exit_code": 0,
+      "tests": 8,
+      "comparison_groups": 65,
+      "comparison_commands": 68
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "exit_code": 0,
+      "tests": 12
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0,
+      "local_links": 1863,
+      "lean_root_modules": 183
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "tests": 32
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "note": "Current semantic/decoder/source/inventory/binary bindings were also independently rechecked after recording."
+    }
+  ],
+  "toolchains": {
+    "lean": "4.30.0",
+    "mathlib": "4.30.0",
+    "rust": "1.98.1 Homebrew",
+    "python": "3.14.5"
+  },
+  "skipped": [
+    "Full 65-group native CI run and hosted CI for this dirty root checkout; the original 66 commands remain coverage-pinned and two additional checks are now included.",
+    "No new maximum-size corpus generation/checking; semantic comparisons stay within four combined qubits.",
+    "No commit, tag, push or publication performed."
+  ],
+  "remaining": [
+    "Budget-independent reader-to-Operator coordinate bridge to remove existing analytic root/Fourier/QPE leaf/H/provider premises.",
+    "Universal QIRF/QLH1 decoder correspondence, native compiler/runtime and source/execution preservation.",
+    "External schema binding/enablement, VM-28 selected production packaging/dual integration and VM-29 coverage.",
+    "S05 production authority transfer and independent specification review."
+  ]
+}

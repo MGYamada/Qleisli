@@ -216,6 +216,60 @@
       "reference": "pennylane_demos/ising_zz_negative2",
       "project": "semantic_faults/negative_zz_missing_scalar",
       "reason": "Erase exp(+i*pi/4) from RZ(-pi/2); basis probabilities agree but full operator phase differs."
+    },
+    {
+      "id": "controlled_h_unconditional",
+      "reference": "quantum_katas/controlled_h2",
+      "project": "semantic_faults/controlled_h_unconditional",
+      "reason": "Apply H in both control sectors."
+    },
+    {
+      "id": "bitstring_wrong_target",
+      "reference": "quantum_katas/zero_bitstring3",
+      "project": "semantic_faults/bitstring_wrong_target",
+      "reason": "Entangle the middle wire rather than the selected final wire."
+    },
+    {
+      "id": "even_numbers_wrong_low_bit",
+      "reference": "quantum_katas/even_numbers3",
+      "project": "semantic_faults/even_numbers_wrong_low_bit",
+      "reason": "Leave the high bit fixed instead of the low bit."
+    },
+    {
+      "id": "increment_wrong_carry_order",
+      "reference": "qualtran/add_one3",
+      "project": "semantic_faults/increment_wrong_carry_order",
+      "reason": "Read the updated middle bit for the high carry."
+    },
+    {
+      "id": "greater_constant_wrong_threshold",
+      "reference": "qualtran/greater_constant2",
+      "project": "semantic_faults/greater_constant_wrong_threshold",
+      "reason": "Use low-bit parity instead of x>1."
+    },
+    {
+      "id": "xor_constant_missing_high_bit",
+      "reference": "qualtran/xor_constant3",
+      "project": "semantic_faults/xor_constant_missing_high_bit",
+      "reason": "Omit the constant high bit."
+    },
+    {
+      "id": "half_rx_missing_scalar",
+      "reference": "pennylane_demos/rotation_half_x",
+      "project": "semantic_faults/half_rx_missing_scalar",
+      "reason": "Erase -i; computational probabilities still agree."
+    },
+    {
+      "id": "half_zz_missing_scalar",
+      "reference": "pennylane_demos/ising_zz_half2",
+      "project": "semantic_faults/half_zz_missing_scalar",
+      "reason": "Erase -i without changing any basis probability."
+    },
+    {
+      "id": "edge_layer_reversed_order",
+      "reference": "pennylane_demos/qaoa_edge_layer2",
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "reason": "Apply the noncommuting mixer before the cost."
     }
   ]
 }

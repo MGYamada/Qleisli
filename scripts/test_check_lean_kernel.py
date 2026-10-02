@@ -149,6 +149,17 @@ def eval := 1
 #check eval
 '''), [])
 
+    def test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module(self):
+        for token in ['run_elab', 'run_meta']:
+            for module in ['QleisliKernel/Check.lean', 'Protocol.lean', 'Main.lean']:
+                with self.subTest(token=token, module=module):
+                    original = (self.root / 'lean-kernel' / module).read_text()
+                    source = token + ' /- comment -/ Lean.logInfo "unexpected"\n'
+                    self.write(module, original + source)
+                    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))
+                    self.write(module, original)
+            self.assertEqual(source_errors(f'-- {token}\ndef explanation := "{token}"\n'), [])
+
     def test_unterminated_comments_and_strings_fail_closed(self):
         for source in ["/-", 'def s := "', 'def s := r##"', 'def s := s!"']:
             with self.subTest(source=source):

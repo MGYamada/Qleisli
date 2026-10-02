@@ -2,8 +2,8 @@
 
 This Mathlib-free package implements bounded pure checkers and proves facts
 about their actual executable definitions. Rust remains the production
-acceptance authority. Pending hierarchical results retain explicit finite,
-meaning-pair and exact-H obligations; they are not production evidence seals.
+acceptance authority. Native hierarchical adapters now discharge original-QIRF,
+meaning-pair and exact-H obligations; reports are not production evidence seals.
 Decoder/native/Rust correspondence, source preservation, full-profile soundness
 and the later [verification migration gates](../docs/verification-migration-v0.2.md)
 remain separate.
@@ -17,6 +17,7 @@ remain separate.
 | [Finite reconstruction](QleisliKernel/Finite.lean) | Fresh circuit/dependency reconstruction, independently required encoded equations and whole-space inspection |
 | [Pure raw checking](QleisliKernel/Raw/Pure.lean), [retained binding](QleisliKernel/Raw/Function.lean) and [finite extraction](QleisliKernel/Raw/Finite.lean) | Eleven original straight-line pure constructors, complete owners/effects, fresh original bodies/attachments and finite/non-dense clean scopes |
 | [Observing raw checking](QleisliKernel/Raw/Observation.lean) and [finite instruments](QleisliKernel/Raw/Instrument.lean) | All nineteen constructors, global SSA freshness, lexical scopes, complete quantum phis and exact unnormalized hidden histories; [VM-26 scope and remaining gates](../tests/fixtures/verification_v026/README.md) |
+| [QIRF graph checking](QleisliKernel/Qirf.lean) and [QIRF adapter](Protocol/Qirf.lean) | Original QIRF1/2 tables, fresh full-body attachments, exact unary leaf boundaries and whole-space phase equality; [VM-27 scope](../tests/fixtures/verification_v027/README.md) |
 | [Hierarchical artifacts](QleisliKernel/Hierarchical/Artifact.lean), [graph schedules](QleisliKernel/Hierarchical/Graph.lean), [node typing](QleisliKernel/Hierarchical/NodeTyping.lean) and [contract typing](QleisliKernel/Hierarchical/ContractTyping.lean) | Actual dependencies, ordered endpoints, type trees, ownership and effects; structural checks alone do not prove leaf meanings |
 | [Conditional derivations](QleisliKernel/Hierarchical/Conditional.lean) and [root binding](QleisliKernel/Hierarchical/Root.lean) | Supported rule closure with every finite obligation retained; binding to a separately supplied meaning graph |
 | [Fourier root](QleisliKernel/Hierarchical/FourierRoot.lean), [QPE root](QleisliKernel/Hierarchical/QpeRoot.lean), [instrument](QleisliKernel/Hierarchical/Instrument.lean) and [QPE instrument](QleisliKernel/Hierarchical/QpeInstrument.lean) | Actual algorithm geometry/provider binding and initialization/readout composition, retaining component obligations |
@@ -75,10 +76,18 @@ The binary stdin modes run fresh checks of complete tables. `--hierarchy-pending
 retains finite leaf requests; `--hierarchy-request-pending` additionally binds an
 independent complete meaning graph. `--hierarchy-fourier-pending` retains exact-H
 roles. Initialization/readout and named-QPE modes retain their full ordered
-boundaries. The Rust host reconstructs all returned obligations on the same
-immutable bytes with its remaining finite budget. See the [hierarchical
+boundaries. Native adapters discharge original QIRF leaves, requested matrix
+pairs and fixed H under one exact-work budget. Rust native-only reports check
+transport coverage; compatible executable reports independently rebuild sealed
+Rust leaf handles under their own budget. See the [hierarchical
 contracts](../docs/hierarchical-ir-spec.md) for each mode's scope and remaining
 gates. Production `qleisli check`/`run` and QIRF verification continue through Rust.
+
+The [QIRF semantic bridge](../lean/Qleisli/Qirf.lean) proves actual original-graph
+and root complex/reference meaning; [native discharge](../lean/Qleisli/NativeHierarchy.lean)
+connects every finite leaf, pair and fixed-H body to structural derivations.
+All-field decoder and small whole-hierarchy/named-QPE tests are independent
+regressions, not universal decoder/compiler or analytic root-reader proofs.
 
 Experimental command formats and pure checking bounds are defined by the
 [protocol](Protocol.lean), [phase hierarchy](QleisliKernel/Hierarchy.lean),

@@ -1,0 +1,12 @@
+// Deliberate type-correct semantic fault: Erase -i; computational probabilities still agree.
+// Upstream author (repository username): josh. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py
+// Selected symbol: circuit(params); params=(pi,0)
+use std::quantum::x;
+use std::quantum::phase_eighth;
+
+pub unitary fn kernel(q: Q<Bit>) -> Q<Bit> {
+    x(q)
+}

@@ -106,4 +106,18 @@ expect 0 0 32
 
 ## Audit and remaining trust
 
-Run source policy, compiled Audit, reductions, fresh leanchecker replay and independent native comparisons. Project axioms/noncomputable/unsafe/partial/extern/implemented_by/native_decide/proof holes reject; only propext, Classical.choice and Quot.sound are permitted transitive logical axioms. Lean code generation, compiler/runtime/standard primitives, OS I/O and decoder/adapter correspondence remain explicit assumptions. Audit tests catch generated helpers; finite tests do not prove native compilation or complete source preservation.
+Follow the [test-oriented CI lanes](../.github/ci/README.md) adopted in [#223](https://github.com/MGYamada/Qleisli/issues/223): routine source/compiled policy, native build/Audit and independent positive/negative/differential tests; changed mathematical proofs compile and audit separately; tags, release branches, manual full runs and policy risks retain reductions, fresh leanchecker replay and rebuilt schema types. Native builds still typecheck the kernel's actual proofs. Tests are not theorem evidence. Project axioms/noncomputable/unsafe/partial/extern/implemented_by/native_decide/proof holes reject; only propext, Classical.choice and Quot.sound are permitted transitive logical axioms. Lean code generation, compiler/runtime/standard primitives, OS I/O and decoder/adapter correspondence remain explicit assumptions. Audit tests catch generated helpers; finite tests do not prove native compilation or complete source preservation.
+
+The [VM-27 native slice](../tests/fixtures/verification_v027/README.md) checks
+original QIRF1/2 graphs and raw bodies, independent finite requests and
+phase-fixed H in Lean. Native-only experimental reports require no Rust
+finite-checker premise; existing executable reports independently rebuild Rust
+sealed leaf handles for compatibility. Native obligations share one 10,000,000
+exact-work ceiling; legacy handle work has a separate equal ceiling and count.
+The [semantic extension](../lean/Qleisli/NativeHierarchy.lean) proves fresh
+original-graph/root complex meaning, arbitrary reference inverse laws, every
+finite leaf's structural discharge, complete pairs and fixed-H body meaning.
+All decoder constructors/fields and small whole-hierarchy/named-QPE coefficients
+have independent test coverage. The general reader-to-Operator bridge for the
+existing analytic root/Fourier/QPE theorems, universal decoder/native compiler
+correspondence and production transfer remain open; VM-27 is not complete.

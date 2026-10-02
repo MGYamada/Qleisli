@@ -129,7 +129,10 @@ fn execute(mut o: Options) -> Result<String> {
         )
     };
     if let Some(path) = o.output {
-        std::fs::write(&path, proposal.payload()).map_err(|e| e.to_string())?;
+        super::artifacts::write_new(&path, proposal.payload()).map_err(|e| match e {
+            super::artifacts::Failure::Source(e) => e.message,
+            super::artifacts::Failure::Artifact(e) => e.to_string(),
+        })?;
         return Ok("{\"status\":\"untrusted-proposal\"}".into());
     }
     let kernel = Kernel::new(o.kernel.ok_or("missing kernel")?);

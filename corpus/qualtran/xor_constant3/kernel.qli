@@ -1,0 +1,14 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/quantumlib/Qualtran/blob/8db02b8b3fb39d69d2900dcc7b52d9d6a36834c3/qualtran/bloqs/arithmetic/bitwise.py
+// Selected symbol: XorK; bitsize=3, k=5
+use std::quantum::x;
+use std::quantum::split;
+use std::quantum::join;
+
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, c) = split(q);
+    let (a, b) = split(ab);
+    join(join(x(a), b), x(c))
+}

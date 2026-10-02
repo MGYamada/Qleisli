@@ -408,6 +408,12 @@ mod tests {
                 let value = raw.write(&mut encoder).unwrap();
                 assert_eq!(value.field("tag").unwrap().text().unwrap(), *tag);
                 assert_eq!(RawOp::read(&value, &decoder).unwrap(), *raw, "{tag}");
+                if let Some(directory) = std::env::var_os("QLEISLI_DECODER_AUDIT") {
+                    let version = if version == Version::V1 { 1 } else { 2 };
+                    let path =
+                        std::path::Path::new(&directory).join(format!("{tag}.v{version}.raw.json"));
+                    std::fs::write(path, super::super::json::encode(&value).unwrap()).unwrap();
+                }
             }
         }
     }

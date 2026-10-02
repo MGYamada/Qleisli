@@ -183,7 +183,11 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
     assert!(output.status.success());
     let text = String::from_utf8(output.stdout).unwrap();
     assert!(text.contains("\"code\":\"project\""), "{text}");
-    assert!(text.contains("\"primary\":null"), "{text}");
+    assert!(
+        text.contains("\"primary\":{\"path\":\"../Qargo.toml\""),
+        "{text}"
+    );
+    assert!(!text.contains(&root.0.display().to_string()), "{text}");
 }
 
 #[test]

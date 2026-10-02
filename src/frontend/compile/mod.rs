@@ -476,7 +476,7 @@ impl Compiler<'_> {
             let mut dependencies = BTreeSet::new();
             let static_names: BTreeSet<_> =
                 decl.static_params.iter().map(|p| &p.name.text).collect();
-            for name in called_names(&decl.body)
+            for name in called_names(decl)
                 .into_iter()
                 .chain(decl.static_params.iter().filter_map(|p| p.meaning.as_ref()))
             {
@@ -529,30 +529,84 @@ fn effect(kind: FnKind) -> Effect {
     }
 }
 
-fn called_names(body: &FnBody) -> Vec<&Ident> {
+fn called_names(decl: &Decl) -> Vec<&Ident> {
+    fn pattern_names(pattern: &Pattern) -> Vec<&Ident> {
+        let mut pending = vec![pattern];
+        let mut names = Vec::new();
+        while let Some(pattern) = pending.pop() {
+            match &pattern.kind {
+                PatternKind::Name(name) => names.push(name),
+                PatternKind::Tuple(fields) => pending.extend(fields),
+                PatternKind::Wildcard => {}
+            }
+        }
+        names
+    }
     enum Node<'a> {
         Expr(&'a Expr),
         Basis(&'a BasisExpr),
-        Block(&'a Block),
+        Block(&'a Block, Vec<&'a Ident>),
+        Bind(Vec<&'a Ident>),
+        Unbind(Vec<&'a Ident>),
+        Names(Vec<&'a Ident>),
     }
-    if let FnBody::Meaning { function, .. } = body {
+    if let FnBody::Meaning { function, .. } = &decl.body {
         return vec![function];
     }
-    let mut stack = vec![match body {
+    let mut locals = BTreeMap::<&str, usize>::new();
+    for name in decl.params.iter().flat_map(|p| pattern_names(&p.pattern)) {
+        *locals.entry(&name.text).or_default() += 1;
+    }
+    let mut stack = vec![match &decl.body {
         FnBody::Meaning { .. } => unreachable!(),
         FnBody::Basis(expr) => Node::Basis(expr),
-        FnBody::Quantum(block) => Node::Block(block),
+        FnBody::Quantum(block) => Node::Block(block, vec![]),
     }];
     let mut names = Vec::new();
     while let Some(node) = stack.pop() {
         match node {
-            Node::Block(block) => {
+            Node::Names(calls) => names.extend(
+                calls
+                    .into_iter()
+                    .filter(|n| !locals.contains_key(n.text.as_str())),
+            ),
+            Node::Bind(bindings) => {
+                for name in bindings {
+                    *locals.entry(&name.text).or_default() += 1;
+                }
+            }
+            Node::Unbind(bindings) => {
+                for name in bindings {
+                    let count = locals
+                        .get_mut(name.text.as_str())
+                        .expect("entered lexical binding");
+                    *count -= 1;
+                    if *count == 0 {
+                        locals.remove(name.text.as_str());
+                    }
+                }
+            }
+            Node::Block(block, extra) => {
+                let mut bindings = extra.clone();
+                for name in extra {
+                    *locals.entry(&name.text).or_default() += 1;
+                }
+                bindings.extend(block.statements.iter().flat_map(|stmt| match &stmt.kind {
+                    StmtKind::Let { pattern, .. } => pattern_names(pattern),
+                    StmtKind::Expr(_) => vec![],
+                }));
+                stack.push(Node::Unbind(bindings));
                 stack.push(Node::Expr(&block.result));
-                for stmt in &block.statements {
-                    stack.push(Node::Expr(match &stmt.kind {
-                        StmtKind::Let { value, .. } => value,
-                        StmtKind::Expr(expr) => expr,
-                    }));
+                // Initializers precede their bindings. Spent local names keep
+                // shadowing declarations until the containing scope ends.
+                for stmt in block.statements.iter().rev() {
+                    match &stmt.kind {
+                        StmtKind::Let { pattern, value } => {
+                            stack.push(Node::Bind(pattern_names(pattern)));
+                            stack.push(Node::Expr(value));
+                        }
+                        StmtKind::Expr(expr) => stack.push(Node::Expr(expr)),
+                    }
                 }
             }
             Node::Expr(expr) => match &expr.kind {
@@ -561,15 +615,15 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     specification,
                     input,
                 } => {
-                    names.extend([implementation, specification]);
                     stack.push(Node::Expr(input));
+                    stack.push(Node::Names(vec![implementation, specification]));
                 }
                 ExprKind::Adjoint { function, input }
                 | ExprKind::RepeatStatic {
                     function, input, ..
                 } => {
-                    names.push(function);
                     stack.push(Node::Expr(input));
+                    stack.push(Node::Names(vec![function]));
                 }
                 ExprKind::QuantumIf {
                     control,
@@ -577,8 +631,8 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     zero,
                     one,
                 } => {
-                    names.extend([zero, one]);
                     stack.extend([Node::Expr(control), Node::Expr(target)]);
+                    stack.push(Node::Names(vec![zero, one]));
                 }
                 ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
                 ExprKind::Not(input) => stack.push(Node::Expr(input)),
@@ -592,11 +646,12 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                     static_args,
                     args,
                 } => {
-                    names.push(callee);
+                    let mut calls = vec![callee];
                     for op in static_args {
-                        operations::called_static_names(op, &mut names);
+                        operations::called_static_names(op, &mut calls);
                     }
                     stack.extend(args.iter().map(Node::Expr));
+                    stack.push(Node::Names(calls));
                 }
                 ExprKind::If {
                     condition,
@@ -605,37 +660,51 @@ fn called_names(body: &FnBody) -> Vec<&Ident> {
                 } => {
                     stack.extend([
                         Node::Expr(condition),
-                        Node::Block(then_branch),
-                        Node::Block(else_branch),
+                        Node::Block(then_branch, vec![]),
+                        Node::Block(else_branch, vec![]),
                     ]);
                 }
-                ExprKind::CoherentLift { input, basis, .. } => {
-                    stack.extend([Node::Expr(input), Node::Basis(basis)]);
+                ExprKind::CoherentLift {
+                    input,
+                    basis,
+                    binder,
+                } => {
+                    let bindings = pattern_names(binder);
+                    stack.extend([
+                        Node::Unbind(bindings.clone()),
+                        Node::Basis(basis),
+                        Node::Bind(bindings),
+                        Node::Expr(input),
+                    ]);
                 }
                 ExprKind::WithComputed {
                     source,
                     function,
+                    binder,
                     body,
-                    ..
                 } => {
-                    names.push(function);
-                    stack.extend([Node::Expr(source), Node::Block(body)]);
+                    stack.extend([Node::Block(body, vec![binder]), Node::Expr(source)]);
+                    stack.push(Node::Names(vec![function]));
                 }
                 ExprKind::CertifiedComputed {
                     source,
                     function,
                     logical,
+                    data_binder,
+                    ancilla_binder,
                     body,
-                    ..
                 } => {
-                    names.extend([function, logical]);
-                    stack.extend([Node::Expr(source), Node::Block(body)]);
+                    stack.extend([
+                        Node::Block(body, vec![data_binder, ancilla_binder]),
+                        Node::Expr(source),
+                    ]);
+                    stack.push(Node::Names(vec![function, logical]));
                 }
             },
             Node::Basis(expr) => match &expr.kind {
                 BasisExprKind::Call { callee, args } => {
-                    names.push(callee);
                     stack.extend(args.iter().map(Node::Basis));
+                    stack.push(Node::Names(vec![callee]));
                 }
                 BasisExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Basis)),
                 BasisExprKind::Xor(a, b) | BasisExprKind::And(a, b) => {
