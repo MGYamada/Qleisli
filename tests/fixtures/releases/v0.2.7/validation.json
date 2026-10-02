@@ -1,0 +1,122 @@
+{
+  "format": 1,
+  "project_version": "0.2.7",
+  "state": "local development checks completed",
+  "created_utc": "2026-10-02T05:25:41.949154+00:00",
+  "publication": "not requested; not committed, tagged, pushed or published",
+  "new_corpus_cases": 9,
+  "total_corpus_cases": 69,
+  "new_semantic_probes": 798,
+  "total_semantic_probes": 14345,
+  "new_type_correct_faults_detected": 9,
+  "total_type_correct_faults_detected": 45,
+  "evidence": [
+    "corpus/validation-v0.2.7.json",
+    "corpus/authoring/v027-small/semantic-validation.json",
+    "tests/fixtures/releases/v0.2.7/documentation-reduction.json",
+    "tests/fixtures/releases/v0.2.7/schema-registry-validation.json"
+  ],
+  "corpus_artifact_bindings": {
+    "compiler": true,
+    "oracle": true,
+    "manifest": true,
+    "fault_manifest": true
+  },
+  "checks": [
+    {
+      "command": "cargo build --bin qleisli --offline",
+      "exit_code": 0,
+      "scope": "Version 0.2.7 compiler built."
+    },
+    {
+      "command": "cargo test --all-targets --offline",
+      "exit_code": 0,
+      "scope": "Ordinary suite passed; explicitly ignored fresh-native tests not included."
+    },
+    {
+      "command": "cargo test --doc --offline",
+      "exit_code": 0,
+      "scope": "One runnable API doctest passed."
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0,
+      "scope": "Formatting passed."
+    },
+    {
+      "command": "cargo clippy --all-targets --offline -- -D warnings",
+      "exit_code": 0,
+      "scope": "No warnings."
+    },
+    {
+      "command": "env RUSTDOCFLAGS=-Dwarnings cargo doc --no-deps --offline",
+      "exit_code": 0,
+      "scope": "API documentation built without warnings."
+    },
+    {
+      "command": "env PYTHONPATH=scripts python3 -m unittest test_check_docs test_check_input_corpus test_check_editions test_check_authoring_sessions test_check_imaginary_v1_examples test_check_stdlib_contract_docs test_check_schema_registry",
+      "exit_code": 0,
+      "scope": "118 tests passed after audited registry refresh."
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "exit_code": 0,
+      "scope": "69 cases; policy, provenance, notices, snapshots passed."
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive --report corpus/validation-v0.2.7.json",
+      "exit_code": 0,
+      "scope": "69 cases, 14,345 probes, all mains, 4 rejection cases, 45 type-correct semantic faults detected; no upstream frameworks executed."
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "scope": "919 .qli and 5 .qlt files under 20 explicit edition-2026 manifests."
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "exit_code": 0,
+      "scope": "15 records, 23 snapshots and 44 observations; metadata check only."
+    },
+    {
+      "command": "python3 scripts/check_imaginary_v1_examples.py",
+      "exit_code": 0,
+      "scope": "58 bounded mathematical checks; imaginary source not compiled."
+    },
+    {
+      "command": "python3 scripts/check_stdlib_contract_docs.py",
+      "exit_code": 0,
+      "scope": "Template and 3 pilots; structure and links only."
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report tests/fixtures/releases/v0.2.7/schema-registry-validation.json",
+      "exit_code": 0,
+      "scope": "Both Lean builds/Audit.lean, source policy, fresh QleisliKernel replay and actual type export passed; only lakefile hashes/revision changed; all 3 schemas disabled."
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "scope": "Refreshed source identity passed."
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status; python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "scope": "Regenerated views and checked 1,827 local links, 74 Markdown anchors, 177 Lean root modules and the AGENTS.md budget."
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "scope": "No whitespace errors."
+    }
+  ],
+  "resolved_failures": [
+    "First controlled-H source used invalid qif syntax; untouched attempt/real diagnostic preserved, repaired attempt accepted.",
+    "Registry regression initially observed old lakefile hashes during audited refresh; rebuilt registry and repeated 118-test suite passed."
+  ],
+  "not_performed": [
+    "No new maximum-size validation.",
+    "Full native comparison suites not repeated: proof/kernel behavior unchanged; rebuilt-type audits and fresh kernel replay performed.",
+    "MSRV/cross-platform/research/clean exact-source distribution/registry-install/hosted-docs/release/publication gates not run; this dirty development tree is not a published-release validation."
+  ],
+  "claims": "Rust authoritative; external schemas disabled; no VM27-29, R14/H1-H5, general algorithm, source/backend preservation or theorem-gate completion."
+}

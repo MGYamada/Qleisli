@@ -46,13 +46,14 @@ parsing, diagnostics, transport, evidence generation and simulation. Follow the
 executable definitions. Rust remains authoritative until transfer gates pass;
 external schemas remain disabled until their binding gates pass.
 
-Keep Lean/Mathlib at 4.30.0 and development Python at 3.11+. For proof/kernel
-changes run builds, Audit.lean, source/compiled-declaration policies, fresh replay
-and applicable independent native comparisons. Reject project axioms, unsafe/
+Keep Lean/Mathlib at 4.30.0 and development Python at 3.11+. Follow the
+[test-oriented CI lanes](.github/ci/README.md): build/audit native checkers and run
+independent tests; compile changed proofs; full replay for releases,
+manual full runs and policy risks. Reject project axioms, unsafe/
 partial definitions and runtime overrides, including private/generated helpers.
 Follow [temporary-proof rules](docs/formal-core.md#temporary-proof-markers);
-keep required components built/audited until compatible replacement and removal.
-Distinguish implementation, tests, proof, preservation and specification review.
+keep components built/audited until compatible replacement and removal.
+Distinguish code, tests, proof, preservation and specification review.
 
 ## Corpus and current work
 
@@ -60,7 +61,7 @@ Until v0.5.0, add algorithms to `corpus` rather than generally expand `stdlib`.
 Follow [corpus policy](corpus/POLICY.md): only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos; source changes need explicit approval. Pin commits/file hashes
 and preserve licenses/notices (Katas MIT; the other two Apache-2.0).
-Read [routine contracts](docs/algorithm-routines.md); library work also follows
+Read [routine contracts](docs/stdlib-contracts.md); library work also follows
 [STDLIB.md](STDLIB.md) and the [contract ledger](docs/stdlib-contracts.md).
 
 Prioritize shared executable corpus source without waiting for general proofs.

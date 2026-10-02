@@ -8,10 +8,10 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Published version: 0.2.6. Qleisli language edition: `"2026"`.**
+**Version: 0.2.7. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](docs/language-editions.md)
-and the [0.2.6 release record](docs/releases/v0.2.6.md).
+and the [0.2.7 release record](docs/releases/v0.2.7.md).
 The Rust CLI and library run with Rust alone.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
@@ -31,7 +31,7 @@ registry artifact, fresh installation, hosted docs and complete GitHub downloads
 ## Language edition and qrate management
 
 The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
-each source. Compiler version `0.2.6`, Qleisli edition `"2026"` and the Rust
+each source. Compiler version `0.2.7`, Qleisli edition `"2026"` and the Rust
 implementation's Cargo edition `"2024"` are independent. See the
 [edition contract](docs/language-editions.md) for manifest validation and migration.
 
@@ -89,11 +89,12 @@ cargo install --path . --locked --bin qleisli
 Install this version from the registry:
 
 ```sh
-cargo install qleisli --version 0.2.6 --locked
+cargo install qleisli --version 0.2.7 --locked
 ```
 
-The [0.2.6 release record](docs/releases/v0.2.6.md) binds source, package and validation.
-[Hosted API documentation](https://docs.rs/qleisli/0.2.6/qleisli/) is verified separately.
+The [0.2.7 release record](docs/releases/v0.2.7.md) separates candidate validation
+from publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.7/qleisli/)
+are publication targets, verified separately after publication.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
 Create a directory named `bell` and save the [small example above](#a-small-example)
@@ -152,7 +153,7 @@ in its top-level directory and pass that directory to `check` or `run`.
 not hardware results or sampled shots. Bit strings follow the returned tuple
 from left to right; probabilities are floating-point approximations. Even an
 ideally impossible outcome may appear with a tiny positive rounding residue
-in text or JSON output; see the [numerical output contract](docs/ir-prototype.md#reference-execution).
+in text or JSON output; see the [numerical output contract](docs/frontend-v0.md#reference-execution).
 
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
 Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
@@ -206,9 +207,10 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-Published version **0.2.6** includes compatible documentation reduction,
-small finite corpus additions, VM-26 checking and review bug fixes. Its [release record](docs/releases/v0.2.6.md)
-records exact-source validation, tagging and publication.
+Selected development version **0.2.7** reduces docs by approximately 55% while retaining
+plans and imaginary-v1, and grows the finite corpus from 60 to 69 translations.
+The [candidate record](docs/releases/v0.2.7.md) records local validation; tagging
+and publication remain separate. The latest published version is 0.2.6.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and
 [0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
 remain current work targets. Rust retains production acceptance authority;

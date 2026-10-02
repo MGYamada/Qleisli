@@ -1,36 +1,15 @@
 # Development goal 1: a quantum language for the AI era
 
-Human and AI source undergo identical type/effect/ownership and independent IR checks.
-Diagnostics identify failing obligations/locations; author identity, explanation and
-proposed certificate grant no authority. [Design](design-philosophy.md),
-[current status](current-status.md) and [formal core](formal-core.md) separate goals
-from implemented/tested/proved results.
+Human/AI source receive identical type/effect/ownership/independent IR checks. Author/context/explanation/certificate presence grants no authority; diagnostics name obligations/locations. [Design](design-philosophy.md)/[formal status](formal-core.md).
 
 ## Levels of guarantees
 
-Linear ownership protects exclusive operation rights and rejects duplicate/unhandled
-owners and protected conflicts; general borrowing remains future. Ideal quantum
-soundness additionally needs valid primitives, injective lifts, full phase, certified
-separation/cleanup and composition. Protocol correctness (e.g. teleportation) and
-algorithm success need independent specifications/proofs. Quantitative
-[Resource Safety](resource-semantics.md) needs actual execution/compilation bounds,
-not ownership or checker budgets. Types alone do not prove the latter guarantees.
+Ownership exclusive rights/protected conflicts, not general borrowing/separability/protocol success. Soundness also needs primitive validity/injective lifts/exact phase/cleanup/composition. Algorithm intent independent; [Resource Safety](resource-semantics.md) needs actual finite static compilation-preserved bounds, not work budgets.
 
 ## Intended soundness theorem
 
-Finite terminating valid rules imply a quantum instrument on arbitrary references:
-each outcome CP/TNI, total TP; pure Iso V†V=I, Unitary also VV†=I, closed main normalized
-classical distribution. Actual frontend/Rust IR/backend correspondence remains open.
-The bounded [SC/FC foundation](finite-contracts.md) is implemented/validated; initial
-[six drafts](imaginary-v1/README.md) complete only a design prerequisite, not v1.
-[Milestones](release-milestones.md) fix the full actual-checker theorem gates.
+Finite valid terminating rules -> arbitrary-reference instrument, each CP/TNI/TP sum; Iso V†V=I,Unitary VV†=I,closed main normalized classical output. Full frontend/Rust/backend correspondence open. Bounded [SC/FC](finite-contracts.md) implemented/tested, [six drafts](imaginary-v1/README.md) design prerequisite only; [theorem gates](release-milestones.md).
 
 ## Development workflow and acceptance
 
-Preserve desired first source under [session procedure](../tests/fixtures/authoring_sessions/README.md),
-state independent meaning, frontend-check/lower, independently verify raw evidence,
-execute the exact accepted artifact under backend capabilities. Specify complete
-correlated-system acceptance/rejection, prove actual checker acceptance and bind
-translations before claiming compile-time soundness. Bell/phase/feedback supplement
-proofs; prior [QWIRE](https://arxiv.org/abs/1803.00699)/[Proto-Quipper](https://arxiv.org/abs/1812.03624)
-work is not implementation evidence.
+Preserve [first sources](../tests/fixtures/authoring_sessions/README.md), independently fix meaning, check/lower/freshly verify, execute exact accepted artifact under capabilities. Prove actual acceptance and bind translations before soundness claim. Bell/phase/feedback supplement proofs; prior QWIRE/Proto-Quipper literature not Qleisli evidence.

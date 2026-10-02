@@ -60,6 +60,19 @@ classical branches. VM-26 is checked. VM-27–29 retain hierarchy/root closure,
 native/decoder correspondence, immutable-artifact dual integration and full
 coverage audit. General source preservation and S05 remain separate.
 
+[VM-27's native slice](../tests/fixtures/verification_v027/README.md) moves
+original QIRF1/2 leaf graphs, independent finite-request equality and phase-fixed
+H into Lean. Native-only reports need no Rust finite acceptance; old executable
+reports retain independently rebuilt Rust sealed handles. All native obligations
+share one exact-work ceiling, separate from legacy compatibility work. Actual
+QIRF graph/root complex semantics and reference laws now discharge all finite
+leaves and fixed-H bodies into structural derivations. Independent tests cover
+every decoder constructor/field and small whole-hierarchy/named-QPE coefficients.
+General analytic reader-to-Operator closure, universal decoder/native compiler
+correspondence and schema binding remain open; VM-27 and S05 are not complete. Routine CI
+now follows the [test-oriented lanes](../.github/ci/README.md), with full proof
+replay retained for releases, explicit full runs and validation-policy risks.
+
 <a id="vm-22-inventory-and-one-bounded-comparison-harness"></a>
 <a id="vm-23-exact-meanings-without-a-domain-change"></a>
 <a id="vm-24-reconstruct-evidence-not-producer-conclusions"></a>

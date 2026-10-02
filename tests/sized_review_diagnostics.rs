@@ -63,7 +63,7 @@ fn rejecting_process(root: &SourceRoot, code: &str) -> std::path::PathBuf {
     root.write(
         "rejecting-kernel",
         &format!(
-            "#!/bin/sh\nprintf '%s\\n' \"$1\" > '{mode_file}'\n/bin/cat > /dev/null\ncase \"$1\" in\n  --hierarchy-request-pending) header='qleisli.hierarchy-request-pending 1' ;;\n  --instrument-pending) header='qleisli.instrument-pending 1' ;;\n  --qpe-instrument-pending) header='qleisli.qpe-instrument-pending 1' ;;\n  *) exit 99 ;;\nesac\nprintf '%s\\n' \"$header\" error {code}\nexit 1\n"
+            "#!/bin/sh\nprintf '%s\\n' \"$1\" > '{mode_file}'\n/bin/cat > /dev/null\ncase \"$1\" in\n  --hierarchy-request-pending) header='qleisli.hierarchy-request-pending 3' ;;\n  --instrument-pending) header='qleisli.instrument-pending 3' ;;\n  --qpe-instrument-pending) header='qleisli.qpe-instrument-pending 3' ;;\n  *) exit 99 ;;\nesac\nprintf '%s\\n' \"$header\" error {code}\nexit 1\n"
         ),
     );
     let path = root.0.join("rejecting-kernel");

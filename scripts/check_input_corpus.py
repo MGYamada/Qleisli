@@ -52,6 +52,18 @@ def sha256(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def check_attribution(source, text):
+    if source == "quantum_katas":
+        require("Copyright (c) Microsoft Corporation" in text, "lost Microsoft attribution")
+    elif source == "qualtran":
+        require("Google LLC" in text, "lost Google attribution")
+    elif source == "pennylane_demos":
+        require(re.search(r"(?m)^// Upstream authors? \(repository usernames?\): \S", text),
+                "lost PennyLane attribution")
+    else:
+        raise ValueError("unapproved attribution source")
+
+
 def check_manifest(corpus=CORPUS):
     manifest = json.loads((corpus / "manifest.json").read_text())
     require(manifest["format"] == 1, "unsupported corpus format")
@@ -91,10 +103,7 @@ def check_manifest(corpus=CORPUS):
             require(f"SPDX-License-Identifier: {case['license']}" in text, f"missing license: {case['id']}/{name}")
             require(f"/{source['commit']}/{case['upstream_path']}" in text, "missing pinned source attribution")
             require("translation/modifications" in text, "missing modification notice")
-            if case["source"] == "quantum_katas":
-                require("Copyright (c) Microsoft Corporation" in text, "lost Microsoft attribution")
-            if case["source"] == "qualtran":
-                require("Google LLC" in text, "lost Google attribution")
+            check_attribution(case["source"], text)
         require((project / "README.md").is_file(), "missing case explanation")
     # Coverage follows the reviewed manifest, not a duplicated release total.
     require({c["source"] for c in manifest["cases"]} == set(APPROVED), "approved source coverage changed")
@@ -121,8 +130,7 @@ def check_manifest(corpus=CORPUS):
         content = path.read_text()
         require(f"SPDX-License-Identifier: {case['license']}" in content and
                 "translation/modifications" in content, "missing sized license/modification notice")
-        require(("Microsoft Corporation" if case["source"] == "quantum_katas" else "Google LLC")
-                in content, "lost sized attribution")
+        check_attribution(case["source"], content)
     # Original Qleisli wrappers compose the pinned algorithms; they are not a
     # fourth upstream source or a translation attributed to a different author.
     compositions = manifest.get("sized_local_compositions", [])
@@ -288,6 +296,35 @@ def reference_column(case, column):
     n = case["qubits"]
     dim = 1 << n
     state = [complex(i == column) for i in range(dim)]
+    if name == "controlled_h2":
+        return [H[row & 1][column & 1] *
+                (H[row >> 1][column >> 1] if row & 1 else int(row >> 1 == column >> 1))
+                for row in range(4)]
+    if name == "zero_bitstring3":
+        return [(-1) ** ((column & 1) * (row & 1)) / math.sqrt(2)
+                if (row & 2) == (column & 2) and
+                (row >> 2) == ((column >> 2) ^ (row & 1)) else 0
+                for row in range(8)]
+    if name == "even_numbers3":
+        return [(-1) ** (((column >> 1) & (row >> 1)).bit_count()) / 2
+                if (row & 1) == (column & 1) else 0 for row in range(8)]
+    if name == "add_one3":
+        return [complex(row == (column + 1) % 8) for row in range(8)]
+    if name == "greater_constant2":
+        return [complex(row == column ^ (4 if (column & 3) > 1 else 0))
+                for row in range(8)]
+    if name == "xor_constant3":
+        return [complex(row == column ^ 5) for row in range(8)]
+    if name == "rotation_half_x":
+        return [-1j if row == column ^ 1 else 0 for row in range(2)]
+    if name == "ising_zz_half2":
+        return [-1j * (-1) ** column.bit_count() if row == column else 0
+                for row in range(4)]
+    if name == "qaoa_edge_layer2":
+        rx = [[1, -1j], [-1j, 1]]
+        phase = cmath.exp(-1j * math.pi / 4 * (-1) ** column.bit_count())
+        return [phase * rx[row & 1][column & 1] * rx[row >> 1][column >> 1] / 2
+                for row in range(4)]
     if name == "global_phase":
         return [-a for a in state]
     if name == "phased_uniform2":

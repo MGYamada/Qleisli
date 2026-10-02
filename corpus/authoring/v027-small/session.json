@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "task": "Add nine small finite translations for v0.2.7 from frozen approved inputs",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.7",
+  "baseline_commit": "1dbacec38d6e65ade389aa71fcb2c8fc5ded46cc",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read design, corpus policy, frozen source symbols and existing checker/oracle patterns. Save and hash complete first sources before compiler checks. Known qif, exact phase aliases and linear tuple operations; informed translations, not controlled model benchmarks or upstream-framework execution.",
+  "created_utc": "2026-10-02T04:28:17.379842+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete untouched first sources before checks",
+      "sha256": {
+        "quantum_katas/controlled_h2/kernel.qli": "3954e5e6388a093b33a57a69a620e3efb5fd67b8b5e8449d1d2708f008bf5e94",
+        "quantum_katas/controlled_h2/main.qli": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12",
+        "quantum_katas/zero_bitstring3/kernel.qli": "de1149594b906961996014862d0775585b7e3c0810ea0c987afea35a0749e980",
+        "quantum_katas/zero_bitstring3/main.qli": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3",
+        "quantum_katas/even_numbers3/kernel.qli": "1871f97fc3c01980ad0be31ef12f9f49d6da14567ae3963666801517b0cf7e4f",
+        "quantum_katas/even_numbers3/main.qli": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8",
+        "qualtran/add_one3/kernel.qli": "500d7ad78ec32b4690194340e32a1167e6478c36ef3ed515366b7971aa25039d",
+        "qualtran/add_one3/main.qli": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304",
+        "qualtran/greater_constant2/kernel.qli": "e99c417397dd916a46384df22833be50e6c891bdd4a50ae45a060479741b7ae4",
+        "qualtran/greater_constant2/main.qli": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c",
+        "qualtran/xor_constant3/kernel.qli": "1c3c20f325096f22aa6bf7801d4bd74bbab7b87c14e317057bb3be17e04fcb27",
+        "qualtran/xor_constant3/main.qli": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6",
+        "pennylane_demos/rotation_half_x/kernel.qli": "abc920f1d9c2345ee919bf4812518e9409b528da874446396c1348800b1f63bd",
+        "pennylane_demos/rotation_half_x/main.qli": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f",
+        "pennylane_demos/ising_zz_half2/kernel.qli": "50428259af64ee53e93a809c6146e78e56107a5e204f2b689ffe05909e3d9a68",
+        "pennylane_demos/ising_zz_half2/main.qli": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a",
+        "pennylane_demos/qaoa_edge_layer2/kernel.qli": "39f9602d9cba52668e8d250672cac70020681bf324c607a525ecc8dc3c87a148",
+        "pennylane_demos/qaoa_edge_layer2/main.qli": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90"
+      },
+      "observations": [
+        "check-initial.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Repair the actual qif parse failure using the documented two-argument branch syntax. All complete projects retained before rechecking.",
+      "sha256": {
+        "quantum_katas/controlled_h2/kernel.qli": "4304d7ca885f446b786326c7d2bfaa53263d59550b2018b236dbe774cab36dba",
+        "quantum_katas/controlled_h2/main.qli": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12",
+        "quantum_katas/zero_bitstring3/kernel.qli": "de1149594b906961996014862d0775585b7e3c0810ea0c987afea35a0749e980",
+        "quantum_katas/zero_bitstring3/main.qli": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3",
+        "quantum_katas/even_numbers3/kernel.qli": "1871f97fc3c01980ad0be31ef12f9f49d6da14567ae3963666801517b0cf7e4f",
+        "quantum_katas/even_numbers3/main.qli": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8",
+        "qualtran/add_one3/kernel.qli": "500d7ad78ec32b4690194340e32a1167e6478c36ef3ed515366b7971aa25039d",
+        "qualtran/add_one3/main.qli": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304",
+        "qualtran/greater_constant2/kernel.qli": "e99c417397dd916a46384df22833be50e6c891bdd4a50ae45a060479741b7ae4",
+        "qualtran/greater_constant2/main.qli": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c",
+        "qualtran/xor_constant3/kernel.qli": "1c3c20f325096f22aa6bf7801d4bd74bbab7b87c14e317057bb3be17e04fcb27",
+        "qualtran/xor_constant3/main.qli": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6",
+        "pennylane_demos/rotation_half_x/kernel.qli": "abc920f1d9c2345ee919bf4812518e9409b528da874446396c1348800b1f63bd",
+        "pennylane_demos/rotation_half_x/main.qli": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f",
+        "pennylane_demos/ising_zz_half2/kernel.qli": "50428259af64ee53e93a809c6146e78e56107a5e204f2b689ffe05909e3d9a68",
+        "pennylane_demos/ising_zz_half2/main.qli": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a",
+        "pennylane_demos/qaoa_edge_layer2/kernel.qli": "39f9602d9cba52668e8d250672cac70020681bf324c607a525ecc8dc3c87a148",
+        "pennylane_demos/qaoa_edge_layer2/main.qli": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90"
+      },
+      "observations": [
+        "check-repaired.json",
+        "semantic-validation.json"
+      ]
+    }
+  ]
+}

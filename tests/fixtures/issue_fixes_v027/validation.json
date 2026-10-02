@@ -1,0 +1,255 @@
+{
+  "format": "qleisli.issue-fixes-validation",
+  "version": 1,
+  "status": "passed",
+  "kind": "local-dirty-worktree-validation",
+  "issues": [
+    207,
+    208,
+    209,
+    210,
+    211,
+    212,
+    214
+  ],
+  "baseline_head": "1dbacec38d6e65ade389aa71fcb2c8fc5ded46cc",
+  "source_binding": {
+    "rust_sources": {
+      "algorithm": "sha256-sorted-path-and-content-map-v1",
+      "sha256": "fa399d42646423b373f69e492936ef6382b95e7ee3395d782682f7959b6ac208",
+      "files": {
+        "src/bin/qleisli/artifacts.rs": "01092b80e4567e61c7980eca843c4044ef83cd44aa8a09a8cf5d4a279bfc9a22",
+        "src/bin/qleisli/interop.rs": "aa179180bd09f421980ac9bdaefb26ec6508a8add70e1ee5f5dc4b306cd104cc",
+        "src/bin/qleisli/json.rs": "dd04277da900584b2caef2be2f2b136726827617931584dd22a2768364177eb3",
+        "src/bin/qleisli/options.rs": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
+        "src/bin/qleisli/samples.rs": "eee6db63e23c5cfafccb7c6961bc7ea1666e490a661007613c2e02bac6df5c3d",
+        "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+        "src/bin/qleisli/sized.rs": "1ea6fa657a515058ee3856fc8175134900e8e776249fa244f6b7eeb41c5a1bb0",
+        "src/bin/qleisli/source_commands.rs": "5f111199e3c8b9c2cc8075aeecae63679a196fb01fc39cedc9ff157ec7be91e6",
+        "src/bin/qleisli.rs": "3f64d2ca6faf5f60ab42ca94434c12c883229636b97eb6dff7a5919b2ce46ceb",
+        "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+        "src/contract/function.rs": "ea9c78e83ce1682ae9acba5c8e1ca901d6f1175a3aca67accf462250391962c9",
+        "src/contract/meaning.rs": "c3a68215973a5b44d919bcdd5aea20559169ff0ef0dc6e6e4f93b9318aca435e",
+        "src/contract/mod.rs": "53ec2704e2cbb89cbfb6ee7f3394b5ca69658d007ed00029c377c28a4970bd67",
+        "src/frontend/ast.rs": "2c5a7d97c82d6337be23c8ed6ec4163bf1724d662dbffe9d347ce961b9b75ca4",
+        "src/frontend/compile/basis.rs": "f37a935885ab3ff57945d5fb4d3a6096ad741e0dd276a2bd42c12f707537c0ce",
+        "src/frontend/compile/circuit.rs": "ebc01a224e051e19981d6a2f3a7d62abe4e287549fc2b42cbd68d9432ccf3a77",
+        "src/frontend/compile/lower/branch.rs": "71abef9520176904ce2f372408e103b23647f44310e26cc3ed3c8254be5df755",
+        "src/frontend/compile/lower/certified.rs": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+        "src/frontend/compile/lower/function_contract.rs": "f82c5a20478a1d5bfd46770f8d44734f62e0c4603c87ea212de32308d581e88e",
+        "src/frontend/compile/lower/mod.rs": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+        "src/frontend/compile/lower/operations.rs": "031060a254996cc1953ee08619c00018e8a2a5ff248c6408d583a2852c330b57",
+        "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+        "src/frontend/compile/lower/scope.rs": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+        "src/frontend/compile/lower/transforms.rs": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
+        "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+        "src/frontend/compile/mod.rs": "fa5f7be61bca503c6efc05777c2f97c0f0e3f27ee191fd2cc3a214393416f73d",
+        "src/frontend/compile/operations.rs": "d40f5ed926e7b796bbad093b3a513cab40b6cc6ce68a7a10a3a2b75cb4b05567",
+        "src/frontend/core.rs": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+        "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+        "src/frontend/documentation.rs": "896b1fc4d0632b6a1d1568076023e598637eb600ac9d9fbde7db08eea7d308c3",
+        "src/frontend/lexer.rs": "ec0260843907a15231277da77cc9a1b5fc13667f8a455826ca558e188a9a99cd",
+        "src/frontend/mod.rs": "342b8de6e0dacfe18dcf923ce083c6d2c8c1c5dc75760b24ed75b2234c2fe86a",
+        "src/frontend/parser.rs": "43c6f1984a2a264e9441f4b8245fdb739fbd33bd61f9c7af8dad47ad42e1f8c9",
+        "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+        "src/frontend/project/manifest.rs": "cdfdd5bf8abdd52ef66a5e7ff321224bfba69372360a317dbebdda5dd706865d",
+        "src/frontend/project/source_file.rs": "3a9c1c8a28647083fff12a46e602704fa0224e6d348078faee7c114e2d4d892a",
+        "src/frontend/project.rs": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
+        "src/frontend/sized/ast.rs": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+        "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+        "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+        "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+        "src/frontend/sized/linear.rs": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
+        "src/frontend/sized/lower/preservation.rs": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+        "src/frontend/sized/lower.rs": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+        "src/frontend/sized/parser.rs": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13",
+        "src/frontend/sized/primitive.rs": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+        "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+        "src/frontend/sized.rs": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+        "src/host/factoring.rs": "cf462c2561cd38ef00103dc3f1d7a9b64dd0e32b1c21af5d49e4508216509a38",
+        "src/host.rs": "ab5309aa8d7ddbe83c247f4a0685b386b4978e967029a5a33133b21fcfdd7ab8",
+        "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+        "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+        "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+        "src/interchange/codec.rs": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+        "src/interchange/finite_leaf.rs": "b8339fbaacccde92c418e3de8e8f6a065a9132f2ea450386332986ab2c83ea56",
+        "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+        "src/interchange/hierarchical/bridge/instrument.rs": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+        "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+        "src/interchange/hierarchical/bridge/request.rs": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+        "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+        "src/interchange/hierarchical/execution.rs": "a1674776cbc639dff94893d455b463e65e81f4aa637378b5636b92c075b11745",
+        "src/interchange/hierarchical/runtime.rs": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
+        "src/interchange/hierarchical.rs": "e37f3e59c6ccf49cef0d3c4a6158326f438ef7f699c6c5b4acad3c6c085d719f",
+        "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+        "src/interchange/mod.rs": "eed1c2cb85f88c456bc690f4d3bab28572fac5eb6ac72eb947a5978e1648b715",
+        "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+        "src/interop/mod.rs": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
+        "src/interop/openqasm.rs": "dda4d8db6a567f6fa742f8588af926f67351e3277ec6c9db77aa774eb1aebcc5",
+        "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+        "src/interop/qir.rs": "a03659389c83d440f99c6db795d5fb14d3a2a5b914c556e8e1b7f6dc067887c6",
+        "src/ir/compat.rs": "89f7ad8f214b8b4bb386a699fb3299d8d174fcb706e5204bd4e2f04df9e1f071",
+        "src/ir.rs": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+        "src/lib.rs": "661b2586fccb5d628247ba6a9a217dcd03169a94151b81aa1f6a4b456d1953f6",
+        "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+        "src/sim/sampling.rs": "aeef8111325ddd4f3e48a9019d58d6f9c7f2034d7f1acf63cf79052e1fe77380",
+        "src/sim/state.rs": "7b0d035cc7f712c04e856e0307b5766f130a9aa343fb783fcff2c991d1f45c2f",
+        "src/sim/tests.rs": "9907a6e908c944b28a6822245923a08bebe85fbaa26cbd75b0fd28e34aefc657",
+        "src/sim.rs": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+        "src/verify.rs": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85"
+      }
+    },
+    "harnesses": {
+      "tests/review_v027.rs": "58aaafc658458f766f847810f2d50fbbf74e79a6db06c97b3e7eab246a2b9779",
+      "tests/hierarchical_host.rs": "fe1e1a5c83a822ef360323f81ebaef15290b170f01ba1bc8e24ffc97d89f6c43",
+      "tests/review_v024.rs": "536a4caa1051d335cd0bac9241e32703e91987a6a21413cae8ca75f65fd9cac3",
+      "tests/operation_parameters.rs": "52b7704503de928cd55da120c9fc4f0c838bd93386e3ca7961d1a8d2f3fde73b",
+      "scripts/check_lean_kernel.py": "f81f9ac100bd9d6eb16c8cd9618086081fe636ad3bb1d4886e253c822ce79dd8",
+      "scripts/test_check_lean_kernel.py": "7f2a44a4d67d737d414d5cfd3ef2eece1dee274e39fc6a2e232b96ab99d15b8a",
+      "scripts/check_input_corpus.py": "57fff75bf6a2c203446a17cb645cca72bbfa34273c57c587daf206a9e2238e4b",
+      "scripts/test_check_input_corpus.py": "563508836a1267dc935284bc4cd82eebbfe2b53dfba8f18736db9de5c01d79d2",
+      "scripts/test_run_native_ci.py": "7bf7472664dbfb0ac980e7f6220fff338d650076936c01937d5150119d37915f",
+      "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
+      "scripts/test_hierarchical_host.py": "b2fc7b0d1a942e7c7dca22a02b105702f5b4320cce92b8470cc75d06b64a7b6e",
+      ".github/ci/native-comparisons.json": "c4bcec809907342bea8244ed5b44c6782b86133aa574123695293dcfaa61ee75",
+      "tests/fixtures/verification_v022/inventory.json": "d5bc5e3b06aa479a3714ec352c539da5ac02536332aa086923fa0bda1371f69e",
+      "lean/schema-registry.json": "6ea8fcb7ff3bbaf991ed75c0f389d31451e424c8310c59c096be44f61d6cd174"
+    }
+  },
+  "rust_default_tests": {
+    "passed": 570,
+    "ignored": 36,
+    "targets": 68
+  },
+  "native": {
+    "hierarchy_report": "hierarchy-validation.json",
+    "qpe_host_report": "qpe-host-validation.json",
+    "decoder_report": "decoder-validation.json",
+    "schema_report": "schema-validation.json"
+  },
+  "ci_inventory": {
+    "groups": 65,
+    "commands": 69,
+    "pre_206_commands": 66,
+    "pre_206_command_environment_digest": "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e"
+  },
+  "additional_checks": [
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "cargo fmt --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_check_input_corpus.py",
+      "exit_code": 0,
+      "tests": 36
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "exit_code": 0,
+      "tests": 9
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "exit_code": 0,
+      "tests": 6
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "constructors": 232,
+      "source_snapshots": 212,
+      "boundaries": 18
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "tests": 17
+    },
+    {
+      "command": "python3 scripts/test_check_schema_registry.py",
+      "exit_code": 0,
+      "tests": 12
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "tests": 32
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0
+    }
+  ],
+  "observations": [
+    {
+      "command": "cargo test --all-targets --quiet",
+      "exit_code": 0,
+      "terminal_tail": "..\ntest result: ok. 70 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.47s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.32s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 30 tests\n..............................\ntest result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 9 tests\n.........\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 16 tests\n................\ntest result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.36s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.18s\n\n\nrunning 17 tests\n.................\ntest result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s\n\n\nrunning 19 tests\n...................\ntest result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 18 tests\niiiiiiiiiiii......\ntest result: ok. 6 passed; 0 failed; 12 ignored; 0 measured; 0 filtered out; finished in 0.33s\n\n\nrunning 2 tests\nii\ntest result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s\n\n\nrunning 9 tests\n.........\ntest result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.18s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 14 tests\n..............\ntest result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.35s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.33s\n\n\nrunning 17 tests\n.................\ntest result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s\n\n\nrunning 11 tests\n...........\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.75s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.09s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.76s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 5 tests\n.....\ntest result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s\n\n\nrunning 20 tests\n....................\ntest result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 13 tests\n.............\ntest result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 7 tests\nii.....\ntest result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 3 tests\niii\ntest result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\n.\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 2 tests\n..\ntest result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.22s\n\n\nrunning 8 tests\niiiii...\ntest result: ok. 3 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.21s\n\n\nrunning 30 tests\ni...........i.i...............\ntest result: ok. 27 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.33s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s\n\n\nrunning 6 tests\n......\ntest result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 10 tests\n..........\ntest result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s\n\n\nrunning 12 tests\n............\ntest result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s\n\n\nrunning 11 tests\n...........\ntest result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s\n\n\nrunning 4 tests\n....\ntest result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 8 tests\n........\ntest result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s\n\n\nrunning 3 tests\n...\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 29 tests\n.............................\ntest result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.41s\n\n\nrunning 7 tests\n.......\ntest result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_execution.py",
+      "exit_code": 0,
+      "terminal_tail": "\nrunning 3 tests\ntest frozen_finite_leaf_executes_through_its_actual_definition_index ... ok\nEXECUTION|fourier-1-False|8|103|0.00000000000000011102230246251565\nEXECUTION|fourier-1-True|8|123|0.00000000000000011102230246251565\nEXECUTION|fourier-2-False|24|662|0.00000000000000024492935982947064\nEXECUTION|fourier-2-True|24|714|0.00000000000000024492935982947064\nEXECUTION|fourier-3-False|80|3913|0.0000000000000009992007221626409\nEXECUTION|fourier-3-True|80|4077|0.0000000000000010547118733938987\nEXECUTION|qpe-1-2|32|2785|0.0000000000000002220446049250313\nEXECUTION|qpe-1-3|64|9116|0.0000000000000004440892098500626\nEXECUTION|qpe-2-2|96|8097|0.0000000000000002220446049250313\nEXECUTION|order|96|10158|0.0000000000000002220446049250313\nEXECUTION|amplitude|32|6325|0.0000000000000006661338147750939\nSAMPLING|sample-qpe-1-2|256|380168|[152, 78, 11, 15]|0|0\nEXECUTION|retiming|48|395|0.00000000000000011102230246251565\nEXECUTION|reordered-readout|48|395|0.00000000000000011102230246251565\nEXECUTION|qpe-global|32|3475|0.0000000000000002220446049250313\nEXECUTION|qpe-conjugated|32|3379|0.0000000000000002220446049250313\nEXECUTION|named-qpe-1-1|16|839|0.0000000000000002220446049250313\nEXECUTION|named-qpe-1-2|32|2785|0.0000000000000002220446049250313\nEXECUTION|named-qpe-1-3|64|9116|0.0000000000000004440892098500626\nEXECUTION|named-qpe-2-2|96|8097|0.0000000000000002220446049250313\ntest small_source_clients_match_independent_complex_reference_branches ... ok\nSAMPLING|sample-order|256|477704|[117, 0, 139, 0]|139|0\nSAMPLING|sample-amplitude|256|462084|[99, 66, 19, 72]|0|0.34375\ntest seeded_fresh_shots_match_independent_branches_and_classical_clients ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.37s\n\n\n19 small checked execution cases, 912 complex coefficients\n3 fresh-shot clients, 768 seeded outcomes\n"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_finite_binding.py",
+      "exit_code": 0,
+      "terminal_tail": "Passed 57 native QIRF/request cases; Rust checker not invoked.\n"
+    },
+    {
+      "command": "python3 scripts/test_verification_baseline.py target/debug/qleisli --kernel lean-kernel/.lake/build/bin/qleisli-kernel",
+      "exit_code": 0,
+      "terminal_tail": "VM-22: 12 finite comparisons, 12 source decisions, 5 native component decisions; at most three qubits.\n"
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "exit_code": 0,
+      "terminal_tail": "............................\n----------------------------------------------------------------------\nRan 28 tests in 32.818s\n\nOK\n"
+    },
+    {
+      "command": "lake env lean Tests.lean (cwd lean-kernel)",
+      "exit_code": 0,
+      "terminal_tail": ""
+    },
+    {
+      "command": "lake env leanchecker --fresh QleisliKernel (cwd lean-kernel)",
+      "exit_code": 0,
+      "terminal_tail": ""
+    },
+    {
+      "command": "lake env leanchecker --fresh Main (cwd lean-kernel)",
+      "exit_code": 0,
+      "terminal_tail": ""
+    }
+  ],
+  "skipped": [
+    "No GitHub Actions dispatch or full 65-group clean-checkout CI runner this turn. Applicable native harnesses were executed directly; the command-coverage regression includes the required named-QPE host fault harness.",
+    "Default Rust tests retain explicit ignored native tests. Applicable hierarchy, QPE fault, decoder and execution harnesses were run separately; unrelated ignored native suites were not all rerun.",
+    "No new maximum-size corpus cases or benchmarks generated.",
+    "No commits, push, PR creation or GitHub issue closure."
+  ],
+  "remaining": {
+    "deferred_bug_issues": [
+      181,
+      192
+    ],
+    "already_fixed_before_this_turn": [
+      186
+    ],
+    "production_authority": "Rust",
+    "external_schemas_enabled": 0,
+    "source_preservation_proof": false
+  }
+}

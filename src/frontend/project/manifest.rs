@@ -108,7 +108,7 @@ pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic
         if non_table {
             format!("manifest key `{key}` must be a table; this Qleisli command ignores it; check the schema-2 spelling")
         } else {
-            format!("unused manifest key `{key}` in {}; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)",path.display())
+            format!("unused manifest key `{key}`; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)")
         })
         .into_diagnostic()).collect())
 }

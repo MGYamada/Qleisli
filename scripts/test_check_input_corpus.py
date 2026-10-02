@@ -26,7 +26,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 60)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 69)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -72,6 +72,51 @@ class IntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "lost Microsoft attribution"):
             corpus.check_manifest(self.root)
 
+    def pennylane_sized_case(self, attribution=True):
+        path = self.root / "sized/qualtran_xor/bitwise.qli"
+        text = path.read_text().replace("// Copyright 2024 Google LLC\n", "")
+        if attribution:
+            text = "// Upstream authors (repository usernames): josh. See upstream metadata.\n" + text
+        path.write_text(text)
+        def mutate(manifest):
+            upstream = next(c for c in manifest["cases"] if c["id"] == "pennylane_demos/qubit_rotation")
+            case = next(c for c in manifest["sized_experiments"] if c["file"] == "sized/qualtran_xor/bitwise.qli")
+            case.update(source=upstream["source"], license=upstream["license"],
+                        upstream_path=upstream["upstream_path"], sha256=corpus.sha256(path))
+        self.edit_manifest(mutate)
+
+    def test_sized_pennylane_uses_its_authors_not_google_attribution(self):
+        self.pennylane_sized_case()
+        corpus.check_manifest(self.root)
+
+    def test_missing_sized_pennylane_authors_reject(self):
+        self.pennylane_sized_case(attribution=False)
+        with self.assertRaisesRegex(ValueError, "lost PennyLane attribution"):
+            corpus.check_manifest(self.root)
+
+    def test_missing_sized_google_or_microsoft_attribution_reject(self):
+        manifest = json.loads((self.root / "manifest.json").read_text())
+        for source, token, label in [("qualtran", "Google LLC", "Google"),
+                                     ("quantum_katas", "Copyright (c) Microsoft Corporation", "Microsoft")]:
+            with self.subTest(source=source):
+                case = next(c for c in manifest["sized_experiments"] if c["source"] == source)
+                path = self.root / case["file"]
+                original = path.read_text()
+                path.write_text(original.replace(token, "removed"))
+                self.edit_manifest(lambda m: next(c for c in m["sized_experiments"]
+                                                 if c["file"] == case["file"]).update(sha256=corpus.sha256(path)))
+                with self.assertRaisesRegex(ValueError, f"lost {label} attribution"):
+                    corpus.check_manifest(self.root)
+                path.write_text(original)
+                self.edit_manifest(lambda m: next(c for c in m["sized_experiments"]
+                                                 if c["file"] == case["file"]).update(sha256=corpus.sha256(path)))
+
+    def test_missing_finite_pennylane_authors_reject(self):
+        path = self.root / "pennylane_demos/qubit_rotation/kernel.qli"
+        path.write_text('\n'.join(path.read_text().splitlines()[1:]) + '\n')
+        with self.assertRaisesRegex(ValueError, "lost PennyLane attribution"):
+            corpus.check_manifest(self.root)
+
     def test_altered_first_attempt_is_rejected(self):
         path = self.root / "authoring/attempt-01/quantum_katas/global_phase/kernel.qli"
         path.write_text(path.read_text() + "// later rewrite\n")
@@ -110,6 +155,31 @@ class IntakeTests(unittest.TestCase):
 
 
 class OracleTests(unittest.TestCase):
+    def test_even_preparation_keeps_low_bit_on_all_input_columns(self):
+        case = {"id": "quantum_katas/even_numbers3", "qubits": 3}
+        for column in range(8):
+            values = corpus.reference_column(case, column)
+            self.assertTrue(all(value == 0 for row, value in enumerate(values)
+                                if row % 2 != column % 2))
+        self.assertEqual(corpus.reference_column(case, 0), [.5, 0, .5, 0, .5, 0, .5, 0])
+
+    def test_half_rotations_keep_phase_in_y_interference(self):
+        rx = {"id": "pennylane_demos/rotation_half_x", "qubits": 1}
+        self.assertEqual(corpus.reference_column(rx, 0), [0, -1j])
+        with self.assertRaises(corpus.SemanticMismatch):
+            corpus.compare(corpus.interference([0, -1j], 1, "y"),
+                           corpus.interference([0, 1], 1, "y"), "missing half-turn scalar")
+
+    def test_greater_constant_equality_and_arbitrary_target(self):
+        case = {"id": "qualtran/greater_constant2", "qubits": 3}
+        for target in range(2):
+            boundary = 1 + 4 * target
+            above = 2 + 4 * target
+            self.assertEqual(corpus.reference_column(case, boundary),
+                             [int(row == boundary) for row in range(8)])
+            self.assertEqual(corpus.reference_column(case, above),
+                             [int(row == (above ^ 4)) for row in range(8)])
+
     def test_comparison_equality_boundary_and_arbitrary_target(self):
         inclusive = {"id": "qualtran/less_equal1", "qubits": 3}
         strict = {"id": "qualtran/greater_than1", "qubits": 3}

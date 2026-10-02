@@ -33,6 +33,8 @@ import Qleisli.HierarchicalTyping
 import Qleisli.HierarchicalAcceptance
 import Qleisli.HierarchicalFiniteEvaluation
 import Qleisli.HierarchicalFiniteUnitary
+import Qleisli.Qirf
+import Qleisli.NativeHierarchy
 import Qleisli.HierarchicalDiagonal
 import Qleisli.HierarchicalGradient
 import Qleisli.HierarchicalFourier

@@ -376,7 +376,7 @@ fn pending_call_frames_declared_effects_and_local_shadowing_are_preserved() {
     );
     rejects(
         "unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){use_op[q](q)}",
-        ErrorCode::UnknownName,
+        ErrorCode::TypeMismatch,
     );
 }
 

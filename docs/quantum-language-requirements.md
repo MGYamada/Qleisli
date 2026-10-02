@@ -1,70 +1,23 @@
 # Requirements for a quantum programming language
 
-Adopted requirements, English authoritative. They constrain design/implementation;
-not all are proved guarantees. [Language v0](language-spec.md) implements a finite
-profile; [formal core](formal-core.md) distinguishes actual proofs from intended scope.
+Adopted English requirements; [finite language](language-spec.md)/[formal scope](formal-core.md), not all implemented/proved.
 
 ## Semantics and purity
 
-**Q1:** H(A)=C^A. Iso V satisfies V†V=I on the whole domain; Unitary also VV†=I.
-Retain scalar phase in IR/control. Pure programs terminate; initial loops are static
-finite. Arbitrary free-vector bind is not an execution API.
-
-**Q2:** Loading declarations performs no operations. Compose explicit transformations
-of values/owners without implicit mutable quantum state/I/O. Q<A> is ownership,
-not an effect. Observe accounts for probabilities; host/device/file effects are separate.
+Q1 H(A)=C^A,Iso V†V=I,Unitary also VV†=I,retain scalar phase/termination/static finite loops,no unrestricted free-vector bind. Q2 declarations load without operations/implicit mutable quantum state/I/O; Q ownership not effect, Observe probabilities vs host/device/file effects.
 
 ## Quantum resources and auxiliary systems
 
-**Q3:** Linear exclusive operation rights reject duplicates, wire aliases, implicit
-disposal and use after consumption. Discard is explicit Observe. Split/join rebind
-handles, not product-state assertions. Current capture/disjointness rules do not
-implement general borrowing.
-
-**Q4:** Basis labels are not measured CBits. Injective x->(x,x) may lift coherently;
-Q ownership cannot copy, noninjective x->0 cannot lift purely.
-
-**Q5:** Pure release requires exact zero return and factorization for every input/
-reference. Restricted compute/use/uncompute preserves source/auxiliary labels;
-[SC](finite-contracts.md) instead checks actual W E_f=E_f u and permits relation-preserving
-joint changes. Both reject protected measurement/reset/discard. Lifetime/name alone
-is not zero-return evidence.
+Q3 linear exclusive rights/no duplicate/alias/reuse/implicit disposal,explicit Observe discard,split/join no separability/general borrowing. Q4 Bit labels vs CBit,injective basis-copy lift allowed,unknown state cloning/constant pure lift not. Q5 exact zero/factorization every input/reference,legacy protected labels or [SC](finite-contracts.md) W Ef=Ef u; no protected observation/reset/discard/name/lifetime evidence.
 
 ## Observation and control
 
-**Q6:** Measurement/reset/discard are Observe. Each outcome is CP/TNI and their sum TP
-on the whole entangled system/reference. measure_z consumes the logical wire;
-reset/discard lose correlations explicitly, physical reuse prepares a different owner.
-
-**Q7:** Classical if arms exclusively receive the same context and return compatible
-ownership. qif retains control and same-type unitary target arms, preserving relative
-phase. Classical branching alone is not measurement.
+Q6 whole-reference Observe CP/TNI per outcome/TP sum,measure consumes/reset fresh/discard correlations explicitly. Q7 classical branches same exclusive context/compatible outputs,qif retains control/same-type unitary arms/full phase; if alone not measurement.
 
 ## Requirements for an executable language
 
-**Q8:** Express known preparation, interference, entanglement, predicate phase oracles,
-partial measurement and feedback. Closed main returns classical data and no owners.
-
-**Q9:** Ordinary std definitions obey user checking. Sealed operations/checked forms
-mediate gates, lifts, measurements, structure and cleanup. Check evidence validity,
-not presence; execute the accepted core and reject or meaning-preservingly translate
-unsupported backend features.
-
-**Q10:** Ownership does not imply separability. Local operations/partial observations
-retain arbitrary references; only Q5 evidence authorizes pure release, Q6 permits
-observing correlation loss.
-
-**Q11:** Prove finite terminating type/resource safety and instrument semantics under
-valid primitives, checked lifts/cleanup and composition. Until actual frontend/IR
-acceptance is connected to these premises, compile success is not proved physical
-validity. [Three theorem gates](release-milestones.md) remain distinct.
+Q8 preparation/interference/entanglement/oracles/partial observation/feedback,closed main classical/no owners. Q9 std ordinary user checks,sealed meanings/checked forms/evidence validity,execute accepted core/meaning-preserving supported backend. Q10 local operations/function boundaries retain arbitrary correlations; only Q5 pure cleanup/Q6 explicit loss. Q11 prove finite resource/instrument soundness under actual valid primitives/lifts/cleanup/composition; compile success alone not physics, [three theorem gates](release-milestones.md).
 
 ## Acceptance examples and research
 
-Accept injective basis-copy, certified compute/Z/uncompute, Bell-half measurement/
-explicit disposal and outcome-driven X. Reject copied owners, constant Bit lift,
-protected observation, unsupported pure disposal and Bell-half release from ownership
-alone. [QML](https://people.cs.nott.ac.uk/psztxa/publ/qml.pdf),
-[Qurts](https://arxiv.org/pdf/2411.10835), [OpenQASM3.1](https://openqasm.com/versions/3.1/language/insts.html)
-and [QIR Adaptive](https://github.com/qir-alliance/qir-spec/blob/main/specification/profiles/Adaptive_Profile.md)
-are prior work, not Qleisli proofs.
+Accept injective copy/compute-Z-uncompute/Bell-half measure or discard/feedback X. Reject copied owner/constant Bit lift/protected observation/pure disposal/Bell-half release from ownership. QML/Qurts/OpenQASM/QIR prior work, not implementation proof.

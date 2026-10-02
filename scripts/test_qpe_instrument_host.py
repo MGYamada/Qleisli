@@ -91,7 +91,7 @@ def test_binary_transport(frame_path):
     for name,data,expected in cases:
         run=subprocess.run([str(kernel),'--qpe-instrument-pending'],input=data,capture_output=True,timeout=30)
         lines=run.stdout.decode().splitlines()
-        assert lines[:1]==['qleisli.qpe-instrument-pending 1'],(name,run)
+        assert lines[:1]==['qleisli.qpe-instrument-pending 3'],(name,run)
         if expected=='pending':assert run.returncode==0 and lines[1]=='pending',(name,lines)
         else:assert run.returncode==1 and lines[1:]==['error',expected],(name,lines)
     return dict(cases=len(cases),shared_word_budget='rejected before semantic checking',maximum_qubit_corpus_generated=False)
@@ -129,6 +129,20 @@ def test_named_host(record=None):
         matrix['entries']=[[dict(numerator=str(int(k in (1,2) and j==0)),denominator_bits=0) for j in range(4)] for k in range(4)]
         graph['meanings'][proof['meaning']]['body']['description']=json.dumps(matrix)
     mutate('coordinated-wrong-H',replace_h)
+    def negative_h(p,r,c):
+        index=c['hadamards'][0]['index'];graph=p['circuit']
+        program=json.loads(graph['definitions'][index]['body']['program'])
+        op=program['programs'][0]['operations'][0]
+        program['programs'][0]['operations'][0]=dict(tag='apply_unitary',input=op['input'],output=op['output'],
+            steps=[dict(controls=[],action=dict(tag='hadamard',target=0)),
+                   dict(controls=[],action=dict(tag='monomial',indices=[],permutation=[0],phases=[4]))])
+        graph['definitions'][index]['body']['program']=json.dumps(program)
+        proof=next(x for x in graph['proofs'] if x['implementation']==index)
+        matrix=json.loads(graph['meanings'][proof['meaning']]['body']['description'])
+        for entry in matrix['entries']:
+            for coefficient in entry:coefficient['numerator']=str(-int(coefficient['numerator']))
+        graph['meanings'][proof['meaning']]['body']['description']=json.dumps(matrix)
+    mutate('coordinated-H-global-phase',negative_h)
     def wrong_finite(p,r,c):
         m=next(x for x in r['provider']['meanings'] if x['body']['tag']=='finite');matrix=json.loads(m['body']['description'])
         for entry in matrix['entries']:
@@ -142,8 +156,8 @@ def test_named_host(record=None):
                 (directory/f'{name}.{suffix}.json').write_text(json.dumps(value))
         (directory/'cases.txt').write_text(''.join(f'{name}|{expected}\n' for name,(*_,expected) in rows.items()))
         a,b,h=expected_obligations(*rows['finite-provider'][:3]);assert b
-        def response(a=a,b=b,h=h):return '\n'.join(map(str,['qleisli.qpe-instrument-pending 1','pending',0,len(a),*a,len(b),*b,len(h),*h]))+'\n'
-        bad={'omit-proof':response(a=a[:-1]),'duplicate-proof':response(a=a+[a[0]]),'omit-provider':response(b=[]),'duplicate-provider':response(b=b+b),'omit-H':response(h=h[:-1]),'duplicate-H':response(h=h+[h[0]]),'substitute-H':response(h=[99999,*h[1:]]),'trailing':response()+'extra\n','noncanonical':response().replace('pending\n0\n','pending\n00\n'),'claimed-seal':response().replace('\npending\n','\nchecked\n'),'failure-trailing':'qleisli.qpe-instrument-pending 1\nerror\ncontract\nextra\n'}
+        def response(a=a,b=b,h=h):return '\n'.join(map(str,['qleisli.qpe-instrument-pending 3','pending',0,0,len(a),*a,len(b),*b,len(h),*h]))+'\n'
+        bad={'omit-proof':response(a=a[:-1]),'duplicate-proof':response(a=a+[a[0]]),'omit-provider':response(b=[]),'duplicate-provider':response(b=b+b),'omit-H':response(h=h[:-1]),'duplicate-H':response(h=h+[h[0]]),'substitute-H':response(h=[99999,*h[1:]]),'trailing':response()+'extra\n','noncanonical':response().replace('pending\n0\n','pending\n00\n'),'claimed-seal':response().replace('\npending\n','\nchecked\n'),'failure-trailing':'qleisli.qpe-instrument-pending 3\nerror\ncontract\nextra\n'}
         (directory/'bad-responses').mkdir()
         for name,value in bad.items():(directory/'bad-responses'/name).write_text(value)
         command=['cargo','test','--test','hierarchical_qpe_host','--','--include-ignored','--nocapture']

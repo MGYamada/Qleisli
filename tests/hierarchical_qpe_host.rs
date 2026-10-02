@@ -25,6 +25,16 @@ fn native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries() {
     {
         let (name, expected) = line.split_once('|').unwrap();
         let (payload, request, candidate) = files(&root, name);
+        match kernel.check_qpe_instrument_native(&payload, &request, &candidate) {
+            Ok(native) => {
+                assert_eq!(expected, "ok", "{name}");
+                assert_eq!(native.payload(), payload);
+                assert_eq!(native.request(), Some(request.as_slice()));
+                assert_eq!(native.candidate(), Some(candidate.as_slice()));
+                assert!(native.exact_work() > 0 && native.exact_work() <= 10_000_000);
+            }
+            Err(error) => assert_eq!(error.code, expected, "native-only {name}: {error}"),
+        }
         match kernel.check_qpe_instrument(&payload, &request, &candidate) {
             Ok(checked) => {
                 assert_eq!(expected, "ok", "{name}");

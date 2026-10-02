@@ -10,13 +10,11 @@ pub mod execution;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use super::finite_leaf::{
-    CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_unitary, check_unitary,
-};
+use super::finite_leaf::{CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_unitary};
 use super::json::Value;
 use super::{Error, Result, contract_error};
-use crate::contract::exact::{Budget, Exact, Matrix};
-use crate::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK};
+use crate::contract::exact::{Budget, Matrix};
+use crate::contract::{BasisType, DEFAULT_EXACT_WORK};
 use crate::ir::{BasisShape, QuantumPort, TokenId, WireId};
 
 /// Explicitly selected native dependency. The caller must select a built and
@@ -34,6 +32,7 @@ pub struct Reconstructed {
     leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
     structural_work: usize,
     exact_work: usize,
+    native_exact_work: usize,
 }
 
 impl Reconstructed {
@@ -41,6 +40,7 @@ impl Reconstructed {
         payload: &[u8],
         leaves: Vec<(usize, CheckedSerializedUnitaryLeaf)>,
         structural_work: usize,
+        native_exact_work: usize,
         budget: &Budget,
     ) -> Self {
         Self {
@@ -48,6 +48,7 @@ impl Reconstructed {
             leaves,
             structural_work,
             exact_work: DEFAULT_EXACT_WORK - budget.remaining(),
+            native_exact_work,
         }
     }
 
@@ -62,6 +63,12 @@ impl Reconstructed {
     }
     pub fn exact_work(&self) -> usize {
         self.exact_work
+    }
+    /// Native original-QIRF, request and H work under its own shared ceiling.
+    /// Compatibility Rust handles are independently rebuilt, not double charged
+    /// into this budget. `exact_work` reports that separate legacy work.
+    pub fn native_exact_work(&self) -> usize {
+        self.native_exact_work
     }
 }
 
@@ -84,8 +91,163 @@ impl Kernel {
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.value, response.indices, &mut budget)?;
-        Ok(Reconstructed::new(payload, leaves, response.work, &budget))
+        Ok(Reconstructed::new(
+            payload,
+            leaves,
+            response.work,
+            response.exact_work,
+            &budget,
+        ))
     }
+}
+
+/// Experimental native-only report. It retains immutable inputs but creates no
+/// Rust `VerifiedProgram` or executable finite-leaf handle. Decoder/native
+/// correspondence and the selected audited executable remain assumptions.
+#[derive(Debug)]
+pub struct NativeChecked {
+    payload: Arc<[u8]>,
+    request: Option<Arc<[u8]>>,
+    candidate: Option<Arc<[u8]>>,
+    structural_work: usize,
+    exact_work: usize,
+}
+
+impl NativeChecked {
+    fn new(
+        payload: &[u8],
+        request: Option<&[u8]>,
+        candidate: Option<&[u8]>,
+        response: &runtime::Response,
+    ) -> Self {
+        Self {
+            payload: Arc::from(payload),
+            request: request.map(Arc::from),
+            candidate: candidate.map(Arc::from),
+            structural_work: response.work,
+            exact_work: response.exact_work,
+        }
+    }
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+    pub fn request(&self) -> Option<&[u8]> {
+        self.request.as_deref()
+    }
+    pub fn candidate(&self) -> Option<&[u8]> {
+        self.candidate.as_deref()
+    }
+    pub fn structural_work(&self) -> usize {
+        self.structural_work
+    }
+    pub fn exact_work(&self) -> usize {
+        self.exact_work
+    }
+}
+
+impl Kernel {
+    /// Check all actual QIRF leaves natively, without invoking Rust acceptance.
+    pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked> {
+        let decoded = bridge::decode(payload)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
+        validate_leaves(&decoded.value, &response.indices)?;
+        Ok(NativeChecked::new(payload, None, None, &response))
+    }
+
+    /// Native original-QIRF/request checking, including phase-fixed Fourier H.
+    pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
+        let decoded = bridge::decode_request(payload, request)?;
+        let mode = if decoded.fourier_width.is_some() {
+            Mode::Fourier
+        } else {
+            Mode::Request
+        };
+        let response = runtime::check(&self.executable, decoded.bridge, mode)?;
+        validate_leaves(&decoded.actual, &response.indices)?;
+        if let Some(width) = decoded.fourier_width {
+            validate_hadamards(&decoded.actual, width, response.pairs.clone())?;
+        } else {
+            validate_pairs(
+                &decoded.actual,
+                &decoded.request,
+                &decoded.pairs,
+                response.pairs.clone(),
+            )?;
+        }
+        Ok(NativeChecked::new(payload, Some(request), None, &response))
+    }
+
+    /// Native composed initialization, finite circuit request and readout.
+    pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked> {
+        let decoded = bridge::decode_instrument(payload, request)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
+        validate_leaves(&decoded.pure.actual, &response.indices)?;
+        validate_pairs(
+            &decoded.pure.actual,
+            &decoded.pure.request,
+            &decoded.pure.pairs,
+            response.pairs.clone(),
+        )?;
+        Ok(NativeChecked::new(payload, Some(request), None, &response))
+    }
+
+    /// Native named-QPE provider, schedule and exact H checks. No production
+    /// verification authority, source theorem or external schema is enabled.
+    pub fn check_qpe_instrument_native(
+        &self,
+        payload: &[u8],
+        request: &[u8],
+        candidate: &[u8],
+    ) -> Result<NativeChecked> {
+        let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
+        let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
+        validate_leaves(&decoded.provider.actual, &response.indices)?;
+        validate_pairs(
+            &decoded.provider.actual,
+            &decoded.provider.request,
+            &decoded.provider.pairs,
+            response.pairs.clone(),
+        )?;
+        let returned: std::collections::BTreeSet<_> = response.hadamards.iter().copied().collect();
+        if returned.len() != response.hadamards.len() || returned != decoded.hadamards {
+            return Err(Error::format(
+                "runtime omitted, duplicated or substituted QPE Hadamard obligations",
+            ));
+        }
+        for &index in &response.hadamards {
+            validate_hadamards(&decoded.provider.actual, 1, vec![index])?;
+        }
+        Ok(NativeChecked::new(
+            payload,
+            Some(request),
+            Some(candidate),
+            &response,
+        ))
+    }
+}
+
+fn validate_leaves(value: &Value, indices: &[usize]) -> Result<()> {
+    let proofs = value.field("proofs")?.array()?;
+    let mut seen = vec![false; proofs.len()];
+    for &index in indices {
+        let proof = proofs
+            .get(index)
+            .ok_or_else(|| Error::format("runtime returned an invalid proof index"))?;
+        if seen[index] || proof.field("rule")?.field("tag")?.text()? != "finite" {
+            return Err(Error::format(
+                "runtime returned duplicate or non-finite proof index",
+            ));
+        }
+        seen[index] = true;
+    }
+    for (index, proof) in proofs.iter().enumerate() {
+        if proof.field("rule")?.field("tag")?.text()? == "finite" && !seen[index] {
+            return Err(Error::format(
+                "runtime omitted a finite reconstruction obligation",
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn reconstruct(
@@ -168,29 +330,35 @@ impl Kernel {
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.actual, response.indices, &mut budget)?;
         if let Some(width) = decoded.fourier_width {
-            reconstruct_hadamards(&decoded.actual, width, response.pairs, &mut budget)?;
+            validate_hadamards(&decoded.actual, width, response.pairs)?;
         } else {
-            reconstruct_pairs(
+            validate_pairs(
                 &decoded.actual,
                 &decoded.request,
                 &decoded.pairs,
                 response.pairs,
-                &mut budget,
             )?;
         }
         Ok(CheckedRequest {
-            reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
+            reconstruction: Reconstructed::new(
+                payload,
+                leaves,
+                response.work,
+                response.exact_work,
+                &budget,
+            ),
             request: Arc::from(request),
         })
     }
 }
 
-fn reconstruct_pairs(
+// Native v3 has already read and compared the exact matrices. This only checks
+// transport coverage; a returned index or work count is not semantic evidence.
+fn validate_pairs(
     actual: &Value,
     required: &Value,
     pairs: &[(usize, usize)],
     indices: Vec<usize>,
-    budget: &mut Budget,
 ) -> Result<()> {
     let actual = actual.field("meanings")?.array()?;
     let required = required.field("meanings")?.array()?;
@@ -209,18 +377,6 @@ fn reconstruct_pairs(
         let r = required[r].field("body")?;
         if a.field("tag")?.text()? != "finite" || r.field("tag")?.text()? != "finite" {
             return Err(Error::format("runtime returned non-finite meaning pair"));
-        }
-        let a = super::finite_matrix::decode(a.field("description")?.text()?.as_bytes(), budget)?;
-        let r = super::finite_matrix::decode(r.field("description")?.text()?.as_bytes(), budget)?;
-        budget
-            .charge(a.entries().len())
-            .map_err(ContractError::from)
-            .map_err(contract_error)?;
-        if a != r {
-            return Err(Error::new(
-                "contract",
-                "finite meaning differs from independently requested matrix",
-            ));
         }
     }
     for (i, &(a, r)) in pairs.iter().enumerate() {
@@ -266,15 +422,20 @@ impl Kernel {
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.pure.actual, response.indices, &mut budget)?;
-        reconstruct_pairs(
+        validate_pairs(
             &decoded.pure.actual,
             &decoded.pure.request,
             &decoded.pure.pairs,
             response.pairs,
-            &mut budget,
         )?;
         Ok(CheckedInstrument {
-            reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
+            reconstruction: Reconstructed::new(
+                payload,
+                leaves,
+                response.work,
+                response.exact_work,
+                &budget,
+            ),
             request: Arc::from(request),
         })
     }
@@ -295,12 +456,11 @@ impl Kernel {
         let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
         let leaves = reconstruct(&decoded.provider.actual, response.indices, &mut budget)?;
-        reconstruct_pairs(
+        validate_pairs(
             &decoded.provider.actual,
             &decoded.provider.request,
             &decoded.provider.pairs,
             response.pairs,
-            &mut budget,
         )?;
         let returned: std::collections::BTreeSet<_> = response.hadamards.iter().copied().collect();
         if returned.len() != response.hadamards.len() || returned != decoded.hadamards {
@@ -309,11 +469,17 @@ impl Kernel {
             ));
         }
         for index in response.hadamards {
-            reconstruct_hadamards(&decoded.provider.actual, 1, vec![index], &mut budget)?;
+            validate_hadamards(&decoded.provider.actual, 1, vec![index])?;
         }
         Ok(CheckedQpeInstrument {
             instrument: CheckedInstrument {
-                reconstruction: Reconstructed::new(payload, leaves, response.work, &budget),
+                reconstruction: Reconstructed::new(
+                    payload,
+                    leaves,
+                    response.work,
+                    response.exact_work,
+                    &budget,
+                ),
                 request: Arc::from(request),
             },
             candidate: Arc::from(candidate),
@@ -340,27 +506,14 @@ impl CheckedQpeInstrument {
     }
 }
 
-/// Additional obligations use the exact mathematical H target, never a matrix
-/// supplied by the producer. Complete artifact and request bytes remain retained.
-fn reconstruct_hadamards(
-    value: &Value,
-    width: usize,
-    indices: Vec<usize>,
-    budget: &mut Budget,
-) -> Result<()> {
+/// Transport coverage only. The native checker has reconstructed original QIRF
+/// against mathematical H, never a producer-supplied replacement target.
+fn validate_hadamards(value: &Value, width: usize, indices: Vec<usize>) -> Result<()> {
     if !(1..=8).contains(&width) || indices.len() != width {
         return Err(Error::format(
             "runtime omitted Fourier Hadamard obligations",
         ));
     }
-    let r = Exact::inv_sqrt2();
-    let negative = r
-        .neg()
-        .map_err(ContractError::from)
-        .map_err(contract_error)?;
-    let expected = Matrix::new(2, 2, vec![r, r, r, negative])
-        .map_err(ContractError::from)
-        .map_err(contract_error)?;
     let definitions = value.field("definitions")?.array()?;
     let mut seen = vec![false; definitions.len()];
     for index in indices {
@@ -373,13 +526,6 @@ fn reconstruct_hadamards(
             ));
         }
         seen[index] = true;
-        let program = d.field("body")?.field("program")?.text()?.as_bytes();
-        check_unitary(
-            program,
-            &boundary(d.field("interface")?)?,
-            &expected,
-            budget,
-        )?;
     }
     Ok(())
 }
@@ -395,8 +541,16 @@ fn legacy(value: &Value) -> Result<BasisType> {
                 if arity < 2 || arity > stack.len() {
                     return Err(Error::format("invalid finite type tree"));
                 }
-                let fields = (0..arity).map(|_| stack.pop().unwrap()).collect();
-                stack.push(BasisType::Tuple(fields));
+                let first = stack.pop().unwrap();
+                let second = stack.pop().unwrap();
+                let ty = if arity == 2 {
+                    BasisType::pair(first, second)
+                } else {
+                    let mut fields = vec![first, second];
+                    fields.extend((2..arity).map(|_| stack.pop().unwrap()));
+                    BasisType::Tuple(fields)
+                };
+                stack.push(ty);
             }
             _ => {
                 return Err(Error::new(

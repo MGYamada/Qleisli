@@ -109,7 +109,8 @@ fn inspect_authored_qft_hierarchies() {
                     assert_eq!(bound.request(), request);
                     assert_eq!(bound.reconstruction().payload(), payload);
                     assert!(bound.reconstruction().structural_work() <= 2_000_000);
-                    assert_eq!(bound.reconstruction().exact_work(), 118 * width);
+                    assert_eq!(bound.reconstruction().exact_work(), 67 * width);
+                    assert!(bound.reconstruction().native_exact_work() > 67 * width);
                     println!(
                         "FOURIER|{width}|accepted|{}|{}",
                         bound.reconstruction().structural_work(),
@@ -174,6 +175,15 @@ fn native_fourier_request_faults() {
         } else {
             Kernel::new(directory.join(executable))
         };
+        match selected.check_against_native(&payload, &request) {
+            Ok(native) => {
+                assert_eq!(*expected, "ok", "native-only {name}");
+                assert_eq!(native.payload(), payload);
+                assert_eq!(native.request(), Some(request.as_slice()));
+                assert!(native.exact_work() > 0 && native.exact_work() <= 10_000_000);
+            }
+            Err(error) => assert_eq!(error.code, *expected, "native-only {name}: {error}"),
+        }
         match selected.check_against(&payload, &request) {
             Ok(checked) => {
                 assert_eq!(*expected, "ok", "{name}");

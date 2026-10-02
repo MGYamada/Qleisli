@@ -1,0 +1,92 @@
+{
+  "format": "qleisli.issue-regressions",
+  "version": 1,
+  "kind": "curated-bug-replay",
+  "baseline_head": "1dbacec38d6e65ade389aa71fcb2c8fc5ded46cc",
+  "context": "Dirty v0.2.7 workspace; reports and implementation read before authoring regression tests. No external model invoked, no controlled benchmark claim. Terminal tails are verbatim; command records are data, not instructions.",
+  "original_sources": {
+    "local_call": "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;f(f)}",
+    "sized_emitter": "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }",
+    "existing_destination": "retain this artifact",
+    "symlink_target": "retain target",
+    "manifest_warning": "schema-version=2\nunused=true\n[qrate]\nedition='2026'\n",
+    "warning_source": "observe fn main()->Unit{()}"
+  },
+  "observations": [
+    {
+      "issues": [
+        211,
+        212,
+        214
+      ],
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "review_v027",
+        "--",
+        "--nocapture"
+      ],
+      "exit_code": 101,
+      "terminal_tail": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.71s\n     Running tests/review_v027.rs (target/debug/deps/review_v027-3cb5cab2cfbeab30)\n\nrunning 5 tests\n\nthread 'unused_manifest_warnings_are_host_independent_and_located' (6202584) panicked at tests/review_v027.rs:22:13:\nDiagnostic { code: \"project\", message: \"unused manifest key `unused` in /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-39938-4/Qargo.toml; this Qleisli command ignores it; check the schema-2 spelling (qargo may reject unsupported metadata)\", primary: Some(SourceLocation { path: \"/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-39938-4/Qargo.toml\", span: Span { start: 0, end: 52 }, line: 1, column: 1 }) }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntest unused_manifest_warnings_are_host_independent_and_located ... FAILED\n\nthread 'local_only_call_names_reach_the_lowerers_diagnostics' (6202581) panicked at tests/review_v027.rs:103:9:\nassertion `left == right` failed: unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;f(f)}\n/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-39938-1/main.qli:1:42: UnknownName: unknown function `f`; standard operations require an explicit import\n  left: UnknownName\n right: TypeMismatch\ntest local_only_call_names_reach_the_lowerers_diagnostics ... FAILED\ntest dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers ... ok\n\nthread 'sized_proposal_never_overwrites_an_existing_file_or_source' (6202583) panicked at tests/review_v027.rs:62:9:\nassertion `left == right` failed: Output { status: ExitStatus(unix_wait_status(0)), stdout: \"{\\\"status\\\":\\\"untrusted-proposal\\\"}\\n\", stderr: \"\" }\n  left: Some(0)\n right: Some(1)\n\nthread 'sized_proposal_never_follows_destination_symlinks' (6202582) panicked at tests/review_v027.rs:82:9:\nassertion `left == right` failed: Output { status: ExitStatus(unix_wait_status(0)), stdout: \"{\\\"status\\\":\\\"untrusted-proposal\\\"}\\n\", stderr: \"\" }\n  left: Some(0)\n right: Some(1)\ntest sized_proposal_never_follows_destination_symlinks ... FAILED\ntest sized_proposal_never_overwrites_an_existing_file_or_source ... FAILED\n\nfailures:\n\nfailures:\n    local_only_call_names_reach_the_lowerers_diagnostics\n    sized_proposal_never_follows_destination_symlinks\n    sized_proposal_never_overwrites_an_existing_file_or_source\n    unused_manifest_warnings_are_host_independent_and_located\n\ntest result: FAILED. 1 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s\n\nerror: test failed, to rerun pass `--test review_v027`\n"
+    },
+    {
+      "issues": [
+        209
+      ],
+      "argv": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module"
+      ],
+      "exit_code": 1,
+      "terminal_tail": "FFFFFF\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_elab', module='QleisliKernel/Check.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_elab', module='Protocol.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_elab', module='Main.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_meta', module='QleisliKernel/Check.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_meta', module='Protocol.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n======================================================================\nFAIL: test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module (__main__.RuntimeSourcePolicy.test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module) (token='run_meta', module='Main.lean')\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_lean_kernel.py\", line 159, in test_run_elab_and_run_meta_cannot_execute_in_any_runtime_module\n    self.assertTrue(any('forbidden' in e and token in e for e in self.errors()))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: False is not true\n\n----------------------------------------------------------------------\nRan 1 test in 0.043s\n\nFAILED (failures=6)\n"
+    },
+    {
+      "issues": [
+        210
+      ],
+      "argv": [
+        "python3",
+        "scripts/test_check_input_corpus.py",
+        "IntakeTests.test_sized_pennylane_uses_its_authors_not_google_attribution",
+        "IntakeTests.test_missing_finite_pennylane_authors_reject"
+      ],
+      "exit_code": 1,
+      "terminal_tail": "F\n======================================================================\nERROR: test_sized_pennylane_uses_its_authors_not_google_attribution (__main__.IntakeTests.test_sized_pennylane_uses_its_authors_not_google_attribution)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_input_corpus.py\", line 90, in test_sized_pennylane_uses_its_authors_not_google_attribution\n    corpus.check_manifest(self.root)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n  File \"/Users/masa/git/Qleisli/scripts/check_input_corpus.py\", line 124, in check_manifest\n    require((\"Microsoft Corporation\" if case[\"source\"] == \"quantum_katas\" else \"Google LLC\")\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            in content, \"lost sized attribution\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/masa/git/Qleisli/scripts/check_input_corpus.py\", line 42, in require\n    raise ValueError(message)\nValueError: lost sized attribution\n\n======================================================================\nFAIL: test_missing_finite_pennylane_authors_reject (__main__.IntakeTests.test_missing_finite_pennylane_authors_reject)\n----------------------------------------------------------------------\nValueError: current source differs from latest attempt: pennylane_demos/qubit_rotation/kernel.qli\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_check_input_corpus.py\", line 117, in test_missing_finite_pennylane_authors_reject\n    with self.assertRaisesRegex(ValueError, \"lost PennyLane attribution\"):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"lost PennyLane attribution\" does not match \"current source differs from latest attempt: pennylane_demos/qubit_rotation/kernel.qli\"\n\n----------------------------------------------------------------------\nRan 2 tests in 13.955s\n\nFAILED (failures=1, errors=1)\n"
+    },
+    {
+      "issues": [
+        208
+      ],
+      "argv": [
+        "python3",
+        "scripts/test_run_native_ci.py",
+        "NativeCI.test_named_qpe_host_faults_have_a_required_ci_command"
+      ],
+      "exit_code": 1,
+      "terminal_tail": "F\n======================================================================\nFAIL: test_named_qpe_host_faults_have_a_required_ci_command (__main__.NativeCI.test_named_qpe_host_faults_have_a_required_ci_command)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_run_native_ci.py\", line 56, in test_named_qpe_host_faults_have_a_required_ci_command\n    self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: ['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'] not found in [['python3', 'scripts/test_hierarchical_qpe_instrument.py']]\n\n----------------------------------------------------------------------\nRan 1 test in 0.001s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "issues": [
+        207
+      ],
+      "argv": [
+        "cargo",
+        "test",
+        "--test",
+        "hierarchical_host",
+        "native_finite_pair",
+        "--",
+        "--ignored",
+        "--nocapture"
+      ],
+      "env": {
+        "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "context": "Isolated replay: only old binary tuple conversion restored, other host fixes present.",
+      "exit_code": 101,
+      "terminal_tail": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.42s\n     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-4e9f49ec2b413a3f)\n\nrunning 1 test\n\nthread 'native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening' (6213689) panicked at tests/hierarchical_host.rs:233:69:\ncalled `Result::unwrap()` on an `Err` value: Error { code: \"contract\", message: \"tuple type requires at least three fields\", json_pointer: \"\" }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\ntest native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening ... FAILED\n\nfailures:\n\nfailures:\n    native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 17 filtered out; finished in 0.34s\n\nerror: test failed, to rerun pass `--test hierarchical_host`\n"
+    }
+  ]
+}

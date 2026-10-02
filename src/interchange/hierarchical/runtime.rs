@@ -36,11 +36,11 @@ impl Mode {
     }
     fn header(self) -> &'static str {
         match self {
-            Self::Inspect => "qleisli.hierarchy-pending 1",
-            Self::Request => "qleisli.hierarchy-request-pending 1",
-            Self::Fourier => "qleisli.hierarchy-fourier-pending 1",
-            Self::Instrument => "qleisli.instrument-pending 1",
-            Self::QpeInstrument => "qleisli.qpe-instrument-pending 1",
+            Self::Inspect => "qleisli.hierarchy-pending 3",
+            Self::Request => "qleisli.hierarchy-request-pending 3",
+            Self::Fourier => "qleisli.hierarchy-fourier-pending 3",
+            Self::Instrument => "qleisli.instrument-pending 3",
+            Self::QpeInstrument => "qleisli.qpe-instrument-pending 3",
         }
     }
     fn maximum(self) -> usize {
@@ -52,6 +52,7 @@ impl Mode {
 }
 pub(super) struct Response {
     pub(super) work: usize,
+    pub(super) exact_work: usize,
     pub(super) indices: Vec<usize>,
     pub(super) pairs: Vec<usize>,
     pub(super) hadamards: Vec<usize>,
@@ -78,7 +79,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
                 return Err(Error::format("trailing runtime failure data"));
             }
             let detail = if code == "limit" {
-                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000; required work is unavailable in the native failure reply"
+                "a checking capacity was exceeded; aggregate structural-work allowance is 2000000 and shared exact-work allowance is 10000000; required work is unavailable in the native failure reply"
             } else {
                 "the native checker rejected the artifact or request"
             };
@@ -107,6 +108,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
         Ok(n)
     };
     let work = integer(lines.next(), 2_000_000)?;
+    let exact_work = integer(lines.next(), 10_000_000)?;
     let count = integer(lines.next(), 100_000)?;
     let indices = (0..count)
         .map(|_| integer(lines.next(), 99_999))
@@ -140,6 +142,7 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
     }
     Ok(Response {
         work,
+        exact_work,
         indices,
         pairs,
         hadamards,
@@ -209,6 +212,41 @@ fn invoke(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Vec<u8>> {
 #[cfg(test)]
 mod response_diagnostics_tests {
     use super::{Mode, response_indices};
+
+    #[test]
+    fn native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance() {
+        for mode in [
+            Mode::Inspect,
+            Mode::Fourier,
+            Mode::Request,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            let suffix = if matches!(mode, Mode::QpeInstrument) {
+                "0\n"
+            } else {
+                ""
+            };
+            let pairs = if matches!(mode, Mode::Inspect) {
+                ""
+            } else {
+                "0\n"
+            };
+            let valid = format!("{}\npending\n12\n36\n0\n{pairs}{suffix}", mode.header());
+            let response = response_indices(valid.as_bytes(), mode).unwrap();
+            assert_eq!(response.work, 12);
+            assert_eq!(response.exact_work, 36);
+            for malformed in [
+                valid.replacen("pending 3", "pending 1", 1),
+                valid.replacen("pending 3", "pending 2", 1),
+                valid.replacen("\n36\n", "\n10000001\n", 1),
+                valid.replacen("\n36\n", "\n036\n", 1),
+                format!("{valid}extra\n"),
+            ] {
+                assert!(response_indices(malformed.as_bytes(), mode).is_err());
+            }
+        }
+    }
 
     #[cfg(unix)]
     #[test]
@@ -313,8 +351,9 @@ mod response_diagnostics_tests {
                 ""
             };
             let reply = format!(
-                "{}\npending\n42\n2\n0\n9\n{pairs}{hadamards}",
-                mode.header()
+                "{}\npending\n42\n{}2\n0\n9\n{pairs}{hadamards}",
+                mode.header(),
+                "36\n"
             );
             let response = response_indices(reply.as_bytes(), mode).unwrap();
             assert_eq!(response.work, 42);
@@ -361,7 +400,7 @@ mod response_diagnostics_tests {
             assert!(error.message.contains("2000000"));
             assert!(error.message.contains("required work is unavailable"));
         }
-        let reply = b"qleisli.qpe-instrument-pending 1\nerror\ncontract\n";
+        let reply = b"qleisli.qpe-instrument-pending 3\nerror\ncontract\n";
         let error = response_indices(reply, Mode::QpeInstrument).err().unwrap();
         assert_eq!(error.code, "contract");
         assert!(!error.message.contains("capacity"));

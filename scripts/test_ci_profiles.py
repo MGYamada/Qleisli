@@ -7,9 +7,10 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, plan
+from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, plan, proof_lane, registry_binding_only
 
 
 class CIProfiles(unittest.TestCase):
@@ -49,7 +50,7 @@ class CIProfiles(unittest.TestCase):
 
     def needs(self, profile):
         return {
-            "changes": {"result": "success", "outputs": {"profile": profile, "head": "a" * 40}},
+            "changes": {"result": "success", "outputs": {"profile": profile, "proof_lane": "tests", "head": "a" * 40}},
             **{name: {"result": "success" if profile == "full" or name == "check-docs" else "skipped"} for name in SUITES},
         }
 
@@ -78,6 +79,55 @@ class CIProfiles(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_needs(skipped, "a" * 40)
 
+    def test_test_default_proof_maintenance_and_full_risk_lanes(self):
+        for paths, expected in [
+            (["src/verify.rs"], "tests"), (["tests/new.rs"], "tests"),
+            (["lean-kernel/QleisliKernel/Finite.lean"], "tests"),
+            (["lean-kernel/Protocol/HierarchicalFinite.lean"], "tests"),
+            (["corpus/manifest.json"], "tests"),
+            (["lean/Qleisli/RawPure.lean"], "model"),
+            (["docs/type-system.md"], "model"),
+            (["lean/lean-toolchain"], "full"), ([".github/workflows/ci.yml"], "full"),
+            (["scripts/check_schema_registry.py"], "full"),
+            (["new/unknown.rs"], "full"), (["../src/new.rs"], "full"),
+            (["docs/new-unknown.md"], "full"), ([], "full"),
+            (["lean/schema-registry.json"], "full"),
+        ]:
+            self.assertEqual(proof_lane(paths), expected, paths)
+        for lane in ["tests", "model", "full"]:
+            needs = self.needs("full")
+            needs["changes"]["outputs"]["proof_lane"] = lane
+            self.assertEqual(check_needs(needs, "a" * 40), "full")
+        for lane in [None, "", "unrecognized"]:
+            needs = self.needs("full")
+            needs["changes"]["outputs"]["proof_lane"] = lane
+            with self.assertRaises(ValueError):
+                check_needs(needs, "a" * 40)
+
+    def test_registry_source_updates_do_not_force_full_but_type_changes_do(self):
+        old = json.loads((ROOT / "lean/schema-registry.json").read_text())
+        new = copy.deepcopy(old)
+        new["source_revision"]["sha256"] = "b" * 64
+        new["source_revision"]["files"]["new.lean"] = "c" * 64
+        with patch("ci_profiles.git", side_effect=[json.dumps(old), json.dumps(new)]):
+            self.assertTrue(registry_binding_only(ROOT, "a" * 40, "b" * 40))
+        self.assertEqual(proof_lane(["lean-kernel/QleisliKernel/Finite.lean", "lean/schema-registry.json"], self.policy, True), "tests")
+        self.assertEqual(proof_lane(["lean/Qleisli/RawPure.lean", "lean/schema-registry.json"], self.policy, True), "model")
+        for change in [
+            lambda m: m["checker"].update(type=["constant", "Bool", []]),
+            lambda m: m["entries"][0].update(external_enabled=True),
+            lambda m: m.update(version=True),
+            lambda m: m.update(unknown=True),
+        ]:
+            changed = copy.deepcopy(new)
+            change(changed)
+            with patch("ci_profiles.git", side_effect=[json.dumps(old), json.dumps(changed)]):
+                self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
+        with patch("ci_profiles.git", side_effect=[json.dumps(old), '{"version":1,"version":1}']):
+            self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
+        with patch("ci_profiles.git", side_effect=subprocess.CalledProcessError(1, "git")):
+            self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
+
     def test_actual_git_diffs_deleted_renamed_inputs_missing_bases_and_releases(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -100,6 +150,12 @@ class CIProfiles(unittest.TestCase):
             event = {"pull_request": {"base": {"sha": base}}}
             self.assertEqual(plan(root, "pull_request", event, head, "refs/pull/1/merge")["profile"], "docs")
             self.assertEqual(plan(root, "push", {"before": base}, head, "refs/heads/main")["profile"], "docs")
+            self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/heads/main")["proof_lane"], "tests")
+            self.assertEqual(plan(root, "push", {"before": base}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
+            self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
+            self.assertEqual(plan(root, "pull_request", {"pull_request": {"base": {"sha": base}, "head": {"ref": "codex/release-v027"}}}, head, "refs/pull/1/merge")["proof_lane"], "full")
+            with self.assertRaises(ValueError):
+                plan(root, "workflow_dispatch", {"inputs": {"validation": "unknown"}}, head, "refs/heads/main")
             for name, payload, ref in [
                 ("workflow_dispatch", event, "refs/heads/main"),
                 ("push", {"before": base}, "refs/tags/v0.2.6"),
@@ -116,6 +172,7 @@ class CIProfiles(unittest.TestCase):
             changed = git("rev-parse", "HEAD")
             result = plan(root, "push", {"before": head}, changed, "refs/heads/main")
             self.assertEqual(result["profile"], "full")
+            self.assertEqual(result["proof_lane"], "tests")
             self.assertEqual(result["paths"], ["AGENTS.md", "src/new.rs"])
             git("rm", "src/new.rs")
             git("commit", "--quiet", "-m", "delete code")

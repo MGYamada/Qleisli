@@ -40,7 +40,19 @@ fn path_label(root: &Path, path: &Path) -> Option<String> {
     if let Ok(relative) = path.strip_prefix("<bundled>/std") {
         return Some(format!("std://{}", slash_path(relative)?));
     }
-    slash_path(path.strip_prefix(root).ok()?)
+    if let Ok(relative) = path.strip_prefix(root) {
+        return slash_path(relative);
+    }
+    // A selected source root may be below its owning qrate manifest. Only
+    // that ancestor filename can escape the source root, without host labels.
+    if path.file_name()? == "Qargo.toml" {
+        let relative = root.strip_prefix(path.parent()?).ok()?;
+        return Some(format!(
+            "{}Qargo.toml",
+            "../".repeat(relative.components().count())
+        ));
+    }
+    None
 }
 
 fn slash_path(path: &Path) -> Option<String> {

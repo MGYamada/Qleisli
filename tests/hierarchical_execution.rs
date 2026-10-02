@@ -147,7 +147,14 @@ fn small_source_clients_match_independent_complex_reference_branches() {
         let input = coefficients(&directory.join(format!("{name}.input")));
         let expected = coefficients(&directory.join(format!("{name}.expected")));
         if kind == "pure" {
+            let native = kernel.check_against_native(&actual, &request).unwrap();
             let checked = kernel.check_against(&actual, &request).unwrap();
+            assert_eq!(native.payload(), actual);
+            assert_eq!(native.request(), Some(request.as_slice()));
+            assert_eq!(
+                native.exact_work(),
+                checked.reconstruction().native_exact_work()
+            );
             let result = checked.execute(&input, reference, limits).unwrap();
             assert_eq!(result.quantum_bits, output_bits);
             let error = compare(&result.amplitudes, &expected);
@@ -195,8 +202,29 @@ fn small_source_clients_match_independent_complex_reference_branches() {
                 result.steps
             );
         } else {
-            assert_eq!(kind, "instrument");
-            let checked = kernel.check_instrument(&actual, &request).unwrap();
+            let (native, named, ordinary);
+            let checked = if kind == "named" {
+                let candidate =
+                    std::fs::read(directory.join(format!("{name}.candidate.json"))).unwrap();
+                native = kernel
+                    .check_qpe_instrument_native(&actual, &request, &candidate)
+                    .unwrap();
+                named = kernel
+                    .check_qpe_instrument(&actual, &request, &candidate)
+                    .unwrap();
+                named.instrument()
+            } else {
+                assert_eq!(kind, "instrument");
+                native = kernel.check_instrument_native(&actual, &request).unwrap();
+                ordinary = kernel.check_instrument(&actual, &request).unwrap();
+                &ordinary
+            };
+            assert_eq!(native.payload(), actual);
+            assert_eq!(native.request(), Some(request.as_slice()));
+            assert_eq!(
+                native.exact_work(),
+                checked.reconstruction().native_exact_work()
+            );
             let result = checked.execute(&input, reference, limits).unwrap();
             assert_eq!(result.residual_quantum_bits, output_bits);
             assert_eq!(result.measured_bits, measured_bits);

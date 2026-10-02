@@ -538,3 +538,20 @@ pub(super) fn decode(payload: &[u8]) -> Result<Decoded> {
         word_count: w.reads,
     })
 }
+
+#[cfg(test)]
+mod decoder_audit {
+    #[test]
+    #[ignore = "run scripts/test_verification_decoders.py with the native decoder view"]
+    fn original_json_fields_survive_the_actual_rust_bridge() {
+        let directory = std::env::var_os("QLEISLI_DECODER_AUDIT").expect("decoder fixtures");
+        for item in std::fs::read_dir(directory).unwrap() {
+            let path = item.unwrap().path();
+            if path.extension().and_then(|value| value.to_str()) != Some("qirh") {
+                continue;
+            }
+            let decoded = super::decode(&std::fs::read(&path).unwrap()).unwrap();
+            std::fs::write(path.with_extension("bridge"), decoded.bridge).unwrap();
+        }
+    }
+}

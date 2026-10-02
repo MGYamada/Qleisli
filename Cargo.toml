@@ -1,6 +1,6 @@
 [package]
 name = "qleisli"
-version = "0.2.6"
+version = "0.2.7"
 license = "Apache-2.0"
 repository = "https://github.com/MGYamada/Qleisli"
 edition = "2024"

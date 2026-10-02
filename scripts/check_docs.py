@@ -303,9 +303,8 @@ def render_status(root: Path, *, inventory_only: bool = False) -> str:
     inventory_rows = rows(data["inventory"], ["rule", "implementation", "tests", "proof"])
     current_rows = rows(data["current"], ["topic", "state", "detail"])
     if inventory_only:
-        # Keep every rule visible, with one primary reference per evidence
-        # column. The source ledger retains the complete reference lists and
-        # scoped component statements rather than duplicating them in prose.
+        # Keep each obligation group visible with a primary reference per column.
+        # Detailed component premises and evidence remain in the linked packets.
         def primary(value, label):
             links = LINK.findall(value)
             if links:
@@ -333,8 +332,8 @@ def render_status(root: Path, *, inventory_only: bool = False) -> str:
             "and capacities. General source/Rust/native/execution correspondence, complete production",
             "soundness and R14/H1–H5 remain open. Rust acceptance stays authoritative; external",
             "schemas remain disabled. Historical probe counts belong to their frozen reports.", "",
-            "The [source ledger](project-status.json) retains complete reference lists and",
-            "component statements; this table gives one primary reference per column.", "",
+            "The [source ledger](project-status.json) groups current obligations; linked packets",
+            "retain component details. This table gives one primary reference per column.", "",
             "| Rule | Implementation boundary | Existing regression evidence | Proof status and gap |",
             "| --- | --- | --- | --- |", *inventory_rows, "",
         ])

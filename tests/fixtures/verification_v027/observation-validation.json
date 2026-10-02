@@ -1,0 +1,116 @@
+{
+  "native_cases": 150,
+  "rust_checks": 144,
+  "rust_comparisons": 143,
+  "original_constructors": 19,
+  "independent_operators": 145,
+  "hidden_histories": 145,
+  "complete_observing_sources": 5,
+  "max_semantic_qubits": 3,
+  "native_bindings": {
+    "lean_binary_sha256": "15666c3c1f6d0a229a0df3801023b53cc9e7aac72d37c7083f0de987fc6bde34",
+    "lean_input_sha256": "64e9d4cec7fe3e963e937cddebb18bf442ec1f3b797f022ae41330800cc305d2",
+    "lean_stdout_sha256": "384b28ee8ae2b1c0fe86d3b37dc51966b9189277ed830bededf56b02d4832cde",
+    "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "rust_binary_sha256": "6cb0fbd9b8235d3b0414abdfb2aec30feb111e952770061d144b6b18ba813fe7",
+    "rust_stdout_sha256": "2965bfe27e627278a646736117ee04abb8839f7d67ce83e285cc4194f3e26217"
+  },
+  "commands": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/raw-observing-v026/first",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-observation-source-1maeknwy/0.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/bell",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-observation-source-1maeknwy/1.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/graph_state2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-observation-source-1maeknwy/2.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/qualtran/control_zero_reflection2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-observation-source-1maeknwy/3.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_negative2",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-observation-source-1maeknwy/4.json",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": "info: observation_test: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "run",
+        "--offline",
+        "--quiet"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Semantics/Observation.lean": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "2097f2d760ecf8d09a1fc425cd7ea2bb27efff88127efa553bd0a6c2b64ad2c1",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+    "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+    "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+    "scripts/test_lean_observation.py": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9"
+  },
+  "remaining": [
+    "six-bit dense component; general matrix-free acceptance and branch functions use separate VM-26 modules",
+    "native/decoder correspondence",
+    "VM-27 hierarchy closure",
+    "VM-28/29 packaging and production dual integration"
+  ]
+}

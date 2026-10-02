@@ -1,0 +1,489 @@
+{
+  "status": "failed",
+  "failures": [
+    {
+      "name": "wire-bound-target",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "action": {
+                        "tag": "hadamard",
+                        "target": 4294967296
+                      },
+                      "controls": []
+                    }
+                  ],
+                  "tag": "apply_unitary"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-control",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "action": {
+                        "indices": [
+                          0
+                        ],
+                        "permutation": [
+                          0
+                        ],
+                        "phases": [
+                          0
+                        ],
+                        "tag": "monomial"
+                      },
+                      "controls": [
+                        {
+                          "index": 4294967296,
+                          "when_one": false
+                        }
+                      ]
+                    }
+                  ],
+                  "tag": "apply_unitary"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-permutation",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "action": {
+                        "indices": [
+                          0
+                        ],
+                        "permutation": [
+                          65536
+                        ],
+                        "phases": [
+                          0
+                        ],
+                        "tag": "monomial"
+                      },
+                      "controls": []
+                    }
+                  ],
+                  "tag": "apply_unitary"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-phase",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "action": {
+                        "indices": [
+                          0
+                        ],
+                        "permutation": [
+                          0
+                        ],
+                        "phases": [
+                          256
+                        ],
+                        "tag": "monomial"
+                      },
+                      "controls": []
+                    }
+                  ],
+                  "tag": "apply_unitary"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-evidence",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "input": 0,
+                  "output": 1,
+                  "steps": [
+                    {
+                      "action": {
+                        "adjoint": false,
+                        "evidence": 4294967296,
+                        "indices": [
+                          0
+                        ],
+                        "tag": "contract"
+                      },
+                      "controls": []
+                    }
+                  ],
+                  "tag": "apply_unitary"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-computed-function",
+      "actual": {
+        "ok": {
+          "evidence": [],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "ancilla_wires": [
+                    1
+                  ],
+                  "function": [
+                    65536
+                  ],
+                  "logical_steps": [],
+                  "source": 0,
+                  "source_out": 1,
+                  "tag": "certified_compute",
+                  "use_steps": []
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-meaning-permutation",
+      "actual": {
+        "ok": {
+          "evidence": [
+            {
+              "identity": {
+                "implementation": "x",
+                "sources": [],
+                "specification": "y"
+              },
+              "implementation": 0,
+              "signature": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "target": {
+                "table": [
+                  65536
+                ],
+                "tag": "permutation"
+              }
+            }
+          ],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "gate": "h",
+                  "input": 0,
+                  "output": 1,
+                  "tag": "gate"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    },
+    {
+      "name": "wire-bound-meaning-phase8",
+      "actual": {
+        "ok": {
+          "evidence": [
+            {
+              "identity": {
+                "implementation": "x",
+                "sources": [],
+                "specification": "y"
+              },
+              "implementation": 0,
+              "signature": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "target": {
+                "table": [
+                  256
+                ],
+                "tag": "phase8"
+              }
+            }
+          ],
+          "programs": [
+            {
+              "classical_inputs": [],
+              "classical_outputs": [],
+              "declared_effect": "unitary",
+              "operations": [
+                {
+                  "gate": "h",
+                  "input": 0,
+                  "output": 1,
+                  "tag": "gate"
+                }
+              ],
+              "quantum_inputs": [
+                {
+                  "shape": {
+                    "bits": 1
+                  },
+                  "token": 0,
+                  "wires": [
+                    0
+                  ]
+                }
+              ],
+              "quantum_outputs": [
+                1
+              ]
+            }
+          ],
+          "root": 0,
+          "root_interface": null,
+          "sources": []
+        }
+      },
+      "expected": null
+    }
+  ],
+  "decoder_sha256": "d3c12781fd555c307291bafb478aff18f183cd3144603016a1810b6f464fadd7",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "original_json_fields_survive_the_actual_rust_bridge",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "stdout": "\nrunning 1 test\ntest interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.01s\n\n",
+      "stderr": "   Compiling qleisli v0.2.7 (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.20s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-c9c2f09c3096a771)\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "every_frozen_raw_operation_and_action_preserves_its_fields"
+      ],
+      "exit_code": 0,
+      "stdout": "\nrunning 1 test\ntest interchange::codec::tests::every_frozen_raw_operation_and_action_preserves_its_fields ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.01s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running unittests src/lib.rs (target/debug/deps/qleisli-c9c2f09c3096a771)\n"
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [159/161] Built Main (4.1s)\n\u2714 [160/161] Built Main:c.o (545ms)\n\u2714 [161/161] Built \u00abdecoder-audit\u00bb:exe (1.8s)\nBuild completed successfully (161 jobs).\n",
+      "stderr": "info: decoder_audit: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    }
+  ]
+}

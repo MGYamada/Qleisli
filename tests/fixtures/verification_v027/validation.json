@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.vm27-request-slice-validation",
+  "version": 1,
+  "date": "2026-10-02",
+  "status": "passed-local-bounded-slice",
+  "candidate": "dirty development tree; not committed, tagged, published or checked by hosted CI",
+  "scope": "Native exact finite-request decoding/equality for hierarchy roots, instruments and QPE providers; progressive test-oriented CI lanes",
+  "kernel_binary_sha256": "75a93d39583191dce1ae940359ed711a6332661d4021bacd93d1709945299012",
+  "schema_source_revision": "2869a745f9650e6ad0b31f2c7ebf1c6046c6220bd85942376c3e498aadfacc38",
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
+    "lean-kernel/Protocol/HierarchicalFinite.lean": "68ffc5c70a250fa0954546354f00173adbb2f1dbfe43c791ad08a6bd20467e64",
+    "lean-kernel/Cli/Hierarchical.lean": "8deec39be7ce81fe4e3ecfc6813f42e54712248fdb6365b45eab89714c344409",
+    "src/interchange/hierarchical.rs": "37ffd301a59836a203c5f35dc4efafa990b1bc0bdee198ac2ae0332f50403095",
+    "src/interchange/hierarchical/runtime.rs": "f8dc5015e0dc4749052935c6e430db61f88f624e9f6f24949591941da3f1a463",
+    "scripts/ci_profiles.py": "6ac40d6688b234c9000d95eb45f3358875f992d69f827a7f14eac4c7518c38c8",
+    ".github/workflows/ci.yml": "3594c87047a2e917e751679164c8ed90e04837c65abbd5dc2444918ef0198dd8",
+    ".github/ci/native-comparisons.json": "2efb6183678a56f9f83c3e3360722d6540c87eb8f98df41fae438f96193b154f"
+  },
+  "checks": [
+    {"command": "lake build (lean-kernel)", "exit_code": 0},
+    {"command": "python3 scripts/check_schema_registry.py --write --report /private/tmp/qleisli-vm27-registry.json", "exit_code": 0, "scope": "Both Lean builds/Audit, source policy, fresh QleisliKernel replay and actual type export; 3 external schemas remain disabled", "record": "schema-registry-validation.json"},
+    {"command": "lake env leanchecker --fresh Main (lean-kernel)", "exit_code": 0},
+    {"command": "python3 scripts/test_check_lean_kernel.py --compiled", "exit_code": 0, "tests": 27},
+    {"command": "python3 scripts/test_hierarchical_finite_binding.py", "exit_code": 0, "native_cases": 8, "rust_matrix_reader_invoked": false},
+    {"command": "python3 scripts/test_hierarchical_host.py", "exit_code": 0, "binary_cases": 362, "ignored_host_tests": 11},
+    {"command": "python3 scripts/test_hierarchical_request.py", "exit_code": 0, "cases": 820},
+    {"command": "python3 scripts/test_instrument_host.py", "exit_code": 0, "binary_cases": 772},
+    {"command": "python3 scripts/test_qpe_instrument_host.py", "exit_code": 0, "native_cases": 20, "response_faults": 11, "binary_cases": 72},
+    {"command": "cargo test --all-targets --quiet", "exit_code": 0, "scope": "Ordinary Rust tests, including strict v2 framing and sized native-failure diagnostics; other ignored native suites not implicitly included"},
+    {"command": "cargo clippy --all-targets -- -D warnings", "exit_code": 0},
+    {"command": "cargo fmt --check", "exit_code": 0},
+    {"command": "python3 scripts/test_ci_profiles.py", "exit_code": 0, "tests": 6, "scope": "Real Git diffs; tests/model/full selection; unknown/missing/policy/release fallback; source-only registry updates versus type/domain/enablement changes; required-check failure aggregation"},
+    {"command": "python3 scripts/test_run_native_ci.py", "exit_code": 0, "tests": 8, "scope": "Original 65-group/66-command coverage retained plus one new command; concurrency, timeout, source/toolchain/report mutations, explicit full-proof and routine-native routing"},
+    {"command": "python3 scripts/test_measure_ci.py", "exit_code": 0, "tests": 5},
+    {"command": "python3 scripts/test_check_schema_registry.py", "exit_code": 0, "tests": 12},
+    {"command": "python3 scripts/check_schema_registry.py --source-only", "exit_code": 0},
+    {"command": "ruby YAML.load_file workflow syntax check", "exit_code": 0},
+    {"command": "python3 scripts/check_docs.py --write-status", "exit_code": 0, "scope": "Generated status refreshed; 1841 local links, 74 anchors, 179 Lean root modules; AGENTS 97 lines / 5998 UTF-8 bytes"},
+    {"command": "git diff --check", "exit_code": 0}
+  ],
+  "not_performed": [
+    "No new maximum-qubit corpus or benchmark cases.",
+    "The complete 65-group native CI inventory was not rerun locally; affected hierarchy/request/instrument/QPE paths and runner regressions were run.",
+    "Retained whole-project reduction/refactoring-equivalence fixtures were not rerun for this bounded slice; existing proof statements were retained, both packages built/audited and both executable roots freshly replayed.",
+    "No hosted CI run or new CI timing claim, PR/merge, MSRV/cross-platform, clean exact-source distribution or publication."
+  ],
+  "remaining": [
+    "Rust QIRF finite-leaf and phase-fixed H reconstruction remains required.",
+    "VM27 closure, native/decoder correspondence, full hierarchy/source preservation, VM28/29 and S05 remain open.",
+    "Issue 223 remains a medium-term progressive migration; only the initial test-oriented lane split is implemented."
+  ],
+  "production_authority": "Rust",
+  "external_schemas_enabled": false
+}

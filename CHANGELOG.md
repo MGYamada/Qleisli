@@ -6,6 +6,37 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
+## 0.2.7 - 2026-10-02
+
+- Fix finite Pair/nested tuple reconstruction (#207), retain named-QPE host
+  fault checks in CI (#208), reject run_elab/run_meta in kernel policy (#209),
+  and validate corpus attribution by its actual upstream source (#210).
+- Diagnose local-only value calls at the callee rather than as missing imports
+  (#211); prevent sized proposal output from overwriting files or following
+  destination symlinks (#212); keep unused-manifest warnings host-independent
+  with stable ancestor-manifest locations under --qrate (#214).
+- Prove actual native QIRF graph/root complex and reference semantics; discharge
+  every finite leaf, independent request pair and phase-fixed H body. Add all-field
+  Rust/Lean decoder comparisons (362 cases), align eight QIRF wire integer bounds,
+  and extend whole-hierarchy/named-QPE reference coefficient tests. General
+  analytic reader-to-Operator closure and universal decoder/compiler proofs remain open.
+- Move original QIRF1/2 leaf graphs, finite-request equality and phase-fixed H
+  to native Lean checking for hierarchy/Fourier/instrument/QPE reports. Add
+  native-only experimental APIs; retain independent bounded native work and
+  Rust sealed-handle reconstruction for compatible executable reports.
+  VM-27 closure and production authority transfer remain open.
+- Adopt test-oriented routine CI (#223): native builds/audits and all retained
+  comparisons, separate changed-model proof compilation, full fresh replay
+  for release/tag/manual full and policy-risk inputs. Reuse #206's bounded
+  native runner and exact source/toolchain/coverage records.
+- Select development version 0.2.7 across Rust, Lean, Python and the std qrate.
+- Reduce current documentation by approximately 55% in tracked UTF-8 bytes while
+  preserving plans and imaginary-v1; consolidate repeated contracts and retire
+  historical narrative with repaired links and regenerated status views.
+- Add nine small translations from frozen QuantumKatas, Qualtran and PennyLane
+  inputs (60 to 69), complete first-source diagnostics, independent full-entry
+  phase/order checks and nine paired semantic faults (36 to 45).
+
 ## 0.2.6 — 2026-10-02
 
 Published to crates.io and GitHub; [immutable validation and installation evidence](tests/fixtures/releases/v0.2.6/publication.json).
@@ -33,7 +64,7 @@ Published to crates.io and GitHub; [immutable validation and installation eviden
 - Require exact failure framing in every Lean runtime mode, including nonzero
   process exits (#193); no checker authority or acceptance semantics change.
 
-Validation and publication are recorded in the [release record](docs/releases/v0.2.6.md).
+Validation and publication are retained in the [immutable release record](https://github.com/MGYamada/Qleisli/blob/1dbacec38d6e65ade389aa71fcb2c8fc5ded46cc/docs/releases/v0.2.6.md).
 VM-26 is checked; VM-27–29 remain open. Production acceptance remains in Rust.
 
 ## 0.2.5 — 2026-10-02
@@ -623,7 +654,7 @@ and the remaining production hierarchy/H1–H5 work target 0.2.1.
 - Preserve tuple arity and nesting across source AST, type checking, ownership
   and finite evidence: `(Bit,Bit,Bit)` differs from `((Bit,Bit),Bit)`.
   Add the consolidated [type contract](docs/type-system.md), explicit conversion
-  and [migration rules](docs/tuple-shapes.md), and source/external-evidence
+  and [migration rules](docs/type-system.md), and source/external-evidence
   regressions. Existing binary interfaces retain their shapes. This supersedes
   the earlier plan to preserve the 0.1.8 left-folding rule.
 - Adopt Rust as the default when type or ownership design is uncertain;

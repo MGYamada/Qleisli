@@ -20,6 +20,8 @@ structure Scan where
   stack : List Frame := []
   depth : Nat := 0
   count : Nat := 0
+  values : Nat := 0
+  depthLimit : Nat := 64
   deriving Repr
 
 private def bare (literal : List Char) : Except String Unit := do
@@ -27,6 +29,7 @@ private def bare (literal : List Char) : Except String Unit := do
   if text == "true" || text == "false" || text == "null" then return
   if text.isEmpty || !text.toList.all Char.isDigit || text.length > 20 then
     throw "expected bounded unsigned integer"
+  if text.length > 1 && text.startsWith "0" then throw "noncanonical integer"
   let some number := text.toNat? | throw "invalid integer"
   if number > 18446744073709551615 then throw "integer exceeds u64"
 
@@ -42,9 +45,10 @@ private def stringToken (scan : Scan) : Except String Scan := do
 
 private def punctuation (scan : Scan) (char : Char) : Except String Scan := do
   if char == '{' || char == '[' then
-    if scan.depth ≥ 64 then throw "JSON depth exceeds 64"
+    if scan.depth ≥ scan.depthLimit then throw "JSON depth exceeds limit"
     let frame := if char == '{' then Frame.object [] true else .array
-    return {scan with stack := frame :: scan.stack,depth := scan.depth+1}
+    if scan.values ≥ 1000000 then throw "too many JSON values"
+    return {scan with stack := frame :: scan.stack,depth := scan.depth+1,values := scan.values+1}
   if char == '}' || char == ']' then
     let _ :: rest := scan.stack | throw "unmatched JSON close"
     return {scan with stack := rest,depth := scan.depth-1}
@@ -55,11 +59,16 @@ private def punctuation (scan : Scan) (char : Char) : Except String Scan := do
   return scan
 
 private def outside (scan : Scan) (char : Char) : Except String Scan := do
-  if char == '"' then return {scan with mode := .quote,literal := ['"']}
   if char == ' ' || char == '\n' || char == '\r' || char == '\t' then return scan
   if char == '{' || char == '}' || char == '[' || char == ']' || char == ',' || char == ':' then
     punctuation scan char
-  else return {scan with mode := .bare,literal := [char]}
+  else
+    let key := match scan.stack with | .object _ true :: _ => true | _ => false
+    if !key && (scan.values ≥ 1000000 || scan.depth > scan.depthLimit) then
+      throw "JSON value/depth limit"
+    let scan := {scan with values := scan.values + if key then 0 else 1}
+    if char == '"' then return {scan with mode := .quote,literal := ['"']}
+    else return {scan with mode := .bare,literal := [char]}
 
 private def scanChar (scan : Scan) (char : Char) : Except String Scan := do
   if scan.count ≥ 16777216 then throw "JSON exceeds 16 MiB"
@@ -80,13 +89,15 @@ private def scanChar (scan : Scan) (char : Char) : Except String Scan := do
 
 /-- Duplicate fields are rejected before Lean.Json's map insertion can erase them.
 Numeric spelling, byte/depth bounds and full JSON framing are checked afresh. -/
-def parse (text : String) : Except String Json := do
+def parseWithDepth (text : String) (depthLimit : Nat) : Except String Json := do
   if text.utf8ByteSize > 16777216 then throw "JSON exceeds 16 MiB"
-  let scan ← text.toList.foldlM scanChar {}
+  let scan ← text.toList.foldlM scanChar {depthLimit}
   if scan.mode == .bare then bare scan.literal
   else if scan.mode != .outside then throw "unterminated JSON string"
   if !scan.stack.isEmpty then throw "unclosed JSON container"
   Json.parse text
+
+def parse (text : String) : Except String Json := parseWithDepth text 64
 
 private def fields (value : Json) (names : List String) : Except String Unit := do
   let object ← value.getObj?

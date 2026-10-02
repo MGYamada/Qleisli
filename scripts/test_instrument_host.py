@@ -71,9 +71,9 @@ def test_transport(kernel):
     for name, data, expected in cases:
         run = subprocess.run([str(kernel),'--instrument-pending'],input=data,capture_output=True,timeout=30)
         lines = run.stdout.decode().splitlines()
-        assert lines[:1] == ['qleisli.instrument-pending 1'], (name,run)
+        assert lines[:1] == ['qleisli.instrument-pending 3'], (name,run)
         if expected == 'pending':
-            assert run.returncode == 0 and lines[1] == 'pending' and lines[3:] == ['0','0'], (name,lines)
+            assert run.returncode == 0 and lines[1] == 'pending' and lines[3:] == ['0','0','0'], (name,lines)
             assert 0 < int(lines[2]) <= 2000000
         else:
             assert run.returncode == 1 and lines[1:] == ['error',expected], (name,lines)
