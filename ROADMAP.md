@@ -6,7 +6,16 @@ Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Current targets and implementation boundaries below do not adopt future syntax or imply completed proofs. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
-## v0.2.5: refactoring, documentation and finite corpus
+## Published v0.2.6: observing verification and finite corpus
+
+Published on 2026-10-02: VM-26 observing/SSA/branch-function checking and proofs,
+60 finite translations, docs reduced by at least half, bounded AGENTS.md,
+CI policy and compatible review repairs. [Publication evidence](tests/fixtures/releases/v0.2.6/publication.json)
+binds exact-source CI, matching Linux/macOS packages, fresh registry installation,
+hosted docs and complete source downloads. Rust remains authoritative;
+VM-27–29 and general source/backend/theorem gates remain open.
+
+## Published v0.2.5: refactoring, documentation and finite corpus
 
 Selected on 2026-10-01. Consolidate CLI source execution, canonical numeric
 argument parsing and sample-result transport; separate sized argument validation
@@ -81,7 +90,7 @@ obligations and public migrations before implementation; the
 builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development is 0.2.5; the type-system decision remains future work.
+Current release is 0.2.6; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
