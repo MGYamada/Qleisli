@@ -1,2 +1,0 @@
-["python3", "scripts/test_hierarchical_fourier_host.py"]
-{"argv":["cargo","test","--test","qft_hierarchy","native_fourier_request_faults","--","--ignored","--nocapture"],"binary_cases":187,"binary_sha256":"cdf388fbb01f30655e9cea9d27bf251311c9e1d94ff701a118c20b620423f7a8","exit_code":0,"format":"qleisli.fourier-host-validation","host_cases":39,"seconds":50.228,"semantic_evidence_issued":false,"status":"passed","version":1}

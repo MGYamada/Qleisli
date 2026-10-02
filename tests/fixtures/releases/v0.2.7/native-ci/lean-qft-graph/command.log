@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_qft_graph.py"]
-Typed QFT graph: 68 native decisions, 744 independent literal paths; dense dimension 0

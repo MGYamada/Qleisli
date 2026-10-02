@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_finite.py"]
-222 native Lean cases; 211 Rust comparisons; 110 independent matrices; 22 graph fault detectors

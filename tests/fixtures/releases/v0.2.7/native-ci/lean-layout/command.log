@@ -1,7 +1,0 @@
-["python3", "scripts/test_lean_layout.py"]
-.........
-----------------------------------------------------------------------
-Ran 9 tests in 17.555s
-
-OK
-Native typed-layout decisions: 230

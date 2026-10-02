@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_raw.py"]
-121 native raw cases; 104 Rust comparisons; 85 independent rational matrices; 180 independent raw trace comparisons

@@ -1,7 +1,0 @@
-["python3", "scripts/test_lean_layout_dag.py"]
-.........
-----------------------------------------------------------------------
-Ran 9 tests in 10.886s
-
-OK
-Native typed-layout DAG decisions: 147

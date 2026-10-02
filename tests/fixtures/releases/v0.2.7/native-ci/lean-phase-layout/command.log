@@ -1,7 +1,0 @@
-["python3", "scripts/test_lean_phase_layout.py"]
-...........
-----------------------------------------------------------------------
-Ran 11 tests in 31.863s
-
-OK
-Native typed-phase/layout decisions: 382

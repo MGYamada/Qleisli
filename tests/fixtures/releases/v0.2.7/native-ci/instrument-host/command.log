@@ -1,2 +1,0 @@
-["python3", "scripts/test_instrument_host.py"]
-{"format": "qleisli.instrument-host-validation", "version": 1, "status": "passed", "binary_cases": 772, "host_command": ["cargo", "test", "--test", "hierarchical_host", "instrument", "--", "--include-ignored", "--nocapture"], "kernel_sha256": "cdf388fbb01f30655e9cea9d27bf251311c9e1d94ff701a118c20b620423f7a8", "production_integration": false, "named_qpe_binding": false}

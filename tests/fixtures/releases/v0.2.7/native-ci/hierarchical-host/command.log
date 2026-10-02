@@ -1,6 +1,0 @@
-["python3", "scripts/test_hierarchical_host.py"]
-{"format": "qleisli.hierarchy-host-validation", "version": 1, "status": "passed", "binary_sha256": "cdf388fbb01f30655e9cea9d27bf251311c9e1d94ff701a118c20b620423f7a8", "binary_cases": 362, "seconds": 71.047, "host_command": ["cargo", "test", "--test", "hierarchical_host", "--", "--ignored", "--nocapture"], "exit_code": 0}
-["python3", "scripts/test_hierarchical_finite_binding.py"]
-Passed 57 native QIRF/request cases; Rust checker not invoked.
-["python3", "scripts/test_verification_decoders.py", "--record", "/home/runner/work/_temp/native-comparisons/hierarchical-host/record.json"]
-Passed 362 lossless decoder cases; all 19 raw and selected hierarchy variants.

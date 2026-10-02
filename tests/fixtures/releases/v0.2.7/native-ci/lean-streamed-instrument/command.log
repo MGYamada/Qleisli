@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_streamed_instrument.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/record.json"]
-154 native streamed cases; 143 Rust comparisons; 147 exact Kraus operators

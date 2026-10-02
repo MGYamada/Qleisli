@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_qpe.py"]
-{"native_decisions": 101, "accepted": 64, "controlled_path_comparisons": 4080, "preparation_paths": 4080, "largest_target_calls": 255, "kernel_dense_dimension": 0, "schema_decisions": 40, "schema_accepted": 6, "kraus_entries": 1080, "joint_density_branches": 180, "largest_oracle_vector": 64, "maximum_error": 4.440937517184161e-15, "unitary_completeness_cases": 24, "joint_trace_cases": 24, "completeness_counterexamples": 3}

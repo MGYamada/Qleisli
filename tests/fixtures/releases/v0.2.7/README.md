@@ -6,7 +6,10 @@ Publication completed on 2026-10-03 (Asia/Tokyo); candidate selection was Octobe
 
 The exact-source full CI selection, all successful jobs, native coverage and
 complete command logs are retained in `ci-selection.json`, `native-ci/`,
-`native-coverage.json` and `publication-command-results.json`. The distribution
+`native-coverage.json` and `publication-command-results.json`. Raw logs use
+lossless gzip so their output whitespace is preserved without treating it as
+source formatting; `publication.json` maps original names to stored paths and
+records both raw and compressed hashes. The distribution
 reports preserve both hosts' full source inventories and command results;
 `local-distribution-logs/` and `linux-distribution-logs/` preserve their logs.
 Original temporary paths remain in reports as execution evidence, not reusable

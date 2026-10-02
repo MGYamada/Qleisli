@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_branch_function.py", "--record", "/home/runner/work/_temp/native-comparisons/lean-branch-function/record.json"]
-51 native branch-function cases; 45 Rust comparisons; 69 exact operators

@@ -1,2 +1,0 @@
-["python3", "scripts/test_lean_exact.py"]
-815 native Rust/Lean comparisons; 551 rational and 75 matrix checks

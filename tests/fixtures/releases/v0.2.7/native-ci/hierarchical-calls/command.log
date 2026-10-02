@@ -1,2 +1,0 @@
-["python3", "scripts/test_hierarchical_calls.py"]
-{"format": "qleisli.hierarchical-call-validation", "version": 1, "status": "passed", "cases": 95, "accepted": 81, "exact_coefficients": 4599, "semantic_counterexamples": 4, "maximum_oracle_dimension": 256, "generated_adapter_nodes": 2, "repeated_bodies_expanded": 0, "external_semantic_evidence": false, "binary_sha256": "eceb07f7097e12ac96e7edc5a50a89e9f79cb0d2ba37a3d4cf51139045dcbd42", "harness_sha256": "f7e008972a4bdc4c0a867b42fb0494ff54089544de35c78c4f35d3a3808176a6"}

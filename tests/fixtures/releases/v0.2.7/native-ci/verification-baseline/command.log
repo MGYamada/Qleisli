@@ -1,4 +1,0 @@
-["cargo", "build", "--bin", "qleisli"]
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
-["python3", "scripts/test_verification_baseline.py", "target/debug/qleisli", "--kernel", "lean-kernel/.lake/build/bin/qleisli-kernel"]
-VM-22: 12 finite comparisons, 12 source decisions, 5 native component decisions; at most three qubits.
