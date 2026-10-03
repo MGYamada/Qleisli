@@ -1,0 +1,2550 @@
+{
+  "status": "passed",
+  "scope": "small QIRF/ordinary CLI dual gate; not S05 or source preservation",
+  "binaries": {
+    "/Users/masa/git/Qleisli/target/debug/qleisli": "31c9b7f7b8ac4591d1c0ec1ee91a6fb836650c8c277e7595985f18c44ab66fee",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "65254f31d6b306db68c5dd7af37bf502ed2d266df56b9bc4aa7672ad984bca7a"
+  },
+  "observations": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=64",
+        "--seed=7"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7}],\"execution_steps\":423}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=64",
+        "--seed=7",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":7},{\"bits\":[true,true],\"execution_steps\":7}],\"execution_steps\":423}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "checked source and verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/rust.qirf",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/rust.qirf\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/dual.qirf",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/dual.qirf\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/dual.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/dual.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "verified IR; request_checked: false\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n50\n0\n",
+      "stderr": "",
+      "input_sha256": "a2a75daa23b1353cf2fc997ab2c1cb9371e4bac16afffa6db236030180fb8b6b"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"io\",\"severity\":\"error\",\"message\":\"cannot resolve Lean dual checker: No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"io\",\"severity\":\"error\",\"message\":\"cannot resolve Lean dual checker: No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=1",
+        "--seed=1",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"io\",\"severity\":\"error\",\"message\":\"cannot resolve Lean dual checker: No such file or directory (os error 2)\",\"primary\":null,\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/blocked.qirf",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"io\",\"severity\":\"error\",\"message\":\"cannot resolve Lean dual checker: No such file or directory (os error 2)\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects opt-in Rust/Lean dual checking; either failure blocks use.\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel="
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects opt-in Rust/Lean dual checking; either failure blocks use.\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--against=x"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects opt-in Rust/Lean dual checking; either failure blocks use.\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "doc",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/dual-v028/attempt-02/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects opt-in Rust/Lean dual checking; either failure blocks use.\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  --legacy-source-limits cannot be combined with explicit byte limits.\n  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\n"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "64588d27ff8109c6523b7442a8374bcc597c3cbccb6bbeae7d2e678d1d1db7bc"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/h.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "6836b58c5733040abeb363cfe630bfe105fa34488e2008af92bdd53c2db1b114"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/h.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "c0c5717fd21c7f46c4607e0883e11fc65616eaf360abbb917c7be82141d3597b"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/t.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "93288a19356dff750f93b6c9daac39188fb9dc90640805c241c0c2db90d3dc1b"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/t.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "187474d6f47d093537d1f31d80ec147a887e236bef59d7b8aae561e20a12d584"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/unit_phase.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "830a58d1110f106ec1142089cba673525678078fe0b82918d483bc72980e85be"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/unit_phase.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n44\n0\n",
+      "stderr": "",
+      "input_sha256": "6973a64d9eecc6a322d5a9d45fbce7df0440e2006d88d588b95e46375eb964bb"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/toffoli.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n44\n0\n",
+      "stderr": "",
+      "input_sha256": "9781210f0b9ac215cb63f290d6d2f489b15fca26122bdb0d7ae96fe012a83d54"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/toffoli.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n34\n0\n",
+      "stderr": "",
+      "input_sha256": "0d080c6ab3e5fb334f3ee3e766eda29f55f41e301256af5b78a29869b07866ed"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_qif_unit.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n34\n0\n",
+      "stderr": "",
+      "input_sha256": "34f6733fa4431c6141e79ed725b9c3f5985e495faa1fbbdb61f2be259008bbc0"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_qif_unit.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n46\n0\n",
+      "stderr": "",
+      "input_sha256": "6ad600a053427a358f614088a36da0bfcb220d6784d94b5d7011cd7b9fd5016b"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_computed_target.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n46\n0\n",
+      "stderr": "",
+      "input_sha256": "3f31986daebe59e05a51fa785ec437091a52f52fc99c693c5add0422ac9f606c"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_computed_target.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n183\n1\n",
+      "stderr": "",
+      "input_sha256": "dac89ba0bff15051de19cad23bd37e4548c551051b3a3006e966a9cfc8ffc40c"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "3de058f9d9991b3a91479321f7882ed7c021c63f24b04271746c6e4314d153c2"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"exact equation U E_in = E_out u does not hold\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /request/meaning\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"exact equation U E_in = E_out u does not hold\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /request/meaning\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "b22decd9e9f6fa4b916d0a4f6a210af7d9f59629f10446cf36d7805f711763f3"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"root type trees do not equal the requested signature\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /root_interface\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"root type trees do not equal the requested signature\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /root_interface\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "76806f584b464430fe8eef61410fd3f443a3afca1860d8848c999edd74fd26f2"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"source snapshot differs from the requested snapshot\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /sources\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"source snapshot differs from the requested snapshot\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /sources\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "f3a9f6f2386a88ca3dfa53216c90abc46e91bda3c327e14d70d9759fb3493cf1"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"format\",\"severity\":\"error\",\"message\":\"unused source entry\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /sources\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"format\",\"severity\":\"error\",\"message\":\"unused source entry\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: /sources\",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n183\n1\n",
+      "stderr": "",
+      "input_sha256": "3426189192f489cf64e98c8a5ae87776a058b5da932364c7359ad934cd05c635"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-dual-h8e_zmj5/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "0b9735a8aec23dd19bb0de636924f03d1e22eb83bfae2938c6e5335e9df0a755"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "90611b0bac454e20c60d9a4d0bc3cbd8cc5e3c9869e356105674bcbb67a87b86"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "71bc80ff8bc05640e0c06cbcaa9730165ea7ba4abea3c691d9fa26d06d10c224"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "d217b3437c1ecb4e72823e5f938086eb7857c4ae7aec65872ca79626b5c05ea5"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "6dd5de63cd11c2316a734ca0f9d76ac73ca841aff9cae142fbd548c428d4a9a5"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "3aed5d43b066af15e623531bfdbbba09357b6a99568492712a6bfba783ef362c"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "56e44985c104c1aa1a1ac60962b98ef2e9388e6cb3348aa0d6633247d212f031"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-dual"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "58560a468a942ed1a09b056f5a932e1d0ed3eeb0a6fef59b06664ab3bd16f11a"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/global_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/global_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/ghz3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/ghz3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bernstein_vazirani",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bernstein_vazirani",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/qpe3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/and_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/and_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qft2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qft2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qpe2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qpe2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qubit_rotation",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qubit_rotation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/teleport",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_vertex_cover",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_vertex_cover",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_maxcut",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_maxcut",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/classifier_layer",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/classifier_layer",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qpe3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qpe3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/deutsch_jozsa3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[true,false,false],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/deutsch_jozsa3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[true,false,false],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_measure",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_measure",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_constant3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_constant3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/lcu_projector",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/lcu_projector",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/kernel_overlap2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/kernel_overlap2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/swap2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/swap2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/fredkin3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/fredkin3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/bitwise_not2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/bitwise_not2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_quarter",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/phase_kickback1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/phase_kickback1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/odd_parity3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[true,false,false],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/odd_parity3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[true,false,false],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_singlet2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_singlet2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than_constant2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals_constant2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_quarter",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_quarter2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_quarter2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_control_x2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_control_x2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_change_zx2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_change_zx2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_minus_one2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_minus_one2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_negative_quarter",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_negative_quarter",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_negative_quarter",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_z2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_z2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/toffoli3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/toffoli3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_equal1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_equal1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_than1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_than1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_mixed_sign",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_mixed_sign",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_mixer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_mixer2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/phased_uniform2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/phased_uniform2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/graph_state2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/graph_state2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_minus1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_minus1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/control_zero_reflection2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/control_zero_reflection2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_y",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_y",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_negative2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_negative2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_h2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_h2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_bitstring3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_bitstring3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_numbers3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_numbers3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_one3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_one3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_constant2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_constant2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_x",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_x",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_half2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_half2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_edge_layer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_edge_layer2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/two_bitstrings3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,true],\"probability\":0.5000000000000001},{\"bits\":[true,false,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/two_bitstrings3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,true],\"probability\":0.5000000000000001},{\"bits\":[true,false,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/w2_retained3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,false],\"probability\":0.5000000000000001},{\"bits\":[true,false,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/w2_retained3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true,false],\"probability\":0.5000000000000001},{\"bits\":[true,false,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_parity3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,false],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_parity3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,false],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/controlled_increment2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/controlled_increment2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals1",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_zero2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_zero2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_negative_x_positive_y",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_negative_x_positive_y",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_negative_mixer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_negative_mixer2",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_path_layer3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_path_layer3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": ""
+    }
+  ]
+}

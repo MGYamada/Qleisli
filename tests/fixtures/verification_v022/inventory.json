@@ -1848,8 +1848,14 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Cli/Validity.lean",
+      "sha256": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Main.lean",
-      "sha256": "325ad33b411cdca45be9ced45c842cfb52b6c2d006ee4da9361dc46fe7fd1d6d",
+      "sha256": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94",
       "group": "hierarchy",
       "surface": null
     },
@@ -1884,6 +1890,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
+      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/Layout.lean",
       "sha256": "da6b03a187ac74be6ee6b594c1b1af61bc77ea2ceb63e6a8e5afa8f78502e3d3",
       "group": "hierarchy",
@@ -1893,6 +1905,12 @@
       "path": "lean-kernel/Protocol/Observation.lean",
       "sha256": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/Qirf.lean",
+      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+      "group": "hierarchy",
       "surface": null
     },
     {
@@ -1908,8 +1926,14 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "sha256": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "220123026b3c5eb589d52497be00e21c46fe06d7ecd2f57d2bb19e3fddb9ff29",
+      "sha256": "b9bab994083c571a695792ff02a6f60c493ea1573db988b74a70777eef82ac41",
       "group": "hierarchy",
       "surface": null
     },
@@ -1994,6 +2018,12 @@
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Finite.lean",
       "sha256": "0ba3bc69488f9f57cccfd8d6a1d2013bb8a0c736c80d93bc837f5b76d561e169",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean",
+      "sha256": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
       "group": "hierarchy",
       "surface": null
     },
@@ -2214,6 +2244,30 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Qirf.lean",
+      "sha256": "17277e76f5154cf1624a5b6cceda3fd18186bf05e9fd7877256b4726167635bb",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
+      "sha256": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
+      "sha256": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
+      "sha256": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Qpe.lean",
       "sha256": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
       "group": "hierarchy",
@@ -2251,7 +2305,19 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
-      "sha256": "2097f2d760ecf8d09a1fc425cd7ea2bb27efff88127efa553bd0a6c2b64ad2c1",
+      "sha256": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean",
+      "sha256": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
+      "sha256": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
       "group": "raw-core",
       "surface": null
     },
@@ -2334,6 +2400,18 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+      "sha256": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean",
+      "sha256": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean",
       "sha256": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
       "group": "hierarchy",
@@ -2349,6 +2427,12 @@
       "path": "lean-kernel/QleisliKernel/Semantics/Protected.lean",
       "sha256": "9a145100d2a3b839551a9af480eeb36697d19a33da5c5b561569c6c4d775d5e0",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Qirf.lean",
+      "sha256": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86",
+      "group": "hierarchy",
       "surface": null
     },
     {
@@ -2383,8 +2467,32 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "1e3f1c5646bcfde4993b6f8dde83cb539439455ec56dabdd0eaaf371f73bc02f",
+      "sha256": "35412ea8be973253b2039e64c149a9e8a5974c02388942e1de7b8b78f658cfd2",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeHierarchy.lean",
+      "sha256": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeValidity.lean",
+      "sha256": "845e50fc3628b80b2ec8e783aa380e274dcf67bd2a307fbe625324809dc21c67",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Qirf.lean",
+      "sha256": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/QirfValidity.lean",
+      "sha256": "8e6a6300fabe1791223df9227e5b962fdb466691e663b2eb3de26fcd9877011b",
+      "group": "hierarchy",
       "surface": null
     },
     {
@@ -2478,6 +2586,12 @@
       "surface": null
     },
     {
+      "path": "lean/Qleisli/Semantics/Qirf.lean",
+      "sha256": "f37cb57590e8d780894b1a5a940582457d3c493df409546b94c659d66d725bc3",
+      "group": "hierarchy",
+      "surface": null
+    },
+    {
       "path": "lean/Qleisli/Semantics/Raw.lean",
       "sha256": "f06aaa32286366d32915d8730011de29e6390d2e43049a0553e5a1a634901ee8",
       "group": "raw-core",
@@ -2509,13 +2623,13 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "cdad520034083864764f9192daee7d323ff891155595cd27fb4a941889f374d5",
+      "sha256": "27d52247da89b710697e602996ad67ad554c5f586d654f548d543c94f1f7893c",
       "group": "foreign",
       "surface": null
     },
     {
       "path": "python/qleisli/__main__.py",
-      "sha256": "e0ea2bb515f5cbd9f8b6aafa4b797b32ca7095d7072843577c5cdd7115447cef",
+      "sha256": "1558439ab64c3961aff9d68dd4a452cb97401bc068ed5f186701f6dd5a185d9e",
       "group": "foreign",
       "surface": null
     },
@@ -2563,7 +2677,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "3f64d2ca6faf5f60ab42ca94434c12c883229636b97eb6dff7a5919b2ce46ceb",
+      "sha256": "eb9f7139629d0a43fd6d2dadd9907a16c2da5ea95c2df2c7b8e11942a072934a",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2573,7 +2687,7 @@
     },
     {
       "path": "src/bin/qleisli/artifacts.rs",
-      "sha256": "01092b80e4567e61c7980eca843c4044ef83cd44aa8a09a8cf5d4a279bfc9a22",
+      "sha256": "5b0139862ac62bf9d5d16d4c8c3699921f1fc97f217442e906c3a0f95898497f",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2583,7 +2697,7 @@
     },
     {
       "path": "src/bin/qleisli/interop.rs",
-      "sha256": "aa179180bd09f421980ac9bdaefb26ec6508a8add70e1ee5f5dc4b306cd104cc",
+      "sha256": "ffa13820fee50814dcd3ecfc08b677fe1fa36155d08ae5d175754df14eca5579",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2593,7 +2707,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "dd04277da900584b2caef2be2f2b136726827617931584dd22a2768364177eb3",
+      "sha256": "bfeff4762aa301c16800c8dbe785691e5b5631c84931076537708d60cb3e937d",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2603,7 +2717,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
+      "sha256": "16c805ebcd584dd8b86c844e5bacb2cda2fe9d84dddf14745f72187d09fee54d",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2645,7 +2759,7 @@
     },
     {
       "path": "src/bin/qleisli/source_commands.rs",
-      "sha256": "5f111199e3c8b9c2cc8075aeecae63679a196fb01fc39cedc9ff157ec7be91e6",
+      "sha256": "9bdd8521b83ba4d66a344efb0dac54c876e33777f3b216d92e8435e6b2d5dcc2",
       "group": "execution",
       "surface": {
         "declarations": [],
@@ -2951,7 +3065,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "fa5f7be61bca503c6efc05777c2f97c0f0e3f27ee191fd2cc3a214393416f73d",
+      "sha256": "cc6a4c986e52ae98ca7695b921430707b815dca339bed106fae4b38bd32fc6e9",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2962,9 +3076,11 @@
           "pub fn check_project(root: &Path) -> Result<(), CompileError>",
           "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
           "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
           "pub fn compile_project(root: &Path) -> Result<VerifiedProgram, CompileError>",
           "pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic>",
-          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<VerifiedProgram, Diagnostic>"
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic>"
         ],
         "capacity_constants": [
           "const MAX_BITS: usize = 12;",
@@ -3070,7 +3186,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "43c6f1984a2a264e9441f4b8245fdb739fbd33bd61f9c7af8dad47ad42e1f8c9",
+      "sha256": "085227ea64b414ecbfe2c17b36b9979961c3778ff8a2199beb0da7d38e8b4f04",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3090,7 +3206,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "535ba048a268c67d7b6e14d04bdb68c13f83d2be942afda421ff453682efeec8",
+      "sha256": "b92a63586252f7adfbb8b3b7f54f691b4bd7b62032f0b5b391bcc85ba90e12bf",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3125,20 +3241,25 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "cdfdd5bf8abdd52ef66a5e7ff321224bfba69372360a317dbebdda5dd706865d",
+      "sha256": "5262d02b1f442c63c79b4a056a9bd711e4e2a45f6116bc3d25a22ad181903f85",
       "group": "source",
       "surface": {
-        "declarations": [],
+        "declarations": [
+          "QrateSource"
+        ],
         "functions": [
+          "pub fn load_with_policy( &self, policy: super::SourcePolicy, ) -> Result<super::Project, Diagnostic>",
           "pub fn manifest_warnings(directory: &Path) -> Result<Vec<Diagnostic>, Diagnostic>",
-          "pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic>"
+          "pub fn path(&self) -> &Path",
+          "pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic>",
+          "pub fn select(directory: &Path) -> Result<Self, Diagnostic>"
         ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/frontend/project/source_file.rs",
-      "sha256": "3a9c1c8a28647083fff12a46e602704fa0224e6d348078faee7c114e2d4d892a",
+      "sha256": "6b4bf1001f62cfc9788a3e61b5ed25f2980e3895a19243b757d8f4c6f2c21f0f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3471,6 +3592,38 @@
       }
     },
     {
+      "path": "src/interchange/dual.rs",
+      "sha256": "0ebb58044adcbb7e81cc9719219086986c6f1188a76a8956f12ba4f69150d87d",
+      "group": "transport",
+      "surface": {
+        "declarations": [
+          "Checked",
+          "Kernel"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn into_program(self) -> VerifiedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn request(&self) -> Option<&[u8]>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/dual/runtime.rs",
+      "sha256": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/interchange/finite_leaf.rs",
       "sha256": "b8339fbaacccde92c418e3de8e8f6a065a9132f2ea450386332986ab2c83ea56",
       "group": "finite-leaf",
@@ -3655,7 +3808,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "eed1c2cb85f88c456bc690f4d3bab28572fac5eb6ac72eb947a5978e1648b715",
+      "sha256": "d4567e4e6fb406fae2c2117dd543cdb2eb50b4e4512dc5679b4c2a74a77fa035",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3663,6 +3816,7 @@
           "Imported",
           "RootInterface",
           "Version",
+          "dual",
           "finite_leaf",
           "finite_matrix",
           "hierarchical"
@@ -3692,7 +3846,7 @@
     },
     {
       "path": "src/interop/mod.rs",
-      "sha256": "fa578690b46747aae35c746421feb3456d6946994f8adcfd96d456d7c058485d",
+      "sha256": "886274f018ebb43d96e8502b3e1558a131060b689f290df30bc0076e6c5d9a79",
       "group": "foreign",
       "surface": {
         "declarations": [
@@ -3795,7 +3949,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "661b2586fccb5d628247ba6a9a217dcd03169a94151b81aa1f6a4b456d1953f6",
+      "sha256": "f75f2102efc3115536699d61b0d23362f13a40535005ef83ede3a2ea9bac0797",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3900,62 +4054,26 @@
     },
     {
       "path": "stdlib/src/arithmetic.qli",
-      "sha256": "d4d784f668b9e1666aa7111d29a526680a98f559b67b28cae9a3cbeb93a3c6ef",
+      "sha256": "7f2fea0ff5ac0b6b66fc08e0b9f25c0b351397ea19e360f3c9ec8d4e87e6cbb2",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/basis.qli",
-      "sha256": "574a3ed05072f8572cc32267649dc1f3877563a093ccb7ffc726bc9f577bad9b",
+      "sha256": "65eaf24de59045608fc289da0823b9879df756e0ec2e679e7580e7833c7c2b02",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/routines.qli",
-      "sha256": "641fb3351f46ef42afdee72432eec809fbda230801f335ddb1c4553b2d07ba02",
+      "sha256": "8f7a073ddc5d75a56a29d86860c4d88ae3d684b8f7ed642da73c1fb17872c91c",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/transforms.qli",
-      "sha256": "9116d185e214fc4fc06ead860dc91234cd20f62878b4dad4f5f1c61ad0d67eab",
+      "sha256": "6a4f0dc06ead037bb89b7c7d976efdefea1df78f108247c00d9614f4c399ebbd",
       "group": "source",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
-      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
-      "group": "hierarchy",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/Protocol/Qirf.lean",
-      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
-      "group": "hierarchy",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean",
-      "sha256": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
-      "group": "hierarchy",
-      "surface": null
-    },
-    {
-      "path": "lean-kernel/QleisliKernel/Qirf.lean",
-      "sha256": "31209fef8f9f0270260f3c0d145dbbec8ec9597a058053f521fb7b99d287601d",
-      "group": "hierarchy",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/Qirf.lean",
-      "sha256": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
-      "group": "hierarchy",
-      "surface": null
-    },
-    {
-      "path": "lean/Qleisli/NativeHierarchy.lean",
-      "sha256": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
-      "group": "hierarchy",
       "surface": null
     }
   ],
@@ -4327,6 +4445,25 @@
         "VM-25",
         "VM-26",
         "VM-27",
+        "VM-28",
+        "VM-29"
+      ]
+    },
+    {
+      "id": "qirf-dual-v028",
+      "group": "transport",
+      "entry_points": [
+        "interchange::dual::Kernel::check",
+        "CLI check/run/sample/emit-ir/verify-ir --lean-kernel=PATH"
+      ],
+      "status": "Explicit opt-in intersection; Rust still seals executable programs. No fallback or schema enabling.",
+      "request": "Optional independent qleisli.request v1; both original artifact and request byte arrays go to both checkers.",
+      "binding": "Private Checked retains immutable artifact/request and Rust reconstruction from those bytes. Run/sample uses that reconstruction; emission writes retained bytes.",
+      "encoding": "Original QIRF1/2 JSON in QLV1 length-delimited stdin; strict qleisli.qirf-dual 1 response and request-presence agreement.",
+      "domain": "Existing R8 finite equations and full original raw ownership/effects, including both classical arms. No caller equation for ordinary validity.",
+      "limits": "Existing checker capacities plus 16 MiB per file, 256-byte response, 60-second process deadline; exact work independently capped at 10000000.",
+      "failure": "Either rejection, unsupported form, exhausted capacity, absent runtime, malformed/oversized reply, exit/reply conflict or request coverage mismatch blocks use.",
+      "replacement": [
         "VM-28",
         "VM-29"
       ]

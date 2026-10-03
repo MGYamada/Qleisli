@@ -2,17 +2,16 @@
 
 # Qleisli roadmap
 
-Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a quantum language for the AI era](docs/ai-era-goal.md) and [goal 2: structuring quantum algorithms](docs/algorithm-structure-goal.md) remain in development. [Layer 3: a standard algorithm vocabulary](docs/stdlib-roadmap.md) has a v1 contract ledger and finite static-operation implementations. Stage 0 is complete as documentation; Stage 1 has a normative finite-core v0 specification but unfinished proofs; Stages 2–4 are partially implemented. Alongside minimal examples such as Bell, shared components build finite Grover, BV, bit-flip correction, QPE, and N=15 order-finding examples. Completion is judged against documented criteria and evidence. The [frontend documentation](docs/frontend-v0.md) distinguishes executed `.qli` from unimplemented syntax proposals.
+Status: the [design principles](docs/design-philosophy.md) are fixed. [Goal 1: a quantum language for the AI era](docs/ai-era-goal.md) and [goal 2: structuring quantum algorithms](docs/algorithm-structure-goal.md) remain in development. [Layer 3: a standard algorithm vocabulary](docs/stdlib-roadmap.md) has a v1 contract ledger and finite static-operation implementations. Stage 0 is complete as documentation; Stage 1 has a normative finite-core v0 specification but unfinished proofs; Stages 2–4 are partially implemented. Alongside minimal examples such as Bell, shared components build finite Grover, BV, bit-flip correction, QPE, and N=15 order-finding examples. Completion is judged against documented criteria and evidence. The [frontend documentation](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) distinguishes executed `.qli` from unimplemented syntax proposals.
 
 This is the authoritative English development plan. The [release milestones](docs/release-milestones.md) and version-specific release records govern acceptance and publication. Current targets and implementation boundaries below do not adopt future syntax or imply completed proofs. See the [documentation map](docs/documentation-map.md) for authority and translation status.
 
-## Selected v0.2.7: documentation and finite corpus
+## Selected v0.2.8: documentation and finite corpus
 
-Development selection on 2026-10-02: docs reduced by approximately 55% in tracked
-UTF-8 bytes, plans and imaginary-v1 retained, nine small translations added
-(69 finite cases). [Candidate](docs/releases/v0.2.7.md) records local checks.
-This version does not complete VM-27 or publish a release; existing migration
-and theorem acceptance gates below remain in force.
+Selected 2026-10-03: reduce current tracked docs by approximately 56%, retain active
+plans and imaginary-v1, add nine small frozen-source translations (78 total).
+[Candidate](docs/releases/v0.2.8.md) records local checks; publication is separate.
+This selection does not complete VM-28 or change Rust authority/schema gates.
 
 ## Published v0.2.6: observing verification and finite corpus
 
@@ -46,7 +45,7 @@ Rust authority, edition 2026 and public contracts remain unchanged.
 
 ## Published v0.2.3: Qleisli edition 2026
 
-The user selected v0.2.3 on 2026-09-30 for [explicit language editions](docs/language-editions.md).
+The user selected v0.2.3 on 2026-09-30 for [explicit language editions](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md).
 All current `.qli` sources and `.qlt` drafts use `"2026"`, declared in each
 source tree's `Qargo.toml`. The `std` qrate lives in `stdlib/`; other source trees
 will all migrate to qrate management in the future. No repository-root manifest
@@ -98,7 +97,7 @@ obligations and public migrations before implementation; the
 builds on the migrated checker and requires corresponding rule/proof updates in the
 [detailed plan](docs/v0x-roadmap.md#v030-qleisli-type-system-specification).
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development version is 0.2.7; the type-system decision remains future work.
+Current development version is 0.2.8; the type-system decision remains future work.
 
 ## v0.5.0: Qleisli Soundness Theorem and community foundation
 
@@ -164,7 +163,7 @@ actual first sources, counterexamples, proofs and validation fixtures remain int
 
 ## 0. Source and standard-library organization
 
-First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-language requirements](docs/quantum-language-requirements.md). The [Stage 0 design](docs/frontend-v0.md) selects:
+First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-language requirements](docs/quantum-language-requirements.md). The [Stage 0 design](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) selects:
 
 - The role/encoding of `.qli`, one-file/one-module correspondence, top-level declarations, visibility, imports, and entry functions.
 - Minimal standard-library modules and automatically available names; boundaries between ordinary `.qli`, sealed operations, and language forms.
@@ -173,13 +172,13 @@ First prepare [README.md](README.md), [AGENTS.md](AGENTS.md), and [quantum-langu
 
 **Completion:** consistent documented choices, with examples readable under the same module rules. Grammar/type-checker implementation is not a Stage 0 condition.
 
-Stage 0 organization is selected in the [standard-library specification](docs/frontend-v0.md). Multifile Bell/phase-oracle examples follow its public declarations and root-relative `use` rules. Final grammar and execution validation belong to later stages.
+Stage 0 organization is selected in the [standard-library specification](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md). Multifile Bell/phase-oracle examples follow its public declarations and root-relative `use` rules. Final grammar and execution validation belong to later stages.
 
 <a id="1-言語仕様"></a>
 
 ## 1. Language specification
 
-The [finite-core v0 specification](docs/language-spec.md) and [normative grammar](docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
+The [finite-core v0 specification](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-spec.md) and [normative grammar](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/syntax-v0.md) align with Stage 0 modules/sealed APIs. Finite-core acceptance/rejection rules are specified. [Conformance](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/specification-status.md) and [formalization](docs/formal-core.md) distinguish specified contracts, implementation, and proof targets. [Inference rules](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/source-typing-rules.md) and resource rules cover all syntax, but correspondence to all accepted paths and general proofs remain open.
 
 - Formalize effectful transformations of classical values and quantum resources from the [design philosophy](docs/design-philosophy.md) using input/output contexts and composition. Investigate the precise structure of Kleisli-inspired composition and its relationship/limits with free-vector-space `bind`.
 - Specify grammar and name resolution for all examples.
@@ -196,7 +195,7 @@ The [finite-core v0 specification](docs/language-spec.md) and [normative grammar
 
 ## 2. Typed IR
 
-Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](docs/frontend-v0.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) records constructor semantics and implementation obligations.
+Represent ownership tokens, logical wire IDs, effects, phases, and checkable constructors in Rust. The verifier rechecks injectivity, gate types, protected-region/target conflicts, nonuse of measurement-consumed handles, and structured `ComputeUseUncompute` zero-return conditions. This does not implement general source borrowing. Do not expose a standalone `Release0`. Document each constructor's ideal semantics and the trusted primitive boundary. The [prototype](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) records implemented checks and unachieved guarantees; the [finite-IR paper proof](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/finite-core-proof.md) records constructor semantics and implementation obligations.
 
 **Completion:** accept valid small IR and reject intentionally constructed duplication, implicit discard, invalid release, and effect violations. Apply the same verifier to handwritten/external IR regardless of origin, and show that accepted IR meaning satisfies Stage 1 theorem premises.
 
@@ -206,7 +205,7 @@ Represent ownership tokens, logical wire IDs, effects, phases, and checkable con
 
 Implement parsing, module resolution, and type/effect/ownership checking under Stage 0 file rules, producing verified IR.
 
-Within the finite-core v0 profile, all-declaration name resolution, call-cycle rejection, type/effect/linear-ownership checking, and IR generation are implemented. Ordinary calls are expanded. The original two-argument `with_computed` path restricts/rechecks expanded bodies to identity and Z/T sequences; the later explicit logical-contract path is specified in [SC](docs/finite-contracts.md). Classical branches merge results and surrounding live resources through φ. Public entry points are `check_project`, `compile_project`, and `qleisli check/run`; all generated IR passes independent `verify`. Static adjoints/control/repetition lower to ApplyUnitary in the finite implementation. The [frontend reference](docs/frontend-v0.md) records rules, diagnostic codes, limits, and unsupported features.
+Within the finite-core v0 profile, all-declaration name resolution, call-cycle rejection, type/effect/linear-ownership checking, and IR generation are implemented. Ordinary calls are expanded. The original two-argument `with_computed` path restricts/rechecks expanded bodies to identity and Z/T sequences; the later explicit logical-contract path is specified in [SC](docs/finite-contracts.md). Classical branches merge results and surrounding live resources through φ. Public entry points are `check_project`, `compile_project`, and `qleisli check/run`; all generated IR passes independent `verify`. Static adjoints/control/repetition lower to ApplyUnitary in the finite implementation. The [frontend reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) records rules, diagnostic codes, limits, and unsupported features.
 
 Review work limited internal values/types to 4,096 nodes and depth 64, charging copied trees to the work budget. Ordinary-call argument errors point to caller actual arguments or the call expression. Regressions include reproducers and accepted in-limit cases.
 
@@ -218,7 +217,7 @@ Review work limited internal values/types to 4,096 nodes and depth 64, charging 
 
 Execute instruments including measurement/reset/discard using finite-dimensional vectors and density operators or an equivalent mixed-state representation. The Rust prototype runs verified closed IR as ensembles of unnormalized pure states. Bell, phase-oracle, and feedback projects compile from `.qli` and match expected distributions; finite IR tests for partial discard/reset are retained. Values are approximate `f64`; exact zero probabilities and an independent literal execution check of auxiliary wires remain open.
 
-The [finite algorithm examples](docs/stdlib-contracts.md) check all two-bit Grover targets/iteration counts, all BV hidden strings, reference correlations in bit-flip correction, and parity-measurement coherence. Their success conditions are separate from type/resource safety.
+The [finite algorithm examples](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md) check all two-bit Grover targets/iteration counts, all BV hidden strings, reference correlations in bit-flip correction, and parity-measurement coherence. Their success conditions are separate from type/resource safety.
 
 **Completion:** execute compiled closed `.qli` programs and match analytically known distributions, distinguishing finite checks from general soundness proofs.
 

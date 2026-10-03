@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -11,15 +12,15 @@ import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from run_native_ci import MANIFEST, ROOT, execute, load_tasks, source_binding, verify_coverage
+from run_native_ci import MANIFEST, ROOT, execute, execution_environment, load_tasks, source_binding, verify_coverage
 
 
 class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
-        self.assertEqual(len(tasks), 65)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 69)
-        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks]
+        self.assertEqual(len(tasks), 66)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 72)
+        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] != "dual-verification"]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]
@@ -41,7 +42,9 @@ class NativeCI(unittest.TestCase):
                        lambda m: m["tasks"][0].update(id="../escape"),
                        lambda m: m["tasks"][0].update(commands=[]),
                        lambda m: m["tasks"][0].update(commands=["shell command"]),
-                       lambda m: m["tasks"][0].update(env={"BAD KEY": "value"})):
+                       lambda m: m["tasks"][0].update(env={"BAD KEY": "value"}),
+                       lambda m: m["tasks"][0].update(env={"RUSTUP_TOOLCHAIN": "1.85.0"}),
+                       lambda m: m["tasks"][0].update(commands=[["cargo", "+1.85.0", "test"]])):
             mutated = copy.deepcopy(original)
             mutate(mutated)
             mutations.append(mutated)
@@ -146,16 +149,44 @@ class NativeCI(unittest.TestCase):
             root = Path(directory)
             (root / "lean-kernel").mkdir()
             (root / "lean-kernel/lean-toolchain").write_text("leanprover/lean4:v4.30.0\n")
-            good = ["a" * 40, "Lean (version 4.30.0, test)", "rustc 1.98.1 (test)"]
-            with patch("run_native_ci.subprocess.check_output", side_effect=good), patch("run_native_ci.subprocess.run"):
-                self.assertEqual(source_binding(root, "a" * 40)["head"], "a" * 40)
-            for outputs in (["b" * 40], [good[0], "Lean (version 4.29.0, test)", good[2]], [good[0], good[1], "rustc 1.85.0 (test)"]):
-                with patch("run_native_ci.subprocess.check_output", side_effect=outputs), patch("run_native_ci.subprocess.run"):
+            good = ["a" * 40, "", "Lean (version 4.30.0, test)", "rustc 1.98.1 (test)", "cargo 1.98.1 (test)"]
+            with patch("run_native_ci.subprocess.check_output", side_effect=good):
+                binding = source_binding(root, "a" * 40)
+                self.assertEqual(binding["head"], "a" * 40)
+                self.assertEqual(binding["environment"]["RUSTUP_TOOLCHAIN"], "1.98.1")
+            for outputs in (["b" * 40], [good[0], "?? lean-kernel/extra.lean"],
+                            good[:2] + ["Lean (version 4.29.0, test)"] + good[3:],
+                            good[:3] + ["rustc 1.85.0 (test)", good[4]],
+                            good[:4] + ["cargo 1.85.0 (test)"]):
+                with patch("run_native_ci.subprocess.check_output", side_effect=outputs):
                     with self.assertRaises(ValueError):
                         source_binding(root, "a" * 40)
-            with patch("run_native_ci.subprocess.check_output", return_value=good[0]), patch("run_native_ci.subprocess.run", side_effect=subprocess.CalledProcessError(1, "git diff")):
-                with self.assertRaises(subprocess.CalledProcessError):
-                    source_binding(root, "a" * 40)
+
+    def test_untracked_input_is_rejected_in_a_real_checkout(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for command in (["git", "init", "-q"], ["git", "-c", "user.name=test", "-c", "user.email=test@example.invalid",
+                            "commit", "-q", "--allow-empty", "-m", "fixture"]):
+                subprocess.run(command, cwd=root, check=True, capture_output=True)
+            (root / "untracked.py").write_text("raise RuntimeError('unbound input')")
+            with self.assertRaisesRegex(ValueError, "untracked changes"):
+                source_binding(root, None)
+
+    def test_nested_processes_receive_only_bound_environment(self):
+        poison = {name: "injected" for name in ("PYTHONPATH", "PYTHONHOME", "RUSTFLAGS", "RUSTC_WRAPPER",
+                  "CARGO_ENCODED_RUSTFLAGS", "LEAN_PATH", "QLEISLI_BIN")}
+        poison["RUSTUP_TOOLCHAIN"] = "1.85.0"
+        with patch.dict(os.environ, poison):
+            env = execution_environment()
+            self.assertEqual(env["RUSTUP_TOOLCHAIN"], "1.98.1")
+            for name in poison.keys() - {"RUSTUP_TOOLCHAIN"}:
+                self.assertNotIn(name, env)
+            code = ("import os,subprocess,sys; "
+                    "assert os.environ['RUSTUP_TOOLCHAIN']=='1.98.1'; "
+                    "assert 'RUSTFLAGS' not in os.environ and 'PYTHONPATH' not in os.environ; "
+                    "subprocess.run([sys.executable,'-c',\"import os; assert os.environ['RUSTUP_TOOLCHAIN']=='1.98.1'\"],check=True)")
+            tasks, report = self.run_tasks([[[sys.executable, "-c", code]]])
+            verify_coverage(report, tasks, {"head": "a"}, "hash")
 
 
 if __name__ == "__main__":

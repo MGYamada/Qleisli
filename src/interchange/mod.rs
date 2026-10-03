@@ -1,6 +1,7 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
+pub mod dual;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;

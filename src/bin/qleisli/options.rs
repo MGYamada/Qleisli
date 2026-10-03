@@ -8,12 +8,14 @@ pub(super) const USAGE: &str = "usage:
   qleisli run <source-root> [--format=json] [source-options]
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
-  qleisli verify-ir <artifact-file> [--against=REQUEST] [--format=json]
+  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
   qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S]
   interop always returns JSON; qli input takes a project directory.
 source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate
+  --lean-kernel=PATH selects opt-in Rust/Lean dual checking; either failure blocks use.
+  Use an explicitly built/audited native kernel. No automatic download or fallback.
   --qrate selects the explicit [source].root in the selected directory's Qargo.toml.
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   --legacy-source-limits cannot be combined with explicit byte limits.
@@ -29,6 +31,8 @@ pub(super) struct Options {
     pub output: Option<PathBuf>,
     pub against: Option<PathBuf>,
     pub qrate: bool,
+    pub selected_root: Option<qleisli::frontend::project::QrateSource>,
+    pub lean_kernel: Option<PathBuf>,
 }
 
 /// Canonical unsigned decimal spelling; the caller supplies its range and type.
@@ -50,11 +54,17 @@ impl Options {
         let (mut source, mut project, mut shots, mut seed) = (None, None, None, None);
         let (mut output, mut against) = (None, None);
         let mut qrate = false;
+        let mut lean_kernel = None;
         for arg in args {
             match arg.to_str() {
                 Some("--format=json") if json && !format => format = true,
                 Some("--legacy-source-limits") if !legacy => legacy = true,
                 Some("--qrate") if !qrate => qrate = true,
+                Some(s)
+                    if s.starts_with("--lean-kernel=") && lean_kernel.is_none() && s.len() > 14 =>
+                {
+                    lean_kernel = Some(PathBuf::from(&s[14..]));
+                }
                 Some(s) if s.starts_with("--source-bytes=") && source.is_none() => {
                     source = Some(natural(&s[15..])?)
                 }
@@ -91,6 +101,7 @@ impl Options {
             || matches!(command, "emit-ir" | "verify-ir") && (shots.is_some() || seed.is_some())
             || command == "verify-ir" && (legacy || source.is_some() || project.is_some())
             || matches!(command, "verify-ir" | "doc") && qrate
+            || command == "doc" && lean_kernel.is_some()
         {
             return None;
         }
@@ -118,6 +129,8 @@ impl Options {
             output,
             against,
             qrate,
+            selected_root: None,
+            lean_kernel,
         })
     }
 }

@@ -1,0 +1,2 @@
+$ python3 scripts/check_stdlib_contract_docs.py
+Checked contract template and 3 pilots; documentation structure/links only.

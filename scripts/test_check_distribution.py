@@ -17,6 +17,7 @@ from check_distribution import (
     digest, extract_checked, license_inventory, read_archive, tracked_files, validate,
     SOURCE_ROOTS, check_source_roots,
 )
+from check_installation import check_registry_links
 
 
 class ArchiveTests(unittest.TestCase):
@@ -24,6 +25,18 @@ class ArchiveTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
+
+    def test_registry_links_allow_only_current_files_and_reviewed_retired_contracts(self):
+        prefix = "https://github.com/MGYamada/Qleisli/blob/"
+        historical = prefix + "7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md"
+        (self.root / "README.md").write_text("current")
+        self.assertEqual(check_registry_links(self.root,
+            f"[current]({prefix}v0.2.8/README.md) [old]({historical})", "0.2.8"), [historical])
+        for target in ["README.md", prefix + "main/README.md", prefix + "v0.2.8/missing.md",
+                       historical.replace("language-editions", "unreviewed"),
+                       historical.replace("7844a10d63880a2b6984c093e2dc7a75033d1e1e", "v0.2.7")]:
+            with self.subTest(target=target), self.assertRaises(ValueError):
+                check_registry_links(self.root, f"[link]({target})", "0.2.8")
 
     def test_complete_archive_requires_kernel_source_audit_and_process_client(self):
         files = {name: File(b"source") for name in SOURCE_ROOTS}

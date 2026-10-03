@@ -1,0 +1,359 @@
+{
+  "format": 1,
+  "baseline_commit": "84c9ec4c6a4cd731781eb0c44ea375dd3e6dfd11",
+  "metric": "UTF-8 bytes of Git-tracked docs/ at baseline, surviving tracked plus new non-ignored docs/ at completion; ignored .DS_Store excluded",
+  "baseline_bytes": 190835,
+  "final_bytes": 84388,
+  "removed_bytes": 106447,
+  "reduction_percent": 55.78,
+  "baseline_file_count": 45,
+  "final_file_count": 29,
+  "original_target_percent": 60,
+  "scope_adjustment": "User explicitly selected reduction from current checkout, then said an approximate result is sufficient. Restore the working type/finite contract references rather than forcing additional cuts; finish near 56%.",
+  "retained_plans_and_drafts": {
+    "docs/v0.2.2-plan.md": {
+      "before": {
+        "bytes": 4893,
+        "sha256": "a448073762a56bf029949358fcb93c3baa1c1b1aa870edaca6a558eb9efddd70"
+      },
+      "after": {
+        "bytes": 3114,
+        "sha256": "5d400eeffc77334526395a0c706a5e16c5047078f15864ba7c6696149753037d"
+      },
+      "unchanged": false
+    },
+    "docs/verification-migration-v0.2.md": {
+      "before": {
+        "bytes": 10203,
+        "sha256": "50f971416398d217985c73ed830403512831db67e53106909c05688cb7ce6cf6"
+      },
+      "after": {
+        "bytes": 4837,
+        "sha256": "b6d5c595c35b1153164ccaa0cfabd10e7b6f6dfb310522e0018a93b20332b582"
+      },
+      "unchanged": false
+    },
+    "docs/v0x-roadmap.md": {
+      "before": {
+        "bytes": 4798,
+        "sha256": "3fcc44a21f818c5297f0b269531238929d23d2fe689467be57148bb5702c971c"
+      },
+      "after": {
+        "bytes": 3376,
+        "sha256": "2d49f77e99e94aa22c1feeff901a9095532a06d3fc216f0b37b50d5b471561af"
+      },
+      "unchanged": false
+    },
+    "docs/lean-kernel-migration.md": {
+      "before": {
+        "bytes": 10161,
+        "sha256": "d1d1b3582a2755ff03dee67e2f5a42833240473514978133c110fb1fc56dd2f6"
+      },
+      "after": {
+        "bytes": 4138,
+        "sha256": "a2caa7e28e4cce16b19f7037b23ffc127c2f8d7e75049ca3d1b2e3264d44c6c1"
+      },
+      "unchanged": false
+    },
+    "docs/interoperability-roadmap.md": {
+      "before": {
+        "bytes": 4719,
+        "sha256": "a2fe0a7f7cbbabec3c3f865780754e511d5f1b3a646e275a0d90be329e289896"
+      },
+      "after": {
+        "bytes": 2870,
+        "sha256": "2da5a379910e12693c9f17b925bb5fcf2efb1ef319046bf179a85b5f5e5f5711"
+      },
+      "unchanged": false
+    },
+    "docs/stdlib-roadmap.md": {
+      "before": {
+        "bytes": 4034,
+        "sha256": "2976312ede9e34aa2aa113558974ea055ccddc9bbe69c65470e0d4af0d1beb5d"
+      },
+      "after": {
+        "bytes": 2743,
+        "sha256": "cb082a4e5fc1ccb37835d5d8c284f2a6f7e65ac1285c00b0b63f79c850ba128b"
+      },
+      "unchanged": false
+    },
+    "docs/next-minor-spec.md": {
+      "before": {
+        "bytes": 7463,
+        "sha256": "57ac9ee774a69ffc93fd7ba44eb7e0a3af3d868f3aaa48af3def162a0bdea5db"
+      },
+      "after": {
+        "bytes": 4220,
+        "sha256": "29f3c7a74e1ffd783122ad46b92ba8c1907eb57af25c953a27bfc95ed9f90aa7"
+      },
+      "unchanged": false
+    },
+    "docs/release-milestones.md": {
+      "before": {
+        "bytes": 14420,
+        "sha256": "7fa84908ecf9810537f3e821fa3bfbf40032cf23658df5f77e341f1be2fba08d"
+      },
+      "after": {
+        "bytes": 8130,
+        "sha256": "06c4eb5f1687567a723142ecbbc67c27b7d3cdccca1d0d375e49876c8d5a5d4a"
+      },
+      "unchanged": false
+    },
+    "docs/resource-semantics.md": {
+      "before": {
+        "bytes": 3211,
+        "sha256": "98174d82107b66cc8280029cfdd80b70a5c8d7df1cc28ff5c9e2b101f4894d6e"
+      },
+      "after": {
+        "bytes": 2044,
+        "sha256": "f5d3ca70120612e19ee52952917a3f72db4787da17281b8b99f5cdf634cc49b6"
+      },
+      "unchanged": false
+    },
+    "docs/coefficient-domains.md": {
+      "before": {
+        "bytes": 2795,
+        "sha256": "4945ddcfeb5672f84d1458124f92f5544e3d682f85796c94870914349f8d5953"
+      },
+      "after": {
+        "bytes": 2143,
+        "sha256": "98c18187ef8b2733506050b25b5fd1e80fedb2f261a63c760f447c084a7d4d5d"
+      },
+      "unchanged": false
+    },
+    "docs/imaginary-v1/README.md": {
+      "before": {
+        "bytes": 1743,
+        "sha256": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d"
+      },
+      "after": {
+        "bytes": 1743,
+        "sha256": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d"
+      },
+      "unchanged": true
+    },
+    "docs/imaginary-v1/requirements.md": {
+      "before": {
+        "bytes": 7041,
+        "sha256": "537fe4d76c5c9094941f8b67bf7e2ba5cfab1fa019af5d8fa3519abf2c9696dd"
+      },
+      "after": {
+        "bytes": 7091,
+        "sha256": "d56204ffeea7e01f03031621d04db60187629e00a48beb448f1af2a0c65064a5"
+      },
+      "unchanged": false
+    },
+    "docs/size-expressions.md": {
+      "before": {
+        "bytes": 3982,
+        "sha256": "4c0a4bfff40860f9469d59f8c1b5350c5bb65a5de1a22731d2843f2d63a0a51c"
+      },
+      "after": {
+        "bytes": 3190,
+        "sha256": "7ff3f71c8e93400e685d9e53f49ecaae044716e5150f2a2b8489f6ee4f8c62c4"
+      },
+      "unchanged": false
+    },
+    "docs/design-philosophy.md": {
+      "before": {
+        "bytes": 2597,
+        "sha256": "f09153385ba442aec365a2bdaa428352f2c902bb3d9d37a59bd011fd70a10af3"
+      },
+      "after": {
+        "bytes": 2650,
+        "sha256": "44edb5223a88157bd92417702583ec231af2cdf4db03d99ae32b915e9c89cf2d"
+      },
+      "unchanged": false
+    },
+    "docs/ai-era-goal.md": {
+      "before": {
+        "bytes": 1456,
+        "sha256": "9a3c0cbfdb8bd72d81317d7c9ae3cf2ace24ec13552c2a7a39a35c6fb12e3692"
+      },
+      "after": {
+        "bytes": 1456,
+        "sha256": "9a3c0cbfdb8bd72d81317d7c9ae3cf2ace24ec13552c2a7a39a35c6fb12e3692"
+      },
+      "unchanged": true
+    },
+    "docs/algorithm-structure-goal.md": {
+      "before": {
+        "bytes": 2164,
+        "sha256": "0c1a24695e95ca283aa387da8c49f0f9442d7deaec64489d3882be7b52d766de"
+      },
+      "after": {
+        "bytes": 2217,
+        "sha256": "5c3ee184a856855f1952e24a265bf2094cb3e3272b09549a23dfb18ae7cd2590"
+      },
+      "unchanged": false
+    },
+    "docs/quantum-language-requirements.md": {
+      "before": {
+        "bytes": 2117,
+        "sha256": "e4070ebf01a3b8bcbb1acfc625d39a80d4f7c8dff5061bdf60119abae03b583e"
+      },
+      "after": {
+        "bytes": 2170,
+        "sha256": "44ee8b8296897604a6c9d539e4e6a3eb2cd377f246fc7ddf934a869cd9ec3128"
+      },
+      "unchanged": false
+    }
+  },
+  "imaginary_v1": "README unchanged; requirements unchanged except one repaired link. Existing linked drafts and all .qli/.qlt fixture sources preserved.",
+  "removed_files": [
+    "docs/crates-io-release.md",
+    "docs/documentation-comments.md",
+    "docs/frontend-v0.md",
+    "docs/hierarchical-ir-spec.md",
+    "docs/interop-m1.1.md",
+    "docs/language-editions.md",
+    "docs/language-spec.md",
+    "docs/machine-interface-spec.md",
+    "docs/qli-authoring-feedback.md",
+    "docs/qli-quick-reference.md",
+    "docs/releases/v0.2.7.md",
+    "docs/sized-corpus-source.md",
+    "docs/static-operations.md",
+    "docs/stdlib-contracts.md",
+    "docs/syntax-v0.md",
+    "docs/terminology.md",
+    "docs/versioning.md"
+  ],
+  "final_files": {
+    "docs/ai-era-goal.md": {
+      "bytes": 1456,
+      "sha256": "9a3c0cbfdb8bd72d81317d7c9ae3cf2ace24ec13552c2a7a39a35c6fb12e3692"
+    },
+    "docs/algorithm-structure-goal.md": {
+      "bytes": 2217,
+      "sha256": "5c3ee184a856855f1952e24a265bf2094cb3e3272b09549a23dfb18ae7cd2590"
+    },
+    "docs/coefficient-domains.md": {
+      "bytes": 2143,
+      "sha256": "98c18187ef8b2733506050b25b5fd1e80fedb2f261a63c760f447c084a7d4d5d"
+    },
+    "docs/current-status.md": {
+      "bytes": 1851,
+      "sha256": "8f7ef92d044161f7be985613f693ed09e0fc5447c7e7a58b47d4b477795166dd"
+    },
+    "docs/design-philosophy.md": {
+      "bytes": 2650,
+      "sha256": "44edb5223a88157bd92417702583ec231af2cdf4db03d99ae32b915e9c89cf2d"
+    },
+    "docs/documentation-map.md": {
+      "bytes": 821,
+      "sha256": "6f3f58c0d23a5cb06ed85987c454f695f51907ae2e91480d97cd6f88cb90500a"
+    },
+    "docs/finite-contracts.md": {
+      "bytes": 5318,
+      "sha256": "129e40df3227f5645ab5b9edc0505991f9ca76613c7a999a75cb72cb2b84caa7"
+    },
+    "docs/formal-core.md": {
+      "bytes": 3885,
+      "sha256": "69992047ec51f6c207640dd778e8b0654c50e1707ec6bef7b0d29eab48c9eb2e"
+    },
+    "docs/imaginary-v1/README.md": {
+      "bytes": 1743,
+      "sha256": "951ee946e4a06f8c82995619a303127d8a92dc4bb1b38ba39de7de9907aad87d"
+    },
+    "docs/imaginary-v1/requirements.md": {
+      "bytes": 7091,
+      "sha256": "d56204ffeea7e01f03031621d04db60187629e00a48beb448f1af2a0c65064a5"
+    },
+    "docs/interoperability-roadmap.md": {
+      "bytes": 2870,
+      "sha256": "2da5a379910e12693c9f17b925bb5fcf2efb1ef319046bf179a85b5f5e5f5711"
+    },
+    "docs/lean-kernel-migration.md": {
+      "bytes": 4138,
+      "sha256": "a2caa7e28e4cce16b19f7037b23ffc127c2f8d7e75049ca3d1b2e3264d44c6c1"
+    },
+    "docs/next-minor-spec.md": {
+      "bytes": 4220,
+      "sha256": "29f3c7a74e1ffd783122ad46b92ba8c1907eb57af25c953a27bfc95ed9f90aa7"
+    },
+    "docs/project-status.json": {
+      "bytes": 2439,
+      "sha256": "e3bee4c480b92abe2c08862f46cae9a4685c65b3a458901dd3b2d1e20e3a49c2"
+    },
+    "docs/quantum-language-requirements.md": {
+      "bytes": 2170,
+      "sha256": "44ee8b8296897604a6c9d539e4e6a3eb2cd377f246fc7ddf934a869cd9ec3128"
+    },
+    "docs/release-milestones.md": {
+      "bytes": 8130,
+      "sha256": "06c4eb5f1687567a723142ecbbc67c27b7d3cdccca1d0d375e49876c8d5a5d4a"
+    },
+    "docs/releases/v0.2.8.md": {
+      "bytes": 1045,
+      "sha256": "f269a3a37cdd7a9b0e0ce90e54dc00957e629374348f50d6828331e4c167022d"
+    },
+    "docs/resource-semantics.md": {
+      "bytes": 2044,
+      "sha256": "f5d3ca70120612e19ee52952917a3f72db4787da17281b8b99f5cdf634cc49b6"
+    },
+    "docs/rule-inventory.md": {
+      "bytes": 1005,
+      "sha256": "68751f0998eac656efd44d3251da580281ac9f1f12371786f2625a77569d844c"
+    },
+    "docs/size-expressions.md": {
+      "bytes": 3190,
+      "sha256": "7ff3f71c8e93400e685d9e53f49ecaae044716e5150f2a2b8489f6ee4f8c62c4"
+    },
+    "docs/stdlib-contract-examples/add2.md": {
+      "bytes": 1682,
+      "sha256": "2b58c1ca69d12584bef6455bc7cf489ba35af526dee78d965cf01280ad93d815"
+    },
+    "docs/stdlib-contract-examples/and-phase.md": {
+      "bytes": 1700,
+      "sha256": "c1634711800be4b857c4da3719d78de77e91a4dc93fedcc25a13553279c7dd66"
+    },
+    "docs/stdlib-contract-examples/qft2.md": {
+      "bytes": 1553,
+      "sha256": "6aacf15839088ef037ce239eaa3776f8423e596a8441656ad978736e05e77cd1"
+    },
+    "docs/stdlib-contract-template.md": {
+      "bytes": 1620,
+      "sha256": "71485495a0be1869f575114a628ce4312dd2d238d88da056d8d6989869080bdd"
+    },
+    "docs/stdlib-roadmap.md": {
+      "bytes": 2743,
+      "sha256": "cb082a4e5fc1ccb37835d5d8c284f2a6f7e65ac1285c00b0b63f79c850ba128b"
+    },
+    "docs/type-system.md": {
+      "bytes": 3337,
+      "sha256": "8a5175a033f862f5122edb3ea07482b4b71a04f56e44db1006b8ad0f931dc4ee"
+    },
+    "docs/v0.2.2-plan.md": {
+      "bytes": 3114,
+      "sha256": "5d400eeffc77334526395a0c706a5e16c5047078f15864ba7c6696149753037d"
+    },
+    "docs/v0x-roadmap.md": {
+      "bytes": 3376,
+      "sha256": "2d49f77e99e94aa22c1feeff901a9095532a06d3fc216f0b37b50d5b471561af"
+    },
+    "docs/verification-migration-v0.2.md": {
+      "bytes": 4837,
+      "sha256": "b6d5c595c35b1153164ccaa0cfabd10e7b6f6dfb310522e0018a93b20332b582"
+    }
+  },
+  "contract_policy": "Retired detailed specifications retain fixed v0.2.7 references, without changing source/API/acceptance contracts. No archived or copied documentation tree.",
+  "preserved_executable_examples": {
+    "tests/fixtures/quick_reference/exact_phase.qli": {
+      "bytes": 247,
+      "sha256": "815e75fadcfade51bb635e06b4bbde99195eec554fc1b3ed0a3f4e1f32d1cba0"
+    },
+    "tests/fixtures/quick_reference/operation_round_trip.qli": {
+      "bytes": 361,
+      "sha256": "6c5a7b66b0fba084d69fef8b4037cf3b79705ef1ce097cab7a0adccee2f6df95"
+    },
+    "tests/fixtures/quick_reference/phase_kickback.qli": {
+      "bytes": 412,
+      "sha256": "9449cba4d4e6b484abdd79fa85173f55fe0e8624f237f77d3c45af90c7bbcc80"
+    },
+    "tests/fixtures/quick_reference/teleport_minus.qli": {
+      "bytes": 495,
+      "sha256": "469e8c44599738fc437016d557090fb6e0f9166387cfe2493897981b8b9826a9"
+    }
+  }
+}

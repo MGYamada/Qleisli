@@ -71,4 +71,4 @@ R14 alone removes neither exponential basis tables nor expanded calls. R02/R04 n
 
 ### First generalized QPE profile: decisions required by R08/R12/R14
 
-Fix widths, phase angles/domain, exact or approximate realization, independent evidence, budgets/diagnostics and instrument/error conventions. Width four needs exp(i pi/8), outside R8. M2 selects bounded ideal exact dyadic phases; backend approximation is separate and cannot weaken exact scratch. [Hierarchy](../hierarchical-ir-spec.md) fixes its selected profile; this requirement adds no primitive or production authority.
+Fix widths, phase angles/domain, exact or approximate realization, independent evidence, budgets/diagnostics and instrument/error conventions. Width four needs exp(i pi/8), outside R8. M2 selects bounded ideal exact dyadic phases; backend approximation is separate and cannot weaken exact scratch. [Hierarchy](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/hierarchical-ir-spec.md) fixes its selected profile; this requirement adds no primitive or production authority.

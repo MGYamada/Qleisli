@@ -97,14 +97,29 @@ pub(super) fn execute(options: &Options) -> Result<Success, Failure> {
         let label = output
             .to_str()
             .ok_or_else(|| io_error("output path is not valid UTF-8"))?;
-        let program = compile_project_with_policy(&options.path, options.policy)?;
+        let program = match &options.selected_root {
+            Some(selected) => selected.compile_with_policy(options.policy)?,
+            None => compile_project_with_policy(&options.path, options.policy)?,
+        };
         let bytes = interchange::export(&program, None, Version::V2)?;
-        write_new(output, &bytes)?;
+        if let Some(path) = &options.lean_kernel {
+            let checked = interchange::dual::Kernel::new(path).check(&bytes, None)?;
+            write_new(output, checked.artifact())?;
+        } else {
+            write_new(output, &bytes)?;
+        }
         Ok(Success::Emitted(label.into()))
     } else {
         let bytes = read(&options.path)?;
         let request = options.against.as_deref().map(read).transpose()?;
-        let imported = interchange::import(&bytes, request.as_deref())?;
-        Ok(Success::Verified(imported.request_checked))
+        let requested = if let Some(path) = &options.lean_kernel {
+            interchange::dual::Kernel::new(path)
+                .check(&bytes, request.as_deref())?
+                .imported()
+                .request_checked
+        } else {
+            interchange::import(&bytes, request.as_deref())?.request_checked
+        };
+        Ok(Success::Verified(requested))
     }
 }

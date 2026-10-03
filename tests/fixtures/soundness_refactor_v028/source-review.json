@@ -1,0 +1,56 @@
+{
+  "changes": [
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "before": "2097f2d760ecf8d09a1fc425cd7ea2bb27efff88127efa553bd0a6c2b64ad2c1",
+      "after": "4e63ad72bcaefcb7d1af31bb02857deb652767c7004fc493dcf2357109000ac2"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf.lean",
+      "before": "31209fef8f9f0270260f3c0d145dbbec8ec9597a058053f521fb7b99d287601d",
+      "after": "60c94637b00f6689405d9ce50294e7b462996d8698ba12257bc10c0dbed65f87"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
+      "before": "6496e94ff4b3d262da8e19b6485cc16bf93fe8ddabe954fbe4713e5afd002bc8",
+      "after": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2"
+    },
+    {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "before": "88cef2c22f92c6febf04a3122600b84e8a581cd978923fc9085d5ae39c83a3c9",
+      "after": "2ac320e1c4ed01365efc713d4427f449ed775f9b665ac87acc184aae9d3fc445"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
+      "before": null,
+      "after": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Qirf.lean",
+      "before": null,
+      "after": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86"
+    },
+    {
+      "path": "lean/Qleisli.lean",
+      "before": "1e3f1c5646bcfde4993b6f8dde83cb539439455ec56dabdd0eaaf371f73bc02f",
+      "after": "35412ea8be973253b2039e64c149a9e8a5974c02388942e1de7b8b78f658cfd2"
+    },
+    {
+      "path": "lean/Qleisli/QirfValidity.lean",
+      "before": null,
+      "after": "1208ff2dba3232ca64098d8883ffaf5c1a9ab51171f4b378e800c269fb9f65b3"
+    },
+    {
+      "path": "lean/Qleisli/NativeValidity.lean",
+      "before": null,
+      "after": "1bd3ccf66a086925089771e9c0b49ce82c65d744b8b1701b88a068717b3b2959"
+    },
+    {
+      "path": "lean/Qleisli/Semantics/Qirf.lean",
+      "before": null,
+      "after": "f37cb57590e8d780894b1a5a940582457d3c493df409546b94c659d66d725bc3"
+    }
+  ],
+  "scope": "Typed acceptance stages and original-packet semantic composition; no external schema or capacity change",
+  "frozen_comparison": "unchanged"
+}

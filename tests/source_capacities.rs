@@ -16,7 +16,9 @@ fn source_boundaries_count_utf8_bytes_before_decoding() {
     assert!(read_source_file(&path, policy(bytes)).is_ok());
     let error = read_source_file(&path, policy(bytes - 1)).unwrap_err();
     assert_eq!(error.code, "limit");
-    assert!(error.primary.is_none());
+    let location = error.primary.unwrap();
+    assert_eq!(location.path, std::fs::canonicalize(&path).unwrap());
+    assert_eq!((location.span.start, location.span.end), (0, 0));
     std::fs::write(&path, [0xff_u8; 4]).unwrap();
     assert_eq!(
         read_source_file(&path, policy(3)).unwrap_err().code,
@@ -49,8 +51,10 @@ fn aggregate_includes_many_files_and_bundled_sources() {
     assert!(Project::load_with_policy(&root.0, policy(total)).is_ok());
     let error = Project::load_with_policy(&root.0, policy(total - 1)).unwrap_err();
     assert_eq!(error.code, "limit");
-    assert!(error.message.contains("bundled"));
-    assert!(error.primary.is_none());
+    assert!(error.message.contains("aggregate limit"));
+    let location = error.primary.unwrap();
+    assert!(location.path.to_string_lossy().contains("bundled"));
+    assert_eq!((location.span.start, location.span.end), (0, 0));
 }
 
 #[test]

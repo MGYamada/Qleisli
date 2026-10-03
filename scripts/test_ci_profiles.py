@@ -89,6 +89,7 @@ class CIProfiles(unittest.TestCase):
             (["docs/type-system.md"], "model"),
             (["lean/lean-toolchain"], "full"), ([".github/workflows/ci.yml"], "full"),
             (["scripts/check_schema_registry.py"], "full"),
+            (["scripts/package_lean_kernel.py"], "full"),
             (["new/unknown.rs"], "full"), (["../src/new.rs"], "full"),
             (["docs/new-unknown.md"], "full"), ([], "full"),
             (["lean/schema-registry.json"], "full"),

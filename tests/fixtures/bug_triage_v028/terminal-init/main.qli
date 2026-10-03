@@ -1,0 +1,3 @@
+use std::quantum::{init0,h};
+use std::observe::measure_z;
+observe fn main()->(CBit,CBit){let a=measure_z(h(init0())); let b=measure_z(init0()); (a,b)}

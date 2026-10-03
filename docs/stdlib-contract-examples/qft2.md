@@ -16,10 +16,10 @@ Two H/two controlled T/output reversal; routing not physically free/depth-resour
 | Aspect | Status | Scope and evidence |
 | --- | --- | --- |
 | Source checking | checked | [Production replay](../../corpus/validation-v0.2.7.json). |
-| Semantic tests | tested | [Independent full complex columns](../../scripts/check_input_corpus.py),1e-11; numerical only. |
-| Actual IR conformance | pending | Actual emitted-body theorem open. |
-| Source preservation | pending | General frontend correspondence open. |
-| Specification review | pending | Independent intent/convention review required. |
+| Semantic tests | tested | [Complex columns](../../scripts/check_input_corpus.py),1e-11, not proof. |
+| Actual IR conformance | pending | Body theorem open. |
+| Source preservation | pending | Frontend proof open. |
+| Specification review | pending | Intent review open. |
 
 ## Adoption and teaching
-[Client](../../corpus/qualtran/qft2/main.qli)/[case](../../corpus/qualtran/qft2/README.md): H paths/quarter-phase interference/coordinates. Probabilities/inverse roundtrip miss sign/reversal/scalar faults; require phase/reference/controlled-scalar tests. [Components](../../lean/Qleisli/Qft.lean) separate scope. No pilot execution/API; Apache-2.0/Qualtran notices,multiple+held-out clients/review/compatibility required.
+[Client](../../corpus/qualtran/qft2/main.qli): H paths/phase interference/reversal. Require phase/reference/control faults, multiple/held-out clients and intent/API review. Apache-2.0/Qualtran notices; pilot adds no execution or general proof.

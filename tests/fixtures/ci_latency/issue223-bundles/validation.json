@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.issue223-partial-validation",
+  "version": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-03T00:13:02.855527+00:00",
+  "issue": "https://github.com/MGYamada/Qleisli/issues/223",
+  "scope": "Partial native bundle lane separation; no theorem work, acceptance change or reusable driver/cache introduced",
+  "progress": {
+    "metric": "Nine acceptance criteria, equally weighted; local technical evidence only, no partial credit",
+    "completed_criteria": [
+      1,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "pending_criteria": [
+      2,
+      3,
+      9
+    ],
+    "percentage": 66.7,
+    "adoption": "Not committed/pushed/merged or run on hosted GitHub Actions in this update"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/test_package_lean_kernel.py",
+      "status": "passed",
+      "tests": 5
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "status": "passed",
+      "tests": 6
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "status": "passed",
+      "tests": 9,
+      "retained_native_groups": 66,
+      "retained_native_commands": 72
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "status": "passed",
+      "tests": 28
+    },
+    {
+      "command": "python3 scripts/test_measure_ci.py",
+      "status": "passed",
+      "tests": 5
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --report tests/fixtures/ci_latency/issue223-bundles/schema-validation.json",
+      "status": "passed",
+      "record": "schema-validation.json"
+    },
+    {
+      "command": "Fresh native packaging in full and tests, each followed by test_dual_verification.py",
+      "status": "passed",
+      "records": [
+        "full-build.json",
+        "tests-build.json",
+        "full/dual-validation.json",
+        "tests/dual-validation.json"
+      ],
+      "process_checks_per_lane": 222,
+      "small_corpus_clients_per_lane": 75,
+      "max_corpus_qubits": 4
+    },
+    {
+      "command": "Compare full/tests manifests and original native packet outcomes",
+      "status": "passed",
+      "original_packets": 28,
+      "source_inventories_equal": true,
+      "record": "native-compatibility.json"
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "status": "passed",
+      "constructors": 232,
+      "sources": 227,
+      "boundaries": 19
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed",
+      "local_links": 1681,
+      "markdown_anchors": 56,
+      "lean_root_modules": 196
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "observed_costs": {
+    "full_seconds": 177.123,
+    "tests_seconds": 52.251,
+    "full_replay_seconds": 122.723,
+    "queue_seconds": null,
+    "order": "full then tests, one observation each",
+    "context": "macOS local host; fresh project copies and outputs, installed toolchain; full phase overlapped schema policy validation; OS/dependency cache state uncontrolled",
+    "interpretation": "Diagnostic timing only; not a comparable hosted latency/runner-time benchmark, no credit to criterion 2"
+  },
+  "not_performed": [
+    "Hosted Linux/macOS Actions, representative shadow matrix, #206/#221 latency/queue/cold-warm comparison",
+    "Build-once reusable fixture drivers or reduction-example migration",
+    "Full retained native matrix and maximum-size quantum checks; existing command coverage was audited and preserved",
+    "Fresh model Mathlib replay; both packages were built/audited and native roots freshly replayed",
+    "Commit, push, merge, release or publication"
+  ],
+  "reports": {
+    "full/dual-validation.json": "349a918ab7fc96d02213084b181b5608b051ae5f012aae1a21e086a15897b461",
+    "full-build.json": "6ea460891485b94a68e5f53cc0cb00ffef92ecd0738ff84a5bd3614bb4133450",
+    "full-dual-command.json": "63043379b00b66c2727ebccc07208b5a38153242db9d217cbdb5cff9efec9f02",
+    "full-manifest.json": "cf15bab3c311498e14c48e5b9dc2db54fc030910f80542c9a3fd25c82e4949bd",
+    "native-compatibility.json": "efdb56ed74007c9dcad36c38c0bcfd637ae99034f062be060f504343c847d5ce",
+    "schema-validation.json": "c0b4a0b62763b088c94a0a8b012a96d41a8b66b55821ebcc38bf67ea9ee6acc4",
+    "source.json": "6a100ed0a919ffbaa86ba9fbfeab0d8e3031be3896671509fa9d67d7ac588773",
+    "tests/dual-validation.json": "85348d980be9b8a538ea082e04cfb6529ab063cabbf7002e51e0d211252f5c8b",
+    "tests-build.json": "a7337cc3732ae30820c2163702b85a57ad796204cadf42fc2bf1792d0c945f95",
+    "tests-dual-command.json": "2d0d3ba56e80deaed45f1ffbe5dcfaa808d05f6d4835140f6d2f202589963a39",
+    "tests-manifest.json": "a86c5874ac4b69c599187252471ec70717dd40ae7bcc4db3d8d9820158b616e2"
+  }
+}

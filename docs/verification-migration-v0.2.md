@@ -1,77 +1,37 @@
 # Verification migration through 0.2.2–0.2.9
 
-VM-22–25 are checked components. [VM-26](../tests/fixtures/verification_v026/README.md)
-completes observation/SSA/branch checking, original complex refinement,
-matrix-free CP/TNI/TP and retained branch-functions.
-The adopted 0.2.2–0.2.9 staging supersedes K1/K2 dates. VM-29 targets complete
-implementation and selected dual checking; Lean-only authority requires S05-C1–C5.
+Adopted staging supersedes old K1/K2 dates. VM22–26 are checked bounded components; VM27–29 open. Complete implementation/dual checking does not transfer authority: S05-C1–C5 required.
 
 ## Scope and starting point
 
-Migrate acceptance outward: exact arithmetic, finite equations, pure/observing raw IR, hierarchy, transport and production integration. Rust parsing, diagnostics, producers, simulation and search remain outside the pure kernel. Preserve every public path/capacity; ordinary validity APIs need not gain a caller-supplied algorithm contract. Semantic requests stay independent of artifact claims. Preserve the frozen [VM-22 inventory](../tests/fixtures/verification_v022/README.md) and original comparison bytes. Validate small systems without generating maximum-size corpus cases.
-
-| Existing surface | Actual starting point | Required replacement |
-| --- | --- | --- |
-| Exact arithmetic | [Rust exact kernel](../src/contract/exact.rs): canonical `Z[ζ8,1/2]`, bounded coefficients/matrices and shared work accounting | Mathlib-free executable arithmetic with proofs of canonical equality and complex interpretation; preserve published success/failure and capacity behavior. |
-| Finite semantic evidence | [Contracts](../src/contract/mod.rs), [meaning adapter](../src/contract/meaning.rs), [function extractor](../src/contract/function.rs) and [finite reconstruction](../src/interchange/finite_leaf.rs) | Independently reconstruct actual operations and requested meanings; check encodings, full-space validity, phase, dependencies and cleanup. Rust success flags or private handles cannot become evidence. |
-| Raw-IR verification | [`RawProgram`/`RawOp`](../src/ir.rs) and [`verify`](../src/verify.rs), including public raw-only compatibility forms | Total Lean checks for every published constructor, full ownership/effect interfaces, classical SSA, branches and final outputs, with actual-acceptance proofs. |
-| Hierarchical verification | [Existing Lean conditional checker](../lean-kernel/QleisliKernel/Hierarchical/Conditional.lean) already checks structure and supported derivations; [host](../src/interchange/hierarchical.rs) still discharges explicit Rust finite-reader/equality obligations | Reuse audited definitions and constructed denotations; eliminate required Rust-checker premises, complete selected rules and bind an independent root request. Conditional reports are not production evidence. |
-| Transport and execution binding | QIRF and experimental hierarchy/native protocols have bounded adapters; production `check`/`run` still use Rust | Independently decoded immutable artifacts and requests, reviewed result protocol, fail-closed integration and execution of the exact accepted artifact. |
-
-## Release packets and dependencies
-
-Targets are dependent work packets, not automatic completion dates. Public breaks require a MINOR. Full production coverage includes RawProgram/QIRF compatibility and every enabled hierarchy profile.
+Migrate arithmetic→finite equations→raw IR→hierarchy→transport/production. Rust parsing/diagnostics/generation/simulation/search remain outside the Mathlib-free kernel. Preserve every public path/raw-only form/capacity; validity APIs need no new caller algorithm contract. Requests are independent of artifact claims. Keep [VM22 inventory/comparison bytes](../tests/fixtures/verification_v022/README.md), small systems only/no new maxima.
 
 ### Target IR and reference semantics fixed before migration
 
-Freeze serialization, domains/phase interpretation, reference definitions, encodings, bounds and request binding before migration. R8, bounded dyadic phases and modulus-256 component models need explicit checked embeddings; no rounding or artifact-selected domain. Reuse the same finite checker in hierarchy. Reference semantics must follow the one-way [review policy](../TRUST_BOUNDARY.md#reference-specification-review-2026-09-30).
+Freeze serialization/domains/phase/meaning/encodings/limits/request binding first. R8/dyadic/mod256 need checked embeddings, no rounding/artifact-selected domain. Reuse one finite checker. Follow one-way [reference review](../TRUST_BOUNDARY.md#reference-specification-review-2026-09-30); Rust success flags/extracted conclusions/private handles are no evidence.
 
-| Target | Main deliverable | Gate before the next dependent packet |
-| --- | --- | --- |
-| **0.2.2 / VM-22** | Freeze the existing acceptance inventory and boundary/request contracts; establish reproducible comparison fixtures. Retain the completed simple corpus augmentation. | Every public constructor, evidence form, API/CLI/import entry and capacity has a producer/consumer, semantic obligation, replacement packet and positive/negative test. Review the native packaging options without imposing a new user dependency. |
-| **0.2.3 / VM-23** | Implement canonical exact scalars, matrices and shared bounded work in Lean. | Actual arithmetic/equality agrees with the complex interpretation; phase, conjugation, normalization, overflow and work failures are covered. No float or modulo-global-phase equality. |
-| **0.2.4 / VM-24** | Migrate circuit/encoding equations and serialized finite evidence reconstruction. | Actual decoded circuits satisfy independently fixed `U E_in = E_out u`, full-space isometry/unitarity and cleanup equations. Changed bytes, type trees, axes, dependencies and requests reject. Raw-program extraction is completed by VM-25/26. |
-| **0.2.5 / VM-25** | Migrate pure raw-IR ownership, typing, effects, actual finite extraction and structured cleanup. | Every pure constructor has an executable acceptance theorem, complete live-owner/output coverage, exact phase and reference/zero-return laws. No Rust verifier or extractor premise substitutes for the migrated checks. |
-| **0.2.6 / VM-26** | Complete observation, classical SSA/branches and phi/frame verification. | All raw constructors are implemented; accepted pure/observing programs have the required operator/instrument semantics. All measurement outcomes and residual/reference states are retained; complete branch coverage and global freshness are proved. |
-| **0.2.7 / VM-27** | Close hierarchical finite/root obligations and supported derivation/schema binding over the same Lean finite checker. | Independently requested roots bind to actual bodies/providers/encodings; no required Rust finite-reader/equality premise. A feature/schema remains disabled until its own R14/H1–H5 and instrument gates pass. |
-| **0.2.8 / VM-28** | Integrate audited native packaging, bounded transport and opt-in dual verification into real producer/consumer paths. | Both checkers receive the same immutable artifact/request; either rejection, disagreement or transport failure blocks that path. Execution/emission binds to the checked artifact. Clean distribution and supported-platform checks pass. |
-| **0.2.9 / VM-29** | Finish the coverage audit and reproducible migration candidate; exercise the complete Lean replacement through the selected production dual path. | Every published acceptance path and variant has Lean coverage or an explicitly recorded unfinished blocker. Publish composed-proof obligations and S05 readiness/review records. An incomplete replacement is reported as pending, never declared complete. |
+## Release packets and dependencies
+
+| Packet / target | Deliverable and advancement gate |
+| --- | --- |
+| VM22 / 0.2.2 | Inventory every constructor/evidence/API/CLI/import/capacity with producer/consumer/meaning/replacement/positive-negative tests; packaging review adds no user dependency. |
+| VM23 / 0.2.3 | Actual canonical bounded scalars/matrices/shared work with complex arithmetic/equality proof; phase/conjugation/normalization/overflow/work failures, never float or scalar-quotient equality. |
+| VM24 / 0.2.4 | Decode/reconstruct U Ein=Eout u, full-space isometry/unitarity/cleanup; reject changed bytes/trees/axes/dependencies/requests. Raw extraction awaits VM25/26. |
+| VM25 / 0.2.5 | Actual acceptance for every pure raw constructor: owners/types/effects/extraction/outputs/exact phase/reference cleanup; no Rust verifier/extractor premise. |
+| VM26 / 0.2.6 | All raw constructors, observation/lexical SSA/branches/phis/frames/global freshness; actual pure operators/full instruments retain every outcome/residual/reference. |
+| VM27 / 0.2.7 | Hierarchy finite/root/derivation/schema binding over same checker, independent roots/actual bodies/providers/encodings, no required Rust reader/equality premise. Enablement still needs R14/H1–H5/instrument gates. |
+| VM28 / 0.2.8 | Audited native package/bounded transport/opt-in dual producer-consumer paths. Same immutable artifact/request; either rejection/disagreement/transport failure blocks. Bind execution/emission; clean distribution/platform checks. |
+| VM29 / 0.2.9 | Coverage audit/reproducible selected production dual candidate; every public variant has Lean coverage or explicit blocker. Publish composed-proof/S05 readiness/review, never label incomplete replacement complete. |
+
+Targets are dependent packets, not completion dates. Full scope includes RawProgram/QIRF/enabled hierarchy; breaks require MINOR.
 
 ### Completed components and remaining gates
 
-[VM-22](../tests/fixtures/verification_v022/README.md) freezes the full constructor/
-producer/API/CLI/capacity inventory and comparison bytes. [VM-23](../tests/fixtures/verification_v023/README.md)
-proves actual bounded canonical arithmetic/complex interpretation. [VM-24](../tests/fixtures/verification_v024/README.md)
-reconstructs actual finite equations; original RawProgram extraction is separate.
-[VM-25](../tests/fixtures/verification_v025/completion/README.md) proves all eleven
-straight-line pure constructors against independent original-operation traces,
-complete owners/interfaces, phase/reference action, actual cleanup for correlated
-inputs, and fresh function graphs with full body/name/source attachment. Broad
-certified scopes use local finite equations, protected uses non-dense coefficient
-semantics; twelve-bit structural capacities remain. Native reports are experimental,
-not production QIRF authority. Pure classical branches remain VM-26.
+[VM23](../tests/fixtures/verification_v023/README.md) actual arithmetic; [VM24](../tests/fixtures/verification_v024/README.md) finite equations; [VM25](../tests/fixtures/verification_v025/completion/README.md) eleven pure constructors/original complex/reference/cleanup/fresh attachments; [VM26](../tests/fixtures/verification_v026/README.md) all raw SSA/phi/branches, matrix-free original-complex CP/TNI/TP for arbitrary finite references. Twelve-bit structural capacity persists, reports experimental.
 
-VM-26 now checks all raw constructors, global IDs across both arms, lexical SSA,
-zero owners and complete phis. The actual finite Kraus sum proves CP/TNI per
-selected outcome and TP overall, retaining hidden and residual/reference states.
-Matrix-free coefficient evaluation proves original complex refinement and
-general finite-reference CP/TNI/TP; fresh retained functions include closed
-classical branches. VM-26 is checked. VM-27–29 retain hierarchy/root closure,
-native/decoder correspondence, immutable-artifact dual integration and full
-coverage audit. General source preservation and S05 remain separate.
+[VM27](../tests/fixtures/verification_v027/README.md) proves graph/root/reference and finite-leaf/pair/H discharge. Native-only reports need no Rust finite acceptance; compatibility reports rebuild handles with separate work. Decoder/small hierarchy/named-QPE comparisons are tests. Analytic reader→Operator, universal decoder/compiler, schema/source/runtime and production binding remain open.
 
-[VM-27's native slice](../tests/fixtures/verification_v027/README.md) moves
-original QIRF1/2 leaf graphs, independent finite-request equality and phase-fixed
-H into Lean. Native-only reports need no Rust finite acceptance; old executable
-reports retain independently rebuilt Rust sealed handles. All native obligations
-share one exact-work ceiling, separate from legacy compatibility work. Actual
-QIRF graph/root complex semantics and reference laws now discharge all finite
-leaves and fixed-H bodies into structural derivations. Independent tests cover
-every decoder constructor/field and small whole-hierarchy/named-QPE coefficients.
-General analytic reader-to-Operator closure, universal decoder/native compiler
-correspondence and schema binding remain open; VM-27 and S05 are not complete. Routine CI
-now follows the [test-oriented lanes](../.github/ci/README.md), with full proof
-replay retained for releases, explicit full runs and validation-policy risks.
+[VM28](../tests/fixtures/verification_v028/README.md) connects original QIRF/request checking to opt-in ordinary CLI check/run/sample/emit-ir/verify-ir and a sealed dual report. Execution/emission uses the accepted bytes' reconstruction; no fallback. Fresh native bundle builds/audits/replays and relocated tests are implemented. Universal source/runtime correspondence, hierarchy closure, remaining public-path coverage and S05 remain open; this is a selected finite dual slice.
 
 <a id="vm-22-inventory-and-one-bounded-comparison-harness"></a>
 <a id="vm-23-exact-meanings-without-a-domain-change"></a>
@@ -81,7 +41,6 @@ replay retained for releases, explicit full runs and validation-policy risks.
 <a id="vm-27-remove-transitional-hierarchy-premises"></a>
 <a id="vm-28-bind-decisions-to-real-production-artifacts"></a>
 <a id="vm-29-declare-the-actual-completed-and-open-scope"></a>
-
 ## Common acceptance and recording rules
 
-Keep PATCH compatibility, Mathlib-free runtime, actual-definition proofs, strict source/compiled audits and independent small semantic/fault checks. Update project-status.json and regenerate both views; bind result records to actual source/binaries. Shared-QPE continuation, publication and general Soundness/Realizability/Resource Safety remain independent gates.
+PATCH compatibility/actual-definition proofs/source+compiled audits/independent small semantics and faults. [CI](../.github/ci/README.md) retains full replay for release/manual-full/policy risks. Bind records to sources/binaries; regenerate status. Shared QPE/source preservation/publication/S05/PR/RS are separate gates.

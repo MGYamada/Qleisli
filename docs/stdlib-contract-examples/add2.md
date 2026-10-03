@@ -16,10 +16,10 @@ Four wires/Toffoli/two CNOT/three split+join; original-low carry before overwrit
 | Aspect | Status | Scope and evidence |
 | --- | --- | --- |
 | Source checking | checked | [Production replay](../../corpus/validation-v0.2.7.json). |
-| Semantic tests | tested | [Independent full complex columns](../../scripts/check_input_corpus.py),1e-11; numerical only. |
-| Actual IR conformance | pending | Actual emitted-body theorem open. |
-| Source preservation | pending | General frontend correspondence open. |
-| Specification review | pending | Independent intent/convention review required. |
+| Semantic tests | tested | [Complex columns](../../scripts/check_input_corpus.py),1e-11, not proof. |
+| Actual IR conformance | pending | Body theorem open. |
+| Source preservation | pending | Frontend proof open. |
+| Specification review | pending | Intent review open. |
 
 ## Adoption and teaching
-[Client](../../corpus/qualtran/add2/main.qli)/[case](../../corpus/qualtran/add2/README.md). Require wrap/nonzero/wrong carry/order/phase faults; scratch replacements encoded entry/reference-stable cleanup,not inverse alone. Preserve Apache-2.0/Qualtran notices; reviewed reuse/held-out compatibility before adoption. Pilot itself executes no new faults.
+[Client](../../corpus/qualtran/add2/main.qli): wrap/nonzero/carry/order/phase cases; scratch replacements need entry/reference-cleanup evidence. Apache-2.0/Qualtran notices; reuse/held-out/compatibility review before adoption. Pilot adds no faults.

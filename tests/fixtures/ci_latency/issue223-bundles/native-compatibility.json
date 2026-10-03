@@ -1,0 +1,181 @@
+{
+  "status": "passed",
+  "packets": 28,
+  "compared": [
+    "input_sha256",
+    "exit_code",
+    "stdout",
+    "stderr"
+  ],
+  "same_sources": true,
+  "observations": [
+    {
+      "input_sha256": "a2a75daa23b1353cf2fc997ab2c1cb9371e4bac16afffa6db236030180fb8b6b",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n50\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "64588d27ff8109c6523b7442a8374bcc597c3cbccb6bbeae7d2e678d1d1db7bc",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "6836b58c5733040abeb363cfe630bfe105fa34488e2008af92bdd53c2db1b114",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "c0c5717fd21c7f46c4607e0883e11fc65616eaf360abbb917c7be82141d3597b",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "93288a19356dff750f93b6c9daac39188fb9dc90640805c241c0c2db90d3dc1b",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "187474d6f47d093537d1f31d80ec147a887e236bef59d7b8aae561e20a12d584",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "830a58d1110f106ec1142089cba673525678078fe0b82918d483bc72980e85be",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n24\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "6973a64d9eecc6a322d5a9d45fbce7df0440e2006d88d588b95e46375eb964bb",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n44\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "9781210f0b9ac215cb63f290d6d2f489b15fca26122bdb0d7ae96fe012a83d54",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n44\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "0d080c6ab3e5fb334f3ee3e766eda29f55f41e301256af5b78a29869b07866ed",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n34\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "34f6733fa4431c6141e79ed725b9c3f5985e495faa1fbbdb61f2be259008bbc0",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n34\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "6ad600a053427a358f614088a36da0bfcb220d6784d94b5d7011cd7b9fd5016b",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n46\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "3f31986daebe59e05a51fa785ec437091a52f52fc99c693c5add0422ac9f606c",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n46\n0\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "dac89ba0bff15051de19cad23bd37e4548c551051b3a3006e966a9cfc8ffc40c",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n183\n1\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "3de058f9d9991b3a91479321f7882ed7c021c63f24b04271746c6e4314d153c2",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "b22decd9e9f6fa4b916d0a4f6a210af7d9f59629f10446cf36d7805f711763f3",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "76806f584b464430fe8eef61410fd3f443a3afca1860d8848c999edd74fd26f2",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ncontract\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "f3a9f6f2386a88ca3dfa53216c90abc46e91bda3c327e14d70d9759fb3493cf1",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "3426189192f489cf64e98c8a5ae87776a058b5da932364c7359ad934cd05c635",
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-dual 1\naccepted\n183\n1\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "0b9735a8aec23dd19bb0de636924f03d1e22eb83bfae2938c6e5335e9df0a755",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "90611b0bac454e20c60d9a4d0bc3cbd8cc5e3c9869e356105674bcbb67a87b86",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "71bc80ff8bc05640e0c06cbcaa9730165ea7ba4abea3c691d9fa26d06d10c224",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "d217b3437c1ecb4e72823e5f938086eb7857c4ae7aec65872ca79626b5c05ea5",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "6dd5de63cd11c2316a734ca0f9d76ac73ca841aff9cae142fbd548c428d4a9a5",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "3aed5d43b066af15e623531bfdbbba09357b6a99568492712a6bfba783ef362c",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "56e44985c104c1aa1a1ac60962b98ef2e9388e6cb3348aa0d6633247d212f031",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    },
+    {
+      "input_sha256": "58560a468a942ed1a09b056f5a932e1d0ed3eeb0a6fef59b06664ab3bd16f11a",
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-dual 1\nerror\ninvalid_ir\n",
+      "stderr": ""
+    }
+  ]
+}

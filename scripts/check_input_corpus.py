@@ -296,6 +296,44 @@ def reference_column(case, column):
     n = case["qubits"]
     dim = 1 << n
     state = [complex(i == column) for i in range(dim)]
+    if name == "two_bitstrings3":
+        return [(-1) ** ((column & 1) * (row & 1)) / math.sqrt(2)
+                if ((row >> 1) & 1) == (((column >> 1) & 1) ^ (row & 1) ^ 1)
+                and (row >> 2) == ((column >> 2) ^ 1) else 0
+                for row in range(8)]
+    if name == "w2_retained3":
+        # Closed coefficients of the retained-ancilla extension. On the
+        # promised zero input, the ancilla factors as |0>; arbitrary inputs
+        # are still compared and never assumed to permit pure release.
+        a, b, anc = (column & 1) ^ 1, (column >> 1) & 1, column >> 2
+        return [sum((-1) ** (anc * control) / math.sqrt(2)
+                    for control in (0, 1)
+                    if row == ((b if control else a)
+                               | ((a if control else b) << 1)
+                               | ((control ^ (a if control else b)) << 2)))
+                for row in range(8)]
+    if name == "even_parity3":
+        return [(-1) ** ((column & row & 3).bit_count()) / 2
+                if (row >> 2) == ((column >> 2) ^ ((row & 3).bit_count() % 2))
+                else 0 for row in range(8)]
+    if name == "controlled_increment2":
+        expected = (column & 1) | ((((column >> 1) + (column & 1)) % 4) << 1)
+        return [complex(row == expected) for row in range(8)]
+    if name == "equals1":
+        expected = column ^ (4 if (column & 1) == ((column >> 1) & 1) else 0)
+        return [complex(row == expected) for row in range(8)]
+    if name == "reflection_zero2":
+        return [(-1 if column == 0 else 1) * int(row == column) for row in range(4)]
+    if name == "rotation_negative_x_positive_y":
+        matrix = [[1-1j, -1+1j], [1+1j, 1+1j]]
+        return [matrix[row][column] / 2 for row in range(2)]
+    if name == "qaoa_negative_mixer2":
+        return [1j ** ((row ^ column).bit_count()) / 2 for row in range(4)]
+    if name == "qaoa_path_layer3":
+        z = [1 - 2 * ((column >> j) & 1) for j in range(3)]
+        phase = cmath.exp(-1j * math.pi * (z[0] * z[1] + z[1] * z[2]) / 4)
+        return [phase * (-1j) ** ((row ^ column).bit_count()) / math.sqrt(8)
+                for row in range(8)]
     if name == "controlled_h2":
         return [H[row & 1][column & 1] *
                 (H[row >> 1][column >> 1] if row & 1 else int(row >> 1 == column >> 1))

@@ -1,7 +1,7 @@
 # Shared reversible AddK and Equals
 
 These ordinary `.qli` definitions use the experimental
-[sized source producer](../../../docs/sized-corpus-source.md), with the existing
+[sized source producer](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md), with the existing
 independent hierarchy checker and exact finite reconstruction. They are not yet
 production CLI or bundled standard-library APIs. Each body is reused at widths
 0–3; zero width is a local ownership boundary test, not an upstream domain claim.

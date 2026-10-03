@@ -270,6 +270,60 @@
       "reference": "pennylane_demos/qaoa_edge_layer2",
       "project": "semantic_faults/edge_layer_reversed_order",
       "reason": "Apply the noncommuting mixer before the cost."
+    },
+    {
+      "id": "two_bitstrings3_fault",
+      "reference": "quantum_katas/two_bitstrings3",
+      "project": "semantic_faults/two_bitstrings3_fault",
+      "reason": "Omit the bit-string offset X on the second wire."
+    },
+    {
+      "id": "w2_retained3_fault",
+      "reference": "quantum_katas/w2_retained3",
+      "project": "semantic_faults/w2_retained3_fault",
+      "reason": "Omit the ancilla disentangling CNOT; data probabilities alone agree."
+    },
+    {
+      "id": "even_parity3_fault",
+      "reference": "quantum_katas/even_parity3",
+      "project": "semantic_faults/even_parity3_fault",
+      "reason": "Flip the required parity from even to odd."
+    },
+    {
+      "id": "controlled_increment2_fault",
+      "reference": "qualtran/controlled_increment2",
+      "project": "semantic_faults/controlled_increment2_fault",
+      "reason": "Compute the carry from the updated low bit instead of the original one."
+    },
+    {
+      "id": "equals1_fault",
+      "reference": "qualtran/equals1",
+      "project": "semantic_faults/equals1_fault",
+      "reason": "Fail to restore the complemented comparison input."
+    },
+    {
+      "id": "reflection_zero2_fault",
+      "reference": "qualtran/reflection_zero2",
+      "project": "semantic_faults/reflection_zero2_fault",
+      "reason": "Reflect around |11> instead of |00>."
+    },
+    {
+      "id": "rotation_negative_x_positive_y_fault",
+      "reference": "pennylane_demos/rotation_negative_x_positive_y",
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "reason": "Reverse the noncommuting rotations."
+    },
+    {
+      "id": "qaoa_negative_mixer2_fault",
+      "reference": "pennylane_demos/qaoa_negative_mixer2",
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "reason": "Use positive beta in both rotations; basis probabilities agree."
+    },
+    {
+      "id": "qaoa_path_layer3_fault",
+      "reference": "pennylane_demos/qaoa_path_layer3",
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "reason": "Omit the second edge while retaining the shared middle wire."
     }
   ]
 }

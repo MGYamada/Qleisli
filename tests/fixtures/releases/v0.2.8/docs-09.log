@@ -1,0 +1,2 @@
+$ python3 scripts/check_input_corpus.py
+Corpus policy, provenance, notices and authoring snapshots: passed (78 cases / 3 sources)

@@ -1,6 +1,6 @@
 # Type system: current finite source contract
 
-Normative v0.2.x; [Rust discipline](design-philosophy.md#follow-rust-for-type-and-ownership-discipline), [grammar](syntax-v0.md)/[language](language-spec.md). General compiler soundness open.
+Normative v0.2.x; [Rust discipline](design-philosophy.md#follow-rust-for-type-and-ownership-discipline), [grammar](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/syntax-v0.md)/[language](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-spec.md). General compiler soundness open.
 
 ## Formation and equality
 
@@ -33,4 +33,4 @@ Specify concrete type-system migrations at0.3; QLT>=0.4. PATCH retains present c
 
 ## Adopted future types
 
-Bits<n>/CBits<m> only [experimental sized profile](sized-corpus-source.md); [linear sizes](size-expressions.md) allow constant multiplication/guarded subtraction. Bit/Bits1,Unit/Bits0,flat/nested distinct; segmentation/reversal/owner conversion explicit. Arrays/generalized Iso/Unitary draft APIs need complete formation/equality/owners/effects/encoding/lowering/capacity/migration and independent checks.
+Bits<n>/CBits<m> only [experimental sized profile](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md); [linear sizes](size-expressions.md) allow constant multiplication/guarded subtraction. Bit/Bits1,Unit/Bits0,flat/nested distinct; segmentation/reversal/owner conversion explicit. Arrays/generalized Iso/Unitary draft APIs need complete formation/equality/owners/effects/encoding/lowering/capacity/migration and independent checks.

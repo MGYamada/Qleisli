@@ -1,6 +1,6 @@
 # Requirements for a quantum programming language
 
-Adopted English requirements; [finite language](language-spec.md)/[formal scope](formal-core.md), not all implemented/proved.
+Adopted English requirements; [finite language](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-spec.md)/[formal scope](formal-core.md), not all implemented/proved.
 
 ## Semantics and purity
 

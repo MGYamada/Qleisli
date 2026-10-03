@@ -1,0 +1,112 @@
+{
+  "results": [
+    {
+      "project": "quantum_katas/two_bitstrings3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/two_bitstrings3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/w2_retained3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/w2_retained3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/even_parity3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/quantum_katas/even_parity3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/controlled_increment2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/controlled_increment2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/equals1",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/equals1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/reflection_zero2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/qualtran/reflection_zero2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rotation_negative_x_positive_y",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/rotation_negative_x_positive_y",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/qaoa_negative_mixer2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_negative_mixer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/qaoa_path_layer3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/pennylane_demos/qaoa_path_layer3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

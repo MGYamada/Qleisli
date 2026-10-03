@@ -791,6 +791,24 @@ fn process_project_with_policy(
     process_loaded_project(root, &project, require_entry).map_err(Diagnostic::from_compile)
 }
 
+impl super::project::QrateSource {
+    /// Check every declaration in the selected qrate, retaining its root identity.
+    pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic> {
+        let project = self.load_with_policy(policy)?;
+        process_loaded_project(self.path(), &project, false)
+            .map(|_| ())
+            .map_err(Diagnostic::from_compile)
+    }
+
+    /// Compile the selected qrate through the same independent source/IR checks.
+    pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic> {
+        let project = self.load_with_policy(policy)?;
+        Ok(process_loaded_project(self.path(), &project, true)
+            .map_err(Diagnostic::from_compile)?
+            .expect("required entry was compiled"))
+    }
+}
+
 fn process_loaded_project(
     root: &Path,
     project: &Project,

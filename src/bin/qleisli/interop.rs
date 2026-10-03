@@ -86,13 +86,13 @@ fn bytes(path: &Path, limit: usize) -> Result<Vec<u8>, Failure> {
     let reader: Box<dyn Read> = if path == Path::new("-") {
         Box::new(std::io::stdin())
     } else {
-        Box::new(std::fs::File::open(path).map_err(|e| failure("io", e.to_string()))?)
+        Box::new(std::fs::File::open(path).map_err(|e| failure("project", e.to_string()))?)
     };
     let mut data = Vec::new();
     reader
         .take(limit as u64 + 1)
         .read_to_end(&mut data)
-        .map_err(|e| failure("io", e.to_string()))?;
+        .map_err(|e| failure("project", e.to_string()))?;
     if data.len() > limit {
         return Err(failure("limit", "input byte limit exceeded"));
     }

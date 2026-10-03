@@ -290,11 +290,22 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
 
 #[test]
 fn every_quick_reference_program_compiles_and_executes() {
-    let reference = fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR")).join("docs/qli-quick-reference.md"),
-    )
-    .unwrap();
-    let programs: Vec<_> = reference.split("```qli\n").skip(1).collect();
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/quick_reference");
+    let programs = [
+        "exact_phase.qli",
+        "teleport_minus.qli",
+        "phase_kickback.qli",
+        "operation_round_trip.qli",
+    ];
+    let inventoried: BTreeSet<_> = fs::read_dir(&directory)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().into_string().unwrap())
+        .filter(|name| name.ends_with(".qli"))
+        .collect();
+    assert_eq!(
+        inventoried,
+        programs.map(String::from).into_iter().collect()
+    );
     let expected = [
         vec![(vec![false], 1.0)],
         message_distribution(&[true]),
@@ -307,8 +318,8 @@ fn every_quick_reference_program_compiles_and_executes() {
         "each program needs an output oracle"
     );
     for (program, expected) in programs.into_iter().zip(expected) {
-        let (source, _) = program.split_once("```").expect("closed source fence");
-        distribution(&execute(&SourceRoot::new(source)), &expected);
+        let source = fs::read_to_string(directory.join(program)).unwrap();
+        distribution(&execute(&SourceRoot::new(&source)), &expected);
     }
 }
 

@@ -1,0 +1,16 @@
+failed: task-0 (0.0s)
+["/opt/homebrew/opt/python@3.14/bin/python3.14", "-c", "raise SystemExit(2)"]
+
+passed: task-2 (0.0s)
+failed: task-1 (0.2s)
+["/opt/homebrew/opt/python@3.14/bin/python3.14", "-c", "import time; time.sleep(10)"]
+
+....passed: task-0 (0.0s)
+passed: task-1 (0.1s)
+...passed: task-0 (0.0s)
+passed: task-1 (0.0s)
+..
+----------------------------------------------------------------------
+Ran 9 tests in 0.377s
+
+OK

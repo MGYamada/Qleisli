@@ -34,6 +34,8 @@ import Qleisli.HierarchicalAcceptance
 import Qleisli.HierarchicalFiniteEvaluation
 import Qleisli.HierarchicalFiniteUnitary
 import Qleisli.Qirf
+import Qleisli.QirfValidity
+import Qleisli.NativeValidity
 import Qleisli.NativeHierarchy
 import Qleisli.HierarchicalDiagonal
 import Qleisli.HierarchicalGradient

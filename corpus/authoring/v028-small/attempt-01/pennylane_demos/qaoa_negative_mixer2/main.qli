@@ -1,0 +1,20 @@
+// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py
+// Selected symbol: U_B
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use kernel::kernel;
+observe fn main() -> (CBit, CBit) {
+let q = join(init0(), init0());
+let q = kernel(q);
+let (w0, w1) = split(q);
+(measure_z(w0), measure_z(w1))
+}

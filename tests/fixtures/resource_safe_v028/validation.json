@@ -1,0 +1,144 @@
+{
+  "format": "qleisli.resource-safe-validation",
+  "version": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-02T20:20:44.068010+00:00",
+  "scope": "Independent quantum linear ownership for every ordinary raw operation, both branch arms and actual QIRF/QLV1 root acceptance; not full EffectSound/hierarchical S05",
+  "source_revision": "fe0278a5933990993fe465049b43147bcefe7dc1ebcfa473304e420346faf159",
+  "sources": {
+    "lean-kernel/QleisliKernel.lean": "b9bab994083c571a695792ff02a6f60c493ea1573db988b74a70777eef82ac41",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+    "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+    "lean-kernel/QleisliKernel/Raw/Ownership.lean": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
+    "lean-kernel/QleisliKernel/Semantics/Ownership.lean": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+    "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+    "lean-kernel/QleisliKernel/Qirf/Ownership.lean": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+    "lean-kernel/Protocol/Validity.lean": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+    "lean/Qleisli/QirfValidity.lean": "8e6a6300fabe1791223df9227e5b962fdb466691e663b2eb3de26fcd9877011b",
+    "lean/Qleisli/NativeValidity.lean": "845e50fc3628b80b2ec8e783aa380e274dcf67bd2a307fbe625324809dc21c67"
+  },
+  "proofs": {
+    "judgment": "QleisliKernel.Semantics.Ownership.ResourceSafe",
+    "raw": "QleisliKernel.Raw.Ownership.prepare_resourceSafe",
+    "observing": "QleisliKernel.Raw.Observation.verify_resourceSafe",
+    "qirf": "QleisliKernel.Qirf.Validity.check_resourceSafe",
+    "native": "QleisliKernel.Protocol.Validity.check_resourceSafe",
+    "compatibility": "QleisliKernel.Raw.Observation.checkOps_projection",
+    "composition": "Qleisli.Qirf.Validity.RootMeaning.resources",
+    "independent_laws": [
+      "Run.split",
+      "Erase.consumed",
+      "Pure.no_reuse",
+      "no_implicit_drop",
+      "Phi.empty_left",
+      "Phi.empty_right",
+      "unit_drop",
+      "unit_has_no_gate",
+      "unit_has_no_bit_access",
+      "unit_return"
+    ]
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report tests/fixtures/resource_safe_v028/schema-registry-validation.json",
+      "status": "passed",
+      "record": "schema-registry-validation.json",
+      "details": "Both full Lean builds and compiled audits; fresh QleisliKernel replay and theorem export",
+      "kernel_declarations": 11288,
+      "math_declarations": 3340,
+      "project_axioms": 0
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --kernel /tmp/qleisli-before-resource-safe --record tests/fixtures/resource_safe_v028/before",
+      "status": "passed",
+      "process_checks": 222,
+      "small_corpus_clients": 75,
+      "record": "before/dual-validation.json"
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --record tests/fixtures/resource_safe_v028/after",
+      "status": "passed",
+      "process_checks": 222,
+      "small_corpus_clients": 75,
+      "record": "after/dual-validation.json"
+    },
+    {
+      "command": "Compare native original input hashes, exit codes, stdout and stderr",
+      "status": "passed",
+      "packets": 28,
+      "record": "native-compatibility.json",
+      "details": "Predecessor executable hash matches preceding soundness-refactor validation"
+    },
+    {
+      "command": "python3 scripts/test_lean_observation.py --record tests/fixtures/resource_safe_v028/observation.json",
+      "status": "passed",
+      "native_cases": 150,
+      "rust_comparisons": 143,
+      "exact_kraus_operators": 145,
+      "retained_histories": 145,
+      "max_semantic_qubits": 3,
+      "record": "observation.json"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_finite_binding.py",
+      "status": "passed",
+      "native_cases": 57
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "status": "passed",
+      "constructors": 232,
+      "sources": 227,
+      "boundaries": 19
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed",
+      "local_links": 1681,
+      "markdown_anchors": 56,
+      "lean_root_modules": 196
+    }
+  ],
+  "not_performed": [
+    "Full EffectSound, full instrument/contract/hierarchical S05 closure and independent specification review",
+    "Full Rust/Python suites: this continuation changes Lean proofs and a universally equivalent Lean instruction decomposition; selected native/Rust integration comparisons were run",
+    "Maximum-size quantum cases, full native CI matrix and complete fresh Mathlib/Qleisli replay; changed mathematics was compiled and audited",
+    "Hosted release CI, fresh distribution bundle, tagging, pushing or publication; older bundles/validation bind their recorded source snapshots"
+  ],
+  "reports": {
+    "after/dual-validation.json": "6d67465a4e4db0dba97b1fe477e1ee1d5c8fbbcd44948c4de0662b4894e6bf22",
+    "before/dual-validation.json": "aefee6d4e20d411d5334b0127706cfb5e07e78975bf55824d7a7e45c62f111fb",
+    "native-compatibility.json": "cd9de7ebc85f6d105958c33bbe5a7460a15dc710a600a4468ae84fd1a5c106bb",
+    "native-inputs.json": "10726d5a4683c0c5e5bd85bb037630ad193a7980b81d7b766c86ddad98d2d0cb",
+    "native-observed.json": "cc59831f1679ce0780e327fa88c110c9899e0e3d163c674b4bd7f1fd28e953e6",
+    "observation.json": "fcc547aa65a460cfd57ad04da69e671cdb40b1a4c329c92c560922ad71ab487f",
+    "schema-registry-validation.json": "f2fe91c23211fab409ebbc10ba0e5e2a446411f961fc6830b2747959ab067d2f",
+    "source-ir/0.qirf.json": "a65811ddcc22bf58cc381ad04734ffd473f8af512da7ffe2ad53b5ac5ccbe12e",
+    "source-ir/1.qirf.json": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "source-ir/2.qirf.json": "5210a8e427f721db29f021a91ff8f01678a2011c8108202755658071ad4a7d11",
+    "source-ir/3.qirf.json": "67604a5175cb4cbe2c04e48038a077e05f68017a65d9a0cfa2b2f232fd16f5c5",
+    "source-ir/4.qirf.json": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+    "source-review.json": "0bf6dc2f8135cd9c6219b992c9813cfecbef604ab4ebe347d71da5b32953a5fd"
+  },
+  "documentation": {
+    "metric": "Tracked/non-ignored docs UTF-8 byte metric; ignored .DS_Store excluded",
+    "baseline_bytes": 190835,
+    "current_bytes": 86422,
+    "reduction_percent": 54.71,
+    "plans_and_imaginary": "retained"
+  }
+}

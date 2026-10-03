@@ -4,10 +4,10 @@
 
 Keep AGENTS.md within **100 lines and 6,000 UTF-8 bytes**, enforced by
 `scripts/check_docs.py`. Edit or replace existing rules rather than append.
-Keep durable working rules and links here; specifications belong in their
-own documents, decisions in Issues, results beside fixtures, history in Git.
-Do not copy release records or maintain version/publication histories here.
-Do not raise these limits without the user's explicit instruction.
+Keep rules/links here; specifications in their documents, decisions in Issues,
+results beside fixtures, history in Git.
+Keep release/publication histories out.
+Raise limits only on explicit user instruction.
 
 ## Start from the design
 
@@ -61,8 +61,8 @@ Until v0.5.0, add algorithms to `corpus` rather than generally expand `stdlib`.
 Follow [corpus policy](corpus/POLICY.md): only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos; source changes need explicit approval. Pin commits/file hashes
 and preserve licenses/notices (Katas MIT; the other two Apache-2.0).
-Read [routine contracts](docs/stdlib-contracts.md); library work also follows
-[STDLIB.md](STDLIB.md) and the [contract ledger](docs/stdlib-contracts.md).
+Library work follows [STDLIB.md](STDLIB.md) and the
+[contract ledger](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md).
 
 Prioritize shared executable corpus source without waiting for general proofs.
 Follow the [continuation](docs/v0.2.2-plan.md), [VM packets](docs/verification-migration-v0.2.md)
@@ -84,13 +84,13 @@ Update `docs/project-status.json` and manifests, then regenerate with
 
 Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
 need an Issue naming the 0.x.0 target, contracts, reason, migration and acceptance
-criteria before implementation. Follow [versioning](docs/versioning.md): compatible
+criteria before implementation. Follow [versioning](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md): compatible
 0.y.z work uses PATCH, breaks MINOR. Cargo.toml is authoritative; synchronize
 Cargo.lock, both lakefiles, Python metadata/__version__ and std Qargo, never
 dependencies. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
 Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
 Run relevant checks and record performed/skipped results accurately. For releases
-follow the [procedure](docs/crates-io-release.md); tag the exact checked commit.
+follow the [procedure](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md); tag the exact checked commit.
 Selection, tagging, pushing and publication are distinct; published artifacts
 are immutable. Documentation-only work need not rerun Rust/Lean tests.
 Preserve Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution

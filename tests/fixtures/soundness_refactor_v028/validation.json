@@ -1,0 +1,119 @@
+{
+  "format": "qleisli.soundness-refactor-validation",
+  "version": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-02T19:23:45.010396+00:00",
+  "scope": "Typed actual QIRF acceptance, independent finite original-body contract and native packet binding; full S05 remains open",
+  "source_revision": "6edea8c2278b075b74f53a20d4025c70967b1c0d41a1a19307be8841a1f6da86",
+  "sources": {
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "4e63ad72bcaefcb7d1af31bb02857deb652767c7004fc493dcf2357109000ac2",
+    "lean-kernel/QleisliKernel/Qirf.lean": "60c94637b00f6689405d9ce50294e7b462996d8698ba12257bc10c0dbed65f87",
+    "lean-kernel/QleisliKernel/Qirf/Validity.lean": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2",
+    "lean-kernel/Protocol/Validity.lean": "2ac320e1c4ed01365efc713d4427f449ed775f9b665ac87acc184aae9d3fc445",
+    "lean-kernel/QleisliKernel/Qirf/Checked.lean": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+    "lean-kernel/QleisliKernel/Semantics/Qirf.lean": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86",
+    "lean/Qleisli.lean": "35412ea8be973253b2039e64c149a9e8a5974c02388942e1de7b8b78f658cfd2",
+    "lean/Qleisli/QirfValidity.lean": "1208ff2dba3232ca64098d8883ffaf5c1a9ab51171f4b378e800c269fb9f65b3",
+    "lean/Qleisli/NativeValidity.lean": "1bd3ccf66a086925089771e9c0b49ce82c65d744b8b1701b88a068717b3b2959",
+    "lean/Qleisli/Semantics/Qirf.lean": "f37cb57590e8d780894b1a5a940582457d3c493df409546b94c659d66d725bc3"
+  },
+  "checks": [
+    {
+      "command": "python3 scripts/check_schema_registry.py --write",
+      "status": "passed",
+      "record": "schema-registry-validation.json",
+      "details": "Both full Lean builds, source/compiled audits, fresh QleisliKernel replay, theorem export; all three external schemas disabled"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --kernel /tmp/qleisli-before-soundness --record tests/fixtures/soundness_refactor_v028/dual-before.json",
+      "status": "passed",
+      "process_checks": 222,
+      "small_corpus_clients": 75,
+      "record": "before/dual-validation.json",
+      "note": "The tool creates a record directory. Renamed dual-before.json/ to before/ after the run; contents unchanged."
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --record tests/fixtures/soundness_refactor_v028/after",
+      "status": "passed",
+      "process_checks": 222,
+      "small_corpus_clients": 75,
+      "record": "after/dual-validation.json"
+    },
+    {
+      "command": "Compare original input hashes, exit codes, stdout and stderr from both native runs",
+      "status": "passed",
+      "packets": 28,
+      "record": "native-compatibility.json"
+    },
+    {
+      "command": "python3 scripts/test_lean_observation.py --record tests/fixtures/soundness_refactor_v028/observation.json",
+      "status": "passed",
+      "native_cases": 150,
+      "rust_comparisons": 143,
+      "exact_kraus_operators": 145,
+      "retained_histories": 145,
+      "record": "observation.json"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_finite_binding.py",
+      "status": "passed",
+      "native_cases": 57
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "status": "passed",
+      "constructors": 232,
+      "sources": 222,
+      "boundaries": 19
+    },
+    {
+      "command": "python3 scripts/check_docs.py --write-status",
+      "status": "passed",
+      "local_links": 1666,
+      "markdown_anchors": 55,
+      "lean_root_modules": 191
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "status": "passed"
+    }
+  ],
+  "not_performed": [
+    "Full ResourceSafe/EffectSound/hierarchical S05 proof; independent structural judgments and analytic hierarchy bridge remain open",
+    "Full Rust/Python suite: no Rust/Python implementation change in this continuation; selected native/Rust integration and observation comparisons were run",
+    "Maximum-size quantum cases and the complete native CI matrix",
+    "Hosted Linux/macOS release CI, fresh distribution bundle, tagging, pushing or publication; earlier bundle manifests bind earlier source snapshots"
+  ],
+  "documentation": {
+    "metric": "Same tracked/non-ignored docs UTF-8 byte metric as the original v0.2.8 cleanup; ignored .DS_Store excluded",
+    "baseline_bytes": 190835,
+    "current_bytes": 85927,
+    "reduction_percent": 54.97,
+    "plans_and_imaginary": "retained"
+  },
+  "reports": {
+    "after/dual-validation.json": "36f5e0e55b86dcfb6469cc1b210e70a827c306e66f9bfc068a3de8bb5e6c1973",
+    "before/dual-validation.json": "36bb94858412734f86bf28c7f94ef617eaf45b5b2afd33a37a352bb27c2408c3",
+    "native-compatibility.json": "ef4d2a69c1aa2e21e711250e5b5b6b9a47c03312f422d9ebdb08d635b44e1941",
+    "native-inputs.json": "10726d5a4683c0c5e5bd85bb037630ad193a7980b81d7b766c86ddad98d2d0cb",
+    "native-observed.json": "713ebba1c230a44198e658b330a1426c6834d8a433fc0b4ec811d83f6dd9b027",
+    "observation.json": "abd42edaeec480bc357e103a690fa4a4364c661a2dd89279386176b4928fde09",
+    "schema-registry-validation.json": "3c45d7796c869cc920d2b2d0f01d1ef5fb95adc3189d13f99ecc8ef72544135e",
+    "source-ir/0.qirf.json": "a65811ddcc22bf58cc381ad04734ffd473f8af512da7ffe2ad53b5ac5ccbe12e",
+    "source-ir/1.qirf.json": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "source-ir/2.qirf.json": "5210a8e427f721db29f021a91ff8f01678a2011c8108202755658071ad4a7d11",
+    "source-ir/3.qirf.json": "67604a5175cb4cbe2c04e48038a077e05f68017a65d9a0cfa2b2f232fd16f5c5",
+    "source-ir/4.qirf.json": "7413e752000dfdbed4dc31773f8410edcc525d2b054cdaed1fbd5c2080b34c0e",
+    "source-review.json": "e198dd1f368e984889afe8f229195e2bccec31d74c19e0727b2dbbd274d662f4"
+  }
+}

@@ -124,15 +124,20 @@ class JsonCliTests(unittest.TestCase):
 
     def test_project_and_entry_errors_have_no_invented_source_span(self):
         self.source("")
-        for command, root, code in [("run", self.root, "invalid_entry"),
-                                    ("check", self.root / "missing", "project")]:
+        for command, root, code, path in [("run", self.root, "invalid_entry", None),
+                                          ("check", self.root / "missing", "project", ".")]:
             diagnostic = self.invoke(command, root, "--format=json", status=1)["diagnostics"][0]
             self.assertEqual(diagnostic["code"], code)
-            self.assertIsNone(diagnostic["primary"])
+            if path is None:
+                self.assertIsNone(diagnostic["primary"])
+            else:
+                self.assertEqual(diagnostic["primary"], {
+                    "path": path, "start": 0, "end": 0, "line": 1, "column": 1})
         (self.root / "main.qli").write_bytes(b"\xff")
         diagnostic = self.invoke("check", self.root, "--format=json", status=1)["diagnostics"][0]
         self.assertEqual(diagnostic["code"], "project")
-        self.assertIsNone(diagnostic["primary"])
+        self.assertEqual(diagnostic["primary"], {
+            "path": "main.qli", "start": 0, "end": 0, "line": 1, "column": 1})
 
     def test_usage_and_escaped_command_names(self):
         for command in ["doc", "sample", "emit-ir", 'unknown"\\\n\t日本語']:

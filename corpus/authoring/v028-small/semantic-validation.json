@@ -1,0 +1,202 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-02T17:40:49.738458+00:00",
+  "project_version": "0.2.8",
+  "compiler_sha256": "c1628266772187b74fc51801fabd4d6d8a76502f36bf11b64a988d1af34a0bc0",
+  "oracle_script_sha256": "4841d50002d10a246f324d29348cece1dadfe5454a4c4df771d9bf9bc64b3ade",
+  "manifest_sha256": "659cbf21b36d561981f784802fcbad9cad8c89b7cbbd23639cb7cfe2743fb8c2",
+  "source_sha256": {
+    "quantum_katas/two_bitstrings3/kernel.qli": "962a3f10728a9796d06d38185ea2be37a4443662ef2f59c32335c6b0004b9608",
+    "quantum_katas/two_bitstrings3/main.qli": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8",
+    "quantum_katas/w2_retained3/kernel.qli": "60775a152f5b1b48274237c49d149975ab42ad0df7b6dc2b7509784a08f04dc3",
+    "quantum_katas/w2_retained3/main.qli": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e",
+    "quantum_katas/even_parity3/kernel.qli": "5002adc4267dba940fefdf769270c564955152991d8dcd6356b735f1659115c8",
+    "quantum_katas/even_parity3/main.qli": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050",
+    "qualtran/controlled_increment2/kernel.qli": "274b833da245acc498008e0e083d113bee31dd1a89c915d2ea0bf09a2ae14131",
+    "qualtran/controlled_increment2/main.qli": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3",
+    "qualtran/equals1/kernel.qli": "bd377eea2a1306b1de5b3915c0628c2e29e8dd342e54fdee86ee0c88f6ac5a12",
+    "qualtran/equals1/main.qli": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a",
+    "qualtran/reflection_zero2/kernel.qli": "9100f5e23798f13f1e97014d8db44472a457d4ce4e20b61fb7dcb82791514c4a",
+    "qualtran/reflection_zero2/main.qli": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb",
+    "pennylane_demos/rotation_negative_x_positive_y/kernel.qli": "f413eff72ef013c6811afa73b93a3e83126290149b9e4fe133d5f79d9852d950",
+    "pennylane_demos/rotation_negative_x_positive_y/main.qli": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af",
+    "pennylane_demos/qaoa_negative_mixer2/kernel.qli": "7f25dc36108873d5e297f9979c4ba7e51c09769bca6f82923e07a0ff96bee9c1",
+    "pennylane_demos/qaoa_negative_mixer2/main.qli": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e",
+    "pennylane_demos/qaoa_path_layer3/kernel.qli": "6007ab7d0b82113fd38dc93ed2b4ea5e0f040073b89117d9bbf862e8f93dcc13",
+    "pennylane_demos/qaoa_path_layer3/main.qli": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15"
+  },
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "cases": [
+    {
+      "id": "quantum_katas/two_bitstrings3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/w2_retained3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "quantum_katas/even_parity3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/controlled_increment2",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/equals1",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "qualtran/reflection_zero2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {}
+    },
+    {
+      "id": "pennylane_demos/rotation_negative_x_positive_y",
+      "semantic_probes": 10,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_negative_mixer2",
+      "semantic_probes": 36,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_path_layer3",
+      "semantic_probes": 136,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 0.0
+      }
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "effect",
+      "exit_code": 1
+    },
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "two_bitstrings3_fault",
+      "reference": "quantum_katas/two_bitstrings3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/two_bitstrings3 column 0: (True, False, True): 0 != 0.4999999999999999"
+    },
+    {
+      "id": "w2_retained3_fault",
+      "reference": "quantum_katas/w2_retained3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/w2_retained3 column 0: (False, True, False): 0 != 0.4999999999999999"
+    },
+    {
+      "id": "even_parity3_fault",
+      "reference": "quantum_katas/even_parity3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/even_parity3 column 0: (True, False, True): 0 != 0.25"
+    },
+    {
+      "id": "controlled_increment2_fault",
+      "reference": "qualtran/controlled_increment2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/controlled_increment2 column 1: (True, True, False): 0 != 1.0"
+    },
+    {
+      "id": "equals1_fault",
+      "reference": "qualtran/equals1",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/equals1 column 0: (False, False, True): 0 != 1.0"
+    },
+    {
+      "id": "reflection_zero2_fault",
+      "reference": "qualtran/reflection_zero2",
+      "typecheck": "passed",
+      "semantic_mismatch": "qualtran/reflection_zero2 entry 0,0 x: (False, False, False): 1 != 0.0"
+    },
+    {
+      "id": "rotation_negative_x_positive_y_fault",
+      "reference": "pennylane_demos/rotation_negative_x_positive_y",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_negative_x_positive_y entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+    },
+    {
+      "id": "qaoa_negative_mixer2_fault",
+      "reference": "pennylane_demos/qaoa_negative_mixer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_negative_mixer2 entry 0,1 y: (False, False, False): 0.0625 != 0.5624999999999997"
+    },
+    {
+      "id": "qaoa_path_layer3_fault",
+      "reference": "pennylane_demos/qaoa_path_layer3",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_path_layer3 entry 0,0 x: (True, False, False, False): 0.15625000000000006 != 0.28124999999999983"
+    }
+  ],
+  "semantic_fault_manifest_sha256": "7092a0a7c1dda72cd06c040e98849c6609ca97ca65ef30467082dc4cb3181fbb",
+  "semantic_fault_source_sha256": {
+    "semantic_faults/two_bitstrings3_fault/kernel.qli": "2542dff51f27184a46df0df2ef4f6ac0210aedb3176356447a6421483a18dfaa",
+    "semantic_faults/two_bitstrings3_fault/main.qli": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8",
+    "semantic_faults/w2_retained3_fault/kernel.qli": "d31befde35368f2e176e990a2b87fe867b1722dd4e17dfaf43e98a1bdebbb716",
+    "semantic_faults/w2_retained3_fault/main.qli": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e",
+    "semantic_faults/even_parity3_fault/kernel.qli": "6bf71ec20f13fec6fcab473f320b25038ab74c7bd2188a2e74f296f7e9a27894",
+    "semantic_faults/even_parity3_fault/main.qli": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050",
+    "semantic_faults/controlled_increment2_fault/kernel.qli": "dec2e45d0e4456bec5445010b2d4e19c341d1058ebfe58f1eb23071350fdcfc6",
+    "semantic_faults/controlled_increment2_fault/main.qli": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3",
+    "semantic_faults/equals1_fault/kernel.qli": "95f553b23cd512c5a5caa5bc22a27a5b1d73239d7f1f47c0492df70f07e41b7c",
+    "semantic_faults/equals1_fault/main.qli": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a",
+    "semantic_faults/reflection_zero2_fault/kernel.qli": "63b5bdbe2cf6cbfc373de121d1c99d71ef3b1e0218d6581e19a4a69fb77da705",
+    "semantic_faults/reflection_zero2_fault/main.qli": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb",
+    "semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": "5e4c189f80df6dee99d0fc18f2c91c7ddef886258738a2450b2e39e7173aed54",
+    "semantic_faults/rotation_negative_x_positive_y_fault/main.qli": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af",
+    "semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": "0a6355b1886016cb61fba144a806c9b725ee053dfd48e07c030360296bcc9277",
+    "semantic_faults/qaoa_negative_mixer2_fault/main.qli": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e",
+    "semantic_faults/qaoa_path_layer3_fault/kernel.qli": "a155446cd09a778e232efb520e803ee17a9c72315043a3cb1da4ad08a078f56f",
+    "semantic_faults/qaoa_path_layer3_fault/main.qli": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15"
+  },
+  "scope": "Nine-case subset of the complete corpus validation; same compiler/oracle/report invocation.",
+  "command": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "target/debug/qleisli",
+    "--exhaustive",
+    "--report",
+    "corpus/validation-v0.2.8.json"
+  ],
+  "exit_code": 0
+}

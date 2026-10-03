@@ -63,7 +63,10 @@ fn structured_load_errors_distinguish_source_spans_from_missing_files() {
     );
     let error = check_project_diagnostic(&root.0.join("missing")).unwrap_err();
     assert_eq!(error.code, "project");
-    assert!(error.primary.is_none());
+    let location = error.primary.unwrap();
+    assert_eq!(location.path, root.0.join("missing"));
+    assert_eq!((location.span.start, location.span.end), (0, 0));
+    assert_eq!((location.line, location.column), (1, 1));
     root.write("main.qli", "");
     assert!(check_project_diagnostic(&root.0).is_ok());
     let error = compile_project_diagnostic(&root.0).unwrap_err();

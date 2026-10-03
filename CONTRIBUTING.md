@@ -3,7 +3,7 @@
 Read [AGENTS.md](AGENTS.md) before changing the repository. It records the
 design-first workflow, quantum safety requirements, specification languages,
 and required validation. The public compatibility and release policy is in
-[Versioning](docs/versioning.md).
+[Versioning](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md).
 
 ## License of contributions
 
@@ -65,9 +65,9 @@ dependency archives only; project binaries/Lean definitions are rebuilt, audited
 and freshly replayed. This selection policy does not adopt the future constitutional
 registry in Issue #141. Use `python3 scripts/test_ci_profiles.py` locally.
 For release preparation, use the complete checklist in
-[Versioning](docs/versioning.md#release-records-and-validation). Distinguish
+[Versioning](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md#release-records-and-validation). Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
-The [crates.io procedure](docs/crates-io-release.md) covers the registry README,
+The [crates.io procedure](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md) covers the registry README,
 API doctests, installed quickstart and archive inventories. Local release
 preparation alone does not authorize an upload; the 0.2.1 upload was separately
 authorized by the user on 2026-09-30, subject to rechecking.

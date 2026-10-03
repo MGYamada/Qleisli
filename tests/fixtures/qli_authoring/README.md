@@ -18,5 +18,5 @@ unregistered files. Rejection tests pin categories. The dedicated
 [ergonomics suite](../ergonomics/README.md) checks precise binding locations
 and the new pattern/tuple forms. When a language limitation is addressed, migrate its
 fixture to accepted tests with an explicit contract and update the
-[authoring report](../../../docs/qli-authoring-feedback.md). The corpus is
+[authoring report](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-authoring-feedback.md). The corpus is
 an authoring/semantic regression suite, not a measured LLM pass-rate benchmark.

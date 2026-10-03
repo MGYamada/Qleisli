@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
+from check_docs import check_source_doc_references, check_python_readme_version, check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -24,6 +24,20 @@ class DocumentationReferences(unittest.TestCase):
 
     def check(self, markdown):
         return check_links(self.root, [self.write("docs/rules.md", markdown)])
+
+    def test_qli_comment_paths_require_existing_documents(self):
+        self.write("docs/active.md", "# Active")
+        self.write("stdlib/src/test.qli", "//! docs/active.md#active docs/gone.md\n// https://github.com/example/blob/v1/docs/old.md\n")
+        self.assertEqual(check_source_doc_references(self.root),
+                         ["stdlib/src/test.qli:1: missing document docs/gone.md"])
+
+    def test_python_readme_tracks_selected_not_published_version(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.2.8"\n')
+        for text in ("Qleisli 0.2.7 Rust", "Qleisli 0.2.8 Rust; latest published Rust release is 0.2.8"):
+            self.write("python/README.md", text)
+            self.assertTrue(check_python_readme_version(self.root))
+        self.write("python/README.md", "Qleisli 0.2.8 Rust executable from the same checkout.")
+        self.assertEqual(check_python_readme_version(self.root), [])
 
     def test_agents_budget_accepts_exact_limits_and_rejects_hidden_extra_lines(self):
         self.write("AGENTS.md", "x" * 5900 + "\n" * 100)

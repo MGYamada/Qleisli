@@ -19,6 +19,20 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / ".github/ci/native-comparisons.json"
+RUST_TOOLCHAIN = "1.98.1"
+LEAN_TOOLCHAIN = "leanprover/lean4:v4.30.0"
+TASK_ENVIRONMENT = {"QLEISLI_HIERARCHY_KERNEL", "QLEISLI_DUAL_KERNEL"}
+
+
+def execution_environment() -> dict[str, str]:
+    """Retain tool discovery/home/temp locations, never ambient compiler flags."""
+    names = {"PATH", "HOME", "TMPDIR", "TMP", "TEMP", "SYSTEMROOT", "WINDIR",
+             "PATHEXT", "CARGO_HOME", "RUSTUP_HOME", "ELAN_HOME"}
+    return {key: value for key, value in os.environ.items() if key in names} | {
+        "RUSTUP_TOOLCHAIN": RUST_TOOLCHAIN, "ELAN_TOOLCHAIN": LEAN_TOOLCHAIN,
+        "PYTHONNOUSERSITE": "1", "PYTHONDONTWRITEBYTECODE": "1",
+        "LC_ALL": "C", "LANG": "C",
+    }
 
 
 def load_tasks(path: Path) -> list[dict]:
@@ -41,31 +55,40 @@ def load_tasks(path: Path) -> list[dict]:
         for command in task["commands"]:
             if not isinstance(command, list) or not command or any(not isinstance(arg, str) or not arg or "\x00" in arg for arg in command):
                 raise ValueError("invalid comparison command")
+            if Path(command[0]).name in {"cargo", "rustc", "rustdoc"} and any(
+                    arg.startswith("+") and arg != "+" + RUST_TOOLCHAIN for arg in command[1:]):
+                raise ValueError("comparison command overrides the pinned Rust toolchain")
         env = task.get("env", {})
         if not isinstance(env, dict) or any(not isinstance(key, str) or not re.fullmatch(r"[A-Z_][A-Z_0-9]*", key) or not isinstance(value, str) or "\x00" in value for key, value in env.items()):
             raise ValueError("invalid comparison environment")
+        if env.keys() - TASK_ENVIRONMENT:
+            raise ValueError("comparison environment is not in the reviewed allowlist")
     return tasks
 
 
-def source_binding(root: Path, expected_head: str | None) -> dict:
+def source_binding(root: Path, expected_head: str | None, environment: dict | None = None) -> dict:
+    environment = execution_environment() if environment is None else environment
     def output(command, directory=root):
-        return subprocess.check_output(command, cwd=directory, text=True).strip()
+        return subprocess.check_output(command, cwd=directory, env=environment, text=True).strip()
 
     head = output(["git", "rev-parse", "HEAD"])
     if expected_head and head != expected_head:
         raise ValueError("comparison checkout differs from GITHUB_SHA")
-    subprocess.run(["git", "diff", "--quiet", "HEAD"], cwd=root, check=True)
+    if output(["git", "status", "--porcelain=v1", "--untracked-files=all"]):
+        raise ValueError("comparison checkout has tracked or untracked changes")
     pin = (root / "lean-kernel/lean-toolchain").read_text().strip()
-    if pin != "leanprover/lean4:v4.30.0":
+    if pin != LEAN_TOOLCHAIN:
         raise ValueError("unexpected Lean toolchain pin")
     lean = output(["lake", "env", "lean", "--version"], root / "lean-kernel")
-    rust = output(["rustc", "+1.98.1", "--version"])
-    if not lean.startswith("Lean (version 4.30.0,") or not rust.startswith("rustc 1.98.1 "):
+    rust = output(["rustc", "--version"])
+    cargo = output(["cargo", "--version"])
+    if not lean.startswith("Lean (version 4.30.0,") or not rust.startswith("rustc 1.98.1 ") or not cargo.startswith("cargo 1.98.1 "):
         raise ValueError("native comparison toolchain mismatch")
-    return dict(head=head, lean_pin=pin, lean_version=lean, rust_version=rust)
+    return dict(head=head, lean_pin=pin, lean_version=lean, rust_version=rust,
+                cargo_version=cargo, environment=environment)
 
 
-def run_task(task: dict, root: Path, directory: Path, timeout: float) -> dict:
+def run_task(task: dict, root: Path, directory: Path, timeout: float, environment: dict) -> dict:
     directory.mkdir()
     started = time.monotonic()
     results = []
@@ -77,7 +100,7 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float) -> dict:
                 log.write(json.dumps(command) + "\n")
                 log.flush()
                 before = time.monotonic()
-                with subprocess.Popen(command, cwd=root, env=os.environ | task.get("env", {}),
+                with subprocess.Popen(command, cwd=root, env=environment | task.get("env", {}),
                                       stdout=log, stderr=subprocess.STDOUT, start_new_session=True) as process:
                     try:
                         code = process.wait(timeout=timeout)
@@ -114,12 +137,16 @@ def verify_coverage(report: dict, tasks: list[dict], binding: dict, manifest_has
                 raise ValueError(f"wrong or failed comparison command: {task['id']}")
 
 
-def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeout: float) -> list[dict]:
+def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeout: float,
+            environment: dict | None = None) -> list[dict]:
     if workers not in (1, 2, 4):
         raise ValueError("workers must be 1, 2 or 4")
     results = []
+    environment = execution_environment() if environment is None else environment
+    if any(task.get("env", {}).keys() - TASK_ENVIRONMENT for task in tasks):
+        raise ValueError("comparison environment is not in the reviewed allowlist")
     with ThreadPoolExecutor(max_workers=workers) as pool:
-        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout): task for task in tasks}
+        futures = {pool.submit(run_task, task, root, directory / task["id"], timeout, environment): task for task in tasks}
         for future in as_completed(futures):
             result = future.result()
             results.append(result)
@@ -143,10 +170,11 @@ def main() -> int:
         args.output.mkdir(parents=True, exist_ok=False)
         tasks = load_tasks(MANIFEST)
         manifest_hash = hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
-        binding = source_binding(ROOT, os.environ.get("GITHUB_SHA"))
+        environment = execution_environment()
+        binding = source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment)
         report.update(binding=binding, manifest_sha256=manifest_hash, expected_ids=[task["id"] for task in tasks])
-        report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900)
-        if source_binding(ROOT, os.environ.get("GITHUB_SHA")) != binding or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != manifest_hash:
+        report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900, environment)
+        if source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment) != binding or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != manifest_hash:
             raise ValueError("source or toolchain changed during comparisons")
         verify_coverage(report, tasks, binding, manifest_hash)
         report["status"] = "passed"

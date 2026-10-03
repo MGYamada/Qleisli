@@ -18,7 +18,7 @@ mod edition;
 mod manifest;
 mod source_file;
 
-pub use manifest::{manifest_warnings, qrate_source_root};
+pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
 
 const BUNDLED_SOURCES: &[(&str, &str)] = &[
     (
@@ -60,11 +60,7 @@ struct SourceBudget {
 
 impl SourceBudget {
     fn limit(path: &Path, message: impl Into<String>) -> LoadFailure {
-        let mut failure = error(
-            path,
-            Span::default(),
-            format!("{}: {}", path.display(), message.into()),
-        );
+        let mut failure = error(path, Span::default(), message);
         failure.code = "limit";
         failure
     }
@@ -234,10 +230,13 @@ pub(crate) struct LoadFailure {
 
 impl LoadFailure {
     pub(crate) fn into_diagnostic(self) -> Diagnostic {
+        // Path/I/O failures have no decoded source. Keep their file identity
+        // with the documented empty span, at the start of the file.
+        let (line, column) = self.coordinates.unwrap_or((1, 1));
         Diagnostic {
             code: self.code,
             message: self.error.message,
-            primary: self.coordinates.map(|(line, column)| SourceLocation {
+            primary: Some(SourceLocation {
                 path: self.error.path,
                 span: self.error.span,
                 line,
@@ -335,9 +334,20 @@ impl Project {
         root: &Path,
         policy: SourcePolicy,
     ) -> Result<Self, LoadFailure> {
-        let mut budget = SourceBudget { policy, used: 0 };
+        let budget = SourceBudget { policy, used: 0 };
         budget.allowance(root)?;
         let root = fs::canonicalize(root).map_err(|failure| io_error(root, failure))?;
+        Self::load_resolved(&root, policy)
+    }
+
+    // A qrate selection already has a canonical base and a checked relative
+    // suffix. Re-canonicalizing it would erase a replacement symlink (#192).
+    fn load_resolved(root: &Path, policy: SourcePolicy) -> Result<Self, LoadFailure> {
+        let mut budget = SourceBudget { policy, used: 0 };
+        budget.allowance(root)?;
+        let _directory =
+            source_file::open_directory(root).map_err(|failure| io_error(root, failure))?;
+        let root = root.to_path_buf();
         if !root.is_dir() {
             return Err(error(
                 &root,

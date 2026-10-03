@@ -1,0 +1,175 @@
+[
+  {
+    "arguments": [
+      "check",
+      "tests/fixtures/bug_triage_v028/tuple",
+      "--format=json"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "check",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "binding `pair` contains a tuple of owners: expected `Q<Bit>`, found `(Q<Bit>,Q<Bit>)`; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
+          "primary": {
+            "path": "main.qli",
+            "start": 90,
+            "end": 94,
+            "line": 3,
+            "column": 30
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  },
+  {
+    "arguments": [
+      "check",
+      "tests/fixtures/bug_triage_v028/source-limit",
+      "--source-bytes=10",
+      "--format=json"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "check",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "limit",
+          "severity": "error",
+          "message": "source exceeds 10-byte file limit",
+          "primary": {
+            "path": "sub/m.qli",
+            "start": 0,
+            "end": 0,
+            "line": 1,
+            "column": 1
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  },
+  {
+    "arguments": [
+      "check",
+      "tests/fixtures/bug_triage_v028/source-limit",
+      "--project-bytes=10",
+      "--format=json"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "check",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "limit",
+          "severity": "error",
+          "message": "project exceeds 10-byte aggregate limit",
+          "primary": {
+            "path": "sub/m.qli",
+            "start": 0,
+            "end": 0,
+            "line": 1,
+            "column": 1
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  },
+  {
+    "arguments": [
+      "interop",
+      "emit-qasm",
+      "tests/fixtures/bug_triage_v028/terminal-init",
+      "--input=qli"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "interop emit-qasm",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "Unsupported: quantum operation after terminal observation at raw operation 3",
+          "primary": null,
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  },
+  {
+    "arguments": [
+      "interop",
+      "emit-qir",
+      "tests/fixtures/bug_triage_v028/terminal-init",
+      "--input=qli"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "interop emit-qir",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "Unsupported: quantum operation after terminal observation at raw operation 3",
+          "primary": null,
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  },
+  {
+    "arguments": [
+      "interop",
+      "check",
+      "tests/fixtures/bug_triage_v028/missing.qasm",
+      "--input=qasm"
+    ],
+    "exit_code": 1,
+    "stdout": {
+      "format": "qleisli.result",
+      "version": 1,
+      "command": "interop check",
+      "outcome": "error",
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "No such file or directory (os error 2)",
+          "primary": null,
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    "stderr": ""
+  }
+]

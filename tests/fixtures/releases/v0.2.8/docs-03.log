@@ -1,0 +1,2 @@
+$ python3 scripts/check_editions.py
+Edition 2026: 977 .qli and 5 .qlt files covered by 21 explicit manifests; no repository-root manifest.

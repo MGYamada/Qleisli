@@ -1,0 +1,2 @@
+$ python3 scripts/check_verification_inventory.py
+VM-22: 232 constructors, 212 source snapshots, 18 boundaries; Rust authority unchanged.

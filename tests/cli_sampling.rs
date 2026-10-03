@@ -66,7 +66,7 @@ fn invalid_flags_and_failed_sampling_never_emit_shots() {
     assert_eq!(o.status.code(), Some(1));
     let s = String::from_utf8(o.stdout).unwrap();
     assert!(s.contains("\"code\":\"limit\""));
-    assert!(s.contains("\"primary\":null"));
+    assert!(s.contains("\"primary\":{\"path\":\"main.qli\""));
     assert!(s.contains("\"result\":null"));
 }
 

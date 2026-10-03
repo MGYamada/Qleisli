@@ -1,0 +1,13 @@
+{
+  "command": [
+    "python3",
+    "scripts/test_dual_verification.py",
+    "--kernel",
+    "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-issue223-cqdo4i5c/full/bin/qleisli-kernel",
+    "--record",
+    "tests/fixtures/ci_latency/issue223-bundles/full"
+  ],
+  "exit_code": 0,
+  "stdout": "VM-28: 222 process checks, 75 small corpus clients; both gates required\n",
+  "stderr": ""
+}

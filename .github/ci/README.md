@@ -16,6 +16,24 @@ project outputs and prior validation reports are never cached.
 | `model` | Changed mathematical proofs or normative contracts | Tests plus Mathlib package build and compiled declaration audit. |
 | `full` | Tags, release branches, default manual runs, policy/toolchain/registry changes, missing diff or unknown inputs | Tests plus both packages' proofs, retained reductions/equivalence, fresh kernel/Main replay and rebuilt schema-type binding. |
 
+Both platform bundle jobs forward this same lane to `package_lean_kernel.py`.
+`tests`/`model` build from a fresh copy, audit every native declaration and run
+relocated acceptance/rejection tests; `full` also freshly replays both roots.
+The packager defaults to `full`, rejects unknown lanes, and records the selected
+lane, whether fresh replay ran, source/file hashes and per-command times in its
+manifest. `model` describes only the native bundle; mathematical maintenance
+still runs in the separate required Lean job. Packaging-policy changes select
+`full`. No previous executable or validation output is reused.
+
+| Validation obligation | Routine `tests` | Additional `model` / `full` work |
+| --- | --- | --- |
+| Actual native correctness theorems | Typechecked with native build | Retained; `full` replays compiled kernel/Main independently |
+| Mathematical bridges | Source identity only | `model`/`full`: package build and declaration audit |
+| Reduction/equivalence examples | Covered native regressions continue | `full`: retained Lean reduction/equivalence files |
+| Native execution, original-input protocol and independent oracles | All retained comparison groups, relocated bundle tests | Same required comparisons in heavier lanes |
+| Source/compiled policy and forbidden-declaration mutations | Required, including private/generated helpers | Retained in all lanes |
+| Schema/release binding | Exact source identity; no proof claim | `full`: rebuilt theorem types and exact-source release assurance |
+
 The native kernel's existing proofs necessarily typecheck in its ordinary
 build. Their statements are retained; no theorem is downgraded to a test claim.
 The deliberate first step is to remove whole-project Mathlib/reduction/fresh
@@ -46,6 +64,18 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
+VM28 adds one dual-verification group with a host build and two checks (66 groups/72 commands):
+ordinary source/IR acceptance, request mutations, bound execution and small
+corpus comparisons. Linux and macOS lanes additionally build/audit native
+bundles from fresh source copies and run the relocated checker through the CLI;
+only `full` adds fresh bundle replay.
+Hosted outcomes remain separate from local validation.
+
+This is a partial #223 migration. Temporary per-group Lean harness compilation
+and overlapping fresh builds/audits still remain; build-once driver consolidation
+and representative hosted shadow/latency comparisons are not complete. A local
+full-versus-tests observation is not the #206/#221 runner-time benchmark.
+
 The kernel job first builds from source, runs source/compiled declaration
 policies, axiom/runtime-replacement audits and compiled negative tests.
 The `full` lane additionally runs reduction/equivalence tests and fresh
@@ -56,6 +86,13 @@ their own temporary projects. No verification result is transferred across
 jobs or reused to skip checks. Each group has a separate log/record directory,
 and any missing, duplicate, failed or timed-out group fails the job. Source,
 actual toolchain and command inventory identities accompany the timings.
+The runner rejects tracked and untracked checkout changes before and after
+execution. It binds the same minimal environment used for toolchain probes and
+tasks: tool/home/temp paths, Rust 1.98.1, Lean 4.30.0 and fixed Python/locale
+settings. Ambient compiler flags, wrappers and Python/Lean search paths are
+excluded; only the two reviewed native-kernel task variables may be added.
+Installed tools and home-directory tool configuration remain host dependencies;
+this is source/environment binding, not a hermetic operating-system sandbox.
 
 In the `full` lane, the unchanged `check_schema_registry.py` still builds and
 audits both Lean packages, replays the kernel and binds exported schema types to
@@ -73,3 +110,8 @@ observational evidence, not a statistical benchmark.
 Successful comparison artifacts retain all task IDs, commands, exit codes,
 timings and logs. They are diagnostic records, never an acceptance shortcut.
 Release/manual-full validation still checks its exact final source independently.
+
+For a standalone fully replayed bundle, run
+`python3 scripts/package_lean_kernel.py --validation full --output <new-directory>`.
+Rollback of this bundle step is to pass `--validation full` in both platform
+jobs; rollback of all routine lane selection is described above.

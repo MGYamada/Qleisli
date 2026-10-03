@@ -25,6 +25,35 @@ class Connections(unittest.TestCase):
         self.client = Client(EXE)
         self.qir = (FIXTURES / "independent.ll").read_text()
 
+    def test_qir_reader_cannot_be_replaced_by_current_directory_package(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            decoy = root / "qleisli"
+            decoy.mkdir()
+            (decoy / "__init__.py").write_text("")
+            (decoy / "_qir.py").write_text("from pathlib import Path; Path('executed').touch(); raise SystemExit(91)")
+            original = Path.cwd()
+            try:
+                os.chdir(root)
+                # Importing Client above used the real installed package. A new
+                # child must keep that identity even with a decoy beside input.
+                result = self.client.from_qir(self.qir).run()
+                self.assertEqual(result["distribution"][0]["bits"], [False, True])
+                self.assertFalse((root / "executed").exists())
+            finally:
+                os.chdir(original)
+
+    def test_host_cli_uses_closed_v1_codes_for_local_failures(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source.qasm"
+            source.write_text("OPENQASM 3.0;")
+            for path, executable in [(source.with_name("missing.qasm"), EXE),
+                                     (source, str(source.with_name("missing-executable")))]:
+                result = subprocess.run([sys.executable, "-m", "qleisli", str(path),
+                    "--input=qasm", "--executable", executable], capture_output=True)
+                self.assertEqual(result.returncode, 1)
+                self.assertEqual(json.loads(result.stdout)["diagnostics"][0]["code"], "project")
+
     def test_independent_qir_text_bitcode_order(self):
         expected = {"distribution": [{"bits": [False, True], "probability": 1.0}]}
         self.assertEqual(self.client.from_qir(self.qir).run(), expected)

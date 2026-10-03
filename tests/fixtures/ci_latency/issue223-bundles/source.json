@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.issue223-local-source",
+  "version": 1,
+  "base_commit": "84c9ec4c6a4cd731781eb0c44ea375dd3e6dfd11",
+  "working_tree": "uncommitted; pre-existing v0.2.8 work preserved",
+  "sources": {
+    ".github/workflows/ci.yml": "e477893652714bc93060afcb9b4f851fac00e6b67850f5c0f45b8318b5f83002",
+    ".github/ci/README.md": "d08758739e20ef61f7316892a174f2fcfec22a004ce44e2f465bd3a4f8a7d23f",
+    "scripts/package_lean_kernel.py": "03f5eb3c2abd157a6cc6a2603891c4eb0f84d610c3e30bdd8a59d7007d7ea9ff",
+    "scripts/test_package_lean_kernel.py": "ec054a4694c05db71b426ad29ae39a438bfab7333455435df68c32ed16724e7f",
+    "scripts/ci_profiles.py": "ba91f88d392bac19d465e12ad933eb0f877a2479730b4b0c26d42fb4eee80a93",
+    "scripts/test_ci_profiles.py": "92e7428ffe918db2469886c91757d338c32ae8cb9bd96fb1c58367b4232974cd",
+    "CHANGELOG.md": "cd8da5e4764ee7d78e005baec7cb733a028084f47258eb7ff27e6915a2b52dd0",
+    "docs/project-status.json": "7806083e84988734c665b83b93cc793562e88caa085ef75ec4d0428fe17269dd"
+  }
+}

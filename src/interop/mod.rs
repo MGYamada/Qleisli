@@ -1,6 +1,6 @@
 //! Bounded, untrusted OpenQASM 3 / QIR adapters for closed terminal circuits.
 //!
-//! See `docs/interop-m1.1.md` for the accepted subset, QIS and limits. Imported
+//! See [the fixed interoperability contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md) for the accepted subset, QIS and limits. Imported
 //! ownership is independently verified; translation correctness is not proved
 //! by that check. Export never transfers Qleisli evidence to an external tool.
 

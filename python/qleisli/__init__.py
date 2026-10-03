@@ -10,7 +10,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-__version__ = "0.2.7"
+__version__ = "0.2.8"
 __all__ = ["Client", "Program", "QleisliError"]
 
 
@@ -95,7 +95,9 @@ class Client:
 
     def from_qir(self, source):
         data = _bytes(source, 1 << 20)
-        result = self._process([sys.executable, "-m", "qleisli._qir"], data)
+        # Use this installation's reader, without adding the caller's cwd to
+        # the child's import path. Keep the environment's optional PyQIR extra.
+        result = self._process([sys.executable, "-P", str(Path(__file__).with_name("_qir.py").resolve())], data)
         try:
             document = json.loads(result.stdout)
             if result.returncode:

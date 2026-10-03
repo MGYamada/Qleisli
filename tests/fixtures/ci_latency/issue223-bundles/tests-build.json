@@ -1,0 +1,16 @@
+{
+  "command": [
+    "python3",
+    "scripts/package_lean_kernel.py",
+    "--validation",
+    "tests",
+    "--output",
+    "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-issue223-cqdo4i5c/tests"
+  ],
+  "started_context": "Sequential local full then tests; fresh project outputs for each, installed pinned toolchain",
+  "exit_code": 0,
+  "seconds": 52.251,
+  "stdout": "passed: lake build\npassed: lake env lean -DwarningAsError=true Audit.lean\nAudited native bundle: /private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-issue223-cqdo4i5c/tests\n",
+  "stderr": "",
+  "recorded_utc": "2026-10-03T00:11:32.848204+00:00"
+}

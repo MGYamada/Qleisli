@@ -42,7 +42,11 @@ def main():
             result = getattr(program, args.action)()
         diagnostics = []
     except (QleisliError, OSError, ValueError) as e:
-        diagnostics = e.diagnostics if isinstance(e, QleisliError) else _error("host", str(e)).diagnostics
+        diagnostics = e.diagnostics if isinstance(e, QleisliError) else _error("project" if isinstance(e, OSError) else "format", str(e)).diagnostics
+        # Library transport/reader exceptions keep their public host codes;
+        # the CLI serializes the closed qleisli.result v1 vocabulary.
+        codes = {"connection": "project", "qir": "unsupported", "host": "format"}
+        diagnostics = [{**d, "code": codes.get(d["code"], d["code"])} for d in diagnostics]
         status, result = 1, None
     print(json.dumps({"format": "qleisli.result", "version": 1, "command": f"interop {args.action}",
                       "outcome": "error" if status else "ok", "diagnostics": diagnostics, "result": result}))
