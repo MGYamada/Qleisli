@@ -1,0 +1,1378 @@
+{
+  "format": "qleisli.publication",
+  "version": 1,
+  "release": "0.2.8",
+  "status": "published and verified",
+  "publication_local_date": "2026-10-03",
+  "publication_timezone": "Asia/Tokyo",
+  "recorded_utc": "2026-10-03T05:18:04.315502+00:00",
+  "authorization": "User explicitly requested items 1\u20132 and crates.io/GitHub v0.2.8 publication; further #223 consolidation/performance work excluded.",
+  "source": {
+    "commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+    "tree": "d31ebe364b1fda744690e133a33952d5a6ad68ed",
+    "version": "0.2.8",
+    "pr": 252,
+    "ci_run": 37087051879
+  },
+  "ci": {
+    "run": 37087051879,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37087051879",
+    "proof_lane": "full",
+    "all_jobs": "success",
+    "native_groups": 66
+  },
+  "registry": {
+    "status": "passed",
+    "metadata": {
+      "url": "https://crates.io/api/v1/crates/qleisli/0.2.8",
+      "final_url": "https://crates.io/api/v1/crates/qleisli/0.2.8",
+      "status": 200,
+      "sha256": "8341b92806c45cefbf8455cea183f1842da1c21bd4ac416c536e9c5cf0b862a5",
+      "bytes": 1791,
+      "saved": "registry-metadata.json"
+    },
+    "download": {
+      "url": "https://static.crates.io/crates/qleisli/qleisli-0.2.8.crate",
+      "final_url": "https://static.crates.io/crates/qleisli/qleisli-0.2.8.crate",
+      "status": 200,
+      "sha256": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+      "bytes": 7531243,
+      "saved": "registry.crate"
+    },
+    "readme": {
+      "url": "https://crates.io/api/v1/crates/qleisli/0.2.8/readme",
+      "final_url": "https://static.crates.io/readmes/qleisli/qleisli-0.2.8.html",
+      "status": 200,
+      "sha256": "0a7722be25b82a067dcbd9e3bdeb81b89db0cd97719e256cf4af3bbb3c83837b",
+      "bytes": 9863,
+      "saved": "registry-readme.html"
+    },
+    "file_count": 2991,
+    "vcs": {
+      "git": {
+        "sha1": "18020190b1c80037442be29d74e90fd9e07253e0"
+      },
+      "path_in_vcs": ""
+    },
+    "checksum": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+    "complete_package_matches_checked": true,
+    "compressed_matches_checked": true,
+    "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+    "version": "0.2.8",
+    "checked_utc": "2026-10-03T05:10:05.375085+00:00"
+  },
+  "docs_rs": {
+    "status": "passed",
+    "http_status": 200,
+    "builds_url": "https://docs.rs/crate/qleisli/0.2.8/builds",
+    "successful_build_url": "https://docs.rs/crate/qleisli/0.2.8/builds/4689323",
+    "url": "https://docs.rs/qleisli/0.2.8/qleisli/",
+    "checked_utc": "2026-10-03T05:12:27.837704+00:00",
+    "builds_sha256": "e1a976ff227758b7c12e39031e6d2652889088f8c66dcac7155e2056c0e2bd30",
+    "build_sha256": "a16ea389a2d2c24f44bc82d69134eb7d89b73e0c4eeb5d8bb2c98a646dc4401b",
+    "rustdoc_sha256": "ace469398dd75f8d54d47fc0f87ae6cd0d106f9ce4e45b3f28afeda3df5811ff"
+  },
+  "immutability": "The annotated v0.2.8 tag and published artifacts retain the exact checked commit. This evidence/status update is committed afterward.",
+  "older_macos": "Darwin >=20 uses O_NOFOLLOW_ANY; older/unknown runtime retains the existing openat read-permission fallback. Forced fallback, FIFO/symlink regressions and x86_64 macOS 10.12 deployment-target compilation passed; no old macOS physical runtime is claimed.",
+  "observed_failures_and_resolution": [
+    "Full Rust/JSON suites exposed old null-primary/path-in-message expectations after #243/#244; updated tests preserve empty spans and file identity, root label is dot.",
+    "Initial installation rehearsal found the old README registry version and strict same-version link policy; synchronized quickstart and reviewed exactly two retired-contract immutable references, subsequently verified live.",
+    "An external recorder initially reused the distribution report filename; repeated the full clean distribution gate with distinct report/command filenames; final reports retained.",
+    "Offline Cargo publish rehearsal required registry HTTP; online dry-run and actual publication succeeded.",
+    "Helper test invocation initially used the wrong Python import directory; corrected invocation passed. All recorded failures are retained."
+  ],
+  "not_performed": [
+    "No PyPI publication or custom binaries.",
+    "No new maximum-size corpus generation/checks; existing CI capacity regressions retained.",
+    "No full Soundness/EffectSound or hierarchical S05 proof, authority transfer or further #223 driver/performance migration."
+  ],
+  "retained_files": {
+    "candidate.json": "28321b8aa0c6760205f48c89ffa46627486e70b40d415d07b47a37f8c8db2e75",
+    "distribution-cross-host.json": "dda5c09c5aa763137dd35f00510bc629dbf9eaef7ba5fa6c03e1990a1f0c509a",
+    "dry-run-package-identity.json": "856b5f6979892275967ef09e311aef8879a0009818cd95ac1941988dccdbb0d3",
+    "ci-run-final.json": "446ff6744e074999e5fc1bdaa5144862b0c6dd348fbe30588b09596b83348697",
+    "registry-verification.json": "9693c48265d2646fa20103dee1c56881bb42a51696a54c8e2fc5028bebabea0c",
+    "registry-metadata.json": "8341b92806c45cefbf8455cea183f1842da1c21bd4ac416c536e9c5cf0b862a5",
+    "pinned-links.json": "4cc50cee2b87872c2c2ba4f4ba2f0197466ab78044a4d95794efe588c5721d38",
+    "docs-rs-verification.json": "a88dad79b405a8fc48396e7bc4d8b390bf2dc5fa0c1a582418043f46ca9fecc8",
+    "github-release.json": "c3841078694f744dd6892bd3cf599a463b3e261ced806970fc076d70f0d5306b",
+    "github-latest.json": "c3841078694f744dd6892bd3cf599a463b3e261ced806970fc076d70f0d5306b",
+    "github-tar-verification.json": "90ee3df0b8aec1b76ce6be0afeae15b8b6d375bf0afd9cdcb48b2207bae80544",
+    "github-zip-verification.json": "c33ef136bf61c803b0418f420ed339bc3dcabab239baeed8647b73c295d156c2",
+    "registry-install-quickstart.json": "09eeb2615de557a8374088bfc2ab8281c34c0478359f73a2b426d9a6af755f2a",
+    "tag-readback.json": "46ea7d5a0fd15fd797a0b03d3604624929dc02e7a087bfc6ff8460f7317c35b5",
+    "release-pr-merge.json": "659aadcdc07ad7c1e107595ca88323796ffc0b85469283363aa7cfd50bb5a56a",
+    "issue-resolutions.json": "d88c8864af15983a631c12b058663761ba68167be23fe686d6cd122b33f9ab25",
+    "documentation-reduction-final.json": "d09ca4e61ef37d05061506fd0223b67eefcb036c1357099afdb5b08142a2afbd",
+    "distribution-local.json": "d593e9d5735f5e3ccaaed7ea1901d7d3a5a35be78a625f96266fb6ba0658d649",
+    "distribution-linux.json": "482a022fb9216a9df806dbfcfe70fd84a1d75644ab9b9f356cf13b97582c49d1",
+    "ci-selection.json": "843aab1b8a0accb51532cc8d1a9fb7243a539a58b56184023bd441cb40223ef1",
+    "local-distribution-logs/00.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/00.stdout.gz": "9b0c1179665d9b41bb4e702fff1474bcebcf800b85b6f93f4defdaa62e32e47a",
+    "local-distribution-logs/01.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/01.stdout.gz": "017915354869f4e3d05966d85fe288126111ae36f01bab465bf63cbcabf846fc",
+    "local-distribution-logs/02.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/02.stdout.gz": "42c7e2a1d84a7bbbcdf21d42eb3d0a6791720f6acbec81869aa634a982235f6b",
+    "local-distribution-logs/03.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/04.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/04.stdout.gz": "ee1939e0bdddbd5e53bc4a5231024a7a99265e6f8d345c091afa68e106f2a29a",
+    "local-distribution-logs/05.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/05.stdout.gz": "39a8a74fe33d43c175adc8557f47b898165499b76be09d1333cbdbff46332a0f",
+    "local-distribution-logs/06.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/06.stdout.gz": "edc7618ed9c49e9b754a08254b46545dfb01d9b16ccf25462a1b0e0b6cca41a5",
+    "local-distribution-logs/07.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/07.stdout.gz": "332e69f52fc4f57301be99a6375eb791900ceeb5869b988d942dbdbafde8f775",
+    "local-distribution-logs/08.stderr.gz": "90f3e76ae9226df4c4b11eb8729654ccdc1658ecc99c8975b88aa1be523d165c",
+    "local-distribution-logs/08.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/09.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/09.stdout.gz": "0d5836f4dda30cf52646230b86e98bb63980e3de1a1a8486b3820665593b45b7",
+    "local-distribution-logs/10.stderr.gz": "c73ed97146146f2b77a62813c7f91a2111e066abc48a16f40029378dfe79d45d",
+    "local-distribution-logs/10.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/11.stderr.gz": "98c40a4c87c33c4e77a40b10b31b1886426375848657ed14001dc575d834c3c2",
+    "local-distribution-logs/11.stdout.gz": "e0c6cb8009c62d05d633c6fce5c79f85a36259473ae48cd41d52b1f27d60d36e",
+    "local-distribution-logs/12.stderr.gz": "4583dc3db551621d8d9cab1d0ba1d2e61a57eb584556377e5b0601ac226fca3d",
+    "local-distribution-logs/12.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/13.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/13.stdout.gz": "2f487d3d80e7c51857a83c8ab1e168a8589cf2942e6fedec9340e4394b512395",
+    "local-distribution-logs/14.stderr.gz": "81d1e913dba408e54e26a5c0470594f551c9990a7ec17262746dcb73574561f8",
+    "local-distribution-logs/14.stdout.gz": "5cdfd114970c003ce4c0e310f12a61da0197edf3c19145f15786281b99ccb5d7",
+    "local-distribution-logs/15.stderr.gz": "d0d7e906c7de5d05ce71669d8295c1b5f6aaade2f9a64b17db3ea0a820140fcf",
+    "local-distribution-logs/15.stdout.gz": "f8a68a4f4b794d53303020a687183033fac3ee0a4cb02a05f1a096d4dd34c7bc",
+    "local-distribution-logs/16.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-distribution-logs/16.stdout.gz": "3d353177447821093c1c8361f60e1cb5090616eb5c0b451bbe979c42a730225b",
+    "linux-distribution-logs/00.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/00.stdout.gz": "835dbbe1b414136c376eb60e40c25e421dc7dbb51ce0686e653cde88ad83aea3",
+    "linux-distribution-logs/01.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/01.stdout.gz": "199e40c783b6d466fbad188e3edb0d9d90e3ac41783715e90d8b933a26f84fdf",
+    "linux-distribution-logs/02.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/02.stdout.gz": "b9723e9db4a2e3edeeb26a8b34088ac080cf579a6d2b3878d58dfe340b40dd13",
+    "linux-distribution-logs/03.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/04.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/04.stdout.gz": "ee1939e0bdddbd5e53bc4a5231024a7a99265e6f8d345c091afa68e106f2a29a",
+    "linux-distribution-logs/05.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/05.stdout.gz": "39a8a74fe33d43c175adc8557f47b898165499b76be09d1333cbdbff46332a0f",
+    "linux-distribution-logs/06.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/06.stdout.gz": "edc7618ed9c49e9b754a08254b46545dfb01d9b16ccf25462a1b0e0b6cca41a5",
+    "linux-distribution-logs/07.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/07.stdout.gz": "332e69f52fc4f57301be99a6375eb791900ceeb5869b988d942dbdbafde8f775",
+    "linux-distribution-logs/08.stderr.gz": "9a1f746de66fccb0f889686a6479a1a473ebf1da134a39d6985b1ccfb16401a9",
+    "linux-distribution-logs/08.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/09.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/09.stdout.gz": "b4869a120811079b3011c8a4f7b45e60b6068fba5df70fa123f67a0490c293db",
+    "linux-distribution-logs/10.stderr.gz": "6a289c8598481d2e701acf3684ca481149fd8b6324e9453290ad651a2c8a24ae",
+    "linux-distribution-logs/10.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/11.stderr.gz": "54b0bfd2a4ce28825c79dfb35a601cd90c1881ac9995af84a2f4e6135624cfd0",
+    "linux-distribution-logs/11.stdout.gz": "2d6504895e8f0ef9f9dcefab02ada05c03566d76ec518761eefe52d0d3dd7ad8",
+    "linux-distribution-logs/12.stderr.gz": "d54900dff1cae3e6eb8ee5786849bd66285e91658acf5e9e26f047193660f590",
+    "linux-distribution-logs/12.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/13.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/13.stdout.gz": "b6b389b11c7bd9d86bda761495bd7137da00291d8f723327f5999cb67cc44494",
+    "linux-distribution-logs/14.stderr.gz": "4d660b5a1df95e96d970695cffe3f1d3e9d918dbab8a7a43acd450ac548cfca8",
+    "linux-distribution-logs/14.stdout.gz": "e0daad967478c31598e1dc4cce0c92076c86b223240d6cdda6e0c77e54c9f2b3",
+    "linux-distribution-logs/15.stderr.gz": "546197d0d4dd930893e7012403b5362fec728d87afd2b97557c950f241d9aa04",
+    "linux-distribution-logs/15.stdout.gz": "011dc3d4d83c9db979fc104daa189e6afcf9af44414a8fd7143670ae0cb777a6",
+    "linux-distribution-logs/16.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "linux-distribution-logs/16.stdout.gz": "57204b8d7a7d8619883541d514ab0d56ef62cdc0a2236879bd83c6c5291fe7b2",
+    "native-results.json": "ac857d4c37b19bae4b40b19d3ed7fb0bebf3dfb187f5c6e96cf9ef2096398eb2",
+    "native-ci/compact-sized-graph/command.log.gz": "323d3a12f518debba6085aac5103149f5578e5b68ddb6cfe13340fa56e7fa68b",
+    "native-ci/dual-verification/command.log.gz": "e5c75b71538269f0dd7073987821bf43130470290dea4bc9bdd4cc45dbb79a42",
+    "native-ci/hierarchical-artifact/command.log.gz": "34783aa4396a6a26a0a0b11480dbeace6845256cb35fc0b57795c7eaee431a17",
+    "native-ci/hierarchical-calls/command.log.gz": "02e681393eaa58ca9f10fa6b3d1b3e216db82292207096ea119ee7f4645c1fcc",
+    "native-ci/hierarchical-circuit-trace/command.log.gz": "33c62d6e7b70742b47b868263676ff2f3b157768cccee036ac4e084af7824904",
+    "native-ci/hierarchical-conditional/command.log.gz": "c7cd69cc46a3bd04ea3ca260ebf70abe28e9d198e9937311988a89bbad9c27d9",
+    "native-ci/hierarchical-contract-typing/command.log.gz": "52ebbb7d5dd10dc7343b2af8253246e95a4e01c9dd3c857027b0644bdd95262f",
+    "native-ci/hierarchical-derivation/command.log.gz": "c453c737a70bc696a414b578608aba8790a519de7b43575d3130648076f88b12",
+    "native-ci/hierarchical-execution/command.log.gz": "597502b4ee43dcc9b142869f599c4f892b3dd12058bc59eaf6dad697109ee476",
+    "native-ci/hierarchical-finite/command.log.gz": "2152605d7d56225c456a3d6aecf4b260ee275a776f31085104c9581c941b29ca",
+    "native-ci/hierarchical-fourier-base/command.log.gz": "0c693802594c5be628fe4be240195ca4db3ac04c651fd17053e818a18f8b728e",
+    "native-ci/hierarchical-fourier-body/command.log.gz": "c8b0130f3899904faa42d5aef9bea9d730acc69960f3ba70cd372222441db9b1",
+    "native-ci/hierarchical-fourier-host/command.log.gz": "b35ca779cc8ece348114b1f8fdfcc3a6e2df142a0725f44240be09fab439350a",
+    "native-ci/hierarchical-fourier-root/command.log.gz": "6f014e8bb3dbceb4701a059c036d3aec51523d631bf2b88efbf179282d25f8cc",
+    "native-ci/hierarchical-fourier-stage/command.log.gz": "70f3a00448088c94204f1d1c922b011a65a0dc4c88c00de99ba62c1881f1ce19",
+    "native-ci/hierarchical-gradient/command.log.gz": "a3daa5fb38249c23b617b81db0aebe3c56ad1d91cc2ba820275f2d3d305a9022",
+    "native-ci/hierarchical-graph/command.log.gz": "827db2ba458921d05fe152f83e44020157176099d4f8bbd3df14b1d6be0cd8af",
+    "native-ci/hierarchical-host/command.log.gz": "3f586d77d0575c0a18cc5123415cd3b1583fbdc453b71c42ffb52e37f9ea33d9",
+    "native-ci/hierarchical-instrument/command.log.gz": "63a13f5f401503333871e5edd9486afe019ad66d2a9de9abd6dff2dcc4938cf6",
+    "native-ci/hierarchical-power/command.log.gz": "774127b6151cd6b0235b7464b72f3a8f3a4d1b53b871d6673a3ce2e13fd0b060",
+    "native-ci/hierarchical-preparation/command.log.gz": "fc576653c889628b50208e26156ea877940934ca691c737e11f615fe38bda6cd",
+    "native-ci/hierarchical-qft/command.log.gz": "290e279b3820cafb75f403810f45f15c642ecb23ba90263d2fc79ef2c0049453",
+    "native-ci/hierarchical-qft-shared-gradient/command.log.gz": "9ad46995c69fdd9b0e6f0b31c839da76fd30530da40d7ff0dc2647f3ecfa09cf",
+    "native-ci/hierarchical-qpe-instrument/command.log.gz": "d14a2730234dc0d76ceb81b10d3f8023d8ef459c8546a099ea722ba4485e7182",
+    "native-ci/hierarchical-qpe-root/command.log.gz": "9efa170372855e490c330bbdcd6c59d40cbaa257f8364112eecbda8a775476cc",
+    "native-ci/hierarchical-qpe-schedule/command.log.gz": "4a13eb9c338d17c848b120f477a781d73c8eafaec4232213c6611464aab0e708",
+    "native-ci/hierarchical-readout/command.log.gz": "0b8298e132f76fa4b07b42852580a78e97e548566d9417834fee327ad9e8f11e",
+    "native-ci/hierarchical-request/command.log.gz": "c4d98b0ff6fc5f71ef4cb93e9a78a633e6d4ba527704f810767216299c57accb",
+    "native-ci/hierarchical-routed-power/command.log.gz": "83e46114ef8eb886c94de9c3035bc43f2258cb93984f2371aadab3a923e38108",
+    "native-ci/hierarchical-structural/command.log.gz": "cd3fdfa5f586a80213c898cdc43e2b75dcf1d19e67dbadd01462ea6e358d78ab",
+    "native-ci/hierarchical-typing/command.log.gz": "1a947953a622af1dbf32023ffeb861497ceea6bd63b3a661fccc4ef62080cb40",
+    "native-ci/hierarchical-wiring/command.log.gz": "ac7d0b984a9841e0c4a83310284987c3483c2be0e02cadac21564e2d5b29649f",
+    "native-ci/instrument-host/command.log.gz": "fe47274ffe31597f831e17ad31bd4b0a039f98bec0463376277b0c9622efa88b",
+    "native-ci/lean-branch-function/command.log.gz": "f1f490c863ee80ef5743b9ba3b241b88742129243fbc2959cae040c6bfa1b873",
+    "native-ci/lean-controlled-power/command.log.gz": "83716db4c5f9c560ac20682be171394db2ceededd98994d0f4c4d99fc8cb49ed",
+    "native-ci/lean-exact/command.log.gz": "b2fc416fd34332d3d92b635d4c7e9c5b8b45df2ca3aa6df96da8a98adf229841",
+    "native-ci/lean-finite/command.log.gz": "acee3f73cbe2e04ee51c38fa1f444a3c00c9e033110759c6c14472f8691fcfa3",
+    "native-ci/lean-hierarchy/command.log.gz": "a87302bf3902a2171b59d586bbee46a18305a6b3fb5f1f030028c11f6760611d",
+    "native-ci/lean-interference/command.log.gz": "307009f90855b2d4499f35d25f7ac9685e94f1e224c74c0b91b2ca99e3252798",
+    "native-ci/lean-kernel-self-test/command.log.gz": "5f6030aae9e7e69cff9eafc41abf3f7d0455c489d3644dcdd82450c648a6098d",
+    "native-ci/lean-layout/command.log.gz": "49fce382e2309e7c967e0cc28dd64fb5ea4576c15a9e19a85114083b2b85e7af",
+    "native-ci/lean-layout-dag/command.log.gz": "2d979258ed99e4b8351c457abbf9c8dace6898fc791963d755103969b941713d",
+    "native-ci/lean-observation/command.log.gz": "e624e94b3108315e96ea85519ec875df039371eadd69a6e5e27db69ef3b390b2",
+    "native-ci/lean-phase-layout/command.log.gz": "3e8772416b7ea8256a721d990abb74f1ef9a492c04aac8119d1d71263bbc9261",
+    "native-ci/lean-phase-operations/command.log.gz": "376e2eca8406f34d5af6d73ddba0df9a60d6737dba581bb03865aa32b0545052",
+    "native-ci/lean-qft/command.log.gz": "7d7e31e474a72456ee711d9aab0632cdf34aa26770b333246dc6d7c5937864f6",
+    "native-ci/lean-qft-graph/command.log.gz": "ceb64be517e6ec297d84cd231715824005d4c73b44d359db0ddc7c4c3a48ef1e",
+    "native-ci/lean-qft-semantic/command.log.gz": "ee92f6d8c1bc8d95bbdbc99b1242173c32e9353994125206f7448b074ed80a98",
+    "native-ci/lean-qpe/command.log.gz": "e80faf4af5e54d7f783a91fbb5bdc4330ed42cacea6cb00528dd2ffacfb33590",
+    "native-ci/lean-raw/command.log.gz": "37aa9b40e995e11df2539eb279db89f683f31ffad07f8f922e130cb4c9c0ea3a",
+    "native-ci/lean-raw-completion/command.log.gz": "aee691d9fe468751e6921d6fa1804f837f0c69d5b3dda3c7696a8f1352ae7bb2",
+    "native-ci/lean-reshape/command.log.gz": "048ee81195f82d754ca8a590ca8747043649e46eee8bce2e690bfd7a1460b641",
+    "native-ci/lean-streamed-instrument/command.log.gz": "f4c92fe912ace633ad53874d07fbc4e0cb33b2e668ce5a68db6c74bd61386cd9",
+    "native-ci/named-qpe-native/command.log.gz": "7c4b93de50ffdfbf6ccc95d7e5b985b5aad665008e4a7dfe66e8c9dc5ccd404b",
+    "native-ci/rust-fourier-factoring/command.log.gz": "50e78de8ff08464ac1921090de4573f526c86bfde9b07557592cce27c4f162a5",
+    "native-ci/sized-arithmetic/command.log.gz": "818a1f554f44eb7b66c775d3c0e88138168922cb874642c3f17a30842db02347",
+    "native-ci/sized-cli-native/command.log.gz": "759777eaa0477867f3bdd64541d20d9c0756492de81264205a7bf34946d50b9d",
+    "native-ci/sized-corpus/command.log.gz": "7b15cca4968671f4c0433bc8e67ece785080df4e94b9800820e40edeedc32ff2",
+    "native-ci/sized-instrument/command.log.gz": "6a0d23923da7f27299c2259487f34662ffc79a4692c58ef536bfcbc19013a131",
+    "native-ci/sized-qft/command.log.gz": "253faa3a18c6227fe17be194852ea4105bce1f61faffa96abccfe3b08737c2b7",
+    "native-ci/sized-qpe/command.log.gz": "ee8741e96449db858dc46a0fc95bae985e7a7977e092f615ada6c5170cfeed5a",
+    "native-ci/sized-qpe-clients/command.log.gz": "cb0ef53072745910321cdd622a581706920b00216efa7baf8098a5c8ed600460",
+    "native-ci/sized-qpe-readout/command.log.gz": "1231f37a40518651b1834bd872936d9b20811d4f266e9d0ca832189209cc8fd4",
+    "native-ci/sized-review-dialects-native/command.log.gz": "0350e051b97d1272ddcd22a67efe89c7d97650f44a945bed83ccde151a6c88fd",
+    "native-ci/sized-source-native/command.log.gz": "b0458d66ded79d5ecce8a1bb5742f90d3fadf3a90415271e5211179fc97ea3e1",
+    "native-ci/verification-baseline/command.log.gz": "195b6fdb666817e422828402dd76f4c8ac04849c5250a6c42633ca58e04f40b5",
+    "native-ci/dual-bundle/dual-validation.json": "566b2c729f878dea57274009fa4d00a6e98e670dd22aba972493bb43ced2ea96",
+    "native-ci/dual-verification/record.json/dual-validation.json": "a15ed02b5a7b9e636b4a05596041f19427b7d8e3f16a440d4bdb1020665a3211",
+    "local-command-logs/cargo-publish-dry-run-online.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/cargo-publish-dry-run-online.stderr.gz": "eab3efa53839dfc49b8b2b5abe953ed3c51a5e75af5a36602dcb4d55a8bd6064",
+    "local-command-logs/cargo-publish-dry-run.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/cargo-publish-dry-run.stderr.gz": "4cfd7f1aea461eaba07bdb512745656e66af36aed8e3135e4331dc2f91e83df9",
+    "local-command-logs/cargo-publish.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/cargo-publish.stderr.gz": "4ddef71792a6b8527a231056d9a370a1d4e1819ff5477b459755b1d7e2f5da7c",
+    "local-command-logs/ci-policy-final.stdout.gz": "c6c997311bb806c7fb8d8c31cca0304a345070d3ccc98af279431634c1753f3e",
+    "local-command-logs/ci-policy-final.stderr.gz": "65489a12939b80b443eb990aed5c954840f30b62c929793493dfc4a249331135",
+    "local-command-logs/ci-policy.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/ci-policy.stderr.gz": "46f453493f31a0b046c6555c59267bea885fad39223fb2e627aabf4ec2a44220",
+    "local-command-logs/cli-json-fixed.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/cli-json-fixed.stderr.gz": "49b46d38e3145eaf8319fac56b111b250d63290c0f8cdae6cb6e54afdfd9fe97",
+    "local-command-logs/cli-json-pre-fix.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/cli-json-pre-fix.stderr.gz": "978ce977daefdf0cf530795e38ed89bcec71cd40de092f8eff84e7ea86f79c80",
+    "local-command-logs/clippy.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/clippy.stderr.gz": "b59f7ec00bc02aaf7367be4c9f4cfdd53e8aca8f99fb2048f29163939ef5d53b",
+    "local-command-logs/diagnostics-final.stdout.gz": "c5815e58a84b3c859d462e2bdd789269334ee3f6d0c2b03bae50d23b51085816",
+    "local-command-logs/diagnostics-final.stderr.gz": "aa7c64e61b28729c86d4a871b1dc9200ca864748fd45f23bd5c7b930db9e2fd1",
+    "local-command-logs/distribution-1802019.stdout.gz": "efaf64dfee2b666234e020056912525a593bdfdafb610526f189e166d6fe8049",
+    "local-command-logs/distribution-1802019.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/distribution-final.stdout.gz": "7c12d110af096c9f1d00ad248385550e07750832fca948fd6cb900efb704e29a",
+    "local-command-logs/distribution-final.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/distribution-gate.stdout.gz": "7c12d110af096c9f1d00ad248385550e07750832fca948fd6cb900efb704e29a",
+    "local-command-logs/distribution-gate.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/distribution.stdout.gz": "0bdc9c7cccdb011c6c94af88ee0fb232bebb8a55544d642dfaf6af91d64a2cf1",
+    "local-command-logs/distribution.stderr.gz": "879001bcd599fb7381848841454e16510ed1e962d21fc17c24d55b4408cf170f",
+    "local-command-logs/msrv-final.stdout.gz": "a147e5369bc41ca14d9af466cd555d77aba5b8c944a791ab906ee4d8b497e6cd",
+    "local-command-logs/msrv-final.stderr.gz": "26bb14f77baea9a87344aa2c42afa62089b24a921e52857abaf81b5f4b7cf9d9",
+    "local-command-logs/python-pyqir.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/python-pyqir.stderr.gz": "a9085cb5c49573976e775b52be2beaa9a1fd004d1532f6a28db1245c6f42901c",
+    "local-command-logs/python-regressions.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/python-regressions.stderr.gz": "bd64bd787355df30ee99dffcc8368599326672917b4a2c26c768b8a3737c042f",
+    "local-command-logs/qli-differential.stdout.gz": "04a21498673b2c9853d7f7e76f336b462cf48b133d97032be80f823fe15db4fc",
+    "local-command-logs/qli-differential.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/registry-install.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/registry-install.stderr.gz": "07b9f300d6376a3337afb3d55725d39950e609766a22e332e40782e72616aee3",
+    "local-command-logs/registry-quickstart.stdout.gz": "84ac021edb4ab03eb3bba3826e2a7f2981912e72ecae4d0d2aa473c9ba7be7d7",
+    "local-command-logs/registry-quickstart.stderr.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/rust-tests-final.stdout.gz": "1780d82358bbdd4a5598f471a2554f7dd177981a4685a780397bee0a4f698a9c",
+    "local-command-logs/rust-tests-final.stderr.gz": "bf1a61f07a84b376a5dccba1880d24acbb6b15bf9ced0a5d012353afd8237add",
+    "local-command-logs/rust-tests.stdout.gz": "2e055850cd720f1035654cd25de615279326b0069821b55d617f9effbacf6f6a",
+    "local-command-logs/rust-tests.stderr.gz": "84f0893bbaf09757ef6b92e00809efcb1ebdff87f39cbc71ab9df1fc61bd3e9c",
+    "local-command-logs/source-capacities-final.stdout.gz": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+    "local-command-logs/source-capacities-final.stderr.gz": "b25f9a8d1657ae4668be3a0a5b908a6654d7f7e068edd29e6dcc046c9bb81b55",
+    "local-command-logs/source-capacities-v2.stdout.gz": "ff9f5f0be479619081189f0f60d82ab1b4d5efa44930b3bbea4ec9ecc2d55e36",
+    "local-command-logs/source-capacities-v2.stderr.gz": "b069dee46152643d58e62468bf4881dd2e6e4d5348baf22ce478de0334fa0d68",
+    "publication-command-results.json": "77e23b7146edb30e4d5350b1f0638eea42bbcc19982a302aed95f67686791cfc",
+    "hosted-ci.log.gz": "9176560b7f697250c63fae9a696de6782c19351f904383d41388b43e40bbe697",
+    "ci-observed-failure.log.gz": "6dd3010e28408fa44d1adb1e8d08bc20335db734cec30c44f4162810242954f2",
+    "github-release-notes.md": "025280eeef8438181b656e287cb689e7b99a04a31b63e77f8d95790cf8ebb1a5"
+  },
+  "lossless_log_storage": [
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/00.stderr",
+      "stored": "local-distribution-logs/00.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/00.stdout",
+      "stored": "local-distribution-logs/00.stdout.gz",
+      "raw_sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+      "stored_sha256": "9b0c1179665d9b41bb4e702fff1474bcebcf800b85b6f93f4defdaa62e32e47a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/01.stderr",
+      "stored": "local-distribution-logs/01.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/01.stdout",
+      "stored": "local-distribution-logs/01.stdout.gz",
+      "raw_sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+      "stored_sha256": "017915354869f4e3d05966d85fe288126111ae36f01bab465bf63cbcabf846fc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/02.stderr",
+      "stored": "local-distribution-logs/02.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/02.stdout",
+      "stored": "local-distribution-logs/02.stdout.gz",
+      "raw_sha256": "ba454dd607c0ba3b69b59ec126ca43ccfdc2a0285534a8cd91b782da73eea4ab",
+      "stored_sha256": "42c7e2a1d84a7bbbcdf21d42eb3d0a6791720f6acbec81869aa634a982235f6b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/03.stderr",
+      "stored": "local-distribution-logs/03.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/04.stderr",
+      "stored": "local-distribution-logs/04.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/04.stdout",
+      "stored": "local-distribution-logs/04.stdout.gz",
+      "raw_sha256": "2c041c6b93f7cc75591e3d84c7a419caa1e0b7fd84178f7a1bda0291f439f68b",
+      "stored_sha256": "ee1939e0bdddbd5e53bc4a5231024a7a99265e6f8d345c091afa68e106f2a29a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/05.stderr",
+      "stored": "local-distribution-logs/05.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/05.stdout",
+      "stored": "local-distribution-logs/05.stdout.gz",
+      "raw_sha256": "436ed33615454a0f2bf248ea0c5b9bcf737f6002f093e24afcfb7a01e6ffa4a6",
+      "stored_sha256": "39a8a74fe33d43c175adc8557f47b898165499b76be09d1333cbdbff46332a0f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/06.stderr",
+      "stored": "local-distribution-logs/06.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/06.stdout",
+      "stored": "local-distribution-logs/06.stdout.gz",
+      "raw_sha256": "bc416f340ec49b7f6f52390c6582807ae73ec321600adc4b6aa409718ccc2620",
+      "stored_sha256": "edc7618ed9c49e9b754a08254b46545dfb01d9b16ccf25462a1b0e0b6cca41a5"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/07.stderr",
+      "stored": "local-distribution-logs/07.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/07.stdout",
+      "stored": "local-distribution-logs/07.stdout.gz",
+      "raw_sha256": "5748df3056b45d67fb090d944303035da16d5771c5f332fb3b43f728982c6f20",
+      "stored_sha256": "332e69f52fc4f57301be99a6375eb791900ceeb5869b988d942dbdbafde8f775"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/08.stderr",
+      "stored": "local-distribution-logs/08.stderr.gz",
+      "raw_sha256": "fc0d2bc11b95db944c3c9d0ec6225072a0941c1673a1a9f6339c9ce31aff2027",
+      "stored_sha256": "90f3e76ae9226df4c4b11eb8729654ccdc1658ecc99c8975b88aa1be523d165c"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/08.stdout",
+      "stored": "local-distribution-logs/08.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/09.stderr",
+      "stored": "local-distribution-logs/09.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/09.stdout",
+      "stored": "local-distribution-logs/09.stdout.gz",
+      "raw_sha256": "699460778da9f372b60997f3b4fdf351f47eeca4a4c8cb94ec68c207d98a149d",
+      "stored_sha256": "0d5836f4dda30cf52646230b86e98bb63980e3de1a1a8486b3820665593b45b7"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/10.stderr",
+      "stored": "local-distribution-logs/10.stderr.gz",
+      "raw_sha256": "fc233c2588a738964bbf6a698b9b3e12ddc9e9c2a5664f6e2ac7dde6448a7d8f",
+      "stored_sha256": "c73ed97146146f2b77a62813c7f91a2111e066abc48a16f40029378dfe79d45d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/10.stdout",
+      "stored": "local-distribution-logs/10.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/11.stderr",
+      "stored": "local-distribution-logs/11.stderr.gz",
+      "raw_sha256": "6f709a9988fe6a62fe7d4fca5e6214907d4982fb30960d2245c434ac1cf23318",
+      "stored_sha256": "98c40a4c87c33c4e77a40b10b31b1886426375848657ed14001dc575d834c3c2"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/11.stdout",
+      "stored": "local-distribution-logs/11.stdout.gz",
+      "raw_sha256": "b1b90e3634759c00b4b0a11795d630293a7a8de7b75dc004a2207940046841da",
+      "stored_sha256": "e0c6cb8009c62d05d633c6fce5c79f85a36259473ae48cd41d52b1f27d60d36e"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/12.stderr",
+      "stored": "local-distribution-logs/12.stderr.gz",
+      "raw_sha256": "d964824fde43445e753429e3fb8f58c6bba201a1ad584506a3cf510f1e5f0fb1",
+      "stored_sha256": "4583dc3db551621d8d9cab1d0ba1d2e61a57eb584556377e5b0601ac226fca3d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/12.stdout",
+      "stored": "local-distribution-logs/12.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/13.stderr",
+      "stored": "local-distribution-logs/13.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/13.stdout",
+      "stored": "local-distribution-logs/13.stdout.gz",
+      "raw_sha256": "e0b07a7760dd442b9578979634942770aa54ec97feb3b09f227755933df0cf91",
+      "stored_sha256": "2f487d3d80e7c51857a83c8ab1e168a8589cf2942e6fedec9340e4394b512395"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/14.stderr",
+      "stored": "local-distribution-logs/14.stderr.gz",
+      "raw_sha256": "d1ed9930f44ee54aa801ac9c422e98d3a3381fc602f3d4c8bceaa7f747da859c",
+      "stored_sha256": "81d1e913dba408e54e26a5c0470594f551c9990a7ec17262746dcb73574561f8"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/14.stdout",
+      "stored": "local-distribution-logs/14.stdout.gz",
+      "raw_sha256": "0b94dd6b9c34043fa945ffab902d9097d38a6e1c993957c82345354f20b31b4e",
+      "stored_sha256": "5cdfd114970c003ce4c0e310f12a61da0197edf3c19145f15786281b99ccb5d7"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/15.stderr",
+      "stored": "local-distribution-logs/15.stderr.gz",
+      "raw_sha256": "80acde9d955f43fae237625a1f5770dece8472e7ba3963678f374ca19c96bd07",
+      "stored_sha256": "d0d7e906c7de5d05ce71669d8295c1b5f6aaade2f9a64b17db3ea0a820140fcf"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/15.stdout",
+      "stored": "local-distribution-logs/15.stdout.gz",
+      "raw_sha256": "076c8c991f7fe5586141a1316675a20d6bb64a9275e462aa863a1e44de421c41",
+      "stored_sha256": "f8a68a4f4b794d53303020a687183033fac3ee0a4cb02a05f1a096d4dd34c7bc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/16.stderr",
+      "stored": "local-distribution-logs/16.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019-report-artifacts-1bnmrv8e/logs/16.stdout",
+      "stored": "local-distribution-logs/16.stdout.gz",
+      "raw_sha256": "ca31ecd8350fc2b909c11d27c21931f92db341eb907a6d0ddda02f46fa254dcb",
+      "stored_sha256": "3d353177447821093c1c8361f60e1cb5090616eb5c0b451bbe979c42a730225b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/00.stderr",
+      "stored": "linux-distribution-logs/00.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/00.stdout",
+      "stored": "linux-distribution-logs/00.stdout.gz",
+      "raw_sha256": "2073de5abf149185c2f4d7473dc833bc921b99135560d24ae7b2293f33a9c376",
+      "stored_sha256": "835dbbe1b414136c376eb60e40c25e421dc7dbb51ce0686e653cde88ad83aea3"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/01.stderr",
+      "stored": "linux-distribution-logs/01.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/01.stdout",
+      "stored": "linux-distribution-logs/01.stdout.gz",
+      "raw_sha256": "9950bbb2d5c3417b1a068f0e81f6d3cac991a363193bdf2a22d447f5acf8b503",
+      "stored_sha256": "199e40c783b6d466fbad188e3edb0d9d90e3ac41783715e90d8b933a26f84fdf"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/02.stderr",
+      "stored": "linux-distribution-logs/02.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/02.stdout",
+      "stored": "linux-distribution-logs/02.stdout.gz",
+      "raw_sha256": "9b598808f45827d88e75777afb7af6c3539718ec14e3eab0c8edd0401648183a",
+      "stored_sha256": "b9723e9db4a2e3edeeb26a8b34088ac080cf579a6d2b3878d58dfe340b40dd13"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/03.stderr",
+      "stored": "linux-distribution-logs/03.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/04.stderr",
+      "stored": "linux-distribution-logs/04.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/04.stdout",
+      "stored": "linux-distribution-logs/04.stdout.gz",
+      "raw_sha256": "2c041c6b93f7cc75591e3d84c7a419caa1e0b7fd84178f7a1bda0291f439f68b",
+      "stored_sha256": "ee1939e0bdddbd5e53bc4a5231024a7a99265e6f8d345c091afa68e106f2a29a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/05.stderr",
+      "stored": "linux-distribution-logs/05.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/05.stdout",
+      "stored": "linux-distribution-logs/05.stdout.gz",
+      "raw_sha256": "436ed33615454a0f2bf248ea0c5b9bcf737f6002f093e24afcfb7a01e6ffa4a6",
+      "stored_sha256": "39a8a74fe33d43c175adc8557f47b898165499b76be09d1333cbdbff46332a0f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/06.stderr",
+      "stored": "linux-distribution-logs/06.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/06.stdout",
+      "stored": "linux-distribution-logs/06.stdout.gz",
+      "raw_sha256": "bc416f340ec49b7f6f52390c6582807ae73ec321600adc4b6aa409718ccc2620",
+      "stored_sha256": "edc7618ed9c49e9b754a08254b46545dfb01d9b16ccf25462a1b0e0b6cca41a5"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/07.stderr",
+      "stored": "linux-distribution-logs/07.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/07.stdout",
+      "stored": "linux-distribution-logs/07.stdout.gz",
+      "raw_sha256": "5748df3056b45d67fb090d944303035da16d5771c5f332fb3b43f728982c6f20",
+      "stored_sha256": "332e69f52fc4f57301be99a6375eb791900ceeb5869b988d942dbdbafde8f775"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/08.stderr",
+      "stored": "linux-distribution-logs/08.stderr.gz",
+      "raw_sha256": "41a33900afe57f0caf9f6c011c3aca9b8b6f0aa17a034774c152b4b7d39368cc",
+      "stored_sha256": "9a1f746de66fccb0f889686a6479a1a473ebf1da134a39d6985b1ccfb16401a9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/08.stdout",
+      "stored": "linux-distribution-logs/08.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/09.stderr",
+      "stored": "linux-distribution-logs/09.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/09.stdout",
+      "stored": "linux-distribution-logs/09.stdout.gz",
+      "raw_sha256": "cb9ac2b86d5b6cd9495dec7963e5f198fc58f0f1aebc71b1b0db5a53e06c99a9",
+      "stored_sha256": "b4869a120811079b3011c8a4f7b45e60b6068fba5df70fa123f67a0490c293db"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/10.stderr",
+      "stored": "linux-distribution-logs/10.stderr.gz",
+      "raw_sha256": "120e71dc3083ebf72bf0ef7b944e096bb3ec334a9e3a2c1ed6c522e77bd5ba95",
+      "stored_sha256": "6a289c8598481d2e701acf3684ca481149fd8b6324e9453290ad651a2c8a24ae"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/10.stdout",
+      "stored": "linux-distribution-logs/10.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/11.stderr",
+      "stored": "linux-distribution-logs/11.stderr.gz",
+      "raw_sha256": "9962f9e4e8b48be18ce3dbfa1b1cf220ff2fdf2ef5f32cb61d3c111bedef4b9c",
+      "stored_sha256": "54b0bfd2a4ce28825c79dfb35a601cd90c1881ac9995af84a2f4e6135624cfd0"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/11.stdout",
+      "stored": "linux-distribution-logs/11.stdout.gz",
+      "raw_sha256": "174b5dc3a5a18e0363ec94b7cc42efe5465e9ceb103de64e41811ad473312c23",
+      "stored_sha256": "2d6504895e8f0ef9f9dcefab02ada05c03566d76ec518761eefe52d0d3dd7ad8"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/12.stderr",
+      "stored": "linux-distribution-logs/12.stderr.gz",
+      "raw_sha256": "4537b63a8b815a2c797cb77538568ca3bafc70ca8244c7ec6840c9a7fb07e0a7",
+      "stored_sha256": "d54900dff1cae3e6eb8ee5786849bd66285e91658acf5e9e26f047193660f590"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/12.stdout",
+      "stored": "linux-distribution-logs/12.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/13.stderr",
+      "stored": "linux-distribution-logs/13.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/13.stdout",
+      "stored": "linux-distribution-logs/13.stdout.gz",
+      "raw_sha256": "052372efd7195c7f139ace85b17cfe4c38594433e40dca0947f96420428c75e7",
+      "stored_sha256": "b6b389b11c7bd9d86bda761495bd7137da00291d8f723327f5999cb67cc44494"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/14.stderr",
+      "stored": "linux-distribution-logs/14.stderr.gz",
+      "raw_sha256": "c4768d86a4fa9e9c17daff4f898cd012025c9676044d933726b5d9447842f9ac",
+      "stored_sha256": "4d660b5a1df95e96d970695cffe3f1d3e9d918dbab8a7a43acd450ac548cfca8"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/14.stdout",
+      "stored": "linux-distribution-logs/14.stdout.gz",
+      "raw_sha256": "adf0f2c02f887b5dcafe0bda8fa369d44115286898fdb20c7c288f7012eebebe",
+      "stored_sha256": "e0daad967478c31598e1dc4cce0c92076c86b223240d6cdda6e0c77e54c9f2b3"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/15.stderr",
+      "stored": "linux-distribution-logs/15.stderr.gz",
+      "raw_sha256": "a4a60aa3ef4410dfa9feccdfcfd95f56be08c3015a1a3a49edeb8de8ce75d330",
+      "stored_sha256": "546197d0d4dd930893e7012403b5362fec728d87afd2b97557c950f241d9aa04"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/15.stdout",
+      "stored": "linux-distribution-logs/15.stdout.gz",
+      "raw_sha256": "d594ae6b39f63ecd52e0dc44bf3a42fe43caa1b96484153306406fa7cd927e4f",
+      "stored_sha256": "011dc3d4d83c9db979fc104daa189e6afcf9af44414a8fd7143670ae0cb777a6"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/16.stderr",
+      "stored": "linux-distribution-logs/16.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/linux-distribution/distribution-18020190b1c80037442be29d74e90fd9e07253e0/qleisli-distribution-artifacts-ozis8852/logs/16.stdout",
+      "stored": "linux-distribution-logs/16.stdout.gz",
+      "raw_sha256": "9fcc097617258b2c6e6ee6a2080a71fa59a22afecae8afb3dfb17ff223509930",
+      "stored_sha256": "57204b8d7a7d8619883541d514ab0d56ef62cdc0a2236879bd83c6c5291fe7b2"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/compact-sized-graph/command.log",
+      "stored": "native-ci/compact-sized-graph/command.log.gz",
+      "raw_sha256": "b0c64dfa52a428de71b0c4656dde1538b955f14cad885f8983e413bb5af4dd2f",
+      "stored_sha256": "323d3a12f518debba6085aac5103149f5578e5b68ddb6cfe13340fa56e7fa68b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/dual-verification/command.log",
+      "stored": "native-ci/dual-verification/command.log.gz",
+      "raw_sha256": "841e95b6dc8870e491f76a014688489ee37826c390900c04102540f90b9920eb",
+      "stored_sha256": "e5c75b71538269f0dd7073987821bf43130470290dea4bc9bdd4cc45dbb79a42"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-artifact/command.log",
+      "stored": "native-ci/hierarchical-artifact/command.log.gz",
+      "raw_sha256": "263f7dcfca87b136dbe6caefd1862c96c58ae98c28a9610c18294ea67bc973e9",
+      "stored_sha256": "34783aa4396a6a26a0a0b11480dbeace6845256cb35fc0b57795c7eaee431a17"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-calls/command.log",
+      "stored": "native-ci/hierarchical-calls/command.log.gz",
+      "raw_sha256": "3856be9fd68ec0c2b6ec9758c78ce74d93d7bc4039cab4e04fe3ee76d42a4910",
+      "stored_sha256": "02e681393eaa58ca9f10fa6b3d1b3e216db82292207096ea119ee7f4645c1fcc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-circuit-trace/command.log",
+      "stored": "native-ci/hierarchical-circuit-trace/command.log.gz",
+      "raw_sha256": "467544c5d9a6ec5585630e76a2654da9a400c594e183c690d17434ab6fe8f26f",
+      "stored_sha256": "33c62d6e7b70742b47b868263676ff2f3b157768cccee036ac4e084af7824904"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-conditional/command.log",
+      "stored": "native-ci/hierarchical-conditional/command.log.gz",
+      "raw_sha256": "a6d8fb7da14ac4e8f3baa153435ce0c401c108b61611a85bb90ef17696e3347b",
+      "stored_sha256": "c7cd69cc46a3bd04ea3ca260ebf70abe28e9d198e9937311988a89bbad9c27d9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-contract-typing/command.log",
+      "stored": "native-ci/hierarchical-contract-typing/command.log.gz",
+      "raw_sha256": "f017cd8a9a0b7b28d6c5f034e728cd8c4bbe65039120721284e7dc6b31009ad0",
+      "stored_sha256": "52ebbb7d5dd10dc7343b2af8253246e95a4e01c9dd3c857027b0644bdd95262f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-derivation/command.log",
+      "stored": "native-ci/hierarchical-derivation/command.log.gz",
+      "raw_sha256": "fb3cb8ae73920fc121b980e3b0305a332c5956707a6f6fa9a1af00cf9a544ea1",
+      "stored_sha256": "c453c737a70bc696a414b578608aba8790a519de7b43575d3130648076f88b12"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-execution/command.log",
+      "stored": "native-ci/hierarchical-execution/command.log.gz",
+      "raw_sha256": "4932e4f46a9c3accb18e907cd55265d643ceee9c678599cbcedbdad82aec9109",
+      "stored_sha256": "597502b4ee43dcc9b142869f599c4f892b3dd12058bc59eaf6dad697109ee476"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-finite/command.log",
+      "stored": "native-ci/hierarchical-finite/command.log.gz",
+      "raw_sha256": "6c18496a7e66777afd35917e54d6cd3cb5c9251b689485171f8a4100854892ab",
+      "stored_sha256": "2152605d7d56225c456a3d6aecf4b260ee275a776f31085104c9581c941b29ca"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-fourier-base/command.log",
+      "stored": "native-ci/hierarchical-fourier-base/command.log.gz",
+      "raw_sha256": "94a9c96857acc6245798885c4957b97d4ab81e024a6bc89100475c055f8d77ed",
+      "stored_sha256": "0c693802594c5be628fe4be240195ca4db3ac04c651fd17053e818a18f8b728e"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-fourier-body/command.log",
+      "stored": "native-ci/hierarchical-fourier-body/command.log.gz",
+      "raw_sha256": "29299996d367cfef5897a0bafa91019e86dd52dba84be511085775a8706e3df9",
+      "stored_sha256": "c8b0130f3899904faa42d5aef9bea9d730acc69960f3ba70cd372222441db9b1"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-fourier-host/command.log",
+      "stored": "native-ci/hierarchical-fourier-host/command.log.gz",
+      "raw_sha256": "4b63488a18cd4099d0bdd0dcfcf6c80b527aec483bd4ff5c025628d57d74b25d",
+      "stored_sha256": "b35ca779cc8ece348114b1f8fdfcc3a6e2df142a0725f44240be09fab439350a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-fourier-root/command.log",
+      "stored": "native-ci/hierarchical-fourier-root/command.log.gz",
+      "raw_sha256": "4662cb8ab8767f8c15eb5981b38fbe06ae93567bc87f1f0bc25e712340fb472d",
+      "stored_sha256": "6f014e8bb3dbceb4701a059c036d3aec51523d631bf2b88efbf179282d25f8cc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-fourier-stage/command.log",
+      "stored": "native-ci/hierarchical-fourier-stage/command.log.gz",
+      "raw_sha256": "06814c77a5274293fd874c2ffb3227946d89511753c50b680b292bf08ca0f1e3",
+      "stored_sha256": "70f3a00448088c94204f1d1c922b011a65a0dc4c88c00de99ba62c1881f1ce19"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-gradient/command.log",
+      "stored": "native-ci/hierarchical-gradient/command.log.gz",
+      "raw_sha256": "814f3cf70ff750ccc31d81e271cd9efb914a89c2c6c40d9e008a55b10e03c861",
+      "stored_sha256": "a3daa5fb38249c23b617b81db0aebe3c56ad1d91cc2ba820275f2d3d305a9022"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-graph/command.log",
+      "stored": "native-ci/hierarchical-graph/command.log.gz",
+      "raw_sha256": "f4daca6092db213ddb8b117ca3a9d3e2810f7c95e4256c6fc34d373cc34f7667",
+      "stored_sha256": "827db2ba458921d05fe152f83e44020157176099d4f8bbd3df14b1d6be0cd8af"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-host/command.log",
+      "stored": "native-ci/hierarchical-host/command.log.gz",
+      "raw_sha256": "976d6739f0c2ee9c6693078b2ed429dc458173c846f256b6e5e193f070c03ead",
+      "stored_sha256": "3f586d77d0575c0a18cc5123415cd3b1583fbdc453b71c42ffb52e37f9ea33d9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-instrument/command.log",
+      "stored": "native-ci/hierarchical-instrument/command.log.gz",
+      "raw_sha256": "d584ff61cacf19c4626c2fc810968c9dda59dabe2f9fa5d153d253a72f03a3fa",
+      "stored_sha256": "63a13f5f401503333871e5edd9486afe019ad66d2a9de9abd6dff2dcc4938cf6"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-power/command.log",
+      "stored": "native-ci/hierarchical-power/command.log.gz",
+      "raw_sha256": "e7ce8fc9484817d02802f648968c5aa20e94e489b4ad30e896b7ec200411387d",
+      "stored_sha256": "774127b6151cd6b0235b7464b72f3a8f3a4d1b53b871d6673a3ce2e13fd0b060"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-preparation/command.log",
+      "stored": "native-ci/hierarchical-preparation/command.log.gz",
+      "raw_sha256": "f6cc5888604a60dcbe4cf28980d47b14304892b11fac577faf5e2c1dc5ca8385",
+      "stored_sha256": "fc576653c889628b50208e26156ea877940934ca691c737e11f615fe38bda6cd"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-qft/command.log",
+      "stored": "native-ci/hierarchical-qft/command.log.gz",
+      "raw_sha256": "e371132b937ba1a06b627b73198c109d0106d6312fb826169440187fdfdff44e",
+      "stored_sha256": "290e279b3820cafb75f403810f45f15c642ecb23ba90263d2fc79ef2c0049453"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-qft-shared-gradient/command.log",
+      "stored": "native-ci/hierarchical-qft-shared-gradient/command.log.gz",
+      "raw_sha256": "50f50e5aab3da8df434785a4d1da2dc7335009d4b38fa198ad0bf1fb17d8d39d",
+      "stored_sha256": "9ad46995c69fdd9b0e6f0b31c839da76fd30530da40d7ff0dc2647f3ecfa09cf"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-qpe-instrument/command.log",
+      "stored": "native-ci/hierarchical-qpe-instrument/command.log.gz",
+      "raw_sha256": "2802ad2d8c162d0c83d1bc1ecfdaa839f007cd7b2ace4b0cebf810bf8852a5d4",
+      "stored_sha256": "d14a2730234dc0d76ceb81b10d3f8023d8ef459c8546a099ea722ba4485e7182"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-qpe-root/command.log",
+      "stored": "native-ci/hierarchical-qpe-root/command.log.gz",
+      "raw_sha256": "247805ef1e5b725eb59c57a4f6f00569c6aacd8c78561225eab5faa147289be1",
+      "stored_sha256": "9efa170372855e490c330bbdcd6c59d40cbaa257f8364112eecbda8a775476cc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-qpe-schedule/command.log",
+      "stored": "native-ci/hierarchical-qpe-schedule/command.log.gz",
+      "raw_sha256": "98243ad55ec6be2d0d8696073c1dfe103d9b477aaff1accc06d3a09b2ea7be11",
+      "stored_sha256": "4a13eb9c338d17c848b120f477a781d73c8eafaec4232213c6611464aab0e708"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-readout/command.log",
+      "stored": "native-ci/hierarchical-readout/command.log.gz",
+      "raw_sha256": "ca06966c56d51d9d0be2363826a5a11fbcc2ca3f92808dcda032eaf02b3e7119",
+      "stored_sha256": "0b8298e132f76fa4b07b42852580a78e97e548566d9417834fee327ad9e8f11e"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-request/command.log",
+      "stored": "native-ci/hierarchical-request/command.log.gz",
+      "raw_sha256": "4730ebdd7aad6a3e50007a2c9fcfe950b2893bbf6a7da51c517eed27f367b0f6",
+      "stored_sha256": "c4d98b0ff6fc5f71ef4cb93e9a78a633e6d4ba527704f810767216299c57accb"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-routed-power/command.log",
+      "stored": "native-ci/hierarchical-routed-power/command.log.gz",
+      "raw_sha256": "7b8cbb40cf02e30c42accd482fa3534575f554087c4262d8aab8c033032b5570",
+      "stored_sha256": "83e46114ef8eb886c94de9c3035bc43f2258cb93984f2371aadab3a923e38108"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-structural/command.log",
+      "stored": "native-ci/hierarchical-structural/command.log.gz",
+      "raw_sha256": "6ba0c35fbd56d119741f0fe4df70e94cd22efd570d1810f7925c921876dcff9c",
+      "stored_sha256": "cd3fdfa5f586a80213c898cdc43e2b75dcf1d19e67dbadd01462ea6e358d78ab"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-typing/command.log",
+      "stored": "native-ci/hierarchical-typing/command.log.gz",
+      "raw_sha256": "1fd46431774e326acddb295b6ce7a20ca86129212af1ee727f737f15a4a6424f",
+      "stored_sha256": "1a947953a622af1dbf32023ffeb861497ceea6bd63b3a661fccc4ef62080cb40"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/hierarchical-wiring/command.log",
+      "stored": "native-ci/hierarchical-wiring/command.log.gz",
+      "raw_sha256": "429b5e276de7b3db99849d99059c21e33f114585ef940eab7672e74f89a84f29",
+      "stored_sha256": "ac7d0b984a9841e0c4a83310284987c3483c2be0e02cadac21564e2d5b29649f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/instrument-host/command.log",
+      "stored": "native-ci/instrument-host/command.log.gz",
+      "raw_sha256": "56be36ac3a26a6fffbf9989652e00b3b82eb33a2178e0eff4454107141d77f6e",
+      "stored_sha256": "fe47274ffe31597f831e17ad31bd4b0a039f98bec0463376277b0c9622efa88b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-branch-function/command.log",
+      "stored": "native-ci/lean-branch-function/command.log.gz",
+      "raw_sha256": "8bc9512901696402e972e6313ebfc8bbca15a951444f1c8d075cd312c50fa0c1",
+      "stored_sha256": "f1f490c863ee80ef5743b9ba3b241b88742129243fbc2959cae040c6bfa1b873"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-controlled-power/command.log",
+      "stored": "native-ci/lean-controlled-power/command.log.gz",
+      "raw_sha256": "643874e1618e3ea6e3e77ead2d75a2f08eecd1a1ffe5bedaaaca443e209f6c91",
+      "stored_sha256": "83716db4c5f9c560ac20682be171394db2ceededd98994d0f4c4d99fc8cb49ed"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-exact/command.log",
+      "stored": "native-ci/lean-exact/command.log.gz",
+      "raw_sha256": "4872bca7421370d262d4d9286e86d541df4d05422bf59e74da0c409179157657",
+      "stored_sha256": "b2fc416fd34332d3d92b635d4c7e9c5b8b45df2ca3aa6df96da8a98adf229841"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-finite/command.log",
+      "stored": "native-ci/lean-finite/command.log.gz",
+      "raw_sha256": "312d8d4b6c3240c7bb16c3525161bd03f12d314b80e6568b3f4adf32b6c9c3a7",
+      "stored_sha256": "acee3f73cbe2e04ee51c38fa1f444a3c00c9e033110759c6c14472f8691fcfa3"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-hierarchy/command.log",
+      "stored": "native-ci/lean-hierarchy/command.log.gz",
+      "raw_sha256": "7fb7a9975738f26bb67c7eeee292da462a45101409aad86f22a1cba619cfd6e1",
+      "stored_sha256": "a87302bf3902a2171b59d586bbee46a18305a6b3fb5f1f030028c11f6760611d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-interference/command.log",
+      "stored": "native-ci/lean-interference/command.log.gz",
+      "raw_sha256": "0f7eb26b58ff5854a127d2e1125e2f745115854b2d41e5ed6fbad35658d2ac06",
+      "stored_sha256": "307009f90855b2d4499f35d25f7ac9685e94f1e224c74c0b91b2ca99e3252798"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-kernel-self-test/command.log",
+      "stored": "native-ci/lean-kernel-self-test/command.log.gz",
+      "raw_sha256": "646e45f0099be9242e4a0ab5c39b9d22dc0211e7b1e37a3d1840c591faad248d",
+      "stored_sha256": "5f6030aae9e7e69cff9eafc41abf3f7d0455c489d3644dcdd82450c648a6098d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-layout/command.log",
+      "stored": "native-ci/lean-layout/command.log.gz",
+      "raw_sha256": "ffe589f18f64a9d42fd38356f74e827644c46f4f7ecbad8902a60e88e8e69467",
+      "stored_sha256": "49fce382e2309e7c967e0cc28dd64fb5ea4576c15a9e19a85114083b2b85e7af"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-layout-dag/command.log",
+      "stored": "native-ci/lean-layout-dag/command.log.gz",
+      "raw_sha256": "bc00a5c4f7d71f5b71eb368d6b63c6b3a320ce3c358b63927f0699876866f559",
+      "stored_sha256": "2d979258ed99e4b8351c457abbf9c8dace6898fc791963d755103969b941713d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-observation/command.log",
+      "stored": "native-ci/lean-observation/command.log.gz",
+      "raw_sha256": "9ca775baec3b67849bd0e51b60addd271ca5d1a45175f35bbe9e2e98937be458",
+      "stored_sha256": "e624e94b3108315e96ea85519ec875df039371eadd69a6e5e27db69ef3b390b2"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-phase-layout/command.log",
+      "stored": "native-ci/lean-phase-layout/command.log.gz",
+      "raw_sha256": "2471084cc8d25cc71d5c8f745942206a42a8577612681cfed7dbd07470eaced4",
+      "stored_sha256": "3e8772416b7ea8256a721d990abb74f1ef9a492c04aac8119d1d71263bbc9261"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-phase-operations/command.log",
+      "stored": "native-ci/lean-phase-operations/command.log.gz",
+      "raw_sha256": "7e1da00645ded573b52fe5f4332fee45c70c00a6ae83de2b6f4adfda6882e4ae",
+      "stored_sha256": "376e2eca8406f34d5af6d73ddba0df9a60d6737dba581bb03865aa32b0545052"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-qft/command.log",
+      "stored": "native-ci/lean-qft/command.log.gz",
+      "raw_sha256": "55090e49e5e63663f7624cee567e5d067f4db165f0c985e9b83ac9f7b6510095",
+      "stored_sha256": "7d7e31e474a72456ee711d9aab0632cdf34aa26770b333246dc6d7c5937864f6"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-qft-graph/command.log",
+      "stored": "native-ci/lean-qft-graph/command.log.gz",
+      "raw_sha256": "bc4007e1636c6f4f74878e64df23834931af2950938d105da86796e74fe83e12",
+      "stored_sha256": "ceb64be517e6ec297d84cd231715824005d4c73b44d359db0ddc7c4c3a48ef1e"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-qft-semantic/command.log",
+      "stored": "native-ci/lean-qft-semantic/command.log.gz",
+      "raw_sha256": "3a88a189ea0f82df61f94279bede4ffcda87ab96f6d35ba94b5c18c8fcd2c88c",
+      "stored_sha256": "ee92f6d8c1bc8d95bbdbc99b1242173c32e9353994125206f7448b074ed80a98"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-qpe/command.log",
+      "stored": "native-ci/lean-qpe/command.log.gz",
+      "raw_sha256": "9843383c974b674ea017f7abf0c11fbe126c30585a46b9e6866ed1b591992624",
+      "stored_sha256": "e80faf4af5e54d7f783a91fbb5bdc4330ed42cacea6cb00528dd2ffacfb33590"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-raw/command.log",
+      "stored": "native-ci/lean-raw/command.log.gz",
+      "raw_sha256": "f2a9e5683302ef7d0e8de488fa0465c57080718a7848848fe466b30ffb077769",
+      "stored_sha256": "37aa9b40e995e11df2539eb279db89f683f31ffad07f8f922e130cb4c9c0ea3a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-raw-completion/command.log",
+      "stored": "native-ci/lean-raw-completion/command.log.gz",
+      "raw_sha256": "7660d96d423ccc487659cd1ccfd329be9e7caca8fc2e22f28ab9c6287857d6ce",
+      "stored_sha256": "aee691d9fe468751e6921d6fa1804f837f0c69d5b3dda3c7696a8f1352ae7bb2"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-reshape/command.log",
+      "stored": "native-ci/lean-reshape/command.log.gz",
+      "raw_sha256": "41a129dcd7ed87c2c52c2a61f017263378152511dbc7e34f44b8403dc9141809",
+      "stored_sha256": "048ee81195f82d754ca8a590ca8747043649e46eee8bce2e690bfd7a1460b641"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/lean-streamed-instrument/command.log",
+      "stored": "native-ci/lean-streamed-instrument/command.log.gz",
+      "raw_sha256": "a515656b5d7421c73e7dc434915d62645dcad2d402c3eb0a1c054d81c1fed661",
+      "stored_sha256": "f4c92fe912ace633ad53874d07fbc4e0cb33b2e668ce5a68db6c74bd61386cd9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/named-qpe-native/command.log",
+      "stored": "native-ci/named-qpe-native/command.log.gz",
+      "raw_sha256": "d8da5b31977bde99b06f9b85d02c8f1e884f2c128db9bb8538803c9e484e637b",
+      "stored_sha256": "7c4b93de50ffdfbf6ccc95d7e5b985b5aad665008e4a7dfe66e8c9dc5ccd404b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/rust-fourier-factoring/command.log",
+      "stored": "native-ci/rust-fourier-factoring/command.log.gz",
+      "raw_sha256": "f057e7f369e9fb6a051348c3129c1888c4f1a695f8d4201c78e6b99e17945a86",
+      "stored_sha256": "50e78de8ff08464ac1921090de4573f526c86bfde9b07557592cce27c4f162a5"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-arithmetic/command.log",
+      "stored": "native-ci/sized-arithmetic/command.log.gz",
+      "raw_sha256": "0565d65b3aee866c0fcbf2a9f273e667a5f088392841ad0bb6a1546b74178821",
+      "stored_sha256": "818a1f554f44eb7b66c775d3c0e88138168922cb874642c3f17a30842db02347"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-cli-native/command.log",
+      "stored": "native-ci/sized-cli-native/command.log.gz",
+      "raw_sha256": "90160258b573cec1c8cfbab8b511b02a9e9202d0551c5dcb8d3510b0669952e8",
+      "stored_sha256": "759777eaa0477867f3bdd64541d20d9c0756492de81264205a7bf34946d50b9d"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-corpus/command.log",
+      "stored": "native-ci/sized-corpus/command.log.gz",
+      "raw_sha256": "e199debacd1c6a2aea8353d5bd3d1331ea2e6be774e2d1aaf36c27f160b402b3",
+      "stored_sha256": "7b15cca4968671f4c0433bc8e67ece785080df4e94b9800820e40edeedc32ff2"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-instrument/command.log",
+      "stored": "native-ci/sized-instrument/command.log.gz",
+      "raw_sha256": "5bf02d0b14ba697fe5cf17302eb6d7872a0a7a75bbfe84810bd57e98073d5fda",
+      "stored_sha256": "6a0d23923da7f27299c2259487f34662ffc79a4692c58ef536bfcbc19013a131"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-qft/command.log",
+      "stored": "native-ci/sized-qft/command.log.gz",
+      "raw_sha256": "cb9215b63d11ae4e88cfc25eeb0bdd554811c58943174f8e02e3fd6663ca0686",
+      "stored_sha256": "253faa3a18c6227fe17be194852ea4105bce1f61faffa96abccfe3b08737c2b7"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-qpe/command.log",
+      "stored": "native-ci/sized-qpe/command.log.gz",
+      "raw_sha256": "66b4cbda761cccecefc08ad3ca3b7c2d3b9242fb221facb46d3afe6638525115",
+      "stored_sha256": "ee8741e96449db858dc46a0fc95bae985e7a7977e092f615ada6c5170cfeed5a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-qpe-clients/command.log",
+      "stored": "native-ci/sized-qpe-clients/command.log.gz",
+      "raw_sha256": "70ab7b884f8d77dfc95a383ee717719b2eaf596785226fd1516b8960a48bc02d",
+      "stored_sha256": "cb0ef53072745910321cdd622a581706920b00216efa7baf8098a5c8ed600460"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-qpe-readout/command.log",
+      "stored": "native-ci/sized-qpe-readout/command.log.gz",
+      "raw_sha256": "113d8a633eac2a47182bc07af7d0f40ccda4660c32419e7d99e9b9516a070134",
+      "stored_sha256": "1231f37a40518651b1834bd872936d9b20811d4f266e9d0ca832189209cc8fd4"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-review-dialects-native/command.log",
+      "stored": "native-ci/sized-review-dialects-native/command.log.gz",
+      "raw_sha256": "39b4e80ea9133d8c6ee7eb5fd52f7206ec4ba9b302d3d9778196c3e17e929ce1",
+      "stored_sha256": "0350e051b97d1272ddcd22a67efe89c7d97650f44a945bed83ccde151a6c88fd"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/sized-source-native/command.log",
+      "stored": "native-ci/sized-source-native/command.log.gz",
+      "raw_sha256": "887f99914528285432edc8733a9fa30dfca10bdf0f07a748198c0aeaa2a3bc3b",
+      "stored_sha256": "b0458d66ded79d5ecce8a1bb5742f90d3fadf3a90415271e5211179fc97ea3e1"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/native-final/native-comparisons-18020190b1c80037442be29d74e90fd9e07253e0-1/verification-baseline/command.log",
+      "stored": "native-ci/verification-baseline/command.log.gz",
+      "raw_sha256": "28884505849ddc574857c41d4b63fe9d7c1330ebb5ad24712ad671657e7d3a70",
+      "stored_sha256": "195b6fdb666817e422828402dd76f4c8ac04849c5250a6c42633ca58e04f40b5"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run-online.stdout",
+      "stored": "local-command-logs/cargo-publish-dry-run-online.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run-online.stderr",
+      "stored": "local-command-logs/cargo-publish-dry-run-online.stderr.gz",
+      "raw_sha256": "50598121b19daa8738a6c8e69f12b048b98e9333b08d04fee908c1d011a7b9db",
+      "stored_sha256": "eab3efa53839dfc49b8b2b5abe953ed3c51a5e75af5a36602dcb4d55a8bd6064"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run.stdout",
+      "stored": "local-command-logs/cargo-publish-dry-run.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run.stderr",
+      "stored": "local-command-logs/cargo-publish-dry-run.stderr.gz",
+      "raw_sha256": "681796d50824a6fad34f47e3ac772f4b0a9753561e63c622b8e429db448dcc33",
+      "stored_sha256": "4cfd7f1aea461eaba07bdb512745656e66af36aed8e3135e4331dc2f91e83df9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish.stdout",
+      "stored": "local-command-logs/cargo-publish.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cargo-publish.stderr",
+      "stored": "local-command-logs/cargo-publish.stderr.gz",
+      "raw_sha256": "495f391bb14d211a7b60f9fc258b56b13c6383042bd387fb468bbc8df5f482ea",
+      "stored_sha256": "4ddef71792a6b8527a231056d9a370a1d4e1819ff5477b459755b1d7e2f5da7c"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/ci-policy-final.stdout",
+      "stored": "local-command-logs/ci-policy-final.stdout.gz",
+      "raw_sha256": "9854110d8b2fae98aed69beedac9e6405bd71e4a82a79c15f3e3582b09997c7e",
+      "stored_sha256": "c6c997311bb806c7fb8d8c31cca0304a345070d3ccc98af279431634c1753f3e"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/ci-policy-final.stderr",
+      "stored": "local-command-logs/ci-policy-final.stderr.gz",
+      "raw_sha256": "3ceedf0357f0274111594a0a6563dc55d95cefc69cc472cbdf7d4db7fc58297c",
+      "stored_sha256": "65489a12939b80b443eb990aed5c954840f30b62c929793493dfc4a249331135"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/ci-policy.stdout",
+      "stored": "local-command-logs/ci-policy.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/ci-policy.stderr",
+      "stored": "local-command-logs/ci-policy.stderr.gz",
+      "raw_sha256": "f9607686c6a3a357098938a87a8cbbb0c87a5ea04f043d9e82bc50a8b6097fe2",
+      "stored_sha256": "46f453493f31a0b046c6555c59267bea885fad39223fb2e627aabf4ec2a44220"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cli-json-fixed.stdout",
+      "stored": "local-command-logs/cli-json-fixed.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cli-json-fixed.stderr",
+      "stored": "local-command-logs/cli-json-fixed.stderr.gz",
+      "raw_sha256": "24b6eeaf6543876acd0590979cfd97e7b8ce77ce926fad62bb930029b5cb87f6",
+      "stored_sha256": "49b46d38e3145eaf8319fac56b111b250d63290c0f8cdae6cb6e54afdfd9fe97"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cli-json-pre-fix.stdout",
+      "stored": "local-command-logs/cli-json-pre-fix.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/cli-json-pre-fix.stderr",
+      "stored": "local-command-logs/cli-json-pre-fix.stderr.gz",
+      "raw_sha256": "d45d1efd75e5884055387c54ad50ccc7bf6024cf777e9287bd393f1af6b5d249",
+      "stored_sha256": "978ce977daefdf0cf530795e38ed89bcec71cd40de092f8eff84e7ea86f79c80"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/clippy.stdout",
+      "stored": "local-command-logs/clippy.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/clippy.stderr",
+      "stored": "local-command-logs/clippy.stderr.gz",
+      "raw_sha256": "5cb9d4baa417adf2be22b30decf00a8f1b301b47531d40fb8291c93eb259084b",
+      "stored_sha256": "b59f7ec00bc02aaf7367be4c9f4cfdd53e8aca8f99fb2048f29163939ef5d53b"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/diagnostics-final.stdout",
+      "stored": "local-command-logs/diagnostics-final.stdout.gz",
+      "raw_sha256": "72d1674d053c4ac7f5af26b6b2bcd1376aae5b34870734b481a074182cb54122",
+      "stored_sha256": "c5815e58a84b3c859d462e2bdd789269334ee3f6d0c2b03bae50d23b51085816"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/diagnostics-final.stderr",
+      "stored": "local-command-logs/diagnostics-final.stderr.gz",
+      "raw_sha256": "fcac7a8cf185d0b6efc150a87a654c9dd11bbbbe0f971bb23a2cff202e7c30e1",
+      "stored_sha256": "aa7c64e61b28729c86d4a871b1dc9200ca864748fd45f23bd5c7b930db9e2fd1"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019.stdout",
+      "stored": "local-command-logs/distribution-1802019.stdout.gz",
+      "raw_sha256": "5af0b4d4837d841b4b5a27e108c92484bed7911712a655b37f912dac2823ccb4",
+      "stored_sha256": "efaf64dfee2b666234e020056912525a593bdfdafb610526f189e166d6fe8049"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-1802019.stderr",
+      "stored": "local-command-logs/distribution-1802019.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-final.stdout",
+      "stored": "local-command-logs/distribution-final.stdout.gz",
+      "raw_sha256": "cf60c4aa388f1ddfb11f2d2ac22306edfea3256bb0c53c75f41b981706f9f60c",
+      "stored_sha256": "7c12d110af096c9f1d00ad248385550e07750832fca948fd6cb900efb704e29a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-final.stderr",
+      "stored": "local-command-logs/distribution-final.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-gate.stdout",
+      "stored": "local-command-logs/distribution-gate.stdout.gz",
+      "raw_sha256": "cf60c4aa388f1ddfb11f2d2ac22306edfea3256bb0c53c75f41b981706f9f60c",
+      "stored_sha256": "7c12d110af096c9f1d00ad248385550e07750832fca948fd6cb900efb704e29a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution-gate.stderr",
+      "stored": "local-command-logs/distribution-gate.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution.stdout",
+      "stored": "local-command-logs/distribution.stdout.gz",
+      "raw_sha256": "cad112a9e304b0ea3836638d610b1ba5a28104f12030f3787e98837b8151f41d",
+      "stored_sha256": "0bdc9c7cccdb011c6c94af88ee0fb232bebb8a55544d642dfaf6af91d64a2cf1"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/distribution.stderr",
+      "stored": "local-command-logs/distribution.stderr.gz",
+      "raw_sha256": "c70564575e150b57fda1b12237b173cb0bc0b62c542e813f7549f6778eac29f1",
+      "stored_sha256": "879001bcd599fb7381848841454e16510ed1e962d21fc17c24d55b4408cf170f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/msrv-final.stdout",
+      "stored": "local-command-logs/msrv-final.stdout.gz",
+      "raw_sha256": "4685b8e4b146d3fcd0eacd79267941118b766d27d640d7191f6034ae8dcbe0ac",
+      "stored_sha256": "a147e5369bc41ca14d9af466cd555d77aba5b8c944a791ab906ee4d8b497e6cd"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/msrv-final.stderr",
+      "stored": "local-command-logs/msrv-final.stderr.gz",
+      "raw_sha256": "53ff0c45e2a36198b1246453ee13d79dd39d21f30348c0b3c086139501dc0dc0",
+      "stored_sha256": "26bb14f77baea9a87344aa2c42afa62089b24a921e52857abaf81b5f4b7cf9d9"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/python-pyqir.stdout",
+      "stored": "local-command-logs/python-pyqir.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/python-pyqir.stderr",
+      "stored": "local-command-logs/python-pyqir.stderr.gz",
+      "raw_sha256": "06bedab173481369e6e7e2ad961a0c2df231b74db010c59eb60a662cdd777846",
+      "stored_sha256": "a9085cb5c49573976e775b52be2beaa9a1fd004d1532f6a28db1245c6f42901c"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/python-regressions.stdout",
+      "stored": "local-command-logs/python-regressions.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/python-regressions.stderr",
+      "stored": "local-command-logs/python-regressions.stderr.gz",
+      "raw_sha256": "e485fb947b34f77dafe8eb2e305301483ff281fad5dab4202ef5d25ff5bf5073",
+      "stored_sha256": "bd64bd787355df30ee99dffcc8368599326672917b4a2c26c768b8a3737c042f"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/qli-differential.stdout",
+      "stored": "local-command-logs/qli-differential.stdout.gz",
+      "raw_sha256": "b3a0ac8edc022a866fbc72584b35058c8fd607c628b0124269afc039fea87242",
+      "stored_sha256": "04a21498673b2c9853d7f7e76f336b462cf48b133d97032be80f823fe15db4fc"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/qli-differential.stderr",
+      "stored": "local-command-logs/qli-differential.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/registry-install.stdout",
+      "stored": "local-command-logs/registry-install.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/registry-install.stderr",
+      "stored": "local-command-logs/registry-install.stderr.gz",
+      "raw_sha256": "0a64c90e81ab6ee073ae6c3f3e2e5c9f7e4373796405294305703e5ff6295355",
+      "stored_sha256": "07b9f300d6376a3337afb3d55725d39950e609766a22e332e40782e72616aee3"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/registry-quickstart.stdout",
+      "stored": "local-command-logs/registry-quickstart.stdout.gz",
+      "raw_sha256": "83f637f6de57500876c4762a286c2313859ab64d84fc87404b0e04baa429150c",
+      "stored_sha256": "84ac021edb4ab03eb3bba3826e2a7f2981912e72ecae4d0d2aa473c9ba7be7d7"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/registry-quickstart.stderr",
+      "stored": "local-command-logs/registry-quickstart.stderr.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/rust-tests-final.stdout",
+      "stored": "local-command-logs/rust-tests-final.stdout.gz",
+      "raw_sha256": "67faa471f769932cf726a0725f8412291a0009e3c95c44fd2b0216180d433aa4",
+      "stored_sha256": "1780d82358bbdd4a5598f471a2554f7dd177981a4685a780397bee0a4f698a9c"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/rust-tests-final.stderr",
+      "stored": "local-command-logs/rust-tests-final.stderr.gz",
+      "raw_sha256": "9ef7e6fa934c4a4bcd320378f08af724b60fe5692ac81f0807775f8bcf89ffd4",
+      "stored_sha256": "bf1a61f07a84b376a5dccba1880d24acbb6b15bf9ced0a5d012353afd8237add"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/rust-tests.stdout",
+      "stored": "local-command-logs/rust-tests.stdout.gz",
+      "raw_sha256": "cb6b8618fee359c3ccf075415c92145321b134575b5d395ce7aa6c4c008278cb",
+      "stored_sha256": "2e055850cd720f1035654cd25de615279326b0069821b55d617f9effbacf6f6a"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/rust-tests.stderr",
+      "stored": "local-command-logs/rust-tests.stderr.gz",
+      "raw_sha256": "2f5289877d7e0fbfb7a29c12dfb7679c08488e9dac92f8ffaa858f732a75a6cc",
+      "stored_sha256": "84f0893bbaf09757ef6b92e00809efcb1ebdff87f39cbc71ab9df1fc61bd3e9c"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/source-capacities-final.stdout",
+      "stored": "local-command-logs/source-capacities-final.stdout.gz",
+      "raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stored_sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/source-capacities-final.stderr",
+      "stored": "local-command-logs/source-capacities-final.stderr.gz",
+      "raw_sha256": "783ed61e223f8ffb5345b22451aa3726502020d946dee27121ec594de70253ed",
+      "stored_sha256": "b25f9a8d1657ae4668be3a0a5b908a6654d7f7e068edd29e6dcc046c9bb81b55"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/source-capacities-v2.stdout",
+      "stored": "local-command-logs/source-capacities-v2.stdout.gz",
+      "raw_sha256": "570aec740037da2ac966404589509c409e7dd619e2885572b1ac2b1856a76a08",
+      "stored_sha256": "ff9f5f0be479619081189f0f60d82ab1b4d5efa44930b3bbea4ec9ecc2d55e36"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/source-capacities-v2.stderr",
+      "stored": "local-command-logs/source-capacities-v2.stderr.gz",
+      "raw_sha256": "0a8205da2d2e9143ca727be5beabc72728fbcfec32877d7f8829fc9acf7a5e4b",
+      "stored_sha256": "b069dee46152643d58e62468bf4881dd2e6e4d5348baf22ce478de0334fa0d68"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/hosted-ci.log",
+      "stored": "hosted-ci.log.gz",
+      "raw_sha256": "3b8d436a6b967d69babfdc41ed8ad1367859663a7ee641665d271751243bc1c8",
+      "stored_sha256": "9176560b7f697250c63fae9a696de6782c19351f904383d41388b43e40bbe697"
+    },
+    {
+      "original": "/private/tmp/qleisli-v028-release/ci-observed-failure.log",
+      "stored": "ci-observed-failure.log.gz",
+      "raw_sha256": "5fe8770de82dae3b81b0f89f7f52052c56b3d0dab4435c2c907ccb7aa66e98fa",
+      "stored_sha256": "6dd3010e28408fa44d1adb1e8d08bc20335db734cec30c44f4162810242954f2"
+    }
+  ]
+}

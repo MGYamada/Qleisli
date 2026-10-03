@@ -1,0 +1,10 @@
+{
+  "tag": "v0.2.8",
+  "type": "annotated",
+  "tag_object": "a19d5714999cbb727654f7ba5c1fdd3116238fe1",
+  "peeled_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "remote_tag_object": "a19d5714999cbb727654f7ba5c1fdd3116238fe1",
+  "remote_peeled_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "remote_verified": true,
+  "annotation": "object 18020190b1c80037442be29d74e90fd9e07253e0\ntype commit\ntag v0.2.8\ntagger Masahiko Yamada <masa@MasahikonoMacBook-Air.local> 1791004088 +0900\n\nQleisli v0.2.8\n\nExact checked commit: 18020190b1c80037442be29d74e90fd9e07253e0\nFull CI: https://github.com/MGYamada/Qleisli/actions/runs/37087051879\nClean local/Linux distribution and native verification passed.\nRust authority retained; full Soundness/EffectSound and hierarchical S05 remain open.\n"
+}

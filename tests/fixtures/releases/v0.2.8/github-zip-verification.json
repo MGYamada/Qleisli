@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "kind": "zip",
+  "download": {
+    "url": "https://api.github.com/repos/MGYamada/Qleisli/zipball/v0.2.8",
+    "final_url": "https://codeload.github.com/MGYamada/Qleisli/legacy.zip/refs/tags/v0.2.8",
+    "status": 200,
+    "sha256": "d157f0cb9042867d48a7fd8ac8376325a2ca7c13b4e571bc313db3d1d46f9614",
+    "bytes": 9525777,
+    "saved": "github.zip"
+  },
+  "archive_root": "MGYamada-Qleisli-a19d571",
+  "file_count": 2997,
+  "bytes_match": true,
+  "complete_inventory_matches_git": true,
+  "excluded_tracked_files": [],
+  "observed_posix_modes": [
+    "0o0"
+  ],
+  "permissions": "tar compares Git modes allowing group-write; ZIP modes may be absent",
+  "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "version": "0.2.8",
+  "checked_utc": "2026-10-03T05:13:31.015734+00:00"
+}

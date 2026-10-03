@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "kind": "tar",
+  "download": {
+    "url": "https://api.github.com/repos/MGYamada/Qleisli/tarball/v0.2.8",
+    "final_url": "https://codeload.github.com/MGYamada/Qleisli/legacy.tar.gz/refs/tags/v0.2.8",
+    "status": 200,
+    "sha256": "969bb6f83223782f2b2a24faa8de2105eb484bd556dd44bfe9c73905ab1a4441",
+    "bytes": 7720488,
+    "saved": "github.tar.gz"
+  },
+  "archive_root": "MGYamada-Qleisli-a19d571",
+  "file_count": 2997,
+  "bytes_match": true,
+  "complete_inventory_matches_git": true,
+  "excluded_tracked_files": [],
+  "observed_posix_modes": [
+    "0o664"
+  ],
+  "permissions": "tar compares Git modes allowing group-write; ZIP modes may be absent",
+  "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "version": "0.2.8",
+  "checked_utc": "2026-10-03T05:13:21.609053+00:00"
+}

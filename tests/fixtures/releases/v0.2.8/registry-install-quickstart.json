@@ -1,0 +1,19 @@
+{
+  "package": "qleisli",
+  "version": "0.2.8",
+  "binary": "/private/tmp/qleisli-v028-registry-install/bin/qleisli",
+  "readmes": "matching Bell source and version",
+  "registry_links": "absolute; current targets exist locally; retired contracts use reviewed immutable refs",
+  "historical_registry_links_pending_live_check": [
+    "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md#package-identity-and-user-documentation",
+    "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md"
+  ],
+  "checks": [
+    "Bell check/run/sample in text and JSON",
+    "embedded qft2",
+    "reject measured-owner reuse"
+  ],
+  "execution": "temporary directory; empty helper-tool PATH",
+  "publication": "This checker performs no publication; actual upload is recorded separately.",
+  "historical_registry_links_verified_by": "pinned-links.json"
+}
