@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Migrate the retained research raw-IR adapter to native acceptance and make
+  foreign/Python comparison tests bind both environment and per-call selection
+  to the requested checker, including CI jobs without an inherited kernel path.
 - Repair distribution CI follow-ups: retain QIRF envelope pointers after native
   rejection, update diagnostic/work expectations, isolate nested CI output paths,
   and keep QPE response-fault tests on the intended protocol while finite leaves

@@ -226,6 +226,10 @@ def main():
     parser.add_argument("--record", type=Path)
     args = parser.parse_args()
     BINARY, KERNEL = args.binary.resolve(), args.kernel.resolve()
+    # Compare environment and per-call selection using the same requested
+    # checker, even when the invoking CI job has no kernel environment set.
+    os.environ["QLEISLI_KERNEL"] = str(KERNEL)
+    ENV["QLEISLI_KERNEL"] = str(KERNEL)
     result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromTestCase(PublicNative))
     if args.record:
         args.record.parent.mkdir(parents=True, exist_ok=True)

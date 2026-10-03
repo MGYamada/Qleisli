@@ -9,8 +9,8 @@ production integration. Qleisli's Apache-2.0 license and
 [attribution](../../NOTICE) apply. Copyright 2026 Masahiko G. Yamada.
 
 The v0.1.5 decision selects a
-bounded M2 continuation, replacing indefinite deferral. The existing prototype
-and regression suite are retained unchanged. Hierarchical IR, schema import,
+bounded M2 continuation, replacing indefinite deferral. The existing term/proof
+rules and regression suite are retained. Hierarchical IR, schema import,
 source integration and their validation are planned, not implemented here;
 new development belongs outside the compatible 0.1.x maintenance scope.
 M2 is a milestone, not a selected product version or release date.
@@ -20,10 +20,11 @@ selects Lean 4 without Mathlib runtime dependencies for new M2 kernel work.
 This Rust prototype and its 43-test suite remain an independent comparison
 implementation, not a second production kernel being extended in parallel.
 The first Lean slice
-checks one-bit phase words and proves its actual acceptance function sound for
-cyclic-phase action. It does not yet replace this prototype's term/proof DAGs,
-bind full raw IR, implement QPE, or change production Rust `check`/`run` authority.
-The migration and existing H1–H5 gates must be satisfied separately.
+checked one-bit phase words and proved its actual acceptance function sound for
+cyclic-phase action. The v0.2.9 production cutover now requires native Lean
+acceptance for this adapter's raw input too. This prototype's term/proof DAGs
+remain an independent research comparison, without production acceptance authority.
+The existing H1–H5 proof gates must be satisfied separately.
 
 ## Purpose
 
@@ -40,8 +41,9 @@ The package consists of a [kernel](src/kernel.rs) and a separate
 derives conclusions. The adapter binds such a conclusion to actual supported
 Qleisli raw IR through ordinary resource verification and independent ordered
 extraction. It does not call frontend flattening or the old whole-function
-matrix comparator. Bounded leaf arithmetic and the raw resource verifier are
-shared trusted implementation components, not independently proved code.
+matrix comparator. Raw resource/effect checks use the explicitly selected native
+Lean checker. Bounded leaf arithmetic remains a shared implementation component;
+this research adapter does not prove the production verifier's soundness.
 
 ## Initial semantics
 
@@ -93,6 +95,7 @@ proof search are not implemented as a hidden simplification oracle.
 From the repository root:
 
 ```sh
+export QLEISLI_KERNEL="/absolute/path/to/matching/bin/qleisli-kernel"
 cargo fmt --manifest-path research/semantic-kernel/Cargo.toml --check
 cargo test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
 cargo clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings

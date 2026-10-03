@@ -1,0 +1,1727 @@
+{
+  "format": 1,
+  "status": "passed",
+  "workers": 4,
+  "run_id": "37141484534",
+  "attempt": "1",
+  "binding": {
+    "head": "b0fedc6bf3eb3723eec26e4e9e99e12ec6e059a8",
+    "lean_pin": "leanprover/lean4:v4.30.0",
+    "lean_version": "Lean (version 4.30.0, x86_64-unknown-linux-gnu, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+    "rust_version": "rustc 1.98.1 (48a229cea 2026-09-01)",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "environment": {
+      "HOME": "/home/runner",
+      "PATH": "/home/runner/.elan/bin:/snap/bin:/home/runner/.local/bin:/opt/pipx_bin:/home/runner/.cargo/bin:/home/runner/.config/composer/vendor/bin:/usr/local/.ghcup/bin:/home/runner/.dotnet/tools:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin",
+      "RUSTUP_TOOLCHAIN": "1.98.1",
+      "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LC_ALL": "C",
+      "LANG": "C"
+    }
+  },
+  "manifest_sha256": "a26bcf0f6e653e510acaacdb8f696d91eab4b00c06ec1b10f7e9ee514bde0c3e",
+  "expected_ids": [
+    "lean-hierarchy",
+    "lean-layout",
+    "lean-layout-dag",
+    "lean-phase-layout",
+    "lean-phase-operations",
+    "hierarchical-gradient",
+    "hierarchical-fourier-stage",
+    "lean-interference",
+    "lean-exact",
+    "lean-finite",
+    "lean-raw",
+    "lean-raw-completion",
+    "lean-observation",
+    "lean-branch-function",
+    "lean-streamed-instrument",
+    "lean-qft",
+    "lean-qft-semantic",
+    "lean-qft-graph",
+    "lean-qpe",
+    "lean-controlled-power",
+    "hierarchical-graph",
+    "hierarchical-artifact",
+    "hierarchical-typing",
+    "hierarchical-contract-typing",
+    "hierarchical-structural",
+    "lean-reshape",
+    "hierarchical-readout",
+    "hierarchical-preparation",
+    "hierarchical-instrument",
+    "instrument-host",
+    "hierarchical-execution",
+    "compact-sized-graph",
+    "sized-instrument",
+    "sized-qpe-readout",
+    "hierarchical-power",
+    "hierarchical-routed-power",
+    "hierarchical-circuit-trace",
+    "hierarchical-qpe-schedule",
+    "hierarchical-qpe-root",
+    "hierarchical-qpe-instrument",
+    "sized-source-native",
+    "sized-review-dialects-native",
+    "sized-cli-native",
+    "named-qpe-native",
+    "hierarchical-derivation",
+    "hierarchical-calls",
+    "hierarchical-finite",
+    "hierarchical-conditional",
+    "hierarchical-request",
+    "hierarchical-host",
+    "verification-baseline",
+    "hierarchical-fourier-base",
+    "hierarchical-fourier-body",
+    "hierarchical-wiring",
+    "hierarchical-fourier-root",
+    "hierarchical-fourier-host",
+    "sized-corpus",
+    "sized-qft",
+    "rust-fourier-factoring",
+    "sized-qpe",
+    "sized-arithmetic",
+    "sized-qpe-clients",
+    "hierarchical-qft",
+    "hierarchical-qft-shared-gradient",
+    "native-paths",
+    "lean-kernel-self-test",
+    "native-acceptance"
+  ],
+  "native_build_commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "\u2714 [82/220] Built QleisliKernel.ExactCapacity:c.o (108ms)\n\u2714 [86/220] Built QleisliKernel.Semantics.OwnershipLaws:c.o (141ms)\n\u2714 [110/220] Built QleisliKernel.Raw.ObservationScope:c.o (119ms)\n\u2714 [111/220] Built QleisliKernel.PhasePolynomial.Operations:c.o (182ms)\n\u2714 [203/220] Built QleisliKernel.Semantics.ClassicalScope:c.o (336ms)\n\u2714 [217/220] Built QleisliKernel.Hierarchical.CallLowering:c.o (236ms)\n\u2714 [218/220] Built QleisliKernel:c.o (183ms)\n\u2714 [219/220] Built QleisliKernel.Reshape:c.o (402ms)\n\u2714 [220/220] Built QleisliKernel:static (23ms)\nBuild completed successfully (220 jobs).\n",
+      "stderr": "",
+      "seconds": 0.6464570439999875
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "Lean (version 4.30.0, x86_64-unknown-linux-gnu, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": "",
+      "seconds": 0.07862090999998372
+    }
+  ],
+  "tasks": [
+    {
+      "id": "compact-sized-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_compact_sized_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_compact_sized_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 0.36635871400005726
+        }
+      ],
+      "seconds": 0.36658292799995706,
+      "log": "/home/runner/work/_temp/native-comparisons/compact-sized-graph/command.log"
+    },
+    {
+      "id": "hierarchical-artifact",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_artifact.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_artifact.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.591429823999988
+        }
+      ],
+      "seconds": 6.591700156000002,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-artifact/command.log"
+    },
+    {
+      "id": "hierarchical-calls",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_calls.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_calls.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.468249479000065
+        }
+      ],
+      "seconds": 10.468491797999945,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-calls/command.log"
+    },
+    {
+      "id": "hierarchical-circuit-trace",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_circuit_trace.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_circuit_trace.py"
+          ],
+          "exit_code": 0,
+          "seconds": 18.40153967299989
+        }
+      ],
+      "seconds": 18.401790387999995,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-circuit-trace/command.log"
+    },
+    {
+      "id": "hierarchical-conditional",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_conditional.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_conditional.py"
+          ],
+          "exit_code": 0,
+          "seconds": 19.811514795999983
+        }
+      ],
+      "seconds": 19.811701348999918,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-conditional/command.log"
+    },
+    {
+      "id": "hierarchical-contract-typing",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_contract_typing.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_contract_typing.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.620689597000023
+        }
+      ],
+      "seconds": 10.6209659189999,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-contract-typing/command.log"
+    },
+    {
+      "id": "hierarchical-derivation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_derivation.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_derivation.py"
+          ],
+          "exit_code": 0,
+          "seconds": 41.77307658699999
+        }
+      ],
+      "seconds": 41.77329836700005,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-derivation/command.log"
+    },
+    {
+      "id": "hierarchical-execution",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_execution.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_execution.py"
+          ],
+          "exit_code": 0,
+          "seconds": 27.74038590600003
+        }
+      ],
+      "seconds": 27.740597757000046,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-execution/command.log"
+    },
+    {
+      "id": "hierarchical-finite",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_finite.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_finite.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.14940964699997
+        }
+      ],
+      "seconds": 6.1496276799999805,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-finite/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-base",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_base.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_base.py"
+          ],
+          "exit_code": 0,
+          "seconds": 49.74555515399993
+        }
+      ],
+      "seconds": 49.745801229999984,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-fourier-base/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-body",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_body.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_body.py"
+          ],
+          "exit_code": 0,
+          "seconds": 53.27131370799998
+        }
+      ],
+      "seconds": 53.27158450100001,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-fourier-body/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 63.613029899000026
+        }
+      ],
+      "seconds": 63.61323963600012,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-fourier-host/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-root",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_root.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_root.py"
+          ],
+          "exit_code": 0,
+          "seconds": 71.74985803200002
+        }
+      ],
+      "seconds": 71.75008091399991,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-fourier-root/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-stage",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_stage.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_stage.py"
+          ],
+          "exit_code": 0,
+          "seconds": 44.04154134099997
+        }
+      ],
+      "seconds": 44.04175469399996,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-fourier-stage/command.log"
+    },
+    {
+      "id": "hierarchical-gradient",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_gradient.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_gradient.py"
+          ],
+          "exit_code": 0,
+          "seconds": 38.192954578999945
+        }
+      ],
+      "seconds": 38.193211536000035,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-gradient/command.log"
+    },
+    {
+      "id": "hierarchical-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 17.19222085699994
+        }
+      ],
+      "seconds": 17.192522919999988,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-graph/command.log"
+    },
+    {
+      "id": "hierarchical-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 70.04165038199994
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_finite_binding.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_finite_binding.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.559824969000033
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_verification_decoders.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/hierarchical-host/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_verification_decoders.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/hierarchical-host/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 11.071274992999975
+        }
+      ],
+      "seconds": 91.67331135500001,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-host/command.log"
+    },
+    {
+      "id": "hierarchical-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.979572806999954
+        }
+      ],
+      "seconds": 2.9797912399999404,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-instrument/command.log"
+    },
+    {
+      "id": "hierarchical-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.114036200999976
+        }
+      ],
+      "seconds": 10.114263362000088,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-power/command.log"
+    },
+    {
+      "id": "hierarchical-preparation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_preparation.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_preparation.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.662176219999992
+        }
+      ],
+      "seconds": 10.662373984000055,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-preparation/command.log"
+    },
+    {
+      "id": "hierarchical-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py"
+          ],
+          "exit_code": 0,
+          "seconds": 13.174610529999882
+        }
+      ],
+      "seconds": 13.174853560999964,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-qft/command.log"
+    },
+    {
+      "id": "hierarchical-qft-shared-gradient",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py",
+            "--construction",
+            "shared-gradient"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py",
+            "--construction",
+            "shared-gradient"
+          ],
+          "exit_code": 0,
+          "seconds": 39.68125430600003
+        }
+      ],
+      "seconds": 39.68151775499996,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-qft-shared-gradient/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 38.38335336400007
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_qpe_instrument_host.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/hierarchical-qpe-instrument/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_qpe_instrument_host.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/hierarchical-qpe-instrument/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 33.18026738800006
+        }
+      ],
+      "seconds": 71.56404446399995,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-qpe-instrument/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-root",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_root.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_root.py"
+          ],
+          "exit_code": 0,
+          "seconds": 37.721351491000064
+        }
+      ],
+      "seconds": 37.721559694999996,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-qpe-root/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-schedule",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_schedule.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_schedule.py"
+          ],
+          "exit_code": 0,
+          "seconds": 16.48837267800002
+        }
+      ],
+      "seconds": 16.48858722500006,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-qpe-schedule/command.log"
+    },
+    {
+      "id": "hierarchical-readout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_readout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_readout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 16.534416953999994
+        }
+      ],
+      "seconds": 16.534637653000004,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-readout/command.log"
+    },
+    {
+      "id": "hierarchical-request",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_request.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_request.py"
+          ],
+          "exit_code": 0,
+          "seconds": 139.93803010099998
+        }
+      ],
+      "seconds": 139.93827485399993,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-request/command.log"
+    },
+    {
+      "id": "hierarchical-routed-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_routed_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_routed_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 15.092827755999906
+        }
+      ],
+      "seconds": 15.093045697999969,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-routed-power/command.log"
+    },
+    {
+      "id": "hierarchical-structural",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_structural.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_structural.py"
+          ],
+          "exit_code": 0,
+          "seconds": 9.760518113999979
+        }
+      ],
+      "seconds": 9.760760943000037,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-structural/command.log"
+    },
+    {
+      "id": "hierarchical-typing",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_typing.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_typing.py"
+          ],
+          "exit_code": 0,
+          "seconds": 5.137841630000025
+        }
+      ],
+      "seconds": 5.1381817559999945,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-typing/command.log"
+    },
+    {
+      "id": "hierarchical-wiring",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_wiring.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_wiring.py"
+          ],
+          "exit_code": 0,
+          "seconds": 43.73486157400009
+        }
+      ],
+      "seconds": 43.735070930000006,
+      "log": "/home/runner/work/_temp/native-comparisons/hierarchical-wiring/command.log"
+    },
+    {
+      "id": "instrument-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_instrument_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_instrument_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 153.81434935899995
+        }
+      ],
+      "seconds": 153.81456274200002,
+      "log": "/home/runner/work/_temp/native-comparisons/instrument-host/command.log"
+    },
+    {
+      "id": "lean-branch-function",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_branch_function.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-branch-function/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_branch_function.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-branch-function/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 111.104525007
+        }
+      ],
+      "seconds": 111.10480909599994,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-branch-function/command.log"
+    },
+    {
+      "id": "lean-controlled-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_controlled_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_controlled_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 8.800862703000007
+        }
+      ],
+      "seconds": 8.80111463000003,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-controlled-power/command.log"
+    },
+    {
+      "id": "lean-exact",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_exact.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_exact.py"
+          ],
+          "exit_code": 0,
+          "seconds": 66.75551240000004
+        }
+      ],
+      "seconds": 66.75573673400004,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-exact/command.log"
+    },
+    {
+      "id": "lean-finite",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_finite.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_finite.py"
+          ],
+          "exit_code": 0,
+          "seconds": 128.012805232
+        }
+      ],
+      "seconds": 128.01302025899997,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-finite/command.log"
+    },
+    {
+      "id": "lean-hierarchy",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_hierarchy.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_hierarchy.py"
+          ],
+          "exit_code": 0,
+          "seconds": 54.305308989000025
+        }
+      ],
+      "seconds": 54.305822019999994,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-hierarchy/command.log"
+    },
+    {
+      "id": "lean-interference",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_interference.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_interference.py"
+          ],
+          "exit_code": 0,
+          "seconds": 26.97672703300009
+        }
+      ],
+      "seconds": 26.977032530999963,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-interference/command.log"
+    },
+    {
+      "id": "lean-kernel-self-test",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "run",
+            "--example",
+            "lean_kernel",
+            "--",
+            "lean-kernel/.lake/build/bin/qleisli-kernel",
+            "--self-test"
+          ],
+          "executed_command": [
+            "cargo",
+            "run",
+            "--example",
+            "lean_kernel",
+            "--",
+            "lean-kernel/.lake/build/bin/qleisli-kernel",
+            "--self-test"
+          ],
+          "exit_code": 0,
+          "seconds": 83.01511211000002
+        }
+      ],
+      "seconds": 83.01538871399998,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-kernel-self-test/command.log"
+    },
+    {
+      "id": "lean-layout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_layout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_layout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 17.183902413
+        }
+      ],
+      "seconds": 17.18434838600001,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-layout/command.log"
+    },
+    {
+      "id": "lean-layout-dag",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_layout_dag.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_layout_dag.py"
+          ],
+          "exit_code": 0,
+          "seconds": 11.022763679000036
+        }
+      ],
+      "seconds": 11.023942931000022,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-layout-dag/command.log"
+    },
+    {
+      "id": "lean-observation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-observation/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-observation/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 74.414636266
+        }
+      ],
+      "seconds": 74.41492915000003,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-observation/command.log"
+    },
+    {
+      "id": "lean-phase-layout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_phase_layout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_phase_layout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 31.78590322900004
+        }
+      ],
+      "seconds": 31.786337480000043,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-phase-layout/command.log"
+    },
+    {
+      "id": "lean-phase-operations",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_phase_operations.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_phase_operations.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.9280388579999794
+        }
+      ],
+      "seconds": 2.9282636729999467,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-phase-operations/command.log"
+    },
+    {
+      "id": "lean-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.900337580000041
+        }
+      ],
+      "seconds": 6.900548238000056,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-qft/command.log"
+    },
+    {
+      "id": "lean-qft-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 31.564576373000023
+        }
+      ],
+      "seconds": 31.56480793100002,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-qft-graph/command.log"
+    },
+    {
+      "id": "lean-qft-semantic",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft.py",
+            "--small",
+            "--semantic"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft.py",
+            "--small",
+            "--semantic"
+          ],
+          "exit_code": 0,
+          "seconds": 5.693340343999921
+        }
+      ],
+      "seconds": 5.69359457500002,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-qft-semantic/command.log"
+    },
+    {
+      "id": "lean-qpe",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qpe.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qpe.py"
+          ],
+          "exit_code": 0,
+          "seconds": 14.777834686999995
+        }
+      ],
+      "seconds": 14.778046648999975,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-qpe/command.log"
+    },
+    {
+      "id": "lean-raw",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "exit_code": 0,
+          "seconds": 126.86852567800008
+        }
+      ],
+      "seconds": 126.86882449300003,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-raw/command.log"
+    },
+    {
+      "id": "lean-raw-completion",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_raw_completion.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-raw-completion/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_raw_completion.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-raw-completion/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 126.96990961400002
+        }
+      ],
+      "seconds": 126.97017142000004,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-raw-completion/command.log"
+    },
+    {
+      "id": "lean-reshape",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_reshape.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_reshape.py"
+          ],
+          "exit_code": 0,
+          "seconds": 11.309220528999958
+        }
+      ],
+      "seconds": 11.309457286999987,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-reshape/command.log"
+    },
+    {
+      "id": "lean-streamed-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_streamed_instrument.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_streamed_instrument.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 81.92534725999997
+        }
+      ],
+      "seconds": 81.92556616299998,
+      "log": "/home/runner/work/_temp/native-comparisons/lean-streamed-instrument/command.log"
+    },
+    {
+      "id": "named-qpe-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--lib",
+            "native_named_qpe",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--lib",
+            "native_named_qpe",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 24.83164175400009
+        }
+      ],
+      "seconds": 24.832050960999936,
+      "log": "/home/runner/work/_temp/native-comparisons/named-qpe-native/command.log"
+    },
+    {
+      "id": "native-acceptance",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "native_acceptance",
+            "--",
+            "--include-ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "native_acceptance",
+            "--",
+            "--include-ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 1.5256535289997828
+        },
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "build",
+            "--locked",
+            "--offline",
+            "--example",
+            "native_acceptance"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--offline",
+            "--example",
+            "native_acceptance"
+          ],
+          "exit_code": 0,
+          "seconds": 0.5685557060000974
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_native_acceptance_replay.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-acceptance/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_native_acceptance_replay.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-acceptance/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 21.899497837000126
+        }
+      ],
+      "seconds": 23.994448295999973,
+      "log": "/home/runner/work/_temp/native-comparisons/native-acceptance/command.log"
+    },
+    {
+      "id": "native-paths",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "build",
+            "--locked",
+            "--offline",
+            "--bin",
+            "qleisli"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--offline",
+            "--bin",
+            "qleisli"
+          ],
+          "exit_code": 0,
+          "seconds": 0.11503903099992385
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_native_verification.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-paths/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_native_verification.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-paths/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 191.9235210490001
+        },
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "native_paths",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "native_paths",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 0.8669447059999129
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_source_kernel.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_source_kernel.py"
+          ],
+          "exit_code": 0,
+          "seconds": 25.58726413100021
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_interop_native.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-paths/record.json/interop-native.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_interop_native.py",
+            "--record",
+            "/home/runner/work/_temp/native-comparisons/native-paths/record.json/interop-native.json"
+          ],
+          "exit_code": 0,
+          "seconds": 27.842353632999902
+        }
+      ],
+      "seconds": 246.33605945199997,
+      "log": "/home/runner/work/_temp/native-comparisons/native-paths/command.log"
+    },
+    {
+      "id": "rust-fourier-factoring",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_rust_fourier_factoring.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_rust_fourier_factoring.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.591903538999986
+        }
+      ],
+      "seconds": 6.592116142000009,
+      "log": "/home/runner/work/_temp/native-comparisons/rust-fourier-factoring/command.log"
+    },
+    {
+      "id": "sized-arithmetic",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "exit_code": 0,
+          "seconds": 18.486120183000025
+        }
+      ],
+      "seconds": 18.486324709999963,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-arithmetic/command.log"
+    },
+    {
+      "id": "sized-cli-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_cli",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_cli",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 2.9923638640000263
+        }
+      ],
+      "seconds": 2.992628925999952,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-cli-native/command.log"
+    },
+    {
+      "id": "sized-corpus",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "exit_code": 0,
+          "seconds": 4.244403889000068
+        }
+      ],
+      "seconds": 4.244938482000066,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-corpus/command.log"
+    },
+    {
+      "id": "sized-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 22.870859227999972
+        }
+      ],
+      "seconds": 22.871082170000022,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-instrument/command.log"
+    },
+    {
+      "id": "sized-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qft.py",
+            "--small"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qft.py",
+            "--small"
+          ],
+          "exit_code": 0,
+          "seconds": 13.01901498999996
+        }
+      ],
+      "seconds": 13.019350755999994,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-qft/command.log"
+    },
+    {
+      "id": "sized-qpe",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "exit_code": 0,
+          "seconds": 11.005620427000167
+        }
+      ],
+      "seconds": 11.005822469000009,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-qpe/command.log"
+    },
+    {
+      "id": "sized-qpe-clients",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "exit_code": 0,
+          "seconds": 17.542039726999974
+        }
+      ],
+      "seconds": 17.542252750999978,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-qpe-clients/command.log"
+    },
+    {
+      "id": "sized-qpe-readout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe_readout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe_readout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.591481983999984
+        }
+      ],
+      "seconds": 6.591728851000084,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-qpe-readout/command.log"
+    },
+    {
+      "id": "sized-review-dialects-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_review_dialects",
+            "native",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_review_dialects",
+            "native",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 6.550866917999997
+        }
+      ],
+      "seconds": 6.551195309000036,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-review-dialects-native/command.log"
+    },
+    {
+      "id": "sized-source-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_source",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_source",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 18.09101462000001
+        }
+      ],
+      "seconds": 18.091288769000016,
+      "log": "/home/runner/work/_temp/native-comparisons/sized-source-native/command.log"
+    },
+    {
+      "id": "verification-baseline",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "build",
+            "--bin",
+            "qleisli"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--bin",
+            "qleisli"
+          ],
+          "exit_code": 0,
+          "seconds": 0.1195012460000271
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_verification_baseline.py",
+            "target/debug/qleisli",
+            "--kernel",
+            "lean-kernel/.lake/build/bin/qleisli-kernel"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_verification_baseline.py",
+            "target/debug/qleisli",
+            "--kernel",
+            "lean-kernel/.lake/build/bin/qleisli-kernel"
+          ],
+          "exit_code": 0,
+          "seconds": 54.74973507599998
+        }
+      ],
+      "seconds": 54.869671736999976,
+      "log": "/home/runner/work/_temp/native-comparisons/verification-baseline/command.log"
+    }
+  ],
+  "elapsed_seconds": 811.5137763949999
+}
