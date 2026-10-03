@@ -106,6 +106,7 @@ def main():
     mutation('owner-reuse', lambda p:p['programs'][0]['operations'][0].update(output=0))
     mutation('effect-observe', lambda p:p['programs'][0].update(declared_effect='observe'), 'contract')
     mutation('unused-program', lambda p:p['programs'].append(copy.deepcopy(p['programs'][0])))
+    mutation('source-unused', lambda p:p.update(sources=[dict(path='unused.qli',text='')]))
     mutation('source-duplicate', lambda p:p.update(sources=[dict(path='x',text=''),dict(path='x',text='')]))
     mutation('producer-flag', lambda p:p.update(checked=True))
     mutation('interface-shape', lambda p:p['root_interface'].update(output=dict(tag='unit')), 'contract')
@@ -133,6 +134,8 @@ def main():
             evidence=[dict(signature=dict(tag='bit'),implementation=1,specification=2,identity=identity)])
         if version == 2: graph['evidence'][0]['tag']='circuit'
         native_cases.append((f'circuit-graph-v{version}',encode(graph),good,'pending'))
+        unused = copy.deepcopy(graph); unused['sources'].append(dict(path='unused.qli',text=''))
+        native_cases.append((f'unused-source-v{version}',encode(unused),good,'format'))
         cycle = copy.deepcopy(graph); cycle['evidence'][0]['implementation']=0
         native_cases.append((f'cycle-v{version}',encode(cycle),good,'format'))
         fault = copy.deepcopy(graph); fault['programs'][2]['operations'][0]['gate']='x'

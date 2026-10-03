@@ -5,8 +5,71 @@ use super::{Diagnostic, Span, edition, error, io_error, located_error};
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
+/// A selected qrate root whose path is never re-canonicalized during loading.
+/// On Unix, the held directory identity also rejects replacement directories.
+/// File contents may still change concurrently; this is not a filesystem snapshot.
+pub struct QrateSource {
+    root: PathBuf,
+    directory: fs::File,
+}
+
+impl QrateSource {
+    /// Select a qrate root and acquire it without following replacement links.
+    pub fn select(directory: &Path) -> Result<Self, Diagnostic> {
+        let root = qrate_source_root(directory)?;
+        let directory = super::source_file::open_directory(&root)
+            .map_err(|e| io_error(&root, e).into_diagnostic())?;
+        Ok(Self { root, directory })
+    }
+
+    /// Selected source identity for diagnostics; do not canonicalize it again.
+    pub fn path(&self) -> &Path {
+        &self.root
+    }
+
+    fn unchanged(&self) -> Result<(), super::LoadFailure> {
+        let current =
+            super::source_file::open_directory(&self.root).map_err(|e| io_error(&self.root, e))?;
+        let held = self
+            .directory
+            .metadata()
+            .map_err(|e| io_error(&self.root, e))?;
+        let current = current.metadata().map_err(|e| io_error(&self.root, e))?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            if (held.dev(), held.ino()) != (current.dev(), current.ino()) {
+                return Err(error(
+                    &self.root,
+                    Span::default(),
+                    "selected source root was replaced",
+                ));
+            }
+        }
+        #[cfg(not(unix))]
+        let _ = (held, current); // Other targets retain the filesystem trust assumption.
+        Ok(())
+    }
+
+    /// Load this selection without resolving a replacement symlink to another tree.
+    pub fn load_with_policy(
+        &self,
+        policy: super::SourcePolicy,
+    ) -> Result<super::Project, Diagnostic> {
+        self.unchanged()
+            .map_err(super::LoadFailure::into_diagnostic)?;
+        let project = super::Project::load_resolved(&self.root, policy)
+            .map_err(super::LoadFailure::into_diagnostic)?;
+        self.unchanged()
+            .map_err(super::LoadFailure::into_diagnostic)?;
+        Ok(project)
+    }
+}
+
 /// Select the explicitly declared `[source].root` beneath a qrate directory.
 /// This does not implement qargo package/dependency/test/doc orchestration.
+/// This legacy path-only query does not retain directory identity. For subsequent
+/// loading/checking/compilation use [`QrateSource`] instead.
 pub fn qrate_source_root(directory: &Path) -> Result<PathBuf, Diagnostic> {
     let root = fs::canonicalize(directory).map_err(|e| io_error(directory, e).into_diagnostic())?;
     let (path, source) =

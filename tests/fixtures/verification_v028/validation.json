@@ -1,0 +1,140 @@
+{
+  "format": "qleisli.vm28-validation",
+  "version": 1,
+  "status": "passed",
+  "recorded_utc": "2026-10-02T18:56:24.406227+00:00",
+  "scope": "v0.2.8 selected ordinary QIRF/CLI opt-in dual integration; not VM27/29/S05 closure or publication",
+  "sources": {
+    "src/interchange/dual.rs": "0ebb58044adcbb7e81cc9719219086986c6f1188a76a8956f12ba4f69150d87d",
+    "src/interchange/dual/runtime.rs": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445",
+    "src/interchange/mod.rs": "d4567e4e6fb406fae2c2117dd543cdb2eb50b4e4512dc5679b4c2a74a77fa035",
+    "src/bin/qleisli.rs": "6eb817d56a38e32f007b6de59d4363a22f28b2d7a6516642f71300c4e4b01cfb",
+    "src/bin/qleisli/options.rs": "4990611c4bbf5bc0c511c3631101850646a02d891ef4461096acc1afce6fdccb",
+    "src/bin/qleisli/source_commands.rs": "92bb50dc7107f45e8e6039c15a2e5efd348e2cc9603363930eb728a0d057a2f1",
+    "src/bin/qleisli/artifacts.rs": "b8a290995912c2bc2aa629b28e380c6ff11e8dfe823c600149a774e85c9491b2",
+    "src/bin/qleisli/json.rs": "dba886caaf9b37d545a4a4cddab60f80915cdfbd625bff18c73e88adb24a86a9",
+    "lean-kernel/QleisliKernel/Qirf/Validity.lean": "6496e94ff4b3d262da8e19b6485cc16bf93fe8ddabe954fbe4713e5afd002bc8",
+    "lean-kernel/Protocol/Validity.lean": "88cef2c22f92c6febf04a3122600b84e8a581cd978923fc9085d5ae39c83a3c9",
+    "lean-kernel/Cli/Validity.lean": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9",
+    "lean-kernel/Main.lean": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94",
+    "lean-kernel/QleisliKernel.lean": "2ce0e536b8e24104968b8b2787ba3f02cb1c706300ffbf513d8aa51ed6cd7881",
+    "scripts/package_lean_kernel.py": "bb90fdc4f15f102b82ddcb20ffed8720d6882ed52a5e2ed7e836bc17d58994e2",
+    "scripts/test_dual_verification.py": "200c1f823fdef9fe03432ef0f32b9e1b351d66bf3e0a4abda6d5e523ab0470c5",
+    "scripts/test_run_native_ci.py": "86e638faa821efac748f625213091a87e0260f15c2c08f0276a769eb40b42d83",
+    "tests/dual.rs": "8086f9800ccaced7afcc9ebcadbc11fab6071e3603114350918fd0527fbb5584",
+    "tests/cli.rs": "1c74ace8a4a4d95ab44f88a9cb9e711d45632f60d5df080901fb7336e931e4e4",
+    "tests/cli_json.rs": "845425344df273a92c544c86f9c0ff7ab100b01c23bbd75ef84e32d3ccbad0af",
+    ".github/workflows/ci.yml": "a543ede5acbc0057861d1fde476191441485d4d2e6ce6a72001ee1d9d458eec5",
+    ".github/ci/native-comparisons.json": "ad939c0907bc4bd9031797183b22649c2be7ce4ca1f24f228ccc864dab8dcc28",
+    "lean/schema-registry.json": "f08617c446bfdbd08d9e51ed0080b927a9137369217e427a4987d7782aa03e9b"
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline --all-targets",
+      "status": "passed",
+      "passed": 572,
+      "ignored": 37,
+      "log": "rust-tests.log"
+    },
+    {
+      "command": "cargo test --locked --offline --test dual -- --ignored",
+      "status": "passed",
+      "passed": 1,
+      "note": "Explicit audited kernel selected; one of the 37 ordinarily ignored tests"
+    },
+    {
+      "command": "rustup run 1.85.0 cargo test --locked --offline --lib interchange::dual --test dual",
+      "status": "passed",
+      "passed": 2,
+      "log": "msrv.log"
+    },
+    {
+      "command": "rustup run 1.85.0 cargo test --locked --offline --test dual -- --ignored",
+      "status": "passed",
+      "passed": 1,
+      "log": "msrv-native.log"
+    },
+    {
+      "command": "cargo fmt --check; cargo clippy --locked --offline --all-targets -- -D warnings; cargo test --locked --offline --doc; RUSTDOCFLAGS=-Dwarnings cargo doc --locked --offline --no-deps",
+      "status": "passed",
+      "logs": [
+        "clippy.log",
+        "doctest.log",
+        "rustdoc.log"
+      ]
+    },
+    {
+      "command": "python3 -m unittest discover -s scripts -p 'test_check_*.py'",
+      "status": "passed",
+      "total": 199,
+      "skipped": 8,
+      "log": "python-tests.log"
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "status": "passed",
+      "total": 28,
+      "log": "policy-tests.log"
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py; python3 scripts/test_ci_profiles.py",
+      "status": "passed",
+      "total": 15,
+      "logs": [
+        "native-ci-tests.log",
+        "ci-profile-tests.log"
+      ]
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --write",
+      "status": "passed",
+      "report": "schema-registry-validation.json",
+      "note": "Both Lean packages rebuilt/audited; fresh kernel replay and actual exported schema type binding; external enablement unchanged false"
+    },
+    {
+      "command": "python3 scripts/package_lean_kernel.py --output /tmp/qleisli-native-v028-final",
+      "status": "passed",
+      "report": "native-bundle-manifest.json",
+      "platform": "Darwin arm64",
+      "note": "Fresh source copy, build/audit/replay, preserved licenses, system-library dependency inspection, relocated positive/wrong-phase checks"
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py",
+      "status": "passed",
+      "process_checks": 222,
+      "corpus_clients": 75,
+      "report": "dual-validation.json"
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --kernel /tmp/qleisli-native-v028-final/bin/qleisli-kernel",
+      "status": "passed",
+      "process_checks": 222,
+      "corpus_clients": 75,
+      "report": "bundle/dual-validation.json"
+    },
+    {
+      "command": "check_docs.py; check_editions.py; check_authoring_sessions.py; check_verification_inventory.py; check_schema_registry.py --source-only; git diff --check",
+      "status": "passed"
+    }
+  ],
+  "docs": {
+    "baseline_bytes": 190835,
+    "current_nonignored_bytes": 85250,
+    "reduction_percent": 55.33,
+    "note": "Original docs cleanup record is preserved separately; plan/status additions are included here."
+  },
+  "observed_repairs": [
+    "Initial manifest missing schema-version: saved before repair; original QLI unchanged.",
+    "Compiled policy audit rejected a generated partial IO helper: replaced with a bounded range loop; unchanged audit now passes.",
+    "Native/Rust comparison exposed unused source metadata acceptance: new Lean ordinary entry rejects it.",
+    "Historical CLI usage fixtures kept unchanged; new option has a new fixture.",
+    "Lean LICENSES is a file on this host; packaging now preserves both supported file/directory layouts."
+  ],
+  "skipped": [
+    "Hosted Linux/macOS exact-source CI (configured, not run here).",
+    "All 72 native CI commands and remaining ordinarily ignored Rust tests (selected small integration checks run here).",
+    "New maximum-size checks; three existing five-qubit corpus clients deliberately excluded from this replay.",
+    "Full S05/source preservation/decoder/compiler/runtime proofs and hierarchy analytic closure.",
+    "Tagging, pushing and publication."
+  ]
+}

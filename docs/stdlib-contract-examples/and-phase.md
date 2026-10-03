@@ -16,10 +16,10 @@ One Z/two four-entry XOR predicate applications; not physical gate/T-count/upstr
 | Aspect | Status | Scope and evidence |
 | --- | --- | --- |
 | Source checking | checked | [Production replay](../../corpus/validation-v0.2.7.json). |
-| Semantic tests | tested | [Independent full complex columns](../../scripts/check_input_corpus.py),1e-11; numerical only. |
-| Actual IR conformance | pending | Actual emitted-body theorem open. |
-| Source preservation | pending | General frontend correspondence open. |
-| Specification review | pending | Independent intent/convention review required. |
+| Semantic tests | tested | [Complex columns](../../scripts/check_input_corpus.py),1e-11, not proof. |
+| Actual IR conformance | pending | Body theorem open. |
+| Source preservation | pending | Frontend proof open. |
+| Specification review | pending | Intent review open. |
 
 ## Adoption and teaching
-[Client](../../corpus/qualtran/and_phase/main.qli)/[case](../../corpus/qualtran/and_phase/README.md): compute flag/phase/uncompute workspace. Require predicate/sign/controlled-scalar/dirty-flag faults and exposed actual scratch checks; factored numerics not literal cleanup. No pilot fault runs/new source; Google/Qleisli Apache-2.0 notices and reuse/name/review/evidence gates required.
+[Client](../../corpus/qualtran/and_phase/main.qli): compute/phase/uncompute. Predicate/sign/control/dirty-flag faults and actual scratch checks; factored numerics prove no literal cleanup. Google/Qleisli Apache-2.0 notices; reuse/name/intent/evidence gates before adoption.

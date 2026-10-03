@@ -1,0 +1,96 @@
+[
+  {
+    "command": [
+      "cargo",
+      "fmt",
+      "--check"
+    ],
+    "started_utc": "2026-10-02T17:36:31.615876+00:00",
+    "seconds": 0.334,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-01.log"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--all-targets"
+    ],
+    "started_utc": "2026-10-02T17:36:31.951078+00:00",
+    "seconds": 115.973,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-02.log"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--offline",
+      "--doc"
+    ],
+    "started_utc": "2026-10-02T17:38:27.924766+00:00",
+    "seconds": 2.209,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-03.log"
+  },
+  {
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "started_utc": "2026-10-02T17:38:30.133843+00:00",
+    "seconds": 9.829,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-04.log"
+  },
+  {
+    "command": [
+      "cargo",
+      "doc",
+      "--locked",
+      "--offline",
+      "--no-deps"
+    ],
+    "started_utc": "2026-10-02T17:38:39.963334+00:00",
+    "seconds": 1.158,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-05.log"
+  },
+  {
+    "command": [
+      "cargo",
+      "build",
+      "--locked",
+      "--offline",
+      "--bin",
+      "qleisli"
+    ],
+    "started_utc": "2026-10-02T17:38:41.121580+00:00",
+    "seconds": 0.077,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/rust-06.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_input_corpus.py",
+      "target/debug/qleisli",
+      "--exhaustive",
+      "--report",
+      "corpus/validation-v0.2.8.json"
+    ],
+    "started_utc": "2026-10-02T17:38:41.198272+00:00",
+    "seconds": 0.565,
+    "exit_code": 1,
+    "log": "tests/fixtures/releases/v0.2.8/rust-07.log"
+  }
+]

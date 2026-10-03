@@ -1,0 +1,15 @@
+{
+  "commands": [
+    {
+      "command": [
+        "target/debug/qleisli",
+        "run",
+        "tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    }
+  ]
+}

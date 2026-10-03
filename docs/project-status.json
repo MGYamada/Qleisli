@@ -1,95 +1,89 @@
 {
   "format": 3,
-  "release_state": "0.2.7 published to crates.io/GitHub on 2026-10-03 (Asia/Tokyo); [exact-source full CI and publication evidence](../tests/fixtures/releases/v0.2.7/publication.json).",
+  "release_state": "0.2.8 selected; unpublished. Latest published: 0.2.7.",
   "current": [
     {
-      "topic": "Use",
-      "state": "Rust finite CLI, edition2026",
-      "detail": "[Quickstart](../README.md#try-it); [manifests](language-editions.md)."
+      "topic": "0.2.8",
+      "state": "78 cases; opt-in Rust/Lean dual",
+      "detail": "[Candidate](releases/v0.2.8.md); [corpus](../corpus/validation-v0.2.8.json)."
     },
     {
-      "topic": "0.2.7",
-      "state": "Published; 69 corpus cases",
-      "detail": "[Release](releases/v0.2.7.md); [first attempts](../corpus/authoring/v027-small/README.md)."
-    },
-    {
-      "topic": "Proof scope",
-      "state": "VM27 graph/root/leaf/H semantics; decoder tests",
-      "detail": "[Boundary](../tests/fixtures/verification_v027/README.md): analytic reader bridge/compiler proof open; [test CI](../.github/ci/README.md); Rust authority/schemas disabled."
-    },
-    {
-      "topic": "Shared source",
-      "state": "Measured-QPE experiment",
-      "detail": "[Checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md); source/native/execution/R14/H1-H5 open; no new maxima."
+      "topic": "Authority",
+      "state": "Rust; schemas disabled",
+      "detail": "[VM28](../tests/fixtures/verification_v028/README.md) dual path; [ordinary ResourceSafe](../tests/fixtures/resource_safe_v028/README.md) proved; full migration/EffectSound/hierarchical S05 open."
     },
     {
       "topic": "Next",
-      "state": "Plans/imaginary-v1 retained",
-      "detail": "[Roadmap](v0x-roadmap.md); [theorem gates](release-milestones.md); legacy cleanup0.3."
+      "state": "Plans and imaginary-v1 retained",
+      "detail": "[Roadmap](v0x-roadmap.md); [measured QPE](v0.2.2-plan.md)."
+    },
+    {
+      "topic": "CI",
+      "state": "Partial test-oriented migration",
+      "detail": "[#223](https://github.com/MGYamada/Qleisli/issues/223): native bundle replay follows tests/model/full; hosted adoption and build-once drivers remain pending."
+    },
+    {
+      "topic": "Bug triage",
+      "state": "12 issues reviewed; local repairs",
+      "detail": "[Validation](../tests/fixtures/bug_triage_v028/README.md); #186 already fixed; remaining patches await integration/platform validation."
     }
   ],
   "milestones": [
     {
       "id": "M0",
       "state": "Finite foundation",
-      "evidence": "[0.2.7](releases/v0.2.7.md)",
-      "open": "VM27-29 and general theorem gates remain open."
+      "evidence": "[Gates](release-milestones.md)",
+      "open": "General theorem gates."
     },
     {
       "id": "M1",
-      "state": "Operations/terminal adapters",
-      "evidence": "[Contract](machine-interface-spec.md)",
-      "open": "Adaptive formats/preservation/native wheels."
+      "state": "Operations/adapters",
+      "evidence": "[Gates](release-milestones.md)",
+      "open": "Adaptive/preservation/wheels."
     },
     {
       "id": "M2",
-      "state": "Bounded source/hierarchy/QPE",
-      "evidence": "[Migration](verification-migration-v0.2.md)",
-      "open": "Production/source/native/execution/H1-H5."
+      "state": "Bounded QPE",
+      "evidence": "[Gates](release-milestones.md)",
+      "open": "R14/H1–H5/binding."
     },
     {
       "id": "M3",
       "state": "Grover planned",
-      "evidence": "[Requirements](imaginary-v1/requirements.md)",
-      "open": "Predicate synthesis/shared source/sampling/retries."
+      "evidence": "[Gates](release-milestones.md)",
+      "open": "Synthesis/shared trials."
     },
     {
       "id": "M4",
       "state": "Shor planned",
-      "evidence": "[Requirements](imaginary-v1/requirements.md)",
-      "open": "General arithmetic/QPE/sampled workflow."
+      "evidence": "[Gates](release-milestones.md)",
+      "open": "General arithmetic/sampling."
     },
     {
       "id": "M5",
-      "state": "V1/resource proofs planned",
+      "state": "V1 planned",
       "evidence": "[Gates](release-milestones.md)",
-      "open": "General algorithms/stable contracts/compilation-preserved bounds."
+      "open": "Stable contracts/S05/PR/RS."
     }
   ],
   "inventory": [
     {
-      "rule": "Finite source/IR/contracts/adapters/execution",
+      "rule": "Finite source/IR",
       "implementation": "[Rust](../src/lib.rs)",
-      "tests": "[source/IR](../tests/source_ir_correspondence.rs)",
-      "proof": "[Scope](formal-core.md): exact evidence vs numerical tests; complete Rust/source/backend adequacy open."
+      "tests": "[Corpus](../corpus/validation-v0.2.8.json)",
+      "proof": "[Scope](formal-core.md): general correspondence open."
     },
     {
-      "rule": "VM23-26 arithmetic/finite/pure/observing actual checkers",
-      "implementation": "[kernel](../lean-kernel/README.md)",
-      "tests": "[VM26](../tests/fixtures/verification_v026/README.md)",
-      "proof": "[Bridges](../lean/README.md): bounded complex/reference/cleanup/CP/TNI/TP/binding; VM27-29 open."
+      "rule": "VM23–27 components",
+      "implementation": "[Kernel](../lean-kernel/README.md)",
+      "tests": "[VM27](../tests/fixtures/verification_v027/README.md)",
+      "proof": "[Migration](verification-migration-v0.2.md): bounded actual-checker proofs; VM27–29 open."
     },
     {
-      "rule": "Hierarchy/gradient/Fourier/power/QPE/sized init",
-      "implementation": "[kernel](../lean-kernel/QleisliKernel.lean)",
-      "tests": "[packets](../tests/fixtures/hierarchical_ir/README.md)",
-      "proof": "[Profile](hierarchical-ir-spec.md): actual provider/reader/native premises; TP005/006 retained, source preservation open."
-    },
-    {
-      "rule": "Library/corpus/general theorem goals",
-      "implementation": "[ledger](stdlib-contracts.md)",
-      "tests": "[corpus](../corpus/validation-v0.2.7.json)",
-      "proof": "[Gates](release-milestones.md): numerical comparisons not general algorithm/upstream equivalence/quantitative proofs; intent review separate."
+      "rule": "Shared source/library",
+      "implementation": "[Source](../corpus/sized/README.md)",
+      "tests": "[Clients](../tests/fixtures/sized_clients/README.md)",
+      "proof": "[Gates](release-milestones.md): source/intent/general algorithm/resource proofs open."
     }
   ]
 }

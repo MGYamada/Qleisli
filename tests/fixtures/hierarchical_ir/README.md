@@ -212,7 +212,7 @@ those checks without increasing limits or using native evaluation. CI and source
 distribution include the native harness. This packet does not enable an external
 schema, implement sized source or complete v0.2.0.
 
-This is the scheduling part of the [adopted hierarchy](../../../docs/hierarchical-ir-spec.md#dependency-scheduling-implementation).
+This is the scheduling part of the [adopted hierarchy](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/hierarchical-ir-spec.md#dependency-scheduling-implementation).
 The source client is the retained [shared-QPE first attempt](../authoring_sessions/shared-qpe-v020/attempt-01/estimation.qli),
 whose initial unsupported diagnostic is unchanged. Shared calls and controlled
 repetition need one checked dependency per body, including count zero, with no

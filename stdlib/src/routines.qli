@@ -2,7 +2,7 @@
 //!
 //! Separate owners may remain entangled; no routine assumes a product state.
 //! Contracts, including reflection phase and observation instruments, are in
-//! docs/algorithm-routines.md and docs/stdlib-contracts.md, R001-R005.
+//! https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md, R001-R005.
 use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::z;

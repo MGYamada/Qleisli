@@ -1,6 +1,6 @@
 # Deliberate semantic counterexamples
 
-These thirty-six local mutations are **expected to compile and verify** under the
+These fifty-four local mutations are **expected to compile and verify** under the
 language's type/resource rules, then disagree with the independently stated
 algorithm contract. They are curated semantic tests, not external translations,
 failed first attempts or a fourth input source. Upstream-derived source retains
@@ -34,10 +34,19 @@ The six 0.2.5 mutations erase CZ, ignore Toffoli's second control, change inclus
 comparison to strict, omit input restoration, reverse noncommuting rotations
 and erase the QAOA mixer's scalar phase. The CZ and mixer changes retain every
 basis-input Z probability; complete complex-entry interference detects them.
-[Current replay](../validation-v0.2.5.json) checks all thirty valid-source faults.
+[0.2.5 replay](../validation-v0.2.5.json) checks all thirty valid-source faults.
 
 The six 0.2.6 mutations conjugate a preparation phase, erase a graph edge,
 omit the signed reflection completion (also inside a zero-control block),
 reverse rotation order, and erase negative ZZ's scalar. Every mutation preserves
 all basis-input Z probabilities; X/Y interference must detect their different
-complex operators. [Current replay](../validation-v0.2.6.json) covers all thirty-six.
+complex operators. [0.2.6 replay](../validation-v0.2.6.json) covers all thirty-six.
+
+The nine 0.2.7 faults cover controlled H, selected-bit/even-label axes, carry,
+comparison thresholds, constant XOR, scalar phases and QAOA operation order.
+The nine 0.2.8 faults additionally exercise bit-string offsets, retained W
+ancilla correlations, parity, controlled carry, restored comparator inputs,
+reflection target, rotation order/sign and a missing shared-vertex QAOA edge.
+[Current replay](../validation-v0.2.8.json) detects all 54 after successful
+source checking. The W mutation preserves data probabilities but leaves the
+explicit auxiliary correlated; no clean-release theorem is inferred.

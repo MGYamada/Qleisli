@@ -11,6 +11,8 @@ import QleisliKernel.Raw.ProtectedEvaluation
 import QleisliKernel.Raw.Protected
 import QleisliKernel.Raw.Pure
 import QleisliKernel.Raw.Observation
+import QleisliKernel.Raw.ObservationOwnership
+import QleisliKernel.Semantics.OwnershipLaws
 import QleisliKernel.Raw.Instrument
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
@@ -39,6 +41,8 @@ import QleisliKernel.Hierarchical.CallLowering
 import QleisliKernel.Hierarchical.Finite
 import QleisliKernel.Hierarchical.FiniteBinding
 import QleisliKernel.Qirf
+import QleisliKernel.Qirf.Validity
+import QleisliKernel.Qirf.Ownership
 import QleisliKernel.Hierarchical.Conditional
 import QleisliKernel.Hierarchical.Root
 import QleisliKernel.Hierarchical.Gradient

@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "storage": "lossless gzip; original validation.json log names remain historical",
+  "files": [
+    {
+      "original_path": "msrv-native.log",
+      "stored_path": "msrv-native.log.gz",
+      "raw_sha256": "6c84ec63b2c8a1015402c93b79bcfc373d3c00e07ae65c6baf06094296377eec",
+      "stored_sha256": "afa7c029eca6826a524a13474186201e4f239941b87056de76152e1f62eff26b"
+    },
+    {
+      "original_path": "msrv.log",
+      "stored_path": "msrv.log.gz",
+      "raw_sha256": "c2096a7e3fe2158080e7046c26d5aa91f60a9dfa00e18ea1cf3328dd3518ccca",
+      "stored_sha256": "40545b63de8177a313b73014f5dbbcffcccbf09b3f120761424688a2eab25f47"
+    },
+    {
+      "original_path": "rust-tests.log",
+      "stored_path": "rust-tests.log.gz",
+      "raw_sha256": "587f6b86afa3f04e8e245ccb1d7b8f7c0cd4f139b80eb1393419815e57978612",
+      "stored_sha256": "4f98b0a4b51e479ed48629bd0ba01e623e7a6fb13c432d87b81cf6c2a0da3171"
+    }
+  ]
+}

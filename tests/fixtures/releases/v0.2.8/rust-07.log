@@ -1,0 +1,16 @@
+$ python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive --report corpus/validation-v0.2.8.json
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/check_input_corpus.py", line 744, in <module>
+    main()
+    ~~~~^^
+  File "/Users/masa/git/Qleisli/scripts/check_input_corpus.py", line 695, in main
+    manifest = check_manifest()
+  File "/Users/masa/git/Qleisli/scripts/check_input_corpus.py", line 183, in check_manifest
+    observation = json.loads(local(session_file.parent, record).read_text())
+                             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/masa/git/Qleisli/scripts/check_input_corpus.py", line 47, in local
+    require(path.is_relative_to(base.resolve()), f"path escapes intake: {relative}")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/masa/git/Qleisli/scripts/check_input_corpus.py", line 42, in require
+    raise ValueError(message)
+ValueError: path escapes intake: ../../validation-v0.2.8.json

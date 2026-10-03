@@ -8,6 +8,14 @@ Decoder/native/Rust correspondence, source preservation, full-profile soundness
 and the later [verification migration gates](../docs/verification-migration-v0.2.md)
 remain separate.
 
+[Soundness composition](../tests/fixtures/soundness_refactor_v028/README.md)
+retains typed QIRF stage results and proves the actual packet check reaches
+independent finite original-body/reference semantics. The compatibility proof
+preserves every input, failure and remaining work value.
+[Ordinary ResourceSafe](../tests/fixtures/resource_safe_v028/README.md) additionally
+proves independent linear ownership through actual native acceptance for all
+19 constructors and both arms. Full EffectSound/hierarchical S05 remains open.
+
 ## Code organization
 
 | Layer | Responsibility |
@@ -80,8 +88,9 @@ boundaries. Native adapters discharge original QIRF leaves, requested matrix
 pairs and fixed H under one exact-work budget. Rust native-only reports check
 transport coverage; compatible executable reports independently rebuild sealed
 Rust leaf handles under their own budget. See the [hierarchical
-contracts](../docs/hierarchical-ir-spec.md) for each mode's scope and remaining
-gates. Production `qleisli check`/`run` and QIRF verification continue through Rust.
+contracts](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/hierarchical-ir-spec.md) for each mode's scope and remaining
+gates. Ordinary CLI/QIRF defaults remain Rust; [VM28](../tests/fixtures/verification_v028/README.md)
+adds explicit dual checking with original artifact/request bytes and no fallback.
 
 The [QIRF semantic bridge](../lean/Qleisli/Qirf.lean) proves actual original-graph
 and root complex/reference meaning; [native discharge](../lean/Qleisli/NativeHierarchy.lean)

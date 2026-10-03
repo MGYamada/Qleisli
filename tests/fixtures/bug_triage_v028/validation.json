@@ -1,0 +1,140 @@
+{
+  "format": "qleisli.bug-triage-validation",
+  "version": 1,
+  "date": "2026-10-03",
+  "timezone": "Asia/Tokyo",
+  "base_commit": "84c9ec4c6a4cd731781eb0c44ea375dd3e6dfd11",
+  "working_tree": "uncommitted, including earlier authorized v0.2.8 work",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "issues": [
+    {
+      "number": 181,
+      "result": "Local search-only descriptor repair; older macOS runtime and Linux validation pending"
+    },
+    {
+      "number": 186,
+      "result": "Already fixed in f88bbc0; closed on GitHub after regression checks"
+    },
+    {
+      "number": 192,
+      "result": "Local bound QrateSource/CLI repair; legacy path-only API remains a query"
+    },
+    {
+      "number": 239,
+      "result": "Local absolute reader path and safe-path subprocess fix"
+    },
+    {
+      "number": 240,
+      "result": "Clarified the terminal-profile contract; existing rejection retained"
+    },
+    {
+      "number": 241,
+      "result": "Local native unused-source rejection and maintained existing proofs"
+    },
+    {
+      "number": 242,
+      "result": "Local closed-v1 diagnostic-code repair"
+    },
+    {
+      "number": 243,
+      "result": "Local path-free byte-limit message with structured location"
+    },
+    {
+      "number": 244,
+      "result": "Local source I/O location repair"
+    },
+    {
+      "number": 247,
+      "result": "Local bundled comment/Python README repair and drift checks"
+    },
+    {
+      "number": 248,
+      "result": "Local pinned execution environment and Cargo/rustc probe repair"
+    },
+    {
+      "number": 249,
+      "result": "Local dirty/untracked checkout rejection and explicit environment allowlist"
+    }
+  ],
+  "checks": [
+    {
+      "command": "cargo test --test review_v028 --test review_v024 --test review_v026 --test review_v027 --test project --test cli --test cli_json --test cli_sampling --test connections --test interop",
+      "passed_tests": 67,
+      "status": "passed",
+      "toolchain": "Homebrew rustc/cargo 1.98.1"
+    },
+    {
+      "command": "/opt/homebrew/opt/rustup/bin/cargo +1.85.0 test --locked --test review_v028 --test review_v024 --test project --test editions",
+      "passed_tests": 36,
+      "status": "passed"
+    },
+    {
+      "command": "/opt/homebrew/opt/rustup/bin/cargo +1.85.0 test --locked --lib source_file::tests",
+      "passed_tests": 4,
+      "status": "passed"
+    },
+    {
+      "command": "cargo clippy --lib --bin qleisli --test review_v028 -- -D warnings",
+      "status": "passed"
+    },
+    {
+      "command": "cargo test --test review_v028 --test connections",
+      "passed_tests": 13,
+      "status": "passed",
+      "reason": "After restoring the unchanged I/O primary-location compatibility test"
+    },
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "passed_tests": 34,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "passed_tests": 11,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_python_host.py",
+      "passed_tests": 2,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "passed_tests": 6,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_package_lean_kernel.py",
+      "passed_tests": 5,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_hierarchical_finite_binding.py",
+      "passed_cases": 60,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/test_dual_verification.py --record tests/fixtures/bug_triage_v028/dual",
+      "process_checks": 222,
+      "small_corpus_clients": 75,
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --write --report tests/fixtures/bug_triage_v028/schema-validation.json",
+      "status": "passed",
+      "scope": "Both Lean packages built/audited; fresh QleisliKernel replay; schema export; external schemas remain disabled"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "status": "passed"
+    }
+  ],
+  "not_run": [
+    "Linux/Windows runtime checks and older macOS runtime checks",
+    "Full installed-PyQIR connection suite: optional pyqir dependency unavailable locally; targeted no-extra host tests passed",
+    "Hosted CI and the complete native comparison manifest on a clean committed checkout",
+    "Maximum-size quantum cases"
+  ],
+  "publication": "No commit, push, PR, release or new proof objective in this bug-triage turn"
+}

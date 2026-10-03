@@ -2,7 +2,7 @@
 
 These Qleisli-authored integration fixtures reuse the
 [retained Qualtran-derived QPE definition](../../../corpus/sized/qualtran_qpe/estimation.qli)
-through the experimental [source path](../../../docs/sized-corpus-source.md).
+through the experimental [source path](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md).
 They are Apache-2.0 local verification material, not a fourth external corpus
 or additional upstream translations. No upstream file was downloaded. The
 existing three-source intake and thirty production CLI cases are unchanged.

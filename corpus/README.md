@@ -26,6 +26,13 @@ material under the existing policy, not a fourth external corpus. Their
 measured clients now have bounded source/CLI integration; general correspondence
 and wider production integration remain open.
 
+The nine 0.2.8 additions cover two-bitstring and even-parity preparation,
+retained-ancilla W preparation, controlled increment, equality with input
+restoration, zero reflection, signed rotations and a shared-edge QAOA layer.
+The [session](authoring/v028-small/README.md) preserves nine accepted first
+sources (zero repairs), complete complex comparisons and nine semantic faults.
+All new kernels use one to three data qubits; upstream pins remain unchanged.
+
 The nine 0.2.7 additions cover controlled H, selected-bit/even-label preparation,
 constant arithmetic/comparison/XOR, half-turn RX/ZZ phases and one QAOA edge layer.
 The [session](authoring/v027-small/README.md) retains first sources, the actual
@@ -194,6 +201,15 @@ replacing a corpus source requires an explicit user-approved policy amendment.
 | qualtran | [greater_than1](qualtran/greater_than1/README.md) | XOR [a>b] into either target value and restore the negative control. |
 | pennylane_demos | [rotation_mixed_sign](pennylane_demos/rotation_mixed_sign/README.md) | RY(-pi/2) RX(pi/2), chronological RX then RY, with full scalar phase. |
 | pennylane_demos | [qaoa_mixer2](pennylane_demos/qaoa_mixer2/README.md) | Two-wire U_B(pi/4)=RX(pi/2) tensor RX(pi/2); excludes cost/preparation/optimization. |
+| quantum_katas | [two_bitstrings3](quantum_katas/two_bitstrings3/README.md) | For bits1=[true,false,true], bits2=[false,true,true], apply X(2) X(1) CNOT(0,1) H(0). Zero becomes (&#124;101>+&#124;110>)/sqrt(2), in low-bit integer labels 5 and 6. |
+| quantum_katas | [w2_retained3](quantum_katas/w2_retained3/README.md) | N=2 recursion: X(a), H(r), controlled-SWAP(r;a,b), CNOT(b,r). On zero input, output is (&#124;100>+&#124;010>)/sqrt(2) in returned (a,b,r) order, with r=0; the full three-wire unitary is checked. |
+| quantum_katas | [even_parity3](quantum_katas/even_parity3/README.md) | Width three, parity=0: coefficients U[y,x]=(-1)^popcount((x&3)&(y&3))/2 when y2=x2 xor y0 xor y1, zero otherwise. Zero prepares the four even-parity labels. |
+| qualtran | [controlled_increment2](qualtran/controlled_increment2/README.md) | &#124;c,x> maps to &#124;c,(x+c) mod 4>, scalar +1; c is axis 0 and x has axes 1,2. Both control sectors and overflow are retained. |
+| qualtran | [equals1](qualtran/equals1/README.md) | &#124;a,b,t> maps to &#124;a,b,t xor [a=b]>, scalar +1, including an initially-one target and restored comparison inputs. |
+| qualtran | [reflection_zero2](qualtran/reflection_zero2/README.md) | I-2&#124;00><00&#124;, global_phase=+1, no outer control. Preserve every nonzero basis label and its phase; negate only zero. |
+| pennylane_demos | [rotation_negative_x_positive_y](pennylane_demos/rotation_negative_x_positive_y/README.md) | RY(pi/2) RX(-pi/2), params=(-pi/2,pi/2); matrix [[1-i,-1+i],[1+i,1+i]]/2, including scalar phase. |
+| pennylane_demos | [qaoa_negative_mixer2](pennylane_demos/qaoa_negative_mixer2/README.md) | U_B(-pi/4)=RX(-pi/2) tensor RX(-pi/2); U[y,x]=i^popcount(x xor y)/2. |
+| pennylane_demos | [qaoa_path_layer3](pennylane_demos/qaoa_path_layer3/README.md) | RX(pi/2)^tensor3 exp(-i*pi*(Z0 Z1+Z1 Z2)/4), gamma=pi/2, beta=pi/4, cost then mixer. The middle wire belongs to both edges. |
 
 The VQE example is the four-orbital excitation at angle pi, not molecular
 energy minimization. QAOA preserves each original four-node graph but fixes
@@ -213,11 +229,11 @@ not passed checks or proved theorems.
 
 | Finite examples | Unitary examples | Observing examples | Semantic faults |
 | --- | --- | --- | --- |
-| 69 | 64 | 5 | 45 |
+| 78 | 73 | 5 | 54 |
 
 <!-- corpus-inventory:end -->
 
-[Current validation](validation-v0.2.7.json) binds its actual commands,
+[Current validation](validation-v0.2.8.json) binds its actual commands,
 probe results and source identities. Historical reports remain reproducibility
 observations for their own snapshots: [0.2.4](validation-v0.2.4.json),
 [0.2.3](validation-v0.2.3.json), [0.2.2](validation-v0.2.2.json),
@@ -250,7 +266,7 @@ cannot adopt semantics or substitute for a new validation run.
 - [Local negative fixtures](negative/manifest.json) reject duplicate ownership,
   post-measurement reuse, measurement adjoints and dirty auxiliary use. They are
   deliberately authored counterexamples, not failed external source translations.
-- Twenty-four [type-correct semantic faults](semantic_faults/README.md) must pass source
+- Fifty-four [type-correct semantic faults](semantic_faults/README.md) must pass source
   checking and then fail the mathematical oracle. They test majority/parity,
   Bell-label order, carry, equality, LCU unpreparation and erased rotation phase.
   The six 0.2.2 faults additionally test incomplete SWAP, unconditional Fredkin,
@@ -290,7 +306,7 @@ repairs**, using known syntax and existing rotation workarounds. The historical
 session covers the six additions. Their latest snapshots together must cover
 every current source, so growth cannot silently omit authoring records.
 
-The [authoring report](../docs/qli-authoring-feedback.md) and
+The [authoring report](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-authoring-feedback.md) and
 [GitHub Issues](https://github.com/MGYamada/Qleisli/issues) track these gaps, phase-preserving rotation
 boilerplate and the boundary around continuous parameters/host optimization.
 Preserve the real attempts as language-design evidence instead of treating

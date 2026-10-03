@@ -51,8 +51,11 @@ fn main() -> ExitCode {
         return ExitCode::from(2);
     };
     if options.qrate {
-        match qleisli::frontend::project::qrate_source_root(&options.path) {
-            Ok(root) => options.path = root,
+        match qleisli::frontend::project::QrateSource::select(&options.path) {
+            Ok(root) => {
+                options.path = root.path().to_owned();
+                options.selected_root = Some(root);
+            }
             Err(error) => {
                 report(&options.path, error);
                 return ExitCode::FAILURE;
@@ -151,6 +154,10 @@ fn main() -> ExitCode {
             ExitCode::SUCCESS
         }
         Err(source_commands::Failure::Simulation(error)) => {
+            eprintln!("{error}");
+            ExitCode::FAILURE
+        }
+        Err(source_commands::Failure::Artifact(error)) => {
             eprintln!("{error}");
             ExitCode::FAILURE
         }

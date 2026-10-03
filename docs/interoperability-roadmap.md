@@ -1,54 +1,21 @@
-# Interoperability direction and acceptance debt
+# Interoperability direction
 
-[M1.1-A](interop-m1.1.md) ships bounded OpenQASM3 input/output, QIR2 Base text output,
-structured CLI/Python and optional LLVM-backed input. Full adaptive coverage and
-compiler-free bundled wheels remain open; current wheel needs a separate Rust executable.
-Target one tested install per Python/OS/architecture and fresh notebook use without
-credentials/source rewriting. Package/platform evidence is distinct from format coverage.
+Bounded OpenQASM3/QIR2 Base, structured CLI/Python and optional LLVM input are shipped. [Frozen contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md). Adaptive coverage and compiler-free bundled wheels remain open; current Python needs Rust executable. Target one tested install per Python/OS/architecture and fresh notebook use without credentials/rewriting. Platform evidence and format coverage differ.
+
+Terminal export permits moving allocations that already precede observation to the
+initial allocation block; an `init0` after the first measurement or discard is
+unsupported, even for a fresh owner. This clarifies the frozen contract's
+ambiguous “Fresh init” sentence ([#240](https://github.com/MGYamada/Qleisli/issues/240));
+physical qubit IDs are never reused. It preserves the existing terminal profile.
 
 ## Compiler layers and translation obligations
 
-Foreign builders/importers and .qli produce untrusted IR; independent verification
-precedes target-capability lowering and execution/export. Python orchestrates; LLVM/
-MLIR supplies no Qleisli semantics. [Lean migration](lean-kernel-migration.md) retains
-Rust authority until gates pass. Required checker absence/unsupported input rejects.
-Every transform must preserve operator/instrument and rebind evidence or invalidate/
-recheck it; valid output alone does not establish original meaning. Preserve phase,
-full types/ordered axes, ownership, encodings and exact cleanup.
+Foreign builders/importers and QLI produce untrusted IR. Independently check before capability lowering/execution/export. Python/LLVM/MLIR add no semantics; required checker absence/unsupported input rejects. Each pass preserves operator/instrument and rebinds or invalidates evidence; accepted output alone proves no source preservation. Retain phase/types/axes/owners/encodings/cleanup, initialization/results/reset/hidden outcomes. Physical IDs are not logical owners. Terminal disposal is Observe; reuse requires a fresh postmeasurement owner and complete reference instrument.
 
-Do not execute foreign externs/calibrations/LLVM while reading. Validate pinned gate/
-QIS definitions, reject unknown/redefinitions, bound traversal before allocation.
-Physical IDs are not logical owners; no aliases or desired outputs infer ownership,
-types or requests. Scalar Rz/phase differences matter under control; decimal rounding
-is not exact evidence. Domains, approximation and noise require separate contracts.
-Retain initialization, result order, reset and hidden outcomes; terminal disposal is
-Observe. Future reuse must reconstruct fresh postmeasurement state/owner and whole
-reference instrument, not revive tokens or unconditionally replace with zero.
-Dynamic allocation/unbounded loops/arbitrary externs/pulse timing and unsupported
-capabilities reject explicitly. Open outputs/adaptive extensions need new contracts.
+Never execute externs/calibrations/LLVM while reading. Bound traversal before allocation; validate pinned gate/QIS meanings and reject unknown/redefined operations. Scalar Rz/phase distinctions survive control; decimal rounding is no exact evidence. Dynamic allocation, unbounded loops, arbitrary externs, pulses and unsupported capabilities reject. Adaptive/open outputs/domains/approximation/noise need separate contracts.
 
 ## IR reduction and the trusted boundary
 
-Convenience belongs in [untrusted desugaring](terminology.md#desugaring-layer), with
-no new primitive/rule. Visitor/tests are not frontend producers. Current finite
-constructors retain QIRF support; public removal/reduced capacities requires MINOR.
+Convenience desugars without new meanings/acceptance. Public raw forms/capacities remain supported until MINOR migration. Current source emits Gate/Cnot/Toffoli; static operations emit ApplyUnitary; QuantumIf remains raw-only with verified numerical adapter. Protected compute source emits empty targets and Z/T auxiliaries; broader raw forms remain compatibility debt, not a reason to expand source acceptance. Certified/function/M1 producers retain exact body/logical/dependency equations. Init/observation/structure/lift/classical/phi producers retain complete instrument/frame obligations.
 
-| Vocabulary | Current producer and disposition |
-| --- | --- |
-| Gate/Cnot/Toffoli | [Primitive lowering](../src/frontend/compile/lower/primitives.rs) emits them; verifier/extractor/simulator accept. Future shared-unitary desugaring must preserve distinct owners/order/locations/limits. |
-| ApplyUnitary/CircuitStep | [Static lowering](../src/frontend/compile/lower/mod.rs) emits qif/inverse/repeat; M1.1 importer emits selected H/monomial subset. Existing shared controls/exact monomial/contract actions need no foreign-gate rule. |
-| QuantumIf/UnitaryStep | No current source constructor; raw API/tests remain supported by independent verifier/extractor. [Private adapter](../src/ir/compat.rs) shares post-verification numerical execution with retained cost/polarity/phase; compatibility debt remains. |
-| ComputeUseUncompute/ProtectedUse | Source emits empty targets and auxiliary Z/T only. Broader raw target/protected/phase/layout forms remain debt; do not expand for hypothetical importers. Cleanup migration needs checked evidence, not unitarity/name. |
-| CertifiedCompute/Contract | [Certified](../src/frontend/compile/lower/certified.rs)/[function](../src/frontend/compile/lower/function_contract.rs)/[M1](../src/frontend/compile/operations.rs) producers retain exact body/logical/dependency equations; convenience removal requires another checker for all obligations. |
-| Init/observe/structure/lift/classical/phis | Primitive/expression/[branch](../src/frontend/compile/lower/branch.rs) producers; M1.1 selected Init0/Join/Split/MeasureZ/Discard. Preserve resource/instrument/ordered frame obligations. |
-
-A smaller core requires an explicit versioned old-to-new migration with independently
-checked full types, empty owners, phase/effects/branches/cleanup/dependencies and
-limits/diagnostics; reject malformed aliases rather than repair them. Prove or validate
-original correspondence, migrate every consumer, then record removed acceptance rules.
-Moving files/shared numerical code is no trust reduction. [VM plan](verification-migration-v0.2.md)
-keeps raw APIs while changing checker implementation. General LiftBasis target synthesis
-remains open; [#132](https://github.com/MGYamada/Qleisli/issues/132) targets v0.4 NCT search
-behind exact table/clean-workspace/phase/layout checking. Same-wire parity obstruction
-is not general non-realizability. Optional PyQIR/LLVM/wheel tooling needs explicit
-version/platform/redistribution contracts; no implicit user LLVM build.
+Reduction requires versioned old→new correspondence covering types/empty owners/phase/effects/branches/cleanup/dependencies/limits/diagnostics, independent checks and migration of every consumer. Reject malformed aliases; moving files or sharing simulation does not reduce trust. [VM](verification-migration-v0.2.md) changes implementation while retaining raw APIs. General LiftBasis synthesis remains open; [#132](https://github.com/MGYamada/Qleisli/issues/132) targets v0.4 NCT search behind exact table/workspace/phase/layout checking. Same-wire parity obstructions prove no general impossibility. PyQIR/LLVM/wheels require explicit version/platform/redistribution contracts and no implicit user LLVM build.

@@ -1,0 +1,3 @@
+use std::quantum::{init0,cnot};
+use std::observe::measure_z;
+observe fn main()->CBit {let pair=cnot(init0(),init0()); measure_z(pair)}

@@ -1,0 +1,4 @@
+$ cargo doc --locked --offline --no-deps
+ Documenting qleisli v0.2.8 (/Users/masa/git/Qleisli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.14s
+   Generated /Users/masa/git/Qleisli/target/doc/qleisli/index.html

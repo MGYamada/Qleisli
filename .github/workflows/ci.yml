@@ -48,6 +48,7 @@ jobs:
           python3 scripts/test_ci_profiles.py
           python3 scripts/test_measure_ci.py
           python3 scripts/test_run_native_ci.py
+          python3 scripts/test_package_lean_kernel.py
       - name: Select validation from the exact commit and both sides of its diff
         id: select
         run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
@@ -165,11 +166,25 @@ jobs:
       - name: Exercise descriptor-relative source loading on macOS
         run: cargo +1.85.0 test --locked --lib source_file::tests
       - name: Check source budgets, project loading and edition manifests
-        run: cargo +1.85.0 test --locked --test source_capacities --test project --test editions
+        run: cargo +1.85.0 test --locked --test source_capacities --test project --test editions --test review_v028
       - name: Build with Rust's existing Intel macOS minimum
         env:
           MACOSX_DEPLOYMENT_TARGET: '10.12'
         run: cargo +1.85.0 build --locked --target x86_64-apple-darwin --bin qleisli
+
+      - name: Install the pinned native kernel toolchain
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'false'
+          use-mathlib-cache: 'false'
+      - name: Build and audit a clean relocated macOS native bundle
+        run: |
+          python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
+          cargo +1.85.0 build --locked --bin qleisli
+          python3 scripts/test_dual_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/dual-macos"
 
   check-interop:
     needs: changes
@@ -204,6 +219,7 @@ jobs:
       - name: Installed Python API and independently authored QIR input
         run: |
           /tmp/qleisli-interop-validation/bin/python scripts/test_connections.py
+          python3 scripts/test_python_host.py
           llvm-as-18 tests/fixtures/interop/independent.ll -o /tmp/qleisli-independent.bc
           opt-18 -passes=verify -disable-output /tmp/qleisli-independent.bc
 
@@ -284,6 +300,10 @@ jobs:
         run: python3 scripts/test_check_lean_kernel.py --compiled
       - name: Run all retained native comparisons with bounded parallelism
         run: python3 scripts/run_native_ci.py --workers "${{ inputs.native_workers || '4' }}" --output "$RUNNER_TEMP/native-comparisons"
+      - name: Build and audit a clean relocated Linux native bundle
+        run: |
+          python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
+          python3 scripts/test_dual_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/dual-bundle"
       - name: Retain complete coverage, per-command timings and independent logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

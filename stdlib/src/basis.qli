@@ -2,7 +2,7 @@
 //!
 //! These functions take basis labels, not quantum owners or measurement results.
 //! Importing them grants no quantum primitive or verification privilege.
-//! Contracts and finite regression status: docs/stdlib-contracts.md, B001-B002.
+//! Contracts and finite regression status: https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md, B001-B002.
 
 /// Return x xor y for all four pairs of Bit inputs.
 /// This two-argument map is total but not injective on the product domain.

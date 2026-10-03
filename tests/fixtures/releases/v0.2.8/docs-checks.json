@@ -1,0 +1,109 @@
+[
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_check_*.py"
+    ],
+    "started_utc": "2026-10-02T17:44:03.277956+00:00",
+    "seconds": 22.834,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-01.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "started_utc": "2026-10-02T17:44:26.112488+00:00",
+    "seconds": 0.61,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-02.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_editions.py"
+    ],
+    "started_utc": "2026-10-02T17:44:26.722393+00:00",
+    "seconds": 15.779,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-03.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "started_utc": "2026-10-02T17:44:42.501636+00:00",
+    "seconds": 0.216,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-04.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_stdlib_contract_docs.py"
+    ],
+    "started_utc": "2026-10-02T17:44:42.717592+00:00",
+    "seconds": 0.039,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-05.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "started_utc": "2026-10-02T17:44:42.757251+00:00",
+    "seconds": 0.347,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-06.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_imaginary_v1_examples.py"
+    ],
+    "started_utc": "2026-10-02T17:44:43.104519+00:00",
+    "seconds": 0.033,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-07.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_semantic_contract_examples.py"
+    ],
+    "started_utc": "2026-10-02T17:44:43.138156+00:00",
+    "seconds": 0.081,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-08.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_input_corpus.py"
+    ],
+    "started_utc": "2026-10-02T17:44:43.219544+00:00",
+    "seconds": 0.224,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-09.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_schema_registry.py",
+      "--source-only"
+    ],
+    "started_utc": "2026-10-02T17:44:43.444286+00:00",
+    "seconds": 0.06,
+    "exit_code": 0,
+    "log": "tests/fixtures/releases/v0.2.8/docs-10.log"
+  }
+]

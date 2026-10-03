@@ -1,0 +1,14 @@
+use std::quantum::init0;
+use std::quantum::join;
+use std::quantum::z;
+use std::routines::hadamard2;
+use std::routines::measure_z2;
+
+basis fn balanced((a,b): (Bit,Bit)) -> Bit { a xor b }
+unitary fn oracle(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q, balanced) { |flag| z(flag) }
+}
+observe fn main() -> (CBit,CBit) {
+    let q = hadamard2(join(init0(),init0()));
+    measure_z2(hadamard2(oracle(q)))
+}

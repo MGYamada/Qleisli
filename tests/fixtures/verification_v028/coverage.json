@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.vm28-coverage",
+  "version": 1,
+  "selected": [
+    "CLI check/run/sample/emit-ir/verify-ir --lean-kernel=PATH (text and JSON)",
+    "interchange::dual::Kernel::check: original QIRF1/2 and optional qleisli.request v1"
+  ],
+  "unchanged_paths_and_blockers": [
+    {"path": "qleisli::verify and existing direct Rust contract APIs", "status": "Rust authority; caller may explicitly export/import through dual API", "gate": "VM29 public-path coverage and S05"},
+    {"path": "CLI interop and Python Program/Client", "status": "Rust paths; --lean-kernel is not accepted here", "gate": "adapter integration and preservation review"},
+    {"path": "sized/hierarchical APIs", "status": "existing explicit native component checks and Rust execution handles", "gate": "VM27 analytic reader-to-Operator closure; complete hierarchy/source/runtime binding"},
+    {"path": "external schemas", "status": "disabled", "gate": "R14/H1-H5 and schema binding"},
+    {"path": "native distribution", "status": "fresh build/audit/replay and relocation implemented; Linux/macOS CI configured", "gate": "exact-source hosted results before release; other platforms unvalidated"}
+  ],
+  "authority": "Rust seals executable handles; opt-in dual rejects on either failure. No fallback or S05 transfer."
+}

@@ -65,6 +65,7 @@
     {"id":"sized-qpe-clients","name":"Shared QPE order and amplitude clients with operation forwarding","commands":[["python3","scripts/test_sized_qpe_clients.py"]]},
     {"id":"hierarchical-qft","name":"QFT hierarchy widths one through four and retained width-eight capacity case","commands":[["python3","scripts/test_hierarchical_qft.py"]]},
     {"id":"hierarchical-qft-shared-gradient","name":"Shared-gradient QFT hierarchies at every supported width","commands":[["python3","scripts/test_hierarchical_qft.py","--construction","shared-gradient"]]},
+    {"id":"dual-verification","name":"VM-28 ordinary CLI, independent requests and immutable dual execution","commands":[["cargo","+1.98.1","build","--locked","--offline","--bin","qleisli"],["python3","scripts/test_dual_verification.py","--record","{record}"],["cargo","+1.98.1","test","--test","dual","--","--ignored"]],"env":{"QLEISLI_DUAL_KERNEL":"lean-kernel/.lake/build/bin/qleisli-kernel"}},
     {"id":"lean-kernel-self-test","name":"Differential and process-boundary checks","commands":[["cargo","+1.98.1","run","--example","lean_kernel","--","lean-kernel/.lake/build/bin/qleisli-kernel","--self-test"]]}
   ]
 }

@@ -1,0 +1,56 @@
+{
+  "changes": [
+    {
+      "path": "lean-kernel/QleisliKernel.lean",
+      "before": "2ce0e536b8e24104968b8b2787ba3f02cb1c706300ffbf513d8aa51ed6cd7881",
+      "after": "b9bab994083c571a695792ff02a6f60c493ea1573db988b74a70777eef82ac41"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "before": "4e63ad72bcaefcb7d1af31bb02857deb652767c7004fc493dcf2357109000ac2",
+      "after": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean",
+      "before": null,
+      "after": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
+      "before": null,
+      "after": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
+      "before": null,
+      "after": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean",
+      "before": null,
+      "after": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
+      "before": null,
+      "after": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2"
+    },
+    {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "before": "2ac320e1c4ed01365efc713d4427f449ed775f9b665ac87acc184aae9d3fc445",
+      "after": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0"
+    },
+    {
+      "path": "lean/Qleisli/QirfValidity.lean",
+      "before": "1208ff2dba3232ca64098d8883ffaf5c1a9ab51171f4b378e800c269fb9f65b3",
+      "after": "8e6a6300fabe1791223df9227e5b962fdb466691e663b2eb3de26fcd9877011b"
+    },
+    {
+      "path": "lean/Qleisli/NativeValidity.lean",
+      "before": "1bd3ccf66a086925089771e9c0b49ce82c65d744b8b1701b88a068717b3b2959",
+      "after": "845e50fc3628b80b2ec8e783aa380e274dcf67bd2a307fbe625324809dc21c67"
+    }
+  ],
+  "scope": "Independent ordinary ResourceSafe, actual raw/QIRF/native composition and universally equivalent instruction decomposition; no acceptance or capacity change",
+  "frozen_comparison": "unchanged"
+}

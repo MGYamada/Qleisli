@@ -1,0 +1,2 @@
+$ python3 scripts/check_schema_registry.py --source-only
+{"entries": 3, "externally_enabled": 0, "format": "qleisli.schema-registry-validation", "manifest_sha256": "4544cb79717e7adf83b114599ffd14334a549b0a1818267f9669d68d1c07e38b", "mode": "source-identity-only", "source_revision": "29f9247dcfdd5e504204c263336784c724a0da2d89534c352db6be0d3940d6e4", "status": "passed", "version": 1}

@@ -1,5 +1,6 @@
 import Cli.Finite
 import Cli.Hierarchical
+import Cli.Validity
 
 /-! Unproved transport adapter for the existing experimental profiles.
 Inputs remain untrusted until checked by the independently specified pure kernel.
@@ -7,6 +8,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 
 def main (args : List String) : IO UInt32 :=
   match args with
+  | ["--qirf-dual"] => QleisliKernel.Cli.runValidity
   | ["--qpe-instrument-pending"] => QleisliKernel.Cli.runQpeInstrument
   | ["--instrument-pending"] => QleisliKernel.Cli.runInstrument
   | ["--readout-check"] => QleisliKernel.Cli.runReadout

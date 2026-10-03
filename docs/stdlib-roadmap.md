@@ -2,62 +2,26 @@
 
 ## Adopted library goal
 
-Build a BLAS/LAPACK-like foundation integrating reusable quantum components,
-a quantum-information textbook and formal specifications. Readers should learn
-concepts/derivations from readable source, examples, counterexamples and explicit
-proof status. Until v0.5 add algorithms to corpus; from v0.5 develop a mathlib-style
-community library under [STDLIB.md](../STDLIB.md). Comprehensive generalized APIs,
-qlippy and general borrowing remain future work. Specification-intent review is
-independent of implementation conformance.
+A BLAS/LAPACK-like foundation combining reusable quantum source, textbook concepts/derivations and formal contracts. Until v0.5 algorithms go to corpus; then mathlib-style community growth under [STDLIB](../STDLIB.md). General APIs/organization/qlippy/borrowing remain future. Intent review is independent of conformance.
 
 ## Library areas and layers
 
-Primitives use sealed contracts; structural composition prefers ordinary definitions
-and specified language transformations. Data structures need width/signedness/order/
-subspace contracts; arithmetic needs full-space reversible extensions and cleanup.
-Transforms preserve phase/encoding/error; algorithm skeletons specify access, success,
-iterations/precision/cost; hybrid patterns separate fresh quantum trials from host
-statistics/optimizers. A block encoding additionally fixes projectors, normalization
-and full unitary completion; its successful block is not an unconditional pure map.
-
-Layers proceed from sealed operations and finite definitions through reusable
-structures, algorithms, quantum-information explanations and evidence. These are
-organization directions, not adoption of new names/modules or arbitrary matrices.
-[Current ledger](stdlib-contracts.md) records the shipped finite definitions.
+Sealed primitives → ordinary composition/data structures → algorithms → teaching/evidence. Specify width/signedness/order/subspace; reversible full-space arithmetic/cleanup; phase/encoding/error-preserving transforms; access/success/iteration/precision/cost skeletons; fresh trials separate from host statistics/optimization. Block encoding fixes projectors/normalization/full unitary; success block is no unconditional pure map. Names/modules/arbitrary matrices are not adopted. [Current ledger](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md).
 
 ## First algorithm skeleton contracts
 
-Candidate metanotation below creates no current API. Operation descriptions capture
-no owners; application consumes/transfers owned resources. Arbitrary free-vector bind
-is not adopted.
+Future metanotation, no current API. Descriptions capture no owners; application transfers them. No unrestricted free-vector bind.
 
-| Candidate | Contract and checking direction |
+| Candidate | Obligation |
 | --- | --- |
-| amplify(P,good,k) | P phase-fixed whole-space unitary with inverse access; a=sin²(theta), success sin²((2k+1)theta). Expand finite oracle/reflection/repetition and reverify; k=0 prepares only, empty good set succeeds with probability zero. Unknown owned state/Iso preparation supplies no inverse reflection. |
-| phase_estimate(U,m;q) | Positive precision, separately checked control/power access, full outcome/residual/reference instrument, retained target and low-bit readout. Reject Observe providers, aliasing and hidden disposal; [sized experiments](sized-corpus-source.md) do not implement the general API. |
-| simulate(H,t,epsilon;q) | Explicit Hamiltonian/access model, actual whole-space realization and certified composition/error budgets. Expand contracted term evolutions; check approximation to H separately from IR unitarity. Hermitian matrix/name alone grants no efficient access. |
-| estimate(prep,observable,plan) | Fresh preparation per destructive measurement, finite host trial plan and stated statistical error. No copying an unknown state or reporting one sample as expectation. Host retries/optimization are separate. |
+| amplify(P,good,k) | Phase-fixed full-space unitary P with inverse; a=sin²θ, success sin²((2k+1)θ). Expand/reverify; k=0 only prepares, empty marked set has success0. Unknown owned state/Iso supplies no inverse reflection. |
+| phase_estimate(U,m;q) | Positive precision, checked control/power, complete outcome/residual/reference instrument, retained target/low-bit readout. Reject Observe/aliases/hidden disposal. |
+| simulate(H,t,ε;q) | Hamiltonian/access model, actual whole-space realization and certified compositional error; Hermitian matrix/name alone grants no efficient access. |
+| estimate(prep,observable,plan) | Fresh preparation per destructive trial, finite host plan/statistical error. No unknown-state copying or one sample as expectation; retries/optimizer separate. |
 
-```text
-Π_good = Σ_{x:good(x)=1} |x⟩⟨x|
-O_good = I - 2Π_good
-R_ψ = P (2|0_A⟩⟨0_A| - I) P†
-G = R_ψ O_good; output = G^k P|0_A⟩
-K_y = (1/M) Σ_(r=0)^(M-1) exp(-2π i r y/M) U^r
-E_y(ρ_AR) = (K_y ⊗ I_R) ρ_AR (K_y† ⊗ I_R)
-```
-
-Oracle/reflection signs and global phase remain observable under control. Cleanup
-must be exact; approximation, sampling and noise are separate obligations.
+Πgood=Σgood(x)|x><x|; O=I−2Πgood; R=P(2|0><0|−I)P†; G=RO; output G^kP|0>. QPE Ky=M⁻¹Σr exp(−2πiry/M)U^r, outcome (Ky⊗I)ρ(Ky†⊗I). Signs/scalars matter under control; exact cleanup, approximation, sampling and noise are distinct.
 
 ## Standard adoption and feedback
 
-Extract candidates from multiple corpus clients. Provide a short fixed contract,
-readable ordinary implementation, concept/derivation reading path, independent
-semantic/fault tests, actual-IR binding and explicit proof assumptions. Evaluate at
-least two different uses and one problem not used for extraction; then review intent,
-stability, phase/ownership/encoding/error/cost and compatibility before adoption.
-Track unmet gates in Issues. Human/AI frequency and numerical agreement alone are
-neither adoption criteria nor proofs; informed authoring is not a model benchmark.
-
+Extract from multiple corpus clients with fixed contracts/readable implementation/derivation path, independent semantics/faults, actual-IR binding and proof assumptions. Evaluate two uses plus a held-out problem, then intent/stability/phase/ownership/encoding/error/cost/compatibility review. Track gaps in Issues. Frequency and numerics alone grant no adoption/proof; informed authoring is no model benchmark.
 <a id="5-標準への採用とaiからの還流"></a>

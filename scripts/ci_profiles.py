@@ -89,6 +89,7 @@ def proof_lane(paths: list[str], policy: dict | None = None,
         if not valid_path(path) or path.startswith(".github/") or path in {
             "TRUST_BOUNDARY.md", "CONSTITUTION.md",
             "scripts/ci_profiles.py", "scripts/run_native_ci.py",
+            "scripts/package_lean_kernel.py",
             "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",
             "lean/schema-registry.json",
         } or path.endswith(("lean-toolchain", "lakefile.toml", "lake-manifest.json")):

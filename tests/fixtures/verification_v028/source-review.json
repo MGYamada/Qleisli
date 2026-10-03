@@ -1,0 +1,70 @@
+{
+  "changes": [
+    {
+      "path": "lean-kernel/Main.lean",
+      "before": "325ad33b411cdca45be9ced45c842cfb52b6c2d006ee4da9361dc46fe7fd1d6d",
+      "after": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel.lean",
+      "before": "220123026b3c5eb589d52497be00e21c46fe06d7ecd2f57d2bb19e3fddb9ff29",
+      "after": "2ce0e536b8e24104968b8b2787ba3f02cb1c706300ffbf513d8aa51ed6cd7881"
+    },
+    {
+      "path": "src/bin/qleisli.rs",
+      "before": "3f64d2ca6faf5f60ab42ca94434c12c883229636b97eb6dff7a5919b2ce46ceb",
+      "after": "6eb817d56a38e32f007b6de59d4363a22f28b2d7a6516642f71300c4e4b01cfb"
+    },
+    {
+      "path": "src/bin/qleisli/artifacts.rs",
+      "before": "01092b80e4567e61c7980eca843c4044ef83cd44aa8a09a8cf5d4a279bfc9a22",
+      "after": "b8a290995912c2bc2aa629b28e380c6ff11e8dfe823c600149a774e85c9491b2"
+    },
+    {
+      "path": "src/bin/qleisli/json.rs",
+      "before": "dd04277da900584b2caef2be2f2b136726827617931584dd22a2768364177eb3",
+      "after": "dba886caaf9b37d545a4a4cddab60f80915cdfbd625bff18c73e88adb24a86a9"
+    },
+    {
+      "path": "src/bin/qleisli/options.rs",
+      "before": "2fd968e971eceb9a29c5bb993f5e98b473e623c898aef3b8c5441270fb7bed69",
+      "after": "4990611c4bbf5bc0c511c3631101850646a02d891ef4461096acc1afce6fdccb"
+    },
+    {
+      "path": "src/bin/qleisli/source_commands.rs",
+      "before": "5f111199e3c8b9c2cc8075aeecae63679a196fb01fc39cedc9ff157ec7be91e6",
+      "after": "92bb50dc7107f45e8e6039c15a2e5efd348e2cc9603363930eb728a0d057a2f1"
+    },
+    {
+      "path": "src/interchange/mod.rs",
+      "before": "eed1c2cb85f88c456bc690f4d3bab28572fac5eb6ac72eb947a5978e1648b715",
+      "after": "d4567e4e6fb406fae2c2117dd543cdb2eb50b4e4512dc5679b4c2a74a77fa035"
+    },
+    {
+      "path": "src/interchange/dual.rs",
+      "before": null,
+      "after": "0ebb58044adcbb7e81cc9719219086986c6f1188a76a8956f12ba4f69150d87d"
+    },
+    {
+      "path": "src/interchange/dual/runtime.rs",
+      "before": null,
+      "after": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Qirf/Validity.lean",
+      "before": null,
+      "after": "6496e94ff4b3d262da8e19b6485cc16bf93fe8ddabe954fbe4713e5afd002bc8"
+    },
+    {
+      "path": "lean-kernel/Protocol/Validity.lean",
+      "before": null,
+      "after": "88cef2c22f92c6febf04a3122600b84e8a581cd978923fc9085d5ae39c83a3c9"
+    },
+    {
+      "path": "lean-kernel/Cli/Validity.lean",
+      "before": null,
+      "after": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9"
+    }
+  ],
+  "review": "Additive opt-in dual transport and ordinary CLI routing. Existing raw/finite public constructors, comparison artifact bytes and capacities unchanged; complete selected-source inventory reviewed."
+}

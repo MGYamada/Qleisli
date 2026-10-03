@@ -1,6 +1,6 @@
 # Standard-library contract template
 
-Eight required sections under [STDLIB conventions](../STDLIB.md); link English source comments to the full contract. Replace prompts before review. Documentation only, not evidence/new API; see [pilots](../STDLIB.md#template-and-reference-implementations).
+Eight required sections; [conventions/pilots](../STDLIB.md). Replace prompts; link source comments. Structure is not evidence/API.
 
 ## Meaning
 [Complete operator/instrument, phase/sign/version, all inputs/reference extension.]
@@ -19,7 +19,7 @@ Eight required sections under [STDLIB conventions](../STDLIB.md); link English s
 | Aspect | Status | Scope and evidence |
 | --- | --- | --- |
 | Source checking | pending | [Actual source/IR/width/result.] |
-| Semantic tests | pending | [Independent formula/domain/tolerance; phase/order/reference/cleanup and type-correct faults.] |
+| Semantic tests | pending | [Independent formula/domain/tolerance and phase/reference/cleanup/faults.] |
 | Actual IR conformance | pending | [Actual-definition theorem/premises or missing obligation.] |
 | Source preservation | pending | [Translation theorem/evidence or gap.] |
 | Specification review | pending | [Intent/family convention review or gap.] |
@@ -27,4 +27,4 @@ Eight required sections under [STDLIB conventions](../STDLIB.md); link English s
 Rows independent. checked/tested/proved/reviewed require result links; pending/not-applicable need reasons. Linter checks form, not claims.
 
 ## Adoption and teaching
-[Motivation/derivation/code, multiple+held-out uses, adoption/API migration, licenses/notices/open work.]
+[Derivation, multiple/held-out clients, adoption/migration/notices/open work.]

@@ -18,7 +18,7 @@ SC-EQ actual all-entry equation+isometries, never selected columns/projected equ
 
 ## Certified computed source and raw region
 
-with_computed(q,f,u){|d,a|body}: [language isolation/evaluation rules](language-spec.md#9-restricted-auxiliary-computation), f total packed A->Bit; Unit/one/left-associated multiargument domain. u unary declared same-tree unitary/no classical ports or eligible sealed Bit. Body Unitary returns exactly(data,aux); form fresh Q<A>/joins input effect. Caller/pending frame incl Unit retained, split/rejoin axes checked; only extractable closed classical work. Five data bits+aux/1024 body and logical steps.
+with_computed(q,f,u){|d,a|body}: [language isolation/evaluation rules](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-spec.md#9-restricted-auxiliary-computation), f total packed A->Bit; Unit/one/left-associated multiargument domain. u unary declared same-tree unitary/no classical ports or eligible sealed Bit. Body Unitary returns exactly(data,aux); form fresh Q<A>/joins input effect. Caller/pending frame incl Unit retained, split/rejoin axes checked; only extractable closed classical work. Five data bits+aux/1024 body and logical steps.
 
 E0|x>=|x,0>; Cf|x,a>=|x,a xor f(x)>; Ef=CfE0. WEf=Efu implies Cf†WCfE0=E0u: zero/separation for every reference even noninjective f. Raw CertifiedCompute retains predicate/use/logical/body/interface and physical witness; substitution only after checking. No Release0; legacy empty/Z/T rule unchanged. [Examples](../examples/semantic_contracts/README.md).
 
@@ -32,7 +32,7 @@ FC limits: SC width/tree/exact bounds; raw1024 incl both arms,retained/extracted
 
 ## FC evidence, caching, transforms and execution
 
-FC-OPAQUE immutable Arc FunctionEvidence retains raw/operator/circuit/signature/names/sources; clone same issued identity, fresh equivalent checks different identity. Binding includes nested identities, construction acyclic; [QIRF](machine-interface-spec.md) reconstructs.
+FC-OPAQUE immutable Arc FunctionEvidence retains raw/operator/circuit/signature/names/sources; clone same issued identity, fresh equivalent checks different identity. Binding includes nested identities, construction acyclic; [QIRF](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/machine-interface-spec.md) reconstructs.
 
 FC-CACHE frozen compiler instance/full declarations/signature/dependencies only, no cross-compilation reuse. Full project incl unrelated/comments/std snapshots shared/copy charged once; per-receipt metadata/raw/pair work remains. Public owned identity compatible; disk changes uncertified.
 

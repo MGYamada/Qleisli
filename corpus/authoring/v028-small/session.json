@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "task": "Nine small finite translations for v0.2.8",
+  "kind": "informed_first_attempt",
+  "project_version": "0.2.8",
+  "baseline_commit": "84c9ec4c6a4cd731781eb0c44ea375dd3e6dfd11",
+  "author": "Codex; exact deployed model identifier and sampling settings unavailable",
+  "context": "Read frozen upstream symbols, existing QLI examples and independent-oracle harness. All complete first sources saved before checking; informed translations, not controlled model benchmarks. Reuse three approved pins and licenses; no upstream framework execution.",
+  "created_utc": "2026-10-02T17:11:01.180977+00:00",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete untouched first sources before compiler checks",
+      "sha256": {
+        "quantum_katas/two_bitstrings3/kernel.qli": "962a3f10728a9796d06d38185ea2be37a4443662ef2f59c32335c6b0004b9608",
+        "quantum_katas/two_bitstrings3/main.qli": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8",
+        "quantum_katas/w2_retained3/kernel.qli": "60775a152f5b1b48274237c49d149975ab42ad0df7b6dc2b7509784a08f04dc3",
+        "quantum_katas/w2_retained3/main.qli": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e",
+        "quantum_katas/even_parity3/kernel.qli": "5002adc4267dba940fefdf769270c564955152991d8dcd6356b735f1659115c8",
+        "quantum_katas/even_parity3/main.qli": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050",
+        "qualtran/controlled_increment2/kernel.qli": "274b833da245acc498008e0e083d113bee31dd1a89c915d2ea0bf09a2ae14131",
+        "qualtran/controlled_increment2/main.qli": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3",
+        "qualtran/equals1/kernel.qli": "bd377eea2a1306b1de5b3915c0628c2e29e8dd342e54fdee86ee0c88f6ac5a12",
+        "qualtran/equals1/main.qli": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a",
+        "qualtran/reflection_zero2/kernel.qli": "9100f5e23798f13f1e97014d8db44472a457d4ce4e20b61fb7dcb82791514c4a",
+        "qualtran/reflection_zero2/main.qli": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb",
+        "pennylane_demos/rotation_negative_x_positive_y/kernel.qli": "f413eff72ef013c6811afa73b93a3e83126290149b9e4fe133d5f79d9852d950",
+        "pennylane_demos/rotation_negative_x_positive_y/main.qli": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af",
+        "pennylane_demos/qaoa_negative_mixer2/kernel.qli": "7f25dc36108873d5e297f9979c4ba7e51c09769bca6f82923e07a0ff96bee9c1",
+        "pennylane_demos/qaoa_negative_mixer2/main.qli": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e",
+        "pennylane_demos/qaoa_path_layer3/kernel.qli": "6007ab7d0b82113fd38dc93ed2b4ea5e0f040073b89117d9bbf862e8f93dcc13",
+        "pennylane_demos/qaoa_path_layer3/main.qli": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15"
+      },
+      "observations": [
+        "check-initial.json",
+        "semantic-validation.json"
+      ]
+    }
+  ]
+}

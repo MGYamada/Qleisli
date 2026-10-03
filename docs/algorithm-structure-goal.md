@@ -12,7 +12,7 @@ S1 fresh Iso vs invertible basis change; S2 total compute/uncompute/exact all-re
 
 ## Design contracts for types and composition
 
-Match interfaces/disjoint owners/effect join; [static](static-operations.md)/[M1](next-minor-spec.md) require actual access/body evidence incl zero. No init inverse release/opaque control. Retain all instrument branches/TP,postselection failure explicit,host fresh trials. Borrowing/block schemas/free-vector bind not current API.
+Match interfaces/disjoint owners/effect join; [static](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/static-operations.md)/[M1](next-minor-spec.md) require actual access/body evidence incl zero. No init inverse release/opaque control. Retain all instrument branches/TP,postselection failure explicit,host fresh trials. Borrowing/block schemas/free-vector bind not current API.
 
 ## Implementation order and acceptance criteria
 

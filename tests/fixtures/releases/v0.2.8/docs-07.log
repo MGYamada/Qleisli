@@ -1,0 +1,60 @@
+$ python3 scripts/check_imaginary_v1_examples.py
+PASS conjugation controls only W and preserves exact-phase convention
+PASS conjugation requires the actual inverse
+PASS conjugation cannot erase a controlled global sign
+PASS nonunitary conjugator does not preserve the inactive sector
+PASS computed oracle controls only its central phase gate
+PASS controlled computed oracle has the specified phase and zero auxiliary on all encoded columns
+PASS QFT displayed gate order matches positive Fourier matrix at width=1
+PASS QFT displayed gate order matches positive Fourier matrix at width=2
+PASS QFT displayed gate order matches positive Fourier matrix at width=3
+PASS QFT displayed gate order matches positive Fourier matrix at width=4
+PASS QPE M=4 normalized
+PASS QPE phase 1/4 decodes to integer 1, not 3
+PASS QPE M=8 normalized
+PASS QPE X instrument is P_plus at y=0 and P_minus at y=2
+PASS QPE instrument completeness
+PASS QPE Bell reference branch y=0 probability 1/2
+PASS QPE Bell branch y=0 retains full target/reference coherence
+PASS QPE Bell reference branch y=2 probability 1/2
+PASS QPE Bell branch y=2 retains full target/reference coherence
+PASS Grover four items one marked succeeds after one iterate
+PASS controlled Grover sign changes control-X expectation from +1/2 to -1/2
+PASS amplification k=0 agrees with sin²((2k+1)theta)
+PASS amplification k=1 agrees with sin²((2k+1)theta)
+PASS amplification k=2 agrees with sin²((2k+1)theta)
+PASS amplification k=3 agrees with sin²((2k+1)theta)
+PASS AE resolves the two phase signs to the same probability
+PASS AE opposite iterate sign changes probability to 1-p
+PASS modular multiplication including padded label is a permutation
+PASS noncoprime multiplication cannot supply the same unitary contract
+PASS Shor phase 1/4 verifies period and factors
+PASS Shor phase 3/4 verifies period and factors
+PASS Shor denominator 2 is not a period for a=2,N=15
+PASS a verified multiple of the order still needs factor checks
+PASS walk transition encoding is isometric
+PASS walk product of reflections is unitary
+PASS symmetric walk stationary lifted vector has eigenvalue +1
+PASS walk reflection product order cannot be silently swapped
+PASS QSVT d=3 block at x=-1 is T3(x)
+PASS QSVT full output at x=-1 remains unitary
+PASS QSVT d=2 block at x=-1 is T2(x)
+PASS QSVT d=3 block at x=-0.6 is T3(x)
+PASS QSVT full output at x=-0.6 remains unitary
+PASS QSVT d=2 block at x=-0.6 is T2(x)
+PASS QSVT d=3 block at x=0 is T3(x)
+PASS QSVT full output at x=0 remains unitary
+PASS QSVT d=2 block at x=0 is T2(x)
+PASS QSVT d=3 block at x=0.3 is T3(x)
+PASS QSVT full output at x=0.3 remains unitary
+PASS QSVT d=2 block at x=0.3 is T2(x)
+PASS QSVT d=3 block at x=1 is T3(x)
+PASS QSVT full output at x=1 remains unitary
+PASS QSVT d=2 block at x=1 is T2(x)
+PASS non-Hermitian encoding dilation is unitary
+PASS even QSVT uses right singular space, not left
+PASS odd QSVT is singular transform, not matrix polynomial
+PASS real polynomial selector implements B/2
+PASS QSVT all selector/ancilla branches form a complete instrument
+PASS QSVT success block leaves nonzero failure weight
+All 58 finite mathematical checks passed; imaginary source was not compiled.

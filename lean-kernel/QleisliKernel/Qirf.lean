@@ -1,3 +1,4 @@
+import QleisliKernel.Semantics.Qirf
 import QleisliKernel.Raw.BranchFunction
 import QleisliKernel.Hierarchical.Graph
 
@@ -6,26 +7,6 @@ bodies and source identity data are retained; no host receipts are inputs.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Qirf
 open Semantics.Exact Semantics.Finite Semantics.Observation Semantics.ObservingFunction Finite
-
-inductive Target where
-  | circuit (program : Nat)
-  | permutation (table : List Nat)
-  | phase8 (table : List Nat)
-
-structure Entry where
-  signature : Basis
-  implementation : Nat
-  target : Target
-  implementationName : String
-  specificationName : String
-  sources : List Nat
-
-structure Artifact where
-  programs : Array Program
-  entries : Array Entry
-  sources : Array (String × String)
-  root : Nat
-  rootInterface : Option (Basis × Basis)
 
 def nodes (artifact : Artifact) : Hierarchical.Graph.Nodes :=
   artifact.programs.map (fun program =>
@@ -130,6 +111,7 @@ def checkGraph (artifact : Artifact) (order : Array Nat) : WorkM (List Dependenc
   let used := artifact.entries.foldl (fun used entry =>
     entry.sources.foldl (fun used index => used.set! index true) used)
     (Array.replicate artifact.sources.size false)
+  guard (used.all id)
   let identityBytes := (artifact.entries.toList.map (fun entry =>
     entry.implementationName.utf8ByteSize + entry.specificationName.utf8ByteSize)).sum +
     ((List.range artifact.sources.size).filter (fun index => used[index]?.getD false) |>.map (fun index =>
@@ -223,6 +205,7 @@ theorem checkGraph_fresh (artifact : Artifact) (order : Array Nat) (dependencies
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨slots,middle,hf,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,hg,h⟩ := bind_success _ _ _ _ _ h
   exact ⟨slots,fold_fresh _ _ _ _ _ _ hf,(guard_success _ _ _ _ hg).1,
@@ -233,6 +216,7 @@ theorem checkGraph_schedule (artifact : Artifact) (order : Array Nat) (dependenc
     ∃ schedule, Hierarchical.Graph.check (nodes artifact) [artifact.root] order = .ok schedule ∧
       schedule.stats.depth ≤ 32 := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h

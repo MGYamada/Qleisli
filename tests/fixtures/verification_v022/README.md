@@ -37,7 +37,7 @@ authority. The Python version-only change and Rust documentation/configuration
 source hashes are refreshed deliberately. Existing public type/IR declarations,
 source capacities, frozen comparison bytes, historical reports and external-disabled
 schemas are retained. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
-and the [edition contract](../../../docs/language-editions.md).
+and the [edition contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md).
 The [registry review](registry-edition-v023-validation.json) rebuilds/audits both
 Lean packages, replays the runtime kernel and exports actual theorem types.
 It refreshes only the two package-version source pins; theorem types, domains,
@@ -188,3 +188,14 @@ pins for native-only acceptance and named-QPE comparisons. It aligns existing
 QIRF wire integer bounds; no public Rust shape or capacity changes. Original
 comparison artifact/request bytes and previous validation snapshots remain
 unchanged. Complete analytic reader-to-operator closure remains open.
+
+The 0.2.8 selection refreshes four current-source pins: Python's version and
+Rust crate/parser/interop documentation links. Public surfaces, checking bodies,
+capacities, original corpus prefixes and comparison bytes remain unchanged.
+[Validation](../releases/v0.2.8/validation.json) records the local checks.
+
+The [VM28 continuation](../verification_v028/README.md) adds an explicit ordinary
+CLI/QIRF dual boundary and five checking/transport source modules. Its source
+review refreshes the changed CLI/module roots without modifying the frozen
+VM22 artifacts or original packaging-options record. Optional fresh audited
+bundles are selected only for the new opt-in path; Rust authority remains.

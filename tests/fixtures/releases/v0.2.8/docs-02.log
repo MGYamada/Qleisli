@@ -1,0 +1,2 @@
+$ python3 scripts/check_docs.py
+Checked 1636 local links, 54 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 183 Lean root modules.

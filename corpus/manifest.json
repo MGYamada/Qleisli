@@ -1378,6 +1378,155 @@
         0,
         0
       ]
+    },
+    {
+      "id": "quantum_katas/two_bitstrings3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "TwoBitstringSuperposition_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "For bits1=[true,false,true], bits2=[false,true,true], apply X(2) X(1) CNOT(0,1) H(0). Zero becomes (|101>+|110>)/sqrt(2), in low-bit integer labels 5 and 6.",
+      "limitations": "Fixed two distinct three-bit strings; preserve the original full unitary extension, not an arbitrary state-preparation API.",
+      "project": "quantum_katas/two_bitstrings3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/w2_retained3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "WState_PowerOfTwo_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "N=2 recursion: X(a), H(r), controlled-SWAP(r;a,b), CNOT(b,r). On zero input, output is (|100>+|010>)/sqrt(2) in returned (a,b,r) order, with r=0; the full three-wire unitary is checked.",
+      "limitations": "The upstream temporary ancilla is an explicit third input/output owner. It is zero only for the promised preparation input; no general clean-release claim or ancilla disposal is made.",
+      "project": "quantum_katas/w2_retained3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "quantum_katas/even_parity3",
+      "source": "quantum_katas",
+      "upstream_path": "Superposition/ReferenceImplementation.qs",
+      "symbol": "AllStatesWithParitySuperposition_Reference",
+      "license": "MIT",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "Width three, parity=0: coefficients U[y,x]=(-1)^popcount((x&3)&(y&3))/2 when y2=x2 xor y0 xor y1, zero otherwise. Zero prepares the four even-parity labels.",
+      "limitations": "Specialize the recursive unitary preparation to three wires; no postselection variant or general-width synthesis.",
+      "project": "quantum_katas/even_parity3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "qualtran/controlled_increment2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/addition.py",
+      "symbol": "AddK; controlled specialization",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|c,x> maps to |c,(x+c) mod 4>, scalar +1; c is axis 0 and x has axes 1,2. Both control sectors and overflow are retained.",
+      "limitations": "Unsigned width-two AddK(k=1) with one coherent control, as allowed by the upstream controlled construction. Direct carry circuit; no upstream auxiliary decomposition or resource-count equivalence.",
+      "project": "qualtran/controlled_increment2",
+      "default_input": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/equals1",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+      "symbol": "Equals",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "|a,b,t> maps to |a,b,t xor [a=b]>, scalar +1, including an initially-one target and restored comparison inputs.",
+      "limitations": "QUInt(1) inputs; finite XOR/negative-control/uncompute specialization, not a symbolic comparator.",
+      "project": "qualtran/equals1",
+      "default_input": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": "qualtran/reflection_zero2",
+      "source": "qualtran",
+      "upstream_path": "qualtran/bloqs/reflections/reflection_using_prepare.py",
+      "symbol": "ReflectionUsingPrepare.reflection_around_zero",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "I-2|00><00|, global_phase=+1, no outer control. Preserve every nonzero basis label and its phase; negate only zero.",
+      "limitations": "Two-bit identity PREPARE specialization with direct phase circuit; no borrowed ancilla, general PREPARE oracle or arbitrary phase.",
+      "project": "qualtran/reflection_zero2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/rotation_negative_x_positive_y",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qubit_rotation/demo.py",
+      "symbol": "circuit(params)",
+      "license": "Apache-2.0",
+      "qubits": 1,
+      "kind": "unitary",
+      "contract": "RY(pi/2) RX(-pi/2), params=(-pi/2,pi/2); matrix [[1-i,-1+i],[1+i,1+i]]/2, including scalar phase.",
+      "limitations": "Fixed exact angles and full operator; no optimization, arbitrary-angle API or expectation-only comparison.",
+      "project": "pennylane_demos/rotation_negative_x_positive_y",
+      "default_input": [
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/qaoa_negative_mixer2",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_B",
+      "license": "Apache-2.0",
+      "qubits": 2,
+      "kind": "unitary",
+      "contract": "U_B(-pi/4)=RX(-pi/2) tensor RX(-pi/2); U[y,x]=i^popcount(x xor y)/2.",
+      "limitations": "Two-wire mixer only; no cost layer, state preparation, graph optimizer or sampling claim.",
+      "project": "pennylane_demos/qaoa_negative_mixer2",
+      "default_input": [
+        0,
+        0
+      ]
+    },
+    {
+      "id": "pennylane_demos/qaoa_path_layer3",
+      "source": "pennylane_demos",
+      "upstream_path": "demonstrations_v2/tutorial_qaoa_maxcut/demo.py",
+      "symbol": "U_C; U_B",
+      "license": "Apache-2.0",
+      "qubits": 3,
+      "kind": "unitary",
+      "contract": "RX(pi/2)^tensor3 exp(-i*pi*(Z0 Z1+Z1 Z2)/4), gamma=pi/2, beta=pi/4, cost then mixer. The middle wire belongs to both edges.",
+      "limitations": "Narrow the four-node graph to path edges (0,1),(1,2), retaining one whole cost/mixer layer on three arbitrary inputs. No initial H, full MaxCut port or optimizer.",
+      "project": "pennylane_demos/qaoa_path_layer3",
+      "default_input": [
+        0,
+        0,
+        0
+      ]
     }
   ],
   "authoring_sessions": [
@@ -1388,7 +1537,8 @@
     "authoring/v024-small/session.json",
     "authoring/v025-small/session.json",
     "authoring/v026-small/session.json",
-    "authoring/v027-small/session.json"
+    "authoring/v027-small/session.json",
+    "authoring/v028-small/session.json"
   ],
   "sized_experiments": [
     {

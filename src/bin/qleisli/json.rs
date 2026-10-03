@@ -184,6 +184,7 @@ fn execute(options: &super::options::Options, root: &Path) -> Result<String, Dia
     match super::source_commands::execute(options, root).map_err(|error| match error {
         Failure::Source(error) => error,
         Failure::Simulation(error) => simulation_failure(error),
+        Failure::Artifact(error) => failure(error.code, error.message),
     })? {
         Success::Checked => Ok("{\"verified\":true}".into()),
         Success::Distribution(distribution) => distribution_json(distribution),
@@ -208,9 +209,9 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     let result = if let Some(options) = options {
         root = options.path.clone();
         let selected = if options.qrate {
-            qleisli::frontend::project::qrate_source_root(&root)
+            qleisli::frontend::project::QrateSource::select(&root).map(Some)
         } else {
-            Ok(root.clone())
+            Ok(None)
         };
         if let Err(error) = selected {
             root = std::fs::canonicalize(&root).unwrap_or(root);
@@ -219,8 +220,11 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
             Err(failure("project", "source root is not valid UTF-8"))
         } else {
             let mut options = options;
-            root = selected.expect("checked root selection");
-            root = std::fs::canonicalize(&root).unwrap_or(root);
+            options.selected_root = selected.expect("checked root selection");
+            root = match &options.selected_root {
+                Some(selected) => selected.path().to_owned(),
+                None => std::fs::canonicalize(&root).unwrap_or(root),
+            };
             options.path = root.clone();
             if root.to_str().is_none() {
                 Err(failure("project", "source root is not valid UTF-8"))

@@ -1,9 +1,11 @@
 //! Open discovered sources without following a replacement symlink.
 //!
-//! macOS walks components with descriptor-relative openat and O_NOFOLLOW, which
-//! do not require macOS 11's O_NOFOLLOW_ANY. On the Linux architectures below,
-//! procfs supplies descriptor-relative paths. Both keep each parent open until
-//! its child is acquired without following links. Other targets retain
+//! macOS 11+ uses O_NOFOLLOW_ANY without requiring read access to ancestors.
+//! Older macOS walks components with descriptor-relative openat and O_NOFOLLOW;
+//! this compatible fallback also requires read access to ancestors. On the
+//! Linux architectures below, procfs supplies descriptor-relative paths with
+//! search-only ancestors. Walks keep each parent open until its child is
+//! acquired without following links. Other targets retain
 //! the legacy filesystem trust assumption. This is not a filesystem sandbox or
 //! a guarantee against concurrent writes to an already open regular file.
 use std::fs::File;
@@ -13,7 +15,7 @@ use std::io;
 use std::path::Path;
 
 pub(super) fn open(path: &Path) -> io::Result<File> {
-    let file = open_platform(path)?;
+    let file = open_platform(path, false)?;
     if !file.metadata()?.is_file() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
@@ -23,8 +25,40 @@ pub(super) fn open(path: &Path) -> io::Result<File> {
     Ok(file)
 }
 
+/// Acquire a non-symlink directory through the same component walk as sources.
+pub(super) fn open_directory(path: &Path) -> io::Result<File> {
+    let file = open_platform(path, true)?;
+    if !file.metadata()?.is_dir() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "source root is not a directory",
+        ));
+    }
+    Ok(file)
+}
+
 #[cfg(target_os = "macos")]
-fn open_platform(path: &Path) -> io::Result<File> {
+fn open_platform(path: &Path, is_directory: bool) -> io::Result<File> {
+    open_macos(
+        path,
+        is_directory,
+        macos_has_nofollow_any(rustix::system::uname().release().to_bytes()),
+    )
+}
+
+#[cfg(target_os = "macos")]
+fn macos_has_nofollow_any(release: &[u8]) -> bool {
+    // Darwin 20 is macOS 11. uname is available on the old deployment target;
+    // never pass the new flag on an unknown or pre-11 runtime.
+    std::str::from_utf8(release)
+        .ok()
+        .and_then(|s| s.split('.').next())
+        .and_then(|major| major.parse::<u32>().ok())
+        .is_some_and(|major| major >= 20)
+}
+
+#[cfg(target_os = "macos")]
+fn open_macos(path: &Path, is_directory: bool, nofollow_any: bool) -> io::Result<File> {
     use rustix::fs::{Mode, OFlags};
     use std::path::Component;
     let absolute = if path.is_absolute() {
@@ -32,6 +66,35 @@ fn open_platform(path: &Path) -> io::Result<File> {
     } else {
         std::env::current_dir()?.join(path)
     };
+    if absolute
+        .components()
+        .any(|c| matches!(c, Component::ParentDir))
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "source path must not contain parent traversal",
+        ));
+    }
+    if nofollow_any {
+        // Darwin 20 SDK O_NOFOLLOW_ANY. rustix 1.1.3 does not expose this bit.
+        // The kernel rejects symlinks anywhere in the path atomically; only
+        // the final file/directory is opened for reading. NONBLOCK also keeps
+        // a replacement FIFO from waiting before the regular-file check.
+        let flags = OFlags::from_bits_retain(0x20000000)
+            | OFlags::RDONLY
+            | OFlags::NONBLOCK
+            | OFlags::CLOEXEC;
+        let flags = if is_directory {
+            flags | OFlags::DIRECTORY
+        } else {
+            flags
+        };
+        return Ok(File::from(rustix::fs::open(
+            &absolute,
+            flags,
+            Mode::empty(),
+        )?));
+    }
     let mut directory = File::from(rustix::fs::open(
         "/",
         OFlags::RDONLY | OFlags::DIRECTORY | OFlags::CLOEXEC,
@@ -49,11 +112,18 @@ fn open_platform(path: &Path) -> io::Result<File> {
                 ));
             }
         };
-        let file = open_macos_child(&directory, name, components.peek().is_some())?;
+        let file = open_macos_child(
+            &directory,
+            name,
+            is_directory || components.peek().is_some(),
+        )?;
         if components.peek().is_none() {
             return Ok(file);
         }
         directory = file;
+    }
+    if is_directory {
+        return Ok(directory);
     }
     Err(io::Error::new(
         io::ErrorKind::InvalidInput,
@@ -95,8 +165,8 @@ fn open_macos_child(
         target_arch = "riscv32"
     )
 ))]
-fn open_platform(path: &Path) -> io::Result<File> {
-    open_linux(path, Path::new("/proc/self/fd"))
+fn open_platform(path: &Path, is_directory: bool) -> io::Result<File> {
+    open_linux(path, Path::new("/proc/self/fd"), is_directory)
 }
 
 #[cfg(all(
@@ -110,13 +180,14 @@ fn open_platform(path: &Path) -> io::Result<File> {
         target_arch = "riscv32"
     )
 ))]
-fn open_linux(path: &Path, procfs: &Path) -> io::Result<File> {
+fn open_linux(path: &Path, procfs: &Path, is_directory: bool) -> io::Result<File> {
     use std::os::unix::fs::OpenOptionsExt;
     use std::path::Component;
     // Linux UAPI asm-generic/fcntl.h on these architectures.
     const NOFOLLOW: i32 = 0o400000;
     const DIRECTORY: i32 = 0o200000;
     const NONBLOCK: i32 = 0o4000;
+    const PATH_ONLY: i32 = 0o10000000;
     let absolute = if path.is_absolute() {
         path.to_owned()
     } else {
@@ -124,7 +195,7 @@ fn open_linux(path: &Path, procfs: &Path) -> io::Result<File> {
     };
     let mut directory = OpenOptions::new()
         .read(true)
-        .custom_flags(DIRECTORY)
+        .custom_flags(DIRECTORY | PATH_ONLY)
         .open("/")?;
     // Diagnose a missing/inaccessible descriptor filesystem separately from a
     // missing source. Check the actual held descriptor, not just /proc itself.
@@ -144,8 +215,8 @@ fn open_linux(path: &Path, procfs: &Path) -> io::Result<File> {
         let child = procfs_directory(&directory, procfs)?.join(name);
         let flags = NOFOLLOW
             | NONBLOCK
-            | if components.peek().is_some() {
-                DIRECTORY
+            | if is_directory || components.peek().is_some() {
+                DIRECTORY | PATH_ONLY
             } else {
                 0
             };
@@ -158,6 +229,9 @@ fn open_linux(path: &Path, procfs: &Path) -> io::Result<File> {
         }
         // The parent stays open until the child has been acquired atomically.
         directory = file;
+    }
+    if is_directory {
+        return Ok(directory);
     }
     Err(io::Error::new(
         io::ErrorKind::InvalidInput,
@@ -216,8 +290,19 @@ fn procfs_directory(directory: &File, procfs: &Path) -> io::Result<std::path::Pa
         )
     )
 )))]
-fn open_platform(path: &Path) -> io::Result<File> {
-    OpenOptions::new().read(true).open(path)
+fn open_platform(path: &Path, is_directory: bool) -> io::Result<File> {
+    let mut options = OpenOptions::new();
+    options.read(true);
+    #[cfg(windows)]
+    if is_directory {
+        use std::os::windows::fs::OpenOptionsExt;
+        // Required to acquire directory handles on Windows. Other targets
+        // retain the existing filesystem trust assumption for symlinks.
+        options.custom_flags(0x02000000); // FILE_FLAG_BACKUP_SEMANTICS
+    }
+    #[cfg(not(windows))]
+    let _ = is_directory;
+    options.open(path)
 }
 
 #[cfg(all(
@@ -265,6 +350,63 @@ mod tests {
         fn drop(&mut self) {
             let _ = fs::remove_dir_all(&self.0);
         }
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn macos_nofollow_any_is_gated_by_runtime_version() {
+        for release in [
+            b"19.6.0".as_slice(),
+            b"16.7.0",
+            b"",
+            b"unknown",
+            b"999999999999",
+        ] {
+            assert!(!macos_has_nofollow_any(release));
+        }
+        for release in [b"20.0.0".as_slice(), b"21.6.0", b"25.0.0"] {
+            assert!(macos_has_nofollow_any(release));
+        }
+    }
+
+    #[cfg(target_os = "macos")]
+    #[test]
+    fn macos_legacy_walk_rejects_links_and_retains_read_requirement() {
+        use std::os::unix::fs::PermissionsExt;
+        let root = MacosDirectory::new();
+        fs::create_dir(root.0.join("nested")).unwrap();
+        let source = root.0.join("nested/main.qli");
+        fs::write(&source, "original").unwrap();
+        assert!(open_macos(&source, false, false).is_ok());
+        fs::set_permissions(&root.0, fs::Permissions::from_mode(0o100)).unwrap();
+        let denied = File::open(&root.0).is_err();
+        let result = open_macos(&source, false, false);
+        fs::set_permissions(&root.0, fs::Permissions::from_mode(0o700)).unwrap();
+        if denied {
+            assert_eq!(result.unwrap_err().kind(), io::ErrorKind::PermissionDenied);
+        }
+        fs::rename(root.0.join("nested"), root.0.join("renamed")).unwrap();
+        symlink(root.0.join("renamed"), root.0.join("nested")).unwrap();
+        assert!(open_macos(&source, false, false).is_err());
+        let saved = root.0.join("renamed/main.qli");
+        fs::remove_file(&saved).unwrap();
+        symlink(root.0.join("missing"), &saved).unwrap();
+        assert!(open_macos(&saved, false, false).is_err());
+        fs::remove_file(&saved).unwrap();
+        assert!(
+            std::process::Command::new("mkfifo")
+                .arg(&saved)
+                .status()
+                .unwrap()
+                .success()
+        );
+        assert!(
+            !open_macos(&saved, false, false)
+                .unwrap()
+                .metadata()
+                .unwrap()
+                .is_file()
+        );
     }
 
     #[cfg(target_os = "macos")]

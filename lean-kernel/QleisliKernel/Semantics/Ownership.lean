@@ -1,0 +1,238 @@
+import QleisliKernel.Semantics.Observation
+
+/-! Independent linear ownership judgments for all original observing raw ops.
+No checker, work limit, effect decision, evidence receipt or matrix is imported.
+Quantum owners are exclusive operation rights, not separable quantum states.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+namespace QleisliKernel.Semantics.Ownership
+open Raw Observation
+
+structure State where
+  live : List Port := []
+  tokens : List Nat := []
+  wires : List Nat := []
+  frame : List Nat := []
+  deriving BEq, DecidableEq, Repr
+
+def State.interface (state : State) : RawTrace.Interface := ⟨state.live,state.frame⟩
+
+/-- Tokens retain zero-width owners. Live wires form a disjoint complete frame;
+issued identities persist after consumption and scoped auxiliary release. -/
+structure Valid (state : State) : Prop where
+  owners : (state.live.map (·.token)).Nodup
+  tokens : state.tokens.Nodup
+  wires : state.wires.Nodup
+  frame : state.frame.Nodup
+  exclusive : (state.live.flatMap (·.wires)).Nodup
+  ports : ∀ port ∈ state.live, port.bits = port.wires.length ∧ port.token ∈ state.tokens
+  issued : ∀ wire ∈ state.frame, wire ∈ state.wires
+  count : (state.live.flatMap (·.wires)).length = state.frame.length
+  covered : ∀ wire ∈ state.live.flatMap (·.wires), wire ∈ state.frame
+
+/-- Inputs and phi destinations allocate fresh owners and fresh logical axes. -/
+structure Input (before : State) (port : Port) (after : State) : Prop where
+  shape : port.bits = port.wires.length
+  freshOwner : port.token ∉ before.tokens
+  freshWires : ∀ wire ∈ port.wires, wire ∉ before.wires
+  distinct : port.wires.Nodup
+  result : after = ⟨before.live ++ [port],before.tokens ++ [port.token],
+    before.wires ++ port.wires,before.frame ++ port.wires⟩
+
+inductive Inputs : State → List Port → State → Prop
+  | nil (state) : Inputs state [] state
+  | cons (before port middle ports after) (head : Input before port middle)
+      (tail : Inputs middle ports after) : Inputs before (port :: ports) after
+
+/-- Issued outputs of the original instruction, including all protected targets. -/
+def outputs : Raw.Op → List Nat
+  | .init0 out _ | .gate _ _ out | .join _ _ out | .liftBasis _ out _ _
+  | .applyUnitary _ out _ | .certifiedCompute _ out _ _ _ _ => [out]
+  | .cnot _ _ a b | .quantumIf _ _ a b _ _ | .split _ a b _ => [a,b]
+  | .toffoli _ _ _ a b c => [a,b,c]
+  | .computeUseUncompute _ out targets _ _ _ => out :: targets.map (·.output)
+
+/-- Scratch identities remain issued after their scoped operation. Fresh axes
+of a lift are the suffix after its original operand, not inferred separability. -/
+def allocated (state : State) : Raw.Op → List Nat
+  | .init0 _ wire => [wire]
+  | .liftBasis input _ wires _ =>
+    wires.drop (((state.live.find? (fun port => port.token == input)).map (·.bits)).getD 0)
+  | .certifiedCompute _ _ ancilla _ _ _ | .computeUseUncompute _ _ _ ancilla _ _ => ancilla
+  | _ => []
+
+/-- Local coordinates must denote distinct axes within the consumed owner or
+its explicitly allocated scratch. No default-index behavior grants access. -/
+def actionAxes : Finite.Action → List Nat
+  | .hadamard target => [target]
+  | .monomial targets _ _ | .contract targets _ _ => targets
+
+def Circuit (bits : Nat) (steps : List Finite.Step) : Prop :=
+  ∀ step ∈ steps, (step.controls.map (·.index) ++ actionAxes step.action).Nodup ∧
+    ∀ axis ∈ step.controls.map (·.index) ++ actionAxes step.action, axis < bits
+
+def Protected (source scratch : Nat) (bit : ProtectedBit) : Prop :=
+  bit.index < match bit.region with | .source => source | .ancilla => scratch
+
+def Controls (source scratch : Nat) (controls : List ProtectedControl) : Prop :=
+  (controls.map (·.bit)).Nodup ∧ ∀ control ∈ controls, Protected source scratch control.bit
+
+def Uses (source scratch targets : Nat) (uses : List Use) : Prop :=
+  ∀ use ∈ uses, match use with
+  | .protectedGate bit _ => Protected source scratch bit
+  | .targetGate controls target _ => target < targets ∧ Controls source scratch controls
+  | .phase controls _ => Controls source scratch controls
+
+def PortAt (state : State) (token : Nat) (port : Port) : Prop :=
+  port ∈ state.live ∧ port.token = token
+
+def BitOwner (state : State) (token : Nat) : Prop :=
+  ∃ port, PortAt state token port ∧ port.bits = 1
+
+/-- Shape and access obligations on the literal original operation. Internal
+circuits borrow only local coordinates; scratch release equations are separate. -/
+def Access (state : State) : Raw.Op → Prop
+  | .init0 _ _ | .join _ _ _ => True
+  | .gate _ input _ => BitOwner state input
+  | .cnot control target _ _ => BitOwner state control ∧ BitOwner state target
+  | .toffoli a b target _ _ _ => BitOwner state a ∧ BitOwner state b ∧ BitOwner state target
+  | .quantumIf control target _ _ zero one => BitOwner state control ∧
+    ∃ port, PortAt state target port ∧ Circuit port.bits (zero.map RawTrace.unitary) ∧
+      Circuit port.bits (one.map RawTrace.unitary)
+  | .split input _ _ left => ∃ port, PortAt state input port ∧ left ≤ port.bits
+  | .liftBasis input _ wires _ => ∃ port, PortAt state input port ∧
+    port.bits ≤ wires.length ∧ wires.take port.bits = port.wires
+  | .applyUnitary input _ steps => ∃ port, PortAt state input port ∧ Circuit port.bits steps
+  | .certifiedCompute input _ scratch _ physical logical => ∃ port, PortAt state input port ∧
+    Circuit (port.bits + scratch.length) physical ∧ Circuit port.bits logical
+  | .computeUseUncompute input _ targets scratch _ uses => ∃ port, PortAt state input port ∧
+    (∀ target ∈ targets, BitOwner state target.input) ∧ Uses port.bits scratch.length targets.length uses
+
+/-- Literal consumption/return is fixed by the independent original-operation
+reader. Exact issued lists plus Valid rule out every reuse, including scratch. -/
+structure Pure (before : State) (op : Raw.Op) (after : State) : Prop where
+  access : Access before op
+  action : ∃ events, RawTrace.step before.interface op = some (after.interface,events)
+  tokens : after.tokens = before.tokens ++ outputs op
+  wires : after.wires = before.wires ++ allocated before op
+
+/-- Observe consumes a logical owner and explicitly erases its axes. -/
+structure Erase (before : State) (token : Nat) (port : Port) (after : State) : Prop where
+  present : port ∈ before.live
+  owner : port.token = token
+  result : after = {before with live := before.live.filter (fun p => p.token != token), frame := before.frame.filter (fun wire => !port.wires.contains wire)}
+
+/-- Complete phi interfaces: both arms account for every owner exactly once,
+including Unit and caller-frame owners. Output coordinates are explicitly given. -/
+structure Phi (left right : State) (phis : List QuantumPhi) : Prop where
+  leftDistinct : (phis.map (·.thenToken)).Nodup
+  rightDistinct : (phis.map (·.elseToken)).Nodup
+  leftCount : phis.length = left.live.length
+  rightCount : phis.length = right.live.length
+  leftCoverage : ∀ port ∈ left.live, port.token ∈ phis.map (·.thenToken)
+  rightCoverage : ∀ port ∈ right.live, port.token ∈ phis.map (·.elseToken)
+  shape : ∀ phi ∈ phis, ∃ a b, a ∈ left.live ∧ b ∈ right.live ∧
+    a.token = phi.thenToken ∧ b.token = phi.elseToken ∧
+    a.bits = b.bits ∧ phi.wires.length = a.bits
+
+def restore (entry left : State) : State :=
+  {entry with tokens := left.tokens,wires := left.wires}
+
+def mergeBase (right : State) : State := {right with live := [],frame := []}
+
+def phiPorts (phis : List QuantumPhi) : List Port :=
+  phis.map (fun phi => ⟨phi.output,phi.wires,phi.wires.length⟩)
+
+mutual
+  /-- Both classical arms are certified from the same live entry. Their issued
+  identity store is threaded globally, even when only one arm will execute. -/
+  inductive Step : State → Observation.Op → State → Prop
+    | pure (before op after) (body : Pure before op after) : Step before (.pure op) after
+    | measure (before input output port after) (body : Erase before input port after)
+        (bit : port.bits = 1) : Step before (.measure input output) after
+    | reset (before input output wire port middle after) (body : Erase before input port middle)
+        (bit : port.bits = 1) (fresh : Input middle ⟨output,[wire],1⟩ after) :
+        Step before (.reset input output wire) after
+    | discard (before input port after) (body : Erase before input port after) :
+        Step before (.discard input) after
+    | constant (state value output) : Step state (.constant value output) state
+    | not (state input output) : Step state (.not input output) state
+    | xor (state left right output) : Step state (.xor left right output) state
+    | and (state left right output) : Step state (.and left right output) state
+    | branch (before condition thenOps elseOps quantum classical left right after)
+        (thenArm : Run before thenOps left)
+        (elseArm : Run (restore before left) elseOps right)
+        (coverage : Phi left right quantum)
+        (merge : Inputs (mergeBase right) (phiPorts quantum) after) :
+        Step before (.branch condition thenOps elseOps quantum classical) after
+  /-- Every instruction boundary in both arms is valid; this includes every
+  list prefix and not only the final returned state. -/
+  inductive Run : State → List Observation.Op → State → Prop
+    | nil (state) (valid : Valid state) : Run state [] state
+    | cons (before op middle ops after) (valid : Valid before)
+        (head : Step before op middle) (tail : Run middle ops after) :
+        Run before (op :: ops) after
+end
+
+structure Returned (state : State) (outputs : List Nat) : Prop where
+  distinct : outputs.Nodup
+  count : outputs.length = state.live.length
+  live : ∀ port ∈ state.live, port.token ∈ outputs
+  present : ∀ token ∈ outputs, ∃ port ∈ state.live, port.token = token
+
+/-- Linear ownership safety for a complete ordinary raw program. Classical
+SSA/effect correctness, quantum cleanup meaning, costs and hierarchy are separate. -/
+def ResourceSafe (program : Observation.Program) : Prop :=
+  ∃ initial final, Inputs {} program.inputs initial ∧
+    Run initial program.operations final ∧ Returned final program.outputs
+
+theorem Run.final_valid {before after : State} {ops : List Observation.Op}
+    (run : Run before ops after) : Valid after := by
+  induction ops generalizing before with
+  | nil => cases run with | nil state valid => exact valid
+  | cons op ops ih =>
+    cases run with
+    | cons before op middle ops after valid head tail => exact ih tail
+
+/-- Freshness follows from the independent rule and distinct issued identities,
+without a premise referring to an executable checker. -/
+theorem Pure.fresh {before after : State} {op : Raw.Op}
+    (step : Pure before op after) (valid : Valid after) :
+    (∀ token ∈ outputs op, token ∉ before.tokens) ∧
+    (∀ wire ∈ allocated before op, wire ∉ before.wires) := by
+  have tokens := valid.tokens
+  have wires := valid.wires
+  rw [step.tokens,List.nodup_append] at tokens
+  rw [step.wires,List.nodup_append] at wires
+  exact ⟨fun token new old => tokens.2.2 token old token new rfl,
+    fun wire new old => wires.2.2 wire old wire new rfl⟩
+
+def pureProgram (program : Raw.Program) : Observation.Program :=
+  ⟨program.inputs,[],program.operations.map Observation.Op.pure,program.outputs,[],program.effect⟩
+
+theorem Run.initial_valid {before after : State} {ops : List Observation.Op}
+    (run : Run before ops after) : Valid before := by
+  cases run with
+  | nil state valid => exact valid
+  | cons before op middle ops after valid head tail => exact valid
+
+/-- Any instruction prefix has its own valid interface and remaining derivation.
+The same theorem applies inside either arm of every branch judgment. -/
+theorem Run.split {before after : State} (front suffix : List Observation.Op)
+    (run : Run before (front ++ suffix) after) :
+    ∃ middle, Run before front middle ∧ Valid middle ∧ Run middle suffix after := by
+  induction front generalizing before with
+  | nil => exact ⟨before,.nil _ run.initial_valid,run.initial_valid,run⟩
+  | cons op front ih =>
+    cases run with
+    | cons before op next ops after valid head tail =>
+      obtain ⟨middle,first,good,last⟩ := ih tail
+      exact ⟨middle,.cons _ _ _ _ _ valid head first,good,last⟩
+
+/-- Measurement/discard consumption removes the token even at width zero. -/
+theorem Erase.consumed {before after : State} {input : Nat} {port : Port}
+    (erased : Erase before input port after) : ∀ p ∈ after.live, p.token ≠ input := by
+  rw [erased.result]
+  intro p member
+  simpa using (List.mem_filter.mp member).2
+
+end QleisliKernel.Semantics.Ownership

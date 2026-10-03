@@ -1,10 +1,53 @@
 # Changelog
 
-Versions follow the [versioning and compatibility policy](docs/versioning.md).
+Versions follow the [versioning and compatibility policy](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md).
 Development milestones and the scope of their evidence are recorded
 separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
+
+## 0.2.8 — selected 2026-10-03
+
+- Repair GitHub review findings: retain qrate directory identity across loading,
+  restore search-only ancestor access on macOS 11+ and listed Linux targets,
+  locate source load/limit diagnostics,
+  keep interop JSON codes within v1, bind Python's QIR reader to its installation,
+  reject unused QIRF sources natively, and bind CI execution to the checked
+  toolchains and an explicit environment. Clarify terminal allocation ordering
+  and check bundled source documentation references and Python README versions.
+  Older macOS keeps its existing descriptor walk/read requirement; a runtime
+  Darwin-version gate avoids newer flags on the unchanged deployment targets.
+- Partially advance #223: propagate CI lanes to native bundle builds, retaining
+  builds/audits/relocated tests in every lane and fresh replay in `full`.
+  Record performed replay and command timings; reject unknown lanes and keep
+  full validation as the standalone default. Driver consolidation and hosted
+  shadow/performance validation remain open.
+- Prove independent linear ResourceSafe for all 19 ordinary raw constructors,
+  both branch arms, local axis bounds, scratch freshness and complete Unit/phi
+  returns. Connect actual raw/QIRF/native acceptance to the judgment and retain
+  optional finite semantics. Full EffectSound and hierarchical S05 remain open.
+- Refactor native QIRF acceptance into typed stages with named refinement
+  contracts. Prove compatibility for every input/work budget and compose the
+  actual packet checker with independent original-body finite semantics and
+  reference laws; full effect/hierarchical S05 obligations remain open.
+
+- Add opt-in Rust/Lean dual checking to ordinary check/run/sample/emit-ir/verify-ir
+  and `interchange::dual::Kernel`. Native checking receives the original QIRF
+  and optional independent request; either rejection or transport failure blocks
+  execution/emission. Add actual-checker lemmas, small differential/fault tests
+  and fresh audited native bundles; S05 and full migration remain open.
+- Reduce tracked `docs/` UTF-8 bytes by approximately 55% from the current 0.2.7
+  checkout; retain active plans, their acceptance gates and imaginary-v1.
+  Retire detailed specification files with fixed-release references, preserving
+  language contracts and the four quick-reference executable programs as fixtures.
+- Add nine finite translations from the unchanged QuantumKatas, Qualtran and
+  PennyLane inputs (69 to 78), first-source diagnostics, independent full-entry
+  complex comparisons and nine paired semantic faults (45 to 54).
+- Synchronize Rust, Lean, Python and std qrate to 0.2.8; edition 2026, Rust
+  authority, external-schema gates and theorem scope remain unchanged.
+
+Selection/local validation only; [candidate](docs/releases/v0.2.8.md) records
+performed and skipped checks. No tag or publication is claimed.
 
 ## 0.2.7 - 2026-10-03
 
@@ -854,7 +897,7 @@ separate implementation, validation and publication.
   Require explicit OpenQASM initialization, retain exact gate phases and output
   order, and independently verify imported ownership through the existing core.
   Add a Rust host example, adversarial/exact tests and independent parser/LLVM
-  validation. See the [connection contract](docs/interop-m1.1.md).
+  validation. See the [connection contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md).
 - Start M1 X1 with opt-in `--format=json` for `check` and `run`: one version-1
   `qleisli.result` object on stdout, including failures, stable categories,
   nullable original-source locations, and lexicographically ordered distributions.
@@ -908,7 +951,7 @@ separates local checks from exact-commit CI, tagging and publication in the
 - Doc spellings previously treated as arbitrary comments now require valid
   placement. Line comments end at LF/EOF; bare CR is forbidden in doc text.
   Use ordinary comment spellings or LF/CRLF when migrating, as described in
-  the [extension specification](docs/documentation-comments.md).
+  the [extension specification](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/documentation-comments.md).
 - Keep 0.1.6 at the user's explicit request despite the normal MINOR rule.
   This feature and its source-acceptance changes are not compatible-only
   maintenance; the exception does not apply to future feature work.

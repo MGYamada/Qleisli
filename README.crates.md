@@ -8,8 +8,8 @@ The Rust frontend produces IR that an independent Rust verifier checks before
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Package version: **0.2.7**. See the
-[release record](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md)
+Package version: **0.2.8**. See the
+[release record](https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md)
 for the release scope and validation. The release record tracks publication
 separately from candidate checks.
 **Qleisli language edition: `"2026"` for all current
@@ -18,12 +18,15 @@ The version-specific release record distinguishes the
 implemented bounded profile from pending proof and migration goals.
 Rust 1.85 or later is required. Cargo builds the implementation and its TOML reader;
 ordinary CLI/library use requires no Lean, Python or LLVM installation.
-On macOS, source loading uses descriptor-relative `openat` with `O_NOFOLLOW`
-for each component, preserving Rust's existing deployment targets without
-requiring macOS 11's `O_NOFOLLOW_ANY` flag.
+On macOS 11+, source loading uses `O_NOFOLLOW_ANY`, requiring only search
+permission on ancestor directories. Older macOS keeps the descriptor-relative
+`openat`/`O_NOFOLLOW` fallback and requires read permission on those directories.
+The runtime version is checked before using the newer flag; Rust's existing
+deployment targets remain supported.
 Filesystem source loading on Linux x86/x86_64, ARM/aarch64 and RISC-V requires
 accessible procfs directory descriptors at `/proc/self/fd`. A missing or
-inaccessible descriptor path produces a targeted runtime diagnostic.
+inaccessible descriptor path produces a targeted runtime diagnostic. Ancestors
+use `O_PATH` directory descriptors and require only search permission.
 
 ## Install and run
 
@@ -32,7 +35,7 @@ Install from a source checkout with
 crates.io with:
 
 ```sh
-cargo install qleisli --version 0.2.7 --locked
+cargo install qleisli --version 0.2.8 --locked
 ```
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -92,7 +95,7 @@ Add this dependency to your Rust project's `Cargo.toml`:
 
 ```toml
 [dependencies]
-qleisli = "0.2.7"
+qleisli = "0.2.8"
 ```
 
 The [API documentation](https://docs.rs/qleisli) provides a runnable
@@ -125,7 +128,7 @@ checked programs become `VerifiedProgram` values.
 The published 0.2.1 first registry release adopted the name `qleisli` in place of
 the earlier Git/path package `qleisli-core` and Rust import `qleisli_core`.
 Those consumers must update dependency/import names or use the documented
-[Cargo alias](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md#package-identity-and-user-documentation).
+[Cargo alias](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md#package-identity-and-user-documentation).
 This user-selected identity migration is a narrow exception; other 0.2.x
 contracts stay compatible except for the explicitly selected v0.2.3 requirement
 to add an edition manifest to filesystem source trees. The planned 0.3.0
@@ -134,16 +137,16 @@ breaking-change boundary.
 
 ## Documentation
 
-- [Language editions and qrate migration](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md)
+- [Language editions and qrate migration](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md)
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-quick-reference.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.7/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.7/TRUST_BOUNDARY.md)
-- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.8/tests/fixtures/quick_reference/README.md)
+- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.8/python/README.md)
+- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.8/python/README.md)
+- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.8/TRUST_BOUNDARY.md)
+- [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Version-pinned documentation links above target the immutable `v0.2.7` source tag.
+Version-pinned documentation links target the planned `v0.2.8` tag; it is not yet published.
 Packaged files contain the current specifications and release record;
 source validation, tagging and publication are recorded separately.
 

@@ -1,0 +1,51 @@
+$ python3 scripts/check_semantic_contract_examples.py
+PASS E_id is isometric
+PASS CNOT append-zero equals E_id
+PASS X_source X_aux implements logical X
+PASS compute/use/uncompute returns X with clean zero
+PASS aux Z implements logical Z on the graph code
+PASS compute/Z/uncompute returns the phase oracle
+PASS aux X fails the fixed graph code: compression is zero
+PASS aux X has unit leakage on each code basis
+PASS composition yields logical identity
+PASS tensoring a reference preserves intertwining
+PASS the same preserved code admits meanings I and X
+PASS a common encoding supports coherent control
+PASS rectangular isometry: forward and encoded adjoint hold
+PASS a rectangular adjoint is not globally isometric
+adjoint maps out-of-code |1> norm^2 to 0
+PASS non-surjective logical u satisfies the forward equality
+PASS non-surjective logical u fails the full adjoint equality
+PASS compression example rotation is unitary
+PASS compressed target 3/5 is not the full intertwiner
+compression-only leakage probability = 16/25
+PASS non-isometric U can have unitary compression and leakage
+PASS Hadamard is unitary over Q(sqrt(2))
+PASS H followed by H is exactly identity
+PASS auxiliary H;H preserves the graph code exactly
+PASS Hadamard compression equals 1/sqrt(2)
+PASS Hadamard compression retains nonzero leakage
+PASS Hadamard leakage probability equals 1/2
+Hadamard compressed coefficient = (0) + (1/2)*sqrt(2) ; leakage probability = 1/2
+PASS X converts the different encodings
+PASS different encodings invalidate the identity control arm
+PASS a certified conversion on both arms restores control compatibility
+PASS aux-controlled X is logical I on zero-auxiliary code
+PASS without the code promise logical zero changes to one
+PASS density maps cannot distinguish I and -I
+PASS control of scalar -1 changes plus to minus
+X-minus outcome: controlled(+1)=0, controlled(-1)= 1
+PASS coherent leakage n=4: U is unitary
+PASS coherent leakage n=4: uniform vector leaks completely
+n=4: every basis leakage=1/4; superposition leakage=1
+PASS coherent leakage n=16: U is unitary
+PASS coherent leakage n=16: uniform vector leaks completely
+n=16: every basis leakage=1/16; superposition leakage=1
+PASS controlled rotation is unitary
+PASS discarding a nearly-zero auxiliary makes a mixed state
+PASS the reduced logical state is not pure
+uniform max cleanup failure = 40000/100020001
+plus-input cleanup failure = 20000/100020001
+reduced logical determinant = 10000/100020001
+zero-projection success trace = 100000001/100020001
+All 39 exact rational/algebraic assertions passed.

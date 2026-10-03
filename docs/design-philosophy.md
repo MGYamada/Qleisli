@@ -24,4 +24,4 @@ Q<A> owns ordered operation rights (including zero width), not states/effects. B
 
 ## Open central issue: separating ownership from entanglement
 
-Separate owners may remain correlated; local actions extend by reference identity. Gates/partial observation/discard/reset/boundaries act globally; need cleanup semantics, not general entanglement inference. Measurement consumes, init creates fresh logical wire. Pure release requires exact all-input factorization, never Clean names/lifetimes; unitarity grants no inverse/control access. [Types](type-system.md)/[language](language-spec.md)/[formal scope](formal-core.md) specify rules.
+Separate owners may remain correlated; local actions extend by reference identity. Gates/partial observation/discard/reset/boundaries act globally; need cleanup semantics, not general entanglement inference. Measurement consumes, init creates fresh logical wire. Pure release requires exact all-input factorization, never Clean names/lifetimes; unitarity grants no inverse/control access. [Types](type-system.md)/[language](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-spec.md)/[formal scope](formal-core.md) specify rules.
