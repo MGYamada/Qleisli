@@ -8,10 +8,10 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Development version: 0.2.8 (unpublished). Qleisli language edition: `"2026"`.**
+**Published version: 0.2.8. Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. See [language editions](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md)
-and the [0.2.8 candidate](docs/releases/v0.2.8.md).
+and the [0.2.8 release](docs/releases/v0.2.8.md).
 The Rust CLI and library run with Rust alone.
 Ordinary `check`, `run`, `sample`, `emit-ir` and `verify-ir` also support
 `--lean-kernel=PATH` for [opt-in dual checking](tests/fixtures/verification_v028/README.md).
@@ -23,9 +23,9 @@ its [source contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized
 describes the supported checking and lowering profiles.
 The three theorem pillars below are project goals. Current implementation and
 proof status are recorded in the [status ledger](docs/current-status.md).
-Version 0.2.7 was published on 2026-10-03 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.7)
-and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.7).
-[Publication evidence](tests/fixtures/releases/v0.2.7/publication.json) binds the immutable source,
+Version 0.2.8 was published on 2026-10-03 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.8)
+and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.8).
+[Publication evidence](tests/fixtures/releases/v0.2.8/publication.json) binds the immutable source,
 registry artifact, fresh installation, hosted docs and complete GitHub downloads.
 
 [Quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) ·
@@ -89,14 +89,14 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Install this version from the registry once its publication is complete:
+Install this version from the registry:
 
 ```sh
 cargo install qleisli --version 0.2.8 --locked
 ```
 
-The [0.2.7 release record](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md) separates candidate validation
-from publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.7/qleisli/)
+The [0.2.8 release record](docs/releases/v0.2.8.md) separates candidate validation
+from publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.8/qleisli/)
 were verified after publication, including a fresh exact-version registry install.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -210,10 +210,10 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-Development **0.2.8** reduces current tracked docs by approximately 56% while retaining
+**0.2.8** reduces tracked docs by approximately 54% while retaining
 active plans and imaginary-v1, and grows the finite corpus from 69 to 78 translations.
-The [candidate](docs/releases/v0.2.8.md) records local validation separately from
-publication. The latest published version remains 0.2.7. Retired detailed
+The [release](docs/releases/v0.2.8.md) records exact-source validation and
+publication. Retired detailed
 specifications remain authoritative in the fixed 0.2.7 source; language and
 acceptance contracts are unchanged.
 The active [0.2.2 plan](docs/v0.2.2-plan.md) and

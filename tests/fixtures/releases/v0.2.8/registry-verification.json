@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "metadata": {
+    "url": "https://crates.io/api/v1/crates/qleisli/0.2.8",
+    "final_url": "https://crates.io/api/v1/crates/qleisli/0.2.8",
+    "status": 200,
+    "sha256": "8341b92806c45cefbf8455cea183f1842da1c21bd4ac416c536e9c5cf0b862a5",
+    "bytes": 1791,
+    "saved": "registry-metadata.json"
+  },
+  "download": {
+    "url": "https://static.crates.io/crates/qleisli/qleisli-0.2.8.crate",
+    "final_url": "https://static.crates.io/crates/qleisli/qleisli-0.2.8.crate",
+    "status": 200,
+    "sha256": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+    "bytes": 7531243,
+    "saved": "registry.crate"
+  },
+  "readme": {
+    "url": "https://crates.io/api/v1/crates/qleisli/0.2.8/readme",
+    "final_url": "https://static.crates.io/readmes/qleisli/qleisli-0.2.8.html",
+    "status": 200,
+    "sha256": "0a7722be25b82a067dcbd9e3bdeb81b89db0cd97719e256cf4af3bbb3c83837b",
+    "bytes": 9863,
+    "saved": "registry-readme.html"
+  },
+  "file_count": 2991,
+  "vcs": {
+    "git": {
+      "sha1": "18020190b1c80037442be29d74e90fd9e07253e0"
+    },
+    "path_in_vcs": ""
+  },
+  "checksum": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+  "complete_package_matches_checked": true,
+  "compressed_matches_checked": true,
+  "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "version": "0.2.8",
+  "checked_utc": "2026-10-03T05:10:05.375085+00:00"
+}

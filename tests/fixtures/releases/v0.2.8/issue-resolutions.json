@@ -1,0 +1,74 @@
+[
+  {
+    "number": 181,
+    "url": "https://github.com/MGYamada/Qleisli/issues/181",
+    "state": "closed",
+    "note": "Restored search-only ancestor traversal on macOS 11+ using runtime-gated O_NOFOLLOW_ANY and on the listed Linux architectures using O_PATH. Older/unknown Darwin retains the previously supported descriptor walk and read-permission requirement, now documented; no minimum OS was raised. Linux/macOS permission, symlink/FIFO, forced legacy fallback tests and the Intel macOS 10.12 deployment-target build passed. No physical older-macOS runtime validation is claimed."
+  },
+  {
+    "number": 192,
+    "url": "https://github.com/MGYamada/Qleisli/issues/192",
+    "state": "closed",
+    "note": "QrateSource retains the selected directory identity and avoids re-canonicalizing the selected suffix during loading/checking/compilation. Replacement-directory and replacement-symlink regressions passed in both Linux and macOS CI."
+  },
+  {
+    "number": 239,
+    "url": "https://github.com/MGYamada/Qleisli/issues/239",
+    "state": "closed",
+    "note": "The installed Python package selects its own absolute _qir.py with Python safe-path handling. Installed PyQIR 0.12.5 tests, including a working-directory decoy package, passed."
+  },
+  {
+    "number": 240,
+    "url": "https://github.com/MGYamada/Qleisli/issues/240",
+    "state": "closed",
+    "note": "The terminal export contract now explicitly requires allocation before terminal observation. Existing unsupported later allocation remains rejected; allocation-order acceptance/rejection regressions passed for QASM and QIR."
+  },
+  {
+    "number": 241,
+    "url": "https://github.com/MGYamada/Qleisli/issues/241",
+    "state": "closed",
+    "note": "The native QIRF graph checker rejects unused source metadata. The additional rejection cases, actual-checker proofs, both package audits/fresh replay and independent native comparisons passed."
+  },
+  {
+    "number": 242,
+    "url": "https://github.com/MGYamada/Qleisli/issues/242",
+    "state": "closed",
+    "note": "Rust/Python machine-interface paths emit the closed v1 diagnostic codes while preserving the public Python exception API. I/O and host-reader/transport regressions passed."
+  },
+  {
+    "number": 243,
+    "url": "https://github.com/MGYamada/Qleisli/issues/243",
+    "state": "closed",
+    "note": "Source byte-limit diagnostics retain location as a structured relative identity without embedding absolute host paths in the message. Full Rust and Python CLI contract suites passed after aligning their old expectations with this repair."
+  },
+  {
+    "number": 244,
+    "url": "https://github.com/MGYamada/Qleisli/issues/244",
+    "state": "closed",
+    "note": "Path/I/O failures retain the failing file identity and an empty 0..0 span. JSON uses '.' for the selected root and relative filenames for individual source failures. Mode-000 text/JSON and full diagnostic regressions passed."
+  },
+  {
+    "number": 247,
+    "url": "https://github.com/MGYamada/Qleisli/issues/247",
+    "state": "closed",
+    "note": "Bundled QLI documentation references use preserved immutable contracts; Python documentation selects Rust 0.2.8 without making premature publication claims. Repository document/version checks and live registry documentation-link checks passed."
+  },
+  {
+    "number": 248,
+    "url": "https://github.com/MGYamada/Qleisli/issues/248",
+    "state": "closed",
+    "note": "Native CI executes both probes and nested work with pinned Rust 1.98.1/Lean 4.30.0, rejects conflicting explicit overrides, and records actual toolchain identities. The exact-source full CI run passed all 66 native groups/72 commands."
+  },
+  {
+    "number": 249,
+    "url": "https://github.com/MGYamada/Qleisli/issues/249",
+    "state": "closed",
+    "note": "Native CI rejects tracked/untracked source changes before and after execution and uses the reviewed environment allowlist for probes/tasks. Full CI passed all 66 groups/72 commands with source/toolchain/environment binding; host tools/home configuration remain explicit assumptions, not OS hermeticity."
+  },
+  {
+    "number": 186,
+    "url": "https://github.com/MGYamada/Qleisli/issues/186",
+    "state": "closed",
+    "note": "Already fixed before v0.2.8 and closed; verified in the full regression suite."
+  }
+]

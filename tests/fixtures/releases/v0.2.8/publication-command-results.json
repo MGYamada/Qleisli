@@ -1,0 +1,543 @@
+[
+  {
+    "command": [
+      "cargo",
+      "publish",
+      "--dry-run",
+      "--locked"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:46:31.577216+00:00",
+    "seconds": 13.313,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run-online.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run-online.stderr",
+        "sha256": "50598121b19daa8738a6c8e69f12b048b98e9333b08d04fee908c1d011a7b9db"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "publish",
+      "--dry-run",
+      "--locked",
+      "--offline"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:44:33.451819+00:00",
+    "seconds": 0.067,
+    "exit_code": 101,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish-dry-run.stderr",
+        "sha256": "681796d50824a6fad34f47e3ac772f4b0a9753561e63c622b8e429db448dcc33"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "publish",
+      "--locked"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T05:09:07.773700+00:00",
+    "seconds": 22.204,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/cargo-publish.stderr",
+        "sha256": "495f391bb14d211a7b60f9fc258b56b13c6383042bd387fb468bbc8df5f482ea"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "test_ci_profiles",
+      "test_run_native_ci",
+      "test_package_lean_kernel",
+      "test_python_host"
+    ],
+    "cwd": "/Users/masa/git/Qleisli/scripts",
+    "start_utc": "2026-10-03T01:14:15.325356+00:00",
+    "seconds": 1.664,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/ci-policy-final.stdout",
+        "sha256": "9854110d8b2fae98aed69beedac9e6405bd71e4a82a79c15f3e3582b09997c7e"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/ci-policy-final.stderr",
+        "sha256": "3ceedf0357f0274111594a0a6563dc55d95cefc69cc472cbdf7d4db7fc58297c"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "scripts/test_ci_profiles.py",
+      "scripts/test_run_native_ci.py",
+      "scripts/test_package_lean_kernel.py",
+      "scripts/test_python_host.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:14:03.427568+00:00",
+    "seconds": 0.453,
+    "exit_code": 1,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/ci-policy.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/ci-policy.stderr",
+        "sha256": "f9607686c6a3a357098938a87a8cbbb0c87a5ea04f043d9e82bc50a8b6097fe2"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_cli_json.py",
+      "target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:39:36.006458+00:00",
+    "seconds": 1.023,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/cli-json-fixed.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/cli-json-fixed.stderr",
+        "sha256": "24b6eeaf6543876acd0590979cfd97e7b8ce77ce926fad62bb930029b5cb87f6"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_cli_json.py",
+      "target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:30:23.038313+00:00",
+    "seconds": 0.603,
+    "exit_code": 1,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/cli-json-pre-fix.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/cli-json-pre-fix.stderr",
+        "sha256": "d45d1efd75e5884055387c54ad50ccc7bf6024cf777e9287bd393f1af6b5d249"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "clippy",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:16:02.657924+00:00",
+    "seconds": 13.532,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/clippy.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/clippy.stderr",
+        "sha256": "5cb9d4baa417adf2be22b30decf00a8f1b301b47531d40fb8291c93eb259084b"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "diagnostics",
+      "--test",
+      "source_capacities",
+      "--test",
+      "review_v028"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:18:11.639059+00:00",
+    "seconds": 2.878,
+    "exit_code": 101,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/diagnostics-final.stdout",
+        "sha256": "72d1674d053c4ac7f5af26b6b2bcd1376aae5b34870734b481a074182cb54122"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/diagnostics-final.stderr",
+        "sha256": "fcac7a8cf185d0b6efc150a87a654c9dd11bbbbe0f971bb23a2cff202e7c30e1"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_distribution.py",
+      "--report",
+      "/private/tmp/qleisli-v028-release/distribution-1802019-report.json",
+      "--target-dir",
+      "/private/tmp/qleisli-v028-release/distribution-target"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:41:24.156103+00:00",
+    "seconds": 126.678,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-1802019.stdout",
+        "sha256": "5af0b4d4837d841b4b5a27e108c92484bed7911712a655b37f912dac2823ccb4"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-1802019.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_distribution.py",
+      "--report",
+      "/private/tmp/qleisli-v028-release/distribution-final.json",
+      "--target-dir",
+      "/private/tmp/qleisli-v028-release/distribution-target"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:21:07.533522+00:00",
+    "seconds": 148.99,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-final.stdout",
+        "sha256": "cf60c4aa388f1ddfb11f2d2ac22306edfea3256bb0c53c75f41b981706f9f60c"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-final.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_distribution.py",
+      "--report",
+      "/private/tmp/qleisli-v028-release/distribution-final.json",
+      "--target-dir",
+      "/private/tmp/qleisli-v028-release/distribution-target"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:24:11.323822+00:00",
+    "seconds": 127.441,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-gate.stdout",
+        "sha256": "cf60c4aa388f1ddfb11f2d2ac22306edfea3256bb0c53c75f41b981706f9f60c"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/distribution-gate.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_distribution.py",
+      "--report",
+      "/private/tmp/qleisli-v028-release/distribution.json",
+      "--target-dir",
+      "/private/tmp/qleisli-v028-release/distribution-target"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:15:53.162601+00:00",
+    "seconds": 45.119,
+    "exit_code": 1,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/distribution.stdout",
+        "sha256": "cad112a9e304b0ea3836638d610b1ba5a28104f12030f3787e98837b8151f41d"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/distribution.stderr",
+        "sha256": "c70564575e150b57fda1b12237b173cb0bc0b62c542e813f7549f6778eac29f1"
+      }
+    }
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/rustup/bin/cargo",
+      "+1.85.0",
+      "test",
+      "--locked",
+      "--all-targets",
+      "--no-fail-fast"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:21:08.678621+00:00",
+    "seconds": 153.925,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/msrv-final.stdout",
+        "sha256": "4685b8e4b146d3fcd0eacd79267941118b766d27d640d7191f6034ae8dcbe0ac"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/msrv-final.stderr",
+        "sha256": "53ff0c45e2a36198b1246453ee13d79dd39d21f30348c0b3c086139501dc0dc0"
+      }
+    }
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-v028-release-python/bin/python",
+      "scripts/test_connections.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:13:43.809222+00:00",
+    "seconds": 6.609,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/python-pyqir.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/python-pyqir.stderr",
+        "sha256": "06bedab173481369e6e7e2ad961a0c2df231b74db010c59eb60a662cdd777846"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_check_*.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:12:47.775425+00:00",
+    "seconds": 23.235,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/python-regressions.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/python-regressions.stderr",
+        "sha256": "e485fb947b34f77dafe8eb2e305301483ff281fad5dab4202ef5d25ff5bf5073"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/test_qli_differential.py",
+      "target/debug/qleisli",
+      "--cases=96"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:39:37.142517+00:00",
+    "seconds": 0.862,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/qli-differential.stdout",
+        "sha256": "b3a0ac8edc022a866fbc72584b35058c8fd607c628b0124269afc039fea87242"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/qli-differential.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "command": [
+      "env",
+      "CARGO_HOME=/private/tmp/qleisli-v028-registry-cargo",
+      "cargo",
+      "install",
+      "qleisli",
+      "--version",
+      "=0.2.8",
+      "--locked",
+      "--root",
+      "/private/tmp/qleisli-v028-registry-install",
+      "--target-dir",
+      "/private/tmp/qleisli-v028-registry-target"
+    ],
+    "cwd": "/private/tmp",
+    "start_utc": "2026-10-03T05:11:17.860249+00:00",
+    "seconds": 35.793,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/registry-install.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/registry-install.stderr",
+        "sha256": "0a64c90e81ab6ee073ae6c3f3e2e5c9f7e4373796405294305703e5ff6295355"
+      }
+    }
+  },
+  {
+    "command": [
+      "python3",
+      "/private/tmp/qleisli-v028-registry-cargo/registry/src/index.crates.io-1949cf8c6b5b557f/qleisli-0.2.8/scripts/check_installation.py",
+      "/private/tmp/qleisli-v028-registry-install/bin/qleisli"
+    ],
+    "cwd": "/private/tmp",
+    "start_utc": "2026-10-03T05:12:27.013332+00:00",
+    "seconds": 0.754,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/registry-quickstart.stdout",
+        "sha256": "83f637f6de57500876c4762a286c2313859ab64d84fc87404b0e04baa429150c"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/registry-quickstart.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--all-targets"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:13:42.702918+00:00",
+    "seconds": 110.446,
+    "exit_code": 101,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/rust-tests-final.stdout",
+        "sha256": "67faa471f769932cf726a0725f8412291a0009e3c95c44fd2b0216180d433aa4"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/rust-tests-final.stderr",
+        "sha256": "9ef7e6fa934c4a4bcd320378f08af724b60fe5692ac81f0807775f8bcf89ffd4"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--all-targets"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:11:56.624593+00:00",
+    "seconds": 37.028,
+    "exit_code": 101,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/rust-tests.stdout",
+        "sha256": "cb6b8618fee359c3ccf075415c92145321b134575b5d395ce7aa6c4c008278cb"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/rust-tests.stderr",
+        "sha256": "2f5289877d7e0fbfb7a29c12dfb7679c08488e9dac92f8ffaa858f732a75a6cc"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "source_capacities"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:19:44.451594+00:00",
+    "seconds": 0.454,
+    "exit_code": 101,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/source-capacities-final.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/source-capacities-final.stderr",
+        "sha256": "783ed61e223f8ffb5345b22451aa3726502020d946dee27121ec594de70253ed"
+      }
+    }
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "source_capacities"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "start_utc": "2026-10-03T01:20:21.712482+00:00",
+    "seconds": 1.634,
+    "exit_code": 0,
+    "logs": {
+      "stdout": {
+        "path": "/private/tmp/qleisli-v028-release/source-capacities-v2.stdout",
+        "sha256": "570aec740037da2ac966404589509c409e7dd619e2885572b1ac2b1856a76a08"
+      },
+      "stderr": {
+        "path": "/private/tmp/qleisli-v028-release/source-capacities-v2.stderr",
+        "sha256": "0a8205da2d2e9143ca727be5beabc72728fbcfec32877d7f8829fc9acf7a5e4b"
+      }
+    }
+  }
+]

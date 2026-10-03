@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "same_tracked_bytes_and_modes": true,
+  "complete_crate_files_match": true,
+  "local_crate_sha256": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+  "linux_crate_sha256": "c5028d3ab81b994842bc4cc6545b0078b29ea301e808cc198b9ddf55e9788e8a",
+  "compressed_crates_equal": true,
+  "local_files": 2991,
+  "linux_files": 2991
+}

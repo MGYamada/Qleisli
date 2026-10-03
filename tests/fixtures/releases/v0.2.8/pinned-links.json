@@ -1,0 +1,140 @@
+{
+  "status": "passed",
+  "links": [
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md#package-identity-and-user-documentation",
+      "ref": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+      "path": "docs/crates-io-release.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md",
+        "status": 200,
+        "sha256": "3ca0abd8d82a937ab0cfc8dea5c7631edc9a6ede3caf1e42b8bf7779d25c3db6",
+        "bytes": 3752,
+        "saved": "pinned-link-0.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md#package-identity-and-user-documentation",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/crates-io-release.md#package-identity-and-user-documentation",
+        "status": 200,
+        "sha256": "63afea627c4fd63ac4f7b9cd9819aef367537975525cf300ed7cc66758de5e89",
+        "bytes": 267270,
+        "saved": "pinned-link-0.html"
+      }
+    },
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md",
+      "ref": "7844a10d63880a2b6984c093e2dc7a75033d1e1e",
+      "path": "docs/language-editions.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md",
+        "status": 200,
+        "sha256": "3f9abf144b9382585d86410d535f0f36e649f85fbc631086407001aa57abda68",
+        "bytes": 1940,
+        "saved": "pinned-link-1.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md",
+        "status": 200,
+        "sha256": "0d690b9c4fbdf4033708de0cf42d14851db4b3efafe59e42b6d2969f78205479",
+        "bytes": 255750,
+        "saved": "pinned-link-1.html"
+      }
+    },
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/TRUST_BOUNDARY.md",
+      "ref": "v0.2.8",
+      "path": "TRUST_BOUNDARY.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/TRUST_BOUNDARY.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/TRUST_BOUNDARY.md",
+        "status": 200,
+        "sha256": "6e8de6d1bde5d9ef8a509783a925e163a20836e27458d3dc1f1bc714b2be4706",
+        "bytes": 6604,
+        "saved": "pinned-link-2.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/TRUST_BOUNDARY.md",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/TRUST_BOUNDARY.md",
+        "status": 200,
+        "sha256": "fa0465e52bf0880158c0dc44462c4f0320e59e7710d697e870196cdc29bc2342",
+        "bytes": 269594,
+        "saved": "pinned-link-2.html"
+      }
+    },
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md",
+      "ref": "v0.2.8",
+      "path": "docs/releases/v0.2.8.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/docs/releases/v0.2.8.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/docs/releases/v0.2.8.md",
+        "status": 200,
+        "sha256": "6e41358f300c9160f3b085272bb8fe408c373090bba4c8a6247efd9fdd5aa676",
+        "bytes": 2607,
+        "saved": "pinned-link-3.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md",
+        "status": 200,
+        "sha256": "50bc52550a21e902d72c86092efed79337fc56ab19954d5cb20e6ca970fed9c8",
+        "bytes": 246819,
+        "saved": "pinned-link-3.html"
+      }
+    },
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/python/README.md",
+      "ref": "v0.2.8",
+      "path": "python/README.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/python/README.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/python/README.md",
+        "status": 200,
+        "sha256": "cf359150f3fd769bc0edb020e6ecc4bfd6fd7fb4f7eba9eca461530219247da2",
+        "bytes": 2440,
+        "saved": "pinned-link-4.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/python/README.md",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/python/README.md",
+        "status": 200,
+        "sha256": "56ec03caf447bb3d24b11308109186bb6d7b2edccfbc7fc1356f8969d4e1db83",
+        "bytes": 247981,
+        "saved": "pinned-link-4.html"
+      }
+    },
+    {
+      "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/tests/fixtures/quick_reference/README.md",
+      "ref": "v0.2.8",
+      "path": "tests/fixtures/quick_reference/README.md",
+      "bytes_match_git": true,
+      "raw": {
+        "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/tests/fixtures/quick_reference/README.md",
+        "final_url": "https://raw.githubusercontent.com/MGYamada/Qleisli/v0.2.8/tests/fixtures/quick_reference/README.md",
+        "status": 200,
+        "sha256": "e817c8421fa0cf4c5684773dd7f6abf0212d78951a6ed89b7d6b0544dd13f611",
+        "bytes": 564,
+        "saved": "pinned-link-5.raw"
+      },
+      "page": {
+        "url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/tests/fixtures/quick_reference/README.md",
+        "final_url": "https://github.com/MGYamada/Qleisli/blob/v0.2.8/tests/fixtures/quick_reference/README.md",
+        "status": 200,
+        "sha256": "518d0dbca4a831763ca7d28b8669013b45a20b757f58e4fe3a2dbc75c7f4cb05",
+        "bytes": 248302,
+        "saved": "pinned-link-5.html"
+      }
+    }
+  ],
+  "source_commit": "18020190b1c80037442be29d74e90fd9e07253e0",
+  "version": "0.2.8",
+  "checked_utc": "2026-10-03T05:08:54.984735+00:00"
+}

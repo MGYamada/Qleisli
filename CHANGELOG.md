@@ -6,7 +6,7 @@ separately in [release milestones](docs/release-milestones.md).
 
 ## Unreleased
 
-## 0.2.8 — selected 2026-10-03
+## 0.2.8 — 2026-10-03
 
 - Repair GitHub review findings: retain qrate directory identity across loading,
   restore search-only ancestor access on macOS 11+ and listed Linux targets,
@@ -36,7 +36,7 @@ separately in [release milestones](docs/release-milestones.md).
   and optional independent request; either rejection or transport failure blocks
   execution/emission. Add actual-checker lemmas, small differential/fault tests
   and fresh audited native bundles; S05 and full migration remain open.
-- Reduce tracked `docs/` UTF-8 bytes by approximately 55% from the current 0.2.7
+- Reduce tracked `docs/` UTF-8 bytes by approximately 54% from the current 0.2.7
   checkout; retain active plans, their acceptance gates and imaginary-v1.
   Retire detailed specification files with fixed-release references, preserving
   language contracts and the four quick-reference executable programs as fixtures.
@@ -46,8 +46,8 @@ separately in [release milestones](docs/release-milestones.md).
 - Synchronize Rust, Lean, Python and std qrate to 0.2.8; edition 2026, Rust
   authority, external-schema gates and theorem scope remain unchanged.
 
-Selection/local validation only; [candidate](docs/releases/v0.2.8.md) records
-performed and skipped checks. No tag or publication is claimed.
+Published to crates.io and GitHub; [release evidence](tests/fixtures/releases/v0.2.8/publication.json)
+binds the checked commit, full CI, package, fresh installation and source downloads.
 
 ## 0.2.7 - 2026-10-03
 

@@ -1,11 +1,11 @@
 {
   "format": 3,
-  "release_state": "0.2.8 selected; unpublished. Latest published: 0.2.7.",
+  "release_state": "0.2.8 published to crates.io and GitHub; exact-source full CI and downloaded artifacts verified.",
   "current": [
     {
       "topic": "0.2.8",
-      "state": "78 cases; opt-in Rust/Lean dual",
-      "detail": "[Candidate](releases/v0.2.8.md); [corpus](../corpus/validation-v0.2.8.json)."
+      "state": "Published; 78 cases; opt-in Rust/Lean dual",
+      "detail": "[Release](releases/v0.2.8.md); [publication evidence](../tests/fixtures/releases/v0.2.8/publication.json)."
     },
     {
       "topic": "Authority",
@@ -24,8 +24,8 @@
     },
     {
       "topic": "Bug triage",
-      "state": "12 issues reviewed; local repairs",
-      "detail": "[Validation](../tests/fixtures/bug_triage_v028/README.md); #186 already fixed; remaining patches await integration/platform validation."
+      "state": "12 issues resolved or confirmed fixed",
+      "detail": "[Release evidence](../tests/fixtures/releases/v0.2.8/publication.json); Linux/macOS/PyQIR full CI passed; older macOS retains its documented fallback."
     }
   ],
   "milestones": [

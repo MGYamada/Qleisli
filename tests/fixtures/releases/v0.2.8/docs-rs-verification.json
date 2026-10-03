@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "http_status": 200,
+  "builds_url": "https://docs.rs/crate/qleisli/0.2.8/builds",
+  "successful_build_url": "https://docs.rs/crate/qleisli/0.2.8/builds/4689323",
+  "url": "https://docs.rs/qleisli/0.2.8/qleisli/",
+  "checked_utc": "2026-10-03T05:12:27.837704+00:00",
+  "builds_sha256": "e1a976ff227758b7c12e39031e6d2652889088f8c66dcac7155e2056c0e2bd30",
+  "build_sha256": "a16ea389a2d2c24f44bc82d69134eb7d89b73e0c4eeb5d8bb2c98a646dc4401b",
+  "rustdoc_sha256": "ace469398dd75f8d54d47fc0f87ae6cd0d106f9ce4e45b3f28afeda3df5811ff"
+}
