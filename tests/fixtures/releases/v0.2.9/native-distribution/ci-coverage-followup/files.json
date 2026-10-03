@@ -1,0 +1,23 @@
+{
+  "native-results.json.gz": {
+    "decompressed_sha256": "bd737c4eb16988b11ea377b6e374a0e90ae41cc9f6b06ae843ebc0a6b04a65fd"
+  },
+  "source-package-stderr.gz": {
+    "decompressed_sha256": "179e92c0bca41e247c27562d3b31cc48fd1c1bd59e846dbc2c1159228988fdf7"
+  },
+  "msrv-ci.log.gz": {
+    "decompressed_sha256": "824e145bd34db7c50b9b5005ad702adc49b54df80392298af9806a69acaa774f"
+  },
+  "rust-ci.log.gz": {
+    "decompressed_sha256": "8c82cc115b7873f1df0ffb81b7a549a87a8c6b2cd2829362d92044b0abc3cabd"
+  },
+  "review-v021-small.log.gz": {
+    "decompressed_sha256": "1e76c7b60a48bcede2e65ba59ea1dbc963d1dd5e01271d5e5abc6921437f9796"
+  },
+  "runner-tests.log.gz": {
+    "decompressed_sha256": "0bfafb31ba19dddbc21d1a64cc780cf4bb6978f58f9db60c50a063387fdff8e7"
+  },
+  "source-package-stdout.gz": {
+    "decompressed_sha256": "73f473906dbdf4f51d1ea2ca708882ab1e3802fc1519831dec04dc1439432926"
+  }
+}

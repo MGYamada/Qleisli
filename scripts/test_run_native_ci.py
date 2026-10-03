@@ -155,6 +155,11 @@ class NativeCI(unittest.TestCase):
             self.assertEqual(results[0]["status"], "passed")
             self.assertEqual((output / "nested/record.json/interop-native.json").read_text(), "nested")
             self.assertFalse((root / "{record}").exists())
+            report = dict(binding={"head": "a"}, manifest_sha256="hash", tasks=results)
+            verify_coverage(report, tasks, {"head": "a"}, "hash")
+            results[0]["commands"][0]["command"][-1] = "{record}/interop-native.json"
+            with self.assertRaises(ValueError):
+                verify_coverage(report, tasks, {"head": "a"}, "hash")
 
     def test_failure_and_timeout_do_not_skip_other_groups_or_pass(self):
         fail = [sys.executable, "-c", "raise SystemExit(2)"]

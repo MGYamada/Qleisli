@@ -104,6 +104,10 @@ def launch_command(command: list[str]) -> list[str]:
     return command
 
 
+def record_command(template: list[str], directory: Path) -> list[str]:
+    return [arg.replace("{record}", str(directory / "record.json")) for arg in template]
+
+
 def run_task(task: dict, root: Path, directory: Path, timeout: float, environment: dict) -> dict:
     directory.mkdir()
     started = time.monotonic()
@@ -112,7 +116,7 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
     try:
         with log_path.open("w") as log:
             for template in task["commands"]:
-                command = [arg.replace("{record}", str(directory / "record.json")) for arg in template]
+                command = record_command(template, directory)
                 executed = launch_command(command)
                 log.write(json.dumps(dict(command=command, executed_command=executed)) + "\n")
                 log.flush()
@@ -149,7 +153,7 @@ def verify_coverage(report: dict, tasks: list[dict], binding: dict, manifest_has
         if result.get("status") != "passed" or len(result.get("commands", [])) != len(task["commands"]):
             raise ValueError(f"failed or incomplete comparison: {task['id']}")
         for observed, template in zip(result["commands"], task["commands"]):
-            command = [str(Path(result["log"]).parent / "record.json") if arg == "{record}" else arg for arg in template]
+            command = record_command(template, Path(result["log"]).parent)
             if observed.get("command") != command or observed.get("executed_command") != launch_command(command) or observed.get("exit_code") != 0:
                 raise ValueError(f"wrong or failed comparison command: {task['id']}")
 
