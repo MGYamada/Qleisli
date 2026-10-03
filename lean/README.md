@@ -25,7 +25,7 @@ retains literal physical circuits, phase, interfaces and output order. See the
 
 The executable **Mathlib-free** kernel is in [lean-kernel](../lean-kernel/README.md).
 This directory remains the separate Mathlib proof/model package. The
-[staged migration](../docs/lean-kernel-migration.md) now includes an
+staged migration now includes an
 [interference bridge](Qleisli/Interference.lean) importing the actual executable
 definitions through a local Lake dependency. It instantiates H/diagonal
 amplitude laws over complex numbers and interprets accepted phase/layout graphs
@@ -48,7 +48,7 @@ with separate isometry and unitary premises; it does not enumerate large
 operators or verify the experimental Rust kernel.
 It does not formalize the complete source
 language, the Rust compiler, general positivity, or the full quantum soundness
-theorem. The current [rule inventory](../docs/rule-inventory.md) links exact
+theorem. The current rule inventory links exact
 declarations, checking evidence and remaining proof obligations.
 
 Lean and Mathlib are pinned to `v4.30.0`; the committed manifest pins their
@@ -128,7 +128,7 @@ predicate is noncomputable; equality with Rust's finite-map scan is a paper
 correspondence supported by finite implementation checks, not a mechanized
 compiler-correctness theorem. See the
 [scope definitions and theorems](Qleisli/Scope.lean)
-and [Rust lowering-state refinement](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/lowering-state-refinement.md).
+and Rust lowering-state refinement.
 
 The build treats warnings as errors. The audit permits only `propext`,
 `Classical.choice`, and `Quot.sound`; it rejects `sorryAx`, native-evaluation

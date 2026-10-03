@@ -4,6 +4,85 @@ use common::SourceRoot;
 use std::process::Command;
 
 #[test]
+fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations() {
+    let root = SourceRoot::new("pub unitary fn id(q:Q<Bit>)->Q<Bit>{q}");
+    let kernel = std::env::var("QLEISLI_KERNEL").expect("explicit native checker");
+    for json in [false, true] {
+        for invalid in [false, true] {
+            root.write(
+                "unused.qli",
+                if invalid {
+                    "unitary fn broken(q:Q<Bit>)->Q<Bit>{missing(q)}"
+                } else {
+                    "unitary fn unused(q:Q<Bit>)->Q<Bit>{q}"
+                },
+            );
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command
+                .arg("check")
+                .arg(&root.0)
+                .arg(format!("--lean-kernel={kernel}"));
+            if json {
+                command.arg("--format=json");
+            }
+            let output = command.output().unwrap();
+            assert_eq!(output.status.success(), !invalid, "{output:?}");
+            assert!(!String::from_utf8_lossy(&output.stdout).contains("invalid_entry"));
+        }
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
+    use std::os::{fd::OwnedFd, unix::net::UnixStream};
+    use std::process::Stdio;
+    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let artifact = root.0.join("out.qirf");
+    for name in ["check", "run", "sample", "doc", "emit-ir", "verify-ir"] {
+        let (writer, reader) = UnixStream::pair().unwrap();
+        drop(reader); // Deterministic EPIPE before the child can write anything.
+        let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        command.arg(name).arg(match name {
+            "doc" => root.0.join("main.qli"),
+            "verify-ir" => artifact.clone(),
+            _ => root.0.clone(),
+        });
+        if name == "sample" {
+            command.args(["--shots=1", "--seed=1"]);
+        }
+        if name == "emit-ir" {
+            command.arg(format!("--output={}", artifact.display()));
+        }
+        let output = command
+            .stdout(Stdio::from(OwnedFd::from(writer)))
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(1), "{name}: {output:?}");
+        let text = String::from_utf8(output.stderr).unwrap();
+        assert!(text.contains("could not write"), "{name}: {text}");
+        assert!(!text.contains("panicked"), "{text}");
+    }
+    root.write("main.qli", "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}");
+    let (writer, reader) = UnixStream::pair().unwrap();
+    drop(reader);
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["sized", "emit-proposal", "--entry=main::f"])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .arg(format!("--output={}", root.0.join("sized.json").display()))
+        .stdout(Stdio::from(OwnedFd::from(writer)))
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1), "{output:?}");
+    let text = String::from_utf8(output.stderr).unwrap();
+    assert!(text.contains("could not write sized result"), "{text}");
+    assert!(!text.contains("panicked"), "{text}");
+}
+
+#[test]
 fn doc_reports_truncated_static_arguments_without_panicking() {
     let root = SourceRoot::new("unitary fn f(q: Q<Bit>) -> Q<Bit> { g[");
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
@@ -78,7 +157,7 @@ fn non_utf8_command_reports_usage_without_panicking() {
     assert_eq!(output.status.code(), Some(2), "{output:?}");
     assert_eq!(
         String::from_utf8(output.stderr).unwrap(),
-        include_str!("fixtures/verification_v028/usage.txt")
+        include_str!("fixtures/verification_v029/usage.txt")
     );
 }
 

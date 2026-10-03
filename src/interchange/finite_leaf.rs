@@ -1,16 +1,14 @@
-//! Reconstructed finite unitary leaves for the explicit transitional Rust
-//! boundary. These results are not Lean evidence or a hierarchical-program
-//! seal. Every call imports the complete immutable QIRF bytes again.
+//! Native finite equations bound to complete QIRF bytes and independent requests.
+//! Rust describes and decodes data; only a fresh Lean decision authorizes a leaf.
 
 use std::collections::BTreeSet;
 use std::sync::Arc;
 
-use super::{Error, Result, RootInterface, contract_error, import_with_budget};
-use crate::VerifiedProgram;
+use super::{Error, Result, contract_error};
+use crate::AcceptedProgram;
 use crate::contract::exact::{Budget, Matrix};
-use crate::contract::function::verified_meaning;
 use crate::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK};
-use crate::ir::{Effect, QuantumPort};
+use crate::ir::QuantumPort;
 
 /// Independently required whole-space boundary of a unary unitary leaf.
 /// The exact legacy type tree is retained even when its width is zero.
@@ -55,14 +53,14 @@ impl UnitaryBoundary {
     }
 }
 
-/// A Rust-checked finite equation bound to complete bytes and required ports.
+/// A native-checked finite equation bound to complete bytes and required ports.
 /// Private fields prevent producer construction. This value must never be
 /// serialized as an authority flag or imported into Lean as a theorem.
 #[derive(Debug)]
 pub struct CheckedUnitaryLeaf {
     payload: Arc<[u8]>,
     boundary: UnitaryBoundary,
-    program: VerifiedProgram,
+    program: AcceptedProgram,
     meaning: Matrix,
     exact_work: usize,
 }
@@ -76,7 +74,7 @@ impl CheckedUnitaryLeaf {
         &self.boundary
     }
 
-    pub fn program(&self) -> &VerifiedProgram {
+    pub fn program(&self) -> &AcceptedProgram {
         &self.program
     }
 
@@ -134,12 +132,28 @@ pub fn check_serialized_unitary(
     description: &[u8],
     budget: &mut Budget,
 ) -> Result<CheckedSerializedUnitaryLeaf> {
+    check_serialized_with_kernel(
+        &super::native::Kernel::selected()?,
+        payload,
+        boundary,
+        description,
+        budget,
+    )
+}
+
+pub(super) fn check_serialized_with_kernel(
+    kernel: &super::native::Kernel,
+    payload: &[u8],
+    boundary: &UnitaryBoundary,
+    description: &[u8],
+    budget: &mut Budget,
+) -> Result<CheckedSerializedUnitaryLeaf> {
     if payload.len().saturating_add(description.len()) > super::json::MAX_BYTES {
         return Err(Error::limit("combined finite leaf payload exceeds 16 MiB"));
     }
     let before = budget.remaining();
     let meaning = super::finite_matrix::decode(description, budget)?;
-    let leaf = check_unitary(payload, boundary, &meaning, budget)?;
+    let leaf = check_with_kernel(kernel, payload, boundary, &meaning, budget)?;
     Ok(CheckedSerializedUnitaryLeaf {
         leaf,
         description: Arc::from(description),
@@ -151,6 +165,22 @@ pub fn check_serialized_unitary(
 /// exact whole-space matrix. The caller shares one bounded budget across leaves.
 /// Neither the expected matrix nor the declared effect alone is evidence.
 pub fn check_unitary(
+    payload: &[u8],
+    boundary: &UnitaryBoundary,
+    meaning: &Matrix,
+    budget: &mut Budget,
+) -> Result<CheckedUnitaryLeaf> {
+    check_with_kernel(
+        &super::native::Kernel::selected()?,
+        payload,
+        boundary,
+        meaning,
+        budget,
+    )
+}
+
+fn check_with_kernel(
+    kernel: &super::native::Kernel,
     payload: &[u8],
     boundary: &UnitaryBoundary,
     meaning: &Matrix,
@@ -169,51 +199,15 @@ pub fn check_unitary(
             "finite leaf meaning dimensions differ from the required type",
         )));
     }
-    let imported = import_with_budget(payload, None, budget)?;
-    let raw = imported.program.raw();
-    if raw.declared_effect != Effect::Unitary
-        || imported.program.derived_effect() != Effect::Unitary
-        || !raw.classical_inputs.is_empty()
-        || !raw.classical_outputs.is_empty()
-        || raw.quantum_inputs.as_slice() != std::slice::from_ref(&boundary.input)
-        || imported.program.output_ports() != std::slice::from_ref(&boundary.output)
-    {
-        return Err(Error::new(
-            "contract",
-            "finite leaf does not match the required complete unitary boundary",
-        ));
-    }
-    let required_types = RootInterface {
-        input: boundary.signature.clone(),
-        output: boundary.signature.clone(),
-    };
-    if imported.root_interface.as_ref() != Some(&required_types) {
-        return Err(Error::new(
-            "contract",
-            "finite leaf retained type trees differ from the request",
-        )
-        .at("/root_interface"));
-    }
-    let actual =
-        verified_meaning(&imported.program, &boundary.signature, budget).map_err(contract_error)?;
+    let program = kernel.check_leaf(payload, boundary, meaning)?;
     budget
-        .charge(dimension * dimension)
+        .charge(program.native_exact_work())
         .map_err(ContractError::from)
         .map_err(contract_error)?;
-    if &actual != meaning {
-        return Err(contract_error(ContractError::EquationMismatch));
-    }
-    if !meaning
-        .is_isometry(budget)
-        .map_err(ContractError::from)
-        .map_err(contract_error)?
-    {
-        return Err(contract_error(ContractError::NotIsometric));
-    }
     Ok(CheckedUnitaryLeaf {
         payload: Arc::from(payload),
         boundary: boundary.clone(),
-        program: imported.program,
+        program,
         meaning: meaning.clone(),
         exact_work: before - budget.remaining(),
     })

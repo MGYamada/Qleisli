@@ -1,6 +1,6 @@
 use super::{InteropError, InteropErrorKind, MAX_GATES, MAX_OPERATIONS, MAX_QUBITS};
+use crate::AcceptedProgram;
 use crate::ir::*;
-use crate::{VerifiedProgram, verify};
 use std::collections::{BTreeMap, BTreeSet};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -132,7 +132,10 @@ impl TerminalCircuit {
         self.gates.push(GateOp { gate, wires });
         Ok(())
     }
-    pub fn lower(&self) -> Result<VerifiedProgram, InteropError> {
+    pub fn lower_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<AcceptedProgram, InteropError> {
         let mut operations = Vec::new();
         let mut next = 0u32;
         let mut fresh = || {
@@ -193,15 +196,16 @@ impl TerminalCircuit {
         for input in owners.into_iter().flatten() {
             operations.push(RawOp::Discard { input });
         }
-        verify(RawProgram {
-            quantum_inputs: vec![],
-            classical_inputs: vec![],
-            operations,
-            quantum_outputs: vec![],
-            classical_outputs,
-            declared_effect: Effect::Observe,
-        })
-        .map_err(|e| InteropError::new(InteropErrorKind::InvalidIr, e.to_string()))
+        kernel
+            .accept_raw(RawProgram {
+                quantum_inputs: vec![],
+                classical_inputs: vec![],
+                operations,
+                quantum_outputs: vec![],
+                classical_outputs,
+                declared_effect: Effect::Observe,
+            })
+            .map_err(|e| InteropError::new(InteropErrorKind::InvalidIr, e.to_string()))
     }
 }
 
@@ -256,7 +260,7 @@ pub(super) fn recognize(
     Ok((gate, axes.into_iter().map(|axis| wires[axis]).collect()))
 }
 
-pub(super) fn extract(program: &VerifiedProgram) -> Result<TerminalCircuit, InteropError> {
+pub(super) fn extract(program: &AcceptedProgram) -> Result<TerminalCircuit, InteropError> {
     let raw = program.raw();
     if !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()

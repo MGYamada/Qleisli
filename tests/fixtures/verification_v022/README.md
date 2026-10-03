@@ -37,7 +37,7 @@ authority. The Python version-only change and Rust documentation/configuration
 source hashes are refreshed deliberately. Existing public type/IR declarations,
 source capacities, frozen comparison bytes, historical reports and external-disabled
 schemas are retained. See [Issue 96](https://github.com/MGYamada/Qleisli/issues/96)
-and the [edition contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md).
+and the edition contract.
 The [registry review](registry-edition-v023-validation.json) rebuilds/audits both
 Lean packages, replays the runtime kernel and exports actual theorem types.
 It refreshes only the two package-version source pins; theorem types, domains,
@@ -51,7 +51,7 @@ pins. Added cases have their own first-source and numerical reports in
 [the 0.2.3 session](../../../corpus/authoring/v023-small/session.json).
 No behavior or comparison artifact is regenerated.
 
-The [v0.2.5 internal refactoring](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md) reviews eleven
+The v0.2.5 internal refactoring reviews eleven
 changed private-body/version hashes and adds eight private modules. Shared CLI
 execution, frontend flattening state, finite numerical state/circuit execution,
 explicit QIRF field maps and native hierarchy response handling retain published
@@ -61,8 +61,8 @@ The later Lean refactoring refreshes thirty-two kernel source-body pins and adds
 eight bounded-capacity/transport modules. Existing public types, legacy rewrite
 names, actual result/work behavior and all original comparison bytes remain.
 Source/import and compiled-origin policy explicitly cover each transport child;
-registry identity includes its complete source. [Universal equality and native
-comparisons](https://github.com/MGYamada/Qleisli/blob/b316a5065527c84f3dbcb059750637e2b14b0965/docs/releases/v0.2.5.md#lean-kernel-continuation) record the
+registry identity includes its complete source. Universal equality and native
+comparisons record the
 review without enabling schemas or claiming later migration gates.
 The v0.2.2 review repairs explicitly refresh thirteen checking-source snapshots
 and two current harness pins, then add eight regression/source pins. Public
@@ -131,7 +131,7 @@ hierarchy or `QLEISLI_VM22_CAPTURE=<directory>` for the Rust finite test) is a
 review operation, not acceptance evidence; review independent requests and
 update individual inventory hashes deliberately. Write a new report with
 `--report=<path>`; retain historical records. VM-23 starts arithmetic migration
-against this baseline under the [staged plan](../../../docs/verification-migration-v0.2.md).
+against this baseline under the [staged plan](https://github.com/MGYamada/Qleisli/issues/276).
 
 Local harness code is Apache-2.0. Katas-derived SWAP/Fredkin artifacts retain
 Copyright (c) Microsoft Corporation and their

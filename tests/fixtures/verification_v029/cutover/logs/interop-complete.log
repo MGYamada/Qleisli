@@ -1,0 +1,15 @@
+test_all_actions_formats_use_real_native_checker (__main__.PublicDual.test_all_actions_formats_use_real_native_checker) ... ok
+test_artifact_mutation_rejects_before_every_action (__main__.PublicDual.test_artifact_mutation_rejects_before_every_action) ... ok
+test_invalid_kernel_options_are_usage_failures (__main__.PublicDual.test_invalid_kernel_options_are_usage_failures) ... ok
+test_missing_rejecting_and_failed_native_block_every_output (__main__.PublicDual.test_missing_rejecting_and_failed_native_block_every_output) ... ok
+test_no_source_reload_after_native_acceptance (__main__.PublicDual.test_no_source_reload_after_native_acceptance) ... ok
+test_python_cli_actions_preserve_failure_envelopes (__main__.PublicDual.test_python_cli_actions_preserve_failure_envelopes) ... ok
+test_python_imports_and_every_program_method_use_selected_kernel (__main__.PublicDual.test_python_imports_and_every_program_method_use_selected_kernel) ... ok
+test_python_program_does_not_cache_prior_acceptance (__main__.PublicDual.test_python_program_does_not_cache_prior_acceptance) ... ok
+test_qir_text_and_bitcode_keep_gate_after_translation (__main__.PublicDual.test_qir_text_and_bitcode_keep_gate_after_translation) ... ok
+test_qirf_emission_keeps_the_exact_checked_snapshot (__main__.PublicDual.test_qirf_emission_keeps_the_exact_checked_snapshot) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 27.041s
+
+OK

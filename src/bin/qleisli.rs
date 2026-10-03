@@ -20,6 +20,16 @@ mod sized;
 #[path = "qleisli/source_commands.rs"]
 mod source_commands;
 
+fn write_stdout(bytes: &[u8], description: &str) -> ExitCode {
+    match std::io::stdout().lock().write_all(bytes) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            eprintln!("could not write {description}: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}
+
 fn report(root: &std::path::Path, error: Diagnostic) {
     if let Some(p) = error.primary {
         eprintln!(
@@ -72,14 +82,14 @@ fn main() -> ExitCode {
     }
     if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
         return match artifacts::execute(&options) {
-            Ok(artifacts::Success::Emitted(path)) => {
-                println!("emitted independently verified IR: {path}");
-                ExitCode::SUCCESS
-            }
-            Ok(artifacts::Success::Verified(request)) => {
-                println!("verified IR; request_checked: {request}");
-                ExitCode::SUCCESS
-            }
+            Ok(artifacts::Success::Emitted(path)) => write_stdout(
+                format!("emitted independently verified IR: {path}\n").as_bytes(),
+                "emission result",
+            ),
+            Ok(artifacts::Success::Verified(request)) => write_stdout(
+                format!("verified IR; request_checked: {request}\n").as_bytes(),
+                "verification result",
+            ),
             Err(artifacts::Failure::Source(error)) => {
                 report(source_root, error);
                 ExitCode::FAILURE
@@ -99,13 +109,7 @@ fn main() -> ExitCode {
             }
         };
         return match render_markdown(&source) {
-            Ok(markdown) => match std::io::stdout().lock().write_all(markdown.as_bytes()) {
-                Ok(()) => ExitCode::SUCCESS,
-                Err(error) => {
-                    eprintln!("could not write documentation: {error}");
-                    ExitCode::FAILURE
-                }
-            },
+            Ok(markdown) => write_stdout(markdown.as_bytes(), "documentation"),
             Err(error) => {
                 eprintln!("{}: {error}", source_root.display());
                 ExitCode::FAILURE
@@ -113,10 +117,14 @@ fn main() -> ExitCode {
         };
     }
     match source_commands::execute(&options, source_root) {
-        Ok(source_commands::Success::Checked) => {
-            println!("checked source and verified IR: {}", source_root.display());
-            ExitCode::SUCCESS
-        }
+        Ok(source_commands::Success::Checked) => write_stdout(
+            format!(
+                "checked source and verified IR: {}\n",
+                source_root.display()
+            )
+            .as_bytes(),
+            "check result",
+        ),
         Err(source_commands::Failure::Source(error)) => {
             report(source_root, error);
             ExitCode::FAILURE
@@ -132,32 +140,26 @@ fn main() -> ExitCode {
                 }
                 text.push('\n');
             }
-            match std::io::stdout().lock().write_all(text.as_bytes()) {
-                Ok(()) => ExitCode::SUCCESS,
-                Err(e) => {
-                    eprintln!("could not write sample results: {e}");
-                    ExitCode::FAILURE
-                }
-            }
+            write_stdout(text.as_bytes(), "sample results")
         }
         Ok(source_commands::Success::Distribution(distribution)) => {
+            use std::fmt::Write as _;
+            let mut text = String::new();
             for (outcome, probability) in distribution {
                 let label: String = outcome
                     .iter()
                     .map(|bit| if *bit { '1' } else { '0' })
                     .collect();
-                println!(
+                writeln!(
+                    text,
                     "{}: {probability:.12e}",
                     if label.is_empty() { "()" } else { &label }
-                );
+                )
+                .expect("writing to String");
             }
-            ExitCode::SUCCESS
+            write_stdout(text.as_bytes(), "distribution")
         }
         Err(source_commands::Failure::Simulation(error)) => {
-            eprintln!("{error}");
-            ExitCode::FAILURE
-        }
-        Err(source_commands::Failure::Artifact(error)) => {
             eprintln!("{error}");
             ExitCode::FAILURE
         }

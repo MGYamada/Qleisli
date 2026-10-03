@@ -1,9 +1,11 @@
 # Contributing to Qleisli
 
-Read [AGENTS.md](AGENTS.md) before changing the repository. It records the
+Read [AGENTS.md](AGENTS.md) before changing the repository; [CLAUDE.md](CLAUDE.md)
+contains identical instructions. Update both together: `scripts/check_docs.py`
+enforces byte-for-byte equality and the same size limits. They record the
 design-first workflow, quantum safety requirements, specification languages,
-and required validation. The public compatibility and release policy is in
-[Versioning](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md).
+and required validation. Compatible 0.y.z maintenance uses PATCH; public
+breaking changes use MINOR with a recorded migration and acceptance criteria.
 
 ## License of contributions
 
@@ -42,10 +44,10 @@ criteria and resolution. The legacy backlog is retired; use Issues for new work.
 ## Documentation cleanup
 
 Follow **docs/ cleanup boundary at v0.3.0** in
-[AGENTS.md](AGENTS.md#docs-cleanup-boundary-at-v030). Delete obsolete documents
-actively, while retaining the active v0.2.x goals and migration plan. Retire the
-remaining legacy files by v0.3.0 and write the new documentation from scratch;
-do not migrate or archive the old tree.
+[AGENTS.md](AGENTS.md#docs-cleanup-boundary-at-v030). Only imaginary-v1 drafts remain in `docs/`. Other former documents
+are temporarily stored in `docs-old/`, which will be deleted at v0.3.0. Remove
+links and active checker dependencies now; preserve executable source, proofs,
+validation artifacts and notices outside that temporary tree.
 
 ## Recording changes
 
@@ -64,17 +66,41 @@ Every required context rejects missing/failed selected suites. Cargo caches cont
 dependency archives only; project binaries/Lean definitions are rebuilt, audited
 and freshly replayed. This selection policy does not adopt the future constitutional
 registry in Issue #141. Use `python3 scripts/test_ci_profiles.py` locally.
-For release preparation, use the complete checklist in
-[Versioning](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md#release-records-and-validation). Distinguish
+For release preparation, check the exact source, packages, installed quickstart,
+archive inventories, licenses and full CI before tagging. Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
-The [crates.io procedure](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md) covers the registry README,
-API doctests, installed quickstart and archive inventories. Local release
+Include the registry README and API doctests in that validation. Local release
 preparation alone does not authorize an upload; the 0.2.1 upload was separately
 authorized by the user on 2026-09-30, subject to rechecking.
 
+## Version and source-binding maintenance
+
+Preview all product-version edits and exact-source review requirements with:
+
+```sh
+python3 scripts/maintain_release.py --version 0.2.9 --report /tmp/release-plan.json
+```
+
+Cargo is authoritative when `--version` is omitted. The plan covers Cargo/lock,
+both Lake packages, Python metadata/runtime, std Qargo and current installation
+snippets; dependency and publication-history versions are never rewritten.
+Apply with `--write --refresh-registry` to run the existing complete registry
+build/audit/replay, followed by source, metadata, docs and edition checks.
+The report retains the exact proposed diffs, hashes and command outcomes.
+Existing source drift requires inspection and explicit `--review-source PATH`;
+matching public signatures alone never approve implementation changes. New
+public surfaces require an inventory and [VM29 coverage](tests/fixtures/verification_v029/README.md)
+review. A failed audit leaves a failed report; it does not certify the edits.
+Release prose and milestone decisions still require editorial review.
+
+Corpus `--report` files are atomically checkpointed after every completed case.
+`status: incomplete` or `failed` never means acceptance, even if some rows passed.
+Failures retain case/stage, diagnostics and available input identities; each new
+run replaces a stale success before starting validation.
+
 ## Executable verification kernel
 
-The [Lean migration](docs/lean-kernel-migration.md) keeps the Rust frontend and
+The Lean migration keeps the Rust frontend and
 moves acceptance logic in bounded, proved steps to [lean-kernel](lean-kernel/README.md).
 That executable package depends on Lean 4.30.0 Init/Std only; Mathlib remains in
 the separate proof/model package. Follow the package's build, compiled audit,
@@ -85,9 +111,9 @@ Record the actual theorem scope and residual native/transport assumptions.
 ## Community development from v0.5
 
 Qleisli currently develops through an individual-led effort with public source
-and checks. The [adopted roadmap](docs/v0x-roadmap.md#community-development-from-v05)
+and checks. The adopted roadmap
 plans broader community development from v0.5 onward, anchored in the
-[Qleisli Soundness Theorem](docs/release-milestones.md#qleisli-soundness-theorem-v050).
+Qleisli Soundness Theorem.
 Contributions and review can begin before that milestone.
 
 During 0.4.x, prepare reproducible contributor setup, bounded issues, proof/code
@@ -104,17 +130,22 @@ continue to apply.
 Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
 `corpus` under its existing source/license policy. From v0.5.0, grow the library
 as a mathlib-style open-source effort with shared mathematical conventions and
-reviewed contributions. Read [STDLIB.md](STDLIB.md), start from its
-[contract template](docs/stdlib-contract-template.md), and compare the
-[three filled contracts](STDLIB.md#template-and-reference-implementations)
-with their actual source and existing evidence.
+reviewed contributions. Read [STDLIB.md](STDLIB.md) and compare its existing reference implementations
+with their source and independent evidence.
 
 Specify the meaning/phase, encoding, owner transitions, entry/access premises,
 scratch return, approximation and resource model before selecting an optimized
 implementation. Show source checks, semantic tests, actual-IR proofs, source
 preservation and specification review as distinct scoped results. Keep general
 borrow syntax and final parameterized APIs in the language specification process.
-The initial `check_stdlib_contract_docs.py` CI step checks documentation form
-and links only; planned `qlippy` tooling issues no semantic acceptance evidence.
+The retired template/pilot prose is no longer required by CI. Planned `qlippy`
+tooling issues no semantic acceptance evidence.
 Follow the existing reuse/adoption and compatibility rules rather than treating
 corpus frequency or a successful linter as standard adoption.
+
+Runtime tests require a freshly built native checker. Run `(cd lean-kernel &&
+lake build && lake env lean -DwarningAsError=true Audit.lean)`, then export
+`QLEISLI_KERNEL` as the absolute path to its `.lake/build/bin/qleisli-kernel`.
+The explicitly approved v0.2.9 exception removes Rust acceptance; Cargo builds
+and API documentation still need only Rust. Missing checker tests unset the
+variable in child processes so they cannot fall back to a development checkout.

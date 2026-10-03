@@ -127,7 +127,13 @@ impl Lowerer<'_, '_> {
                         classical_outputs: vec![],
                         declared_effect: Effect::Unitary,
                     };
-                    let verified = crate::verify(raw).expect("fixed sealed primitive");
+                    let verified = self.compiler.kernel.accept_raw(raw).map_err(|e| {
+                        self.compiler.op_error(
+                            module,
+                            name.span,
+                            crate::contract::ContractError::InvalidCircuit(e.to_string()),
+                        )
+                    })?;
                     crate::contract::function::verified_meaning(
                         &verified,
                         &signature,

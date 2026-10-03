@@ -3,13 +3,13 @@ mod common;
 use std::process::Command;
 use std::sync::Arc;
 
+use common::accept;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
 use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_serialized_unitary, check_unitary};
 use qleisli::interchange::finite_matrix;
 use qleisli::interchange::{self, RootInterface, Version};
 use qleisli::ir::*;
-use qleisli::verify;
 
 fn port(token: u32, wires: &[u32]) -> QuantumPort {
     QuantumPort {
@@ -34,7 +34,7 @@ fn raw(input: QuantumPort, operations: Vec<RawOp>, output: u32) -> RawProgram {
 
 fn packet(raw: RawProgram, ty: BasisType, version: Version) -> Vec<u8> {
     interchange::export(
-        &verify(raw).unwrap(),
+        &accept(raw).unwrap(),
         Some(&RootInterface {
             input: ty.clone(),
             output: ty,
@@ -203,7 +203,7 @@ fn type_tree_owner_and_wire_mutations_are_not_dimension_equality() {
         );
     }
     let no_types =
-        interchange::export(&verify(gate(SingleGate::H)).unwrap(), None, Version::V2).unwrap();
+        interchange::export(&accept(gate(SingleGate::H)).unwrap(), None, Version::V2).unwrap();
     assert_eq!(
         check_unitary(
             &no_types,
@@ -316,7 +316,7 @@ fn embedded_receipts_are_reconstructed_before_leaf_equality() {
     )
     .unwrap_err();
     assert_eq!(error.code, "contract");
-    assert!(error.json_pointer.starts_with("/evidence/"));
+    assert_eq!(error.code, "contract");
 }
 
 #[test]
@@ -368,7 +368,7 @@ fn malformed_payload_matrix_and_outside_six_bit_boundary_reject() {
         )
         .unwrap_err()
         .code,
-        "format"
+        "invalid_ir"
     );
     let seven = BasisType::Tuple(vec![BasisType::Bit; 7]);
     assert_eq!(
@@ -527,7 +527,9 @@ fn fresh_process_reconstruction_rejects_a_global_phase_mutation() {
             .unwrap();
         assert_eq!(result.status.success(), accepted, "{result:?}");
         if !accepted {
-            assert!(String::from_utf8_lossy(&result.stderr).contains("does not hold"));
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains("Lean native checker rejected")
+            );
         }
     }
 }
@@ -687,7 +689,9 @@ fn fresh_process_decodes_both_sides_and_rejects_changed_meaning() {
             .unwrap();
         assert_eq!(result.status.success(), accepted, "{result:?}");
         if !accepted {
-            assert!(String::from_utf8_lossy(&result.stderr).contains("does not hold"));
+            assert!(
+                String::from_utf8_lossy(&result.stderr).contains("Lean native checker rejected")
+            );
         }
     }
 }

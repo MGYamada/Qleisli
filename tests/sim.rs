@@ -1,10 +1,11 @@
+mod common;
+use common::accept;
 use qleisli::ir::{
-    BasisShape, ClassicalId, Control, Effect, ProtectedBit, ProtectedRegion, ProtectedUse,
-    QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate, TokenId, UnitaryStep,
-    WireId,
+    BasisShape, ClassicalId, ClassicalPhi, Control, Effect, ProtectedBit, ProtectedRegion,
+    ProtectedUse, QuantumPhi, QuantumPort, RawOp, RawProgram, ScalarPhase, SingleGate, TokenId,
+    UnitaryStep, WireId,
 };
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
-use qleisli::verify;
 
 fn t(id: u32) -> TokenId {
     TokenId(id)
@@ -18,8 +19,8 @@ fn c(id: u32) -> ClassicalId {
     ClassicalId(id)
 }
 
-fn closed(operations: Vec<RawOp>, classical_outputs: Vec<ClassicalId>) -> qleisli::VerifiedProgram {
-    verify(RawProgram {
+fn closed(operations: Vec<RawOp>, classical_outputs: Vec<ClassicalId>) -> qleisli::AcceptedProgram {
+    accept(RawProgram {
         quantum_inputs: vec![],
         classical_inputs: vec![],
         operations,
@@ -30,7 +31,7 @@ fn closed(operations: Vec<RawOp>, classical_outputs: Vec<ClassicalId>) -> qleisl
     .expect("test program should verify")
 }
 
-fn run(program: &qleisli::VerifiedProgram) -> std::collections::BTreeMap<Vec<bool>, f64> {
+fn run(program: &qleisli::AcceptedProgram) -> std::collections::BTreeMap<Vec<bool>, f64> {
     let distribution = run_closed(program, SimulationLimits::default()).unwrap();
     close(distribution.values().sum(), 1.0);
     distribution
@@ -41,6 +42,263 @@ fn close(actual: f64, expected: f64) {
         (actual - expected).abs() < 1e-12,
         "expected {expected}, got {actual}"
     );
+}
+
+#[test]
+fn nested_branches_reserve_pending_outer_components_and_amplitudes() {
+    use qleisli::frontend::compile::compile_project;
+    let root = common::SourceRoot::new(include_str!(
+        "fixtures/review_v029/nested_ensemble/main.qli"
+    ));
+    let program = compile_project(&root.0).unwrap();
+    // At deepest allocation: two pending outside components plus four cells.
+    assert!(matches!(
+        run_closed(
+            &program,
+            SimulationLimits {
+                max_amplitude_cells: 4,
+                ..SimulationLimits::default()
+            }
+        ),
+        Err(SimulationError::AmplitudeLimit { max: 4, .. })
+    ));
+    assert!(matches!(
+        run_closed(
+            &program,
+            SimulationLimits {
+                max_components: 2,
+                ..SimulationLimits::default()
+            }
+        ),
+        Err(SimulationError::ComponentLimit { max: 2 })
+    ));
+    let distribution = run_closed(
+        &program,
+        SimulationLimits {
+            max_amplitude_cells: 6,
+            max_components: 3,
+            ..SimulationLimits::default()
+        },
+    )
+    .unwrap();
+    close(distribution[&vec![true]], 1.0);
+}
+
+#[test]
+fn classical_projection_copies_share_the_execution_budget() {
+    let mut operations: Vec<_> = (0..256)
+        .map(|i| RawOp::ClassicalConst {
+            value: false,
+            output: c(i),
+        })
+        .collect();
+    for i in 0..4 {
+        operations.extend([
+            RawOp::Init0 {
+                output: t(i * 2),
+                wire: w(i),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: t(i * 2),
+                output: t(i * 2 + 1),
+            },
+            RawOp::MeasureZ {
+                input: t(i * 2 + 1),
+                output: c(256 + i),
+            },
+        ]);
+    }
+    let program = closed(operations, vec![c(259)]);
+    assert!(matches!(
+        run_closed(
+            &program,
+            SimulationLimits {
+                max_execution_steps: 4096,
+                ..SimulationLimits::default()
+            }
+        ),
+        Err(SimulationError::ExecutionLimit { max: 4096 })
+    ));
+    let distribution = run_closed(&program, SimulationLimits::default()).unwrap();
+    close(distribution[&vec![false]], 0.5);
+    close(distribution[&vec![true]], 0.5);
+    let mut rng = qleisli::sim::SplitMix64::new(1);
+    assert!(matches!(
+        qleisli::sim::sample_closed(
+            &program,
+            &mut rng,
+            qleisli::sim::SampleLimits {
+                max_execution_steps: 512,
+                ..qleisli::sim::SampleLimits::default()
+            }
+        ),
+        Err(qleisli::sim::SampleError::Limit(
+            SimulationError::ExecutionLimit { max: 512 }
+        ))
+    ));
+}
+
+#[test]
+fn branch_phi_copies_share_the_ensemble_and_sample_execution_budgets() {
+    let mut operations = Vec::new();
+    for i in 0..2 {
+        operations.extend([
+            RawOp::Init0 {
+                output: t(i * 2),
+                wire: w(i),
+            },
+            RawOp::Gate {
+                gate: SingleGate::H,
+                input: t(i * 2),
+                output: t(i * 2 + 1),
+            },
+            RawOp::MeasureZ {
+                input: t(i * 2 + 1),
+                output: c(i),
+            },
+        ]);
+    }
+    operations.push(RawOp::ClassicalBranch {
+        condition: c(0),
+        then_ops: vec![],
+        else_ops: vec![],
+        quantum_phis: vec![],
+        classical_phis: (2..102)
+            .map(|i| ClassicalPhi {
+                output: c(i),
+                then_id: c(0),
+                else_id: c(0),
+            })
+            .collect(),
+    });
+    let program = closed(operations, vec![c(101)]);
+    // Four retained components each gain 100 values, even with empty arms.
+    assert_eq!(
+        run_closed(
+            &program,
+            SimulationLimits {
+                max_execution_steps: 32,
+                ..SimulationLimits::default()
+            }
+        ),
+        Err(SimulationError::ExecutionLimit { max: 32 })
+    );
+    let distribution = run(&program);
+    close(distribution[&vec![false]], 0.5);
+    close(distribution[&vec![true]], 0.5);
+    for word in [0, u64::MAX] {
+        let mut rng = || Ok::<_, ()>(word);
+        assert_eq!(
+            qleisli::sim::sample_closed(
+                &program,
+                &mut rng,
+                qleisli::sim::SampleLimits {
+                    max_execution_steps: 16,
+                    ..qleisli::sim::SampleLimits::default()
+                }
+            ),
+            Err(qleisli::sim::SampleError::Limit(
+                SimulationError::ExecutionLimit { max: 16 }
+            ))
+        );
+        // Six IR operations, three projection copies, one branch, 100 phi values.
+        let sample = qleisli::sim::sample_closed(
+            &program,
+            &mut rng,
+            qleisli::sim::SampleLimits {
+                max_execution_steps: 110,
+                ..qleisli::sim::SampleLimits::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(sample.bits, vec![word != 0]);
+        assert_eq!(sample.execution_steps, 110);
+    }
+}
+
+#[test]
+fn quantum_phi_copies_charge_empty_owners_and_wire_relabeling() {
+    let program = closed(
+        vec![
+            RawOp::ClassicalConst {
+                value: true,
+                output: c(0),
+            },
+            RawOp::Init0 {
+                output: t(0),
+                wire: w(0),
+            },
+            RawOp::Split {
+                input: t(0),
+                left: t(1),
+                right: t(2),
+                left_bits: 0,
+            },
+            RawOp::ClassicalBranch {
+                condition: c(0),
+                then_ops: vec![],
+                else_ops: vec![],
+                classical_phis: vec![],
+                quantum_phis: vec![
+                    QuantumPhi {
+                        then_token: t(1),
+                        else_token: t(1),
+                        output: t(3),
+                        output_wires: vec![],
+                    },
+                    QuantumPhi {
+                        then_token: t(2),
+                        else_token: t(2),
+                        output: t(4),
+                        output_wires: vec![w(1)],
+                    },
+                ],
+            },
+            RawOp::Discard { input: t(3) },
+            RawOp::MeasureZ {
+                input: t(4),
+                output: c(1),
+            },
+        ],
+        vec![c(1)],
+    );
+    assert_eq!(
+        run_closed(
+            &program,
+            SimulationLimits {
+                max_execution_steps: 10,
+                ..SimulationLimits::default()
+            }
+        ),
+        Err(SimulationError::ExecutionLimit { max: 10 })
+    );
+    close(run(&program)[&vec![false]], 1.0);
+    let mut rng = || Ok::<_, ()>(0);
+    assert_eq!(
+        qleisli::sim::sample_closed(
+            &program,
+            &mut rng,
+            qleisli::sim::SampleLimits {
+                max_execution_steps: 8,
+                ..qleisli::sim::SampleLimits::default()
+            }
+        ),
+        Err(qleisli::sim::SampleError::Limit(
+            SimulationError::ExecutionLimit { max: 8 }
+        ))
+    );
+    let sample = qleisli::sim::sample_closed(
+        &program,
+        &mut rng,
+        qleisli::sim::SampleLimits {
+            max_execution_steps: 12,
+            ..qleisli::sim::SampleLimits::default()
+        },
+    )
+    .unwrap();
+    assert_eq!(sample.bits, vec![false]);
+    assert_eq!(sample.execution_steps, 12);
 }
 
 #[test]
@@ -480,7 +738,7 @@ fn toffoli_and_classical_boolean_ops_execute() {
 
 #[test]
 fn nonclosed_input_and_dimension_limit_are_reported() {
-    let open = verify(RawProgram {
+    let open = accept(RawProgram {
         quantum_inputs: vec![QuantumPort {
             token: t(0),
             wires: vec![w(0)],

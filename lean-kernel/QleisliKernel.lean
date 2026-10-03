@@ -12,6 +12,7 @@ import QleisliKernel.Raw.Protected
 import QleisliKernel.Raw.Pure
 import QleisliKernel.Raw.Observation
 import QleisliKernel.Raw.ObservationOwnership
+import QleisliKernel.Raw.ObservationScope
 import QleisliKernel.Semantics.OwnershipLaws
 import QleisliKernel.Raw.Instrument
 import QleisliKernel.Hierarchy
@@ -61,3 +62,5 @@ import QleisliKernel.Hierarchical.CircuitTrace
 import QleisliKernel.Hierarchical.QpeSchedule
 import QleisliKernel.Hierarchical.QpeRoot
 import QleisliKernel.Hierarchical.QpeInstrument
+
+import QleisliKernel.Qirf.Contract

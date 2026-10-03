@@ -1,6 +1,6 @@
 //! Bounded, untrusted OpenQASM 3 / QIR adapters for closed terminal circuits.
 //!
-//! See [the fixed interoperability contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md) for the accepted subset, QIS and limits. Imported
+//! See the fixed interoperability contract for the accepted subset, QIS and limits. Imported
 //! ownership is independently verified; translation correctness is not proved
 //! by that check. Export never transfers Qleisli evidence to an external tool.
 
@@ -9,11 +9,11 @@ mod openqasm;
 mod profile;
 mod qir;
 
-use crate::VerifiedProgram;
+use crate::AcceptedProgram;
 use crate::frontend::ast::Span;
 use std::fmt;
 
-pub use openqasm::import_openqasm3;
+pub use openqasm::{import_openqasm3, import_openqasm3_with_kernel};
 
 /// Maximum UTF-8 source size accepted by the initial OpenQASM adapter.
 pub const MAX_OPENQASM_BYTES: usize = 1 << 20;
@@ -77,12 +77,12 @@ impl fmt::Display for InteropError {
 impl std::error::Error for InteropError {}
 
 /// Export a closed, verified terminal-profile program as OpenQASM 3.0.
-pub fn export_openqasm3(program: &VerifiedProgram) -> Result<String, InteropError> {
+pub fn export_openqasm3(program: &AcceptedProgram) -> Result<String, InteropError> {
     Ok(openqasm::write(&profile::extract(program)?))
 }
 
 /// Export QIR 2.0 Base Profile text with the explicit QIS in the connection spec.
 /// Standard LLVM assembly/verification and target support remain external gates.
-pub fn export_qir_base(program: &VerifiedProgram) -> Result<String, InteropError> {
+pub fn export_qir_base(program: &AcceptedProgram) -> Result<String, InteropError> {
     Ok(qir::write(&profile::extract(program)?))
 }

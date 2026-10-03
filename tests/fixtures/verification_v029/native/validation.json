@@ -1,0 +1,116 @@
+{
+  "format": "qleisli.native-migration-initial-validation",
+  "version": 1,
+  "date": "2026-10-03",
+  "decision": "https://github.com/MGYamada/Qleisli/issues/276",
+  "status": "initial-slice-passed",
+  "cutover_complete": false,
+  "general_soundness_proved": false,
+  "replay_sha256": "a7b810b9e234e76fd91108e71327dfe3e24ae3c9042652d43773b31c6c47f61c",
+  "performed": [
+    {
+      "command": "cargo test --locked --offline",
+      "result": "passed; native-dependent ignored tests are separately selected below; includes three new compile-fail tests"
+    },
+    {
+      "command": "QLEISLI_DUAL_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel cargo test --test native_acceptance --test dual -- --include-ignored",
+      "result": "passed: 4 native slice tests, 3 retained dual tests"
+    },
+    {
+      "command": "cargo doc --no-deps --locked --offline",
+      "result": "passed"
+    },
+    {
+      "command": "cargo build --example native_acceptance --locked --offline",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/test_native_acceptance_replay.py --record tests/fixtures/verification_v029/native/replay",
+      "result": "passed: 799 pairs, 263 accepts, 536 rejects, no mismatches; one explicit empty-input proposal-bound rejection"
+    },
+    {
+      "command": "python3 scripts/test_test_native_acceptance_replay.py",
+      "result": "passed: 3 tests"
+    },
+    {
+      "command": "python3 scripts/test_run_native_ci.py",
+      "result": "passed: 14 tests; negative fixture subprocess failures are expected"
+    },
+    {
+      "command": "python3 scripts/test_check_production_coverage.py",
+      "result": "passed: 3 tests"
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "result": "passed: 6 tests"
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "result": "passed: 232 constructors, 230 sources, 20 boundaries"
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "result": "passed: 36 groups, 20 boundaries, 82 public source surfaces; all five S05 gates open; migration in progress"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "result": "passed; AGENTS/CLAUDE equal and within limits"
+    },
+    {
+      "command": "python3 scripts/check_lean_kernel.py",
+      "result": "passed: 107 executable source modules, no external Lake dependencies"
+    },
+    {
+      "command": "lake build",
+      "cwd": "lean-kernel",
+      "result": "passed: 209 jobs"
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true Audit.lean",
+      "cwd": "lean-kernel",
+      "result": "passed: 11425 project declarations; only propext, Classical.choice, Quot.sound"
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true Tests.lean",
+      "cwd": "lean-kernel",
+      "result": "passed"
+    },
+    {
+      "command": "lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean",
+      "cwd": "lean-kernel",
+      "result": "passed"
+    },
+    {
+      "command": "lake env leanchecker --fresh QleisliKernel",
+      "cwd": "lean-kernel",
+      "result": "passed"
+    },
+    {
+      "command": "lake env leanchecker --fresh Main",
+      "cwd": "lean-kernel",
+      "result": "passed"
+    },
+    {
+      "command": "python3 scripts/test_check_lean_kernel.py --compiled",
+      "result": "passed: 28 tests"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py",
+      "result": "passed: rebuilt types and audits; 3 entries, 0 external schemas enabled"
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "not_performed": [
+    "The complete 68-group native comparison run; existing groups retained and new group commands run separately.",
+    "Fresh platform bundle/package/registry installation and hosted CI; required after the remaining caller/distribution migration.",
+    "Commit, tag, push and publication."
+  ],
+  "initial_attempts": [
+    "Native integration tests invoked without QLEISLI_DUAL_KERNEL failed their explicit environment requirement; rerun with the selected kernel passed.",
+    "Initial replay conservatively flagged the empty JSON input as a harness failure; distinguish its expected proposal-bound rejection without accepting transport failures. Final retained replay passes.",
+    "Coverage tests ran before the referenced slice README existed; rerun after adding the record passed."
+  ]
+}

@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::t;
+
+pub unitary fn unused_phase(q: Q<Bit>) -> Q<Bit> { t(q) }

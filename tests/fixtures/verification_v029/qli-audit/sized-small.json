@@ -1,0 +1,287 @@
+{
+  "format": "qleisli.sized-corpus-experiment",
+  "version": 1,
+  "status": "passed-experimental-source-path",
+  "scope": "small-system",
+  "native": [
+    [
+      "xor-0",
+      "ok",
+      "11427",
+      "0",
+      "0"
+    ],
+    [
+      "xor-1",
+      "ok",
+      "61347",
+      "67",
+      "1"
+    ],
+    [
+      "xor-2",
+      "ok",
+      "181376",
+      "134",
+      "2"
+    ],
+    [
+      "ghz-1",
+      "ok",
+      "60965",
+      "67",
+      "1"
+    ],
+    [
+      "ghz-2",
+      "ok",
+      "138508",
+      "134",
+      "2"
+    ],
+    [
+      "ghz-3",
+      "ok",
+      "221047",
+      "201",
+      "3"
+    ],
+    [
+      "xor-wrong-axis",
+      "ok",
+      "318413",
+      "134",
+      "2"
+    ],
+    [
+      "xor-phase",
+      "ok",
+      "741870",
+      "536",
+      "8"
+    ],
+    [
+      "ghz-no-superposition",
+      "ok",
+      "138508",
+      "134",
+      "2"
+    ],
+    [
+      "ghz-missing-fanout",
+      "ok",
+      "47625",
+      "67",
+      "1"
+    ],
+    [
+      "ir-empty-owner",
+      "invalid_ir",
+      "Lean artifact inspection: the native checker rejected the artifact or request"
+    ],
+    [
+      "ir-wrong-leaf",
+      "contract",
+      "Lean artifact inspection: the native checker rejected the artifact or request"
+    ]
+  ],
+  "source_rejections": [
+    {
+      "case": "alias",
+      "diagnostic": "unknown, captured or already moved quantum value x"
+    },
+    {
+      "case": "empty-alias",
+      "diagnostic": "unknown, captured or already moved quantum value x"
+    },
+    {
+      "case": "dropped-zero-owner",
+      "diagnostic": "unreturned quantum owners: y"
+    },
+    {
+      "case": "empty-body-alias",
+      "diagnostic": "unknown, captured or already moved quantum value a"
+    },
+    {
+      "case": "out-of-range",
+      "diagnostic": "bit index outside register"
+    },
+    {
+      "case": "wrong-width",
+      "diagnostic": "take_bit width/type mismatch"
+    },
+    {
+      "case": "wrong-reinsert-width",
+      "diagnostic": "put_bit width/type mismatch"
+    },
+    {
+      "case": "owner-shadow",
+      "diagnostic": "binding would discard live owner y"
+    },
+    {
+      "case": "tuple-shape",
+      "diagnostic": "tuple pattern has the wrong shape"
+    },
+    {
+      "case": "unknown-import",
+      "diagnostic": "unsupported or duplicate import other::quantum::cnot"
+    },
+    {
+      "case": "nonlinear-size",
+      "diagnostic": "unexpected character at byte/character offset 561"
+    },
+    {
+      "case": "underflow",
+      "diagnostic": "static arithmetic underflow/overflow"
+    },
+    {
+      "case": "zero-ghz",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "register-capacity",
+      "diagnostic": "register width exceeds the eight-bit register profile"
+    },
+    {
+      "case": "implicit-bit-view",
+      "diagnostic": "h requires Q<Bit>; conversions are explicit"
+    },
+    {
+      "case": "total-capacity",
+      "diagnostic": "input exceeds the 16-wire profile"
+    }
+  ],
+  "source_sha256": {
+    "xor": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce",
+    "ghz": "756cad0efe7200c37082be1682e54cb85abaa0cde50f47c54cfe10712f89bfc6"
+  },
+  "kernel_sha256": "65254f31d6b306db68c5dd7af37bf502ed2d266df56b9bc4aa7672ad984bca7a",
+  "artifacts": {
+    "xor-0": {
+      "sha256": "bfa0a918cfc5161809cb95b8478592bd76653f5e6d6f45797a9f479af2ffcf4f",
+      "bytes": 2502,
+      "definitions": 2
+    },
+    "xor-1": {
+      "sha256": "44ce7c73e55657e80616f141f552c22014258b3e64560e1ec294754d40bb463e",
+      "bytes": 13019,
+      "definitions": 11
+    },
+    "xor-2": {
+      "sha256": "d3d7d4575d7626be84835c60085ce45921c83a5c451c41d4080d7d9d71ac7a54",
+      "bytes": 30314,
+      "definitions": 23
+    },
+    "ghz-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "ghz-2": {
+      "sha256": "08a214980c0df1ead08a1d9b1601ed8157235c077b587ff8d7d5f627fec60154",
+      "bytes": 26320,
+      "definitions": 23
+    },
+    "ghz-3": {
+      "sha256": "25b9a6b41435526c60eb8e5091f2801a7d46e230a6910dcf35162421b995e88f",
+      "bytes": 37837,
+      "definitions": 31
+    },
+    "xor-wrong-axis": {
+      "sha256": "5ec8e550ca9b02d32290aa7c53cca617b67b270e2e193b77d7de83ab5418992d",
+      "bytes": 46574,
+      "definitions": 35
+    },
+    "xor-phase": {
+      "sha256": "d6ef8c5a89b6e1bcd7e3b9c01793328edeab4f3f57c647bfbf8e16fd1a0aa156",
+      "bytes": 92023,
+      "definitions": 64
+    },
+    "ghz-no-superposition": {
+      "sha256": "0f1df3f5dd284d13ce7e6465b097b563ed907e45c5db372492457b873a843a9d",
+      "bytes": 26319,
+      "definitions": 23
+    },
+    "ghz-missing-fanout": {
+      "sha256": "c5bc5e736b30d828229b3e6a686d1ad4b04af986da849a4e16c682612765edb5",
+      "bytes": 10986,
+      "definitions": 10
+    },
+    "ir-empty-owner": {
+      "sha256": "4874cbb359b312903fe0fbafbba4a4cd3a60d9dc86362bfcd910c8a366ab547f",
+      "bytes": 30314,
+      "definitions": 23
+    },
+    "ir-wrong-leaf": {
+      "sha256": "af0923fb7e09cb169a7e2cb8f84d47d413e23722aacde6e98f9d18faac61fe85",
+      "bytes": 30314,
+      "definitions": 23
+    }
+  },
+  "stdout": "\nrunning 1 test\nCORPUS|xor-0|ok|11427|0|0\nCORPUS|xor-1|ok|61347|67|1\nCORPUS|xor-2|ok|181376|134|2\nCORPUS|ghz-1|ok|60965|67|1\nCORPUS|ghz-2|ok|138508|134|2\nCORPUS|ghz-3|ok|221047|201|3\nCORPUS|xor-wrong-axis|ok|318413|134|2\nCORPUS|xor-phase|ok|741870|536|8\nCORPUS|ghz-no-superposition|ok|138508|134|2\nCORPUS|ghz-missing-fanout|ok|47625|67|1\nCORPUS|ir-empty-owner|invalid_ir|Lean artifact inspection: the native checker rejected the artifact or request\nCORPUS|ir-wrong-leaf|contract|Lean artifact inspection: the native checker rejected the artifact or request\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.66s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s\n     Running tests/sized_corpus.rs (target/debug/deps/sized_corpus-8a255c836ec3c4ff)\n",
+  "semantics": {
+    "xor-0": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 0
+    },
+    "xor-1": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 1
+    },
+    "xor-2": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 2
+    },
+    "ghz-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 1
+    },
+    "ghz-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 2
+    },
+    "ghz-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0.0,
+      "executed_gates": 3
+    }
+  },
+  "semantic_faults": {
+    "xor-wrong-axis": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 2
+    },
+    "xor-phase": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 1.9999999999999996,
+      "executed_gates": 8
+    },
+    "ghz-no-superposition": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "ghz-missing-fanout": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 1
+    }
+  }
+}

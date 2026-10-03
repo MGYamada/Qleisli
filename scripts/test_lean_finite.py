@@ -4,6 +4,7 @@
 Neither executable receives the other's result. Rust remains production authority.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import copy
 from fractions import Fraction
@@ -355,12 +356,10 @@ def native(all_cases, log):
     exact.command(['rustc','-vV'],ROOT,log)
     with tempfile.TemporaryDirectory(prefix='qleisli-finite-native-') as directory:
         project=Path(directory)
-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())
-        (project/'lakefile.toml').write_text('name="finite_test"\nversion="0.0.0"\ndefaultTargets=["finite-test"]\n[[require]]\nname="qleisli_kernel"\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\n[[lean_exe]]\nname="finite-test"\nroot="Main"\n')
         (project/'Main.lean').write_text(LEAN)
-        exact.command(['lake','build'],project,log)
+        binary = native_harness.build(project, log)
         payload='\n'.join(dumps({k:v for k,v in c.items() if k not in {'oracle','expected','name'}}) for c in all_cases)+'\n'
-        run=subprocess.run([str(project/'.lake/build/bin/finite-test')],input=payload,text=True,capture_output=True,timeout=180)
+        run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
         log.append(dict(command=['finite-test < original JSON requests'],exit=run.returncode,stderr=run.stderr))
         assert run.returncode==0,run.stderr
         lean=[json.loads(line) for line in run.stdout.splitlines()]
@@ -454,7 +453,7 @@ def main():
         detected_graph_faults=faults,detected_semantic_faults=semantic_faults,
         largest_circuit_qubits=3,production_authority='Rust',external_schemas_enabled=0,
         remaining_premises=['RawProgram extraction/ownership/effects (VM-25/26)',
-            'native transport refinement and production dual integration (VM-28/29)'],
+            'native transport/decoder correspondence'],
         budget_scope='Published matrix decoding, direct circuit and whole-space budgets compared exactly. Selected Rust CheckedContract API equations compare acceptance and full matrices; graph work additionally reads all maps, checks whole-space Gram and rechecks the root under one experimental aggregate budget. No production graph price change.',
         cases_sha256=hashlib.sha256(dumps(all_cases).encode()).hexdigest(),outcomes_sha256=hashlib.sha256(dumps(lean).encode()).hexdigest(),
         commands=log,source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [

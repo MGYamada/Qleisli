@@ -3,9 +3,9 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use qleisli::frontend::compile::{check_project_with_policy, compile_project_with_policy};
+use qleisli::frontend::compile::{check_project_with_kernel, compile_project_with_kernel};
 use qleisli::frontend::diagnostic::Diagnostic;
-use qleisli::interchange::{self, Version, dual::Kernel};
+use qleisli::interchange::native::Kernel;
 use qleisli::sim::{Sample, SimulationError, SimulationLimits, run_closed};
 
 use super::options::Options;
@@ -23,7 +23,6 @@ pub(super) enum Success {
 pub(super) enum Failure {
     Source(Diagnostic),
     Simulation(SimulationError),
-    Artifact(interchange::Error),
 }
 
 impl From<Diagnostic> for Failure {
@@ -33,29 +32,28 @@ impl From<Diagnostic> for Failure {
 }
 
 pub(super) fn execute(options: &Options, root: &Path) -> Result<Success, Failure> {
-    if options.command == "check" && options.lean_kernel.is_none() {
+    let kernel = options
+        .lean_kernel
+        .as_ref()
+        .map(Kernel::new)
+        .map(Ok)
+        .unwrap_or_else(Kernel::selected)
+        .map_err(|error| Diagnostic {
+            code: error.code,
+            message: error.message,
+            primary: None,
+        })?;
+    if options.command == "check" {
         match &options.selected_root {
-            Some(selected) => selected.check_with_policy(options.policy)?,
-            None => check_project_with_policy(root, options.policy)?,
+            Some(selected) => selected.check_with_kernel(options.policy, &kernel)?,
+            None => check_project_with_kernel(root, options.policy, &kernel)?,
         }
         return Ok(Success::Checked);
     }
     let program = match &options.selected_root {
-        Some(selected) => selected.compile_with_policy(options.policy)?,
-        None => compile_project_with_policy(root, options.policy)?,
+        Some(selected) => selected.compile_with_kernel(options.policy, &kernel)?,
+        None => compile_project_with_kernel(root, options.policy, &kernel)?,
     };
-    let program = if let Some(path) = &options.lean_kernel {
-        let bytes = interchange::export(&program, None, Version::V2).map_err(Failure::Artifact)?;
-        Kernel::new(path)
-            .check(&bytes, None)
-            .map_err(Failure::Artifact)?
-            .into_program()
-    } else {
-        program
-    };
-    if options.command == "check" {
-        return Ok(Success::Checked);
-    }
     if options.command == "sample" {
         let seed = options.seed.expect("parsed sample seed");
         let (shots, execution_steps) =

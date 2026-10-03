@@ -41,22 +41,39 @@ fn verification_error(
     sources: &OperationSources,
     module: &str,
     span: Span,
-    failure: crate::ValidationError,
+    failure: crate::interchange::Error,
     limit: bool,
 ) -> CompileError {
-    let (module, span) = (1..=failure.path.len())
+    // Optional post-rejection explanations retain source locations. They never
+    // issue an acceptance decision or replace the native rejection category.
+    let path: Vec<usize> = failure
+        .json_pointer
+        .split('/')
+        .skip(2)
+        .filter_map(|part| match part {
+            "then_ops" => Some(0),
+            "else_ops" => Some(1),
+            _ => part.parse().ok(),
+        })
+        .collect();
+    let (module, span) = (1..=path.len())
         .rev()
-        .find_map(|length| sources.get(&failure.path[..length]))
+        .find_map(|length| sources.get(&path[..length]))
         .map_or((module, span), |(module, span)| (module.as_str(), *span));
     compiler.error(
         module,
         span,
         if limit {
             ErrorCode::Limit
+        } else if matches!(failure.code, "io" | "kernel") {
+            ErrorCode::Project
         } else {
             ErrorCode::InvalidIr
         },
-        failure.to_string(),
+        match &compiler.checking {
+            Some(key) => format!("{failure} while checking {}::{}", key.0, key.1),
+            None => failure.to_string(),
+        },
     )
 }
 
@@ -1061,18 +1078,21 @@ impl Lowerer<'_, '_> {
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
-        let checked =
-            crate::verify::verify_with_budget_classified(raw, &mut inner.compiler.exact_work)
-                .map_err(|(err, limit)| {
-                    verification_error(
-                        inner.compiler,
-                        &inner.operation_sources,
-                        module,
-                        name.span,
-                        err,
-                        limit,
-                    )
-                })?;
+        let checked = inner
+            .compiler
+            .kernel
+            .accept_raw_with_budget(raw, &mut inner.compiler.exact_work)
+            .map_err(|err| {
+                let limit = err.code == "limit";
+                verification_error(
+                    inner.compiler,
+                    &inner.operation_sources,
+                    module,
+                    name.span,
+                    err,
+                    limit,
+                )
+            })?;
         super::circuit::flatten(inner.compiler, module, name.span, &checked)
     }
 
@@ -1289,7 +1309,7 @@ impl Lowerer<'_, '_> {
 pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
-) -> Result<VerifiedProgram, CompileError> {
+) -> Result<AcceptedProgram, CompileError> {
     lower_function_inner(compiler, key, BTreeMap::new(), false)?.ok_or_else(|| {
         compiler.error(
             &key.0,
@@ -1305,7 +1325,7 @@ fn lower_function_inner(
     key: &Key,
     bindings: super::operations::Bindings,
     abstract_check: bool,
-) -> Result<Option<VerifiedProgram>, CompileError> {
+) -> Result<Option<AcceptedProgram>, CompileError> {
     let decl = compiler.declarations[key];
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
@@ -1386,9 +1406,13 @@ fn lower_function_inner(
     if abstract_check {
         return Ok(None);
     }
-    crate::verify::verify_with_budget_classified(raw, &mut lower.compiler.exact_work)
+    lower
+        .compiler
+        .kernel
+        .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
         .map(Some)
-        .map_err(|(failure, limit)| {
+        .map_err(|failure| {
+            let limit = failure.code == "limit";
             verification_error(
                 lower.compiler,
                 &lower.operation_sources,

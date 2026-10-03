@@ -169,18 +169,26 @@ pub fn render_markdown(source: &str) -> Result<String, ParseError> {
 }
 
 fn render_comments(output: &mut String, comments: &[DocComment]) {
+    let mut text = String::new();
     for comment in comments {
         for line in comment.text.split('\n') {
-            output.push_str(line.strip_prefix(' ').unwrap_or(line));
-            output.push('\n');
+            text.push_str(line.strip_prefix(' ').unwrap_or(line));
+            text.push('\n');
         }
     }
     if !comments.is_empty() {
-        output.push('\n');
+        // Comments are descriptive text, not trusted Markdown/HTML. A fence
+        // longer than every embedded backtick run isolates all block syntax,
+        // including unfinished fences, HTML comments and raw HTML elements.
+        render_fenced(output, text.trim_end_matches('\n'), "text");
     }
 }
 
 fn render_source(output: &mut String, source: &str) {
+    render_fenced(output, source, "qli");
+}
+
+fn render_fenced(output: &mut String, source: &str, language: &str) {
     // A signature may contain ordinary comments with Markdown fence text.
     let longest = source
         .split(|ch| ch != '`')
@@ -188,5 +196,5 @@ fn render_source(output: &mut String, source: &str) {
         .max()
         .unwrap_or(0);
     let fence = "`".repeat(3.max(longest + 1));
-    output.push_str(&format!("{fence}qli\n{source}\n{fence}\n\n"));
+    output.push_str(&format!("{fence}{language}\n{source}\n{fence}\n\n"));
 }

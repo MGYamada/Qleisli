@@ -11,6 +11,70 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
 }
 
 #[test]
+fn native_transport_failures_use_the_closed_v1_project_code() {
+    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let artifact = root.0.join("valid.qirf");
+    let emitted = cli(&[
+        "emit-ir".as_ref(),
+        root.0.as_os_str(),
+        format!("--output={}", artifact.display()).as_ref(),
+    ]);
+    assert!(emitted.status.success(), "{emitted:?}");
+    for command in ["check", "run", "sample", "emit-ir", "verify-ir"] {
+        let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        process
+            .arg(command)
+            .arg(if command == "verify-ir" {
+                &artifact
+            } else {
+                &root.0
+            })
+            .arg("--format=json")
+            .arg(format!("--lean-kernel={}", root.0.join("absent").display()));
+        if command == "sample" {
+            process.args(["--shots=1", "--seed=1"]);
+        }
+        if command == "emit-ir" {
+            process.arg(format!(
+                "--output={}",
+                root.0.join("blocked.qirf").display()
+            ));
+        }
+        let output = process.output().unwrap();
+        assert_eq!(output.status.code(), Some(1), "{output:?}");
+        let text = String::from_utf8(output.stdout).unwrap();
+        assert!(text.contains("\"code\":\"project\""), "{command}: {text}");
+        assert!(!text.contains("\"code\":\"io\"") && !text.contains("\"code\":\"kernel\""));
+    }
+}
+
+#[test]
+fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
+    let root = SourceRoot::new(include_str!(
+        "fixtures/review_v029/contract_mismatch/main.qli"
+    ));
+    for json in [false, true] {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        command.arg("check").arg(&root.0);
+        if json {
+            command.arg("--format=json");
+        }
+        let output = command.output().unwrap();
+        assert_eq!(output.status.code(), Some(1));
+        let text = String::from_utf8(if json { output.stdout } else { output.stderr }).unwrap();
+        assert!(
+            text.contains(if json {
+                "\"code\":\"contract\""
+            } else {
+                ": contract:"
+            }),
+            "{text}"
+        );
+        assert!(text.contains("function semantic contract"), "{text}");
+    }
+}
+
+#[test]
 fn truncated_static_arguments_emit_one_located_json_parse_error() {
     for source in [
         "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
@@ -65,7 +129,7 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    let usage = include_str!("fixtures/verification_v028/usage.txt")
+    let usage = include_str!("fixtures/verification_v029/usage.txt")
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [

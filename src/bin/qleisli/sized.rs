@@ -141,28 +141,28 @@ fn execute(mut o: Options) -> Result<String> {
         max_steps: 10_000_000,
     };
     if proposal.is_instrument() {
-        let named;
-        let generic;
         let checked = if let Some(path) = o.provider {
             let binding = proposal
                 .qpe_binding(&read(&path)?)
                 .map_err(|e| e.to_string())?;
-            named = kernel
-                .check_qpe_instrument(proposal.payload(), binding.request(), binding.candidate())
-                .map_err(checking_error)?;
-            named.instrument()
+            kernel
+                .check_qpe_instrument_native(
+                    proposal.payload(),
+                    binding.request(),
+                    binding.candidate(),
+                )
+                .map_err(checking_error)?
         } else {
             let request = match o.request {
                 Some(path) => read(&path)?,
                 None => proposal.comparison_request().to_vec(),
             };
-            generic = kernel
-                .check_instrument(proposal.payload(), &request)
-                .map_err(checking_error)?;
-            &generic
+            kernel
+                .check_instrument_native(proposal.payload(), &request)
+                .map_err(checking_error)?
         };
         proposal
-            .validate_initialization_moves(checked)
+            .validate_initialization_moves_native(&checked)
             .map_err(|e| e.to_string())?;
         if o.command == "check" {
             return Ok(format!(
@@ -190,7 +190,7 @@ fn execute(mut o: Options) -> Result<String> {
             ));
         }
         let output = checked
-            .execute(input, 1, limits)
+            .execute_instrument(input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
             "{{\"measured_bits\":{},\"residual_bits\":{},\"branches\":{:?},{verification}}}",
@@ -205,7 +205,7 @@ fn execute(mut o: Options) -> Result<String> {
             None => proposal.comparison_request().to_vec(),
         };
         let checked = kernel
-            .check_against(proposal.payload(), &request)
+            .check_against_native(proposal.payload(), &request)
             .map_err(checking_error)?;
         if o.command == "check" {
             return Ok(format!(
@@ -214,7 +214,7 @@ fn execute(mut o: Options) -> Result<String> {
         }
         let input = input.as_deref().ok_or("missing execution input")?;
         let output = checked
-            .execute(input, 1, limits)
+            .execute_pure(input, 1, limits)
             .map_err(|e| e.to_string())?;
         Ok(format!(
             "{{\"quantum_bits\":{},\"amplitudes\":{:?},{verification}}}",
@@ -228,10 +228,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
         return ExitCode::from(2);
     };
     match execute(o) {
-        Ok(out) => {
-            println!("{out}");
-            ExitCode::SUCCESS
-        }
+        Ok(out) => super::write_stdout(format!("{out}\n").as_bytes(), "sized result"),
         Err(e) => {
             eprintln!("{e}");
             ExitCode::FAILURE

@@ -81,6 +81,15 @@ pub(super) fn diagnostic_json(root: &Path, diagnostic: &Diagnostic) -> String {
     located_diagnostic_json(root, diagnostic, "error")
 }
 
+// Native setup/transport errors are host configuration failures in the closed
+// v1 CLI vocabulary. Internal library codes do not extend that wire contract.
+fn v1_code(code: &str) -> &str {
+    match code {
+        "io" | "kernel" => "project",
+        _ => code,
+    }
+}
+
 fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str) -> String {
     let primary = diagnostic
         .primary
@@ -93,7 +102,7 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
     };
     format!(
         "{{\"code\":{},\"severity\":{},\"message\":{},\"primary\":{},\"related\":[]}}",
-        quoted(code),
+        quoted(v1_code(code)),
         quoted(severity),
         quoted(&diagnostic.message),
         primary.as_deref().unwrap_or("null")
@@ -103,7 +112,7 @@ fn located_diagnostic_json(root: &Path, diagnostic: &Diagnostic, severity: &str)
 pub(super) fn artifact_diagnostic_json(code: &str, message: &str, pointer: &str) -> String {
     format!(
         "{{\"code\":{},\"severity\":\"error\",\"message\":{},\"primary\":null,\"related\":[{{\"message\":{},\"location\":null}}]}}",
-        quoted(code),
+        quoted(v1_code(code)),
         quoted(message),
         quoted(&format!("json_pointer: {pointer}"))
     )
@@ -188,7 +197,6 @@ fn execute(options: &super::options::Options, root: &Path) -> Result<String, Dia
     match super::source_commands::execute(options, root).map_err(|error| match error {
         Failure::Source(error) => error,
         Failure::Simulation(error) => simulation_failure(error),
-        Failure::Artifact(error) => failure(error.code, error.message),
     })? {
         Success::Checked => Ok("{\"verified\":true}".into()),
         Success::Distribution(distribution) => distribution_json(distribution),

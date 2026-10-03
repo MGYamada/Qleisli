@@ -10,5 +10,5 @@ Current library regressions remain in the compiler's Rust test suite, including
 [semantic contracts](../../tests/semantic_contracts.rs). Run them from the
 repository top-level directory with `cargo test --all-targets`. Their scopes
 and the separate proof obligations remain in the
-[contract ledger](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md). Declaring this qrate test
+contract ledger. Declaring this qrate test
 root does not move, duplicate or replace those checks.

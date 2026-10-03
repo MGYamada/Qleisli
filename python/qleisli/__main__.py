@@ -12,6 +12,7 @@ def main():
     parser.add_argument("--input", dest="format", choices=["qasm", "qir", "qirf", "qli"], required=True)
     parser.add_argument("--action", choices=["check", "run", "sample", "emit-qasm", "emit-qir", "emit-ir"], default="check")
     parser.add_argument("--executable")
+    parser.add_argument("--lean-kernel")
     parser.add_argument("--shots", type=int)
     parser.add_argument("--seed", type=int)
     args = parser.parse_args()
@@ -22,7 +23,7 @@ def main():
         parser.error("--shots and --seed require sample")
     status = 0
     try:
-        client = Client(args.executable)
+        client = Client(args.executable, lean_kernel=args.lean_kernel)
         if args.format == "qli":
             program = client.compile_project(args.input)
         else:

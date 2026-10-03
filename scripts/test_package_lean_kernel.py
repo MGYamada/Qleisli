@@ -81,7 +81,7 @@ class NativeBundleLanes(unittest.TestCase):
             self.assertIn('--validation "${{ needs.changes.outputs.proof_lane }}"', line)
         for name, following in (("check-macos-source", "check-interop"), ("check-lean-kernel", "check-distribution")):
             job = workflow.split(f"  {name}:\n")[1].split(f"  {following}:\n")[0]
-            self.assertIn('test_dual_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel"', job)
+            self.assertIn('test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel"', job)
 
 
 if __name__ == "__main__":

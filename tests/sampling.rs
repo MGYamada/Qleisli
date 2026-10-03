@@ -131,6 +131,84 @@ fn failures_are_errors_and_limits_apply_before_draws() {
 }
 
 #[test]
+fn projection_copy_limits_precede_visible_and_hidden_random_draws() {
+    use qleisli::ir::{ClassicalId, Effect, RawOp, RawProgram, TokenId, WireId};
+    use qleisli::sim::SimulationError;
+    let measure = |input| RawOp::MeasureZ {
+        input: TokenId(input),
+        output: ClassicalId(0),
+    };
+    for (tail, outputs, insufficient, sufficient, expected_draws) in [
+        (vec![measure(0)], vec![ClassicalId(0)], 2, 3, 1),
+        (
+            vec![
+                RawOp::Reset {
+                    input: TokenId(0),
+                    output: TokenId(1),
+                    fresh_wire: WireId(1),
+                },
+                measure(1),
+            ],
+            vec![ClassicalId(0)],
+            3,
+            6,
+            2,
+        ),
+        (vec![RawOp::Discard { input: TokenId(0) }], vec![], 3, 4, 1),
+    ] {
+        let mut operations = vec![RawOp::Init0 {
+            output: TokenId(0),
+            wire: WireId(0),
+        }];
+        operations.extend(tail);
+        let program = common::accept(RawProgram {
+            quantum_inputs: vec![],
+            classical_inputs: vec![],
+            operations,
+            quantum_outputs: vec![],
+            classical_outputs: outputs,
+            declared_effect: Effect::Observe,
+        })
+        .unwrap();
+        let mut draws = 0;
+        let mut failing_rng = || {
+            draws += 1;
+            Err::<u64, _>("rng unavailable")
+        };
+        assert_eq!(
+            sample_closed(
+                &program,
+                &mut failing_rng,
+                SampleLimits {
+                    max_execution_steps: insufficient,
+                    ..SampleLimits::default()
+                }
+            ),
+            Err(SampleError::Limit(SimulationError::ExecutionLimit {
+                max: insufficient
+            }))
+        );
+        assert_eq!(draws, 0);
+        let mut rng = || {
+            draws += 1;
+            Ok::<_, ()>(0)
+        };
+        let sample = sample_closed(
+            &program,
+            &mut rng,
+            SampleLimits {
+                max_execution_steps: sufficient,
+                ..SampleLimits::default()
+            },
+        )
+        .unwrap();
+        assert_eq!(sample.execution_steps, sufficient as u64);
+        assert_eq!(draws, expected_draws);
+        assert!(sample.bits.iter().all(|bit| !bit));
+    }
+}
+
+#[test]
 fn preserved_grover_trial_draws_marked_result() {
     let p = compile_project(Path::new(
         "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02",
@@ -169,8 +247,9 @@ fn interference_probability_matches_an_independent_analytic_value() {
 
 #[test]
 fn sampler_rejects_open_interfaces_before_requesting_randomness() {
-    use qleisli::{ir::*, verify};
-    let p = verify(RawProgram {
+    use common::accept;
+    use qleisli::ir::*;
+    let p = accept(RawProgram {
         quantum_inputs: vec![QuantumPort {
             token: TokenId(0),
             wires: vec![],

@@ -291,11 +291,8 @@ fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     assert_ne!(first.program(), second.program());
     let mut wrong = first.program().clone();
     wrong.declared_effect = qleisli::ir::Effect::Unitary;
-    let error = qleisli::verify(wrong).unwrap_err();
-    assert_eq!(
-        error.message,
-        "declared Unitary is narrower than the derived Observe effect"
-    );
+    let error = common::accept(wrong).unwrap_err();
+    assert_eq!(error.code, "invalid_ir");
 }
 
 #[test]

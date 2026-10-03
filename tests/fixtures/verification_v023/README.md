@@ -121,8 +121,8 @@ Rust source-storage allocation accounting is separate from this arithmetic budge
 
 Compiled audits and fresh Lean replay check proof/runtime policy. Executing the
 audited definitions retains the declared compiler/runtime assumptions in the
-[migration policy](../../../docs/lean-kernel-migration.md#audit-and-remaining-trust).
-The adopted [VM-23 gate](../../../docs/verification-migration-v0.2.md#vm-23-exact-meanings-without-a-domain-change)
+migration policy.
+The adopted [VM-23 gate](https://github.com/MGYamada/Qleisli/issues/276)
 requires proofs about the actual Lean definitions and compatibility comparison
 with Rust. A general correctness/refinement proof of the old Rust arithmetic
 is not a prerequisite: Rust is a comparison path, and the proved replacement

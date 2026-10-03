@@ -1,0 +1,22 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.54s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-805a0c2582deab55)
+
+running 14 tests
+test contract::exact::tests::capacity_errors_never_wrap_or_approximate ... ok
+test contract::exact::tests::canonical_dyadics_and_irrational_components_remain_distinct ... ok
+test contract::exact::tests::denominator_alignment_preserves_sign_at_capacity ... ok
+test contract::exact::tests::exact_complex_algebra_includes_cross_terms ... ok
+test contract::exact::tests::shared_budget_cannot_be_reset_by_matrix_composition ... ok
+test contract::exact::tests::isometry_checks_cross_column_inner_products ... ok
+test contract::exact::tests::hadamard_squared_and_phase_sensitive_adjoint ... ok
+test contract::exact::tests::dimensions_entries_and_getters_are_bounded ... ok
+test contract::exact::tests::tensor_places_first_operand_on_low_bits ... ok
+test contract::exact::tests::all_eighth_root_products_and_conjugates_are_exact ... ok
+test contract::function::snapshot_tests::aggregate_budget_charges_each_fresh_native_decision ... ok
+test contract::function::snapshot_tests::shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification ... ok
+test contract::function::snapshot_tests::shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies ... ok
+test contract::tests::counterexample_diagnostic_preserves_the_shared_work_budget ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 63 filtered out; finished in 0.08s
+

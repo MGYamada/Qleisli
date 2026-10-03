@@ -1,0 +1,76 @@
+{
+  "format": 1,
+  "scope": "Reviewed v0.2.9 metadata and removal of retired-document references only; original VM-22 behavior fixtures and corpus prefix unchanged.",
+  "changes": [
+    {
+      "path": "python/qleisli/__init__.py",
+      "before": "27d52247da89b710697e602996ad67ad554c5f586d654f548d543c94f1f7893c",
+      "after": "32f8b2e2c71c39d5ee5fd79c004ed97d1d2df601df024dd59d158499e94bdbe5",
+      "scope": "version-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before": "085227ea64b414ecbfe2c17b36b9979961c3778ff8a2199beb0da7d38e8b4f04",
+      "after": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "src/interop/mod.rs",
+      "before": "886274f018ebb43d96e8502b3e1558a131060b689f290df30bc0076e6c5d9a79",
+      "after": "e8a43256feaa4a8ef29bf5d423ae4139c4a3e6ac7381b3538bc34eb93439f479",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "src/lib.rs",
+      "before": "f75f2102efc3115536699d61b0d23362f13a40535005ef83ede3a2ea9bac0797",
+      "after": "adcab87951f5438a3eb025a4f749942d563c0510a59e75d0cb5077d0ed467618",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "before": "7f2fea0ff5ac0b6b66fc08e0b9f25c0b351397ea19e360f3c9ec8d4e87e6cbb2",
+      "after": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "before": "65eaf24de59045608fc289da0823b9879df756e0ec2e679e7580e7833c7c2b02",
+      "after": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "before": "8f7a073ddc5d75a56a29d86860c4d88ae3d684b8f7ed642da73c1fb17872c91c",
+      "after": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "before": "6a4f0dc06ead037bb89b7c7d976efdefea1df78f108247c00d9614f4c399ebbd",
+      "after": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "scripts/compile_sized_corpus.py",
+      "before": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed",
+      "after": "6bc931a56a3585771fa79b2d82e4c8a6801970b22d057294730eb523e9939fb5",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    },
+    {
+      "path": "scripts/compile_sized_instrument.py",
+      "before": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+      "after": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
+      "scope": "documentation-only",
+      "executable_definitions_changed": false
+    }
+  ]
+}

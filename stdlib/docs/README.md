@@ -9,7 +9,7 @@ The compiler embeds the four [source modules](../src) and their edition
 manifest in its distribution. It reads no installed qargo executable to use
 them. Their mathematical contracts, ownership/effect rules and proof status
 remain governed by [STDLIB.md](../../STDLIB.md) and the
-[contract ledger](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md).
+contract ledger.
 
 To check the source using this checkout:
 
@@ -39,4 +39,4 @@ identifies the current regression checks.
 
 Other Qleisli source trees currently use edition-only manifests and are not
 qrates. The adopted direction is to migrate **all of them to qrate management**;
-see the [edition and migration contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md).
+see the edition and migration contract.

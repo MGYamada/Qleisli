@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "status": "passed",
+  "created_utc": "2026-10-03T10:03:32.307818+00:00",
+  "scope": "Local maintenance validation; no publication, hosted CI claim or authority transfer.",
+  "tooling": {
+    "commands": 18,
+    "regression_tests": 163
+  },
+  "corpus": {
+    "cases": 87,
+    "semantic_probes": 15889,
+    "semantic_faults": 63,
+    "source_rejections": 4
+  },
+  "native": {
+    "groups": 66,
+    "commands": 72,
+    "local_snapshot_head": "7935610cfcfb46a74c19db5c114482fdc09da6f4",
+    "elapsed_seconds": 262.0679760830244,
+    "source_map": "native-source-map.json",
+    "full_kernel_replay": true,
+    "compiled_negative_audits": true,
+    "kernel_sources_unchanged_across_attempts": true
+  },
+  "schema": {
+    "status": "passed",
+    "externally_enabled": 0
+  },
+  "reviewed_source_updates": "source-binding-review.json",
+  "coverage": "../../../verification_v029/coverage.json",
+  "repaired_validation_failure": "Two local attempts rejected six Cargo commands before test execution because a direct Cargo binary cannot parse Rustup +toolchain syntax. The runner now normalizes only the identical pin after actual toolchain checks; requested and executed commands are both bound. All 66 groups then passed in one run.",
+  "skipped": [
+    "Hosted CI and Linux validation",
+    "Publication/tagging/pushing",
+    "Full ordinary Rust/MSRV suite (no Rust implementation changes in this maintenance follow-up)",
+    "New maximum-size corpus experiments"
+  ],
+  "remaining_proof_scope": "S05-C1\u2013C5 remain open. The coverage ledger does not replace their proof, production binding, platform and independent-review obligations; Rust authority is retained."
+}

@@ -110,7 +110,7 @@ def main():
         complete_observing_sources=5,retained_branch_dependency_cases=4,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in paths},
         scope='actual matrix-free coefficient checker; post-acceptance small operator display; exponential budgeted verification',
-        remaining=['native/decoder correspondence and production packaging','VM-27 hierarchy/root closure','VM-28/29 immutable-artifact production dual integration'])
+        remaining=['native/decoder correspondence and production packaging','VM-27 hierarchy/root closure','native decoder/runtime correspondence'])
     args.record.write_text(json.dumps(report,indent=2)+'\n')
     args.record.with_name('streamed-inputs.json').write_text(json.dumps(records,indent=2)+'\n')
     print(f'{len(records)} native streamed cases; {report["rust_comparisons"]} Rust comparisons; {operators} exact Kraus operators')

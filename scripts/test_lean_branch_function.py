@@ -3,6 +3,7 @@
 Every checker receives original bodies/identities and separate bindings only.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import ast
 import copy
@@ -151,10 +152,8 @@ def main():
     payload='\n'.join(finite.dumps({k:c[k] for k in ['functions','bindings','budget']}) for c in records)+'\n'
     with tempfile.TemporaryDirectory(prefix='qleisli-branch-functions-') as directory:
         project=Path(directory)
-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())
-        (project/'lakefile.toml').write_text('name="branch_function_test"\nversion="0.0.0"\n[[require]]\nname="qleisli_kernel"\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\n[[lean_exe]]\nname="branch-functions"\nroot="Main"\n')
-        (project/'Main.lean').write_text(LEAN);exact.command(['lake','build','branch-functions'],project,log)
-        binary=project/'.lake/build/bin/branch-functions'
+        (project/'Main.lean').write_text(LEAN)
+        binary = native_harness.build(project, log)
         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0,run.stderr
         observed=[json.loads(line) for line in run.stdout.splitlines()]

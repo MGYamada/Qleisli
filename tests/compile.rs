@@ -449,7 +449,7 @@ fn invalid_callee_body_still_reports_its_own_source() {
     assert_eq!(error.span.start, helper.rfind("()").unwrap());
 }
 
-// Finite v0 conformance boundaries: docs/specification-status.md.
+// Finite v0 conformance boundaries.
 #[test]
 fn finite_v0_type_shapes_and_zero_wire_ownership() {
     for source in [
@@ -597,7 +597,7 @@ fn finite_v0_local_names_shadow_static_callees() {
     }
 }
 
-// SPEC-3 resource calculus boundaries: docs/formal-core.md (R1).
+// SPEC-3 resource calculus boundaries (R1).
 #[test]
 fn resource_rules_pending_mixed_argument_survives_nested_call() {
     let root = SourceRoot::new(

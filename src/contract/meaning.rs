@@ -135,7 +135,20 @@ impl MeaningEvidence {
         identity: RetainedIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractError> {
-        let receipt = FunctionEvidence::check_retained_diagnostic(
+        let kernel = crate::interchange::native::Kernel::selected()
+            .map_err(|e| ContractError::InvalidCircuit(e.to_string()))?;
+        Self::check_retained_with_kernel(&kernel, implementation, target, identity, budget)
+    }
+
+    pub(crate) fn check_retained_with_kernel(
+        kernel: &crate::interchange::native::Kernel,
+        implementation: RawProgram,
+        target: FiniteMeaning,
+        identity: RetainedIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractError> {
+        let receipt = FunctionEvidence::check_retained_with_kernel(
+            kernel,
             target.signature.clone(),
             implementation,
             target.target_ir()?,

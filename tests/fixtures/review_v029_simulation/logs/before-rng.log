@@ -1,0 +1,24 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s
+     Running tests/sampling.rs (target/debug/deps/sampling-85dd39bd7a5ef4c9)
+
+running 1 test
+test projection_copy_limits_precede_visible_and_hidden_random_draws ... FAILED
+
+failures:
+
+---- projection_copy_limits_precede_visible_and_hidden_random_draws stdout ----
+
+thread 'projection_copy_limits_precede_visible_and_hidden_random_draws' (9130431) panicked at tests/sampling.rs:152:9:
+assertion `left == right` failed
+  left: Err(RandomSource("rng unavailable"))
+ right: Err(Limit(ExecutionLimit { max: 2 }))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    projection_copy_limits_precede_visible_and_hidden_random_draws
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.04s
+
+error: test failed, to rerun pass `--test sampling`

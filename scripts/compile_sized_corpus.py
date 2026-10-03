@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Untrusted sized-source corpus producer; see docs/sized-corpus-source.md.
+"""Untrusted sized-source corpus producer.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 This tool emits proposals, never verification evidence or production programs.
 """

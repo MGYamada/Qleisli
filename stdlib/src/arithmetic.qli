@@ -2,7 +2,7 @@
 //!
 //! All definitions are ordinary checked .qli and return every input wire.
 //! Full-space contracts, including overflow and value 15, are documented in
-//! https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md, A001-A003.
+//! Contract identifiers: A001-A003.
 //! These are fixed finite routines, not generalized integer arithmetic.
 use std::quantum::x;
 use std::quantum::cnot;

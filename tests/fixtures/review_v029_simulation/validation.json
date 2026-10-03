@@ -1,0 +1,112 @@
+{
+  "format": "qleisli.simulation-review-followup",
+  "version": 1,
+  "recorded_at": "2026-10-03T16:17:57.849564+00:00",
+  "scope": "Two review findings in unpublished v0.2.9; no acceptance/proof changes",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "kernel_sha256": "c5775845e7cd51b0f187a5ecc4e46b04ce678c53885cd3026c2d57e3cd655475"
+  },
+  "before_sources": {
+    "src/sim.rs": "e8e18fddb97405ad06451231cadad5fbc30ebdffd77cd7a0eae48970fd901e94",
+    "src/sim/state.rs": "af75fe5cd68cf77110d80c5d8d44eb7d2f0b700f6cfaa4158af5e6f247522804",
+    "src/sim/sampling.rs": "cfc63fc9aaca2c45634aa078e42a4ad85804eadf752562aac5d94ff937e4cee1"
+  },
+  "after_sources": {
+    "src/sim.rs": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+    "src/sim/state.rs": "213bbd8ab841937f05d940d9cb87e0986ba6bf5737f3e747c598b70d206762c3",
+    "src/sim/sampling.rs": "f8913d06559195348cd6811906ef106df88f1f0b3643d7da23f013096cfcae07",
+    "tests/sim.rs": "a9b4843eb3f01ed763927fa53044474351e5ab38e509f3b19ee9736c93ef02c7",
+    "tests/sampling.rs": "fadbd3cbc7a5699c0c88efee706da90d6740010a1f97b1c8d859ef102ac7c6f8",
+    "README.md": "ffde5d2edd95fe862bbcf4c268a2407eea4bcd79a79590f2803b4a67848091db",
+    "CHANGELOG.md": "515ba4cbe4a683eb68b1f4df09f02f3b0bdfb515180dfff66676b3357cd4dd9b",
+    "tests/fixtures/verification_v022/inventory.json": "a5ff47dc57ab5f7f36e695d39bf6eacc0b9d22749497a2c04b6033bf7e998fa1",
+    "tests/fixtures/verification_v029/coverage.json": "57d083cd9894f760df4c4067bf76b5954872792b4f629e6feb4cc23e9512f7c3"
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --offline --test sim phi -- --nocapture",
+      "log": "logs/before-phi.log",
+      "stage": "before repair",
+      "exit_code": 101,
+      "failed": 2,
+      "expected": "reproduce missing phi copy accounting"
+    },
+    {
+      "command": "cargo test --locked --offline --test sampling projection_copy_limits_precede_visible_and_hidden_random_draws -- --exact",
+      "log": "logs/before-rng.log",
+      "stage": "before repair",
+      "exit_code": 101,
+      "failed": 1,
+      "expected": "reproduce RNG failure masking the copy limit"
+    },
+    {
+      "command": "cargo test --locked --offline --test sim --test sampling",
+      "log": "logs/sim-sampling.log",
+      "stage": "after repair",
+      "exit_code": 0,
+      "passed": 26
+    },
+    {
+      "command": "cargo test --locked --offline --lib sim::",
+      "log": "logs/sim-unit.log",
+      "stage": "after repair",
+      "exit_code": 0,
+      "passed": 8,
+      "filtered": 72
+    },
+    {
+      "command": "cargo test --locked --offline --test cli --test cli_json",
+      "log": "logs/cli.log",
+      "stage": "after repair",
+      "exit_code": 0,
+      "passed": 15
+    },
+    {
+      "command": "cargo clippy --locked --offline --all-targets -- -D warnings",
+      "log": "logs/clippy.log",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "log": "logs/docs.log",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "log": "logs/coverage.log",
+      "exit_code": 0
+    },
+    {
+      "command": "rustfmt --check --edition 2024 --config skip_children=true src/sim.rs src/sim/state.rs src/sim/sampling.rs tests/sim.rs tests/sampling.rs",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "binding_checks": "binding-checks.json",
+  "not_performed": [
+    "maximum-size stress tests",
+    "full release CI",
+    "Linux/Windows/MSRV matrix",
+    "new Lean proof compilation",
+    "commit, push, publication or issue closure"
+  ],
+  "artifacts": {
+    "README.md": "4fa62677c10b4f5fefc3ffebdb7638438ac9ba3eb48c7350eee755817fb19d4c",
+    "binding-checks.json": "941f2ac8f55a608cba9a618fc931dc83bf52a838b239dca9d509f4168a7a4a8d",
+    "logs/before-phi.log": "13cceb41d41d20954d6102af2ffb4837a8aa6f56dcf12f99369f4212576e78df",
+    "logs/before-rng.log": "12c8143316124226bf5db4877db79add662e983df6b2e7ec72b7c8a04b1abd8d",
+    "logs/cli.log": "3658c0235fdc211de3f5581e0c785a5e236c2c0f5196518767c154e2feb7d7c8",
+    "logs/clippy.log": "4e086f82bc51398d3e40beb7bff7ebdfe59e9dda9e5d4c5cd43520240a01c54c",
+    "logs/coverage.log": "5927f300a27e7e1fa855e3216b4cc52e7f413a94562caba0852046a62749bd8a",
+    "logs/docs.log": "effe32932e0829ac4e9460be9b54e8e90440e90bcd7d86853a8e56ba99dba220",
+    "logs/sim-sampling.log": "6e2fa3bbb19f515a1a0610b4d33b30882e791b0155cd005a38050c1e19d7eb73",
+    "logs/sim-unit.log": "e4bab2b2582daf330e84add3b0f1adf6bd7134fb17268790a6c87bda246bc200",
+    "original-phi.rs": "60ab9b222ca54ab10dae919ddec04cfe7396ce6b1b80a9af947bd2220e2fe51f",
+    "original-sample.rs": "d6750b831c53e25a6b2aabfe38dba0a64b17e270b8aad3f983fe7664fa99a556",
+    "source-review.json": "68559ee975061122982ca1f03a0c04a9e37b3f2644cbe667224c7bda61daeb34"
+  }
+}

@@ -1,6 +1,6 @@
 # Canonical reshape metadata and encoding
 
-The [pre-check packet](packet.md) and [contract](../../../docs/size-expressions.md)
+The [pre-check packet](packet.md) and contract
 bound this experiment. The desired source and original parse error are in the
 [authoring session](../authoring_sessions/reshape-v021/session.json).
 `reshape::<...>` remains a draft, with no repaired executable source yet.

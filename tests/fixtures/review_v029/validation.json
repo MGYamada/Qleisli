@@ -1,0 +1,200 @@
+{
+  "format": "qleisli.github-bug-repairs",
+  "version": 1,
+  "date": "2026-10-04",
+  "timezone": "Asia/Tokyo",
+  "package_version": "0.2.9",
+  "publication": "uncommitted workspace; no pushes or issue closures",
+  "environment": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "rust": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "python": "3.14.5",
+    "kernel_sha256": "c5775845e7cd51b0f187a5ecc4e46b04ce678c53885cd3026c2d57e3cd655475",
+    "kernel_env": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_HIERARCHY_KERNEL": "same path for hierarchy commands"
+    }
+  },
+  "implemented": [
+    257,
+    258,
+    259,
+    260,
+    261,
+    262,
+    263,
+    264,
+    266,
+    267,
+    271
+  ],
+  "partial": {
+    "268": "Unix process groups and nonblocking pipes repaired; Windows process-tree containment remains open"
+  },
+  "remaining": {
+    "94": "Full typed-capacity refactor remains open",
+    "275": "Explicit v0.3.1 TODO diagnostic taxonomy",
+    "278": "Explicit v0.3.1 TODO stress/capacity recovery"
+  },
+  "checks": [
+    {
+      "log": "logs/rust-relevant.log",
+      "status": "passed",
+      "targets": 16,
+      "passed": 200,
+      "ignored": 22,
+      "filtered": 1
+    },
+    {
+      "log": "logs/rust-focused.log",
+      "status": "passed",
+      "targets": 6,
+      "passed": 72,
+      "ignored": 0,
+      "filtered": 0
+    },
+    {
+      "log": "logs/source-unit.log",
+      "status": "passed",
+      "targets": 1,
+      "passed": 8,
+      "ignored": 0,
+      "filtered": 72
+    },
+    {
+      "log": "logs/process-tree.log",
+      "status": "passed",
+      "targets": 1,
+      "passed": 1,
+      "ignored": 0,
+      "filtered": 79
+    },
+    {
+      "log": "logs/native-handles.log",
+      "status": "passed",
+      "targets": 2,
+      "passed": 5,
+      "ignored": 0,
+      "filtered": 2
+    },
+    {
+      "log": "logs/hierarchy.log",
+      "status": "passed",
+      "targets": 1,
+      "passed": 1,
+      "ignored": 0,
+      "filtered": 17
+    },
+    {
+      "log": "logs/sim-library.log",
+      "status": "passed",
+      "targets": 3,
+      "passed": 8,
+      "ignored": 0,
+      "filtered": 95
+    },
+    {
+      "log": "logs/sim-integration.log",
+      "status": "passed",
+      "targets": 2,
+      "passed": 23,
+      "ignored": 0,
+      "filtered": 0
+    },
+    {
+      "log": "logs/target-case.log",
+      "status": "passed",
+      "targets": 1,
+      "passed": 1,
+      "ignored": 0,
+      "filtered": 7
+    }
+  ],
+  "clippy": "all targets, -D warnings: passed",
+  "policy_tests": {
+    "run": 196,
+    "skipped": 8,
+    "status": "passed"
+  },
+  "source_path_tests": 4,
+  "native_public_paths": {
+    "checks": 241,
+    "corpus_clients": 84,
+    "max_corpus_qubits": 4
+  },
+  "native_replay": {
+    "pairs": 799,
+    "accepted": 263,
+    "rejected": 536,
+    "proposal_bound_rejections": 1,
+    "failures": 0
+  },
+  "source_binding": "replay-complete/results.json",
+  "limitations": [
+    "No full clean release CI",
+    "No new maximum-size stress runs",
+    "No Linux/MSRV/Windows validation",
+    "Lean sources/proofs unchanged; no new proof compilation",
+    "Intermediate failures are retained; broad runs are not falsely rewritten as final-source reruns",
+    "Public path and broad Rust reports bind their own runs; final copy accounting was covered by the separate final simulation/sampling suite and final native replay."
+  ],
+  "files": {
+    "Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "README.md": "c4a3aa72f7cc2a78d8c7b222fa432cc445b382916b81433e2ad34f89c1a4a3ad",
+    "contract-diagnostic.json": "2697824bbf556d9a4371abec905a2fb360ff15954a4a0fd971617357c4311760",
+    "contract_mismatch/main.qli": "3836ef455c4233ab83d1b04b6b1d1255533418c78d17aeec3dd6c4a3b80a03fd",
+    "github-comments.json": "fb7817669aee1bee69320703e21525455ba1d7e0af30350a2f3f2600c94a820e",
+    "issues-at-start.json": "112bf10abaa8f9ce9b34e508c2bd7306baa8c829d66520e848ed88e3a416eaee",
+    "logs/check-coverage.log": "5927f300a27e7e1fa855e3216b4cc52e7f413a94562caba0852046a62749bd8a",
+    "logs/check-docs.log": "effe32932e0829ac4e9460be9b54e8e90440e90bcd7d86853a8e56ba99dba220",
+    "logs/check-editions.log": "820c253c16c3cd165c8b65ffc6c2c69d73c547ce057cf3604fd3b915f4b444bf",
+    "logs/check-inventory.log": "ecd035b503a29060f0f31a34666d4603d04240e0c466c9c9c350af19a009c2f3",
+    "logs/check-schema.log": "fd19bbe79af163ca3a9586be9ec0810d8f58901f3993237a868d35e776459fdb",
+    "logs/clippy.log": "1fe4e6d46f843910998c20e53525f0328b1821c269deb576a230646b4613c91e",
+    "logs/hierarchy.log": "14f441800c9564cd8e2688fb479acbfaa38a035145056b3885cd5c517cf8942d",
+    "logs/intermediate-hierarchy-failure.log": "d6a093d203481a186ec4b2e52417a205c2d8672fe6563f4927a61517095acf2d",
+    "logs/intermediate-regression-failures.log": "bf24793e24685847a0959ceda33bf5ebe3704b33c7602d70dd236a4045710bdc",
+    "logs/intermediate-usage-failure.log": "012c3209df48d44d9d81534748835d1eed21cbc5c40fecbffbdc7ef154bfe3fc",
+    "logs/native-handles.log": "7038798407b7a501891f6788a728ccce9807052f3fac867a4989ab998f14bae0",
+    "logs/policy.log": "c60c912abc3b894d131d5ff0b6f22858bd37a4ecfa3d2c774a8cbaafe2e4aa7a",
+    "logs/process-tree.log": "f7694bbd08c1504cf92b8ab5cf6417515540f8170a3de0329576d6707a98f1bd",
+    "logs/public-paths.log": "4531f39977379c99372d5c69cec04bca0acec552f70e1630da31b7e3b1240e74",
+    "logs/rust-focused.log": "98276f6724357c9b84439ad032706cba3a2cf549ae36ff0dce83232ce3710031",
+    "logs/rust-relevant.log": "e82f14765ede65d3aeba9c95b5cf9ccb2853b9c12ecaea9b73cd9d7fe3584534",
+    "logs/sim-integration.log": "3eab5459a105c2b4b1d27d42028fcf78b69b152c744c6778944e5e02cac36c10",
+    "logs/sim-library.log": "21fb7acfb36c1b05adb70296134ce41e540963a6d481a57df874a014a1e9b369",
+    "logs/source-paths.log": "9ae11cc39dab320b693d1d25dcda1f52e091a9cbc167f715cd377b833c687d7c",
+    "logs/source-unit.log": "755cd2216a039650a5df5a6961cb8b455b0743f5166151d0eff0f856d31154ca",
+    "logs/target-case.log": "6608c7813337e003ae6a7ff3e6d5e61bf75d014e77f1de941581beddad0390b9",
+    "nested-distribution.json": "88da417ab0c55e5101c49f9ce77c3398067b75231bdffa3bbd3da168772c7f34",
+    "nested_ensemble/main.qli": "a819f9ef550ed3f8dcdd5fdda9fcdddebd136944b7812b91fb927b8e81efe134",
+    "public-paths.json": "f95d2ac0302f051511a2e9f67598184cf230b137a296f7290d21c0b06124b22b",
+    "replay/results.json": "889042ab3f9fcd12f21c2bb767578b9b13a5e4c574cd1cbe29ae66b11da5dfee",
+    "replay-complete/results.json": "1db5039757226132fc7c08b8e3a94f5a14ef54b3f2e19ffcc6f364015f9b1726",
+    "replay-final/results.json": "aba3b7293b9e115fc62bb8ba191449016a96cf90782ab967738a39ee4e82247d",
+    "source-review.json": "19f8d962bfae94e0a4d35d1cdcbf3d61923e8216fdfb41e2cbaa57c0896aaa54"
+  },
+  "github_comments": "github-comments.json",
+  "repository_checks": {
+    "docs": "passed",
+    "verification-inventory": "passed",
+    "production-coverage": "passed",
+    "editions": "passed",
+    "schema-registry-source-only": "passed",
+    "diff-check": "passed"
+  },
+  "commands": {
+    "logs/rust-relevant.log": "cargo test --locked --offline --no-fail-fast --lib --test cli --test cli_json --test documentation --test editions --test review_v024 --test review_v026 --test review_v028 --test sim --test sampling --test semantic_contracts --test native_acceptance --test native_paths --test hierarchical_host --test project --test sized_cli -- --skip inherited_pipes_do_not_leave_descendants_or_transport_threads",
+    "logs/process-tree.log": "cargo test --locked --offline --lib interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads -- --exact --nocapture (outside sandbox for ps)",
+    "logs/source-unit.log": "cargo test --locked --offline --lib frontend::project::",
+    "logs/sim-library.log": "cargo test --locked --offline --lib sim:: --test sim --test sampling (integration names filtered out; separate run below)",
+    "logs/sim-integration.log": "cargo test --locked --offline --test sim --test sampling",
+    "logs/native-handles.log": "cargo test --locked --offline --test native_acceptance --test native_paths -- --ignored",
+    "logs/hierarchy.log": "cargo test --locked --offline --test hierarchical_host native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes -- --ignored --exact",
+    "logs/clippy.log": "cargo clippy --locked --offline --all-targets -- -D warnings",
+    "logs/policy.log": "python3 -m unittest discover -s scripts -p 'test_check_*.py'",
+    "logs/public-paths.log": "python3 scripts/test_native_verification.py --record /private/tmp/qleisli-bug-public-paths",
+    "logs/source-paths.log": "python3 scripts/test_source_kernel.py",
+    "replay-complete/results.json": "python3 scripts/test_native_acceptance_replay.py --record /private/tmp/qleisli-bug-replay-complete (copied into this record)"
+  }
+}

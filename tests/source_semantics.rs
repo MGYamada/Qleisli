@@ -6,17 +6,18 @@ use std::collections::BTreeMap;
 
 use common::SourceRoot;
 
+use common::accept;
+use qleisli::AcceptedProgram;
 use qleisli::frontend::compile::compile_project;
 use qleisli::ir::RawOp;
 use qleisli::sim::{SimulationLimits, run_closed};
-use qleisli::{VerifiedProgram, verify};
 
-fn compile(source: &str) -> VerifiedProgram {
+fn compile(source: &str) -> AcceptedProgram {
     let root = SourceRoot::new(source);
     compile_project(&root.0).unwrap()
 }
 
-fn distribution(program: &VerifiedProgram) -> BTreeMap<Vec<bool>, f64> {
+fn distribution(program: &AcceptedProgram) -> BTreeMap<Vec<bool>, f64> {
     run_closed(program, SimulationLimits::default()).unwrap()
 }
 
@@ -206,6 +207,6 @@ observe fn main() -> ((CBit,CBit),((CBit,CBit),(CBit,CBit))) {
         }
     }
     assert_eq!(reordered_branches, 1);
-    let reordered = verify(reordered).unwrap();
+    let reordered = accept(reordered).unwrap();
     assert_distribution(&distribution(&reordered), expected);
 }

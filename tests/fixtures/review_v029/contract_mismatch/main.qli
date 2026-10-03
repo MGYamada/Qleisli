@@ -1,0 +1,4 @@
+use std::quantum::h;
+unitary fn actual(q: Q<Bit>) -> Q<Bit> { h(q) }
+unitary fn expected(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn client(q: Q<Bit>) -> Q<Bit> { apply_contract(actual, expected, q) }

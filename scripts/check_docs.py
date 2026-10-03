@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check Markdown references, Lean imports, and the generated current-state view.
+"""Check Markdown references, Lean imports, and the active documentation layout.
 
 A link labelled with one backticked identifier and targeting a .rs file opts
 into declaration checking. Under tests/, it must name a #[test] function.
@@ -8,6 +8,7 @@ This is a source-reference check, not a Rust parser or a coverage proof.
 
 from pathlib import Path
 import json
+import os
 import re
 import sys
 import tomllib
@@ -22,17 +23,23 @@ AGENTS_MAX_BYTES = 6000
 
 
 def check_agents_budget(root: Path) -> list[str]:
-    """Keep working instructions compact, including comments and examples."""
-    try:
-        content = (root / "AGENTS.md").read_bytes()
-        lines = len(content.decode("utf-8").splitlines())
-    except (OSError, UnicodeError) as failure:
-        return [f"AGENTS.md: {failure}"]
+    """Require identical, compact instructions, including comments and examples."""
     errors = []
-    if lines > AGENTS_MAX_LINES:
-        errors.append(f"AGENTS.md: {lines} lines exceeds {AGENTS_MAX_LINES}; replace or shorten existing rules")
-    if len(content) > AGENTS_MAX_BYTES:
-        errors.append(f"AGENTS.md: {len(content)} UTF-8 bytes exceeds {AGENTS_MAX_BYTES}; replace or shorten existing rules")
+    contents = {}
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        try:
+            content = (root / name).read_bytes()
+            lines = len(content.decode("utf-8").splitlines())
+        except (OSError, UnicodeError) as failure:
+            errors.append(f"{name}: {failure}")
+            continue
+        contents[name] = content
+        if lines > AGENTS_MAX_LINES:
+            errors.append(f"{name}: {lines} lines exceeds {AGENTS_MAX_LINES}; replace or shorten existing rules")
+        if len(content) > AGENTS_MAX_BYTES:
+            errors.append(f"{name}: {len(content)} UTF-8 bytes exceeds {AGENTS_MAX_BYTES}; replace or shorten existing rules")
+    if len(contents) == 2 and contents["AGENTS.md"] != contents["CLAUDE.md"]:
+        errors.append("AGENTS.md and CLAUDE.md must be byte-for-byte identical; update both together")
     return errors
 
 
@@ -262,128 +269,89 @@ def check_lean(root: Path) -> tuple[list[str], int]:
     return errors, len(sources)
 
 
-def render_status(root: Path, *, inventory_only: bool = False) -> str:
-    """Render current planning states and a scoped inventory, not proof claims."""
-    data = json.loads((root / "docs/project-status.json").read_text(encoding="utf-8"))
-    if set(data) != {"format", "release_state", "current", "milestones", "inventory"} or data["format"] != 3:
-        raise ValueError("unsupported project-status format or fields")
-    versions = []
-    for manifest in ["Cargo.toml", "lean/lakefile.toml", "lean-kernel/lakefile.toml", "python/pyproject.toml"]:
-        match = re.search(r'^version = "([^"]+)"$', (root / manifest).read_text(), re.MULTILINE)
-        if not match:
-            raise ValueError(f"missing project version in {manifest}")
-        versions.append(match[1])
-    if len(set(versions)) != 1:
-        raise ValueError("Rust, Lean and Python project versions differ")
-    python_version = re.search(r'^__version__ = "([^"]+)"$', (root / "python/qleisli/__init__.py").read_text(), re.MULTILINE)
-    if python_version is None or python_version[1] != versions[0]:
-        raise ValueError("Python runtime version differs from project manifests")
-    for notice in ["LICENSE", "NOTICE"]:
-        if (root / "python" / notice).read_bytes() != (root / notice).read_bytes():
-            raise ValueError(f"Python package {notice} differs from repository {notice}")
-
-    def cell(value):
-        if not isinstance(value, str) or not value.strip() or "\n" in value or "\r" in value:
-            raise ValueError("status cells must be nonempty single-line strings")
-        return value.replace("|", "\\|")
-
-    def rows(items, fields):
-        if not isinstance(items, list) or not items:
-            raise ValueError("status tables must be nonempty lists")
-        result = []
-        for item in items:
-            if not isinstance(item, dict) or set(item) != set(fields):
-                raise ValueError("status row has missing or unknown fields")
-            result.append("| " + " | ".join(cell(item[key]) for key in fields) + " |")
-        return result
-
-    milestone_rows = rows(data["milestones"], ["id", "state", "evidence", "open"])
-    if [item["id"] for item in data["milestones"]] != [f"M{i}" for i in range(6)]:
-        raise ValueError("milestones must contain M0 through M5 once, in order")
-    inventory_rows = rows(data["inventory"], ["rule", "implementation", "tests", "proof"])
-    current_rows = rows(data["current"], ["topic", "state", "detail"])
-    if inventory_only:
-        # Keep each obligation group visible with a primary reference per column.
-        # Detailed component premises and evidence remain in the linked packets.
-        def primary(value, label):
-            links = LINK.findall(value)
-            if links:
-                original_label, target = links[0]
-                if IDENTIFIER.fullmatch(original_label):
-                    label = original_label
-                return f"[{label}]({target})"
-            return value if len(value) <= 80 else "[ledger](project-status.json)"
-
-        compact_inventory = [
-            {**item,
-             "implementation": primary(item["implementation"], "code"),
-             "tests": primary(item["tests"], "tests"),
-             "proof": primary(item["proof"], "scope")}
-            for item in data["inventory"]
-        ]
-        inventory_rows = rows(compact_inventory, ["rule", "implementation", "tests", "proof"])
-        return "\n".join([
-            "# Finite rule and implementation inventory", "",
-            "<!-- Generated by scripts/check_docs.py --write-status; edit docs/project-status.json. -->", "",
-            "[Status](current-status.md); [ledger](project-status.json) retains all references.", "",
-            "Bounded component inventory, not a fresh run or complete soundness audit.",
-            "Rust authoritative; schemas disabled. General source/native/execution correspondence,",
-            "production soundness and R14/H1–H5 remain open. Linked packets fix scope/capacities.", "",
-            "| Rule | Implementation boundary | Existing regression evidence | Proof status and gap |",
-            "| --- | --- | --- | --- |", *inventory_rows, "",
-        ])
-    return "\n".join([
-        "# Current project status and finite-rule inventory", "",
-        "<!-- Generated by scripts/check_docs.py --write-status; edit docs/project-status.json. -->", "",
-        f"Selected product version: **{versions[0]}**. {cell(data['release_state'])}",
-        f"See the [validation/publication record](releases/v{versions[0]}.md).", "",
-        "## Where we are now", "",
-        "| Area | Current state | Details |",
-        "| --- | --- | --- |", *current_rows, "",
-        "Generated from [ledger](project-status.json)/manifests, not a fresh run or soundness proof.",
-        "Evidence stays beside fixtures; history uses Git/tags.", "",
-        "## Active milestone states", "",
-        "| Milestone | State | Evidence / direction | Remaining work |",
-        "| --- | --- | --- | --- |", *milestone_rows, "",
-        "## Finite rule inventory", "",
-        "Read the [separate implementation/test/proof inventory](rule-inventory.md).", "",
-        "[M0–M5 and legacy IDs](v0x-roadmap.md#legacy-id-mapping) separate active scheduling",
-        "from requirements, theorem names, acceptance criteria and historical release steps.",
-        "Regenerate with `python3 scripts/check_docs.py --write-status`; ordinary checks reject drift.", "",
-    ])
-
-
-def check_status(root: Path, write: bool = False) -> list[str]:
+def check_project_metadata(root: Path) -> list[str]:
+    """Keep release metadata and notices synchronized without retired status pages."""
     try:
-        views = {"docs/current-status.md": render_status(root),
-                 "docs/rule-inventory.md": render_status(root, inventory_only=True)}
-        for name, expected in views.items():
-            path = root / name
-            if write:
-                path.write_text(expected, encoding="utf-8")
-            elif not path.exists() or path.read_text(encoding="utf-8") != expected:
-                return [f"{name} is stale; run python3 scripts/check_docs.py --write-status"]
+        versions = []
+        for manifest in ["Cargo.toml", "lean/lakefile.toml", "lean-kernel/lakefile.toml", "python/pyproject.toml"]:
+            match = re.search(r'^version = "([^"]+)"$', (root / manifest).read_text(), re.MULTILINE)
+            if not match:
+                raise ValueError(f"missing project version in {manifest}")
+            versions.append(match[1])
+        if len(set(versions)) != 1:
+            raise ValueError("Rust, Lean and Python project versions differ")
+        native_product = root / "lean-kernel/Protocol/Product.lean"
+        if native_product.is_file():
+            native_version = re.search(r'^def productVersion : String := "([^"]+)"$', native_product.read_text(), re.MULTILINE)
+            if native_version is None or native_version[1] != versions[0]:
+                raise ValueError("native runtime product version differs from project manifests")
+        python_version = re.search(r'^__version__ = "([^"]+)"$', (root / "python/qleisli/__init__.py").read_text(), re.MULTILINE)
+        if python_version is None or python_version[1] != versions[0]:
+            raise ValueError("Python runtime version differs from project manifests")
+        for notice in ["LICENSE", "NOTICE"]:
+            if (root / "python" / notice).read_bytes() != (root / notice).read_bytes():
+                raise ValueError(f"Python package {notice} differs from repository {notice}")
     except (OSError, ValueError, TypeError, KeyError) as failure:
-        return [f"project status: {failure}"]
-    # The compact view displays primary references; validate every reference
-    # retained in the source ledger, including secondary declaration links.
-    ledger = root / "docs/project-status.json"
-    data = json.loads(ledger.read_text(encoding="utf-8"))
-    references = "\n".join(
-        value for group in ["current", "milestones", "inventory"]
-        for item in data[group] for value in item.values()
-    )
-    return check_links(root, [ledger], text_overrides={ledger: references})[0]
+        return [f"project metadata: {failure}"]
+    return []
+
+
+def retained_doc(relative: str) -> bool:
+    """The only two exceptions surviving the v0.3.0 docs cleanup boundary."""
+    return relative == "lean-backend-plan-v0.3.md" or relative.startswith("imaginary-v1/")
+
+
+def check_docs_layout(root: Path) -> list[str]:
+    """Require both cleanup survivors and exclude every other legacy docs path."""
+    errors = []
+    for name in ("docs/imaginary-v1/README.md", "docs/lean-backend-plan-v0.3.md"):
+        if not (root / name).is_file():
+            errors.append(f"missing retained document: {name}")
+    for path in sorted((root / "docs").rglob("*")):
+        if path.is_file() and path.name != ".DS_Store" and not retained_doc(path.relative_to(root / "docs").as_posix()):
+            errors.append(f"{path.relative_to(root)}: move retired documentation to docs-old until v0.3.0")
+    return errors
+
+
+def check_retired_doc_links(root: Path, paths: list[Path]) -> list[str]:
+    """Retiring documents must not remain dependencies, including pinned web links."""
+    errors = []
+    for path in paths:
+        prose = markdown_prose(path.read_text(encoding="utf-8"))
+        targets = [match[2] for match in LINK.finditer(prose)]
+        targets += re.findall(r'^ {0,3}\[[^\]]+\]:\s*(<[^>]+>|\S+)', prose, re.MULTILINE)
+        targets += re.findall(r'(?:href|src)\s*=\s*[\'"]([^\'"]+)[\'"]', prose)
+        targets += re.findall(r'https?://[^\s<>"\)]+', prose)
+        for raw in dict.fromkeys(targets):
+            target = raw.strip().split(' "', 1)[0].strip("<>")
+            url = urlsplit(target)
+            retired = False
+            if url.scheme or url.netloc:
+                remote = re.fullmatch(r"/MGYamada/Qleisli/(?:blob|tree)/[^/]+/(docs(?:-old)?)(?:/(.*))?", unquote(url.path))
+                if url.netloc == "github.com" and remote:
+                    retired = remote[1] == "docs-old" or not retained_doc(remote[2] or "")
+            elif url.path:
+                destination = (path.parent / unquote(url.path)).resolve()
+                if destination.is_relative_to((root / "docs-old").resolve()):
+                    retired = True
+                elif destination.is_relative_to((root / "docs").resolve()):
+                    retired = not retained_doc(destination.relative_to((root / "docs").resolve()).as_posix())
+            if retired:
+                errors.append(f"{path.relative_to(root)}: remove retired document link {target}")
+    return errors
 
 
 def markdown_paths(root: Path) -> list[Path]:
-    docs = [*root.glob("*.md"), *root.joinpath("docs").rglob("*.md")]
-    docs += list(root.joinpath("lean").glob("*.md"))
-    docs += list(root.joinpath("lean-kernel").glob("*.md"))
-    docs += list(root.joinpath("research").glob("*/README.md"))
-    for directory in ["examples", "corpus", "stdlib", "tests/fixtures"]:
-        docs += list(root.joinpath(directory).rglob("*.md"))
-    return docs
+    """Discover maintained Markdown, pruning archives, builds and frozen upstream."""
+    excluded = {".git", ".lake", "target", "__pycache__", ".venv", "node_modules", ".codex", ".agents"}
+    docs = []
+    for directory, children, files in os.walk(root, followlinks=False):
+        base = Path(directory)
+        children[:] = sorted(name for name in children if name not in excluded
+                             and not (base / name).is_symlink()
+                             and (base / name).relative_to(root).as_posix() not in {"docs-old", "corpus/upstream"})
+        docs.extend(base / name for name in files if name.endswith(".md") and not (base / name).is_symlink())
+    return sorted(docs)
 
 
 def check_release_doc_links(root: Path) -> list[str]:
@@ -439,7 +407,7 @@ def check_corpus_overview(root: Path, write: bool = False) -> list[str]:
         unitary = sum(case["kind"] == "unitary" for case in cases)
         begin, end = "<!-- corpus-inventory:start -->", "<!-- corpus-inventory:end -->"
         expected = (f"{begin}\n"
-                    "<!-- Generated by scripts/check_docs.py --write-status from corpus manifests. -->\n\n"
+                    "<!-- Generated by scripts/check_docs.py --write-corpus from corpus manifests. -->\n\n"
                     "| Finite examples | Unitary examples | Observing examples | Semantic faults |\n"
                     "| --- | --- | --- | --- |\n"
                     f"| {len(cases)} | {unitary} | {len(cases) - unitary} | {len(faults['cases'])} |\n\n"
@@ -454,24 +422,25 @@ def check_corpus_overview(root: Path, write: bool = False) -> list[str]:
         if write:
             path.write_text(text[:start] + expected + text[stop:])
         elif text[start:stop] != expected:
-            return ["corpus/README.md inventory is stale; run python3 scripts/check_docs.py --write-status"]
+            return ["corpus/README.md inventory is stale; run python3 scripts/check_docs.py --write-corpus"]
     except (OSError, ValueError, TypeError, KeyError) as failure:
         return [f"corpus overview: {failure}"]
     return []
 
 
 def main() -> int:
-    if sys.argv[1:] not in ([], ["--write-status"]):
-        print("usage: check_docs.py [--write-status]", file=sys.stderr)
+    if sys.argv[1:] not in ([], ["--write-corpus"]):
+        print("usage: check_docs.py [--write-corpus]", file=sys.stderr)
         return 2
-    status_errors = check_status(ROOT, write=sys.argv[1:] == ["--write-status"])
     errors, counts = check_links(ROOT, markdown_paths(ROOT))
     errors.extend(check_agents_budget(ROOT))
-    errors.extend(status_errors)
+    errors.extend(check_project_metadata(ROOT))
+    errors.extend(check_docs_layout(ROOT))
+    errors.extend(check_retired_doc_links(ROOT, markdown_paths(ROOT) + list((ROOT / "src").rglob("*.rs"))))
     errors.extend(check_release_doc_links(ROOT))
     errors.extend(check_source_doc_references(ROOT))
     errors.extend(check_python_readme_version(ROOT))
-    errors.extend(check_corpus_overview(ROOT, write=sys.argv[1:] == ["--write-status"]))
+    errors.extend(check_corpus_overview(ROOT, write=sys.argv[1:] == ["--write-corpus"]))
     lean_errors, modules = check_lean(ROOT)
     errors.extend(lean_errors)
     # Loaded here so the standalone checker can reuse lean_imports above.

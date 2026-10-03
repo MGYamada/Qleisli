@@ -6,12 +6,12 @@ use std::collections::BTreeMap;
 
 use common::SourceRoot;
 
-use qleisli::VerifiedProgram;
+use qleisli::AcceptedProgram;
 use qleisli::frontend::compile::compile_project;
 use qleisli::ir::RawOp;
 use qleisli::sim::{SimulationLimits, run_closed};
 
-fn compile(source: &str) -> VerifiedProgram {
+fn compile(source: &str) -> AcceptedProgram {
     let root = SourceRoot::new(source);
     compile_project(&root.0).unwrap_or_else(|error| panic!("{source}\n{error}"))
 }

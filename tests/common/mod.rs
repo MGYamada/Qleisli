@@ -1,4 +1,5 @@
-//! Temporary source projects shared by integration tests.
+//! Temporary source projects and native acceptance shared by integration tests.
+#![allow(dead_code)]
 
 use std::fs;
 use std::io::ErrorKind;
@@ -40,4 +41,11 @@ impl Drop for SourceRoot {
     fn drop(&mut self) {
         let _ = fs::remove_dir_all(&self.0);
     }
+}
+
+#[allow(dead_code)]
+pub(super) fn accept(
+    raw: qleisli::ir::RawProgram,
+) -> Result<qleisli::AcceptedProgram, qleisli::interchange::Error> {
+    qleisli::interchange::native::Kernel::selected()?.accept_raw(raw)
 }

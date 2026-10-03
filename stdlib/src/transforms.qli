@@ -2,7 +2,7 @@
 //!
 //! Ordinary checked .qli definitions; no general-size or approximate QFT API.
 //! Basis labels are little-endian and each circuit includes output-bit reversal.
-//! Contracts and finite regression status: https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/stdlib-contracts.md, F001-F002.
+//! Contracts and finite regression status: Contract identifiers: F001-F002.
 use std::quantum::h;
 use std::quantum::t;
 use std::quantum::s;

@@ -12,7 +12,6 @@ use std::sync::{Arc, OnceLock};
 use super::exact::{Budget, Matrix};
 use super::{
     BasisType, Circuit, ContractDiagnostic, ContractError, MAX_CONTRACT_BITS, MAX_CONTRACT_STEPS,
-    check_equation,
 };
 use crate::ir::*;
 
@@ -56,7 +55,7 @@ impl RetainedIdentity {
         }
     }
 
-    fn parts(&self) -> (&str, &str, &[(String, String)]) {
+    pub(crate) fn parts(&self) -> (&str, &str, &[(String, String)]) {
         match self {
             Self::Owned(identity) => (
                 &identity.implementation,
@@ -96,7 +95,7 @@ impl RetainedIdentity {
     }
 }
 
-/// An exact theorem for two concrete, independently verified raw functions.
+/// Native acceptance of two concrete raw functions with equal exact meaning.
 ///
 /// All fields are private. Cloning evidence preserves its checked raw snapshots
 /// and dependency graph. A function call may reuse `meaning` without evaluating
@@ -114,6 +113,8 @@ pub struct FunctionEvidence {
     depth: usize,
     expanded_steps: usize,
     proof_identity: Arc<()>,
+    native: Arc<crate::interchange::native::NativeChecked>,
+    snapshot_key: Arc<[u8]>,
 }
 
 // Proof dependencies are issued identities, not recursively expanded trees.
@@ -175,35 +176,79 @@ impl FunctionEvidence {
         identity: RetainedIdentity,
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
+        let kernel = crate::interchange::native::Kernel::selected().map_err(native_error)?;
+        Self::check_retained_with_kernel(
+            &kernel,
+            signature,
+            implementation,
+            specification,
+            identity,
+            budget,
+        )
+    }
+
+    pub(crate) fn check_retained_with_kernel(
+        kernel: &crate::interchange::native::Kernel,
+        signature: BasisType,
+        implementation: RawProgram,
+        specification: RawProgram,
+        identity: RetainedIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
+        validate_identity(&identity, budget)?;
+        let implementation_view = implementation.clone();
+        let specification_view = specification.clone();
+        let signature_view = signature.clone();
+        kernel
+            .function_evidence(signature, implementation, specification, identity, budget)
+            .map_err(|failure| {
+                let error = native_error(failure);
+                let detail = if error == ContractError::EquationMismatch {
+                    (|| {
+                        let bits = signature_view.bits()?;
+                        preflight(&implementation_view, bits, budget)?;
+                        preflight(&specification_view, bits, budget)?;
+                        let a = extract(&implementation_view, &signature_view, budget)?
+                            .matrix(budget)?;
+                        let b = extract(&specification_view, &signature_view, budget)?
+                            .matrix(budget)?;
+                        Ok::<_, ContractError>(super::equation_counterexample(&a, &b))
+                    })()
+                    .ok()
+                    .flatten()
+                } else {
+                    None
+                };
+                ContractDiagnostic { error, detail }
+            })
+    }
+
+    /// Decode a view of an entry in a freshly accepted artifact. This constructor
+    /// is internal; only the native artifact decoder supplies its bound fields.
+    pub(crate) fn decode_native(
+        ticket: &crate::interchange::native::NativeChecked,
+        signature: BasisType,
+        implementation: RawProgram,
+        specification: RawProgram,
+        identity: RetainedIdentity,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
         let bits = signature.bits()?;
         validate_identity(&identity, budget)?;
-        let implementation_depth = preflight(&implementation, bits, budget)?;
-        let specification_depth = preflight(&specification, bits, budget)?;
-        let depth = implementation_depth.max(specification_depth);
-        // The preflight bounds every raw branch and vector before cloning or
-        // recursively invoking the independent verifier.
-        let verification_error = |(error, limit): (crate::verify::ValidationError, bool)| {
-            if limit {
-                ContractError::Limit(
-                    "independent function verification exceeded its work budget or finite capacity",
-                )
-            } else {
-                ContractError::InvalidCircuit(error.to_string())
-            }
-        };
-        let verified_implementation =
-            crate::verify::verify_with_budget_classified(implementation.clone(), budget)
-                .map_err(verification_error)?;
-        let verified_specification =
-            crate::verify::verify_with_budget_classified(specification.clone(), budget)
-                .map_err(verification_error)?;
-        let circuit = extract(verified_implementation.program(), &signature, budget)?;
-        let specified = extract(verified_specification.program(), &signature, budget)?;
-        expanded_steps(&specified)?;
+        let depth =
+            preflight(&implementation, bits, budget)?.max(preflight(&specification, bits, budget)?);
+        let circuit = extract(&implementation, &signature, budget)?;
+        let specified = extract(&specification, &signature, budget)?;
         let expanded_steps = expanded_steps(&circuit)?;
-        let actual = circuit.matrix(budget)?;
+        // Execution cache, never a Rust equation/isometry acceptance decision.
         let meaning = specified.matrix(budget)?;
-        check_equation(&actual, &meaning)?;
+        let snapshot_key = crate::interchange::function_snapshot_key(
+            &signature,
+            &implementation,
+            &specification,
+            identity.parts(),
+        )
+        .map_err(native_error)?;
         Ok(Self {
             signature,
             implementation,
@@ -214,7 +259,29 @@ impl FunctionEvidence {
             depth,
             expanded_steps,
             proof_identity: Arc::new(()),
+            native: Arc::new(ticket.clone()),
+            snapshot_key,
         })
+    }
+
+    /// Reuse producer source storage only after matching native-decoded metadata.
+    pub(crate) fn retain_identity(
+        mut self,
+        identity: RetainedIdentity,
+    ) -> Result<Self, ContractError> {
+        if self.identity.parts() != identity.parts() {
+            return Err(ContractError::EvidenceMismatch);
+        }
+        self.identity = Arc::new(identity);
+        Ok(self)
+    }
+
+    pub(crate) fn snapshot_key(&self) -> &Arc<[u8]> {
+        &self.snapshot_key
+    }
+
+    pub fn checker(&self) -> &std::path::Path {
+        self.native.checker()
     }
 
     pub fn signature(&self) -> &BasisType {
@@ -258,12 +325,34 @@ impl FunctionEvidence {
         specification: &RawProgram,
     ) -> Result<(), ContractError> {
         if !self.identity.matches(identity)
-            || implementation != &self.implementation
-            || specification != &self.specification
+            || !same_snapshot(implementation, &self.implementation)?
+            || !same_snapshot(specification, &self.specification)?
         {
             return Err(ContractError::EvidenceMismatch);
         }
         Ok(())
+    }
+}
+
+// Fresh native decoding assigns fresh receipt identities. Bind complete canonical
+// graph bytes rather than treating host Arc identity as semantic/source evidence.
+fn same_snapshot(a: &RawProgram, b: &RawProgram) -> Result<bool, ContractError> {
+    use crate::interchange::{Version, native::Proposal};
+    Ok(Proposal::from_raw(a, None, Version::V2, None)
+        .map_err(native_error)?
+        .artifact()
+        == Proposal::from_raw(b, None, Version::V2, None)
+            .map_err(native_error)?
+            .artifact())
+}
+
+fn native_error(error: crate::interchange::Error) -> ContractError {
+    if error.code == "limit" {
+        ContractError::Limit("native function checking exceeded its bounded profile")
+    } else if error.code == "contract" {
+        ContractError::EquationMismatch
+    } else {
+        ContractError::InvalidCircuit(error.to_string())
     }
 }
 
@@ -506,7 +595,7 @@ fn inspect_steps(
 /// Independent finite denotation of a verified unary unitary. This exposes no
 /// evidence constructor and does not trust frontend circuit flattening.
 pub(crate) fn verified_meaning(
-    verified: &crate::VerifiedProgram,
+    verified: &crate::AcceptedProgram,
     signature: &BasisType,
     budget: &mut Budget,
 ) -> Result<Matrix, ContractError> {
@@ -1165,10 +1254,11 @@ mod snapshot_tests {
     }
 
     #[test]
-    fn aggregate_budget_charges_each_shared_source_allocation_once() {
-        let sources = Arc::new(vec![("main".into(), "p".repeat(100_000))]);
-        let mut budget = Budget::new(110_000);
-        for _ in 0..256 {
+    fn aggregate_budget_charges_each_fresh_native_decision() {
+        let sources = Arc::new(vec![("main".into(), "p".repeat(1000))]);
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let before = budget.remaining();
+        for _ in 0..2 {
             FunctionEvidence::check_retained_diagnostic(
                 BasisType::Unit,
                 raw(),
@@ -1178,17 +1268,18 @@ mod snapshot_tests {
             )
             .unwrap();
         }
-        assert!(budget.remaining() < 10_000);
-        // Equal text in a distinct allocation is not the retained storage.
-        let distinct = Arc::new(sources.as_ref().clone());
-        let error = FunctionEvidence::check_retained_diagnostic(
-            BasisType::Unit,
-            raw(),
-            raw(),
-            RetainedIdentity::shared("i".into(), "s".into(), distinct),
-            &mut budget,
-        )
-        .unwrap_err();
-        assert!(error.error.is_capacity());
+        assert!(budget.remaining() < before - 2000);
+        let mut exhausted = Budget::new(0);
+        assert!(
+            FunctionEvidence::check_retained_diagnostic(
+                BasisType::Unit,
+                raw(),
+                raw(),
+                RetainedIdentity::shared("i".into(), "s".into(), sources),
+                &mut exhausted
+            )
+            .is_err()
+        );
+        assert_eq!(exhausted.remaining(), 0);
     }
 }

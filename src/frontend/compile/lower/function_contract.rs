@@ -80,7 +80,8 @@ impl Lowerer<'_, '_> {
             let specification = raw(&specification_key)?;
             let signature = contract_basis(&basis);
             let budget = &mut self.compiler.exact_work;
-            let evidence = FunctionEvidence::check_retained_diagnostic(
+            let evidence = FunctionEvidence::check_retained_with_kernel(
+                &self.compiler.kernel,
                 signature,
                 implementation,
                 specification,
@@ -93,8 +94,10 @@ impl Lowerer<'_, '_> {
                     span,
                     if error.error.is_capacity() {
                         ErrorCode::Limit
-                    } else {
+                    } else if matches!(error.error, crate::contract::ContractError::InvalidCircuit(_) | crate::contract::ContractError::EvidenceMismatch) {
                         ErrorCode::InvalidIr
+                    } else {
+                        ErrorCode::Contract
                     },
                     format!("function semantic contract: {error}{}", if matches!(error.error,
                         crate::contract::ContractError::Arithmetic(crate::contract::exact::ExactError::ArithmeticCapacity)) {

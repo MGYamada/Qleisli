@@ -1,0 +1,22 @@
+..........................................................................................................................[
+  {
+    "stage": "run",
+    "id": null,
+    "type": "ValueError",
+    "message": "invalid provenance"
+  }
+]
+..[
+  {
+    "stage": "cases",
+    "id": "quantum_katas/minus_state1",
+    "type": "SemanticMismatch",
+    "message": "wrong phase"
+  }
+]
+.ssssssss...............................................................
+----------------------------------------------------------------------
+Ran 196 tests in 20.719s
+
+OK (skipped=8)
+Passed 1 cases, 10 semantic probes and 4 rejection cases; detected 1 type-correct semantic faults; upstream frameworks not executed.

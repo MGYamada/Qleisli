@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout": "VM-22: 232 constructors, 234 source snapshots, 20 boundaries; native authority selected by #276; full Soundness remains open.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"7b887f905d98788582ebb179c48f45d23f6cf6f8c89d2af717ae9fd01914e900\", \"mode\": \"source-identity-only\", \"source_revision\": \"1a13d566743ac8010837a35b0ae47cbb72cc4e6e483301bb3d44dc65d44e5c24\", \"status\": \"passed\", \"version\": 1}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Checked 1570 local links, 8 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 201 Lean root modules.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Edition 2026: 1043 .qli and 5 .qlt files covered by 26 explicit manifests; no repository-root manifest.\n",
+      "stderr": ""
+    }
+  ],
+  "version": "0.2.9",
+  "changes": []
+}

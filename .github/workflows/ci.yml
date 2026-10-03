@@ -49,6 +49,7 @@ jobs:
           python3 scripts/test_measure_ci.py
           python3 scripts/test_run_native_ci.py
           python3 scripts/test_package_lean_kernel.py
+          python3 scripts/test_archive_lean_kernel.py
       - name: Select validation from the exact commit and both sides of its diff
         id: select
         run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
@@ -67,6 +68,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -119,6 +132,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -152,6 +177,18 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -184,7 +221,21 @@ jobs:
         run: |
           python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
           cargo +1.85.0 build --locked --bin qleisli
-          python3 scripts/test_dual_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/dual-macos"
+          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos"
+          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
+          python3 scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos/interop-native.json"
+      - name: Archive the freshly replayed macOS checker for distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        run: python3 scripts/archive_lean_kernel.py --bundle "$RUNNER_TEMP/qleisli-native-bundle" --output "$RUNNER_TEMP/native-distribution"
+      - name: Retain macOS native distribution and validation records
+        if: needs.changes.outputs.proof_lane == 'full'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qleisli-kernel-macos-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/native-distribution/
+            ${{ runner.temp }}/native-macos/
+          if-no-files-found: error
 
   check-interop:
     needs: changes
@@ -194,6 +245,18 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -303,7 +366,23 @@ jobs:
       - name: Build and audit a clean relocated Linux native bundle
         run: |
           python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
-          python3 scripts/test_dual_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/dual-bundle"
+          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/native-bundle"
+          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
+      - name: Exercise optional QIR/Python paths against the same audited bundle
+        run: |
+          python3 -m venv "$RUNNER_TEMP/native-qir"
+          "$RUNNER_TEMP/native-qir/bin/pip" install -r scripts/qir-reader-requirements.txt
+          "$RUNNER_TEMP/native-qir/bin/python" scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/native-bundle/interop-native.json"
+      - name: Archive the freshly replayed Linux checker for distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        run: python3 scripts/archive_lean_kernel.py --bundle "$RUNNER_TEMP/qleisli-native-bundle" --output "$RUNNER_TEMP/native-distribution"
+      - name: Retain Linux native distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qleisli-kernel-linux-${{ github.sha }}
+          path: ${{ runner.temp }}/native-distribution/
+          if-no-files-found: error
       - name: Retain complete coverage, per-command timings and independent logs
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -319,6 +398,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -357,6 +448,12 @@ jobs:
           python3 scripts/test_check_editions.py
           python3 scripts/check_editions.py
       - run: python3 scripts/test_check_docs.py
+      - run: python3 scripts/test_maintain_release.py
+      - run: python3 scripts/test_native_harness.py
+      - run: |
+          python3 scripts/test_check_production_coverage.py
+          python3 scripts/test_test_native_acceptance_replay.py
+      - run: python3 scripts/check_production_coverage.py
       - run: python3 scripts/test_check_lean_kernel.py
       - run: python3 scripts/test_check_schema_registry.py
       - run: python3 scripts/check_schema_registry.py --source-only
@@ -366,10 +463,6 @@ jobs:
           python3 scripts/test_check_verification_inventory.py
           python3 scripts/check_verification_inventory.py
           python3 scripts/test_test_verification_baseline.py
-      - name: Standard-library contract-writing conventions and mutation checks
-        run: |
-          python3 scripts/test_check_stdlib_contract_docs.py
-          python3 scripts/check_stdlib_contract_docs.py
       - run: python3 scripts/test_check_authoring_sessions.py
       - run: python3 scripts/check_authoring_sessions.py
       - run: python3 scripts/test_check_input_corpus.py

@@ -1,0 +1,5 @@
+passed: lake build
+passed: lake env lean -DwarningAsError=true Audit.lean
+passed: lake env leanchecker --fresh QleisliKernel
+passed: lake env leanchecker --fresh Main
+Audited native bundle: /private/tmp/qleisli-cutover-native-bundle

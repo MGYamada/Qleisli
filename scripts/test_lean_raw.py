@@ -6,6 +6,7 @@ independent required operator is supplied explicitly; neither executable
 receives the other's decision. Production acceptance remains Rust.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import copy
 import hashlib
@@ -394,12 +395,9 @@ def rust_program(p, receipts='receipts'):
 def native(all_cases, log):
     with tempfile.TemporaryDirectory(prefix='qleisli-raw-native-') as directory:
         project=Path(directory)
-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())
-        (project/'lakefile.toml').write_text('name="raw_test"\nversion="0.0.0"\ndefaultTargets=["raw-test"]\n[[require]]\nname="qleisli_kernel"\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\n[[lean_exe]]\nname="raw-test"\nroot="Main"\n')
         (project/'Main.lean').write_text(LEAN)
-        exact.command(['lake','build'],project,log)
+        binary = native_harness.build(project, log)
         payload='\n'.join(finite.dumps({k:v for k,v in c.items() if k in {'artifact','required','budget'}}) for c in all_cases)+'\n'
-        binary=project/'.lake/build/bin/raw-test'
         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0,run.stderr
         bindings=dict(lean_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
@@ -414,7 +412,7 @@ def native(all_cases, log):
             if c['name']=='missing_dependency':continue
             for e in a['evidence']:
                 statements.append('receipts.push(std::sync::Arc::new(qleisli::contract::FunctionEvidence::check('+finite.rust_basis(e['signature'])+','+rust_program(e['implementation'])+','+rust_program(e['specification'])+',identity(),&mut b).ok()?));')
-            statements.append('let raw='+rust_program(p)+';let verified=qleisli::verify(raw.clone()).ok()?;')
+            statements.append('let raw='+rust_program(p)+';let verified=qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw(raw.clone()).ok()?;')
             unary=len(p['quantum_inputs'])==1 and len(p['quantum_outputs'])==1 and p['declared_effect']=='unitary'
             if unary:
                 bits=p['quantum_inputs'][0]['shape']['bits']
@@ -470,7 +468,7 @@ def main():
         independent_raw_trace_programs=sum(r['reference_programs'] for r in lean),
         pure_constructors=11,max_semantic_qubits=3,rust_source_prefixes=6,commands=log,native_bindings=bindings,
         remaining=['VM-26 classical control/observation',
-                   'VM-27 hierarchy closure','VM-28/29 native packaging, byte refinement and production dual path'],
+                   'VM-27 hierarchy closure','native packaging and byte/decoder refinement'],
         source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
             ROOT/'lean-kernel/QleisliKernel/Semantics/Raw.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Structure.lean',
             ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',Path(__file__).resolve()]})

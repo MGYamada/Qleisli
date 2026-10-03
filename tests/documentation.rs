@@ -199,6 +199,31 @@ fn markdown_includes_private_docs_and_uses_safe_signature_fences() {
 }
 
 #[test]
+fn unfinished_comment_blocks_cannot_swallow_later_declarations() {
+    for comment in ["```", "~~~~rust", "<!--", "<script>", "``````\n/// <!--"] {
+        let source = format!(
+            "/// {comment}\nbasis fn hidden()->Bit{{0}}\n/// visible\npub basis fn visible()->Bit{{1}}"
+        );
+        let rendered = render_markdown(&source).unwrap();
+        // Independently scan fenced blocks: the later heading must occur at
+        // block level, with the complete signature in its own qli block.
+        let mut fence = None;
+        let mut heading = false;
+        for line in rendered.lines() {
+            let ticks = line.bytes().take_while(|b| *b == b'`').count();
+            match fence {
+                Some(n) if ticks >= n && line[ticks..].trim().is_empty() => fence = None,
+                None if ticks >= 3 => fence = Some(ticks),
+                None if line == "## visible (public)" => heading = true,
+                _ => {}
+            }
+        }
+        assert!(heading && fence.is_none(), "{rendered}");
+        assert!(rendered.contains("```qli\npub basis fn visible()->Bit\n```"));
+    }
+}
+
+#[test]
 fn every_bundled_module_and_public_or_private_definition_has_documentation() {
     let sources = [
         include_str!("../stdlib/src/arithmetic.qli"),

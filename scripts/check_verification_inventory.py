@@ -117,7 +117,7 @@ def check(root=ROOT, data=None):
         expected = {'format','version','packet','release','authority','groups','enums','sources','boundaries','capacities','corpus','native_packaging','comparison'}
         if set(data) != expected or data['format'] != 'qleisli.verification-inventory' or data['version'] != 1 or data['packet'] != 'VM-22':
             raise ValueError('unknown inventory format/fields')
-        if data['authority'] != 'Rust production; Lean components experimental; external schemas disabled':
+        if data['authority'] != 'Lean production under approved v0.2.9 exception #276; external schemas disabled':
             raise ValueError('inventory cannot change production authority')
         groups = data['groups']
         if not groups or len({g['id'] for g in groups}) != len(groups):
@@ -222,7 +222,7 @@ def check(root=ROOT, data=None):
         if not entries or any(e.get('external_enabled') is not False for e in entries):
             raise ValueError('external schema enabled; new acceptance review required')
         if not data['native_packaging'] or any(set(o) != {'option','current','selected_for_dual'} or o['selected_for_dual'] is not False or not o['option'] or not o['current'] for o in data['native_packaging']):
-            raise ValueError('VM-22 does not select production dual packaging')
+            raise ValueError('native-only inventory forbids dual packaging')
         comparison=data['comparison']
         if set(comparison) != {'pinned_files','reference','commands','scopes'} or not all(comparison.values()):
             raise ValueError('incomplete comparison baseline')
@@ -240,7 +240,7 @@ def main():
         for error in errors: print(error,file=sys.stderr)
         return 1
     data = json.loads((ROOT/INVENTORY).read_text())
-    print(f"VM-22: {sum(len(e['members']) for e in data['enums'])} constructors, {len(data['sources'])} source snapshots, {len(data['boundaries'])} boundaries; Rust authority unchanged.")
+    print(f"VM-22: {sum(len(e['members']) for e in data['enums'])} constructors, {len(data['sources'])} source snapshots, {len(data['boundaries'])} boundaries; native authority selected by #276; full Soundness remains open.")
     return 0
 
 

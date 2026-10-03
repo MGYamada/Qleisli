@@ -1,0 +1,118 @@
+[
+  {
+    "name": "build",
+    "command": [
+      "lake",
+      "build"
+    ],
+    "exit_code": 0,
+    "seconds": 48.48429383302573
+  },
+  {
+    "name": "audit",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Audit.lean"
+    ],
+    "exit_code": 0,
+    "seconds": 2.863684416981414
+  },
+  {
+    "name": "proof-tests",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "Tests.lean"
+    ],
+    "exit_code": 0,
+    "seconds": 11.514359916967805
+  },
+  {
+    "name": "equivalence",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5144277500221506
+  },
+  {
+    "name": "replay-root",
+    "command": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "QleisliKernel"
+    ],
+    "exit_code": 0,
+    "seconds": 63.32116687501548
+  },
+  {
+    "name": "replay-main",
+    "command": [
+      "lake",
+      "env",
+      "leanchecker",
+      "--fresh",
+      "Main"
+    ],
+    "exit_code": 0,
+    "seconds": 61.507569124980364
+  },
+  {
+    "name": "negative-audits",
+    "command": [
+      "python3",
+      "scripts/test_check_lean_kernel.py",
+      "--compiled"
+    ],
+    "exit_code": 0,
+    "seconds": 30.002254499995615
+  },
+  {
+    "name": "native-comparisons",
+    "command": [
+      "python3",
+      "scripts/run_native_ci.py",
+      "--output",
+      "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native"
+    ],
+    "exit_code": 1,
+    "seconds": 254.7019585419912
+  },
+  {
+    "name": "native-comparisons-rustup",
+    "command": [
+      "python3",
+      "scripts/run_native_ci.py",
+      "--output",
+      "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-rustup"
+    ],
+    "exit_code": 1,
+    "seconds": 212.80408395896666,
+    "path_prefix": "/Users/masa/.cargo/bin",
+    "reason": "The initial local PATH selected Cargo directly, which cannot parse +toolchain arguments."
+  },
+  {
+    "name": "native-comparisons-final",
+    "command": [
+      "python3",
+      "scripts/run_native_ci.py",
+      "--output",
+      "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final"
+    ],
+    "exit_code": 0,
+    "seconds": 262.11458445800235,
+    "head": "7935610cfcfb46a74c19db5c114482fdc09da6f4",
+    "note": "Actual Rust/Cargo version binding is retained; the identical Rustup proxy selector is normalized for native Cargo."
+  }
+]

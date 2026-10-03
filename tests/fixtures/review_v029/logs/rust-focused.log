@@ -1,0 +1,110 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.16s
+     Running tests/cli_json.rs (target/debug/deps/cli_json-34e5773ad9c50490)
+
+running 7 tests
+test json_type_failure_is_located_in_the_original_source ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.27s
+
+     Running tests/editions.rs (target/debug/deps/editions-4ff36c62e423b111)
+
+running 11 tests
+test non_file_manifest_is_rejected_before_platform_open ... ok
+test manifest_symlinks_and_non_files_cannot_fall_back_to_an_ancestor ... ok
+test missing_manifest_has_no_default_and_all_filesystem_loaders_check_it ... ok
+test malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source ... ok
+test sized_and_documentation_files_use_their_enclosing_manifest ... ok
+test empty_files_and_directory_entries_consume_bounded_discovery_capacity ... ok
+test qlt_drafts_require_an_edition_without_claiming_execution_support ... ok
+test manifest_bytes_are_bounded_and_decoded_independently_of_source_policy ... ok
+test closest_manifest_wins_without_changing_import_roots_or_skipping_invalid_files ... ok
+test full_qrate_manifest_and_toml_string_forms_select_the_same_edition ... ok
+test edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.34s
+
+     Running tests/project.rs (target/debug/deps/project-fd9430dae90d1468)
+
+running 11 tests
+test reserved_word_cannot_name_a_local_module ... ok
+test nonpublic_import_reports_calling_file_and_utf8_byte_span ... ok
+test bell_module_and_bundled_imports_resolve ... ok
+test converging_import_paths_do_not_report_a_cycle ... ok
+test std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules ... ok
+test algorithm_routines_are_bundled_source_with_private_helpers ... ok
+test missing_module_and_name_are_distinct_errors ... ok
+test unknown_sealed_name_is_not_reinterpreted_as_user_code ... ok
+test import_cycles_and_name_collisions_are_rejected ... ok
+test deep_import_cycle_reports_the_back_edge_and_cycle_path ... ok
+test long_acyclic_import_chain_loads_on_a_small_stack ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.66s
+
+     Running tests/review_v028.rs (target/debug/deps/review_v028-fc1b70024d1459c4)
+
+running 7 tests
+test source_loading_needs_search_but_not_read_permission_on_ancestors ... ok
+test tuple_diagnostic_has_a_structured_binding_and_no_host_path ... ok
+test interop_file_io_uses_the_closed_project_code ... ok
+test unreadable_source_identifies_the_failing_file_in_both_transports ... ok
+test byte_limits_identify_the_file_without_embedding_a_host_path ... ok
+test selected_qrate_rejects_root_and_ancestor_replacement_before_loading ... ok
+test terminal_export_keeps_allocations_before_observation ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.75s
+
+     Running tests/semantic_contracts.rs (target/debug/deps/semantic_contracts-03181785913613a8)
+
+running 21 tests
+test evidence_is_bound_to_full_circuit_and_contract ... ok
+test capacity_and_shared_work_exhaustion_fail_closed ... ok
+test encodings_and_logical_maps_must_be_isometric ... ok
+test impossible_circuit_shapes_are_not_capacity_failures ... ok
+test changed_encoding_blocks_control_even_when_the_logical_map_is_square ... ok
+test exact_basis_tree_is_not_erased_by_equal_dimensions ... ok
+test non_surjective_logical_isometry_cannot_be_adjointed_or_controlled ... ok
+test adjoint_reverses_permutation_with_input_indexed_phases ... ok
+test entry_requires_exact_coordinates_even_for_the_same_image ... ok
+test rejected_deep_type_is_destroyed_without_recursive_stack_growth ... ok
+test primitive_evidence_preserves_exact_phase ... ok
+test malformed_circuits_never_become_checked_evidence ... ok
+test controlled_encoded_phase_preserves_the_identity_arm ... ok
+test sequential_proofs_use_application_order ... ok
+test raw_ir_contract_diagnostic_identifies_an_exact_counterexample ... ok
+test computed_phase_hh_and_simultaneous_x_use_the_same_equation ... ok
+test unit_has_scalar_phase_and_a_distinct_owned_type ... ok
+test raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires ... ok
+test raw_ir_rechecks_actual_predicate_body_and_logical_evidence ... ok
+test tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference ... ok
+test computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.46s
+
+     Running tests/sim.rs (target/debug/deps/sim-b0ba904c997bde18)
+
+running 15 tests
+test computed_predicate_controls_target_without_measuring_source ... ok
+test coherent_qif_entangles_control_and_target ... ok
+test bell_half_measurement_and_feedback_corrects_other_half ... ok
+test join_and_permutation_lift_use_register_bit_order ... ok
+test bell_lift_split_and_measure_has_only_matching_outcomes ... ok
+test discarding_entangled_half_keeps_mixed_residual ... ok
+test computed_phase_oracle_not_function_interferes_to_one ... ok
+test classical_projection_copies_share_the_execution_budget ... ok
+test scalar_phase_survives_even_without_target_wires ... ok
+test nonclosed_input_and_dimension_limit_are_reported ... ok
+test reset_breaks_bell_correlation_and_returns_new_zero_wire ... ok
+test toffoli_and_classical_boolean_ops_execute ... ok
+test repeated_t_phase_can_leave_a_tiny_floating_point_outcome ... ok
+test unit_target_scalar_phase_becomes_relative_control_phase ... ok
+test nested_branches_reserve_pending_outer_components_and_amplitudes ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+

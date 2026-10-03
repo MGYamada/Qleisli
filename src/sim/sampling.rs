@@ -67,7 +67,7 @@ impl Default for SampleLimits {
 pub struct Sample {
     /// The same classical output order as `run_closed`.
     pub bits: Vec<bool>,
-    /// Executed IR/circuit steps, including hidden observations.
+    /// Executed IR/circuit steps and copied metadata entries, including hidden observations.
     pub execution_steps: u64,
 }
 
@@ -131,6 +131,7 @@ fn observe<R: RandomSource>(
     mut state: Component,
     wire: WireId,
     random: &mut R,
+    budget: &mut ExecutionBudget,
 ) -> Result<(Component, bool), SampleError<R::Error>> {
     normalize(&mut state, 0)?;
     let axis = state.position(wire)?;
@@ -144,11 +145,12 @@ fn observe<R: RandomSource>(
     if !p0.is_finite() || !(-TOLERANCE..=1.0 + TOLERANCE).contains(&p0) {
         return Err(SampleError::Numerical("invalid observation probability"));
     }
+    let projection = state.prepare_projection(wire, budget)?;
     // Deterministic measurements consume a word too, fixing the trace contract.
     let word = random.next_u64().map_err(SampleError::RandomSource)?;
     let u = (word >> 11) as f64 * (1.0 / ((1_u64 << 53) as f64));
     let outcome = u >= p0.clamp(0.0, 1.0);
-    let mut state = state.project_remove(wire, outcome)?;
+    let mut state = projection.project(outcome);
     let weight = state.weight();
     if !weight.is_finite() || weight <= 0.0 {
         return Err(SampleError::Numerical(
@@ -174,7 +176,7 @@ fn trajectory<R: RandomSource>(
             RawOp::MeasureZ { input, output } => {
                 budget.charge(1)?;
                 let wires = state.take(*input)?;
-                let (next, outcome) = observe(state, wires[0], random)?;
+                let (next, outcome) = observe(state, wires[0], random, budget)?;
                 state = next;
                 state.classical.insert(*output, outcome);
             }
@@ -186,7 +188,7 @@ fn trajectory<R: RandomSource>(
                 // Dispatch and the hidden measurement are both charged.
                 budget.charge(2)?;
                 let wires = state.take(*input)?;
-                state = observe(state, wires[0], random)?.0;
+                state = observe(state, wires[0], random, budget)?.0;
                 state.add_zero_wire(*fresh_wire, limits)?;
                 state.tokens.insert(*output, vec![*fresh_wire]);
             }
@@ -196,7 +198,7 @@ fn trajectory<R: RandomSource>(
                 wires.sort();
                 for wire in wires {
                     budget.charge(1)?;
-                    state = observe(state, wire, random)?.0;
+                    state = observe(state, wire, random, budget)?.0;
                 }
             }
             RawOp::ClassicalBranch {
@@ -215,12 +217,13 @@ fn trajectory<R: RandomSource>(
                     limits,
                     budget,
                 )?;
-                state = relabel_branch(state, then_arm, quantum_phis, classical_phis)?;
+                state = relabel_branch(state, then_arm, quantum_phis, classical_phis, budget)?;
             }
             _ => {
                 // Share only deterministic numerical execution. Observations and
                 // branches above never construct an exhaustive ensemble.
                 let before = budget.remaining;
+                let copies_before = budget.copied_entries;
                 let mut next = execute_op(state, operation, limits, budget)?;
                 if next.len() != 1 {
                     return Err(SampleError::InconsistentVerifiedIr(
@@ -228,7 +231,11 @@ fn trajectory<R: RandomSource>(
                     ));
                 }
                 state = next.pop().expect("exactly one successor");
-                normalize(&mut state, before - budget.remaining)?;
+                // Metadata copies cost resources but introduce no numerical
+                // error, so they must not relax the trajectory norm alarm.
+                let arithmetic_steps =
+                    before - budget.remaining - (budget.copied_entries - copies_before);
+                normalize(&mut state, arithmetic_steps)?;
             }
         }
     }
@@ -240,11 +247,11 @@ fn trajectory<R: RandomSource>(
 /// order, including hidden reset/discard observations. Floating-point reference
 /// execution is separate from the exact semantic evidence authorizing the IR.
 pub fn sample_closed<R: RandomSource>(
-    program: &VerifiedProgram,
+    program: &(impl ExecutableProgram + ?Sized),
     random: &mut R,
     limits: SampleLimits,
 ) -> Result<Sample, SampleError<R::Error>> {
-    let raw = program.raw();
+    let raw = program.execution_view();
     if !raw.quantum_inputs.is_empty()
         || !raw.classical_inputs.is_empty()
         || !raw.quantum_outputs.is_empty()
@@ -261,6 +268,7 @@ pub fn sample_closed<R: RandomSource>(
     };
     check_amplitude_cells(1, limits)?;
     let mut budget = ExecutionBudget {
+        copied_entries: 0,
         remaining: limits.max_execution_steps,
         max: limits.max_execution_steps,
     };

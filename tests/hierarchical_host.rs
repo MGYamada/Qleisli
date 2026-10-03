@@ -1,9 +1,10 @@
+mod common;
+use common::accept;
 use qleisli::contract::BasisType;
 use qleisli::contract::exact::{Exact, Matrix};
 use qleisli::interchange::hierarchical::Kernel;
 use qleisli::interchange::{self, RootInterface, Version, finite_matrix};
 use qleisli::ir::*;
-use qleisli::verify;
 
 fn quoted(text: &str) -> String {
     // Test payloads are ASCII JSON. Escape the outer string independently.
@@ -51,7 +52,7 @@ fn finite_program_at(owner: u32, wire: u32) -> Vec<u8> {
         declared_effect: Effect::Unitary,
     };
     interchange::export(
-        &verify(raw).unwrap(),
+        &accept(raw).unwrap(),
         Some(&RootInterface {
             input: BasisType::Bit,
             output: BasisType::Bit,
@@ -211,7 +212,7 @@ fn native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening
         let request = request_from_meanings(vec![(side.clone(), side.clone(), meaning.clone())], 0);
         for version in [Version::V1, Version::V2] {
             let bytes = interchange::export(
-                &verify(raw.clone()).unwrap(),
+                &accept(raw.clone()).unwrap(),
                 Some(&RootInterface {
                     input: ty.clone(),
                     output: ty.clone(),
@@ -702,8 +703,27 @@ fn native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes() {
         );
     }
     assert!(costs.windows(2).all(|w| w[0] == w[1]));
-    assert_eq!(costs[0].1, 67);
-    assert!(costs[0].2 > costs[0].1);
+    // Compare with an independently invoked finite leaf, not the retired Rust
+    // verifier's hard-coded 67-unit counter. Repeated DAG uses charge it once.
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_serialized_unitary};
+    let port = |token| QuantumPort {
+        token: TokenId(token),
+        wires: vec![WireId(7)],
+        shape: BasisShape::BIT,
+    };
+    let boundary = UnitaryBoundary::new(BasisType::Bit, port(0), port(1)).unwrap();
+    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+    let leaf = check_serialized_unitary(
+        &finite_program(),
+        &boundary,
+        &finite_matrix::encode(&h_matrix(false)).unwrap(),
+        &mut budget,
+    )
+    .unwrap();
+    assert_eq!(costs[0].1, DEFAULT_EXACT_WORK - budget.remaining());
+    assert_eq!(costs[0].1, leaf.exact_work());
+    assert!(costs[0].2 > 0);
     println!("independent request shared-power costs: {costs:?}");
 }
 

@@ -1,0 +1,115 @@
+{
+  "format": 1,
+  "recorded_utc": "2026-10-03T09:03:14.523116+00:00",
+  "scope": "Outcomes of local commands executed during the v0.2.9 corpus expansion and documentation retirement; not hosted CI or release validation.",
+  "checks": [
+    {
+      "command": "python3 scripts/test_check_docs.py",
+      "exit_code": 0,
+      "result": "29 tests"
+    },
+    {
+      "command": "python3 scripts/test_ci_profiles.py",
+      "exit_code": 0,
+      "result": "6 tests"
+    },
+    {
+      "command": "python3 scripts/test_check_distribution.py",
+      "exit_code": 0,
+      "result": "22 tests"
+    },
+    {
+      "command": "python3 scripts/test_check_input_corpus.py",
+      "exit_code": 0,
+      "result": "38 tests"
+    },
+    {
+      "command": "python3 scripts/test_check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "17 tests"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "exit_code": 0,
+      "result": "1494 local links, 10 anchors, 196 Lean root modules; agent equality/budget, metadata and retired-link checks"
+    },
+    {
+      "command": "python3 scripts/check_editions.py",
+      "exit_code": 0,
+      "result": "1038 QLI and 5 QLT sources, 22 manifests"
+    },
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "exit_code": 0,
+      "result": "87 cases; hashes, pins, attribution and authoring snapshots"
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "exit_code": 0,
+      "result": "232 constructors, 227 source snapshots, 19 boundaries"
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "exit_code": 0,
+      "result": "16 records, 25 snapshots, 48 observations; recorded commands not replayed"
+    },
+    {
+      "command": "python3 scripts/check_imaginary_v1_examples.py",
+      "exit_code": 0,
+      "result": "58 finite mathematical checks; drafts not compiled"
+    },
+    {
+      "command": "python3 scripts/check_schema_registry.py --source-only",
+      "exit_code": 0,
+      "result": "3 entries, all externally disabled; source identity only"
+    },
+    {
+      "command": "cargo build --locked --offline --bin qleisli",
+      "exit_code": 0,
+      "result": "development CLI built"
+    },
+    {
+      "command": "python3 scripts/check_installation.py target/debug/qleisli",
+      "exit_code": 0,
+      "result": "Bell, embedded QFT and ownership rejection; see quickstart-after-docs.json"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "result": "passed"
+    }
+  ],
+  "corpus": {
+    "report": "corpus/validation-v0.2.9.json",
+    "sha256": "e458e9eb54112756cf576bcb5c1b655b3ae80a864626e3aa2a67dd50723eb342",
+    "cases": 87,
+    "semantic_probes": 15889,
+    "faults": 63,
+    "rejections": 4
+  },
+  "docs": {
+    "retained": [
+      "docs/verification-migration-v0.2.md",
+      "docs/imaginary-v1/README.md",
+      "docs/imaginary-v1/requirements.md"
+    ],
+    "moved_document_and_metadata_files": 27,
+    "destination": "docs-old",
+    "delete_at": "0.3.0",
+    "active_links_to_retiring_documents": 0
+  },
+  "not_run": [
+    "full Rust suite",
+    "fresh Lean rebuild/replay for this documentation/corpus-only follow-up (the prior version-selection audit is separately recorded)",
+    "native comparison release matrix",
+    "hosted CI",
+    "package publication",
+    "new maximum-size experiments",
+    "upstream frameworks"
+  ],
+  "observed_repairs": [
+    "A proposed negative minus-state fixture Z H was equivalent to H X. Its first failed negative calibration and original source are retained; H X Z is detected. All nine positive first sources passed without repair.",
+    "The corpus census assertion was updated from 78 to 87.",
+    "Ten version/comment-only inventory hashes were reviewed and refreshed; executable bodies, public surfaces and behavioral fixtures were preserved."
+  ]
+}

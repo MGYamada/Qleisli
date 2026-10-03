@@ -1,0 +1,231 @@
+{
+  "decision": 276,
+  "scope": "First native accepted-handle vertical slice; not full cutover",
+  "sources": [
+    {
+      "path": "src/interchange/dual.rs",
+      "previous_sha256": "1b3d1bd9351b6684de25a779b31f384798a544045d4d9b6e9f118a42750fb297",
+      "sha256": "be90d0e6c7e71f5afc955541b2ba334abab43e6e558ea64bde44c17104148e7a",
+      "old_surface": {
+        "declarations": [
+          "Checked",
+          "Kernel",
+          "NativeChecked"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn check_program(&self, program: &VerifiedProgram) -> Result<Checked>",
+          "pub fn check_raw( &self, program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn check_with_meanings( &self, program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[crate::contract::meaning::MeaningEvidence], request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn convert( &self, artifact: &[u8], version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn inspect(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<NativeChecked>",
+          "pub fn into_program(self) -> VerifiedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn verify(&self, program: &RawProgram) -> Result<Checked>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "Checked",
+          "Kernel",
+          "NativeChecked"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn check_program(&self, program: &VerifiedProgram) -> Result<Checked>",
+          "pub fn check_raw( &self, program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn check_with_meanings( &self, program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[crate::contract::meaning::MeaningEvidence], request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn convert( &self, artifact: &[u8], version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn inspect(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<NativeChecked>",
+          "pub fn into_program(self) -> VerifiedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn verify(&self, program: &RawProgram) -> Result<Checked>"
+        ],
+        "capacity_constants": []
+      },
+      "review": "Native immutable handle/decoder boundary, shared process transport, sealed simulation input; legacy entry points retained pending caller migration."
+    },
+    {
+      "path": "src/interchange/mod.rs",
+      "previous_sha256": "892582873c20924308e9a8f171d52381b88b966b8935e1fb1ce0db62a43e672a",
+      "sha256": "983d54df2f2458c3845b6fd7addf6994b1488a4dbb369519d3a2ec1e8554a721",
+      "old_surface": {
+        "declarations": [
+          "Error",
+          "Imported",
+          "RootInterface",
+          "Version",
+          "dual",
+          "finite_leaf",
+          "finite_matrix",
+          "hierarchical"
+        ],
+        "functions": [
+          "pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>>",
+          "pub fn export( program: &VerifiedProgram, interface: Option<&RootInterface>, version: Version, ) -> Result<Vec<u8>>",
+          "pub fn export_with_meanings( program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[MeaningEvidence], ) -> Result<Vec<u8>>",
+          "pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported>"
+        ],
+        "capacity_constants": [
+          "const MAX_NODES: usize = 1_000_000;",
+          "const MAX_OBJECTS: usize = 65_536;",
+          "const MAX_SOURCE_BYTES: usize = 1 << 20;"
+        ]
+      },
+      "new_surface": {
+        "declarations": [
+          "Error",
+          "Imported",
+          "RootInterface",
+          "Version",
+          "dual",
+          "finite_leaf",
+          "finite_matrix",
+          "hierarchical",
+          "native"
+        ],
+        "functions": [
+          "pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>>",
+          "pub fn export( program: &VerifiedProgram, interface: Option<&RootInterface>, version: Version, ) -> Result<Vec<u8>>",
+          "pub fn export_with_meanings( program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[MeaningEvidence], ) -> Result<Vec<u8>>",
+          "pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported>"
+        ],
+        "capacity_constants": [
+          "const MAX_NODES: usize = 1_000_000;",
+          "const MAX_OBJECTS: usize = 65_536;",
+          "const MAX_SOURCE_BYTES: usize = 1 << 20;"
+        ]
+      },
+      "review": "Native immutable handle/decoder boundary, shared process transport, sealed simulation input; legacy entry points retained pending caller migration."
+    },
+    {
+      "path": "src/sim.rs",
+      "previous_sha256": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+      "sha256": "909d32ae7cf1af8db67bc87dc3ab495096250970de18129a24f938a3b3c66e26",
+      "old_surface": {
+        "declarations": [
+          "SimulationError",
+          "SimulationLimits"
+        ],
+        "functions": [
+          "pub fn run_closed( program: &VerifiedProgram, limits: SimulationLimits, ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError>"
+        ],
+        "capacity_constants": [
+          "pub const MAX_SIMULATED_QUBITS: usize = 20;"
+        ]
+      },
+      "new_surface": {
+        "declarations": [
+          "ExecutableProgram",
+          "Sealed",
+          "SimulationError",
+          "SimulationLimits"
+        ],
+        "functions": [
+          "pub fn run_closed( program: &(impl ExecutableProgram + ?Sized), limits: SimulationLimits, ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError>"
+        ],
+        "capacity_constants": [
+          "pub const MAX_SIMULATED_QUBITS: usize = 20;"
+        ]
+      },
+      "review": "Native immutable handle/decoder boundary, shared process transport, sealed simulation input; legacy entry points retained pending caller migration."
+    },
+    {
+      "path": "src/sim/sampling.rs",
+      "previous_sha256": "aeef8111325ddd4f3e48a9019d58d6f9c7f2034d7f1acf63cf79052e1fe77380",
+      "sha256": "47af1cb03127898a395a8fa5237cabc93b866532fd7b3c73557e7c390eb94f83",
+      "old_surface": {
+        "declarations": [
+          "RandomSource",
+          "Sample",
+          "SampleError",
+          "SampleLimits",
+          "SplitMix64"
+        ],
+        "functions": [
+          "pub fn new(seed: u64) -> Self",
+          "pub fn sample_closed<R: RandomSource>( program: &VerifiedProgram, random: &mut R, limits: SampleLimits, ) -> Result<Sample, SampleError<R::Error>>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "RandomSource",
+          "Sample",
+          "SampleError",
+          "SampleLimits",
+          "SplitMix64"
+        ],
+        "functions": [
+          "pub fn new(seed: u64) -> Self",
+          "pub fn sample_closed<R: RandomSource>( program: &(impl ExecutableProgram + ?Sized), random: &mut R, limits: SampleLimits, ) -> Result<Sample, SampleError<R::Error>>"
+        ],
+        "capacity_constants": []
+      },
+      "review": "Native immutable handle/decoder boundary, shared process transport, sealed simulation input; legacy entry points retained pending caller migration."
+    },
+    {
+      "path": "src/interchange/native.rs",
+      "previous_sha256": null,
+      "sha256": "895f49ff47b9e9385920fe0a7bc444f54a49ea60d0b4f29e8b7a7da61ae0c271",
+      "old_surface": null,
+      "new_surface": {
+        "declarations": [
+          "AcceptedProgram",
+          "Proposal"
+        ],
+        "functions": [
+          "pub fn accept(&self, proposal: &Proposal) -> Result<AcceptedProgram>",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn checker(&self) -> &Path",
+          "pub fn from_raw( program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Self>",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(artifact: &[u8], request: Option<&[u8]>) -> Result<Self>",
+          "pub fn raw(&self) -> &RawProgram",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn root_interface(&self) -> Option<&RootInterface>"
+        ],
+        "capacity_constants": []
+      },
+      "review": "Native immutable handle/decoder boundary, shared process transport, sealed simulation input; legacy entry points retained pending caller migration."
+    }
+  ],
+  "new_boundary": {
+    "id": "qirf-native-v029",
+    "group": "transport",
+    "entry_points": [
+      "interchange::native::{Proposal,AcceptedProgram,Kernel::accept}",
+      "sim::{run_closed,sample_closed} on AcceptedProgram"
+    ],
+    "status": "Native-only accepted handles for one evidence-free QIRF program; other callers pending",
+    "request": "Original optional independent request passed to the fresh Lean check",
+    "binding": "Owned immutable proposal; only native acceptance constructs the handle; decoder reads that ticket; no VerifiedProgram conversion",
+    "encoding": "QIRF1 finite-v0 or QIRF2 finite-meaning-v1, single program, no evidence/sources",
+    "domain": "Existing 19 raw constructors without retained function evidence; no additional semantic rules",
+    "limits": "Existing packet/JSON/native work bounds and reference execution limits",
+    "failure": "Explicit native rejection/transport error or unsupported execution view; never legacy fallback",
+    "replacement": [
+      "VM-29"
+    ]
+  }
+}

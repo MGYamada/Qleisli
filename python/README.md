@@ -2,7 +2,7 @@
 
 Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0.
 
-This development host package calls the separately installed Qleisli 0.2.8 Rust
+This development host package calls the separately installed Qleisli 0.2.9 Rust
 executable built from the same checkout. The version denotes this development
 checkout; Rust and Python registry publications are separate.
 It does not embed Rust or require an LLVM installation. Install a local wheel,
@@ -12,7 +12,7 @@ then select `Client(executable="/path/to/qleisli")`, set `QLEISLI_BIN`, or put
 ```python
 from qleisli import Client
 
-client = Client(executable="target/debug/qleisli")
+client = Client(executable="target/debug/qleisli", lean_kernel="/path/to/qleisli-kernel")
 program = client.from_openqasm('''OPENQASM 3.0;
 include "stdgates.inc";
 qubit[2] q; bit[2] c; reset q;
@@ -28,7 +28,7 @@ QIRF artifact. `from_qir(text_or_bitcode)` requires the optional `qir` extra
 (PyQIR 0.12.5, MIT, with its LLVM dependency notices). It supports the declared
 QIR 2.0 Base terminal subset, not arbitrary LLVM or adaptive programs. The
 reader runs in a separate process and never executes imported code. All inputs
-then pass the Rust verifier. `QleisliError.diagnostics` retains structured Rust
+then pass the native Lean verifier. `QleisliError.diagnostics` retains structured Rust
 diagnostics. Result bit lists keep declared output order; probabilities are
 numerical diagnostics and samples are local simulations, not device results.
 
@@ -37,10 +37,22 @@ provides a JSON command-line host. Sampling requires `--shots` and `--seed`.
 Each operation rechecks the actual artifact. Mutating a Python object or its
 serialized IR cannot create a trusted evidence handle.
 
+To select an independently built and audited Lean kernel, use
+`Client(executable="target/debug/qleisli", lean_kernel="/path/to/qleisli-kernel")`
+or add `--lean-kernel=/path/to/qleisli-kernel` to the Python CLI. Every input path
+(including QIR text/bitcode) and every subsequent `Program` method then requires
+fresh native acceptance. Missing executables, rejection and malformed responses fail;
+there is no fallback. Output IR is the exact checked artifact, and execution or
+foreign emission uses its reconstructed program. Clients without an explicit path require `QLEISLI_KERNEL`. Cargo and the Python
+wheel do not install or download the checker. A prebuilt native bundle needs no
+Lean development installation. Missing and incompatible product versions reject.
+
 For a checkout, install into a virtual environment (QIR support is optional):
 
 ```sh
 cargo build --bin qleisli
+(cd lean-kernel && lake build)
+export QLEISLI_KERNEL="$PWD/lean-kernel/.lake/build/bin/qleisli-kernel"
 python3 -m venv /tmp/qleisli-python
 /tmp/qleisli-python/bin/pip install --only-binary=pyqir './python[qir]'
 ```

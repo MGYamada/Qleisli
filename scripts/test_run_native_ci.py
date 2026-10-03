@@ -12,15 +12,22 @@ import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from run_native_ci import MANIFEST, ROOT, execute, execution_environment, load_tasks, source_binding, verify_coverage
+from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, source_binding, verify_coverage
 
 
 class NativeCI(unittest.TestCase):
+    def test_native_cargo_uses_only_the_already_checked_toolchain_pin(self):
+        self.assertEqual(launch_command(["cargo", "+1.98.1", "test"]), ["cargo", "test"])
+        for version in ["+1.85.0", "+stable", "+nightly"]:
+            with self.assertRaises(ValueError):
+                launch_command(["cargo", version, "test"])
+        self.assertEqual(launch_command(["echo", "+1.98.1"]), ["echo", "+1.98.1"])
+
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
-        self.assertEqual(len(tasks), 66)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 72)
-        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] != "dual-verification"]
+        self.assertEqual(len(tasks), 67)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 77)
+        inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]
@@ -58,6 +65,15 @@ class NativeCI(unittest.TestCase):
     def test_named_qpe_host_faults_have_a_required_ci_command(self):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-qpe-instrument')
         self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])
+
+    def test_native_handles_and_original_input_replay_are_required(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'native-acceptance')
+        self.assertEqual(task['commands'], [
+            ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--example', 'native_acceptance'],
+            ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
+        ])
+        self.assertEqual(task['env']['QLEISLI_KERNEL'], 'lean-kernel/.lake/build/bin/qleisli-kernel')
 
     def test_workflow_separates_full_proofs_from_native_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
@@ -115,6 +131,7 @@ class NativeCI(unittest.TestCase):
                        lambda r: r["tasks"][0].update(commands=[]),
                        lambda r: r["tasks"][0]["commands"][0].update(exit_code=1),
                        lambda r: r["tasks"][0]["commands"][0].update(command=["different"]),
+                       lambda r: r["tasks"][0]["commands"][0].update(executed_command=["different"]),
                        lambda r: r.update(binding={"head": "stale"}),
                        lambda r: r.update(manifest_sha256="corrupt")):
             mutated = copy.deepcopy(report)

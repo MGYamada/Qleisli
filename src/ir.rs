@@ -1,4 +1,4 @@
-//! Untrusted, finite Qleisli IR. All public fields must be checked by `verify`.
+//! Untrusted, finite Qleisli IR. All public fields must be accepted by the native Lean kernel.
 
 mod compat;
 

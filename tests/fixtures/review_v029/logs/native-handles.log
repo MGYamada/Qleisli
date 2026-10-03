@@ -1,0 +1,19 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running tests/native_acceptance.rs (target/debug/deps/native_acceptance-db202cdfd95cf255)
+
+running 3 tests
+test evidence_dags_decode_from_the_native_ticket_and_execute ... ok
+test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ok
+test native_rejection_and_independent_requests_bind_exact_bytes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.13s
+
+     Running tests/native_paths.rs (target/debug/deps/native_paths-1ee976a76f3d0d8d)
+
+running 2 tests
+test native_report_retains_the_exact_artifact_request_and_reconstructed_program ... ok
+test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.27s
+

@@ -26,13 +26,20 @@ class ArchiveTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
 
-    def test_registry_links_allow_only_current_files_and_reviewed_retired_contracts(self):
+    def test_registry_links_allow_only_current_active_files(self):
         prefix = "https://github.com/MGYamada/Qleisli/blob/"
         historical = prefix + "7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/language-editions.md"
         (self.root / "README.md").write_text("current")
         self.assertEqual(check_registry_links(self.root,
-            f"[current]({prefix}v0.2.8/README.md) [old]({historical})", "0.2.8"), [historical])
+            f"[current]({prefix}v0.2.8/README.md)", "0.2.8"), [])
+        (self.root / "docs").mkdir()
+        (self.root / "docs/lean-backend-plan-v0.3.md").write_text("requested plan")
+        self.assertEqual(check_registry_links(self.root,
+            f"[plan]({prefix}v0.2.9/docs/lean-backend-plan-v0.3.md)", "0.2.9"), [])
+        (self.root / "docs-old").mkdir()
+        (self.root / "docs-old/design.md").write_text("temporary")
         for target in ["README.md", prefix + "main/README.md", prefix + "v0.2.8/missing.md",
+                       historical, prefix + "v0.2.8/docs-old/design.md",
                        historical.replace("language-editions", "unreviewed"),
                        historical.replace("7844a10d63880a2b6984c093e2dc7a75033d1e1e", "v0.2.7")]:
             with self.subTest(target=target), self.assertRaises(ValueError):

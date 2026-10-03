@@ -33,7 +33,9 @@ const BUNDLED_SOURCES: &[(&str, &str)] = &[
     ),
 ];
 
-/// Byte policy before UTF-8 decoding or tokenization. The legacy adapter is
+/// Byte policy before UTF-8 decoding. Bounded project loading also permits at
+/// most max(64, project_bytes / 1024) directory entries, including empty files.
+/// Entry accounting is separate from source bytes. The legacy adapter is
 /// explicit; parser, evidence and lowering budgets are independent of this.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SourcePolicy {
@@ -112,8 +114,19 @@ impl SourceBudget {
     }
 
     fn read(&mut self, path: &Path) -> Result<String, LoadFailure> {
-        let allowance = self.allowance(path)?;
         let file = source_file::open(path).map_err(|failure| io_error(path, failure))?;
+        self.read_open(path, file)
+    }
+
+    fn read_open(&mut self, path: &Path, file: fs::File) -> Result<String, LoadFailure> {
+        let allowance = self.allowance(path)?;
+        if !file.metadata().map_err(|e| io_error(path, e))?.is_file() {
+            return Err(error(
+                path,
+                Span::default(),
+                "source must be a regular file",
+            ));
+        }
         let mut bytes = Vec::new();
         match allowance {
             Some(limit) => {
@@ -343,32 +356,45 @@ impl Project {
     // A qrate selection already has a canonical base and a checked relative
     // suffix. Re-canonicalizing it would erase a replacement symlink (#192).
     fn load_resolved(root: &Path, policy: SourcePolicy) -> Result<Self, LoadFailure> {
+        let directory =
+            source_file::open_directory(root).map_err(|failure| io_error(root, failure))?;
+        Self::load_anchored(root, &directory, policy)
+    }
+
+    fn load_anchored(
+        root: &Path,
+        directory: &fs::File,
+        policy: SourcePolicy,
+    ) -> Result<Self, LoadFailure> {
         let mut budget = SourceBudget { policy, used: 0 };
         budget.allowance(root)?;
-        let _directory =
-            source_file::open_directory(root).map_err(|failure| io_error(root, failure))?;
-        let root = root.to_path_buf();
-        if !root.is_dir() {
-            return Err(error(
-                &root,
-                Span::default(),
-                "source root is not a directory",
-            ));
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            let held = directory.metadata().map_err(|e| io_error(root, e))?;
+            let current = source_file::open_directory(root)
+                .and_then(|file| file.metadata())
+                .map_err(|e| io_error(root, e))?;
+            if (held.dev(), held.ino()) != (current.dev(), current.ino()) {
+                return Err(error(
+                    root,
+                    Span::default(),
+                    "selected source root was replaced",
+                ));
+            }
         }
-        edition::check_directory(&root)?;
+        let root = root.to_path_buf();
         edition::check_manifest(
             Path::new("<bundled>/std/Qargo.toml"),
             include_str!("../../stdlib/Qargo.toml"),
         )?;
         let mut files = Vec::new();
-        collect_qli_files(&root, &mut files)?;
-        files.sort();
+        collect_qli_files(&root, directory, &mut budget, &mut files)?;
+        files.sort_by(|a, b| a.0.cmp(&b.0));
 
         let mut modules = BTreeMap::new();
-        for path in files {
-            edition::check_directory(path.parent().expect("source has a parent"))?;
+        for (path, source) in files {
             let name = local_module_name(&root, &path)?;
-            let source = budget.read(&path)?;
             let module = parse_source(name.clone(), path, ModuleOrigin::Local, source)?;
             if modules.insert(name.clone(), module).is_some() {
                 return Err(error(
@@ -579,32 +605,86 @@ impl Project {
     }
 }
 
-fn collect_qli_files(directory: &Path, files: &mut Vec<PathBuf>) -> Result<(), LoadFailure> {
-    let mut entries = fs::read_dir(directory)
-        .map_err(|failure| io_error(directory, failure))?
-        .collect::<Result<Vec<_>, _>>()
-        .map_err(|failure| io_error(directory, failure))?;
-    entries.sort_by_key(|entry| entry.file_name());
-    for entry in entries {
-        let path = entry.path();
-        let kind = entry
-            .file_type()
-            .map_err(|failure| io_error(&path, failure))?;
-        if kind.is_symlink() {
-            return Err(error(
-                &path,
-                Span::default(),
-                "symlinks are not allowed in a source root",
-            ));
+fn collect_qli_files(
+    root: &Path,
+    anchor: &fs::File,
+    budget: &mut SourceBudget,
+    files: &mut Vec<(PathBuf, String)>,
+) -> Result<(), LoadFailure> {
+    struct Directory {
+        path: PathBuf,
+        anchor: fs::File,
+        entries: std::vec::IntoIter<std::ffi::OsString>,
+    }
+    fn enter(
+        path: PathBuf,
+        anchor: fs::File,
+        root: bool,
+        policy: SourcePolicy,
+        entries_used: &mut u64,
+    ) -> Result<Directory, LoadFailure> {
+        edition::check_anchored(&path, &anchor, root)?;
+        let mut entries = Vec::new();
+        for entry in source_file::entries(&anchor, &path).map_err(|e| io_error(&path, e))? {
+            let entry = entry.map_err(|e| io_error(&path, e))?;
+            if let SourcePolicy::Bounded { project_bytes, .. } = policy {
+                let maximum = (project_bytes / 1024).max(64);
+                *entries_used += 1;
+                if *entries_used > maximum {
+                    return Err(SourceBudget::limit(
+                        &path.join(&entry),
+                        format!("project directory-entry limit exceeded ({maximum} entries)"),
+                    ));
+                }
+            }
+            entries.push(entry);
         }
-        if kind.is_dir() {
-            collect_qli_files(&path, files)?;
-        } else if kind.is_file() && path.extension().is_some_and(|extension| extension == "qli") {
-            files.push(path);
-        } else if kind.is_file() && path.extension().is_some_and(|extension| extension == "qlt") {
-            // QLT execution is deferred, but every file still declares its
-            // language edition through the same enclosing manifest.
-            edition::check_directory(path.parent().expect("source has a parent"))?;
+        entries.sort();
+        Ok(Directory {
+            path,
+            anchor,
+            entries: entries.into_iter(),
+        })
+    }
+    let mut entries_used = 0;
+    let directory = enter(
+        root.to_owned(),
+        anchor.try_clone().map_err(|e| io_error(root, e))?,
+        true,
+        budget.policy,
+        &mut entries_used,
+    )?;
+    // Hold only the active ancestor chain, not one handle per sibling directory.
+    // Discovery is iterative so directory depth cannot exhaust the Rust stack.
+    let mut stack = vec![directory];
+    while let Some(directory) = stack.last_mut() {
+        let Some(name) = directory.entries.next() else {
+            stack.pop();
+            continue;
+        };
+        let path = directory.path.join(&name);
+        match source_file::kind(&directory.anchor, &directory.path, &name)
+            .map_err(|e| io_error(&path, e))?
+        {
+            source_file::Kind::Link => {
+                return Err(error(
+                    &path,
+                    Span::default(),
+                    "symlinks are not allowed in a source root",
+                ));
+            }
+            source_file::Kind::Directory => {
+                let child = source_file::child(&directory.anchor, &directory.path, &name, true)
+                    .map_err(|e| io_error(&path, e))?;
+                stack.push(enter(path, child, false, budget.policy, &mut entries_used)?);
+            }
+            source_file::Kind::File if path.extension().is_some_and(|ext| ext == "qli") => {
+                let file = source_file::child(&directory.anchor, &directory.path, &name, false)
+                    .map_err(|e| io_error(&path, e))?;
+                let source = budget.read_open(&path, file)?;
+                files.push((path, source));
+            }
+            _ => {} // QLT inherits the edition checked once above.
         }
     }
     Ok(())

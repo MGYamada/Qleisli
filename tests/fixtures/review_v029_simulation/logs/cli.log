@@ -1,0 +1,29 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s
+     Running tests/cli.rs (target/debug/deps/cli-3f0107b174d0ba7d)
+
+running 8 tests
+test non_utf8_command_reports_usage_without_panicking ... ok
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.44s
+
+     Running tests/cli_json.rs (target/debug/deps/cli_json-34e5773ad9c50490)
+
+running 7 tests
+test json_type_failure_is_located_in_the_original_source ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.61s
+

@@ -5,6 +5,7 @@ Build a temporary test executable importing the actual kernel definitions.
 There is no new public checker protocol and numerical results issue no evidence.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import cmath
 import hashlib
@@ -107,12 +108,6 @@ def cases():
 def native_normalize(words, log):
     with tempfile.TemporaryDirectory(prefix="qleisli-interference-native-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text(
-            'name = "interference_test"\nversion = "0.0.0"\n'
-            'defaultTargets = ["interference-test"]\n'
-            '[[require]]\nname = "qleisli_kernel"\npath = ' + json.dumps(str(ROOT / "lean-kernel")) +
-            '\n[[lean_exe]]\nname = "interference-test"\nroot = "Main"\n')
         (project / "Main.lean").write_text('''import QleisliKernel.Interference
 open QleisliKernel.Interference
 set_option maxRecDepth 20000
@@ -127,11 +122,7 @@ def main : IO Unit := do
   for word in cases do
     IO.println (String.intercalate "|" ((normalize word).map encode))
 ''')
-        build = subprocess.run(["lake", "build"], cwd=project, capture_output=True, text=True, timeout=180)
-        log.append(dict(command=["lake", "build"], cwd="temporary native harness", exit=build.returncode,
-                        stdout=build.stdout, stderr=build.stderr))
-        assert build.returncode == 0, build.stdout + build.stderr
-        binary = project / ".lake/build/bin/interference-test"
+        binary = native_harness.build(project, log)
         run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=15)
         log.append(dict(command=["interference-test"], exit=run.returncode,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), stderr=run.stderr))

@@ -2,7 +2,7 @@
 
 This is informed, curated development on 2026-09-28–29 JST, not a controlled
 LLM authoring benchmark, an external input corpus source, or an algorithm proof.
-The [migration contract](../../../docs/lean-kernel-migration.md#first-executable-slice)
+The migration contract
 fixes the experimental wire format and limits of its theorem.
 
 The [first source](first_source/main.qli) uses the existing T gate as the
@@ -66,7 +66,7 @@ These are policy fixtures, not an implemented backend or `LeafRealizer` API.
 The [2026-09-29 label validation](proof-labels-validation.json) rebuilds both
 Lean packages, audits every imported project declaration, independently replays
 the kernel and exports the unchanged component theorem types after documentation
-comment changes. The [inventory](../../../docs/formal-core.md#temporary-proof-markers)
+comment changes. The inventory
 classifies 27 declarations in six retirement groups, with importance and explicit
 replacement/removal conditions. No proof body or executable definition changed;
 this record is not a new semantic regression run or feature completion.

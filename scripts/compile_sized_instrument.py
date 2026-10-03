@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Untrusted initializing/observing source proposal, sharing the sized pure core.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
-See docs/sized-corpus-source.md; no result here is verification evidence.
+No result here is verification evidence.
 """
 import copy
 from dataclasses import dataclass

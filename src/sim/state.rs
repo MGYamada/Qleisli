@@ -3,8 +3,8 @@
 use std::collections::BTreeMap;
 
 use super::{
-    AUXILIARY_LEAKAGE_ALARM, SimulationError, SimulationLimits, bit, check_amplitude_cells,
-    check_dimension,
+    AUXILIARY_LEAKAGE_ALARM, ExecutionBudget, SimulationError, SimulationLimits, bit,
+    check_amplitude_cells, check_dimension,
 };
 use crate::ir::{ClassicalId, TokenId, WireId};
 
@@ -78,6 +78,37 @@ pub(super) struct Component {
     pub(super) classical: BTreeMap<ClassicalId, bool>,
 }
 
+/// A projection whose metadata copies have already consumed their budget.
+/// The borrow prevents changing the reserved state before choosing the outcome.
+pub(super) struct Projection<'a> {
+    component: &'a Component,
+    axis: usize,
+}
+
+impl Projection<'_> {
+    pub(super) fn project(self, outcome: bool) -> Component {
+        let source = self.component;
+        let axis = self.axis;
+        let mask = 1usize << axis;
+        let mut projected = vec![Complex::ZERO; source.amplitudes.len() / 2];
+        for (old_index, amplitude) in source.amplitudes.iter().copied().enumerate() {
+            if (old_index & mask != 0) == outcome {
+                let low = old_index & (mask - 1);
+                let high = old_index >> (axis + 1);
+                projected[low | (high << axis)] = amplitude;
+            }
+        }
+        let mut component = Component {
+            axes: source.axes.clone(),
+            amplitudes: projected,
+            tokens: source.tokens.clone(),
+            classical: source.classical.clone(),
+        };
+        component.axes.remove(axis);
+        component
+    }
+}
+
 impl Component {
     pub(super) fn vacuum() -> Self {
         Self {
@@ -136,32 +167,42 @@ impl Component {
         &self,
         wire: WireId,
         outcome: bool,
+        budget: &mut ExecutionBudget,
     ) -> Result<Self, SimulationError> {
+        Ok(self.prepare_projection(wire, budget)?.project(outcome))
+    }
+
+    /// Reserve outcome-independent copies before an observation requests randomness.
+    pub(super) fn prepare_projection(
+        &self,
+        wire: WireId,
+        budget: &mut ExecutionBudget,
+    ) -> Result<Projection<'_>, SimulationError> {
         let axis = self.position(wire)?;
-        let mask = 1usize << axis;
-        let mut projected = vec![Complex::ZERO; self.amplitudes.len() / 2];
-        for (old_index, amplitude) in self.amplitudes.iter().copied().enumerate() {
-            if (old_index & mask != 0) == outcome {
-                let low = old_index & (mask - 1);
-                let high = old_index >> (axis + 1);
-                projected[low | (high << axis)] = amplitude;
-            }
+        // Charge before cloning retained metadata for this outcome. Empty
+        // quantum owners count too: their map entries are not bounded by axes.
+        // This also covers reset, discard, exact cleanup and sampling.
+        budget.charge_copies(self.classical.len())?;
+        budget.charge_copies(self.tokens.len())?;
+        budget.charge_copies(self.axes.len())?;
+        for wires in self.tokens.values() {
+            budget.charge_copies(wires.len())?;
         }
-        let mut component = Self {
-            axes: self.axes.clone(),
-            amplitudes: projected,
-            tokens: self.tokens.clone(),
-            classical: self.classical.clone(),
-        };
-        component.axes.remove(axis);
-        Ok(component)
+        Ok(Projection {
+            component: self,
+            axis,
+        })
     }
 
     pub(super) fn weight(&self) -> f64 {
         self.amplitudes.iter().map(|z| z.norm_squared()).sum()
     }
 
-    pub(super) fn remove_certified_zero(&self, wire: WireId) -> Result<Self, SimulationError> {
+    pub(super) fn remove_certified_zero(
+        &self,
+        wire: WireId,
+        budget: &mut ExecutionBudget,
+    ) -> Result<Self, SimulationError> {
         let axis = self.position(wire)?;
         let mut scale = 0.0_f64;
         let mut total_weight = 0.0;
@@ -204,6 +245,6 @@ impl Component {
         // Exact raw-IR evidence is the only permission to release. Preserve
         // the projected amplitudes, including their numerical mass; do not
         // renormalize the component or turn this alarm into postselection.
-        self.project_remove(wire, false)
+        self.project_remove(wire, false, budget)
     }
 }

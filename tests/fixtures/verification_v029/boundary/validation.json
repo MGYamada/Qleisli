@@ -1,0 +1,673 @@
+{
+  "format": "qleisli.vm29-boundary-validation",
+  "version": 1,
+  "status": "passed",
+  "scope": "Compatible selected public-path integration and legacy reconstruction removal; default Rust authority remains until v0.5.0",
+  "platform": "local macOS; hosted platform outcomes not claimed",
+  "base_commit": "059833cde205a3e4068f37438ec61b0eef8fdd9c",
+  "worktree": "uncommitted source hashes, not a tagged release",
+  "toolchains": {
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "python3": "Python 3.14.5",
+    "lean": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)"
+  },
+  "binaries": {
+    "target/debug/qleisli": "2fe978a0a93f6bc069e9073042efbdf44f00d5ad9b7b52115e0d7f4020d72040",
+    "lean-kernel/.lake/build/bin/qleisli-kernel": "65254f31d6b306db68c5dd7af37bf502ed2d266df56b9bc4aa7672ad984bca7a"
+  },
+  "sources": {
+    ".github/ci/native-comparisons.json": "1188949638f37d9a1449f15cfc94df5788c48b954a64d4b7a0acf3b794e52f5b",
+    ".github/workflows/ci.yml": "3b8b0f2b4ff5acc460ece9a21356882f3395ff90169d607adb0fd40f324df3de",
+    "Cargo.lock": "f1086b9f8dd9bf05ed1ba7eb34d31baa1032af095d308f6eb21b0723571e263b",
+    "Cargo.toml": "14070d0447b0d72c117d855820c21835862cb61d675302be156eef19889b11ff",
+    "lean-kernel/Audit.lean": "5af8e11d1a2c16367f579c111e2645d08f9c688dd26002a9a3a393ff62122baa",
+    "lean-kernel/Cli/Common.lean": "50a6d25a1207e94ef9abca1a7b4170152e0b23b19b76fc77e82e645568675587",
+    "lean-kernel/Cli/Finite.lean": "d57544b88b1a8e2493ff669def7ca98a0ae2e78ce636a733ea5834e91cf3fadc",
+    "lean-kernel/Cli/Hierarchical.lean": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff",
+    "lean-kernel/Cli/Validity.lean": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9",
+    "lean-kernel/Main.lean": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94",
+    "lean-kernel/Protocol.lean": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
+    "lean-kernel/Protocol/BranchFunction.lean": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+    "lean-kernel/Protocol/Core.lean": "c952a7bf9a9bafda2c43d24405f3e039544bc79eeaa4ab000ffc522e59efc042",
+    "lean-kernel/Protocol/FiniteCodec.lean": "abc49b87f81dd3e336a046ca4d777977bffad9f5c153708011fbe20c3c4c9eed",
+    "lean-kernel/Protocol/Hierarchical.lean": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
+    "lean-kernel/Protocol/HierarchicalFinite.lean": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+    "lean-kernel/Protocol/Layout.lean": "da6b03a187ac74be6ee6b594c1b1af61bc77ea2ceb63e6a8e5afa8f78502e3d3",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean-kernel/Protocol/Qirf.lean": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+    "lean-kernel/Protocol/Raw.lean": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
+    "lean-kernel/Protocol/StreamedObservation.lean": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+    "lean-kernel/Protocol/Validity.lean": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+    "lean-kernel/QleisliKernel.lean": "de3367514e57f77e9ac86a4f9a7bba2954de0eac047143eb113f4b21f540de58",
+    "lean-kernel/QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "177f68975a739c93cbd096d9d7b677627b57286225a61513dcac38dc94516515",
+    "lean-kernel/QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "lean-kernel/QleisliKernel/Exact.lean": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+    "lean-kernel/QleisliKernel/ExactCapacity.lean": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+    "lean-kernel/QleisliKernel/ExactMatrix.lean": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+    "lean-kernel/QleisliKernel/Finite.lean": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b",
+    "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+    "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "46ea27e589f1f61460e6e8659a65497cd2fec746d8eb55ddb8cb73bbe1e4e60c",
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "2c6ae1ebfde3d329c2893d77c78bde062bb1fcbda26154a039d8091bd36b4bdb",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "1e4efe077528b3c3b631735bdfa41aeafa508ea263af3e11d3d8e4f2a7640f3c",
+    "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "53dc0763bfe18e0fbcbf4904723106eae68c144d4c5d0108d2a3f5b4f841028c",
+    "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "0ba3bc69488f9f57cccfd8d6a1d2013bb8a0c736c80d93bc837f5b76d561e169",
+    "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean": "0efb2979b63ae3dd6e7d110b5833084c4bb2c3e0cc2c6dfa88bbe2d7a5a0ea2e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean": "dab9d37274e5b7d614c9086b13d1306fae609ee6e8f06f4c8b22c8827866592b",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean": "a6b834a16be24bde9850532d72b66f991cc11736dac767b7a2543a9cb9ffd313",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "97edcde096268a7169a4ba8524c739d398d0b42d4c111f9c1e724ca9c54f8078",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean": "e0a22a0340a9bfdccd121eb216f32303cbef40fe5aea4bf2889799343d20f3ee",
+    "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean": "ccb7ed04759bd76270f08cfd841dc62fad081a0f83f1de218ebef449cb51c1b7",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "b5481da36cad98ffb3636b3a80404c4094053e5a42d50f0efa0f483595f25406",
+    "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean": "56f42f53dd9ffcdf8000dc09939cfeeadf6d1923757a70e90cbcbf975814dfdf",
+    "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean": "c51d1b0d8c35237baef48d584a1753157294609e6d9a310a188e1854bd538306",
+    "lean-kernel/QleisliKernel/Hierarchical/Limits.lean": "381f7ad3470eed56bfb0463ac66e7bea1ef59575bad0a997cde65e476369ed44",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "9f9b47b7f2501baa6fa0eeee32e8a7b80abe6d440a98c6d6321efcb8a67a0157",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "d7e58e94cfafc9e2ad6fa2b12304440b8100cc7c7a8fc241af8d6ffc798adc19",
+    "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "6dca41ad09443838f98096a101f374da36ab71698d8d2a3458c6026cb004c911",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "a841a9a26610d39f266d1a57dac3d1312dc2374b3c7cc34673fbaff5fd1dac0c",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "16a8bb64f8ab37800755f339d3e572687d6402fd90ab7f3faeebdd7bff9d8a4b",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "fe68609c9b3df4ae6fe608db377f883253f1b2b1eef5e7abd122a3ff8eb73ff4",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "05f2157a148246d991d48b67babfb5758e2411a41d42a2018959d846d14e4910",
+    "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "d7778da47232a789ca40be2efee9180c29cd2ba94b61d07a0a2abfbe3fa1ba8a",
+    "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "d4c0a92a6b117bd2e2a08461c1dcdc3be1cbd50780cc39e63e94dae3dc0ccf9b",
+    "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "b87825ff3ab228b383c2f34356ca4bbfc9ae00d0b3cef9607aa3acb631601e12",
+    "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "becc740a86dd09df2e499b133a1bf9426bb97dcf03835a2acd81647e8e0f7840",
+    "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "5d12fbf817f76943850a72a376cc0cc66155507c81796a55fa04c6be43d76d2c",
+    "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": "2d2d3b0dfc5867ddd1a8dc5f0ae83cd477933568c53cac199c918d222ae3242a",
+    "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean": "6493361fb5384c72c0f3a192fe81d75a7c0a0eea2d266ff04bed0bc3a6048cc7",
+    "lean-kernel/QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "lean-kernel/QleisliKernel/Interference.lean": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+    "lean-kernel/QleisliKernel/Layout.lean": "3252fa96de9ccddc41f7a4e40e1a6df8c9c55dbf62c88bd45db0115a887c48b4",
+    "lean-kernel/QleisliKernel/LayoutDag.lean": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+    "lean-kernel/QleisliKernel/ObservationBinding.lean": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+    "lean-kernel/QleisliKernel/PathSum.lean": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
+    "lean-kernel/QleisliKernel/PhaseLayout.lean": "364a651c6beb8dd326e11e2856b25434f2448965df78c88659b797291ff2b5ec",
+    "lean-kernel/QleisliKernel/PhasePolynomial.lean": "62bd1477722a0ae223cc3ebef8938473e8be1b069c19fed48a5f26cdf451b2d2",
+    "lean-kernel/QleisliKernel/PhasePolynomial/Operations.lean": "2c1de4db33f55a4c7da81eee9264ab899afdc3518a7e4b46f304a690afcca69e",
+    "lean-kernel/QleisliKernel/PhaseWord.lean": "c084d5d13440121cd2f72e219f479fe762e9125c08c94a55d3eb48e234092926",
+    "lean-kernel/QleisliKernel/Qft.lean": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+    "lean-kernel/QleisliKernel/QftGraph.lean": "737b23fb404cc08df4b955e2eb876fa8ecca2cbe273d6971868f26d9126157d3",
+    "lean-kernel/QleisliKernel/Qirf.lean": "17277e76f5154cf1624a5b6cceda3fd18186bf05e9fd7877256b4726167635bb",
+    "lean-kernel/QleisliKernel/Qirf/Checked.lean": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+    "lean-kernel/QleisliKernel/Qirf/Ownership.lean": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+    "lean-kernel/QleisliKernel/Qirf/Validity.lean": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean-kernel/QleisliKernel/Raw/BranchFunction.lean": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+    "lean-kernel/QleisliKernel/Raw/Coefficient.lean": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+    "lean-kernel/QleisliKernel/Raw/Function.lean": "6eafada4f9ab878470a28735daad5106026ba70a6cb83f0bd49004dba540c740",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+    "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+    "lean-kernel/QleisliKernel/Raw/ObservationScope.lean": "83986a17c17efd5fbe9c8220f0195eee9b53ec087a6b01f46c52d4145f4995b9",
+    "lean-kernel/QleisliKernel/Raw/Ownership.lean": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
+    "lean-kernel/QleisliKernel/Raw/Protected.lean": "1792118b9824adb2c18d8a5c6d52b2f2c6479176a460185b316ca0ad6c5d5ac0",
+    "lean-kernel/QleisliKernel/Raw/ProtectedEvaluation.lean": "19f3b780bbedd7f78d900fb68f8593683dc3d110e108ee4c61c7de80f9b4e20d",
+    "lean-kernel/QleisliKernel/Raw/Pure.lean": "83c6c70ce4f34c06a56f9438662aef1cddfc69eb32d114b5d2b6c8adaef6a466",
+    "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+    "lean-kernel/QleisliKernel/Raw/Trace.lean": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d",
+    "lean-kernel/QleisliKernel/Reshape.lean": "9497443e33e1b3d00b309a7599c77a24f90b0828956ec38b58afb39234bad793",
+    "lean-kernel/QleisliKernel/Schema.lean": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
+    "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean": "de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0",
+    "lean-kernel/QleisliKernel/Semantics/Exact.lean": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303",
+    "lean-kernel/QleisliKernel/Semantics/Finite.lean": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+    "lean-kernel/QleisliKernel/Semantics/Function.lean": "119ed5646e8098dd0e6c0a569a16e517b71c6833d2b4265cb1e0bb114cd6cacc",
+    "lean-kernel/QleisliKernel/Semantics/Observation.lean": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+    "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+    "lean-kernel/QleisliKernel/Semantics/Ownership.lean": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+    "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+    "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
+    "lean-kernel/QleisliKernel/Semantics/Preparation.lean": "db784406ef6338e1b65cb0ad13af6c6b38ae5f04140b2efbecedf4c2db9201ed",
+    "lean-kernel/QleisliKernel/Semantics/Protected.lean": "9a145100d2a3b839551a9af480eeb36697d19a33da5c5b561569c6c4d775d5e0",
+    "lean-kernel/QleisliKernel/Semantics/Qirf.lean": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86",
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+    "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+    "lean-kernel/QleisliKernel/Semantics/Readout.lean": "0ae67265e9aa8ae355de2c7a711c14ce2b7812a5c256cb2920c7b825e06ec8bc",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/Tests.lean": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+    "lean/Qleisli.lean": "35412ea8be973253b2039e64c149a9e8a5974c02388942e1de7b8b78f658cfd2",
+    "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
+    "lean/Qleisli/ControlledPowers.lean": "4549aaadd86091f1315290bc89f464c1a16265d8725fe227a6cef210e5d974b2",
+    "lean/Qleisli/CoordinateOperators.lean": "819011e9d4858e804134c9adc8ccb7959899af2213b32a771ddc5b2c754d660f",
+    "lean/Qleisli/Exact.lean": "59e54250a35fe43874b0e91b7468ea1901a117df2f9e2fa6bf2771486ff72b16",
+    "lean/Qleisli/ExactMatrix.lean": "e3a665bf86f96c159507b4c6f1817a9a452a166ab12dc7a7721c40bb17afcc64",
+    "lean/Qleisli/Examples.lean": "a0cde16b55a1e2f51e9f3ae236ceda9643e2d71412747bf789a5f54afbff14c8",
+    "lean/Qleisli/Finite.lean": "88a11c8a07e574f6d080af1edabd460eafa899bedcdbb2b6c27c1b3ad6488df3",
+    "lean/Qleisli/HierarchicalAcceptance.lean": "a56b9e353c05c23593fb414d42bf1222d9dceca7eeddc62f90dc27df38225937",
+    "lean/Qleisli/HierarchicalCircuitTrace.lean": "3f6efaa34a1a267e47f7e9fea3a6a156b0d45138bbe3b8897c27305b92a07b21",
+    "lean/Qleisli/HierarchicalCircuitTraceEvaluation.lean": "fc5ebf7b8b626136d438738efb741b5e0ca3a303c927e9644eeed614ea653c46",
+    "lean/Qleisli/HierarchicalDiagonal.lean": "787a1ca312d270824a618c0f3dc5aae688ff2cba021affdb17a82be2260c98fd",
+    "lean/Qleisli/HierarchicalEvaluation.lean": "675297b6b192560433ab3741dd553bc2d9bafb3d4a86e7803de71d606ebc7545",
+    "lean/Qleisli/HierarchicalFiniteEvaluation.lean": "c8ba3ab83a3db8f99ff85e9cfefe59098a56e0cce733e852ee0e28fca7f55bdc",
+    "lean/Qleisli/HierarchicalFiniteUnitary.lean": "f8f3f5b2d01caaa040940f4ae3e1ca4e26f7489db10a1476839417d89b29d50c",
+    "lean/Qleisli/HierarchicalFourier.lean": "1447af7800e8e4dc46562f960be176f544ea71eb0ed5ef008800998ad903ba44",
+    "lean/Qleisli/HierarchicalFourierBase.lean": "b7890025ce8eb71c3ff720410b6d05457cceca6c3cbd2ee766e5420778d6e4d9",
+    "lean/Qleisli/HierarchicalFourierBody.lean": "cffca92ec33a7f0f9b0416761bdd5846b09c4f99c5594aebac6b4feaf21e54fc",
+    "lean/Qleisli/HierarchicalFourierControl.lean": "84cdb731070e585aa67547aeb5051101e2e3dfb84cb767753757571602769672",
+    "lean/Qleisli/HierarchicalFourierRoot.lean": "be6350124c83c62dec4bc6a7a1d390e216f3b4d2889cb80dde35d43aa2964327",
+    "lean/Qleisli/HierarchicalFourierStage.lean": "330d38840dd8362ec545bf8191b45878b58d5898aa336aba0563ff636c320cee",
+    "lean/Qleisli/HierarchicalGradient.lean": "9e555282eada239c847b5e40dee6d379a8aa9678d13da28fd50064fa5adcb526",
+    "lean/Qleisli/HierarchicalHadamard.lean": "9c550d4ca0042e5969c1739cf5aac677161a88365b207da269a35acf47c7f433",
+    "lean/Qleisli/HierarchicalInstrument.lean": "12938c79ab66658da9bb70662791d5892108425ed6d3a0ffae142cc747251996",
+    "lean/Qleisli/HierarchicalInstrumentComplete.lean": "517a4e6f7fbf50f5a83c4bfcf8b25a4d84a878bf7d61a698afa0907dc05c6736",
+    "lean/Qleisli/HierarchicalInstrumentCoordinates.lean": "20c7b54a927b4976c9216e2a3704e0b4f190addcd8be2e5d4ef716991b6233d1",
+    "lean/Qleisli/HierarchicalOperators.lean": "388b89204bad501796cd7816d8c1565893440181d9c61c032229e59e3b437946",
+    "lean/Qleisli/HierarchicalPower.lean": "fb40ae2a0bd359fa0c8cd93fb4da9a4acc73d0558a845dbf397472ed2667adaf",
+    "lean/Qleisli/HierarchicalProvider.lean": "65ce858677f63bf02c9d77bd1d4ec6241e505e3bbf679b14302ca56c5ac97ec6",
+    "lean/Qleisli/HierarchicalQpeCircuit.lean": "0d07a7a1fe0021a4c1e59b068a81a3d6f9450a931a8e52f4eca8fd8f4a74a303",
+    "lean/Qleisli/HierarchicalQpeCoordinates.lean": "be0c21dc09e1c4db0462bbf8e0b5d5d14695265f332869e103ffb66ba4edf99b",
+    "lean/Qleisli/HierarchicalQpeInstrument.lean": "f75750c9e8295917339cd7089e91b487d64d4fafa12e30a2cd9c7383617acfc5",
+    "lean/Qleisli/HierarchicalQpeLayout.lean": "f8d31baffbfd06d6d0e0eefe147c20191d2d5bbe8677a458aa9833f512c1c2df",
+    "lean/Qleisli/HierarchicalQpeRoot.lean": "01437e2932263ecab715d175245111ed210a5a5ad3fa4036389d14ade72e7d25",
+    "lean/Qleisli/HierarchicalQpeSchedule.lean": "4ca58710598ce1964b0977d060607f00da7ccc6c75150401e5ab7e7a25772ef8",
+    "lean/Qleisli/HierarchicalRoot.lean": "8f7cb5de7dd14d0f8b1a71762168b0678296e9408b4aebcf1f99ad3229dea9bd",
+    "lean/Qleisli/HierarchicalRoutedPower.lean": "dd0f7b7242fc7d36dfdc0cbce766ffadfadcd5e5bc8fdbcadf49b6400c2efad2",
+    "lean/Qleisli/HierarchicalSemantics.lean": "0f1897ece90856fc532dbc6058548da5f00b9bea12b664442a441d54c48a7cc3",
+    "lean/Qleisli/HierarchicalTensorCoordinates.lean": "1d7c775e229c38affd613673aca696bb4ac47cc0860e27c9e71495680a074bd7",
+    "lean/Qleisli/HierarchicalTyping.lean": "c945d655d0db23b7db43225aa200d9aa2ad1533990c9f1238dc96aa9c9a6d277",
+    "lean/Qleisli/HierarchicalUnitary.lean": "09ffa77eedc2f2a065f1af7095e3a9533f7ed96a8771adb4fe674531aa99fc1e",
+    "lean/Qleisli/HierarchicalWiring.lean": "49c356f3f16953105d7cb4b1be9a924cf1b34c828d559fcb0a80fd79174e3c60",
+    "lean/Qleisli/InstrumentCompleteExamples.lean": "d35386a5f1b8ddef19819000dc8f796236c7be496b9483b3f848d048b81f92b9",
+    "lean/Qleisli/InstrumentExamples.lean": "68e3f4b59ffb3dadd1e49f18d246cb0077a94bc814b6ea709d9a27c833cc88c1",
+    "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6",
+    "lean/Qleisli/Kraus.lean": "00d400bd717f0631c17403790a282c1a2d59c80194d9e3b134842c8be1f0b511",
+    "lean/Qleisli/NativeHierarchy.lean": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
+    "lean/Qleisli/NativeValidity.lean": "42bc339072dc89df5b0f6fd08b458153da5b492ba01d12fd22a27ea3405881e5",
+    "lean/Qleisli/Phi.lean": "4c9a8ade1a252553cfc707a19ad5c1f3a50d245c4fdecef0846b4ce438fe3135",
+    "lean/Qleisli/Qft.lean": "a82e1bd2d17b1c74ae38571199865a4f5dde6b1d633329abfa7413d9094c2dbf",
+    "lean/Qleisli/QftGraph.lean": "149315798b8e783302e369f7e8e0911424c580dc53a8ae06bf922412f67ba233",
+    "lean/Qleisli/QftUnitary.lean": "3e9d6ce1768347b245ac6e1ca180a92189be37b1b6a6bd744088b5f0c98aa3ea",
+    "lean/Qleisli/Qirf.lean": "99742dfeb61b7942d3137e3d328c71c8851f759c394e64f6a10a0ea2997eedd3",
+    "lean/Qleisli/QirfValidity.lean": "9813f7f221321b2515c693d4c2f76e46af9115604556f74a6822c6215d56c409",
+    "lean/Qleisli/Qpe.lean": "dd2d6049ca1e3a4db607ac7b72b728dcf62eb1d386ec9039bd6d149d25a47711",
+    "lean/Qleisli/QpeComplete.lean": "c8465edcaaa46ccf2d738326c69ed3890168e2f0d7e2309776f1baf9dcbee1e2",
+    "lean/Qleisli/Raw.lean": "db62a7804b0c6e0541a801c71c35b1fbbfd26e81a95591bdd3b2b4cc128ee4c0",
+    "lean/Qleisli/RawBranchFunction.lean": "d4e353bf921c3822f8159deef5cc88ff0f3647628a38478bc71dde65e0c74fe8",
+    "lean/Qleisli/RawCoefficient.lean": "d52413d122834742c74abe61da399214c964bfd2f17b5844c2c34f669038fa08",
+    "lean/Qleisli/RawDenotation.lean": "3dcfa99abe873decec825013991e403ecfd7239ebc305c5395a13d3b9a1a51e4",
+    "lean/Qleisli/RawFunction.lean": "3d89ce3f86dcf17aa6090b25e3bf18b0589f10792f56f150e652ff9394a34efc",
+    "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
+    "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
+    "lean/Qleisli/RawProtected.lean": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
+    "lean/Qleisli/RawProtectedEvaluation.lean": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
+    "lean/Qleisli/RawPure.lean": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
+    "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
+    "lean/Qleisli/Resource.lean": "6893254dfc2b6b80867df7404a85292830ea88ecd462a3df847c42b89d613c1a",
+    "lean/Qleisli/Schema.lean": "ae9692c3f9d83d0f3b3579e92285b361244fa9cf66f6a3786109ab3455f9dd9d",
+    "lean/Qleisli/Scope.lean": "74c28e09400d2ebed08d3c1fa339fb85772c0a6d78e8ee2abc13228e30abed24",
+    "lean/Qleisli/SemanticContract.lean": "21d98d721792ed35ce8031191466028de93460cb2b51291df24fb55c10f2e75c",
+    "lean/Qleisli/Semantics/CoordinateOperators.lean": "3d5d5834bae9f61c15391e34834e62f92474ece238ac23d7cf5828388273bc90",
+    "lean/Qleisli/Semantics/Exact.lean": "b379cab6e9b5b1cdb20e7362d04b9f8255d41e2554611ed7b02ce7937e4c282b",
+    "lean/Qleisli/Semantics/Finite.lean": "a86f0318ec89160bc139904df73913a812dc6dd95addee9019a1f1148a468bf2",
+    "lean/Qleisli/Semantics/FreshInitialization.lean": "fe8ab4ba59f282514d34ecb1aee367b61abe0d98e2cc3e6fd514752176cf2af1",
+    "lean/Qleisli/Semantics/Instrument.lean": "b630db6f70ae39ea15dab3f32c0fc31c895902007410533024a2fd64124ad1ff",
+    "lean/Qleisli/Semantics/InstrumentComplete.lean": "213635521ea753aa0524d05c1b0d77dc9e2d85f081f2ec314c2503d9e642d2b8",
+    "lean/Qleisli/Semantics/InstrumentCoordinates.lean": "643d8684867d7a13e195ddb69472f3f9affc837e96227db3b425a4b71cb1f01d",
+    "lean/Qleisli/Semantics/InstrumentPartitions.lean": "addc8dd944eb0dbb36ff712a30d0fa94fddee4e3263b5c9c62dae423ee83eafc",
+    "lean/Qleisli/Semantics/ObservingAction.lean": "629ee722ab6782e67e6ab7a191ad79296583b61c4d6c34249b096de5f0624330",
+    "lean/Qleisli/Semantics/ObservingFunction.lean": "80be5b656fc4f3517642a979dd58dab8af64165346d244c3b91e70e0d74151ed",
+    "lean/Qleisli/Semantics/Protected.lean": "477f6a11e5582861e19cab9c9cda100766585280e1239b53b3365f70234b0d7f",
+    "lean/Qleisli/Semantics/ProtectedMatrix.lean": "38f56fb5249705313736880e0d6e60d1be8a6a255168d64877c4e3228d308b35",
+    "lean/Qleisli/Semantics/Qirf.lean": "f37cb57590e8d780894b1a5a940582457d3c493df409546b94c659d66d725bc3",
+    "lean/Qleisli/Semantics/QpeFrames.lean": "59c65467635a6a190943f5893833ef449407c54e786af9d6d2090c1fe1352723",
+    "lean/Qleisli/Semantics/Raw.lean": "f06aaa32286366d32915d8730011de29e6390d2e43049a0553e5a1a634901ee8",
+    "lean/Qleisli/Semantics/RawAction.lean": "40e4ff0b8d3e3b20ca6e64959f72742c5b6876a2f2b460edfa363c8745bab7fb",
+    "lean/Qleisli/Semantics/RawFunction.lean": "bcfd2976d4ade6bf6911a02f4d318e66fa12954a503b21a8d789fbaeca2e3947",
+    "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+    "lean/Qleisli/Semantics/RawPure.lean": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
+    "lean/Qleisli/Transition.lean": "e2a6be7d61e3b56b4079ba1ec39feca391a6d0feb3bc7193792993a0d4612b19",
+    "lean/schema-registry.json": "a1a50c69ddf7ec2914b6cb83c693f7e4cfd890efebe190d7680819fb57d1b08e",
+    "python/qleisli/__init__.py": "fcc8837550a505bc37d9f85b05c5659f06e9e27d9d78fdb3d088a3b86bb590e6",
+    "python/qleisli/__main__.py": "7c0ca09223cb98192ca4e5a16b330685b2cee43debb0d8576acbd40fc8bffb5a",
+    "python/qleisli/_qir.py": "5f29fb4e3a1cb720ac42244744fc0d93ea6bb2d5f80a6e41e6018bbbe4d6324b",
+    "scripts/check_production_coverage.py": "26f429fc69602c6519389340be1bf5c532c7ae6b91d60dace6e30b9255839c4a",
+    "scripts/test_check_production_coverage.py": "b343726fc8d48666104e7e64ad95de17ecf9fd2d304bcaaa96ce5361ef82ce75",
+    "scripts/test_instrument_host.py": "1320846b61fb3b7c40adaced11f0f68fe3ccebbbbcfe0af49f9429fab29c84c0",
+    "scripts/test_interop_dual.py": "af44aaf3b425a29a045866917b3ea458a8cf19f78fefd26b4dbccaf55c25a2fa",
+    "scripts/test_lean_branch_function.py": "da0c08ed5e0dd8e492dc54a9d7593f55f509c1bb148dad12d8a810a26bd340f7",
+    "scripts/test_lean_observation.py": "f5fb68bd694f84b4b5d6a60ab0b3ee5f40255daa10147bcdc58a5a9c66087052",
+    "scripts/test_lean_raw.py": "4d437df92c094bdcf774b1508f666d4d7a6d7603d287950db7d75406922ead87",
+    "scripts/test_lean_raw_completion.py": "772cb44bb3aa95a8733d76caf9fbcdfa4bca01ab7b524ac240a851eb387af043",
+    "scripts/test_lean_streamed_instrument.py": "faee06c25a15f8b40489b007aff83f4fb73db176e17369ffe74455b88cb24943",
+    "scripts/test_run_native_ci.py": "f8e8a8cb03d14f2d39db63daf612b21bdfc423cab73edb7aa032c37a219409c7",
+    "scripts/test_source_kernel.py": "9d85d4463eee622df43a511adf99979528d5ded8908ad41d8d6a32c89ac24bd9",
+    "src/bin/qleisli.rs": "2153f4e00ed10d533a99f9f5fe01b18cc9091c1cd9c99a7a1beeb5d8e5e7b9ed",
+    "src/bin/qleisli/artifacts.rs": "45fdc5a15eb697589367129021ed9d0a4a44c9fafe6532f16032f313800fa8f8",
+    "src/bin/qleisli/interop.rs": "669443e56cf7f276efe0a4652b493f6807583199f0e9cf45a6c093d061768df3",
+    "src/bin/qleisli/json.rs": "b71400b838aac87d1a43391a630f611e27b83dd1d3196257e878edbdc0789481",
+    "src/bin/qleisli/options.rs": "1ca882b870e6aa35792a23d316a6cdfb2acb9e9b3a3aeb248ffe5d45c7b9ea8f",
+    "src/bin/qleisli/samples.rs": "eee6db63e23c5cfafccb7c6961bc7ea1666e490a661007613c2e02bac6df5c3d",
+    "src/bin/qleisli/sized.rs": "078ba451eb4d2ec19da7d19825e29759ae967f9879de7c19971681fbfa6da0d2",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "src/bin/qleisli/source_commands.rs": "da3364cae04ede3dcd72f0e86d9d5aff4610c81c3cefce395e0095fe7321ee08",
+    "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+    "src/contract/function.rs": "ea9c78e83ce1682ae9acba5c8e1ca901d6f1175a3aca67accf462250391962c9",
+    "src/contract/meaning.rs": "c3a68215973a5b44d919bcdd5aea20559169ff0ef0dc6e6e4f93b9318aca435e",
+    "src/contract/mod.rs": "53ec2704e2cbb89cbfb6ee7f3394b5ca69658d007ed00029c377c28a4970bd67",
+    "src/frontend/ast.rs": "2c5a7d97c82d6337be23c8ed6ec4163bf1724d662dbffe9d347ce961b9b75ca4",
+    "src/frontend/compile/basis.rs": "f37a935885ab3ff57945d5fb4d3a6096ad741e0dd276a2bd42c12f707537c0ce",
+    "src/frontend/compile/circuit.rs": "ebc01a224e051e19981d6a2f3a7d62abe4e287549fc2b42cbd68d9432ccf3a77",
+    "src/frontend/compile/lower/branch.rs": "71abef9520176904ce2f372408e103b23647f44310e26cc3ed3c8254be5df755",
+    "src/frontend/compile/lower/certified.rs": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+    "src/frontend/compile/lower/function_contract.rs": "f82c5a20478a1d5bfd46770f8d44734f62e0c4603c87ea212de32308d581e88e",
+    "src/frontend/compile/lower/mod.rs": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+    "src/frontend/compile/lower/operations.rs": "031060a254996cc1953ee08619c00018e8a2a5ff248c6408d583a2852c330b57",
+    "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+    "src/frontend/compile/lower/scope.rs": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+    "src/frontend/compile/lower/transforms.rs": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
+    "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+    "src/frontend/compile/mod.rs": "488f0aca4e101cb6b69f5ea91bdb7521b3f0312b591aaab26cb01e01aba37fb6",
+    "src/frontend/compile/operations.rs": "d40f5ed926e7b796bbad093b3a513cab40b6cc6ce68a7a10a3a2b75cb4b05567",
+    "src/frontend/core.rs": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+    "src/frontend/documentation.rs": "896b1fc4d0632b6a1d1568076023e598637eb600ac9d9fbde7db08eea7d308c3",
+    "src/frontend/lexer.rs": "ec0260843907a15231277da77cc9a1b5fc13667f8a455826ca558e188a9a99cd",
+    "src/frontend/mod.rs": "342b8de6e0dacfe18dcf923ce083c6d2c8c1c5dc75760b24ed75b2234c2fe86a",
+    "src/frontend/parser.rs": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
+    "src/frontend/project.rs": "b92a63586252f7adfbb8b3b7f54f691b4bd7b62032f0b5b391bcc85ba90e12bf",
+    "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+    "src/frontend/project/manifest.rs": "5262d02b1f442c63c79b4a056a9bd711e4e2a45f6116bc3d25a22ad181903f85",
+    "src/frontend/project/source_file.rs": "6b4bf1001f62cfc9788a3e61b5ed25f2980e3895a19243b757d8f4c6f2c21f0f",
+    "src/frontend/sized.rs": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+    "src/frontend/sized/ast.rs": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+    "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+    "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/linear.rs": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
+    "src/frontend/sized/lower.rs": "243cb6120bab732c11e5ff822274dd2835eab0fcd5520998bf684d7df3ee8aeb",
+    "src/frontend/sized/lower/preservation.rs": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+    "src/frontend/sized/parser.rs": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13",
+    "src/frontend/sized/primitive.rs": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/host.rs": "ab5309aa8d7ddbe83c247f4a0685b386b4978e967029a5a33133b21fcfdd7ab8",
+    "src/host/factoring.rs": "cf462c2561cd38ef00103dc3f1d7a9b64dd0e32b1c21af5d49e4508216509a38",
+    "src/interchange/codec.rs": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+    "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+    "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+    "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+    "src/interchange/dual.rs": "1b3d1bd9351b6684de25a779b31f384798a544045d4d9b6e9f118a42750fb297",
+    "src/interchange/dual/runtime.rs": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445",
+    "src/interchange/finite_leaf.rs": "b8339fbaacccde92c418e3de8e8f6a065a9132f2ea450386332986ab2c83ea56",
+    "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+    "src/interchange/hierarchical.rs": "13a61ac12ba13971eeda37eb06fb431c06d74beb2105ec6b3f5bf0da2f455665",
+    "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+    "src/interchange/hierarchical/bridge/instrument.rs": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "src/interchange/hierarchical/bridge/request.rs": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+    "src/interchange/hierarchical/execution.rs": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+    "src/interchange/hierarchical/runtime.rs": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
+    "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+    "src/interchange/mod.rs": "892582873c20924308e9a8f171d52381b88b966b8935e1fb1ce0db62a43e672a",
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/mod.rs": "e8a43256feaa4a8ef29bf5d423ae4139c4a3e6ac7381b3538bc34eb93439f479",
+    "src/interop/openqasm.rs": "dda4d8db6a567f6fa742f8588af926f67351e3277ec6c9db77aa774eb1aebcc5",
+    "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+    "src/interop/qir.rs": "a03659389c83d440f99c6db795d5fb14d3a2a5b914c556e8e1b7f6dc067887c6",
+    "src/ir.rs": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+    "src/ir/compat.rs": "89f7ad8f214b8b4bb386a699fb3299d8d174fcb706e5204bd4e2f04df9e1f071",
+    "src/lib.rs": "8228f0217ce26485db9dc9061b58a32213cf2f3ae5d00499b2fa3a8f274c0f9f",
+    "src/sim.rs": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+    "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+    "src/sim/sampling.rs": "aeef8111325ddd4f3e48a9019d58d6f9c7f2034d7f1acf63cf79052e1fe77380",
+    "src/sim/state.rs": "7b0d035cc7f712c04e856e0307b5766f130a9aa343fb783fcff2c991d1f45c2f",
+    "src/sim/tests.rs": "9907a6e908c944b28a6822245923a08bebe85fbaa26cbd75b0fd28e34aefc657",
+    "src/verify.rs": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
+    "stdlib/src/arithmetic.qli": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/routines.qli": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+    "stdlib/src/transforms.qli": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+    "tests/cli.rs": "a96f515409639aa62fea8a442fd6d637e7982b37f9d16fad0cad2ea300d757b7",
+    "tests/cli_json.rs": "7ed368c3ba3e2407dd7692da0348db003c93b2746104f356c5cec0113560c556",
+    "tests/dual.rs": "bf27ebc283afeeca780207ed84f45c3e13d68189f1d57135201b373334ea0a10",
+    "tests/fixtures/verification_v022/inventory.json": "a6900068e8a5fd7e6ef2c530f0cdf54a5cdf417296196f8892d283333576a339",
+    "tests/fixtures/verification_v029/coverage.json": "ab3c16fa9a563c6aae085ee1cb6cef964a9dfcf5d8beca0b913420e71b8147e3",
+    "tests/fixtures/verification_v029/generic/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "tests/fixtures/verification_v029/generic/main.qli": "fb7062cf1f393edf8922fcec6dbac32cb9b6d2bd828a987353d1e10b71afe6c8",
+    "tests/fixtures/verification_v029/library/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "tests/fixtures/verification_v029/library/library.qli": "a0ae68371bdfe29b7e967b40b33748fa4a2a08e7683fcc8f273fedb19bc57d94",
+    "tests/fixtures/verification_v029/project/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "tests/fixtures/verification_v029/project/main.qli": "e68c7ffbb65fb8ad47ab0f5c89a06a4e464eb80567d692aeccd0883c0a94ded6",
+    "tests/hierarchical_execution.rs": "5f18806249cd22c9a0cd61814d5220cdeb6f861918c328696e8d200ee37bdb29",
+    "tests/sized_source.rs": "f40aaf032319517fbf2efa9b5ad0d9a508f34e7f0b55e1eae28e2ea22a131d85"
+  },
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--all-targets"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/rust-tests-final.log.gz",
+        "sha256": "f3b62a59de8a2c81cd6e6d0a9edb383a34a2fc0d55e8696b9144bce4fc88754e",
+        "uncompressed_sha256": "85d93a9f5ee748753dfb8860f6f894651187c55297c34e0ada99384f942d0faf"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/clippy-final.log.gz",
+        "sha256": "2623b783ed4f8bfd9f36a328f6a476bb884bddf4df9339065834fac4c4cc947b",
+        "uncompressed_sha256": "589339a4414e26c9a7ef53b2f2445ecc0664796027a0d51e1a8ba716ddabddfd"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--doc"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/rust-docs.log.gz",
+        "sha256": "01ca2d9c3328d967aa00bfeb330e46f940b5aff61eb2ee688c064dbf927c7f1c",
+        "uncompressed_sha256": "4739d7f372357135892510464cd5042c431768f02c7728c15ad337fdf7e72010"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "dual",
+        "--",
+        "--ignored"
+      ],
+      "environment": {
+        "QLEISLI_DUAL_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/dual-rust.log.gz",
+        "sha256": "b756d7e38b4e9fe8db869efdca379b00e7fc37cf51fe67292ec0f715b1f139d6",
+        "uncompressed_sha256": "dda92ba44e7db2753eaf56f4053c0312d1c8e00e31a45ba53cb92a5a2f71af05"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_source_kernel.py"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/source-tests-final.log.gz",
+        "sha256": "65adc562fdb6b6395bc3773fe643141d7a4505f982db66d49187a3e6b6e23392",
+        "uncompressed_sha256": "22b68958079dfe4ebeec8362d6b3286c4a0eaed8c910f9cd01d2980a15d28ebc"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_dual_verification.py",
+        "--record",
+        "/tmp/qleisli-boundary-dual"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/dual.log.gz",
+        "sha256": "8b7377bb5f26f4aa463519ddf3bf1231ad78479780187a4f34bbe4789dd80a99",
+        "uncompressed_sha256": "24b1c800d20a912f9b9777457fa7a4efe097765941edba9714ea547101c0a193"
+      }
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-connections-021/bin/python",
+        "scripts/test_interop_dual.py",
+        "--record",
+        "/tmp/qleisli-boundary-interop.json"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/interop.log.gz",
+        "sha256": "b3d71152bcf6e22152b863b5798489b3d64292b8091f94ab9107231a86a5984a",
+        "uncompressed_sha256": "b636620999fe0fe081ed6a2fd465457765f6a219dd777be8c0a0ef179789ded2"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_hierarchical_execution.py",
+        "--record",
+        "/tmp/qleisli-boundary-hierarchy-record"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/hierarchy-final.log.gz",
+        "sha256": "2d56e42e0ed2b8db9c48fcad9caa655bd17f91e876faabb62f78ff0e6de046a9",
+        "uncompressed_sha256": "6dcda1c2f273f102fbeee35c8eb97378c82eef7c17edcef491f5c15f2f4096e5"
+      }
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "sized_cli",
+        "--test",
+        "sized_review_diagnostics",
+        "--test",
+        "sized_source",
+        "--",
+        "--ignored"
+      ],
+      "environment": {
+        "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/sized.log.gz",
+        "sha256": "6707bb8209ac4ef18b33c2e524ff8e8286adae3479b5e94d75da233a226f7240",
+        "uncompressed_sha256": "b1a80884a89da884cf989df675f905e79f3bb5a274387466e9df89215026fdcd"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_qpe_instrument_host.py",
+        "--record",
+        "/tmp/qleisli-boundary-qpe"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/qpe.log.gz",
+        "sha256": "93de2f39f602ccf9e52677099c4b86a5dce6d3b0fd3d14dc920dfffe86ca0656",
+        "uncompressed_sha256": "3818c3ffe3e22090a6c63bbdc498d358dfca9dd49510f4e1170a8d30f5cffd4f"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_lean_kernel.py",
+        "--compiled"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/policy-tests.log.gz",
+        "sha256": "39ac62d36d042efe983d813a7067f581f2cab15de4758a5640f24676548ae93f",
+        "uncompressed_sha256": "22027b61567d24d4faaa6225bc35fe150b60164ea9df85b9493b11f73ea97cec"
+      }
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--write"
+      ],
+      "environment": {},
+      "working_directory": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/schema.log.gz",
+        "sha256": "93239eb3204d1e875884a08ea7f0a3e5bdbf114fa24608ec0d7e8b04b17b19df",
+        "uncompressed_sha256": "8652ab18e84ffc9c375fdf2e14a54492b92a3346c6f03a9e36b4cdac5c3b1d3c"
+      }
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "QleisliKernel"
+      ],
+      "environment": {},
+      "working_directory": "lean-kernel",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/kernel-replay.log.gz",
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanchecker",
+        "--fresh",
+        "Main"
+      ],
+      "environment": {},
+      "working_directory": "lean-kernel",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/main-replay.log.gz",
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "Tests.lean"
+      ],
+      "environment": {},
+      "working_directory": "lean-kernel",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/lean-tests.log.gz",
+        "sha256": "9ceffb7310338057cfe71a4ae1e2c98d2c485d81cdef906532a801f457a38d64",
+        "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean"
+      ],
+      "environment": {},
+      "working_directory": "lean-kernel",
+      "exit_code": 0,
+      "log": {
+        "path": "logs/equivalence.log.gz",
+        "sha256": "7db34fe1a35575d0857066a9d02aea2c82fde1272d47a4c020d2f703ddfe1ded",
+        "uncompressed_sha256": "c2b4c754d566e1352e05f97155aabbc2e2b6c6b174afd1b1e852c5b337640a2e"
+      }
+    }
+  ],
+  "final_checks": "final-checks.json",
+  "rust_all_targets": {
+    "passed": 582,
+    "ignored": 38
+  },
+  "initial_failures": [
+    {
+      "exit_code": 101,
+      "reason": "CLI help fixture lacked new interop selection option",
+      "log": {
+        "path": "logs/rust-tests.log.gz",
+        "sha256": "5669279ecfdc3d1fac0efe74b971396bee48c26a4c1b43be98e9f3bff8024c56",
+        "uncompressed_sha256": "ad48e31a479294f005e5e654b74ead0811f402ddac0e751f26039e77d7b4dab1"
+      }
+    },
+    {
+      "exit_code": 101,
+      "reason": "Direct hierarchy suite invocation omitted generated independent source-oracle directory; replaced by proper harness",
+      "log": {
+        "path": "logs/hierarchy.log.gz",
+        "sha256": "31079b14ace682e6005f3f89c3ef4478772549debebddad17235167d627edeff",
+        "uncompressed_sha256": "c09ea032ff64cc17281e370304a558ef2c059c2eaa5024417d2fe4f3f5af7e82"
+      }
+    },
+    {
+      "reason": "Generic provider fixture initially passed a primitive directly; actual source and diagnostic preserved beside fixtures",
+      "source": "../generic-first-attempt.qli.txt",
+      "diagnostic": "../generic-first-diagnostic.json"
+    },
+    {
+      "reason": "Generic test initially looked for direct T gates, but instantiation lowers to retained contract calls; corrected test predicate and reran",
+      "full_transcript_retained": false
+    },
+    {
+      "reason": "Cargo build cache exhausted free disk; cache cleaned and final Rust run rebuilt",
+      "source_changes_lost": false
+    }
+  ],
+  "not_run": [
+    "Hosted Linux/macOS CI",
+    "MSRV toolchain rerun",
+    "Other unrelated opt-in native comparison groups",
+    "Maximum-size algorithm cases",
+    "Publication or tagging"
+  ],
+  "remaining_gates": [
+    "Full ordinary-root EffectSound/CPTP composition",
+    "Analytic native hierarchy to Operator closure",
+    "S05-C1 through S05-C5 for v0.5.0 authority transfer"
+  ],
+  "assumptions": [
+    "Selected built/audited native executable",
+    "Native compilation and transport/decoder correspondence",
+    "Numerical execution is not a preservation theorem"
+  ]
+}

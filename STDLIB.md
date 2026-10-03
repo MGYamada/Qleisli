@@ -12,8 +12,7 @@ Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
 conventions, reference contracts and checking tools now. Existing library
 maintenance and documentation retain their compatibility obligations. From
 v0.5.0, library growth follows reviewed adoption rather than automatic promotion
-of everything in the corpus. The [library goal](docs/stdlib-roadmap.md#adopted-library-goal)
-and [adoption criteria](docs/stdlib-roadmap.md#5-標準への採用とaiからの還流) remain in force.
+of everything in the corpus. Adoption requires explicit source contracts and independent review.
 
 ## Shared decisions before individual implementations
 
@@ -32,7 +31,7 @@ that the chosen specification is the intended one; review that choice separately
 
 | Initial rule | Contribution obligation |
 | --- | --- |
-| **SC-01: contract first** | Complete the [short template](docs/stdlib-contract-template.md) before proposing standard adoption. State the whole-input operator or complete instrument, exact type tree, owner transitions, encodings and premises. Give totality/domain rules for basis functions. A name such as "QFT" is not a contract. |
+| **SC-01: contract first** | Record a source contract before proposing standard adoption. State the whole-input operator or complete instrument, exact type tree, owner transitions, encodings and premises. Give totality/domain rules for basis functions. A name such as "QFT" is not a contract. |
 | **SC-02: preserve canonical conventions** | Reuse the existing family's sign, scalar phase, integer/axis encoding and output convention. Current QFT2/3 use positive Fourier phase, first leaf least significant and included reversal; current addition is unsigned modular addition with amplitude +1. Future sized APIs still require specification and adoption. |
 | **SC-03: distinguish changed meaning** | An optimization under the same contract must preserve its phase, ordering, effects, error and cleanup promises. An inverse, omitted reversal or approximate variant needs an explicitly distinguished contract and reviewed name/parameter. Do not introduce a hidden implementation-dependent switch. |
 | **SC-04: report intermediate permissions** | Use current consume/return ownership APIs. Specify preserved basis labels and whole-state/reference behavior separately. Final restoration does not by itself authorize intermediate writes or borrowing. |
@@ -96,57 +95,38 @@ equation or an API style rule alone cannot select those permissions.
 
 ## Template and reference implementations
 
-The template has eight short sections. Use the source's English documentation
-for a concise summary and link the full contract/derivation where needed.
-`None` is a meaningful answer for scratch or approximation; `pending` must name
-the missing obligation and scope. The template is descriptive documentation,
-not a new machine evidence schema or a replacement for ledger format v1.
+Use the source's English documentation for the meaning, interface/encoding,
+premises/access, ancillas/effects, approximation, resources and evidence scope.
+Keep teaching examples beside executable source. `None` is meaningful for scratch
+or approximation; `pending` names the missing obligation and its scope.
 
-| Pilot | Current source and fixed contract | What it teaches |
+| Source | Fixed contract | Review focus |
 | --- | --- | --- |
-| [QFT2](docs/stdlib-contract-examples/qft2.md) | Existing `std::transforms::qft2`, positive `F4`, exact phase and included output reversal | Uniform Z probabilities and an adjoint round trip do not select Fourier sign or output order. |
-| [Add2](docs/stdlib-contract-examples/add2.md) | Existing `std::arithmetic::add2`, preserved addend and destination overwritten modulo four | Basis outputs alone do not detect extra phase; no input zero promise may be invented. |
-| [AND phase oracle](docs/stdlib-contract-examples/and-phase.md) | Existing corpus `kernel`, `(-1)^(a and b)` with exact structured scratch cleanup | Marking polarity, clean return, full phase and source-specific attribution must be explicit. This remains outside `std`. |
+| [QFT2](stdlib/src/transforms.qli) | Positive F4, exact phase and included reversal | Uniform probabilities and inverse round trips do not determine sign or order. |
+| [Add2](stdlib/src/arithmetic.qli) | Preserved addend; destination overwritten modulo four | Basis outputs cannot detect extra phase or invented zero-input promises. |
+| [AND phase](corpus/qualtran/and_phase/kernel.qli) | (-1)^(a and b), with explicit cleanup | Marking polarity, clean return, phase and attribution; this remains outside std. |
 
-These are completed contract-writing pilots over existing code, not three new
-library APIs or general-size proofs. The linked source is the reference code;
-avoid an independently maintained copy in the guide. Their existing validation
-records remain historical evidence. No pilot gains a proof merely by fitting
-the template.
+These existing implementations do not establish general-size or source-preservation
+proofs. The retired template and pilot prose are no longer required CI inputs.
 
 ## Checking responsibilities
 
 | Mechanism | Responsibility and limit |
 | --- | --- |
 | Type/IR/evidence checker | Enforce the specified ownership, effects, access, semantics and cleanup rules. Borrowing is enforced only if a language extension implements it. No style waiver bypasses rejection. |
-| Contract-document linter now; `qlippy` later | Enforce mandatory sections, structured status dimensions and source/evidence links. Future source-aware naming/argument-role advice follows adopted syntax. Presence checks do not establish equation truth. |
+| Documentation checks; `qlippy` planned | Check active links, agent instructions and metadata. Future source-aware advice follows adopted syntax; presence checks do not establish equation truth. |
 | Semantic tests | Compare small full complex columns or a complete instrument against an independent formula; use coherent/control probes for scalar phase, references, order and scratch. Retain deliberate type-correct faults. An inverse round trip is supplementary. |
 | Semantic proofs | State premises and prove conformance for the actual checking/execution definitions and declared range. Abstract-model theorems, actual IR binding and source preservation remain distinguishable. |
 | Human review | Review intended meaning, family conventions, integration, explanation, licensing and usability; assess proof coverage and blocking findings independently of implementation tests. |
 
-The initial [contract-document checker](scripts/check_stdlib_contract_docs.py)
-runs in CI with its mutation regressions. It checks this template and all pilot
-contracts, their mandatory sections, status table structure and local links.
-It checks that each pilot links to an existing `.qli` source; it does not parse
-that source or certify its signature/meaning, re-run cited results, validate a
-Lean theorem or lint all twelve bundled definitions. Existing corpus/semantic
-CI and proof audits retain those separate responsibilities.
-
-```sh
-python3 scripts/check_stdlib_contract_docs.py
-python3 scripts/test_check_stdlib_contract_docs.py
-python3 scripts/check_docs.py
-```
-
-`qlippy` is a planned role/name, not an implemented executable, reserved package
-or acceptance authority. Reuse this small checker as a first contribution; do
-not build a second language checker to enforce prose conventions. Move naming
-and argument-role checks into syntax-aware tooling once the language/API rules
-are settled. Review lint exceptions with a reason; they cannot waive semantics.
+The prose-only template/pilot linter is retired with those documents. Existing
+corpus/semantic CI and Lean proof audits retain their independent responsibilities.
+Run `python3 scripts/check_docs.py` for active documentation and metadata checks.
+`qlippy` remains planned, not an implemented executable or acceptance authority.
 
 ## Review and rollout from v0.5.0
 
-Before v0.5.0, refine the template through corpus authoring and these pilots.
+Before v0.5.0, refine source contracts through corpus authoring and review.
 During 0.4.x, prepare contributor setup, issue/review procedures and source-aware
 linting proposals alongside the existing community plan. At v0.5.0, begin
 reviewed library growth as a mathlib-style open-source effort after its own

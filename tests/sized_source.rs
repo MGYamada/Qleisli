@@ -1553,6 +1553,13 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         .check_instrument(amplitude.payload(), amplitude.comparison_request())
         .unwrap();
     let pass = amplitude.validate_initialization_moves(&checked).unwrap();
+    let native = kernel
+        .check_instrument_native(amplitude.payload(), amplitude.comparison_request())
+        .unwrap();
+    let native_pass = amplitude
+        .validate_initialization_moves_native(&native)
+        .unwrap();
+    assert_eq!(native_pass.movements(), pass.movements());
     assert!(pass.movements() > 0);
     let actual = checked.execute(&input, 2, limits).unwrap();
     let mut independent_amplitude = vec![];
@@ -1602,6 +1609,13 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
     let other = proposal("measurement::qpe", &[("n", 1), ("m", 1)], evolution(1));
     assert_eq!(
         other
+            .validate_initialization_moves_native(&native)
+            .unwrap_err()
+            .code(),
+        "preservation"
+    );
+    assert_eq!(
+        other
             .validate_initialization_moves(&checked)
             .unwrap_err()
             .code(),
@@ -1612,6 +1626,16 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
     let checked = kernel
         .check_against(empty.payload(), empty.comparison_request())
         .unwrap();
+    let native_empty = kernel
+        .check_against_native(empty.payload(), empty.comparison_request())
+        .unwrap();
+    assert_eq!(
+        empty
+            .validate_initialization_moves_native(&native_empty)
+            .unwrap_err()
+            .code(),
+        "preservation"
+    );
     close(
         &checked
             .execute(&[[0.3, 0.8], [-0.4, 0.2]], 2, limits)

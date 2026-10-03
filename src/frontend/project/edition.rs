@@ -10,6 +10,70 @@ use crate::frontend::{CURRENT_EDITION, ast::Span};
 
 const MAX_MANIFEST_BYTES: u64 = 65_536;
 
+#[cfg(test)]
+std::thread_local! { static PARSES: std::cell::Cell<usize> = const { std::cell::Cell::new(0) }; }
+
+// Called once per discovered directory. A nested directory inherits the already
+// checked parent edition; its own manifest, when present, must pass afresh.
+pub(super) fn check_anchored(
+    directory: &Path,
+    anchor: &fs::File,
+    root: bool,
+) -> Result<(), LoadFailure> {
+    let path = directory.join("Qargo.toml");
+    match source_file::kind(anchor, directory, "Qargo.toml".as_ref()) {
+        Ok(source_file::Kind::File) => {}
+        Ok(_) => {
+            return Err(error(
+                &path,
+                Span::default(),
+                "Qargo.toml must be a regular, non-symlink file",
+            ));
+        }
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            return if root {
+                check_directory(directory.parent().unwrap_or(directory))
+            } else {
+                Ok(())
+            };
+        }
+        Err(e) => return Err(io_error(&path, e)),
+    }
+    let file =
+        match source_file::child(anchor, directory, std::ffi::OsStr::new("Qargo.toml"), false) {
+            Ok(file) => file,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+                return if root {
+                    check_directory(directory.parent().unwrap_or(directory))
+                } else {
+                    Ok(())
+                };
+            }
+            Err(e) => return Err(io_error(&path, e)),
+        };
+    if !file.metadata().map_err(|e| io_error(&path, e))?.is_file() {
+        return Err(error(
+            &path,
+            Span::default(),
+            "Qargo.toml must be a regular, non-symlink file",
+        ));
+    }
+    let mut bytes = Vec::new();
+    file.take(MAX_MANIFEST_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|e| io_error(&path, e))?;
+    if bytes.len() as u64 > MAX_MANIFEST_BYTES {
+        return Err(error(
+            &path,
+            Span::default(),
+            "Qargo.toml exceeds the 65536-byte manifest limit",
+        ));
+    }
+    let source = String::from_utf8(bytes)
+        .map_err(|_| error(&path, Span::default(), "Qargo.toml is not valid UTF-8"))?;
+    check_manifest(&path, &source)
+}
+
 pub(super) fn check_directory(directory: &Path) -> Result<(), LoadFailure> {
     read_directory(directory).map(|_| ())
 }
@@ -57,6 +121,8 @@ pub(super) fn read_directory(
 }
 
 pub(super) fn check_manifest(path: &Path, source: &str) -> Result<(), LoadFailure> {
+    #[cfg(test)]
+    PARSES.with(|count| count.set(count.get() + 1));
     let invalid = |message| {
         located_error(
             path,
@@ -101,4 +167,46 @@ pub(super) fn check_manifest(path: &Path, source: &str) -> Result<(), LoadFailur
         )));
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn a_load_parses_each_manifest_once_even_with_many_empty_sources() {
+        let path = std::env::temp_dir().join(format!(
+            "qleisli-edition-cache-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        fs::create_dir(&path).unwrap();
+        struct Cleanup(std::path::PathBuf);
+        impl Drop for Cleanup {
+            fn drop(&mut self) {
+                let _ = fs::remove_dir_all(&self.0);
+            }
+        }
+        let _cleanup = Cleanup(path.clone());
+        fs::write(
+            path.join("Qargo.toml"),
+            "schema-version=2\n[qrate]\nedition='2026'\n",
+        )
+        .unwrap();
+        fs::create_dir(path.join("nested")).unwrap();
+        for i in 0..32 {
+            fs::write(path.join(format!("file{i}.qli")), "").unwrap();
+            fs::write(path.join(format!("nested/file{i}.qlt")), "").unwrap();
+        }
+        let before = PARSES.with(|count| count.get());
+        super::super::Project::load_with_policy(&path, super::super::SourcePolicy::default())
+            .unwrap();
+        assert_eq!(
+            PARSES.with(|count| count.get()) - before,
+            2,
+            "one local manifest and one embedded stdlib manifest"
+        );
+    }
 }

@@ -4,6 +4,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 No external schema or artifact format is enabled by this test harness.
 """
+import native_harness
 import argparse
 import copy
 import hashlib
@@ -219,11 +220,6 @@ def suite():
 def native(cases, log):
     with tempfile.TemporaryDirectory(prefix="qleisli-qft-graph-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text(
-            'name = "qft_graph_test"\nversion = "0.0.0"\ndefaultTargets = ["graph-test"]\n'
-            '[[require]]\nname = "qleisli_kernel"\npath = ' + json.dumps(str(ROOT / "lean-kernel")) +
-            '\n[[lean_exe]]\nname = "graph-test"\nroot = "Main"\n')
         rows = [case_literal(item, probes) for _, item, _, probes in cases]
         (project / "Main.lean").write_text('''import QleisliKernel.QftGraph
 open QleisliKernel
@@ -250,11 +246,7 @@ def main : IO Unit := do
           line := line ++ "#" ++ String.intercalate "," ([output,state.phase,state.hadamards].map toString)
       IO.println line
 ''')
-        build = subprocess.run(["lake", "build"], cwd=project, capture_output=True, text=True, timeout=240)
-        log.append(dict(command=["lake", "build"], cwd="temporary native QFT graph harness",
-                        exit=build.returncode, stdout=build.stdout, stderr=build.stderr))
-        assert build.returncode == 0, build.stdout + build.stderr
-        binary = project / ".lake/build/bin/graph-test"
+        binary = native_harness.build(project, log)
         run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=30)
         log.append(dict(command=["graph-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))

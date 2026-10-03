@@ -1,0 +1,131 @@
+{
+  "status": "passed",
+  "commands": [
+    {
+      "command": [
+        "python3",
+        "scripts/test_run_native_ci.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.056,
+      "log": "logs/final-check-1.log.gz",
+      "uncompressed_sha256": "1fe18a65738b68e32393c482761cfd09590562ef6b8fdd3a60139eae51666fa6"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_ci_profiles.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.008,
+      "log": "logs/final-check-2.log.gz",
+      "uncompressed_sha256": "e00659d847e3a96f0745b3f802872860b49088fd2ecd9c84ff6b5deb5654e1e0"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.182,
+      "log": "logs/final-check-3.log.gz",
+      "uncompressed_sha256": "ebc478192e3c70f9b36de54ebd776b29225eccac9330163c1f1a2da57631cc1e"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.159,
+      "log": "logs/final-check-4.log.gz",
+      "uncompressed_sha256": "9fed3a30b29f6ae2cdd00feb18bccb94c1fba2e0e60994a7227e14a5614f7180"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.766,
+      "log": "logs/final-check-5.log.gz",
+      "uncompressed_sha256": "f5447628bc2ef9c2cf1c8e077aae1f363d4fa2a7f40fd02328ab7f530c1f0d08"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.073,
+      "log": "logs/final-check-6.log.gz",
+      "uncompressed_sha256": "0d33840d79007294f148fcb1e408a2ca67a71f060e4cc2050994b7f4e804b8f5"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "seconds": 0.154,
+      "log": "logs/final-check-7.log.gz",
+      "uncompressed_sha256": "65be97a41ca58ea7057d1cebb8e63ed05fb8fdb03874c72e7a8b6305904a4d5c"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 15.932,
+      "log": "logs/final-check-8.log.gz",
+      "uncompressed_sha256": "73d3bacbedf914368cde480e713ac19578af79eefcb6202b99d92e6fad78c737"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 3.276,
+      "log": "logs/final-check-9.log.gz",
+      "uncompressed_sha256": "52ee0b1d46b1eaf6cdf45871e830323a76312305011e0c3d8692a98676f72e45"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/maintain_release.py",
+        "--report",
+        "/tmp/qleisli-boundary-release-plan.json"
+      ],
+      "exit_code": 0,
+      "seconds": 0.086,
+      "log": "logs/final-check-10.log.gz",
+      "uncompressed_sha256": "4aa6d981d237540927966989989793ffed711869a85cc2bd36bd5576023010a5"
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 3.009,
+      "log": "logs/final-check-11.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.17,
+      "log": "logs/final-check-12.log.gz",
+      "uncompressed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

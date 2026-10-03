@@ -26,7 +26,7 @@ class IntakeTests(unittest.TestCase):
         path.write_text(json.dumps(manifest))
 
     def test_current_intake_passes(self):
-        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 78)
+        self.assertEqual(len(corpus.check_manifest(self.root)["cases"]), 87)
 
     def test_sized_experiment_cannot_add_an_input_source(self):
         self.edit_manifest(lambda m: m["sized_experiments"][0].update(source="unapproved"))
@@ -291,6 +291,28 @@ class OracleTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             corpus.compare(a, b, "conjugated phase")
 
+    def test_minus_preparation_requires_the_upstream_second_column(self):
+        case = {"id": "quantum_katas/minus_state1", "qubits": 1}
+        first = corpus.reference_column(case, 0)
+        second = corpus.reference_column(case, 1)
+        scale = 1 / math.sqrt(2)
+        self.assertEqual(first, [scale, -scale])
+        self.assertEqual(second, [scale, scale])
+        # H X = Z H; adding Z on the input is the actual wrong extension.
+        with self.assertRaises(ValueError):
+            corpus.compare(corpus.interference(second, 0, "x"),
+                           corpus.interference([-v for v in second], 0, "x"), "input phase")
+
+    def test_decrement_and_zero_predicate_cover_wraparound_and_both_targets(self):
+        case = {"id": "qualtran/add_minus_one3", "qubits": 3}
+        for x in range(8):
+            self.assertEqual(corpus.reference_column(case, x)[(x - 1) % 8], 1)
+        case = {"id": "qualtran/less_than_one2", "qubits": 3}
+        for x in range(4):
+            for target in range(2):
+                result = corpus.reference_column(case, x | (target << 2))
+                self.assertEqual(result[x | ((target ^ (x == 0)) << 2)], 1)
+
     def test_oracle_columns_are_unitary(self):
         # This guards transcription of the independent mathematical reference,
         # not the QLI implementation. Measurement cases have separate oracles.
@@ -302,6 +324,57 @@ class OracleTests(unittest.TestCase):
                 for y, right in enumerate(columns):
                     inner = sum(complex(a).conjugate() * b for a, b in zip(left, right))
                     self.assertLess(abs(inner - (x == y)), corpus.TOLERANCE, (case["id"], x, y))
+
+
+class ReportTests(unittest.TestCase):
+    def test_partial_results_and_failures_survive_parallel_completion(self):
+        import subprocess
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            report = dict(status="incomplete", failures=[], cases=[], semantic_faults=[], negative_cases=[])
+            def check(case, *args):
+                if case["id"] == "bad":
+                    raise subprocess.TimeoutExpired("compiler", 1, output=b"partial output", stderr=b"diagnostic")
+                return dict(id=case["id"], semantic_probes=1)
+            with patch.object(corpus, "check_case", side_effect=check), patch.object(corpus, "check_semantic_fault", side_effect=ValueError("escaped")), patch.object(corpus, "check_negative", return_value={"id": "negative"}):
+                corpus.run_checks([dict(id="good"), dict(id="bad")], [dict(id="fault", reference="good")],
+                                  [dict(id="negative")], Path("unused"), True, report, path)
+            observed = json.loads(path.read_text())
+            self.assertEqual(observed["cases"], [dict(id="good", semantic_probes=1)])
+            self.assertEqual(observed["negative_cases"], [dict(id="negative")])
+            self.assertEqual([f["id"] for f in observed["failures"]], ["bad", "fault"])
+            self.assertEqual(observed["failures"][0]["stdout"], "partial output")
+            self.assertEqual(observed["failures"][0]["stderr"], "diagnostic")
+            self.assertEqual(observed["status"], "incomplete")
+
+    def test_manifest_failure_overwrites_stale_success_with_failed_report(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            path.write_text('{"status":"passed"}')
+            with patch.object(corpus, "check_manifest", side_effect=ValueError("invalid provenance")):
+                self.assertEqual(corpus.main(["--report", str(path)]), 1)
+            observed = json.loads(path.read_text())
+            self.assertEqual(observed["status"], "failed")
+            self.assertEqual(observed["failures"][0]["message"], "invalid provenance")
+            self.assertIn("manifest_sha256", observed)
+
+    def test_success_and_runtime_failure_keep_input_bindings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            case = "quantum_katas/minus_state1"
+            binary = Path(__file__).resolve()
+            for failure in (False, True):
+                def check(*args):
+                    if failure:
+                        raise corpus.SemanticMismatch("wrong phase")
+                    return dict(id=case, semantic_probes=10)
+                with patch.object(corpus, "check_case", side_effect=check), patch.object(corpus, "check_semantic_fault", return_value=dict(id="fault")), patch.object(corpus, "check_negative", side_effect=lambda c, b: dict(id=c["id"])):
+                    self.assertEqual(corpus.main([str(binary), "--case", case, "--report", str(path)]), int(failure))
+                observed = json.loads(path.read_text())
+                self.assertEqual(observed["status"], "failed" if failure else "passed")
+                self.assertEqual(observed["compiler_sha256"], corpus.sha256(binary))
+                self.assertEqual(observed["expected_ids"]["cases"], [case])
+                self.assertTrue(observed["source_sha256"])
 
 
 if __name__ == "__main__":

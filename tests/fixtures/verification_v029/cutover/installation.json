@@ -1,0 +1,15 @@
+{
+  "package": "qleisli",
+  "version": "0.2.9",
+  "binary": "/private/tmp/qleisli-cutover-install/bin/qleisli",
+  "readmes": "matching Bell source and version",
+  "registry_links": "absolute; current targets exist locally; retired contracts use reviewed immutable refs",
+  "historical_registry_links_pending_live_check": [],
+  "checks": [
+    "Bell check/run/sample in text and JSON",
+    "embedded qft2",
+    "reject measured-owner reuse"
+  ],
+  "execution": "temporary directory; empty helper-tool PATH",
+  "publication": "not performed"
+}

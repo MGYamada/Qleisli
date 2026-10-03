@@ -1,8 +1,8 @@
 //! Filesystem adapter only. The library importer never resolves source labels.
 use super::options::Options;
-use qleisli::frontend::compile::compile_project_with_policy;
+use qleisli::frontend::compile::compile_project_with_kernel;
 use qleisli::frontend::diagnostic::Diagnostic;
-use qleisli::interchange::{self, Version};
+use qleisli::interchange;
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -92,34 +92,30 @@ pub(super) enum Success {
     Verified(bool),
 }
 pub(super) fn execute(options: &Options) -> Result<Success, Failure> {
+    let kernel = options
+        .lean_kernel
+        .as_ref()
+        .map(interchange::native::Kernel::new)
+        .map(Ok)
+        .unwrap_or_else(interchange::native::Kernel::selected)?;
     if options.command == "emit-ir" {
         let output = options.output.as_ref().expect("parsed output path");
         let label = output
             .to_str()
             .ok_or_else(|| io_error("output path is not valid UTF-8"))?;
         let program = match &options.selected_root {
-            Some(selected) => selected.compile_with_policy(options.policy)?,
-            None => compile_project_with_policy(&options.path, options.policy)?,
+            Some(selected) => selected.compile_with_kernel(options.policy, &kernel)?,
+            None => compile_project_with_kernel(&options.path, options.policy, &kernel)?,
         };
-        let bytes = interchange::export(&program, None, Version::V2)?;
-        if let Some(path) = &options.lean_kernel {
-            let checked = interchange::dual::Kernel::new(path).check(&bytes, None)?;
-            write_new(output, checked.artifact())?;
-        } else {
-            write_new(output, &bytes)?;
-        }
+        write_new(output, program.artifact())?;
         Ok(Success::Emitted(label.into()))
     } else {
         let bytes = read(&options.path)?;
         let request = options.against.as_deref().map(read).transpose()?;
-        let requested = if let Some(path) = &options.lean_kernel {
-            interchange::dual::Kernel::new(path)
-                .check(&bytes, request.as_deref())?
-                .imported()
-                .request_checked
-        } else {
-            interchange::import(&bytes, request.as_deref())?.request_checked
-        };
+        let requested = kernel
+            .check(&bytes, request.as_deref())?
+            .imported()
+            .request_checked;
         Ok(Success::Verified(requested))
     }
 }

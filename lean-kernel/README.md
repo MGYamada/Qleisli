@@ -1,11 +1,11 @@
 # Qleisli executable Lean 4 kernel
 
 This Mathlib-free package implements bounded pure checkers and proves facts
-about their actual executable definitions. Rust remains the production
-acceptance authority. Native hierarchical adapters now discharge original-QIRF,
+about their actual executable definitions. Lean is the sole production
+acceptance implementation under the approved v0.2.9 exception. Native hierarchical adapters now discharge original-QIRF,
 meaning-pair and exact-H obligations; reports are not production evidence seals.
 Decoder/native/Rust correspondence, source preservation, full-profile soundness
-and the later [verification migration gates](../docs/verification-migration-v0.2.md)
+and the later [verification migration gates](https://github.com/MGYamada/Qleisli/issues/276)
 remain separate.
 
 [Soundness composition](../tests/fixtures/soundness_refactor_v028/README.md)
@@ -86,11 +86,18 @@ independent complete meaning graph. `--hierarchy-fourier-pending` retains exact-
 roles. Initialization/readout and named-QPE modes retain their full ordered
 boundaries. Native adapters discharge original QIRF leaves, requested matrix
 pairs and fixed H under one exact-work budget. Rust native-only reports check
-transport coverage; compatible executable reports independently rebuild sealed
-Rust leaf handles under their own budget. See the [hierarchical
-contracts](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/hierarchical-ir-spec.md) for each mode's scope and remaining
-gates. Ordinary CLI/QIRF defaults remain Rust; [VM28](../tests/fixtures/verification_v028/README.md)
-adds explicit dual checking with original artifact/request bytes and no fallback.
+transport coverage and retain immutable artifacts for bounded execution; actual
+finite matrices are decoded without repeating Rust IR/equality/isometry checks.
+Sized CLI checking/execution uses this path. APIs exposing finite leaf handles
+obtain fresh acceptance from the same selected native executable. See the hierarchical
+contracts for each mode's scope and remaining gates.
+[VM28](../tests/fixtures/verification_v028/README.md)
+originally added dual checking; v0.2.9 now uses the same original-byte boundary as sole native acceptance.
+VM29 adds all concrete source declarations, raw Rust adapters, foreign CLI and
+Python/QIR selection, plus native-only ordinary QIRF inspection. Native ordinary
+acceptance now also proves independent classical scope safety and global SSA
+uniqueness through `Qleisli.NativeValidity.check_scopeSafe`; full EffectSound
+composition remains open; production implementation authority is Lean-only.
 
 The [QIRF semantic bridge](../lean/Qleisli/Qirf.lean) proves actual original-graph
 and root complex/reference meaning; [native discharge](../lean/Qleisli/NativeHierarchy.lean)
@@ -156,7 +163,7 @@ lake env leanchecker --fresh QleisliKernel
 lake env leanchecker --fresh Main
 ```
 
-The [backend execution policy](../docs/lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
+The backend execution policy
 requires source and compiled-declaration rejection of `unsafe def`,
 `@[implemented_by]`, `@[extern]` and `partial def` for project executable code,
 including private/generated helpers. These bans already apply throughout this
@@ -227,7 +234,7 @@ failures. `global_phase.qpk` paired with `identity.qpr` must reject.
 | [Hierarchical/Artifact.lean](QleisliKernel/Hierarchical/Artifact.lean) | Typed four-table projection and exact proof endpoint binding under a shared budget; no semantic evidence issued |
 | [Hierarchical/Ports.lean](QleisliKernel/Hierarchical/Ports.lean) | Actual side-map bijections and exact types, with proved coefficient/reference round trips and a remaining-budget interface |
 | [Hierarchical/Structural.lean](QleisliKernel/Hierarchical/Structural.lean) | Explicit consuming/regrouping conversions, actual inverse routing and reference-preserving coefficient round trips; shared-budget checks used by definition and meaning typing |
-| [Reshape.lean](QleisliKernel/Reshape.lean) | Experimental canonical single-owner adapter metadata; general leaf-encoding, inverse/composition and reference-coefficient proofs. Not a new hierarchy rule, source API or evidence issuer; see the [adoption boundary](../docs/size-expressions.md). |
+| [Reshape.lean](QleisliKernel/Reshape.lean) | Experimental canonical single-owner adapter metadata; general leaf-encoding, inverse/composition and reference-coefficient proofs. Not a new hierarchy rule, source API or evidence issuer; see the adoption boundary. |
 | [Hierarchical/Readout.lean](QleisliKernel/Hierarchical/Readout.lean) | Actual measurement nodes and explicit little-endian CBits assembly, with residual/reference branch proofs. The private `--readout-check` command checks this slice only; [full measured-QPE integration remains in progress](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md). |
 | [Hierarchical/Preparation.lean](QleisliKernel/Hierarchical/Preparation.lean) | Actual fresh `init0` nodes, exact frames and zero-factor/reference proofs. Private `--preparation-check` checks this component; composition with the pure graph/readout remains a separate obligation. |
 | [Hierarchical/NodeTyping.lean](QleisliKernel/Hierarchical/NodeTyping.lean) | Actual definition-node ownership/effect checks, both call maps and names, and proved whole-table checking under the shared budget |
@@ -237,7 +244,7 @@ failures. `global_phase.qpk` paired with `identity.qpr` must reject.
 | [Tests.lean](Tests.lean) | Reduction-checked examples and maximum-word boundary evaluations |
 | [Audit.lean](Audit.lean) | Compiled project declaration, axiom and import audit |
 
-See the [word wire contract](../docs/lean-kernel-migration.md#first-executable-slice)
+See the word wire contract
 and [DAG contract and proof limits](QleisliKernel/Hierarchy.lean), plus the
 [typed layout contract](QleisliKernel/Layout.lean) and
 [shared typed call contract](QleisliKernel/LayoutDag.lean) and

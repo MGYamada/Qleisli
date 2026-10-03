@@ -1,24 +1,22 @@
 //! Bounded QIRF1/2 transport. All imported evidence is reconstructed by the
 //! ordinary finite checker; labels and embedded source text are never executed.
 mod codec;
-pub mod dual;
 pub mod finite_leaf;
 pub mod finite_matrix;
 pub mod hierarchical;
 pub(crate) mod json;
+pub mod native;
 
 use codec::Codec;
 use json::Value;
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
-use crate::VerifiedProgram;
+use crate::AcceptedProgram;
 use crate::contract::exact::Budget;
 use crate::contract::function::RetainedIdentity;
 use crate::contract::meaning::{FiniteMeaning, MeaningEvidence};
-use crate::contract::{
-    BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity,
-};
+use crate::contract::{BasisType, ContractError, FunctionEvidence};
 use crate::ir::{Effect, RawProgram};
 
 const MAX_OBJECTS: usize = 65_536;
@@ -101,7 +99,7 @@ pub struct RootInterface {
 
 #[derive(Debug)]
 pub struct Imported {
-    pub program: VerifiedProgram,
+    pub program: AcceptedProgram,
     pub root_interface: Option<RootInterface>,
     pub request_checked: bool,
     /// Charged exact-kernel work, excluding tokenization and structural checks.
@@ -116,10 +114,11 @@ struct Encoder {
     programs: Vec<Value>,
     entries: Vec<Value>,
     seen: BTreeMap<usize, usize>,
+    canonical_evidence: BTreeMap<Arc<[u8]>, usize>,
     sources: Vec<(String, String)>,
     source_ids: BTreeMap<String, usize>,
     remaining: usize,
-    meanings: BTreeMap<usize, FiniteMeaning>,
+    meanings: BTreeMap<Arc<[u8]>, FiniteMeaning>,
     identity_remaining: usize,
     source_remaining: usize,
 }
@@ -130,6 +129,7 @@ impl Encoder {
             programs: vec![],
             entries: vec![],
             seen: BTreeMap::new(),
+            canonical_evidence: BTreeMap::new(),
             sources: vec![],
             source_ids: BTreeMap::new(),
             remaining: MAX_NODES,
@@ -152,6 +152,7 @@ impl Encoder {
         Ok(())
     }
     fn program(&mut self, raw: &RawProgram) -> Result<usize> {
+        proposal_depth(raw)?;
         self.object()?;
         let id = self.programs.len();
         self.programs.push(Value::Null);
@@ -163,18 +164,44 @@ impl Encoder {
         if let Some(&index) = self.seen.get(&key) {
             return Ok(index);
         }
+        if let Some(&index) = self.canonical_evidence.get(receipt.snapshot_key()) {
+            self.seen.insert(key, index);
+            return Ok(index);
+        }
         self.object()?;
         let id = self.entries.len();
         self.entries.push(Value::Null);
         self.seen.insert(key, id);
-        let implementation = self.program(receipt.implementation())?;
-        let target = self.meanings.get(&key).cloned();
+        self.canonical_evidence
+            .insert(Arc::clone(receipt.snapshot_key()), id);
+        let target = self.meanings.get(receipt.snapshot_key()).cloned();
+        self.evidence_fields(
+            id,
+            receipt.signature(),
+            receipt.implementation(),
+            receipt.specification(),
+            receipt.identity_parts(),
+            target,
+        )?;
+        Ok(id)
+    }
+
+    fn evidence_fields(
+        &mut self,
+        id: usize,
+        signature: &BasisType,
+        raw_implementation: &RawProgram,
+        raw_specification: &RawProgram,
+        identity: (&str, &str, &[(String, String)]),
+        target: Option<FiniteMeaning>,
+    ) -> Result<()> {
+        let implementation = self.program(raw_implementation)?;
         let specification = if target.is_none() {
-            Some(self.program(receipt.specification())?)
+            Some(self.program(raw_specification)?)
         } else {
             None
         };
-        let (implementation_name, specification_name, snapshot) = receipt.identity_parts();
+        let (implementation_name, specification_name, snapshot) = identity;
         self.identity_remaining = self
             .identity_remaining
             .checked_sub(implementation_name.len() + specification_name.len())
@@ -206,7 +233,7 @@ impl Encoder {
             sources.push(Value::Number(index as u64));
         }
         let mut fields = vec![
-            ("signature", receipt.signature().write(self)?),
+            ("signature", signature.write(self)?),
             ("implementation", Value::Number(implementation as u64)),
             (
                 "identity",
@@ -239,7 +266,7 @@ impl Encoder {
             ));
         }
         self.entries[id] = Value::object(fields);
-        Ok(id)
+        Ok(())
     }
 }
 
@@ -261,7 +288,7 @@ fn source_values(sources: &[(String, String)]) -> Value {
 /// of a MeaningEvidence receipt is checked in exactly the same way as any IR.
 /// No meaning tag is inferred from names, hashes or a numerical matrix.
 pub fn export(
-    program: &VerifiedProgram,
+    program: &AcceptedProgram,
     interface: Option<&RootInterface>,
     version: Version,
 ) -> Result<Vec<u8>> {
@@ -271,14 +298,14 @@ pub fn export(
 /// Retain explicitly supplied mathematical targets as QIRF2 meaning entries.
 /// Each target must be the sealed receipt actually referenced by the program.
 pub fn export_with_meanings(
-    program: &VerifiedProgram,
+    program: &AcceptedProgram,
     interface: Option<&RootInterface>,
     meanings: &[MeaningEvidence],
 ) -> Result<Vec<u8>> {
     let mut encoder = Encoder::new(Version::V2);
     for meaning in meanings {
         encoder.meanings.insert(
-            Arc::as_ptr(&meaning.receipt()) as usize,
+            Arc::clone(meaning.receipt().snapshot_key()),
             meaning.target().clone(),
         );
     }
@@ -312,23 +339,73 @@ fn meaning_value(target: &FiniteMeaning) -> Value {
 }
 
 fn export_inner(
-    program: &VerifiedProgram,
+    program: &AcceptedProgram,
     interface: Option<&RootInterface>,
-    mut encoder: Encoder,
+    encoder: Encoder,
 ) -> Result<Vec<u8>> {
     if let Some(interface) = interface {
         check_interface(program, interface)?;
     }
-    let root = encoder.program(program.raw())?;
+    let bytes = encode_proposal(program.raw(), interface, encoder)?;
+    // Public export retains its portable-validity contract. Native
+    // adapters call encode_proposal directly and obtain a fresh native decision.
+    program.kernel().inspect(&bytes, None)?;
+    Ok(bytes)
+}
+
+/// Serialization is an untrusted proposal, never an acceptance result. Keeping
+/// it separate avoids importing an export twice on selected checking paths.
+fn encode_proposal(
+    program: &RawProgram,
+    interface: Option<&RootInterface>,
+    mut encoder: Encoder,
+) -> Result<Vec<u8>> {
+    if let Some(interface) = interface {
+        for tree in [&interface.input, &interface.output] {
+            let mut pending = vec![(tree, 0usize)];
+            let mut nodes = 0;
+            while let Some((tree, depth)) = pending.pop() {
+                nodes += 1;
+                if depth > 32 || nodes > 128 {
+                    return Err(Error::limit(
+                        "proposal type exceeds transport depth/node limits",
+                    ));
+                }
+                match tree {
+                    BasisType::Pair(left, right) => {
+                        pending.extend([(left.as_ref(), depth + 1), (right.as_ref(), depth + 1)])
+                    }
+                    BasisType::Tuple(fields) => {
+                        if fields.len() > 128 {
+                            return Err(Error::limit(
+                                "proposal tuple exceeds transport node limit",
+                            ));
+                        }
+                        pending.extend(fields.iter().map(|field| (field, depth + 1)));
+                    }
+                    BasisType::Unit | BasisType::Bit => {}
+                }
+            }
+        }
+    }
+    let root = encoder.program(program)?;
     if encoder
         .meanings
         .keys()
-        .any(|key| !encoder.seen.contains_key(key))
+        .any(|key| !encoder.canonical_evidence.contains_key(key))
     {
         return Err(Error::format(
             "supplied meaning receipt is not referenced by the program",
         ));
     }
+    finish_proposal(root, interface, encoder)
+}
+
+fn finish_proposal(
+    root: usize,
+    interface: Option<&RootInterface>,
+    mut encoder: Encoder,
+) -> Result<Vec<u8>> {
     let version = encoder.version;
     let interface = match interface {
         Some(i) => Value::object([
@@ -347,10 +424,33 @@ fn export_inner(
         ("root", Value::Number(root as u64)),
         ("root_interface", interface),
     ]);
-    let bytes = json::encode(&value)?;
-    // Export success means the complete artifact meets the same portable limits.
-    import(&bytes, None)?;
-    Ok(bytes)
+    json::encode(&value)
+}
+
+/// Bound recursive transport construction before it starts. This walk does not
+/// inspect ownership, effects, equations or evidence validity; those still go
+/// to the independent checkers. Vector sizes are charged by Codec::write.
+fn proposal_depth(program: &RawProgram) -> Result<()> {
+    let mut pending = vec![(program.operations.as_slice(), 0usize)];
+    let mut nodes = 0;
+    while let Some((operations, depth)) = pending.pop() {
+        if depth > 64 || operations.len() > MAX_NODES - nodes {
+            return Err(Error::limit("proposal exceeds transport depth/node limits"));
+        }
+        nodes += operations.len();
+        for operation in operations {
+            if let crate::ir::RawOp::ClassicalBranch {
+                then_ops, else_ops, ..
+            } = operation
+            {
+                pending.extend([
+                    (then_ops.as_slice(), depth + 1),
+                    (else_ops.as_slice(), depth + 1),
+                ]);
+            }
+        }
+    }
+    Ok(())
 }
 
 fn index(value: &Value, bound: usize) -> Result<usize> {
@@ -578,7 +678,7 @@ fn type_bits(ty: &BasisType) -> Result<usize> {
     Ok(bits)
 }
 
-fn check_interface(program: &VerifiedProgram, interface: &RootInterface) -> Result<()> {
+fn check_interface(program: &AcceptedProgram, interface: &RootInterface) -> Result<()> {
     let raw = program.raw();
     if raw.declared_effect != Effect::Unitary
         || raw.quantum_inputs.len() != 1
@@ -621,84 +721,28 @@ fn meaning(value: &Value, signature: BasisType) -> Result<FiniteMeaning> {
     }
 }
 
-/// Parse, reconstruct every receipt, independently verify every program, and
-/// optionally check the caller's separate mathematical request. No frontend is
-/// called, and source labels never cause filesystem or network access.
+pub(crate) fn function_snapshot_key(
+    signature: &BasisType,
+    implementation: &RawProgram,
+    specification: &RawProgram,
+    identity: (&str, &str, &[(String, String)]),
+) -> Result<Arc<[u8]>> {
+    let mut encoder = Encoder::new(Version::V2);
+    encoder.entries.push(Value::Null);
+    encoder.evidence_fields(0, signature, implementation, specification, identity, None)?;
+    Ok(Arc::from(finish_proposal(0, None, encoder)?))
+}
+
+/// Fresh native acceptance of complete QIRF/request bytes. Source labels are data.
 pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
-    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-    import_with_budget(bytes, request, &mut budget)
+    native::Kernel::selected()?
+        .check(bytes, request)
+        .map(|checked| checked.imported)
 }
 
-/// Internal shared-budget entry for the finite-leaf host. Structural and JSON
-/// bounds are unchanged; exact receipt and request work uses the same budget.
-fn import_with_budget(
-    bytes: &[u8],
-    request: Option<&[u8]>,
-    budget: &mut Budget,
-) -> Result<Imported> {
-    let before = budget.remaining();
-    let value = json::parse(bytes)?;
-    let (program, root_interface, snapshot) = import_value(&value, budget)?;
-    if let Some(bytes) = request {
-        let req = json::parse(bytes).map_err(|e| e.at("/request"))?;
-        req.fields(&[
-            "format",
-            "version",
-            "signature",
-            "meaning",
-            "source_snapshot",
-        ])?;
-        if req.field("format")?.text()? != "qleisli.request" || req.field("version")?.number()? != 1
-        {
-            return Err(Error::format("unknown request format/version"));
-        }
-        let signature = BasisType::read(req.field("signature")?, &Decoder { evidence: &[] })?;
-        let interface = root_interface
-            .as_ref()
-            .ok_or_else(|| Error::new("contract", "request requires retained root type trees"))?;
-        if interface.input != signature || interface.output != signature {
-            return Err(Error::new(
-                "contract",
-                "root type trees do not equal the requested signature",
-            )
-            .at("/root_interface"));
-        }
-        if req.field("source_snapshot")? != &Value::Null
-            && sources(req.field("source_snapshot")?)? != snapshot
-        {
-            return Err(Error::new(
-                "contract",
-                "source snapshot differs from the requested snapshot",
-            )
-            .at("/sources"));
-        }
-        let target = meaning(req.field("meaning")?, signature)?;
-        MeaningEvidence::check(
-            program.raw().clone(),
-            target,
-            FunctionIdentity {
-                implementation: "root".into(),
-                specification: "independent-request".into(),
-                sources: vec![],
-            },
-            budget,
-        )
-        .map_err(|e| contract_error(e).at("/request/meaning"))?;
-    }
-    Ok(Imported {
-        program,
-        root_interface,
-        request_checked: request.is_some(),
-        exact_work: before - budget.remaining(),
-    })
-}
-
-type RootParts = (
-    VerifiedProgram,
-    Option<RootInterface>,
-    Vec<(String, String)>,
-);
-fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
+type RootParts = (RawProgram, Option<RootInterface>, Vec<(String, String)>);
+fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<RootParts> {
+    let value = json::parse(native.artifact())?;
     value.fields(&[
         "format",
         "version",
@@ -737,14 +781,7 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
         if node < programs.len() {
             let pointer = format!("/programs/{node}");
             let raw = RawProgram::read(&programs[node], &decoder).map_err(|e| e.at(&pointer))?;
-            checked[node] = Some(
-                crate::verify::verify_with_budget_classified(raw, budget).map_err(
-                    |(e, limit)| {
-                        Error::new(if limit { "limit" } else { "invalid_ir" }, e.to_string())
-                            .at(pointer)
-                    },
-                )?,
-            );
+            checked[node] = Some(raw);
         } else {
             let i = node - programs.len();
             let entry = &entries[i];
@@ -755,7 +792,6 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                     [index(entry.field("implementation")?, programs.len())?]
                 .as_ref()
                 .expect("topological implementation")
-                .raw()
                 .clone();
                 let identity = identity(
                     entry.field("identity")?,
@@ -769,10 +805,10 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                         [index(entry.field("specification")?, programs.len())?]
                     .as_ref()
                     .expect("topological specification")
-                    .raw()
                     .clone();
                     Ok(Arc::new(
-                        FunctionEvidence::check_retained_diagnostic(
+                        FunctionEvidence::decode_native(
+                            native,
                             signature,
                             implementation,
                             specification,
@@ -782,14 +818,18 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                         .map_err(|diagnostic| contract_error(diagnostic.error))?,
                     ))
                 } else {
-                    Ok(MeaningEvidence::check_retained(
-                        implementation,
-                        meaning(entry.field("meaning")?, signature)?,
-                        identity,
-                        budget,
-                    )
-                    .map_err(contract_error)?
-                    .receipt())
+                    let target = meaning(entry.field("meaning")?, signature.clone())?;
+                    Ok(Arc::new(
+                        FunctionEvidence::decode_native(
+                            native,
+                            signature,
+                            implementation,
+                            target.target_ir().map_err(contract_error)?,
+                            identity,
+                            budget,
+                        )
+                        .map_err(|diagnostic| contract_error(diagnostic.error))?,
+                    ))
                 }
             };
             receipts[i] = Some(make_receipt().map_err(|e| e.at(pointer))?);
@@ -808,7 +848,6 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
                 input: BasisType::read(i.field("input")?, &decoder)?,
                 output: BasisType::read(i.field("output")?, &decoder)?,
             };
-            check_interface(&program, &interface).map_err(|e| e.at("/root_interface"))?;
             Some(interface)
         }
     };
@@ -819,6 +858,14 @@ fn import_value(value: &Value, budget: &mut Budget) -> Result<RootParts> {
 /// V2 meaning entries cannot be converted to V1 by this adapter.
 pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>> {
     import(bytes, None)?;
+    let output = convert_proposal(bytes, version)?;
+    import(&output, None)?;
+    Ok(output)
+}
+
+/// Called only after an original artifact check; output still needs a fresh
+/// check. This transformation cannot manufacture an accepted-program handle.
+fn convert_proposal(bytes: &[u8], version: Version) -> Result<Vec<u8>> {
     let mut value = json::parse(bytes)?;
     let Value::Object(ref mut object) = value else {
         unreachable!()
@@ -848,9 +895,7 @@ pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>> {
     }
     object.insert("version".into(), Value::Number(version.number()));
     object.insert("profile".into(), Value::String(version.profile().into()));
-    let output = json::encode(&value)?;
-    import(&output, None)?;
-    Ok(output)
+    json::encode(&value)
 }
 
 #[cfg(test)]
@@ -1109,3 +1154,5 @@ mod tests {
         );
     }
 }
+
+mod process;

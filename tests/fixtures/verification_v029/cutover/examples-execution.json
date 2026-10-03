@@ -1,0 +1,415 @@
+{
+  "scope": "bounded repository examples; execution and sampling smoke, not independent probability proof",
+  "binaries": {
+    "/Users/masa/git/Qleisli/target/debug/qleisli": "08eca388e8ad97b3e378fc7d0dbfc094e24c7a8a5a4af55d5dfdb0434a67df82",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "c5775845e7cd51b0f187a5ecc4e46b04ce678c53885cd3026c2d57e3cd655475"
+  },
+  "observations": [
+    {
+      "project": "examples/bell",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/bell",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/bell",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[false,false],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6},{\"bits\":[true,true],\"execution_steps\":6}],\"execution_steps\":48}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/bernstein_vazirani",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/bernstein_vazirani",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/bernstein_vazirani",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16},{\"bits\":[true,false],\"execution_steps\":16}],\"execution_steps\":128}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/bit_flip_code",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/bit_flip_code",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true,false,false,false],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/bit_flip_code",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31},{\"bits\":[true,true,false,false,false],\"execution_steps\":31}],\"execution_steps\":248}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/feedback",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/feedback",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.5000000000000001}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/feedback",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":7},{\"bits\":[true,false],\"execution_steps\":8},{\"bits\":[false,false],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":7},{\"bits\":[false,false],\"execution_steps\":7},{\"bits\":[true,false],\"execution_steps\":8},{\"bits\":[true,false],\"execution_steps\":8}],\"execution_steps\":59}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/function_contracts",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/function_contracts",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/function_contracts",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22},{\"bits\":[true,false,true],\"execution_steps\":22}],\"execution_steps\":176}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/grover",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/grover",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/grover",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22},{\"bits\":[true,true],\"execution_steps\":22}],\"execution_steps\":176}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/iterative_phase_estimation",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/iterative_phase_estimation",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,false,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[false,true,false,true],\"probability\":0.0000000000000000000000000000000026302144545229465},{\"bits\":[false,true,true,true],\"probability\":0.000000000000000000000000000000000451273456496633},{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/iterative_phase_estimation",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39},{\"bits\":[true,false,false,true],\"execution_steps\":39}],\"execution_steps\":312}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/operation_algorithms",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/operation_algorithms",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/operation_algorithms",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42}],\"execution_steps\":336}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/operation_contracts",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/operation_contracts",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/operation_contracts",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15},{\"bits\":[true,true],\"execution_steps\":15}],\"execution_steps\":120}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/order_finding",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/order_finding",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2500000000000001},{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,false],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/order_finding",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false,true],\"execution_steps\":52},{\"bits\":[false,false,false],\"execution_steps\":52},{\"bits\":[false,true,true],\"execution_steps\":52},{\"bits\":[false,false,false],\"execution_steps\":52},{\"bits\":[false,false,true],\"execution_steps\":52},{\"bits\":[false,false,true],\"execution_steps\":52},{\"bits\":[false,false,false],\"execution_steps\":52},{\"bits\":[false,true,false],\"execution_steps\":52}],\"execution_steps\":416}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/phase_estimation",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/phase_estimation",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/phase_estimation",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42},{\"bits\":[true,false,false,true],\"execution_steps\":42}],\"execution_steps\":336}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/phase_oracle",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/phase_oracle",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/phase_oracle",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6},{\"bits\":[true],\"execution_steps\":6}],\"execution_steps\":48}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/protocols",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/protocols",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true],\"probability\":0.2500000000000001},{\"bits\":[false,true,true],\"probability\":0.2500000000000001},{\"bits\":[true,false,true],\"probability\":0.2500000000000001},{\"bits\":[true,true,true],\"probability\":0.2500000000000001}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/protocols",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false,true],\"execution_steps\":15},{\"bits\":[true,false,true],\"execution_steps\":16},{\"bits\":[false,false,true],\"execution_steps\":15},{\"bits\":[false,false,true],\"execution_steps\":15},{\"bits\":[true,true,true],\"execution_steps\":17},{\"bits\":[true,true,true],\"execution_steps\":17},{\"bits\":[true,true,true],\"execution_steps\":17},{\"bits\":[false,false,true],\"execution_steps\":15}],\"execution_steps\":127}}\n",
+          "stderr": ""
+        }
+      ]
+    },
+    {
+      "project": "examples/semantic_contracts",
+      "observations": [
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "run",
+            "/Users/masa/git/Qleisli/examples/semantic_contracts",
+            "--format=json"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,true],\"probability\":1}]}}\n",
+          "stderr": ""
+        },
+        {
+          "command": [
+            "/Users/masa/git/Qleisli/target/debug/qleisli",
+            "sample",
+            "/Users/masa/git/Qleisli/examples/semantic_contracts",
+            "--format=json",
+            "--shots=8",
+            "--seed=7"
+          ],
+          "exit_code": 0,
+          "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18},{\"bits\":[true,false,true],\"execution_steps\":18}],\"execution_steps\":144}}\n",
+          "stderr": ""
+        }
+      ]
+    }
+  ]
+}

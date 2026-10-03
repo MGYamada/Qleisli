@@ -4,6 +4,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 Numerical comparisons do not issue evidence or prove runtime correspondence.
 """
+import native_harness
 import argparse
 import cmath
 import copy
@@ -129,8 +130,6 @@ def schema_cases():
 def native(cases, log):
     with tempfile.TemporaryDirectory(prefix="qleisli-qpe-native-") as directory:
         project=Path(directory)
-        (project/"lean-toolchain").write_text((ROOT/"lean-kernel/lean-toolchain").read_text())
-        (project/"lakefile.toml").write_text('name = "qpe_test"\nversion = "0.0.0"\ndefaultTargets = ["qpe-test"]\n[[require]]\nname = "qleisli_kernel"\npath = '+json.dumps(str(ROOT/"lean-kernel"))+'\n[[lean_exe]]\nname = "qpe-test"\nroot = "Main"\n')
         rows=[plan_literal(item) for _,item,_ in cases]
         schemas=schema_cases()
         schema_rows=[f'({request}, {proposal})' for _,request,proposal,_ in schemas]
@@ -164,10 +163,7 @@ def main : IO Unit := do
   for (request,proposal) in schemaCases do
     IO.println ("schema:" ++ toString (Schema.check request proposal).isSome)
 ''')
-        build=subprocess.run(["lake","build"],cwd=project,capture_output=True,text=True,timeout=240)
-        log.append(dict(command=["lake","build"],cwd="temporary native QPE harness",exit=build.returncode,stdout=build.stdout,stderr=build.stderr))
-        assert build.returncode==0,build.stdout+build.stderr
-        binary=project/".lake/build/bin/qpe-test"
+        binary = native_harness.build(project, log)
         run=subprocess.run([str(binary)],capture_output=True,text=True,timeout=30)
         log.append(dict(command=["qpe-test"],exit=run.returncode,stderr=run.stderr,executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))
         assert run.returncode==0,run.stderr

@@ -13,7 +13,7 @@ use std::sync::Arc;
 use super::ast::*;
 use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{ImportOrigin, Project, SourcePolicy};
-use crate::{VerifiedProgram, ir::Effect};
+use crate::{AcceptedProgram, ir::Effect};
 
 const MAX_BITS: usize = 12;
 const MAX_WORK: usize = 1_000_000;
@@ -222,10 +222,11 @@ impl BasisFunction {
 }
 
 struct Compiler<'a> {
+    kernel: crate::interchange::native::Kernel,
     project: &'a Project,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
-    checked: BTreeMap<Key, VerifiedProgram>,
+    checked: BTreeMap<Key, AcceptedProgram>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
@@ -721,7 +722,7 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
 /// Load and check every declaration, lower `main::main`, then independently
 /// verify the generated IR. Public, mutable AST/import records are not trusted
 /// inputs to this API; compilation always starts from the source root.
-pub fn compile_project(root: &Path) -> Result<VerifiedProgram, CompileError> {
+pub fn compile_project(root: &Path) -> Result<AcceptedProgram, CompileError> {
     Ok(process_project(root, true)?.expect("required entry was compiled"))
 }
 
@@ -734,7 +735,7 @@ pub fn check_project(root: &Path) -> Result<(), CompileError> {
 fn process_project(
     root: &Path,
     require_entry: bool,
-) -> Result<Option<VerifiedProgram>, CompileError> {
+) -> Result<Option<AcceptedProgram>, CompileError> {
     let project = Project::load_detailed(root).map_err(|failure| {
         let (line, column) = failure.coordinates.unwrap_or((1, 1));
         CompileError {
@@ -757,14 +758,14 @@ pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic> {
 
 /// Compile through the same source and independent IR checks as `compile_project`,
 /// retaining structured diagnostics without interpreting human-readable messages.
-pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic> {
+pub fn compile_project_diagnostic(root: &Path) -> Result<AcceptedProgram, Diagnostic> {
     Ok(process_project_diagnostic(root, true)?.expect("required entry was compiled"))
 }
 
 fn process_project_diagnostic(
     root: &Path,
     require_entry: bool,
-) -> Result<Option<VerifiedProgram>, Diagnostic> {
+) -> Result<Option<AcceptedProgram>, Diagnostic> {
     process_project_with_policy(root, require_entry, SourcePolicy::Legacy)
 }
 
@@ -777,21 +778,81 @@ pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<()
 pub fn compile_project_with_policy(
     root: &Path,
     policy: SourcePolicy,
-) -> Result<VerifiedProgram, Diagnostic> {
+) -> Result<AcceptedProgram, Diagnostic> {
     Ok(process_project_with_policy(root, true, policy)?.expect("required entry was compiled"))
+}
+
+/// Check all executable declarations through the selected native kernel,
+/// including libraries without `main`.
+/// Symbolic generic declarations remain frontend checks until instantiated.
+pub fn check_project_with_kernel(
+    root: &Path,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<(), Diagnostic> {
+    process_project_with_kernel(root, false, policy, kernel).map(|_| ())
+}
+
+/// Compile after native checking every concrete function, including unused
+/// declarations. The returned entry is reconstructed from accepted bytes.
+pub fn compile_project_with_kernel(
+    root: &Path,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<AcceptedProgram, Diagnostic> {
+    Ok(process_project_with_kernel(root, true, policy, kernel)?
+        .expect("required entry was compiled"))
+}
+
+fn process_project_with_kernel(
+    root: &Path,
+    require_entry: bool,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<Option<AcceptedProgram>, Diagnostic> {
+    let project = Project::load_detailed_with_policy(root, policy)
+        .map_err(|failure| failure.into_diagnostic())?;
+    process_loaded_project_with_kernel(root, &project, require_entry, Some(kernel))
+        .map_err(Diagnostic::from_compile)
 }
 
 fn process_project_with_policy(
     root: &Path,
     require_entry: bool,
     policy: SourcePolicy,
-) -> Result<Option<VerifiedProgram>, Diagnostic> {
+) -> Result<Option<AcceptedProgram>, Diagnostic> {
     let project = Project::load_detailed_with_policy(root, policy)
         .map_err(|failure| failure.into_diagnostic())?;
     process_loaded_project(root, &project, require_entry).map_err(Diagnostic::from_compile)
 }
 
 impl super::project::QrateSource {
+    /// Selected native checking retains this qrate's pinned source identity.
+    pub fn check_with_kernel(
+        &self,
+        policy: SourcePolicy,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<(), Diagnostic> {
+        let project = self.load_with_policy(policy)?;
+        process_loaded_project_with_kernel(self.path(), &project, false, Some(kernel))
+            .map(|_| ())
+            .map_err(Diagnostic::from_compile)
+    }
+
+    /// Compile every concrete declaration through the selected kernel.
+    pub fn compile_with_kernel(
+        &self,
+        policy: SourcePolicy,
+        kernel: &crate::interchange::native::Kernel,
+    ) -> Result<AcceptedProgram, Diagnostic> {
+        let project = self.load_with_policy(policy)?;
+        Ok(
+            process_loaded_project_with_kernel(self.path(), &project, true, Some(kernel))
+                .map_err(Diagnostic::from_compile)?
+                .expect("required entry was compiled"),
+        )
+    }
+
     /// Check every declaration in the selected qrate, retaining its root identity.
     pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic> {
         let project = self.load_with_policy(policy)?;
@@ -801,7 +862,7 @@ impl super::project::QrateSource {
     }
 
     /// Compile the selected qrate through the same independent source/IR checks.
-    pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic> {
+    pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic> {
         let project = self.load_with_policy(policy)?;
         Ok(process_loaded_project(self.path(), &project, true)
             .map_err(Diagnostic::from_compile)?
@@ -813,7 +874,16 @@ fn process_loaded_project(
     root: &Path,
     project: &Project,
     require_entry: bool,
-) -> Result<Option<VerifiedProgram>, CompileError> {
+) -> Result<Option<AcceptedProgram>, CompileError> {
+    process_loaded_project_with_kernel(root, project, require_entry, None)
+}
+
+fn process_loaded_project_with_kernel(
+    root: &Path,
+    project: &Project,
+    require_entry: bool,
+    kernel: Option<&crate::interchange::native::Kernel>,
+) -> Result<Option<AcceptedProgram>, CompileError> {
     let declarations = project
         .modules
         .iter()
@@ -825,7 +895,20 @@ fn process_loaded_project(
                 .map(move |decl| ((module.clone(), decl.name.text.clone()), decl))
         })
         .collect();
+    let kernel = kernel
+        .cloned()
+        .map(Ok)
+        .unwrap_or_else(crate::interchange::native::Kernel::selected)
+        .map_err(|error| CompileError {
+            code: ErrorCode::Project,
+            path: root.into(),
+            span: Span::default(),
+            line: 1,
+            column: 1,
+            message: error.to_string(),
+        })?;
     let mut compiler = Compiler {
+        kernel,
         project,
         declarations,
         basis: BTreeMap::new(),
@@ -934,6 +1017,7 @@ mod snapshot_tests {
 
     fn compiler(project: &Project) -> Compiler<'_> {
         Compiler {
+            kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
             project,
             declarations: BTreeMap::new(),
             basis: BTreeMap::new(),

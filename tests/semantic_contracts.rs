@@ -1,5 +1,7 @@
 //! Exact finite contract checks against independently specified operators.
 
+mod common;
+use common::accept;
 use qleisli::contract::exact::{Budget, Exact, ExactError, Matrix};
 use qleisli::contract::{
     BasisType, CheckedContract, Circuit, Contract, ContractError, DEFAULT_EXACT_WORK, Encoding,
@@ -9,10 +11,93 @@ use qleisli::ir::{
     BasisShape, BitControl, CircuitAction, CircuitStep, Effect, QuantumPort, RawOp, RawProgram,
     TokenId, WireId,
 };
-use qleisli::verify;
 
 fn work() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)
+}
+
+#[test]
+fn impossible_circuit_shapes_are_not_capacity_failures() {
+    for step in [
+        CircuitStep {
+            controls: vec![
+                BitControl {
+                    index: 0,
+                    when_one: true
+                };
+                2
+            ],
+            action: CircuitAction::Hadamard { target: 0 },
+        },
+        CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![0, 0],
+                permutation: vec![0, 1, 2, 3],
+                phases: vec![0; 4],
+            },
+        },
+        CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![0],
+                permutation: vec![0, 1, 0],
+                phases: vec![0; 2],
+            },
+        },
+        CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![0],
+                permutation: vec![0, 1],
+                phases: vec![0; 3],
+            },
+        },
+    ] {
+        assert!(matches!(
+            Circuit::new(BasisType::Bit, vec![step]),
+            Err(ContractError::InvalidCircuit(_))
+        ));
+    }
+    let step = CircuitStep {
+        controls: vec![],
+        action: CircuitAction::Hadamard { target: 0 },
+    };
+    assert!(matches!(
+        Circuit::new(BasisType::Bit, vec![step; MAX_CONTRACT_STEPS + 1]),
+        Err(ContractError::Limit(_))
+    ));
+    // Original #264 scenario: malformed raw CertifiedCompute is classified by
+    // the native checker, without a Rust Circuit constructor as an oracle.
+    let raw = RawProgram {
+        quantum_inputs: vec![QuantumPort {
+            token: TokenId(0),
+            wires: vec![WireId(0)],
+            shape: BasisShape::BIT,
+        }],
+        classical_inputs: vec![],
+        operations: vec![RawOp::CertifiedCompute {
+            source: TokenId(0),
+            source_out: TokenId(1),
+            ancilla_wires: vec![WireId(1)],
+            function: vec![0, 1],
+            use_steps: vec![CircuitStep {
+                controls: vec![
+                    BitControl {
+                        index: 0,
+                        when_one: true
+                    };
+                    3
+                ],
+                action: CircuitAction::Hadamard { target: 1 },
+            }],
+            logical_steps: vec![],
+        }],
+        quantum_outputs: vec![TokenId(1)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    assert_eq!(accept(raw).unwrap_err().code, "invalid_ir");
 }
 
 fn pair() -> BasisType {
@@ -171,20 +256,24 @@ fn computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate() {
 #[test]
 fn encodings_and_logical_maps_must_be_isometric() {
     let repeated_columns = matrix(2, 2, |row, _| Exact::integer(i128::from(row == 0)));
-    assert_eq!(
-        Encoding::new(
-            BasisType::Bit,
-            BasisType::Bit,
-            repeated_columns.clone(),
+    let bad_encoding = Encoding::new(
+        BasisType::Bit,
+        BasisType::Bit,
+        repeated_columns.clone(),
+        &mut work(),
+    )
+    .unwrap();
+    assert!(CheckedContract::identity(bad_encoding).is_err());
+    let encoding = Encoding::identity(BasisType::Bit).unwrap();
+    let proposed =
+        Contract::new(encoding.clone(), encoding, repeated_columns, &mut work()).unwrap();
+    assert!(
+        CheckedContract::check(
+            Circuit::new(BasisType::Bit, vec![]).unwrap(),
+            proposed,
             &mut work()
         )
-        .unwrap_err(),
-        ContractError::NotIsometric
-    );
-    let encoding = Encoding::identity(BasisType::Bit).unwrap();
-    assert_eq!(
-        Contract::new(encoding.clone(), encoding, repeated_columns, &mut work()).unwrap_err(),
-        ContractError::NotIsometric
+        .is_err()
     );
     assert!(matches!(
         Encoding::new(BasisType::Unit, BasisType::Bit, flip(), &mut work()),
@@ -461,7 +550,16 @@ fn malformed_circuits_never_become_checked_evidence() {
         monomial(&[0], &[0, 1], &[0]),
         monomial(&[0], &[0, 1], &[0, 8]),
     ] {
-        assert!(Circuit::new(pair(), vec![step]).is_err());
+        if let Ok(proposal) = Circuit::new(pair(), vec![step]) {
+            assert!(
+                CheckedContract::check(
+                    proposal,
+                    meaning(pair(), Matrix::identity(4).unwrap()),
+                    &mut work()
+                )
+                .is_err()
+            );
+        }
     }
 }
 
@@ -558,43 +656,43 @@ fn certified_program(
 #[test]
 fn raw_ir_rechecks_actual_predicate_body_and_logical_evidence() {
     let good = certified_program(1, vec![0, 1], vec![x(0), x(1)], vec![x(0)]);
-    verify(good.clone()).unwrap();
+    accept(good.clone()).unwrap();
     let mut changed_body = good.clone();
     if let RawOp::CertifiedCompute { use_steps, .. } = &mut changed_body.operations[0] {
         *use_steps = vec![x(1)];
     }
     assert!(
-        verify(changed_body)
+        accept(changed_body)
             .unwrap_err()
             .message
-            .contains("semantic contract")
+            .contains("Lean native checker rejected")
     );
     let mut changed_meaning = good.clone();
     if let RawOp::CertifiedCompute { logical_steps, .. } = &mut changed_meaning.operations[0] {
         logical_steps.clear();
     }
     assert!(
-        verify(changed_meaning)
+        accept(changed_meaning)
             .unwrap_err()
             .message
-            .contains("semantic contract")
+            .contains("Lean native checker rejected")
     );
     let mut changed_predicate = good;
     if let RawOp::CertifiedCompute { function, .. } = &mut changed_predicate.operations[0] {
         *function = vec![0, 0];
     }
     assert!(
-        verify(changed_predicate)
+        accept(changed_predicate)
             .unwrap_err()
             .message
-            .contains("semantic contract")
+            .contains("Lean native checker rejected")
     );
 }
 
 #[test]
 fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
     let leakage = certified_program(1, vec![0, 1], vec![x(1)], vec![]);
-    let error = verify(leakage).unwrap_err();
+    let error = accept(leakage).unwrap_err();
     assert!(
         error
             .message
@@ -603,7 +701,7 @@ fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
     assert!(error.message.contains("actual 0, expected 1"));
 
     let phase_error = certified_program(1, vec![0, 1], vec![phase(1, 1)], vec![phase(0, 4)]);
-    let error = verify(phase_error).unwrap_err();
+    let error = accept(phase_error).unwrap_err();
     assert!(
         error
             .message
@@ -619,22 +717,22 @@ fn raw_ir_contract_diagnostic_identifies_an_exact_counterexample() {
 #[test]
 fn raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires() {
     let good = certified_program(0, vec![0], vec![h(0), h(0)], vec![]);
-    verify(good.clone()).unwrap();
+    accept(good.clone()).unwrap();
     let mut lost_owner = good.clone();
     lost_owner.quantum_outputs.clear();
     assert!(
-        verify(lost_owner)
+        accept(lost_owner)
             .unwrap_err()
             .message
-            .contains("ownership")
+            .contains("Lean native checker rejected")
     );
     let mut duplicated_owner = good.clone();
     duplicated_owner.quantum_outputs.push(TokenId(1));
     assert!(
-        verify(duplicated_owner)
+        accept(duplicated_owner)
             .unwrap_err()
             .message
-            .contains("twice")
+            .contains("Lean native checker rejected")
     );
     let mut reused_source = good;
     reused_source.operations.push(RawOp::ApplyUnitary {
@@ -642,15 +740,15 @@ fn raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires() {
         output: TokenId(2),
         steps: vec![],
     });
-    assert!(verify(reused_source).is_err());
+    assert!(accept(reused_source).is_err());
     let mut reused_wire = certified_program(1, vec![0, 1], vec![], vec![]);
     if let RawOp::CertifiedCompute { ancilla_wires, .. } = &mut reused_wire.operations[0] {
         *ancilla_wires = vec![WireId(0)];
     }
-    assert!(verify(reused_wire).is_err());
+    assert!(accept(reused_wire).is_err());
     let mut missing_wire = certified_program(1, vec![0, 1], vec![], vec![]);
     if let RawOp::CertifiedCompute { ancilla_wires, .. } = &mut missing_wire.operations[0] {
         ancilla_wires.clear();
     }
-    assert!(verify(missing_wire).is_err());
+    assert!(accept(missing_wire).is_err());
 }

@@ -1,5 +1,5 @@
 //! Classical postprocessing, separate from `.qli` quantum operations.
-//! These routines cannot create or bypass a [`crate::VerifiedProgram`].
+//! These routines cannot create or bypass a [`crate::AcceptedProgram`].
 
 use std::fmt;
 

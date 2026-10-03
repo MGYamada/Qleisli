@@ -19,7 +19,7 @@ class CIProfiles(unittest.TestCase):
 
     def test_only_explicit_descriptive_documents_and_publication_records_are_light(self):
         for path in self.policy["documentation_only"] + [
-            "docs/releases/v0.2.6.md", "tests/fixtures/releases/v0.2.5/publication.json",
+            "tests/fixtures/releases/v0.2.5/publication.json",
             "tests/fixtures/ci_latency/measurements.json",
         ]:
             with self.subTest(path=path):
@@ -27,7 +27,7 @@ class CIProfiles(unittest.TestCase):
 
     def test_normative_protected_executable_and_unknown_inputs_are_full(self):
         for path in [
-            "TRUST_BOUNDARY.md", "CONSTITUTION.md", ".github/ci/protected-artifacts.json",
+            "TRUSTBOUNDARY.md", "CONSTITUTION.md", ".github/ci/protected-artifacts.json",
             ".github/ci/profiles.json", ".github/workflows/ci.yml", "Cargo.toml", "Cargo.lock",
             "README.crates.md", "LICENSE", "NOTICE", "docs/type-system.md", "docs/syntax-v0.md",
             "docs/release-milestones.md", "docs/finite-contracts.md", "src/verify.rs",
@@ -43,7 +43,7 @@ class CIProfiles(unittest.TestCase):
         self.assertEqual(classify([], self.policy)[0], "full")
         broadened = copy.deepcopy(self.policy)
         protected = ["src/verify.rs", ".github/ci/profiles.json", "Cargo.toml", "LICENSE",
-                     "docs/type-system.md", "CONSTITUTION.md", "tests/proof.lean"]
+                     "docs/type-system.md", "CONSTITUTION.md", "TRUSTBOUNDARY.md", "tests/proof.lean"]
         broadened["documentation_only"] += protected
         for path in protected:
             self.assertEqual(classify([path], broadened)[0], "full")
@@ -86,8 +86,11 @@ class CIProfiles(unittest.TestCase):
             (["lean-kernel/Protocol/HierarchicalFinite.lean"], "tests"),
             (["corpus/manifest.json"], "tests"),
             (["lean/Qleisli/RawPure.lean"], "model"),
-            (["docs/type-system.md"], "model"),
+            (["docs/type-system.md"], "full"),
+            (["TRUSTBOUNDARY.md"], "full"),
             (["lean/lean-toolchain"], "full"), ([".github/workflows/ci.yml"], "full"),
+            (["TRUSTBOUNDARY.md"], "full"),
+            (["AGENTS.md", "CLAUDE.md"], "tests"),
             (["scripts/check_schema_registry.py"], "full"),
             (["scripts/package_lean_kernel.py"], "full"),
             (["new/unknown.rs"], "full"), (["../src/new.rs"], "full"),
