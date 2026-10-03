@@ -358,7 +358,8 @@ impl Compiler<'_> {
         );
         let budget = &mut self.exact_work;
         let evidence = if let Some(mkey) = &mkey {
-            MeaningEvidence::check_retained(
+            MeaningEvidence::check_retained_with_kernel(
+                &self.kernel,
                 implementation,
                 self.meanings[mkey].target.clone(),
                 identity,
@@ -366,7 +367,8 @@ impl Compiler<'_> {
             )
             .map(|e| e.receipt())
         } else {
-            FunctionEvidence::check_retained_diagnostic(
+            FunctionEvidence::check_retained_with_kernel(
+                &self.kernel,
                 contract_basis(basis),
                 implementation.clone(),
                 implementation,

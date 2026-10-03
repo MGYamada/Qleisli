@@ -4,6 +4,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 The internal matcher is not an enabled external QFT schema.
 """
+import native_harness
 import argparse
 import cmath
 import hashlib
@@ -54,11 +55,6 @@ def symbolic_path(result, width, input_value, choices):
 def native(cases, log, semantic=False):
     with tempfile.TemporaryDirectory(prefix="qleisli-qft-native-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text(
-            'name = "qft_test"\nversion = "0.0.0"\ndefaultTargets = ["qft-test"]\n'
-            '[[require]]\nname = "qleisli_kernel"\npath = ' + json.dumps(str(ROOT / "lean-kernel")) +
-            '\n[[lean_exe]]\nname = "qft-test"\nroot = "Main"\n')
         rows = [f"({width}, {literal(word)}, {json.dumps(axes)})" for width, word, axes in cases]
         source = '''import QleisliKernel.Qft
 open QleisliKernel
@@ -81,11 +77,7 @@ def main : IO Unit := do
         if semantic:
             source = source.replace("Qft.matchCircuit", "Qft.matchCompiledCircuit")
         (project / "Main.lean").write_text(source)
-        build = subprocess.run(["lake", "build"], cwd=project, capture_output=True, text=True, timeout=180)
-        log.append(dict(command=["lake", "build"], cwd="temporary native QFT harness",
-                        exit=build.returncode, stdout=build.stdout, stderr=build.stderr))
-        assert build.returncode == 0, build.stdout + build.stderr
-        binary = project / ".lake/build/bin/qft-test"
+        binary = native_harness.build(project, log)
         run = subprocess.run([str(binary)], capture_output=True, text=True, timeout=15)
         log.append(dict(command=["qft-test"], exit=run.returncode, stderr=run.stderr,
                         executable_sha256=hashlib.sha256(binary.read_bytes()).hexdigest()))

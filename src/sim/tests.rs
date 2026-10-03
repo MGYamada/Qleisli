@@ -20,6 +20,7 @@ fn work() -> Budget {
 
 fn execution_budget() -> ExecutionBudget {
     ExecutionBudget {
+        copied_entries: 0,
         remaining: 1_000_000,
         max: 1_000_000,
     }
@@ -210,6 +211,7 @@ fn assert_qif_matches_independent_extraction(
         // phase, wrong control polarity, and incorrect local axis remapping.
         if column == 0 {
             let mut insufficient = ExecutionBudget {
+                copied_entries: 0,
                 remaining: cost - 1,
                 max: cost - 1,
             };
@@ -225,6 +227,7 @@ fn assert_qif_matches_independent_extraction(
         }
         let allocation = state.amplitudes.as_ptr();
         let mut budget = ExecutionBudget {
+            copied_entries: 0,
             remaining: cost,
             max: cost,
         };
@@ -389,7 +392,14 @@ fn certified_cleanup_alarm_is_relative_and_preserves_numerical_mass() {
     for scale in [1.0, 1e-20] {
         let dirty = auxiliary_component(Complex::ZERO, Complex::ONE.scaled(scale));
         assert!(matches!(
-            dirty.remove_certified_zero(WireId(7)),
+            dirty.remove_certified_zero(
+                WireId(7),
+                &mut ExecutionBudget {
+                    copied_entries: 0,
+                    remaining: 100,
+                    max: 100
+                }
+            ),
             Err(SimulationError::InconsistentVerifiedIr(
                 "certified auxiliary has nonzero numerical leakage"
             ))
@@ -398,7 +408,14 @@ fn certified_cleanup_alarm_is_relative_and_preserves_numerical_mass() {
     let zero = Complex { re: 0.2, im: -0.3 };
     let tiny = Complex { re: 1e-14, im: 0.0 };
     let cleaned = auxiliary_component(zero, tiny)
-        .remove_certified_zero(WireId(7))
+        .remove_certified_zero(
+            WireId(7),
+            &mut ExecutionBudget {
+                copied_entries: 0,
+                remaining: 100,
+                max: 100,
+            },
+        )
         .unwrap();
     assert!(cleaned.axes.is_empty());
     assert_eq!(cleaned.amplitudes[0].re, zero.re);
@@ -406,7 +423,14 @@ fn certified_cleanup_alarm_is_relative_and_preserves_numerical_mass() {
     assert_eq!(cleaned.weight(), zero.norm_squared());
     assert_eq!(
         auxiliary_component(Complex::ZERO, Complex::ZERO)
-            .remove_certified_zero(WireId(7))
+            .remove_certified_zero(
+                WireId(7),
+                &mut ExecutionBudget {
+                    copied_entries: 0,
+                    remaining: 100,
+                    max: 100
+                }
+            )
             .unwrap()
             .weight(),
         0.0
@@ -424,7 +448,14 @@ fn certified_cleanup_alarm_is_relative_and_preserves_numerical_mass() {
         ] {
             for (zero, one) in [(amplitude, Complex::ZERO), (Complex::ZERO, amplitude)] {
                 assert!(matches!(
-                    auxiliary_component(zero, one).remove_certified_zero(WireId(7)),
+                    auxiliary_component(zero, one).remove_certified_zero(
+                        WireId(7),
+                        &mut ExecutionBudget {
+                            copied_entries: 0,
+                            remaining: 100,
+                            max: 100
+                        }
+                    ),
                     Err(SimulationError::InconsistentVerifiedIr(_))
                 ));
             }
@@ -445,7 +476,14 @@ fn certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries() {
                 let dirty = auxiliary_component(kept.scaled(scale), leaked.scaled(scale * ratio));
                 assert!(
                     matches!(
-                        dirty.remove_certified_zero(WireId(7)),
+                        dirty.remove_certified_zero(
+                            WireId(7),
+                            &mut ExecutionBudget {
+                                copied_entries: 0,
+                                remaining: 100,
+                                max: 100
+                            }
+                        ),
                         Err(SimulationError::InconsistentVerifiedIr(
                             "certified auxiliary has nonzero numerical leakage"
                         ))
@@ -456,7 +494,14 @@ fn certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries() {
             for ratio in [0.0, 5e-7] {
                 let zero = kept.scaled(scale);
                 let cleaned = auxiliary_component(zero, leaked.scaled(scale * ratio))
-                    .remove_certified_zero(WireId(7))
+                    .remove_certified_zero(
+                        WireId(7),
+                        &mut ExecutionBudget {
+                            copied_entries: 0,
+                            remaining: 100,
+                            max: 100,
+                        },
+                    )
                     .unwrap();
                 assert!(cleaned.axes.is_empty());
                 assert_eq!(cleaned.amplitudes.len(), 1);
@@ -470,7 +515,14 @@ fn certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries() {
     let smallest = f64::from_bits(1);
     let dirty = auxiliary_component(Complex::ZERO, Complex::ONE.scaled(smallest));
     assert!(matches!(
-        dirty.remove_certified_zero(WireId(7)),
+        dirty.remove_certified_zero(
+            WireId(7),
+            &mut ExecutionBudget {
+                copied_entries: 0,
+                remaining: 100,
+                max: 100
+            }
+        ),
         Err(SimulationError::InconsistentVerifiedIr(
             "certified auxiliary has nonzero numerical leakage"
         ))
@@ -579,7 +631,10 @@ fn physical_raw_auxiliary_execution_agrees_with_extracted_contracts() {
         let physical = evidence.implementation();
         // Validation is independent of the test-only ability to execute an
         // open raw function on a supplied vector.
-        crate::verify(physical.clone()).unwrap();
+        crate::interchange::native::Kernel::selected()
+            .unwrap()
+            .accept_raw(physical.clone())
+            .unwrap();
         let contracted = Circuit::new(
             basis(2),
             vec![CircuitStep {
@@ -682,10 +737,13 @@ fn certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup()
     let mut invalid = evidence.implementation().clone();
     invalid.operations[1] = operation.clone();
     assert!(
-        crate::verify(invalid).is_err(),
+        crate::interchange::native::Kernel::selected()
+            .unwrap()
+            .accept_raw(invalid)
+            .is_err(),
         "exact verification must reject before execution"
     );
-    // Fault injection bypasses the public VerifiedProgram boundary only in
+    // Fault injection bypasses the public AcceptedProgram boundary only in
     // this private test, to make the runtime alarm reachable.
     let state = Component {
         axes: vec![WireId(10), WireId(20)],

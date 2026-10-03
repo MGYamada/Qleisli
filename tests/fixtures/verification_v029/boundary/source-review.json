@@ -1,0 +1,418 @@
+{
+  "scope": "Compatible VM29 selected public paths; no default authority/schema/capacity change",
+  "sources": [
+    {
+      "path": "lean-kernel/QleisliKernel.lean",
+      "previous_sha256": "b9bab994083c571a695792ff02a6f60c493ea1573db988b74a70777eef82ac41",
+      "sha256": "de3367514e57f77e9ac86a4f9a7bba2954de0eac047143eb113f4b21f540de58",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "lean/Qleisli/NativeValidity.lean",
+      "previous_sha256": "845e50fc3628b80b2ec8e783aa380e274dcf67bd2a307fbe625324809dc21c67",
+      "sha256": "42bc339072dc89df5b0f6fd08b458153da5b492ba01d12fd22a27ea3405881e5",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "lean/Qleisli/QirfValidity.lean",
+      "previous_sha256": "8e6a6300fabe1791223df9227e5b962fdb466691e663b2eb3de26fcd9877011b",
+      "sha256": "9813f7f221321b2515c693d4c2f76e46af9115604556f74a6822c6215d56c409",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "python/qleisli/__init__.py",
+      "previous_sha256": "32f8b2e2c71c39d5ee5fd79c004ed97d1d2df601df024dd59d158499e94bdbe5",
+      "sha256": "fcc8837550a505bc37d9f85b05c5659f06e9e27d9d78fdb3d088a3b86bb590e6",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "python/qleisli/__main__.py",
+      "previous_sha256": "1558439ab64c3961aff9d68dd4a452cb97401bc068ed5f186701f6dd5a185d9e",
+      "sha256": "7c0ca09223cb98192ca4e5a16b330685b2cee43debb0d8576acbd40fc8bffb5a",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli.rs",
+      "previous_sha256": "eb9f7139629d0a43fd6d2dadd9907a16c2da5ea95c2df2c7b8e11942a072934a",
+      "sha256": "2153f4e00ed10d533a99f9f5fe01b18cc9091c1cd9c99a7a1beeb5d8e5e7b9ed",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/artifacts.rs",
+      "previous_sha256": "5b0139862ac62bf9d5d16d4c8c3699921f1fc97f217442e906c3a0f95898497f",
+      "sha256": "45fdc5a15eb697589367129021ed9d0a4a44c9fafe6532f16032f313800fa8f8",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/interop.rs",
+      "previous_sha256": "ffa13820fee50814dcd3ecfc08b677fe1fa36155d08ae5d175754df14eca5579",
+      "sha256": "669443e56cf7f276efe0a4652b493f6807583199f0e9cf45a6c093d061768df3",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/json.rs",
+      "previous_sha256": "bfeff4762aa301c16800c8dbe785691e5b5631c84931076537708d60cb3e937d",
+      "sha256": "b71400b838aac87d1a43391a630f611e27b83dd1d3196257e878edbdc0789481",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/options.rs",
+      "previous_sha256": "16c805ebcd584dd8b86c844e5bacb2cda2fe9d84dddf14745f72187d09fee54d",
+      "sha256": "1ca882b870e6aa35792a23d316a6cdfb2acb9e9b3a3aeb248ffe5d45c7b9ea8f",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/sized.rs",
+      "previous_sha256": "1ea6fa657a515058ee3856fc8175134900e8e776249fa244f6b7eeb41c5a1bb0",
+      "sha256": "078ba451eb4d2ec19da7d19825e29759ae967f9879de7c19971681fbfa6da0d2",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/bin/qleisli/source_commands.rs",
+      "previous_sha256": "9bdd8521b83ba4d66a344efb0dac54c876e33777f3b216d92e8435e6b2d5dcc2",
+      "sha256": "da3364cae04ede3dcd72f0e86d9d5aff4610c81c3cefce395e0095fe7321ee08",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "previous_sha256": "cc6a4c986e52ae98ca7695b921430707b815dca339bed106fae4b38bd32fc6e9",
+      "sha256": "488f0aca4e101cb6b69f5ea91bdb7521b3f0312b591aaab26cb01e01aba37fb6",
+      "public_surface_changed": true,
+      "old_surface": {
+        "declarations": [
+          "CompileError",
+          "ErrorCode"
+        ],
+        "functions": [
+          "pub fn check_project(root: &Path) -> Result<(), CompileError>",
+          "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn compile_project(root: &Path) -> Result<VerifiedProgram, CompileError>",
+          "pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic>"
+        ],
+        "capacity_constants": [
+          "const MAX_BITS: usize = 12;",
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_TREE_DEPTH: usize = 64;",
+          "const MAX_TREE_NODES: usize = 4096;",
+          "const MAX_WORK: usize = 1_000_000;"
+        ]
+      },
+      "new_surface": {
+        "declarations": [
+          "CompileError",
+          "ErrorCode"
+        ],
+        "functions": [
+          "pub fn check_project(root: &Path) -> Result<(), CompileError>",
+          "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::dual::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::dual::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn compile_project(root: &Path) -> Result<VerifiedProgram, CompileError>",
+          "pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::dual::Kernel, ) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::dual::Kernel, ) -> Result<VerifiedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic>"
+        ],
+        "capacity_constants": [
+          "const MAX_BITS: usize = 12;",
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_TREE_DEPTH: usize = 64;",
+          "const MAX_TREE_NODES: usize = 4096;",
+          "const MAX_WORK: usize = 1_000_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "previous_sha256": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+      "sha256": "243cb6120bab732c11e5ff822274dd2835eab0fcd5520998bf684d7df3ee8aeb",
+      "public_surface_changed": true,
+      "old_surface": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/dual.rs",
+      "previous_sha256": "0ebb58044adcbb7e81cc9719219086986c6f1188a76a8956f12ba4f69150d87d",
+      "sha256": "1b3d1bd9351b6684de25a779b31f384798a544045d4d9b6e9f118a42750fb297",
+      "public_surface_changed": true,
+      "old_surface": {
+        "declarations": [
+          "Checked",
+          "Kernel"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn into_program(self) -> VerifiedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn request(&self) -> Option<&[u8]>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "Checked",
+          "Kernel",
+          "NativeChecked"
+        ],
+        "functions": [
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn check_program(&self, program: &VerifiedProgram) -> Result<Checked>",
+          "pub fn check_raw( &self, program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn check_with_meanings( &self, program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[crate::contract::meaning::MeaningEvidence], request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn convert( &self, artifact: &[u8], version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn inspect(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<NativeChecked>",
+          "pub fn into_program(self) -> VerifiedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn verify(&self, program: &RawProgram) -> Result<Checked>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/hierarchical.rs",
+      "previous_sha256": "e37f3e59c6ccf49cef0d3c4a6158326f438ef7f699c6c5b4acad3c6c085d719f",
+      "sha256": "13a61ac12ba13971eeda37eb06fb431c06d74beb2105ec6b3f5bf0da2f455665",
+      "public_surface_changed": true,
+      "old_surface": {
+        "declarations": [
+          "CheckedInstrument",
+          "CheckedQpeInstrument",
+          "CheckedRequest",
+          "Kernel",
+          "NativeChecked",
+          "Reconstructed",
+          "execution"
+        ],
+        "functions": [
+          "pub fn candidate(&self) -> &[u8]",
+          "pub fn candidate(&self) -> Option<&[u8]>",
+          "pub fn check_against(&self, payload: &[u8], request: &[u8]) -> Result<CheckedRequest>",
+          "pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
+          "pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument>",
+          "pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
+          "pub fn check_qpe_instrument( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<CheckedQpeInstrument>",
+          "pub fn check_qpe_instrument_native( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<NativeChecked>",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn executable(&self) -> &Path",
+          "pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed>",
+          "pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked>",
+          "pub fn instrument(&self) -> &CheckedInstrument",
+          "pub fn leaves(&self) -> &[(usize, CheckedSerializedUnitaryLeaf)]",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl Into<PathBuf>) -> Self",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn reconstruction(&self) -> &Reconstructed",
+          "pub fn reconstruction(&self) -> &Reconstructed",
+          "pub fn request(&self) -> &[u8]",
+          "pub fn request(&self) -> &[u8]",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn structural_work(&self) -> usize",
+          "pub fn structural_work(&self) -> usize"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "CheckedInstrument",
+          "CheckedQpeInstrument",
+          "CheckedRequest",
+          "Kernel",
+          "NativeChecked",
+          "Reconstructed",
+          "execution"
+        ],
+        "functions": [
+          "pub fn candidate(&self) -> &[u8]",
+          "pub fn candidate(&self) -> Option<&[u8]>",
+          "pub fn check_against(&self, payload: &[u8], request: &[u8]) -> Result<CheckedRequest>",
+          "pub fn check_against_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
+          "pub fn check_instrument(&self, payload: &[u8], request: &[u8]) -> Result<CheckedInstrument>",
+          "pub fn check_instrument_native(&self, payload: &[u8], request: &[u8]) -> Result<NativeChecked>",
+          "pub fn check_qpe_instrument( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<CheckedQpeInstrument>",
+          "pub fn check_qpe_instrument_native( &self, payload: &[u8], request: &[u8], candidate: &[u8], ) -> Result<NativeChecked>",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn executable(&self) -> &Path",
+          "pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed>",
+          "pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked>",
+          "pub fn instrument(&self) -> &CheckedInstrument",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn leaves(&self) -> &[(usize, CheckedSerializedUnitaryLeaf)]",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(executable: impl Into<PathBuf>) -> Self",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn reconstruction(&self) -> &Reconstructed",
+          "pub fn reconstruction(&self) -> &Reconstructed",
+          "pub fn request(&self) -> &[u8]",
+          "pub fn request(&self) -> &[u8]",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn structural_work(&self) -> usize",
+          "pub fn structural_work(&self) -> usize"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/hierarchical/execution.rs",
+      "previous_sha256": "a1674776cbc639dff94893d455b463e65e81f4aa637378b5636b92c075b11745",
+      "sha256": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+      "public_surface_changed": true,
+      "old_surface": {
+        "declarations": [
+          "ExecutionLimits",
+          "InstrumentBranches",
+          "InstrumentSample",
+          "InstrumentSamples",
+          "SamplingError",
+          "SamplingLimits",
+          "StateVector"
+        ],
+        "functions": [
+          "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<InstrumentBranches>",
+          "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<StateVector>",
+          "pub fn sample_normalized_shots<R: RandomSource>( &self, input: &[[f64; 2]], reference_dimension: usize, shots: usize, random: &mut R, limits: SamplingLimits, ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [
+          "ExecutionLimits",
+          "InstrumentBranches",
+          "InstrumentSample",
+          "InstrumentSamples",
+          "SamplingError",
+          "SamplingLimits",
+          "StateVector"
+        ],
+        "functions": [
+          "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<InstrumentBranches>",
+          "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<StateVector>",
+          "pub fn execute_instrument( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<InstrumentBranches>",
+          "pub fn execute_pure( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<StateVector>",
+          "pub fn sample_normalized_shots<R: RandomSource>( &self, input: &[[f64; 2]], reference_dimension: usize, shots: usize, random: &mut R, limits: SamplingLimits, ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>>",
+          "pub fn sample_normalized_shots<R: RandomSource>( &self, input: &[[f64; 2]], reference_dimension: usize, shots: usize, random: &mut R, limits: SamplingLimits, ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/mod.rs",
+      "previous_sha256": "d4567e4e6fb406fae2c2117dd543cdb2eb50b4e4512dc5679b4c2a74a77fa035",
+      "sha256": "892582873c20924308e9a8f171d52381b88b966b8935e1fb1ce0db62a43e672a",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "src/lib.rs",
+      "previous_sha256": "adcab87951f5438a3eb025a4f749942d563c0510a59e75d0cb5077d0ed467618",
+      "sha256": "8228f0217ce26485db9dc9061b58a32213cf2f3ae5d00499b2fa3a8f274c0f9f",
+      "public_surface_changed": false,
+      "old_surface": null,
+      "new_surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/ObservationScope.lean",
+      "previous_sha256": null,
+      "sha256": "83986a17c17efd5fbe9c8220f0195eee9b53ec087a6b01f46c52d4145f4995b9",
+      "public_surface_changed": false
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+      "previous_sha256": null,
+      "sha256": "de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0",
+      "public_surface_changed": false
+    },
+    {
+      "path": "tests/hierarchical_execution.rs",
+      "previous_sha256": "95352738bbcc67bb3736e05b89bf42dee1707c03b78f769b05142080d0e209bb",
+      "sha256": "5f18806249cd22c9a0cd61814d5220cdeb6f861918c328696e8d200ee37bdb29",
+      "review": "Retain all prior assertions and add native/compatibility execution, sampling and immutable initialization-move binding regressions."
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "previous_sha256": "e772fe9384a04ce23c0ba3e6d44ae7cb53329f781bf17fdf18902a4d6783e296",
+      "sha256": "f40aaf032319517fbf2efa9b5ad0d9a508f34e7f0b55e1eae28e2ea22a131d85",
+      "review": "Retain all prior assertions and add native/compatibility execution, sampling and immutable initialization-move binding regressions."
+    }
+  ]
+}

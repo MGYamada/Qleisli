@@ -1,4 +1,4 @@
-//! Parser for the provisional finite `.qli` grammar in [the fixed grammar](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/syntax-v0.md).
+//! Parser for the provisional finite `.qli` grammar in the fixed grammar.
 //!
 //! Parsing does not resolve names or establish typing, effects, linear use, or
 //! quantum validity. Those checks must happen before producing trusted IR.

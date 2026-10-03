@@ -25,16 +25,10 @@ SUITES = (
 )
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PROTECTED_ROOTS = {
-    "Cargo.toml", "Cargo.lock", "LICENSE", "NOTICE", "TRUST_BOUNDARY.md",
+    "Cargo.toml", "Cargo.lock", "LICENSE", "NOTICE", "TRUSTBOUNDARY.md",
     "CONSTITUTION.md", "STDLIB.md", "README.crates.md",
 }
-NORMATIVE_DOCS = {
-    "docs/language-spec.md", "docs/syntax-v0.md", "docs/type-system.md",
-    "docs/tuple-shapes.md", "docs/size-expressions.md", "docs/finite-contracts.md",
-    "docs/static-operations.md", "docs/language-editions.md",
-    "docs/hierarchical-ir-spec.md", "docs/machine-interface-spec.md",
-    "docs/release-milestones.md", "docs/versioning.md",
-}
+NORMATIVE_DOCS = {"TRUSTBOUNDARY.md"}
 
 
 def valid_path(path: str) -> bool:
@@ -60,7 +54,7 @@ def classify(paths: list[str], policy: dict) -> tuple[str, str]:
     for path in paths:
         if not valid_path(path):
             return "full", "unrecognized path; full validation required"
-        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/")):
+        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/", "docs/", "docs-old/")):
             return "full", f"protected executable/policy input: {path}"
         if path in policy["documentation_only"]:
             continue
@@ -87,7 +81,7 @@ def proof_lane(paths: list[str], policy: dict | None = None,
         if path == "lean/schema-registry.json" and registry_source_only:
             continue
         if not valid_path(path) or path.startswith(".github/") or path in {
-            "TRUST_BOUNDARY.md", "CONSTITUTION.md",
+            "TRUSTBOUNDARY.md", "CONSTITUTION.md",
             "scripts/ci_profiles.py", "scripts/run_native_ci.py",
             "scripts/package_lean_kernel.py",
             "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",

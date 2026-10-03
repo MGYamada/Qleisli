@@ -7,10 +7,11 @@ use std::collections::BTreeMap;
 use std::f64::consts::{FRAC_1_SQRT_2, FRAC_PI_4};
 
 use common::SourceRoot;
+use common::accept;
+use qleisli::AcceptedProgram;
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::ir::RawOp;
 use qleisli::sim::{SimulationLimits, run_closed};
-use qleisli::{VerifiedProgram, verify};
 
 const TOLERANCE: f64 = 1e-12;
 const IMPORTS: &str = "
@@ -149,12 +150,12 @@ fn born(histories: &[History], axes: &[Axis]) -> Distribution {
     result
 }
 
-fn compile(source: &str) -> VerifiedProgram {
+fn compile(source: &str) -> AcceptedProgram {
     let root = SourceRoot::new(&format!("{IMPORTS}\n{source}"));
     compile_project(&root.0).unwrap_or_else(|error| panic!("{source}\n{error}"))
 }
 
-fn assert_distribution(program: &VerifiedProgram, expected: &Distribution) {
+fn assert_distribution(program: &AcceptedProgram, expected: &Distribution) {
     let actual = run_closed(program, SimulationLimits::default()).unwrap();
     assert!((actual.values().sum::<f64>() - 1.0).abs() < TOLERANCE);
     assert!((expected.values().sum::<f64>() - 1.0).abs() < TOLERANCE);
@@ -172,7 +173,7 @@ fn prepare_bit(bit: bool) -> &'static str {
     if bit { "x(init0())" } else { "init0()" }
 }
 
-fn computed_tables(program: &VerifiedProgram) -> Vec<&[u16]> {
+fn computed_tables(program: &AcceptedProgram) -> Vec<&[u16]> {
     program
         .program()
         .operations
@@ -571,7 +572,7 @@ observe fn main() -> CBit { measure_z(do b <- init0(); pure not b) }
         }
     }
     assert_eq!(replacements, 1);
-    let changed = verify(changed).expect("both the identity and NOT are valid unitaries");
+    let changed = accept(changed).expect("both the identity and NOT are valid unitaries");
     let actual = run_closed(&changed, SimulationLimits::default()).unwrap();
     assert_eq!(actual, Distribution::from([(vec![false], 1.0)]));
     assert_eq!(actual.get(&vec![true]).copied().unwrap_or(0.0), 0.0);

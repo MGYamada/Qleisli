@@ -418,12 +418,13 @@ fn preflight(raw: &RawProgram) -> Result<usize, AdapterError> {
 }
 
 /// Import supported raw IR after independent resource/effect verification.
-/// A bounded shape-only preflight rejects unsupported constructors before the
-/// legacy verifier could invoke their dense semantic checking paths.
+/// A bounded shape-only preflight rejects unsupported constructors before
+/// requesting acceptance from the explicitly selected native Lean checker.
 pub fn import_raw(raw: RawProgram) -> Result<ImportedProgram, AdapterError> {
     let bits = preflight(&raw)?;
-    let verified =
-        qleisli::verify(raw).map_err(|error| AdapterError::InvalidIr(error.to_string()))?;
+    let verified = qleisli::interchange::native::Kernel::selected()
+        .and_then(|kernel| kernel.accept_raw(raw))
+        .map_err(|error| AdapterError::InvalidIr(error.to_string()))?;
     let raw = verified.raw();
     let mut builder = Builder::new(bits);
     let space = builder.widths[bits];

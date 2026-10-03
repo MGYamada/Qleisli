@@ -1,0 +1,15 @@
+{
+  "command": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "target/debug/qleisli",
+    "--exhaustive",
+    "--report",
+    "corpus/validation-v0.2.9.json"
+  ],
+  "exit_code": 1,
+  "diagnostic": "ValueError: semantic fault escaped the oracle: minus_preparation_wrong_extension",
+  "prototype": "fault-calibration/equivalent_minus_extension.qli",
+  "prototype_sha256": "a9f8f09f266eff05711c4818c528df788ff62b7a98f1e1855964b64e2ad8e9e8",
+  "explanation": "The proposed Z H fault is exactly H X by the Pauli/Hadamard relation. The oracle correctly did not distinguish them. Replace only the deliberate negative fixture by H X Z; all nine original positive first sources remain untouched."
+}

@@ -7,6 +7,7 @@ discard histories and surviving reference correlations. Semantic cases use at
 most three qubits. Metadata capacities are separate from corpus execution.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import copy
 import hashlib
@@ -386,12 +387,9 @@ def source_cases(log, record):
 def native(records, log, lean_source=LEAN):
     with tempfile.TemporaryDirectory(prefix='qleisli-observation-native-') as directory:
         project=Path(directory)
-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())
-        (project/'lakefile.toml').write_text('name="observation_test"\nversion="0.0.0"\ndefaultTargets=["observation-test"]\n[[require]]\nname="qleisli_kernel"\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\n[[lean_exe]]\nname="observation-test"\nroot="Main"\n')
         (project/'Main.lean').write_text(lean_source)
-        exact.command(['lake','build'],project,log)
+        binary = native_harness.build(project, log)
         payload='\n'.join(finite.dumps({k:v for k,v in c.items() if k in {'artifact','classical','budget','mode'}}) for c in records)+'\n'
-        binary=project/'.lake/build/bin/observation-test'
         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0,run.stderr
         observed=[json.loads(line) for line in run.stdout.splitlines()]
@@ -403,7 +401,7 @@ def native(records, log, lean_source=LEAN):
         for c in records:
             if not c.get('rust',True):continue
             text=rust_program(c['artifact']['program'])
-            actions.append('println!("{} {}",'+json.dumps(c['name'])+',qleisli::verify('+text+').is_ok());')
+            actions.append('println!("{} {}",'+json.dumps(c['name'])+',qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw('+text+').is_ok());')
         source='use qleisli::ir::*;\nfn main(){\n'+'\n'.join(actions)+'\n}\n'
         (project/'Cargo.toml').write_text('[package]\nname="qleisli_observation_test"\nversion="0.0.0"\nedition="2024"\n[dependencies]\nqleisli={path='+json.dumps(str(ROOT))+'}\n[[bin]]\nname="observation-test"\npath="main.rs"\n')
         (project/'main.rs').write_text(source)

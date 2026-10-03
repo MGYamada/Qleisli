@@ -108,7 +108,7 @@ def main():
     tokens = [raw['quantum_inputs'][0]['token'], 1000, 1001, 1002, 1003, raw['quantum_outputs'][0]]
     raw['operations'] = [dict(tag='gate', gate=gate, input=tokens[i], output=tokens[i+1])
                          for i, gate in enumerate(['h', 'x', 'z', 'x', 'z'])]
-    for name, payload, expected in [('wrong-x', text(wrong_x), 'contract'), ('negative-h', text(negative), 'contract'), ('empty-h', '', 'format')]:
+    for name, payload, expected in [('wrong-x', text(wrong_x), 'contract'), ('negative-h', text(negative), 'contract'), ('empty-h', '', 'limit')]:
         source += f'  emitH {json.dumps(name)} 8 (changed qft8 {leaf} (fun d => {{d with body := .leaf ({json.dumps(payload)}).toUTF8}})) {hs[-1]} {json.dumps(expected)}\n'
     source += f'  emitH "stale-renamed-h" 8 (renamed qft8) {hs[-1]} "contract"\n'
     if args.save_source:

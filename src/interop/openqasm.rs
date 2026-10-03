@@ -1,6 +1,6 @@
 use super::profile::{Gate, TerminalCircuit};
 use super::{InteropError, InteropErrorKind, MAX_OPENQASM_BYTES, MAX_QUBITS, MAX_TOKENS};
-use crate::VerifiedProgram;
+use crate::AcceptedProgram;
 use crate::frontend::ast::Span;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt::Write;
@@ -517,7 +517,17 @@ impl Parser<'_> {
 
 /// Parse the bounded terminal subset and independently verify generated IR.
 /// No include file, external function or imported evidence is trusted/executed.
-pub fn import_openqasm3(source: &str) -> Result<VerifiedProgram, InteropError> {
+pub fn import_openqasm3(source: &str) -> Result<AcceptedProgram, InteropError> {
+    let kernel = crate::interchange::native::Kernel::selected()
+        .map_err(|e| InteropError::new(InteropErrorKind::InvalidIr, e.to_string()))?;
+    import_openqasm3_with_kernel(source, &kernel)
+}
+
+/// Parse and submit to the explicitly selected native acceptance boundary.
+pub fn import_openqasm3_with_kernel(
+    source: &str,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<AcceptedProgram, InteropError> {
     Parser {
         tokens: lex(source)?,
         pos: 0,
@@ -535,7 +545,7 @@ pub fn import_openqasm3(source: &str) -> Result<VerifiedProgram, InteropError> {
         started: false,
     }
     .parse()?
-    .lower()
+    .lower_with_kernel(kernel)
 }
 
 pub(super) fn write(circuit: &TerminalCircuit) -> String {

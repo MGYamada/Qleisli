@@ -109,8 +109,14 @@ fn inspect_authored_qft_hierarchies() {
                     assert_eq!(bound.request(), request);
                     assert_eq!(bound.reconstruction().payload(), payload);
                     assert!(bound.reconstruction().structural_work() <= 2_000_000);
-                    assert_eq!(bound.reconstruction().exact_work(), 67 * width);
-                    assert!(bound.reconstruction().native_exact_work() > 67 * width);
+                    // Each distinct H leaf is reconstructed once; shared uses
+                    // do not repeat the native finite-leaf charge.
+                    let leaves = bound.reconstruction().leaves();
+                    assert_eq!(leaves.len(), width);
+                    let leaf_work: usize = leaves.iter().map(|(_, l)| l.exact_work()).sum();
+                    assert!(leaf_work > 0);
+                    assert_eq!(bound.reconstruction().exact_work(), leaf_work);
+                    assert!(bound.reconstruction().native_exact_work() > leaf_work);
                     println!(
                         "FOURIER|{width}|accepted|{}|{}",
                         bound.reconstruction().structural_work(),

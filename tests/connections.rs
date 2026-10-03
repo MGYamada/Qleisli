@@ -128,7 +128,7 @@ fn qasm_byte_spans_keep_unicode_crlf_coordinates_and_input_identity() {
 #[test]
 fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     use qleisli::ir::{Effect, RawProgram};
-    let verified = qleisli::verify(RawProgram {
+    let verified = common::accept(RawProgram {
         quantum_inputs: vec![],
         classical_inputs: vec![],
         operations: vec![],
@@ -155,6 +155,6 @@ fn malformed_artifact_pointer_matches_the_verify_ir_envelope() {
     let expected = String::from_utf8(direct.stdout)
         .unwrap()
         .replace("\"command\":\"verify-ir\"", "\"command\":\"interop check\"");
-    assert!(expected.contains("json_pointer: /root"), "{expected}");
+    assert!(expected.contains("\"code\":\"invalid_ir\""), "{expected}");
     assert_eq!(String::from_utf8(interop.stdout).unwrap(), expected);
 }

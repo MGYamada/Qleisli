@@ -3,7 +3,7 @@
 [Fourier](fourier.qli) is one ordinary definition for widths 1/2/3/4/8.
 [Its inverse client](inverse.qli) imports that exact definition and calls
 `adjoint(fourier[n], q)`. Both execute through the
-[development source path](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md), not yet the
+development source path, not yet the
 production CLI. The imported forward body is shared in the emitted hierarchy.
 
 The positive Fourier contract is

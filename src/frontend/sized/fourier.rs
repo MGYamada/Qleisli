@@ -86,46 +86,41 @@ fn h_leaf(node: &Node, body: &Value) -> Option<()> {
     if bytes.len() > 4096 {
         return None;
     }
-    let imported = interchange::import(bytes, None).ok()?;
-    let raw = imported.program.raw();
-    let [
-        RawOp::Gate {
-            gate: SingleGate::H,
-            input,
-            output,
-        },
-    ] = raw.operations.as_slice()
-    else {
-        return None;
-    };
     let a = &node.before[0];
     let b = &node.after[0];
-    if *input != TokenId(a.owner)
-        || *output != TokenId(b.owner)
-        || raw.quantum_inputs
-            != vec![QuantumPort {
-                token: TokenId(a.owner),
-                wires: a.axes.iter().copied().map(WireId).collect(),
-                shape: BasisShape::BIT,
-            }]
-        || imported.program.output_ports()
-            != [QuantumPort {
-                token: TokenId(b.owner),
-                wires: b.axes.iter().copied().map(WireId).collect(),
-                shape: BasisShape::BIT,
-            }]
-        || !raw.classical_inputs.is_empty()
-        || !raw.classical_outputs.is_empty()
-        || raw.quantum_outputs != [TokenId(b.owner)]
-        || raw.declared_effect != Effect::Unitary
-        || imported.root_interface
-            != Some(RootInterface {
-                input: BasisType::Bit,
-                output: BasisType::Bit,
-            })
-    {
+    if a.axes != b.axes {
         return None;
     }
+    let raw = RawProgram {
+        quantum_inputs: vec![QuantumPort {
+            token: TokenId(a.owner),
+            wires: a.axes.iter().copied().map(WireId).collect(),
+            shape: BasisShape::BIT,
+        }],
+        classical_inputs: vec![],
+        operations: vec![RawOp::Gate {
+            gate: SingleGate::H,
+            input: TokenId(a.owner),
+            output: TokenId(b.owner),
+        }],
+        quantum_outputs: vec![TokenId(b.owner)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let expected = interchange::native::Proposal::from_raw(
+        &raw,
+        Some(&RootInterface {
+            input: BasisType::Bit,
+            output: BasisType::Bit,
+        }),
+        Version::V2,
+        None,
+    )
+    .ok()?;
+    if bytes != expected.artifact() {
+        return None;
+    }
+
     Some(())
 }
 fn structural_route(node: &Node, body: &Value) -> Option<Vec<usize>> {

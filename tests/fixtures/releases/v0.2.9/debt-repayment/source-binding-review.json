@@ -1,0 +1,87 @@
+{
+  "format": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout": "VM-22: 232 constructors, 227 source snapshots, 19 boundaries; Rust authority unchanged.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"40e3b744870c304b8b82e188e1d526b115f101ebc0052de34f4ff5d8acf713fc\", \"mode\": \"source-identity-only\", \"source_revision\": \"632b2ecc32df3660a23e03405c2205b3a961f2658e752251e7ceb05a0d65c026\", \"status\": \"passed\", \"version\": 1}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Checked 1509 local links, 10 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 196 Lean root modules.\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Edition 2026: 1038 .qli and 5 .qlt files covered by 22 explicit manifests; no repository-root manifest.\n",
+      "stderr": ""
+    }
+  ],
+  "version": "0.2.9",
+  "source_review": [
+    {
+      "path": "scripts/test_lean_branch_function.py",
+      "before_sha256": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc",
+      "after_sha256": "da0c08ed5e0dd8e492dc54a9d7593f55f509c1bb148dad12d8a810a26bd340f7",
+      "classification": "reviewed",
+      "diff_base": "git HEAD",
+      "diff_base_sha256": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc",
+      "diff_base_matches_binding": true,
+      "diff": "--- HEAD:scripts/test_lean_branch_function.py\n+++ scripts/test_lean_branch_function.py\n@@ -3,6 +3,7 @@\n Every checker receives original bodies/identities and separate bindings only.\n Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0\n \"\"\"\n+import native_harness\n import argparse\n import ast\n import copy\n@@ -151,10 +152,8 @@\n     payload='\\n'.join(finite.dumps({k:c[k] for k in ['functions','bindings','budget']}) for c in records)+'\\n'\n     with tempfile.TemporaryDirectory(prefix='qleisli-branch-functions-') as directory:\n         project=Path(directory)\n-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())\n-        (project/'lakefile.toml').write_text('name=\"branch_function_test\"\\nversion=\"0.0.0\"\\n[[require]]\\nname=\"qleisli_kernel\"\\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\\n[[lean_exe]]\\nname=\"branch-functions\"\\nroot=\"Main\"\\n')\n-        (project/'Main.lean').write_text(LEAN);exact.command(['lake','build','branch-functions'],project,log)\n-        binary=project/'.lake/build/bin/branch-functions'\n+        (project/'Main.lean').write_text(LEAN)\n+        binary = native_harness.build(project, log)\n         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)\n         assert run.returncode==0,run.stderr\n         observed=[json.loads(line) for line in run.stdout.splitlines()]\n"
+    },
+    {
+      "path": "scripts/test_lean_observation.py",
+      "before_sha256": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9",
+      "after_sha256": "f5fb68bd694f84b4b5d6a60ab0b3ee5f40255daa10147bcdc58a5a9c66087052",
+      "classification": "reviewed",
+      "diff_base": "git HEAD",
+      "diff_base_sha256": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9",
+      "diff_base_matches_binding": true,
+      "diff": "--- HEAD:scripts/test_lean_observation.py\n+++ scripts/test_lean_observation.py\n@@ -7,6 +7,7 @@\n most three qubits. Metadata capacities are separate from corpus execution.\n Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0\n \"\"\"\n+import native_harness\n import argparse\n import copy\n import hashlib\n@@ -386,12 +387,9 @@\n def native(records, log, lean_source=LEAN):\n     with tempfile.TemporaryDirectory(prefix='qleisli-observation-native-') as directory:\n         project=Path(directory)\n-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())\n-        (project/'lakefile.toml').write_text('name=\"observation_test\"\\nversion=\"0.0.0\"\\ndefaultTargets=[\"observation-test\"]\\n[[require]]\\nname=\"qleisli_kernel\"\\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\\n[[lean_exe]]\\nname=\"observation-test\"\\nroot=\"Main\"\\n')\n         (project/'Main.lean').write_text(lean_source)\n-        exact.command(['lake','build'],project,log)\n+        binary = native_harness.build(project, log)\n         payload='\\n'.join(finite.dumps({k:v for k,v in c.items() if k in {'artifact','classical','budget','mode'}}) for c in records)+'\\n'\n-        binary=project/'.lake/build/bin/observation-test'\n         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)\n         assert run.returncode==0,run.stderr\n         observed=[json.loads(line) for line in run.stdout.splitlines()]\n"
+    },
+    {
+      "path": "scripts/test_lean_raw.py",
+      "before_sha256": "4da68f09466e89b9cd456fc8298ead0e4486c9f82deb184ce6aab6dc78ff1c17",
+      "after_sha256": "4d437df92c094bdcf774b1508f666d4d7a6d7603d287950db7d75406922ead87",
+      "classification": "reviewed",
+      "diff_base": "git HEAD",
+      "diff_base_sha256": "4da68f09466e89b9cd456fc8298ead0e4486c9f82deb184ce6aab6dc78ff1c17",
+      "diff_base_matches_binding": true,
+      "diff": "--- HEAD:scripts/test_lean_raw.py\n+++ scripts/test_lean_raw.py\n@@ -6,6 +6,7 @@\n receives the other's decision. Production acceptance remains Rust.\n Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0\n \"\"\"\n+import native_harness\n import argparse\n import copy\n import hashlib\n@@ -394,12 +395,9 @@\n def native(all_cases, log):\n     with tempfile.TemporaryDirectory(prefix='qleisli-raw-native-') as directory:\n         project=Path(directory)\n-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())\n-        (project/'lakefile.toml').write_text('name=\"raw_test\"\\nversion=\"0.0.0\"\\ndefaultTargets=[\"raw-test\"]\\n[[require]]\\nname=\"qleisli_kernel\"\\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\\n[[lean_exe]]\\nname=\"raw-test\"\\nroot=\"Main\"\\n')\n         (project/'Main.lean').write_text(LEAN)\n-        exact.command(['lake','build'],project,log)\n+        binary = native_harness.build(project, log)\n         payload='\\n'.join(finite.dumps({k:v for k,v in c.items() if k in {'artifact','required','budget'}}) for c in all_cases)+'\\n'\n-        binary=project/'.lake/build/bin/raw-test'\n         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)\n         assert run.returncode==0,run.stderr\n         bindings=dict(lean_binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),\n"
+    },
+    {
+      "path": "scripts/test_lean_raw_completion.py",
+      "before_sha256": "0c353fd8092b5f27c92a172b3fdd896a2ff64c07d3648eb31ac59070323770bb",
+      "after_sha256": "772cb44bb3aa95a8733d76caf9fbcdfa4bca01ab7b524ac240a851eb387af043",
+      "classification": "reviewed",
+      "diff_base": "git HEAD",
+      "diff_base_sha256": "0c353fd8092b5f27c92a172b3fdd896a2ff64c07d3648eb31ac59070323770bb",
+      "diff_base_matches_binding": true,
+      "diff": "--- HEAD:scripts/test_lean_raw_completion.py\n+++ scripts/test_lean_raw_completion.py\n@@ -5,6 +5,7 @@\n Semantic matrices remain at three qubits; wide cases inspect metadata only.\n Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0\n \"\"\"\n+import native_harness\n import argparse\n import ast\n import copy\n@@ -204,11 +205,8 @@\n                         for c in all_cases)+'\\n'\n     with tempfile.TemporaryDirectory(prefix='qleisli-vm25-complete-') as directory:\n         project = Path(directory)\n-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())\n-        (project/'lakefile.toml').write_text('name=\"raw_completion_test\"\\nversion=\"0.0.0\"\\n[[require]]\\nname=\"qleisli_kernel\"\\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\\n[[lean_exe]]\\nname=\"raw-completion\"\\nroot=\"Main\"\\n')\n         (project/'Main.lean').write_text(LEAN)\n-        exact.command(['lake','build','raw-completion'],project,log)\n-        binary = project/'.lake/build/bin/raw-completion'\n+        binary = native_harness.build(project, log)\n         run = subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)\n         assert run.returncode==0, run.stderr\n         outputs = [json.loads(line) for line in run.stdout.splitlines()]\n"
+    }
+  ],
+  "changes": []
+}

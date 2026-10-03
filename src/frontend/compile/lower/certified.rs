@@ -232,18 +232,21 @@ impl Lowerer<'_, '_> {
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
-        let checked =
-            crate::verify::verify_with_budget_classified(raw, &mut inner.compiler.exact_work)
-                .map_err(|(err, limit)| {
-                    verification_error(
-                        inner.compiler,
-                        &inner.operation_sources,
-                        module,
-                        body.span,
-                        err,
-                        limit,
-                    )
-                })?;
+        let checked = inner
+            .compiler
+            .kernel
+            .accept_raw_with_budget(raw, &mut inner.compiler.exact_work)
+            .map_err(|err| {
+                let limit = err.code == "limit";
+                verification_error(
+                    inner.compiler,
+                    &inner.operation_sources,
+                    module,
+                    body.span,
+                    err,
+                    limit,
+                )
+            })?;
         super::super::circuit::flatten(inner.compiler, module, body.span, &checked)
     }
 }

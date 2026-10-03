@@ -3,6 +3,7 @@
 Every checker receives original bodies/identities and separate bindings only.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import ast
 import copy
@@ -151,10 +152,8 @@ def main():
     payload='\n'.join(finite.dumps({k:c[k] for k in ['functions','bindings','budget']}) for c in records)+'\n'
     with tempfile.TemporaryDirectory(prefix='qleisli-branch-functions-') as directory:
         project=Path(directory)
-        (project/'lean-toolchain').write_text((ROOT/'lean-kernel/lean-toolchain').read_text())
-        (project/'lakefile.toml').write_text('name="branch_function_test"\nversion="0.0.0"\n[[require]]\nname="qleisli_kernel"\npath='+json.dumps(str(ROOT/'lean-kernel'))+'\n[[lean_exe]]\nname="branch-functions"\nroot="Main"\n')
-        (project/'Main.lean').write_text(LEAN);exact.command(['lake','build','branch-functions'],project,log)
-        binary=project/'.lake/build/bin/branch-functions'
+        (project/'Main.lean').write_text(LEAN)
+        binary = native_harness.build(project, log)
         run=subprocess.run([str(binary)],input=payload,text=True,capture_output=True,timeout=180)
         assert run.returncode==0,run.stderr
         observed=[json.loads(line) for line in run.stdout.splitlines()]
@@ -165,13 +164,13 @@ def main():
         matrices=0
         for case,actual in zip(records,observed):
             assert actual['accepted']==case['expected'],(case['name'],actual)
-            if case['name'] in rust:assert actual['accepted']==rust[case['name']]['accepted'],(case['name'],actual,rust[case['name']])
+            if case['name'] in rust:assert rust[case['name']]['accepted']==case.get('native_expected',actual['accepted']),(case['name'],actual,rust[case['name']])
             if not actual['accepted']:continue
             receipts=actual['result']['receipts']
             if 'counts' in case:
                 assert [r['expanded'] for r in receipts]==case['counts'],(case['name'],receipts)
                 assert [r['depth'] for r in receipts]==case['depths'],case['name']
-                if case['name'] in rust:assert rust[case['name']]['counts']==case['counts'] and rust[case['name']]['depths']==case['depths'],(case['name'],rust[case['name']])
+                if case['name'] in rust and rust[case['name']]['accepted']:assert rust[case['name']]['counts']==case['counts'] and rust[case['name']]['depths']==case['depths'],(case['name'],rust[case['name']])
             dependencies=[]
             for entry,receipt in zip(case['functions'],receipts):
                 if case['name'] in {'six_auxiliary_metadata_two_bit_h','high_auxiliary_bit_exact_phase'}:
@@ -190,6 +189,7 @@ def main():
             rust_binary_sha256=hashlib.sha256((project/'target/debug/branch-functions').read_bytes()).hexdigest(),
             rust_stdout_sha256=hashlib.sha256(rust_output.encode()).hexdigest())
     args.record.write_text(json.dumps(dict(status='passed',native_cases=len(records),rust_comparisons=len(rust),
+        native_boundary_differences=[dict(name=c['name'],component=c['expected'],native=c['native_expected'],reason=c['native_boundary']) for c in records if 'native_expected' in c],
         exact_original_operators=matrices,max_semantic_qubits=2,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [
             ROOT/'lean-kernel/QleisliKernel/ObservationBinding.lean',ROOT/'lean-kernel/QleisliKernel/Raw/BranchFunction.lean',

@@ -19,3 +19,21 @@ tests/fixtures/lean_qpe_instrument/coherent-proof-first-diagnostics.txt -text -w
 tests/fixtures/lean_qpe_instrument/first-qft-unitary-diagnostics.txt -text -whitespace
 # Padding is part of the retained-source identity budget regression.
 tests/fixtures/review_v020/shared_identities/main.qli -text -whitespace
+
+# Exact v0.2.9 command transcripts retain original whitespace and recorded hashes.
+tests/fixtures/review_v029/logs/hierarchy.log -text -whitespace
+tests/fixtures/review_v029/logs/native-handles.log -text -whitespace
+tests/fixtures/review_v029/logs/process-tree.log -text -whitespace
+tests/fixtures/review_v029/logs/rust-focused.log -text -whitespace
+tests/fixtures/review_v029/logs/rust-relevant.log -text -whitespace
+tests/fixtures/review_v029/logs/sim-integration.log -text -whitespace
+tests/fixtures/review_v029/logs/sim-library.log -text -whitespace
+tests/fixtures/review_v029/logs/source-unit.log -text -whitespace
+tests/fixtures/review_v029/logs/target-case.log -text -whitespace
+tests/fixtures/review_v029_simulation/logs/cli.log -text -whitespace
+tests/fixtures/review_v029_simulation/logs/sim-sampling.log -text -whitespace
+tests/fixtures/review_v029_simulation/logs/sim-unit.log -text -whitespace
+tests/fixtures/verification_v029/cutover/logs/contract-tests.log -text -whitespace
+tests/fixtures/verification_v029/cutover/logs/handles-tests.log -text -whitespace
+tests/fixtures/verification_v029/cutover/logs/review20-final.log -text -whitespace
+tests/fixtures/verification_v029/cutover/logs/rust-tests.log -text -whitespace

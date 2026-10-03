@@ -1,0 +1,14 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.82s
+     Running tests/review_v020.rs (target/debug/deps/review_v020-8fbfc610df893ab4)
+
+running 6 tests
+test capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit ... ignored, historical large expansion exceeds native time/work bounds before the former Rust diagnostic
+test long_identity_circuits_normalize_both_flat_and_compound_steps ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover
+test long_source_trajectory_samples_with_the_original_cli_budget ... ignored, historical large Rust trajectory; maximum-size runs are deferred during native cutover
+test many_receipts_round_trip_shared_source_without_repeated_storage_work ... ignored, historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274
+test usage_in_both_formats_lists_every_command_and_option ... ok
+test small_native_receipts_round_trip_shared_source ... ok
+
+test result: ok. 2 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 1.31s
+

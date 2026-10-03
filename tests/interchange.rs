@@ -1,12 +1,13 @@
 mod common;
 use common::SourceRoot;
+use common::accept;
+use qleisli::AcceptedProgram;
 use qleisli::contract::exact::Budget;
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionIdentity};
 use qleisli::frontend::compile::compile_project;
 use qleisli::interchange::{self, RootInterface, Version};
 use qleisli::ir::*;
-use qleisli::{VerifiedProgram, verify};
 use std::process::Command;
 
 fn identity() -> RawProgram {
@@ -27,6 +28,37 @@ fn request(signature: &str, tag: &str, table: &str) -> Vec<u8> {
     format!(r#"{{"format":"qleisli.request","version":1,"signature":{signature},"meaning":{{"tag":"{tag}","table":{table}}},"source_snapshot":null}}"#).into_bytes()
 }
 const BIT: &str = r#"{"tag":"bit"}"#;
+
+#[test]
+fn native_format_rejections_preserve_envelope_locations_without_granting_authority() {
+    use qleisli::interchange::native::{Kernel, Proposal};
+    let kernel = Kernel::selected().unwrap();
+    let proposal = Proposal::from_raw(&identity(), None, Version::V2, None).unwrap();
+    let original = std::str::from_utf8(proposal.artifact()).unwrap();
+    for replacement in ["null", "999999"] {
+        let malformed = original.replace("\"root\":0", &format!("\"root\":{replacement}"));
+        assert_ne!(malformed, original);
+        let failure = kernel.check(malformed.as_bytes(), None).unwrap_err();
+        assert_eq!(failure.code, "invalid_ir");
+        assert_eq!(failure.json_pointer, "/root");
+        assert_eq!(
+            failure.message,
+            "Lean native checker rejected the artifact/request; no fallback"
+        );
+        // Diagnosing malformed bytes cannot bypass even an absent checker.
+        let unavailable = Kernel::new("/missing-explicit-native-kernel")
+            .check(malformed.as_bytes(), None)
+            .unwrap_err();
+        assert_eq!(unavailable.code, "io");
+        assert!(unavailable.json_pointer.is_empty());
+    }
+    // A valid artifact does not acquire a misleading artifact pointer when only
+    // its independent request is malformed.
+    let failure = kernel.check(proposal.artifact(), Some(b"{}")).unwrap_err();
+    assert_eq!(failure.code, "invalid_ir");
+    assert!(failure.json_pointer.is_empty());
+}
+
 const UNIT_BIT: &str = r#"{"tag":"pair","left":{"tag":"unit"},"right":{"tag":"bit"}}"#;
 const BIT_UNIT: &str = r#"{"tag":"pair","left":{"tag":"bit"},"right":{"tag":"unit"}}"#;
 const FLAT_UNIT_BIT_UNIT: &str =
@@ -45,7 +77,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
     let path = root.0.join("artifact.json");
     let req = root.0.join("request.json");
     let bytes = interchange::export(
-        &verify(identity()).unwrap(),
+        &accept(identity()).unwrap(),
         Some(&interface(BasisType::Tuple(vec![
             BasisType::Unit,
             BasisType::Bit,
@@ -78,7 +110,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
     }
     // Mutating the artifact's own type cannot inherit the original request.
     let changed = interchange::export(
-        &verify(identity()).unwrap(),
+        &accept(identity()).unwrap(),
         Some(&interface(BasisType::pair(
             BasisType::pair(BasisType::Unit, BasisType::Bit),
             BasisType::Unit,
@@ -100,7 +132,7 @@ fn nary_external_requests_reject_reassociation_and_noncanonical_arity() {
 
 #[test]
 fn matching_types_are_required_independently_of_width_and_operator() {
-    let program = verify(identity()).unwrap();
+    let program = accept(identity()).unwrap();
     for version in [Version::V1, Version::V2] {
         for (ty, matching, others) in [
             (BasisType::Bit, BIT, [UNIT_BIT, BIT_UNIT]),
@@ -163,7 +195,7 @@ fn matching_types_are_required_independently_of_width_and_operator() {
     }
 }
 
-fn shared_meaning() -> (VerifiedProgram, MeaningEvidence) {
+fn shared_meaning() -> (AcceptedProgram, MeaningEvidence) {
     let target = FiniteMeaning::phase(BasisType::Bit, vec![0, 1]).unwrap();
     let evidence = MeaningEvidence::check(
         target.target_ir().unwrap(),
@@ -203,7 +235,7 @@ fn shared_meaning() -> (VerifiedProgram, MeaningEvidence) {
         ],
     }];
     raw.quantum_outputs = vec![TokenId(1)];
-    (verify(raw).unwrap(), evidence)
+    (accept(raw).unwrap(), evidence)
 }
 
 #[test]
@@ -291,7 +323,7 @@ fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
             .contains(r#""request_checked":false"#)
     );
     let typed = interchange::export(
-        &verify(identity()).unwrap(),
+        &accept(identity()).unwrap(),
         Some(&interface(BasisType::Bit)),
         Version::V1,
     )
@@ -355,7 +387,7 @@ fn fixed_size_algorithm_and_feedback_artifacts_preserve_distributions() {
 #[test]
 fn malformed_transport_and_declared_root_bindings_are_rejected() {
     let bytes = interchange::export(
-        &verify(identity()).unwrap(),
+        &accept(identity()).unwrap(),
         Some(&interface(BasisType::Bit)),
         Version::V1,
     )
@@ -383,7 +415,7 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
         output: BasisType::pair(BasisType::Bit, BasisType::Bit),
     };
     assert_eq!(
-        interchange::export(&verify(identity()).unwrap(), Some(&wrong), Version::V2)
+        interchange::export(&accept(identity()).unwrap(), Some(&wrong), Version::V2)
             .unwrap_err()
             .code,
         "invalid_ir"
@@ -398,7 +430,7 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
         interchange::import("[".repeat(10_000).as_bytes(), None)
             .unwrap_err()
             .code,
-        "limit"
+        "invalid_ir"
     );
     assert!(interchange::import(&[0xff], None).is_err());
 }

@@ -1,0 +1,9 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.32s
+     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-1cd264f5ba52d833)
+
+running 1 test
+test native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 17 filtered out; finished in 1.75s
+

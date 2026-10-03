@@ -1,0 +1,422 @@
+[
+  {
+    "project": "examples/bell",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/bell",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/bell.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/bell.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/bell.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/bernstein_vazirani",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/bernstein_vazirani",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/bernstein_vazirani.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/bernstein_vazirani.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "d2f1221e30067109ad89cad58af13c8e6ef01877fe3b169bd6fc158f1775cbd3",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/bernstein_vazirani.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/bit_flip_code",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/bit_flip_code",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/bit_flip_code.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/bit_flip_code.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "b2e2ad2f43b5c3f179c11eeb1dce5d2fc4cc19b2a226fc0e0b8868e1f47fea77",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/bit_flip_code.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/feedback",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/feedback",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/feedback.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/feedback.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/feedback.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/function_contracts",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/function_contracts",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/function_contracts.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/function_contracts.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "ec8b4710ad6c5e2401daa8ce810956abefaf0b27f675d5f1624a8388c5df3e0a",
+    "program_count": 3,
+    "evidence_count": 1,
+    "source_count": 7,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/function_contracts.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/grover",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/grover",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/grover.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/grover.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "4d2bef49168ea8447b67e8f835b94e78033c3a3af00fdfc58e420fd19f0f80dc",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/grover.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/iterative_phase_estimation",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/iterative_phase_estimation",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/iterative_phase_estimation.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/iterative_phase_estimation.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "5d4dc50429ef8918f798cee12a1e38a0325d6db33a32cc579fb794e85fa3bbca",
+    "program_count": 3,
+    "evidence_count": 1,
+    "source_count": 6,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/iterative_phase_estimation.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/operation_algorithms",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/operation_algorithms.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/operation_algorithms.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "c94ab014de73ac0984726b344140a0fb488697885c83cc4ced6c64cd9a444579",
+    "program_count": 3,
+    "evidence_count": 1,
+    "source_count": 10,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/operation_algorithms.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/operation_contracts",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/operation_contracts",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/operation_contracts.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/operation_contracts.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "9b4937f747c204d98e783f37f822f9d72d964f23ae17f70394d318d7e1cdd6b8",
+    "program_count": 5,
+    "evidence_count": 2,
+    "source_count": 5,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/operation_contracts.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/order_finding",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/order_finding",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/order_finding.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/order_finding.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "e4e7636bc07b4c4600de64d0772542371bf5e4f4cebf4beabe83619ec4191663",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/order_finding.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/phase_estimation",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/phase_estimation",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/phase_estimation.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/phase_estimation.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "e6ce1f8604987ab2b1a566cf928e9cc5788be4195ec6ea3149af0e303c76bbe9",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/phase_estimation.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/phase_oracle",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/phase_oracle",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/phase_oracle.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/phase_oracle.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "b469341e9005a8a69ace9194f6d2cede049a478c80ffcce68bdfb556ba26b6e6",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/phase_oracle.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/protocols",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/protocols",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/protocols.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/protocols.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "9a08ccccf2c888e13d44730f21bf4bdca24baa4c717df14b9c8621d01fab3127",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/protocols.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  },
+  {
+    "project": "examples/semantic_contracts",
+    "emit": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/examples/semantic_contracts",
+        "--format=json",
+        "--output=/private/tmp/qleisli-cutover-qli/semantic_contracts.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/private/tmp/qleisli-cutover-qli/semantic_contracts.qirf\"}}\n",
+      "stderr": ""
+    },
+    "artifact_sha256": "0a29375ceff62464aadfd53f65f7225da8cdc41c40d041fc3727926cd06d2dfb",
+    "program_count": 1,
+    "evidence_count": 0,
+    "source_count": 0,
+    "native_handle": {
+      "command": [
+        "/Users/masa/git/Qleisli/target/debug/examples/native_acceptance",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "/private/tmp/qleisli-cutover-qli/semantic_contracts.qirf"
+      ],
+      "exit_code": 0,
+      "stdout": "accepted\n",
+      "stderr": ""
+    }
+  }
+]

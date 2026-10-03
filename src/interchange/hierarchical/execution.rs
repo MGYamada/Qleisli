@@ -4,7 +4,8 @@
 
 use super::super::json;
 use super::{
-    CheckedInstrument, CheckedRequest, Error, Matrix, Reconstructed, Result, Value, bridge,
+    CheckedInstrument, CheckedRequest, Error, Matrix, NativeChecked, Reconstructed, Result, Value,
+    bridge,
 };
 use crate::sim::RandomSource;
 use std::collections::BTreeMap;
@@ -224,36 +225,87 @@ struct Program<'a> {
     inputs: Vec<usize>,
     outputs: Vec<usize>,
 }
-impl<'a> Program<'a> {
-    fn compile(actual: &Value, checked: &'a Reconstructed) -> Result<Self> {
-        let definitions = actual.field("definitions")?.array()?;
-        let proofs = actual.field("proofs")?.array()?;
-        let mut matrices = BTreeMap::new();
-        for (proof_index, checked_leaf) in checked.leaves() {
-            let proof = proofs
-                .get(*proof_index)
-                .ok_or_else(|| invalid("missing finite proof"))?;
-            let implementation = index(proof.field("implementation")?)?;
-            let definition = definitions
-                .get(implementation)
-                .ok_or_else(|| invalid("missing finite definition"))?;
-            // Bind the retained matrix to the actual body, not the proof table's
-            // position, requested meaning, or producer-supplied identity flags.
-            if definition
-                .field("body")?
-                .field("program")?
-                .text()?
-                .as_bytes()
-                != checked_leaf.leaf().payload()
-                || super::boundary(definition.field("interface")?)?
-                    != *checked_leaf.leaf().boundary()
-            {
-                return Err(invalid(
-                    "finite matrix no longer matches its actual definition",
-                ));
-            }
-            matrices.insert(implementation, checked_leaf.leaf().meaning());
+// Compatibility reports retain the old public leaf handles. Their bound
+// matrices are an execution view, not new acceptance or a second equation.
+fn retained_matrices<'a>(
+    actual: &Value,
+    checked: &'a Reconstructed,
+) -> Result<BTreeMap<usize, &'a Matrix>> {
+    let proofs = actual.field("proofs")?.array()?;
+    let definitions = actual.field("definitions")?.array()?;
+    let mut matrices = BTreeMap::new();
+    for (proof_index, checked_leaf) in checked.leaves() {
+        let proof = proofs
+            .get(*proof_index)
+            .ok_or_else(|| invalid("missing finite proof"))?;
+        let implementation = index(proof.field("implementation")?)?;
+        let definition = definitions
+            .get(implementation)
+            .ok_or_else(|| invalid("missing finite definition"))?;
+        // Bind the retained matrix to the actual body, not the proof table's
+        // position, requested meaning, or producer-supplied identity flags.
+        if definition
+            .field("body")?
+            .field("program")?
+            .text()?
+            .as_bytes()
+            != checked_leaf.leaf().payload()
+            || super::boundary(definition.field("interface")?)? != *checked_leaf.leaf().boundary()
+        {
+            return Err(invalid(
+                "finite matrix no longer matches its actual definition",
+            ));
         }
+        matrices.insert(implementation, checked_leaf.leaf().meaning());
+    }
+    Ok(matrices)
+}
+
+// Decode the ACTUAL artifact's finite mathematical descriptions only after a
+// fresh native check bound each complete original QIRF body to that matrix.
+// This performs no Rust IR verification, equality or isometry acceptance.
+fn native_matrices(actual: &Value, checked: &NativeChecked) -> Result<BTreeMap<usize, Matrix>> {
+    let proofs = actual.field("proofs")?.array()?;
+    let definitions = actual.field("definitions")?.array()?;
+    let meanings = actual.field("meanings")?.array()?;
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+    let mut matrices = BTreeMap::new();
+    for &proof_index in &checked.finite_indices {
+        let proof = proofs
+            .get(proof_index)
+            .ok_or_else(|| invalid("missing native finite proof"))?;
+        let implementation = index(proof.field("implementation")?)?;
+        let definition = definitions
+            .get(implementation)
+            .ok_or_else(|| invalid("missing native finite definition"))?;
+        let meaning = meanings
+            .get(index(proof.field("meaning")?)?)
+            .ok_or_else(|| invalid("missing native finite meaning"))?;
+        if definition.field("body")?.field("tag")?.text()? != "leaf"
+            || meaning.field("body")?.field("tag")?.text()? != "finite"
+        {
+            return Err(invalid(
+                "native finite proof no longer names actual finite bodies",
+            ));
+        }
+        let matrix = super::super::finite_matrix::decode(
+            meaning
+                .field("body")?
+                .field("description")?
+                .text()?
+                .as_bytes(),
+            &mut budget,
+        )?;
+        // Every returned finite proof was bound to its actual body natively.
+        // Repeated proofs need no second Rust equality decision here.
+        matrices.entry(implementation).or_insert(matrix);
+    }
+    Ok(matrices)
+}
+
+impl<'a> Program<'a> {
+    fn compile(actual: &Value, matrices: BTreeMap<usize, &'a Matrix>) -> Result<Self> {
+        let definitions = actual.field("definitions")?.array()?;
         let mut nodes = Vec::with_capacity(definitions.len());
         // The accepted artifact may retain non-root definitions. Rejecting an
         // unsupported one is explicit, and includes every zero-repeat child.
@@ -619,19 +671,145 @@ impl CheckedRequest {
         limits: ExecutionLimits,
     ) -> Result<StateVector> {
         let actual = json::parse(self.reconstruction().payload())?;
-        let program = Program::compile(&actual, self.reconstruction())?;
-        let mut work = Work { limits, spent: 0 };
-        input_check(input, program.inputs.len(), reference_dimension, &work)?;
-        let mut amplitudes = zeroes(input.len())?;
-        amplitudes.copy_from_slice(input);
-        program.apply(&mut amplitudes, &mut work)?;
-        Ok(StateVector {
-            amplitudes,
-            quantum_bits: program.outputs.len(),
-            reference_dimension,
-            steps: work.spent,
-        })
+        let program =
+            Program::compile(&actual, retained_matrices(&actual, self.reconstruction())?)?;
+        execute_pure(program, input, reference_dimension, limits)
     }
+}
+
+fn execute_pure(
+    program: Program<'_>,
+    input: &[[f64; 2]],
+    reference_dimension: usize,
+    limits: ExecutionLimits,
+) -> Result<StateVector> {
+    let mut work = Work { limits, spent: 0 };
+    input_check(input, program.inputs.len(), reference_dimension, &work)?;
+    let mut amplitudes = zeroes(input.len())?;
+    amplitudes.copy_from_slice(input);
+    program.apply(&mut amplitudes, &mut work)?;
+    Ok(StateVector {
+        amplitudes,
+        quantum_bits: program.outputs.len(),
+        reference_dimension,
+        steps: work.spent,
+    })
+}
+
+fn execute_instrument(
+    actual: &Value,
+    program: Program<'_>,
+    input: &[[f64; 2]],
+    reference_dimension: usize,
+    limits: ExecutionLimits,
+) -> Result<InstrumentBranches> {
+    let preparation = actual.field("preparation")?;
+    let initializations = preparation.field("initializations")?.array()?;
+    let input_side = instrument_input_side(actual)?;
+    quantum_only(input_side)?;
+    let input_axes = wires(input_side)?;
+    let mut work = Work { limits, spent: 0 };
+    input_check(input, input_axes.len(), reference_dimension, &work)?;
+    let dimensions = width_dimension(program.inputs.len())?;
+    let cells = product(dimensions, reference_dimension)?;
+    work.cells(product(cells, 2)?)?;
+    let input_positions = positions(&program.inputs, &input_axes)?;
+    let mut fresh = Vec::new();
+    for init in initializations {
+        work.charge(1)?;
+        let body = init.field("body")?;
+        if body.field("tag")?.text()? != "init0" {
+            return Err(unsupported("initialization must be actual init0"));
+        }
+        let side = init.field("interface")?.field("outputs")?;
+        let axes = wires(side)?;
+        fresh.push(axes[owner_axis(side, index(body.field("output")?)?)?]);
+    }
+    let mut expected_axes = input_axes.clone();
+    expected_axes.extend(fresh);
+    expected_axes.sort_unstable();
+    let mut prepared_axes = program.inputs.clone();
+    prepared_axes.sort_unstable();
+    if expected_axes != prepared_axes {
+        return Err(invalid(
+            "actual preparation does not cover the circuit inputs",
+        ));
+    }
+    work.charge(cells)?;
+    let mut state = zeroes(cells)?;
+    let input_dimension = width_dimension(input_axes.len())?;
+    for (i, coefficient) in input.iter().enumerate() {
+        let basis = i % input_dimension;
+        let prepared = input_positions
+            .iter()
+            .enumerate()
+            .fold(0, |out, (j, position)| {
+                out | (((basis >> j) & 1) << position)
+            });
+        state[(i / input_dimension) * dimensions + prepared] = *coefficient;
+    }
+    program.apply(&mut state, &mut work)?;
+    let readout = actual.field("readout")?;
+    let mut measured = BTreeMap::new();
+    for measurement in readout.field("measurements")?.array()? {
+        work.charge(1)?;
+        let body = measurement.field("body")?;
+        if body.field("tag")?.text()? != "observe_z" {
+            return Err(unsupported("readout must be actual observe_z"));
+        }
+        let before = measurement.field("interface")?.field("inputs")?;
+        let axes = wires(before)?;
+        let axis = axes[owner_axis(before, index(body.field("input")?)?)?];
+        measured.insert(index(body.field("output")?)?, axis);
+    }
+    let pack = readout.field("pack")?.array()?;
+    let measured_axes = pack
+        .iter()
+        .map(|value| {
+            measured
+                .get(&index(value)?)
+                .copied()
+                .ok_or_else(|| invalid("actual pack references an unmeasured value"))
+        })
+        .collect::<Result<Vec<_>>>()?;
+    if pack.len() != measured.len() {
+        return Err(unsupported("readout must retain every measured result"));
+    }
+    let residual_axes = wires(readout.field("outputs")?)?;
+    let outcome_positions = positions(&program.outputs, &measured_axes)?;
+    let residual_positions = positions(&program.outputs, &residual_axes)?;
+    let outcome_count = width_dimension(pack.len())?;
+    let residual_dimension = width_dimension(residual_axes.len())?;
+    let branch_cells = product(residual_dimension, reference_dimension)?;
+    if product(outcome_count, branch_cells)? != cells {
+        return Err(invalid("readout axes do not partition the output state"));
+    }
+    work.charge(cells)?;
+    let mut branches = Vec::new();
+    branches
+        .try_reserve_exact(outcome_count)
+        .map_err(|_| Error::limit("cannot allocate readout branches"))?;
+    for _ in 0..outcome_count {
+        branches.push(zeroes(branch_cells)?);
+    }
+    for (i, coefficient) in state.into_iter().enumerate() {
+        let select = |positions: &[usize]| {
+            positions
+                .iter()
+                .enumerate()
+                .fold(0, |out, (j, position)| out | (((i >> position) & 1) << j))
+        };
+        let outcome = select(&outcome_positions);
+        let residual = select(&residual_positions);
+        branches[outcome][(i / dimensions) * residual_dimension + residual] = coefficient;
+    }
+    Ok(InstrumentBranches {
+        branches,
+        measured_bits: pack.len(),
+        residual_quantum_bits: residual_axes.len(),
+        reference_dimension,
+        steps: work.spent,
+    })
 }
 
 impl CheckedInstrument {
@@ -644,114 +822,10 @@ impl CheckedInstrument {
         limits: ExecutionLimits,
     ) -> Result<InstrumentBranches> {
         let actual = json::parse(self.reconstruction().payload())?;
-        let program = Program::compile(actual.field("circuit")?, self.reconstruction())?;
-        let preparation = actual.field("preparation")?;
-        let initializations = preparation.field("initializations")?.array()?;
-        let input_side = instrument_input_side(&actual)?;
-        quantum_only(input_side)?;
-        let input_axes = wires(input_side)?;
-        let mut work = Work { limits, spent: 0 };
-        input_check(input, input_axes.len(), reference_dimension, &work)?;
-        let dimensions = width_dimension(program.inputs.len())?;
-        let cells = product(dimensions, reference_dimension)?;
-        work.cells(product(cells, 2)?)?;
-        let input_positions = positions(&program.inputs, &input_axes)?;
-        let mut fresh = Vec::new();
-        for init in initializations {
-            work.charge(1)?;
-            let body = init.field("body")?;
-            if body.field("tag")?.text()? != "init0" {
-                return Err(unsupported("initialization must be actual init0"));
-            }
-            let side = init.field("interface")?.field("outputs")?;
-            let axes = wires(side)?;
-            fresh.push(axes[owner_axis(side, index(body.field("output")?)?)?]);
-        }
-        let mut expected_axes = input_axes.clone();
-        expected_axes.extend(fresh);
-        expected_axes.sort_unstable();
-        let mut prepared_axes = program.inputs.clone();
-        prepared_axes.sort_unstable();
-        if expected_axes != prepared_axes {
-            return Err(invalid(
-                "actual preparation does not cover the circuit inputs",
-            ));
-        }
-        work.charge(cells)?;
-        let mut state = zeroes(cells)?;
-        let input_dimension = width_dimension(input_axes.len())?;
-        for (i, coefficient) in input.iter().enumerate() {
-            let basis = i % input_dimension;
-            let prepared = input_positions
-                .iter()
-                .enumerate()
-                .fold(0, |out, (j, position)| {
-                    out | (((basis >> j) & 1) << position)
-                });
-            state[(i / input_dimension) * dimensions + prepared] = *coefficient;
-        }
-        program.apply(&mut state, &mut work)?;
-        let readout = actual.field("readout")?;
-        let mut measured = BTreeMap::new();
-        for measurement in readout.field("measurements")?.array()? {
-            work.charge(1)?;
-            let body = measurement.field("body")?;
-            if body.field("tag")?.text()? != "observe_z" {
-                return Err(unsupported("readout must be actual observe_z"));
-            }
-            let before = measurement.field("interface")?.field("inputs")?;
-            let axes = wires(before)?;
-            let axis = axes[owner_axis(before, index(body.field("input")?)?)?];
-            measured.insert(index(body.field("output")?)?, axis);
-        }
-        let pack = readout.field("pack")?.array()?;
-        let measured_axes = pack
-            .iter()
-            .map(|value| {
-                measured
-                    .get(&index(value)?)
-                    .copied()
-                    .ok_or_else(|| invalid("actual pack references an unmeasured value"))
-            })
-            .collect::<Result<Vec<_>>>()?;
-        if pack.len() != measured.len() {
-            return Err(unsupported("readout must retain every measured result"));
-        }
-        let residual_axes = wires(readout.field("outputs")?)?;
-        let outcome_positions = positions(&program.outputs, &measured_axes)?;
-        let residual_positions = positions(&program.outputs, &residual_axes)?;
-        let outcome_count = width_dimension(pack.len())?;
-        let residual_dimension = width_dimension(residual_axes.len())?;
-        let branch_cells = product(residual_dimension, reference_dimension)?;
-        if product(outcome_count, branch_cells)? != cells {
-            return Err(invalid("readout axes do not partition the output state"));
-        }
-        work.charge(cells)?;
-        let mut branches = Vec::new();
-        branches
-            .try_reserve_exact(outcome_count)
-            .map_err(|_| Error::limit("cannot allocate readout branches"))?;
-        for _ in 0..outcome_count {
-            branches.push(zeroes(branch_cells)?);
-        }
-        for (i, coefficient) in state.into_iter().enumerate() {
-            let select = |positions: &[usize]| {
-                positions
-                    .iter()
-                    .enumerate()
-                    .fold(0, |out, (j, position)| out | (((i >> position) & 1) << j))
-            };
-            let outcome = select(&outcome_positions);
-            let residual = select(&residual_positions);
-            branches[outcome][(i / dimensions) * residual_dimension + residual] = coefficient;
-        }
-        Ok(InstrumentBranches {
-            branches,
-            measured_bits: pack.len(),
-            residual_quantum_bits: residual_axes.len(),
-            reference_dimension,
-            steps: work.spent,
-        })
+        let circuit = actual.field("circuit")?;
+        let program =
+            Program::compile(circuit, retained_matrices(circuit, self.reconstruction())?)?;
+        execute_instrument(&actual, program, input, reference_dimension, limits)
     }
 
     /// Explicitly normalize a finite positive-norm input, then execute each shot
@@ -776,105 +850,195 @@ impl CheckedInstrument {
         random: &mut R,
         limits: SamplingLimits,
     ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>> {
-        if shots == 0 {
-            return Err(invalid("shot count must be positive").into());
-        }
-        if shots > limits.max_shots {
-            return Err(Error::limit("sampling shot limit exceeded").into());
-        }
-        let actual = json::parse(self.reconstruction().payload())?;
-        let input_side = instrument_input_side(&actual)?;
-        quantum_only(input_side)?;
-        let input_width = wires(input_side)?.len();
-        let readout = actual.field("readout")?;
-        let output_width = wires(readout.field("outputs")?)?.len();
-        let measured_bits = readout.field("pack")?.array()?.len();
-        let branch_cells = product(width_dimension(output_width)?, reference_dimension)?;
-        let mut work = Work {
-            limits: limits.execution,
-            spent: 0,
-        };
-        input_check(input, input_width, reference_dimension, &work)?;
-        let output_cells = product(shots, branch_cells)?;
-        work.cells(
-            input
-                .len()
-                .checked_add(output_cells)
-                .ok_or_else(|| Error::limit("sampling retained output size overflow"))?,
-        )?;
-        work.charge(product(input.len(), 2)?)?;
-        let input_norm = norm_squared(input).map_err(SamplingError::Numerical)?;
-        if input_norm <= 0.0 {
-            return Err(SamplingError::Numerical("input norm must be positive"));
-        }
-        let mut normalized = zeroes(input.len())?;
-        let scale = input_norm.sqrt();
-        for (to, from) in normalized.iter_mut().zip(input) {
-            *to = [from[0] / scale, from[1] / scale];
-        }
-        let mut results = Vec::new();
-        results
-            .try_reserve_exact(shots)
-            .map_err(|_| Error::limit("cannot allocate bounded shot results"))?;
-        for shot in 0..shots {
-            let retained = input
-                .len()
-                .checked_add(product(shot, branch_cells)?)
-                .ok_or_else(|| Error::limit("sampling retained state overflow"))?;
-            let available = ExecutionLimits {
-                max_amplitudes: limits.execution.max_amplitudes - retained,
-                max_steps: limits.execution.max_steps - work.spent,
-            };
-            let mut result = self.execute(&normalized, reference_dimension, available)?;
-            work.charge(result.steps)?;
-            if result.measured_bits != measured_bits || result.residual_quantum_bits != output_width
-            {
-                return Err(invalid("actual shot output shape changed").into());
-            }
-            let cells = product(result.branches.len(), branch_cells)?;
-            work.cells(
-                retained
-                    .checked_add(cells)
-                    .and_then(|n| n.checked_add(result.branches.len()))
-                    .ok_or_else(|| Error::limit("sampling branch workspace overflow"))?,
-            )?;
-            work.charge(cells)?;
-            work.charge(result.branches.len())?;
-            // Charge before drawing; the selected branch is then normalized and
-            // its norm independently scanned without additional allocation.
-            work.charge(product(branch_cells, 2)?)?;
-            let (weights, total) = branch_weights(&result.branches, result.steps)?;
-            let word = random.next_u64().map_err(SamplingError::RandomSource)?;
-            let outcome = choose_branch(&weights, total, word);
-            let weight = weights.get(outcome).copied().filter(|w| *w > 0.0).ok_or(
-                SamplingError::Numerical("selected branch has zero or invalid norm"),
-            )?;
-            let mut amplitudes = result.branches.swap_remove(outcome);
-            let scale = weight.sqrt();
-            for value in &mut amplitudes {
-                value[0] /= scale;
-                value[1] /= scale;
-            }
-            let norm = norm_squared(&amplitudes).map_err(SamplingError::Numerical)?;
-            if (norm - 1.0).abs() > norm_tolerance(branch_cells) {
-                return Err(SamplingError::Numerical(
-                    "conditional branch norm differs from one",
-                ));
-            }
-            results.push(InstrumentSample {
-                outcome,
-                probability: weight / total,
-                amplitudes,
-            });
-        }
-        Ok(InstrumentSamples {
-            shots: results,
-            measured_bits,
-            residual_quantum_bits: output_width,
+        sample_instrument(
+            self.reconstruction().payload(),
+            input,
             reference_dimension,
-            input_norm_squared: input_norm,
-            steps: work.spent,
-        })
+            shots,
+            random,
+            limits,
+            |input, reference, limits| self.execute(input, reference, limits),
+        )
+    }
+}
+
+fn sample_instrument<R: RandomSource>(
+    payload: &[u8],
+    input: &[[f64; 2]],
+    reference_dimension: usize,
+    shots: usize,
+    random: &mut R,
+    limits: SamplingLimits,
+    execute: impl Fn(&[[f64; 2]], usize, ExecutionLimits) -> Result<InstrumentBranches>,
+) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>> {
+    if shots == 0 {
+        return Err(invalid("shot count must be positive").into());
+    }
+    if shots > limits.max_shots {
+        return Err(Error::limit("sampling shot limit exceeded").into());
+    }
+    let actual = json::parse(payload)?;
+    let input_side = instrument_input_side(&actual)?;
+    quantum_only(input_side)?;
+    let input_width = wires(input_side)?.len();
+    let readout = actual.field("readout")?;
+    let output_width = wires(readout.field("outputs")?)?.len();
+    let measured_bits = readout.field("pack")?.array()?.len();
+    let branch_cells = product(width_dimension(output_width)?, reference_dimension)?;
+    let mut work = Work {
+        limits: limits.execution,
+        spent: 0,
+    };
+    input_check(input, input_width, reference_dimension, &work)?;
+    let output_cells = product(shots, branch_cells)?;
+    work.cells(
+        input
+            .len()
+            .checked_add(output_cells)
+            .ok_or_else(|| Error::limit("sampling retained output size overflow"))?,
+    )?;
+    work.charge(product(input.len(), 2)?)?;
+    let input_norm = norm_squared(input).map_err(SamplingError::Numerical)?;
+    if input_norm <= 0.0 {
+        return Err(SamplingError::Numerical("input norm must be positive"));
+    }
+    let mut normalized = zeroes(input.len())?;
+    let scale = input_norm.sqrt();
+    for (to, from) in normalized.iter_mut().zip(input) {
+        *to = [from[0] / scale, from[1] / scale];
+    }
+    let mut results = Vec::new();
+    results
+        .try_reserve_exact(shots)
+        .map_err(|_| Error::limit("cannot allocate bounded shot results"))?;
+    for shot in 0..shots {
+        let retained = input
+            .len()
+            .checked_add(product(shot, branch_cells)?)
+            .ok_or_else(|| Error::limit("sampling retained state overflow"))?;
+        let available = ExecutionLimits {
+            max_amplitudes: limits.execution.max_amplitudes - retained,
+            max_steps: limits.execution.max_steps - work.spent,
+        };
+        let mut result = execute(&normalized, reference_dimension, available)?;
+        work.charge(result.steps)?;
+        if result.measured_bits != measured_bits || result.residual_quantum_bits != output_width {
+            return Err(invalid("actual shot output shape changed").into());
+        }
+        let cells = product(result.branches.len(), branch_cells)?;
+        work.cells(
+            retained
+                .checked_add(cells)
+                .and_then(|n| n.checked_add(result.branches.len()))
+                .ok_or_else(|| Error::limit("sampling branch workspace overflow"))?,
+        )?;
+        work.charge(cells)?;
+        work.charge(result.branches.len())?;
+        // Charge before drawing; the selected branch is then normalized and
+        // its norm independently scanned without additional allocation.
+        work.charge(product(branch_cells, 2)?)?;
+        let (weights, total) = branch_weights(&result.branches, result.steps)?;
+        let word = random.next_u64().map_err(SamplingError::RandomSource)?;
+        let outcome = choose_branch(&weights, total, word);
+        let weight =
+            weights
+                .get(outcome)
+                .copied()
+                .filter(|w| *w > 0.0)
+                .ok_or(SamplingError::Numerical(
+                    "selected branch has zero or invalid norm",
+                ))?;
+        let mut amplitudes = result.branches.swap_remove(outcome);
+        let scale = weight.sqrt();
+        for value in &mut amplitudes {
+            value[0] /= scale;
+            value[1] /= scale;
+        }
+        let norm = norm_squared(&amplitudes).map_err(SamplingError::Numerical)?;
+        if (norm - 1.0).abs() > norm_tolerance(branch_cells) {
+            return Err(SamplingError::Numerical(
+                "conditional branch norm differs from one",
+            ));
+        }
+        results.push(InstrumentSample {
+            outcome,
+            probability: weight / total,
+            amplitudes,
+        });
+    }
+    Ok(InstrumentSamples {
+        shots: results,
+        measured_bits,
+        residual_quantum_bits: output_width,
+        reference_dimension,
+        input_norm_squared: input_norm,
+        steps: work.spent,
+    })
+}
+
+impl NativeChecked {
+    /// Execute the actual pure hierarchy accepted by the selected native kernel.
+    /// Finite matrices come only from this retained artifact's native-checked
+    /// original QIRF equations. Rust performs bounded decoding and simulation;
+    /// it does not rerun the migrated IR/equality/isometry acceptance paths.
+    pub fn execute_pure(
+        &self,
+        input: &[[f64; 2]],
+        reference_dimension: usize,
+        limits: ExecutionLimits,
+    ) -> Result<StateVector> {
+        if self.instrument {
+            return Err(unsupported(
+                "instrument report requires instrument execution",
+            ));
+        }
+        let actual = json::parse(self.payload())?;
+        let matrices = native_matrices(&actual, self)?;
+        let program = Program::compile(&actual, matrices.iter().map(|(&i, m)| (i, m)).collect())?;
+        execute_pure(program, input, reference_dimension, limits)
+    }
+
+    /// Execute native-checked preparation, actual hierarchy and ordered readout.
+    /// Numerical limits and reference-axis conventions match the compatibility
+    /// API; decoder/native correspondence remains an explicit assumption.
+    pub fn execute_instrument(
+        &self,
+        input: &[[f64; 2]],
+        reference_dimension: usize,
+        limits: ExecutionLimits,
+    ) -> Result<InstrumentBranches> {
+        if !self.instrument {
+            return Err(unsupported("pure report has no checked instrument"));
+        }
+        let actual = json::parse(self.payload())?;
+        let circuit = actual.field("circuit")?;
+        let matrices = native_matrices(circuit, self)?;
+        let program = Program::compile(circuit, matrices.iter().map(|(&i, m)| (i, m)).collect())?;
+        execute_instrument(&actual, program, input, reference_dimension, limits)
+    }
+
+    /// Normalize explicitly and execute every native-checked instrument shot
+    /// afresh, preserving the compatibility API's RNG and numerical contracts.
+    pub fn sample_normalized_shots<R: RandomSource>(
+        &self,
+        input: &[[f64; 2]],
+        reference_dimension: usize,
+        shots: usize,
+        random: &mut R,
+        limits: SamplingLimits,
+    ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>> {
+        if !self.instrument {
+            return Err(unsupported("pure report has no checked instrument").into());
+        }
+        sample_instrument(
+            self.payload(),
+            input,
+            reference_dimension,
+            shots,
+            random,
+            limits,
+            |input, reference, limits| self.execute_instrument(input, reference, limits),
+        )
     }
 }
 
@@ -1204,13 +1368,17 @@ mod tests {
             r#"{{"definitions":[{{"interface":{header},"effect":"unitary","body":{{"tag":"computed"}}}},{{"interface":{header},"effect":"unitary","body":{{"tag":"repeat","count":0,"definition":0}}}}],"proofs":[],"entry":{{"implementation":1}}}}"#
         );
         let actual = json::parse(input.as_bytes()).unwrap();
-        assert!(matches!(Program::compile(&actual, &report), Err(e) if e.code == "unsupported"));
+        assert!(
+            matches!(Program::compile(&actual, retained_matrices(&actual, &report).unwrap()), Err(e) if e.code == "unsupported")
+        );
         let input = input.replace(
             r#""classical":[]"#,
             r#""classical":[{"value":20,"basis":[{"tag":"bit"}]}]"#,
         );
         let actual = json::parse(input.as_bytes()).unwrap();
-        assert!(matches!(Program::compile(&actual, &report), Err(e) if e.code == "unsupported"));
+        assert!(
+            matches!(Program::compile(&actual, retained_matrices(&actual, &report).unwrap()), Err(e) if e.code == "unsupported")
+        );
     }
 
     #[test]

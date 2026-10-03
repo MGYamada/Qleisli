@@ -1,0 +1,82 @@
+{
+  "ci-rust.log.gz": {
+    "original_sha256": "ba10a400e3c1c125e4e0ccacad2e0ed93f9ca68d070ac0bdaaaa7b66b4bd038f",
+    "original_bytes": 62469
+  },
+  "ci-interop.log.gz": {
+    "original_sha256": "17645b362dd9c4ea63baf2172a562c4ead8e24fde65d7c158c035cc013278956",
+    "original_bytes": 52652
+  },
+  "ci-distribution.log.gz": {
+    "original_sha256": "83902ed410fe37d2f480ad3b4bfc851f8165cddbbaaca4ab6bcf0a654a637ab1",
+    "original_bytes": 45186
+  },
+  "ci-native-kernel.log.gz": {
+    "original_sha256": "18ca1c26b43e0626cbd92de815bb4a00065da465f821e541e5136bafb71fa8cc",
+    "original_bytes": 75123
+  },
+  "rust-targeted.log.gz": {
+    "original_sha256": "1064e09a1addc03fe656ecfd787d3104cf90807a1fed374b556a9820ac3e0faf",
+    "original_bytes": 3407
+  },
+  "tuple-shapes.log.gz": {
+    "original_sha256": "d7d985143deaecd837868b362f945295599688de85620cc584f0b38e844ef183",
+    "original_bytes": 850
+  },
+  "process-tree.log.gz": {
+    "original_sha256": "41784b32b07709a97ae39bd4da99ad32f6a03e6231723b6fe49bcfe4edde8553",
+    "original_bytes": 422
+  },
+  "tensor.log.gz": {
+    "original_sha256": "6a41c6e12c997f6a4d4544fd27f27ecf131341cb2b2e7adeb202b06964d2c648",
+    "original_bytes": 409
+  },
+  "python-connections.log.gz": {
+    "original_sha256": "c57b0c04baed5c49d33a9deac2718ba9c0904867dc02eb46da66ead4ec7d164f",
+    "original_bytes": 112
+  },
+  "installation.json.gz": {
+    "original_sha256": "782ee18709fd023e680ae190e34be2135e2b145cb54999bcc9b087ca9fa7d7d9",
+    "original_bytes": 538
+  },
+  "ci-harness.log.gz": {
+    "original_sha256": "130147c84e9dcf32f36c6e4e1a45fc9ac0e14117d1b9f09e1fa9bbd3ed94d771",
+    "original_bytes": 709
+  },
+  "clippy.log.gz": {
+    "original_sha256": "5e1cc6cebcd8287f28afede053c24ce3b6fe80797dd5dc9913dc173de16e6c7d",
+    "original_bytes": 126
+  },
+  "native-replay.json.gz": {
+    "original_sha256": "d1999eb8a3795e40bc451642fc39042071726149f59ca40284359c73df47daa0",
+    "original_bytes": 294311
+  },
+  "completion.json.gz": {
+    "original_sha256": "dd4c6857738caa1da4dc0b0f9eabcf982bc7ae06a035bb2834fca5ca893465e3",
+    "original_bytes": 5473
+  },
+  "branch.json.gz": {
+    "original_sha256": "24551fb69afafe7690d33fbf3b7906c5d5d2bde020d213fc07d10e53879e22cf",
+    "original_bytes": 3712
+  },
+  "qpe-host.json.gz": {
+    "original_sha256": "409ef6a0fb733f01b6c7ec7962c866b0df77e6bebeacd59c3d74fc2acbf6c42f",
+    "original_bytes": 2114
+  },
+  "qft-shared.json.gz": {
+    "original_sha256": "a9c06051791d8e8526eb5013a70597c9a4eaec808ec3c1ec013e8e59cdb224ad",
+    "original_bytes": 4862
+  },
+  "fourier-base.json.gz": {
+    "original_sha256": "15f988b8f4c2c03fc212ae6d465790589243c9871458520a4c92f8b175cab409",
+    "original_bytes": 79192
+  },
+  "fourier-root.json.gz": {
+    "original_sha256": "705b53156194d1206b8cf3e0e73877dc017d07a8c6db1a842cee56f7f9d7f7b6",
+    "original_bytes": 70050
+  },
+  "fourier-body.json.gz": {
+    "original_sha256": "6a3b5c20e71ffe42f57e7cebb8af7fdabdc0157e3ba257b2eb4615117c593925",
+    "original_bytes": 80483
+  }
+}

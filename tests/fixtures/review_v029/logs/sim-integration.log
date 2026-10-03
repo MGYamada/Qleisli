@@ -1,0 +1,37 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.63s
+     Running tests/sampling.rs (target/debug/deps/sampling-85dd39bd7a5ef4c9)
+
+running 8 tests
+test splitmix_words_are_the_specified_unsigned_algorithm ... ok
+test sampler_rejects_open_interfaces_before_requesting_randomness ... ok
+test discarded_entangled_half_is_sampled_and_no_state_is_reused ... ok
+test bell_draws_follow_the_word_threshold_and_consume_deterministic_words ... ok
+test preserved_grover_trial_draws_marked_result ... ok
+test failures_are_errors_and_limits_apply_before_draws ... ok
+test interference_probability_matches_an_independent_analytic_value ... ok
+test stochastic_samples_match_independent_bell_and_reset_feedback_contracts ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.19s
+
+     Running tests/sim.rs (target/debug/deps/sim-b0ba904c997bde18)
+
+running 15 tests
+test computed_phase_oracle_not_function_interferes_to_one ... ok
+test bell_lift_split_and_measure_has_only_matching_outcomes ... ok
+test discarding_entangled_half_keeps_mixed_residual ... ok
+test bell_half_measurement_and_feedback_corrects_other_half ... ok
+test join_and_permutation_lift_use_register_bit_order ... ok
+test computed_predicate_controls_target_without_measuring_source ... ok
+test coherent_qif_entangles_control_and_target ... ok
+test classical_projection_copies_share_the_execution_budget ... ok
+test repeated_t_phase_can_leave_a_tiny_floating_point_outcome ... ok
+test reset_breaks_bell_correlation_and_returns_new_zero_wire ... ok
+test toffoli_and_classical_boolean_ops_execute ... ok
+test scalar_phase_survives_even_without_target_wires ... ok
+test nonclosed_input_and_dimension_limit_are_reported ... ok
+test unit_target_scalar_phase_becomes_relative_control_phase ... ok
+test nested_branches_reserve_pending_outer_components_and_amplitudes ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+

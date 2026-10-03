@@ -1,0 +1,24 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--manifest-path",
+    "research/semantic-kernel/Cargo.toml",
+    "--all-targets",
+    "--offline"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "start_utc": "2026-10-03T18:17:50.820792+00:00",
+  "seconds": 137.818,
+  "exit_code": 0,
+  "logs": {
+    "stdout": {
+      "path": "/private/tmp/qleisli-v029-publication/research-native.stdout",
+      "sha256": "f5ab98f64e97aa08277c9669732da56d3467bfc8158b2b6037dc094b1e34ef1d"
+    },
+    "stderr": {
+      "path": "/private/tmp/qleisli-v029-publication/research-native.stderr",
+      "sha256": "a70c600b672219f6de65d6553ac5f728fe168d6e65be9c61ad3775e820626d0a"
+    }
+  }
+}

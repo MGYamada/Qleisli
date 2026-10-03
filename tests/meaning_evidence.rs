@@ -1,9 +1,10 @@
 //! The target adapter reuses existing sealed evidence and verifier rules.
+mod common;
+use common::accept;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use qleisli::contract::{BasisType, ContractError, DEFAULT_EXACT_WORK, FunctionIdentity};
 use qleisli::ir::{CircuitAction, CircuitStep, RawOp};
-use qleisli::verify;
 
 fn budget() -> Budget {
     Budget::new(DEFAULT_EXACT_WORK)
@@ -113,7 +114,7 @@ fn retained_target_rejects_stale_source_raw_axes_phase_and_exact_tree() {
             adjoint: false,
         },
     }];
-    verify(attached.clone()).unwrap();
+    accept(attached.clone()).unwrap();
     let RawOp::ApplyUnitary { steps, .. } = &mut attached.operations[0] else {
         panic!()
     };
@@ -121,7 +122,7 @@ fn retained_target_rejects_stale_source_raw_axes_phase_and_exact_tree() {
         panic!()
     };
     indices[0] = 1;
-    assert!(verify(attached).is_err());
+    assert!(accept(attached).is_err());
     assert_eq!(
         evidence.receipt().meaning(),
         &target.matrix(&mut budget()).unwrap()

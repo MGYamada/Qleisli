@@ -1,5 +1,5 @@
 //! Fresh conditional hierarchy inspection and finite reconstruction.
-//! Additive checked-request reports are not production VerifiedProgram values.
+//! Additive checked-request reports are not production AcceptedProgram values.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 mod bridge;
@@ -10,7 +10,9 @@ pub mod execution;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use super::finite_leaf::{CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_unitary};
+use super::finite_leaf::{
+    CheckedSerializedUnitaryLeaf, UnitaryBoundary, check_serialized_with_kernel,
+};
 use super::json::Value;
 use super::{Error, Result, contract_error};
 use crate::contract::exact::{Budget, Matrix};
@@ -65,8 +67,9 @@ impl Reconstructed {
         self.exact_work
     }
     /// Native original-QIRF, request and H work under its own shared ceiling.
-    /// Compatibility Rust handles are independently rebuilt, not double charged
-    /// into this budget. `exact_work` reports that separate legacy work.
+    /// Reconstructed leaves receive fresh native checks under a separate host
+    /// budget. `exact_work` reports those checks plus description decoding;
+    /// it is not work performed by a second Rust acceptance implementation.
     pub fn native_exact_work(&self) -> usize {
         self.native_exact_work
     }
@@ -90,7 +93,12 @@ impl Kernel {
         let decoded = bridge::decode(payload)?;
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let leaves = reconstruct(&decoded.value, response.indices, &mut budget)?;
+        let leaves = reconstruct(
+            &super::native::Kernel::new(&self.executable),
+            &decoded.value,
+            response.indices,
+            &mut budget,
+        )?;
         Ok(Reconstructed::new(
             payload,
             leaves,
@@ -101,14 +109,18 @@ impl Kernel {
     }
 }
 
-/// Experimental native-only report. It retains immutable inputs but creates no
-/// Rust `VerifiedProgram` or executable finite-leaf handle. Decoder/native
-/// correspondence and the selected audited executable remain assumptions.
+/// Native-only report retaining immutable checked inputs and complete finite
+/// obligation coverage. It creates no Rust `AcceptedProgram` or legacy leaf
+/// handle. Bounded execution decodes only actual matrices whose original QIRF
+/// equality the native checker established. Decoder/native correspondence and
+/// the selected audited executable remain explicit assumptions.
 #[derive(Debug)]
 pub struct NativeChecked {
     payload: Arc<[u8]>,
     request: Option<Arc<[u8]>>,
     candidate: Option<Arc<[u8]>>,
+    finite_indices: Vec<usize>,
+    instrument: bool,
     structural_work: usize,
     exact_work: usize,
 }
@@ -119,11 +131,14 @@ impl NativeChecked {
         request: Option<&[u8]>,
         candidate: Option<&[u8]>,
         response: &runtime::Response,
+        instrument: bool,
     ) -> Self {
         Self {
             payload: Arc::from(payload),
             request: request.map(Arc::from),
             candidate: candidate.map(Arc::from),
+            finite_indices: response.indices.clone(),
+            instrument,
             structural_work: response.work,
             exact_work: response.exact_work,
         }
@@ -136,6 +151,10 @@ impl NativeChecked {
     }
     pub fn candidate(&self) -> Option<&[u8]> {
         self.candidate.as_deref()
+    }
+    /// Whether the fresh native check covered preparation and ordered readout.
+    pub fn is_instrument(&self) -> bool {
+        self.instrument
     }
     pub fn structural_work(&self) -> usize {
         self.structural_work
@@ -151,7 +170,7 @@ impl Kernel {
         let decoded = bridge::decode(payload)?;
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Inspect)?;
         validate_leaves(&decoded.value, &response.indices)?;
-        Ok(NativeChecked::new(payload, None, None, &response))
+        Ok(NativeChecked::new(payload, None, None, &response, false))
     }
 
     /// Native original-QIRF/request checking, including phase-fixed Fourier H.
@@ -174,7 +193,13 @@ impl Kernel {
                 response.pairs.clone(),
             )?;
         }
-        Ok(NativeChecked::new(payload, Some(request), None, &response))
+        Ok(NativeChecked::new(
+            payload,
+            Some(request),
+            None,
+            &response,
+            false,
+        ))
     }
 
     /// Native composed initialization, finite circuit request and readout.
@@ -188,7 +213,13 @@ impl Kernel {
             &decoded.pure.pairs,
             response.pairs.clone(),
         )?;
-        Ok(NativeChecked::new(payload, Some(request), None, &response))
+        Ok(NativeChecked::new(
+            payload,
+            Some(request),
+            None,
+            &response,
+            true,
+        ))
     }
 
     /// Native named-QPE provider, schedule and exact H checks. No production
@@ -222,6 +253,7 @@ impl Kernel {
             Some(request),
             Some(candidate),
             &response,
+            true,
         ))
     }
 }
@@ -251,6 +283,7 @@ fn validate_leaves(value: &Value, indices: &[usize]) -> Result<()> {
 }
 
 fn reconstruct(
+    kernel: &super::native::Kernel,
     value: &Value,
     indices: Vec<usize>,
     budget: &mut Budget,
@@ -283,7 +316,8 @@ fn reconstruct(
         let program = db.field("program")?.text()?.as_bytes();
         let description = mb.field("description")?.text()?.as_bytes();
         let boundary = boundary(definition.field("interface")?)?;
-        let checked = check_serialized_unitary(program, &boundary, description, budget)?;
+        let checked =
+            check_serialized_with_kernel(kernel, program, &boundary, description, budget)?;
         leaves.push((index, checked));
     }
     // Every proof is checked by the pure pass, not just the root chain.
@@ -328,7 +362,12 @@ impl Kernel {
         };
         let response = runtime::check(&self.executable, decoded.bridge, mode)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let leaves = reconstruct(&decoded.actual, response.indices, &mut budget)?;
+        let leaves = reconstruct(
+            &super::native::Kernel::new(&self.executable),
+            &decoded.actual,
+            response.indices,
+            &mut budget,
+        )?;
         if let Some(width) = decoded.fourier_width {
             validate_hadamards(&decoded.actual, width, response.pairs)?;
         } else {
@@ -394,7 +433,7 @@ fn validate_pairs(
 
 /// A composed initialization, pure circuit and readout report bound to the
 /// caller's explicit request. All finite obligations have been reconstructed.
-/// This experimental report is not a production `VerifiedProgram`, a source
+/// This experimental report is not a production `AcceptedProgram`, a source
 /// preservation proof, or a proof of a named algorithm such as QPE.
 #[derive(Debug)]
 pub struct CheckedInstrument {
@@ -421,7 +460,12 @@ impl Kernel {
         let decoded = bridge::decode_instrument(payload, request)?;
         let response = runtime::check(&self.executable, decoded.bridge, Mode::Instrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let leaves = reconstruct(&decoded.pure.actual, response.indices, &mut budget)?;
+        let leaves = reconstruct(
+            &super::native::Kernel::new(&self.executable),
+            &decoded.pure.actual,
+            response.indices,
+            &mut budget,
+        )?;
         validate_pairs(
             &decoded.pure.actual,
             &decoded.pure.request,
@@ -455,7 +499,12 @@ impl Kernel {
         let decoded = bridge::decode_qpe_instrument(payload, request, candidate)?;
         let response = runtime::check(&self.executable, decoded.bridge, Mode::QpeInstrument)?;
         let mut budget = Budget::new(DEFAULT_EXACT_WORK);
-        let leaves = reconstruct(&decoded.provider.actual, response.indices, &mut budget)?;
+        let leaves = reconstruct(
+            &super::native::Kernel::new(&self.executable),
+            &decoded.provider.actual,
+            response.indices,
+            &mut budget,
+        )?;
         validate_pairs(
             &decoded.provider.actual,
             &decoded.provider.request,
@@ -490,7 +539,7 @@ impl Kernel {
 /// Checked named-QPE component report with a distinct independent provider
 /// request and retained candidate bytes. The contained instrument supports the
 /// existing bounded numerical execution/sampling APIs; no external schema,
-/// production `VerifiedProgram`, or source theorem is created.
+/// production `AcceptedProgram`, or source theorem is created.
 #[derive(Debug)]
 pub struct CheckedQpeInstrument {
     instrument: CheckedInstrument,

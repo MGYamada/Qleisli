@@ -1,0 +1,15 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-dfcd7d9804c84c88)
+
+running 8 tests
+test frontend::project::source_file::tests::macos_nofollow_any_is_gated_by_runtime_version ... ok
+test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+test frontend::project::source_file::tests::macos_openat_retains_parent_identity_after_path_replacement ... ok
+test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+test frontend::project::source_file::tests::macos_fifo_source_replacement_is_rejected_without_a_writer ... ok
+test frontend::project::source_file::tests::macos_legacy_walk_rejects_links_and_retains_read_requirement ... ok
+test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 0.02s
+

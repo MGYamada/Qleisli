@@ -5,6 +5,7 @@ Temporary harnesses receive raw inputs only. No Rust result, success flag or
 reference summary is passed to Lean. No production protocol or seal is added.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import copy
 from fractions import Fraction
@@ -310,17 +311,11 @@ def native(all_cases, log):
     command(["cc", "--version"], ROOT, log)
     with tempfile.TemporaryDirectory(prefix="qleisli-exact-native-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text('name = "exact_test"\nversion = "0.0.0"\n'
-            'defaultTargets = ["exact-test"]\n[[require]]\nname = "qleisli_kernel"\npath = ' +
-            json.dumps(str(ROOT / "lean-kernel")) +
-            '\n[[lean_exe]]\nname = "exact-test"\nroot = "Main"\n')
         definitions = "\n".join(f"def case{i} : IO Unit := {lean_case(c)}" for i, c in enumerate(all_cases))
         actions = ",".join(f"case{i}" for i in range(len(all_cases)))
         (project / "Main.lean").write_text(LEAN + definitions +
             f"\ndef main : IO Unit := do\n  for action in [{actions}] do action\n")
-        command(["lake", "build"], project, log)
-        binary = project / ".lake/build/bin/exact-test"
+        binary = native_harness.build(project, log)
         lean = [json.loads(line) for line in command([str(binary)], project, log).splitlines()]
         (project / "Cargo.toml").write_text('[package]\nname="qleisli_exact_test"\nversion="0.0.0"\n'
             'edition="2024"\n[dependencies]\nqleisli={path=' + json.dumps(str(ROOT)) + '}\n'

@@ -1,0 +1,28 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.15s
+     Running tests/sim.rs (target/debug/deps/sim-b0ba904c997bde18)
+
+running 2 tests
+
+thread 'quantum_phi_copies_charge_empty_owners_and_wire_relabeling' (9130035) panicked at tests/sim.rs:196:5:
+assertion `left == right` failed
+  left: Ok({[false]: 1.0})
+ right: Err(ExecutionLimit { max: 10 })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test quantum_phi_copies_charge_empty_owners_and_wire_relabeling ... FAILED
+
+thread 'branch_phi_copies_share_the_ensemble_and_sample_execution_budgets' (9130034) panicked at tests/sim.rs:160:5:
+assertion `left == right` failed
+  left: Ok({[false]: 0.5000000000000002, [true]: 0.5000000000000002})
+ right: Err(ExecutionLimit { max: 32 })
+test branch_phi_copies_share_the_ensemble_and_sample_execution_budgets ... FAILED
+
+failures:
+
+failures:
+    branch_phi_copies_share_the_ensemble_and_sample_execution_budgets
+    quantum_phi_copies_charge_empty_owners_and_wire_relabeling
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.15s
+
+error: test failed, to rerun pass `--test sim`

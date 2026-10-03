@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/private/tmp/qleisli-v028-release-python/bin/python",
+    "scripts/test_interop_native.py",
+    "--kernel",
+    "/private/tmp/qleisli-kernel-v0.2.9-macos-arm64/bin/qleisli-kernel",
+    "--record",
+    "/private/tmp/qleisli-v029-publication/interop-explicit-selection-pyqir.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "start_utc": "2026-10-03T18:19:45.177837+00:00",
+  "seconds": 21.839,
+  "exit_code": 0,
+  "logs": {
+    "stdout": {
+      "path": "/private/tmp/qleisli-v029-publication/interop-explicit-selection-pyqir.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "/private/tmp/qleisli-v029-publication/interop-explicit-selection-pyqir.stderr",
+      "sha256": "ff4463abf00ed4cd8ed55ced8faead4a3a7a2f05815162e1f7808c9ba41b431d"
+    }
+  }
+}

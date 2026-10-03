@@ -31,6 +31,6 @@ Executed records for this repair are retained here:
 - [Rebuilt Lean registry, theorem types and audits](registry-validation.json).
 - [Combined local validation and exclusions](validation.json).
 
-See the [review response](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) for dispositions and
-the [development record](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/releases/v0.2.2.md) for local validation.
+See the review response for dispositions and
+the development record for local validation.
 Published 0.2.1 artifacts and earlier validation files remain immutable.

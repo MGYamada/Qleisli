@@ -14,6 +14,106 @@ use std::fs::OpenOptions;
 use std::io;
 use std::path::Path;
 
+/// Directory-relative operations below anchor discovery and reads in an already
+/// selected root. Diagnostic paths never become Unix traversal authority.
+pub(super) fn child(
+    directory: &File,
+    path: &Path,
+    name: &std::ffi::OsStr,
+    is_dir: bool,
+) -> io::Result<File> {
+    #[cfg(unix)]
+    {
+        use rustix::fs::{Mode, OFlags};
+        let _ = path;
+        let flags = OFlags::RDONLY
+            | OFlags::NOFOLLOW
+            | OFlags::NONBLOCK
+            | OFlags::CLOEXEC
+            | if is_dir {
+                OFlags::DIRECTORY
+            } else {
+                OFlags::empty()
+            };
+        Ok(File::from(rustix::fs::openat(
+            directory,
+            name,
+            flags,
+            Mode::empty(),
+        )?))
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        open_platform(&path.join(name), is_dir)
+    }
+}
+
+pub(super) fn entries(
+    directory: &File,
+    path: &Path,
+) -> io::Result<Box<dyn Iterator<Item = io::Result<std::ffi::OsString>>>> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::ffi::OsStrExt;
+        // Reopen for reading: Linux's initial root may be an O_PATH handle.
+        let reader = child(directory, path, std::ffi::OsStr::new("."), true)?;
+        let entries = rustix::fs::Dir::read_from(&reader)?;
+        Ok(Box::new(entries.filter_map(|entry| match entry {
+            Ok(entry) if matches!(entry.file_name().to_bytes(), b"." | b"..") => None,
+            Ok(entry) => Some(Ok(
+                std::ffi::OsStr::from_bytes(entry.file_name().to_bytes()).to_owned(),
+            )),
+            Err(error) => Some(Err(error.into())),
+        })))
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        Ok(Box::new(
+            std::fs::read_dir(path)?.map(|entry| entry.map(|entry| entry.file_name())),
+        ))
+    }
+}
+
+pub(super) enum Kind {
+    Directory,
+    File,
+    Link,
+    Other,
+}
+pub(super) fn kind(directory: &File, path: &Path, name: &std::ffi::OsStr) -> io::Result<Kind> {
+    #[cfg(unix)]
+    {
+        use rustix::fs::{AtFlags, FileType, statat};
+        let _ = path;
+        Ok(
+            match FileType::from_raw_mode(
+                statat(directory, name, AtFlags::SYMLINK_NOFOLLOW)?.st_mode,
+            ) {
+                FileType::Directory => Kind::Directory,
+                FileType::RegularFile => Kind::File,
+                FileType::Symlink => Kind::Link,
+                _ => Kind::Other,
+            },
+        )
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = directory;
+        let metadata = std::fs::symlink_metadata(path.join(name))?;
+        Ok(if metadata.is_symlink() {
+            Kind::Link
+        } else if metadata.is_dir() {
+            Kind::Directory
+        } else if metadata.is_file() {
+            Kind::File
+        } else {
+            Kind::Other
+        })
+    }
+}
+
 pub(super) fn open(path: &Path) -> io::Result<File> {
     let file = open_platform(path, false)?;
     if !file.metadata()?.is_file() {
@@ -436,8 +536,24 @@ mod tests {
         let source = root.0.join("main.qli");
         fs::write(&source, "original").unwrap();
         let mut discovered = vec![];
-        assert!(super::super::collect_qli_files(&root.0, &mut discovered).is_ok());
-        assert_eq!(discovered.as_slice(), std::slice::from_ref(&source));
+        fs::write(
+            root.0.join("Qargo.toml"),
+            "schema-version=2\n[qrate]\nedition=\"2026\"\n",
+        )
+        .unwrap();
+        assert!(
+            super::super::collect_qli_files(
+                &root.0,
+                &open_directory(&root.0).unwrap(),
+                &mut super::super::SourceBudget {
+                    policy: super::super::SourcePolicy::Legacy,
+                    used: 0
+                },
+                &mut discovered
+            )
+            .is_ok()
+        );
+        assert_eq!(discovered[0].0, source);
         fs::remove_file(&source).unwrap();
         assert!(
             std::process::Command::new("mkfifo")
@@ -515,9 +631,25 @@ mod tests {
         fs::write(root.join("nested/main.qli"), "original").unwrap();
         fs::write(root.join("outside"), "replacement").unwrap();
         let mut discovered = vec![];
-        assert!(super::super::collect_qli_files(&root, &mut discovered).is_ok());
-        assert_eq!(discovered, [root.join("nested/main.qli")]);
-        let source = &discovered[0];
+        fs::write(
+            root.join("Qargo.toml"),
+            "schema-version=2\n[qrate]\nedition=\"2026\"\n",
+        )
+        .unwrap();
+        assert!(
+            super::super::collect_qli_files(
+                &root,
+                &open_directory(&root).unwrap(),
+                &mut super::super::SourceBudget {
+                    policy: super::super::SourcePolicy::Legacy,
+                    used: 0
+                },
+                &mut discovered
+            )
+            .is_ok()
+        );
+        assert_eq!(discovered[0].0, root.join("nested/main.qli"));
+        let source = &discovered[0].0;
         let original = open(source).unwrap();
         fs::rename(source, root.join("original")).unwrap();
         symlink(root.join("outside"), source).unwrap();

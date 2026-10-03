@@ -1,11 +1,12 @@
 //! Qleisli: an experimental quantum language with independently checked finite IR.
 //!
 //! The frontend checks a finite `.qli` subset and lowers it to IR. Every
-//! generated function is passed through [`verify`], which checks the operation
-//! subset in [`ir`]. Raw IR is untrusted regardless of its producer.
-//! This Rust library and the `qleisli` CLI require neither Lean nor Python.
-//! The separately built Lean kernel is an experimental, staged migration;
-//! the production acceptance path still uses the Rust verifier.
+//! generated function is submitted to [`interchange::native::Kernel`]. Raw IR
+//! is untrusted regardless of its producer. Lean is the only acceptance authority.
+//! Cargo builds and documents this library without Lean; checking requires a
+//! separately built, compatible native checker. Set `QLEISLI_KERNEL` to its
+//! executable or use the explicit `*_with_kernel` APIs. Missing, incompatible
+//! or failing checkers reject; no runtime download or Rust fallback exists.
 //!
 //! # Start with a verified circuit
 //!
@@ -36,9 +37,9 @@
 //! # API guide
 //!
 //! - [`frontend::compile::compile_project`] compiles a directory with `main.qli`
-//!   to a [`VerifiedProgram`]; its diagnostic/policy variants provide located
+//!   to an [`AcceptedProgram`]; its diagnostic/policy variants provide located
 //!   errors and explicit source-loading limits.
-//! - [`verify`] checks manually constructed [`ir::RawProgram`] values.
+//! - [`interchange::native::Kernel::accept_raw`] checks manually constructed [`ir::RawProgram`] values.
 //! - [`interchange`] imports/exports QIRF artifacts and rechecks retained evidence.
 //! - [`interop`] imports bounded OpenQASM 3 and exports OpenQASM 3 or QIR Base.
 //!   QIR input is provided by the separate optional Python/PyQIR host layer.
@@ -56,11 +57,12 @@
 //! The first-registry-release name migration replaces the earlier Git/path
 //! `qleisli-core` package and `qleisli_core` import with `qleisli`. Existing
 //! clients must migrate dependency/import names or use a Cargo dependency alias.
-//! This explicit identity exception leaves other 0.2.x contracts compatible;
-//! the planned 0.3.0 type-system work is a separate breaking-change boundary.
-//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.8/tests/fixtures/quick_reference/README.md),
-//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.2.8/TRUST_BOUNDARY.md)
-//! and [versioning policy](https://github.com/MGYamada/Qleisli/blob/7844a10d63880a2b6984c093e2dc7a75033d1e1e/docs/versioning.md).
+//! Version 0.2.9 is an explicitly approved breaking verifier migration: use
+//! `AcceptedProgram` and `Kernel::accept_raw` in place of the removed Rust
+//! verifier and its handles. The 0.3.0 type-system work remains separate.
+//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.9/tests/fixtures/quick_reference/README.md),
+//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.2.9/TRUSTBOUNDARY.md)
+//! and versioning policy.
 
 pub mod contract;
 pub mod frontend;
@@ -69,6 +71,5 @@ pub mod interchange;
 pub mod interop;
 pub mod ir;
 pub mod sim;
-mod verify;
 
-pub use verify::{ValidationError, VerifiedProgram, verify};
+pub use interchange::native::AcceptedProgram;

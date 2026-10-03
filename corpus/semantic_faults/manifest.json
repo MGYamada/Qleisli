@@ -324,6 +324,60 @@
       "reference": "pennylane_demos/qaoa_path_layer3",
       "project": "semantic_faults/qaoa_path_layer3_fault",
       "reason": "Omit the second edge while retaining the shared middle wire."
+    },
+    {
+      "id": "minus_preparation_wrong_extension",
+      "reference": "quantum_katas/minus_state1",
+      "project": "semantic_faults/minus_preparation_wrong_extension",
+      "reason": "Apply Z before the upstream H X: the zero-input preparation agrees, but the second column changes sign."
+    },
+    {
+      "id": "negative_phase_conjugated",
+      "reference": "quantum_katas/phase_negative_eighth1",
+      "project": "semantic_faults/negative_phase_conjugated",
+      "reason": "Reverse the phase angle; Z probabilities agree but Y interference differs."
+    },
+    {
+      "id": "uniform_missing_middle_h",
+      "reference": "quantum_katas/uniform3",
+      "project": "semantic_faults/uniform_missing_middle_h",
+      "reason": "Omit the middle Hadamard, losing half the promised support."
+    },
+    {
+      "id": "decrement_lost_high_borrow",
+      "reference": "qualtran/add_minus_one3",
+      "project": "semantic_faults/decrement_lost_high_borrow",
+      "reason": "Omit the final borrow into the high bit; zero no longer maps to seven."
+    },
+    {
+      "id": "zero_predicate_input_not_restored",
+      "reference": "qualtran/less_than_one2",
+      "project": "semantic_faults/zero_predicate_input_not_restored",
+      "reason": "Compute the target correctly but leave the low input bit complemented."
+    },
+    {
+      "id": "basis_reflection_wrong_label",
+      "reference": "qualtran/reflection_basis_one2",
+      "project": "semantic_faults/basis_reflection_wrong_label",
+      "reason": "Flip the control without restoring it, violating the diagonal reflection and label contract."
+    },
+    {
+      "id": "negative_rotations_reversed",
+      "reference": "pennylane_demos/rotation_both_negative",
+      "project": "semantic_faults/negative_rotations_reversed",
+      "reason": "Reverse noncommuting RX and RY while retaining the types and owners."
+    },
+    {
+      "id": "path_cost_lost_second_phase",
+      "reference": "pennylane_demos/qaoa_path_cost3",
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "reason": "Erase the second edge phase; all basis probabilities remain unchanged."
+    },
+    {
+      "id": "negative_edge_cost_sign",
+      "reference": "pennylane_demos/qaoa_negative_edge_layer2",
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "reason": "Reverse the cost angle; probabilities may agree while the complex operator differs."
     }
   ]
 }

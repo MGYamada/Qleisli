@@ -5,7 +5,7 @@ Status: **VM-25 straight-line pure checking complete**; the
 action, non-dense protected cleanup and complete retained attachment/capacity
 binding. The descriptions below retain the earlier component boundary.
 Production acceptance stays Rust. This is the next implementation boundary in
-the [adopted migration](../../../docs/verification-migration-v0.2.md), following
+the [adopted migration](https://github.com/MGYamada/Qleisli/issues/276), following
 VM-24's circuit/encoding equations. No production seal or public API is replaced.
 
 ## Moved code and input boundary

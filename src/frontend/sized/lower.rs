@@ -81,6 +81,20 @@ impl HierarchyProposal {
         }
         preservation::validate(self)
     }
+
+    /// Validate source-order initialization moves against the same immutable
+    /// instrument accepted natively, without rebuilding legacy Rust leaves.
+    pub fn validate_initialization_moves_native(
+        &self,
+        checked: &crate::interchange::hierarchical::NativeChecked,
+    ) -> Result<PreparationValidation> {
+        if !checked.is_instrument() || checked.payload() != self.payload() {
+            return Err(preservation::invalid(
+                "native checked instrument differs from source proposal",
+            ));
+        }
+        preservation::validate(self)
+    }
 }
 
 fn fail(message: impl Into<String>) -> Error {
@@ -720,16 +734,18 @@ impl Lower<'_> {
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
-        let checked = crate::verify(raw).map_err(|e| fail(e.to_string()))?;
-        let program = interchange::export(
-            &checked,
+        let program = interchange::native::Proposal::from_raw(
+            &raw,
             Some(&RootInterface {
                 input: BasisType::Bit,
                 output: BasisType::Bit,
             }),
             Version::V2,
+            None,
         )
-        .map_err(|e| fail(e.to_string()))?;
+        .map_err(|e| fail(e.to_string()))?
+        .artifact()
+        .to_vec();
         let entries = if gate == SingleGate::H {
             [1, 1, 1, -1]
                 .into_iter()

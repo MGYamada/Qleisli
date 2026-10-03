@@ -22,7 +22,8 @@ fn seeded_samples_have_atomic_human_and_json_outputs() {
         let s = String::from_utf8(output.stdout).unwrap();
         if json {
             assert!(s.contains("\"seed\":\"18446744073709551615\""), "{s}");
-            assert!(s.contains("\"shots\":[{\"bits\":[false],\"execution_steps\":2},{\"bits\":[false],\"execution_steps\":2}],\"execution_steps\":4"),"{s}");
+            // Init0, MeasureZ and the projection's axis metadata copy each cost one step.
+            assert!(s.contains("\"shots\":[{\"bits\":[false],\"execution_steps\":3},{\"bits\":[false],\"execution_steps\":3}],\"execution_steps\":6"),"{s}");
         } else {
             assert_eq!(s, "0\n0\n");
         }

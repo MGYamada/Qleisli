@@ -1,0 +1,3199 @@
+{
+  "format": "qleisli.repository-qli-audit",
+  "version": 1,
+  "date": "2026-10-03",
+  "project_version": "0.2.9",
+  "status": "no-unexpected-source-regressions-in-checked-scope",
+  "cutover_complete": false,
+  "source_count": 1041,
+  "source_counts": {
+    "stdlib": 4,
+    "examples": 41,
+    "corpus": 764,
+    "tests": 232
+  },
+  "classification": {
+    "ordinary-syntax": 506,
+    "intentional-syntax-rejection": 4,
+    "frozen-authoring": 505,
+    "sized-dialect": 26
+  },
+  "source_inventory_sha256": "1bc1b7568bd75834e68333ec8617a5b926e264f13f19fb7dfa2ad701a85368c8",
+  "sources_unchanged_after_checks": true,
+  "edition": {
+    "schema": 2,
+    "edition": "2026",
+    "checked": 1041,
+    "failures": 0
+  },
+  "ordinary_parser": {
+    "accepted": 959,
+    "rejected": 82,
+    "rejections": [
+      {
+        "path": "tests/fixtures/ergonomics/ordinary_parameter_pattern.qli",
+        "category": "intentional-syntax-rejection",
+        "diagnostic": "expected an identifier at byte 23..24"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/attempt-01/estimation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 549..550"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/attempt-01/main.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `(`, found identifier at byte 220..224"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/amplification.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 308..311"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/delayed_fourier.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 673..674"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/reflection.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 279..282"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/amplitude.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 429..432"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/modular.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `-` at byte 408..409"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/order.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 367..370"
+      },
+      {
+        "path": "tests/fixtures/sized_clients/rotation.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 340..343"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/preparation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 430..431"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/fourier.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/estimation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 738..739"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/evolution.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 458..461"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/preparation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 430..431"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/fourier.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/estimation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 738..739"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/evolution.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 458..461"
+      },
+      {
+        "path": "tests/fixtures/qli_authoring/rejected/basis_type_parameter.qli",
+        "category": "intentional-syntax-rejection",
+        "diagnostic": "expected `Op`, found identifier at byte 27..36"
+      },
+      {
+        "path": "tests/fixtures/qli_authoring/rejected/static_nat.qli",
+        "category": "intentional-syntax-rejection",
+        "diagnostic": "expected `Op`, found identifier at byte 27..30"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/addition.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 478..479"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/increment.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/controls.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 734..735"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/comparison.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 667..668"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/bitwise.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 558..559"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/addition.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 478..479"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/increment.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/controls.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 734..735"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/negation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 442..443"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/comparison.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 449..452"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/bitwise.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 558..559"
+      },
+      {
+        "path": "tests/fixtures/measured_clients/amplitude.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 270..273"
+      },
+      {
+        "path": "tests/fixtures/measured_clients/retiming.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 410..413"
+      },
+      {
+        "path": "tests/fixtures/measured_clients/order.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 218..221"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-01/readout.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 266..269"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/initialization.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 394..395"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/measurement.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 265..268"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/readout.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 616..617"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-01/xor.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 723..724"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-01/main.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected an identifier at byte 88..91"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-02/bitwise.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 728..729"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-02/main.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `(`, found identifier at byte 194..199"
+      },
+      {
+        "path": "tests/fixtures/review_v019/bare_cr/main.qli",
+        "category": "intentional-syntax-rejection",
+        "diagnostic": "bare carriage return is forbidden; use LF or CRLF at byte 127..128"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/attempt-01/layout.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `+` at byte 295..296"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/attempt-01/main.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `(`, found identifier at byte 302..307"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-01/fourier.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-02/fourier.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-02/inverse.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 344..347"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/amplification.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 308..311"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/preparation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 430..431"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/fourier.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/estimation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 738..739"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/reflection.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 279..282"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/amplitude.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 429..432"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/evolution.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 458..461"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/modular.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `-` at byte 408..409"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/order.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 367..370"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/rotation.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `Op`, found identifier at byte 340..343"
+      },
+      {
+        "path": "tests/fixtures/sized_review/unguarded_take.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 235..238"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/attempt-01/prepare.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 725..726"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/attempt-01/bitwise.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "unexpected character `.` at byte 558..559"
+      },
+      {
+        "path": "tests/fixtures/authoring_sessions/reshape-v021/attempt-01/main.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `}`, found `::` at byte 204..206"
+      },
+      {
+        "path": "corpus/sized/qualtran_xor/bitwise.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 558..559"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/addition.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 478..479"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/increment.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `-` at byte 583..584"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/controls.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `-` at byte 734..735"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/negation.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 442..443"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/comparison.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 449..452"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/preparation.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 430..431"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/estimation.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 738..739"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/evolution.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 458..461"
+      },
+      {
+        "path": "corpus/sized/qualtran_qft/fourier.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 583..584"
+      },
+      {
+        "path": "corpus/sized/qualtran_qft/inverse.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 344..347"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/initialization.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `-` at byte 394..395"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/measurement.qli",
+        "category": "sized-dialect",
+        "diagnostic": "expected `Op`, found identifier at byte 265..268"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/readout.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `-` at byte 616..617"
+      },
+      {
+        "path": "corpus/sized/katas_ghz/prepare.qli",
+        "category": "sized-dialect",
+        "diagnostic": "unexpected character `.` at byte 741..742"
+      },
+      {
+        "path": "corpus/authoring/attempt-01/pennylane_demos/vqe_excitation/kernel.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `(`, found `let` at byte 849..852"
+      },
+      {
+        "path": "corpus/authoring/v026-small/attempt-01/qualtran/control_zero_reflection2/kernel.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected canonical static natural number at byte 692..704"
+      },
+      {
+        "path": "corpus/authoring/v026-small/attempt-01/qualtran/reflection_minus1/kernel.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected canonical static natural number at byte 720..732"
+      },
+      {
+        "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/controlled_h2/kernel.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `)`, found `,` at byte 563..564"
+      },
+      {
+        "path": "corpus/authoring/attempt-01/qualtran/less_than2/kernel.qli",
+        "category": "frozen-authoring",
+        "diagnostic": "expected `)`, found identifier at byte 744..746"
+      }
+    ]
+  },
+  "sized_generic": {
+    "unique_positive_sources": 25,
+    "coherent_modules": 22,
+    "measured_modules": 23,
+    "negative_sources": 1,
+    "result": "coherent: 22 modules accepted\nmeasured: 23 modules accepted\nunguarded_take rejected: main:293..309: size: register index needs k < n\n",
+    "scope": "Generic parse/check with imports; no large instantiation"
+  },
+  "compiler_sha256": "c4616f774b340f5da432539cc06cd287c4c17ac65dd2abebb75eaf60c879af9c",
+  "kernel_sha256": "65254f31d6b306db68c5dd7af37bf502ed2d266df56b9bc4aa7672ad984bca7a",
+  "native_example_sha256": "c69dba078e6f0e7fcf853cecc0d7b002a78dd3fd9e49082478fef5e1731ce9da",
+  "selected_source_comparison": {
+    "project_count": 164,
+    "unexpected": 0,
+    "command": "target/debug/qleisli check PROJECT --format=json [--lean-kernel=lean-kernel/.lake/build/bin/qleisli-kernel]",
+    "results": [
+      {
+        "id": "examples/bell",
+        "source": "examples/bell",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/bernstein_vazirani",
+        "source": "examples/bernstein_vazirani",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/bit_flip_code",
+        "source": "examples/bit_flip_code",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/feedback",
+        "source": "examples/feedback",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/function_contracts",
+        "source": "examples/function_contracts",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/grover",
+        "source": "examples/grover",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/iterative_phase_estimation",
+        "source": "examples/iterative_phase_estimation",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/operation_algorithms",
+        "source": "examples/operation_algorithms",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/operation_contracts",
+        "source": "examples/operation_contracts",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/order_finding",
+        "source": "examples/order_finding",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/phase_estimation",
+        "source": "examples/phase_estimation",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/phase_oracle",
+        "source": "examples/phase_oracle",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/protocols",
+        "source": "examples/protocols",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "examples/semantic_contracts",
+        "source": "examples/semantic_contracts",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": null
+      },
+      {
+        "id": "quantum_katas/global_phase",
+        "source": "corpus/quantum_katas/global_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/global_phase",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/ghz3",
+        "source": "corpus/quantum_katas/ghz3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/ghz3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/measure_plus",
+        "source": "corpus/quantum_katas/measure_plus",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/measure_plus",
+          "semantic_probes": 6,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/teleport",
+        "source": "corpus/quantum_katas/teleport",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/teleport",
+          "semantic_probes": 9,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/dense_coding",
+        "source": "corpus/quantum_katas/dense_coding",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/dense_coding",
+          "semantic_probes": 4,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/bernstein_vazirani",
+        "source": "corpus/quantum_katas/bernstein_vazirani",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/bernstein_vazirani",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/grover2",
+        "source": "corpus/quantum_katas/grover2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/grover2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/qpe3",
+        "source": "corpus/quantum_katas/qpe3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/qpe3",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/add2",
+        "source": "corpus/qualtran/add2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/add2",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/xor2",
+        "source": "corpus/qualtran/xor2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/xor2",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/qrom2",
+        "source": "corpus/qualtran/qrom2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/qrom2",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/and_phase",
+        "source": "corpus/qualtran/and_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/and_phase",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/qft2",
+        "source": "corpus/qualtran/qft2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/qft2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/qpe2",
+        "source": "corpus/qualtran/qpe2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/qpe2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/reflection2",
+        "source": "corpus/qualtran/reflection2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/reflection2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/qubit_rotation",
+        "source": "corpus/pennylane_demos/qubit_rotation",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qubit_rotation",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/teleport",
+        "source": "corpus/pennylane_demos/teleport",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/teleport",
+          "semantic_probes": 9,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_vertex_cover",
+        "source": "corpus/pennylane_demos/qaoa_vertex_cover",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_vertex_cover",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0,
+            "cost_expectation": 1.6653345369377348e-16
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_maxcut",
+        "source": "corpus/pennylane_demos/qaoa_maxcut",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_maxcut",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0,
+            "expected_cut_edges": 2.000000000000001
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/vqe_excitation",
+        "source": "corpus/pennylane_demos/vqe_excitation",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/vqe_excitation",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 1
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/classifier_layer",
+        "source": "corpus/pennylane_demos/classifier_layer",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/classifier_layer",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qpe3",
+        "source": "corpus/pennylane_demos/qpe3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qpe3",
+          "semantic_probes": 108,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": -1
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/deutsch_jozsa3",
+        "source": "corpus/quantum_katas/deutsch_jozsa3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/deutsch_jozsa3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/bell_measure",
+        "source": "corpus/quantum_katas/bell_measure",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/bell_measure",
+          "semantic_probes": 13,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/add_constant3",
+        "source": "corpus/qualtran/add_constant3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/add_constant3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/lcu_projector",
+        "source": "corpus/pennylane_demos/lcu_projector",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/lcu_projector",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": -1,
+            "zero_selector_probability": 0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/kernel_overlap2",
+        "source": "corpus/pennylane_demos/kernel_overlap2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/kernel_overlap2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0,
+            "kernel_overlap": 0.2500000000000001
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/swap2",
+        "source": "corpus/quantum_katas/swap2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/swap2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/fredkin3",
+        "source": "corpus/quantum_katas/fredkin3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/fredkin3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/xor_constant2",
+        "source": "corpus/qualtran/xor_constant2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/xor_constant2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/bitwise_not2",
+        "source": "corpus/qualtran/bitwise_not2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/bitwise_not2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rx_quarter",
+        "source": "corpus/pennylane_demos/rx_quarter",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rx_quarter",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/phase_kickback1",
+        "source": "corpus/pennylane_demos/phase_kickback1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/phase_kickback1",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": -1
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/odd_parity3",
+        "source": "corpus/quantum_katas/odd_parity3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/odd_parity3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/bell_singlet2",
+        "source": "corpus/quantum_katas/bell_singlet2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/bell_singlet2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/less_than_constant2",
+        "source": "corpus/qualtran/less_than_constant2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/less_than_constant2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/equals_constant2",
+        "source": "corpus/qualtran/equals_constant2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/equals_constant2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/ry_quarter",
+        "source": "corpus/pennylane_demos/ry_quarter",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/ry_quarter",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/ising_zz_quarter2",
+        "source": "corpus/pennylane_demos/ising_zz_quarter2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/ising_zz_quarter2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 1
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/zero_control_x2",
+        "source": "corpus/quantum_katas/zero_control_x2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/zero_control_x2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/bell_change_zx2",
+        "source": "corpus/quantum_katas/bell_change_zx2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/bell_change_zx2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/add_minus_one2",
+        "source": "corpus/qualtran/add_minus_one2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/add_minus_one2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/qrom1",
+        "source": "corpus/qualtran/qrom1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/qrom1",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rx_negative_quarter",
+        "source": "corpus/pennylane_demos/rx_negative_quarter",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rx_negative_quarter",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/ry_negative_quarter",
+        "source": "corpus/pennylane_demos/ry_negative_quarter",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/ry_negative_quarter",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/controlled_z2",
+        "source": "corpus/quantum_katas/controlled_z2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/controlled_z2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/toffoli3",
+        "source": "corpus/quantum_katas/toffoli3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/toffoli3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/less_equal1",
+        "source": "corpus/qualtran/less_equal1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/less_equal1",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/greater_than1",
+        "source": "corpus/qualtran/greater_than1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/greater_than1",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rotation_mixed_sign",
+        "source": "corpus/pennylane_demos/rotation_mixed_sign",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rotation_mixed_sign",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_mixer2",
+        "source": "corpus/pennylane_demos/qaoa_mixer2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_mixer2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/phased_uniform2",
+        "source": "corpus/quantum_katas/phased_uniform2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/phased_uniform2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/graph_state2",
+        "source": "corpus/quantum_katas/graph_state2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/graph_state2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/reflection_minus1",
+        "source": "corpus/qualtran/reflection_minus1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/reflection_minus1",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/control_zero_reflection2",
+        "source": "corpus/qualtran/control_zero_reflection2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/control_zero_reflection2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rotation_half_y",
+        "source": "corpus/pennylane_demos/rotation_half_y",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rotation_half_y",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/ising_zz_negative2",
+        "source": "corpus/pennylane_demos/ising_zz_negative2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/ising_zz_negative2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 1
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/controlled_h2",
+        "source": "corpus/quantum_katas/controlled_h2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/controlled_h2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/zero_bitstring3",
+        "source": "corpus/quantum_katas/zero_bitstring3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/zero_bitstring3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/even_numbers3",
+        "source": "corpus/quantum_katas/even_numbers3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/even_numbers3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/add_one3",
+        "source": "corpus/qualtran/add_one3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/add_one3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/greater_constant2",
+        "source": "corpus/qualtran/greater_constant2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/greater_constant2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/xor_constant3",
+        "source": "corpus/qualtran/xor_constant3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/xor_constant3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rotation_half_x",
+        "source": "corpus/pennylane_demos/rotation_half_x",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rotation_half_x",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": -1
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/ising_zz_half2",
+        "source": "corpus/pennylane_demos/ising_zz_half2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/ising_zz_half2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 1
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_edge_layer2",
+        "source": "corpus/pennylane_demos/qaoa_edge_layer2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_edge_layer2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/two_bitstrings3",
+        "source": "corpus/quantum_katas/two_bitstrings3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/two_bitstrings3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/w2_retained3",
+        "source": "corpus/quantum_katas/w2_retained3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/w2_retained3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/even_parity3",
+        "source": "corpus/quantum_katas/even_parity3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/even_parity3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/controlled_increment2",
+        "source": "corpus/qualtran/controlled_increment2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/controlled_increment2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/equals1",
+        "source": "corpus/qualtran/equals1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/equals1",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/reflection_zero2",
+        "source": "corpus/qualtran/reflection_zero2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/reflection_zero2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rotation_negative_x_positive_y",
+        "source": "corpus/pennylane_demos/rotation_negative_x_positive_y",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rotation_negative_x_positive_y",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_negative_mixer2",
+        "source": "corpus/pennylane_demos/qaoa_negative_mixer2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_negative_mixer2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_path_layer3",
+        "source": "corpus/pennylane_demos/qaoa_path_layer3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_path_layer3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "quantum_katas/minus_state1",
+        "source": "corpus/quantum_katas/minus_state1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/minus_state1",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/phase_negative_eighth1",
+        "source": "corpus/quantum_katas/phase_negative_eighth1",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/phase_negative_eighth1",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "quantum_katas/uniform3",
+        "source": "corpus/quantum_katas/uniform3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "quantum_katas/uniform3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/add_minus_one3",
+        "source": "corpus/qualtran/add_minus_one3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/add_minus_one3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/less_than_one2",
+        "source": "corpus/qualtran/less_than_one2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/less_than_one2",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "qualtran/reflection_basis_one2",
+        "source": "corpus/qualtran/reflection_basis_one2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qualtran/reflection_basis_one2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {}
+        }
+      },
+      {
+        "id": "pennylane_demos/rotation_both_negative",
+        "source": "corpus/pennylane_demos/rotation_both_negative",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/rotation_both_negative",
+          "semantic_probes": 10,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_path_cost3",
+        "source": "corpus/pennylane_demos/qaoa_path_cost3",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_path_cost3",
+          "semantic_probes": 52,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 1
+          }
+        }
+      },
+      {
+        "id": "pennylane_demos/qaoa_negative_edge_layer2",
+        "source": "corpus/pennylane_demos/qaoa_negative_edge_layer2",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "pennylane_demos/qaoa_negative_edge_layer2",
+          "semantic_probes": 24,
+          "shipped_main": "passed",
+          "host_observables": {
+            "Z0": 0.0
+          }
+        }
+      },
+      {
+        "id": "majority_replaced_by_parity",
+        "source": "corpus/semantic_faults/majority_replaced_by_parity",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "majority_replaced_by_parity",
+          "reference": "quantum_katas/deutsch_jozsa3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/deutsch_jozsa3 column 0: (False, True, False): 0 != 0.25"
+        }
+      },
+      {
+        "id": "swapped_bell_labels",
+        "source": "corpus/semantic_faults/swapped_bell_labels",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "swapped_bell_labels",
+          "reference": "quantum_katas/bell_measure",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/bell_measure Bell-label-False-True: (True, False): 1 != 0"
+        }
+      },
+      {
+        "id": "missing_add_two",
+        "source": "corpus/semantic_faults/missing_add_two",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "missing_add_two",
+          "reference": "qualtran/add_constant3",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/add_constant3 column 0: (True, True, False): 0 != 1.0"
+        }
+      },
+      {
+        "id": "missing_lcu_unprepare",
+        "source": "corpus/semantic_faults/missing_lcu_unprepare",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "missing_lcu_unprepare",
+          "reference": "pennylane_demos/lcu_projector",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/lcu_projector column 0: (True, False): 0.5000000000000001 != 0.0"
+        }
+      },
+      {
+        "id": "erased_rotation_scalar",
+        "source": "corpus/semantic_faults/erased_rotation_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "erased_rotation_scalar",
+          "reference": "pennylane_demos/kernel_overlap2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+        }
+      },
+      {
+        "id": "incomplete_swap",
+        "source": "corpus/semantic_faults/incomplete_swap",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "incomplete_swap",
+          "reference": "quantum_katas/swap2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/swap2 column 2: (True, False): 0 != 1.0"
+        }
+      },
+      {
+        "id": "unconditional_fredkin",
+        "source": "corpus/semantic_faults/unconditional_fredkin",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "unconditional_fredkin",
+          "reference": "quantum_katas/fredkin3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/fredkin3 column 2: (False, True, False): 0 != 1.0"
+        }
+      },
+      {
+        "id": "xor_constant_wrong_bit",
+        "source": "corpus/semantic_faults/xor_constant_wrong_bit",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "xor_constant_wrong_bit",
+          "reference": "qualtran/xor_constant2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/xor_constant2 column 0: (False, True): 1 != 0.0"
+        }
+      },
+      {
+        "id": "partial_bitwise_not",
+        "source": "corpus/semantic_faults/partial_bitwise_not",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "partial_bitwise_not",
+          "reference": "qualtran/bitwise_not2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/bitwise_not2 column 0: (True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "rx_missing_scalar",
+        "source": "corpus/semantic_faults/rx_missing_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "rx_missing_scalar",
+          "reference": "pennylane_demos/rx_quarter",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "kickback_wrong_secret",
+        "source": "corpus/semantic_faults/kickback_wrong_secret",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "kickback_wrong_secret",
+          "reference": "pennylane_demos/phase_kickback1",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/phase_kickback1 column 0: (True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "parity_prepared_even",
+        "source": "corpus/semantic_faults/parity_prepared_even",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "parity_prepared_even",
+          "reference": "quantum_katas/odd_parity3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/odd_parity3 column 0: (True, False, True): 0.2500000000000001 != 0"
+        }
+      },
+      {
+        "id": "singlet_phase_after_flip",
+        "source": "corpus/semantic_faults/singlet_phase_after_flip",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "singlet_phase_after_flip",
+          "reference": "quantum_katas/bell_singlet2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/bell_singlet2 entry 1,1 x: (True, True, False): 0.7285533905932741 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "threshold_wrong_polarity",
+        "source": "corpus/semantic_faults/threshold_wrong_polarity",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "threshold_wrong_polarity",
+          "reference": "qualtran/less_than_constant2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/less_than_constant2 column 0: (False, False, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "equals_constant_wrong_endian",
+        "source": "corpus/semantic_faults/equals_constant_wrong_endian",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "equals_constant_wrong_endian",
+          "reference": "qualtran/equals_constant2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/equals_constant2 column 1: (True, False, True): 0 != 1.0"
+        }
+      },
+      {
+        "id": "ry_second_column_sign",
+        "source": "corpus/semantic_faults/ry_second_column_sign",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "ry_second_column_sign",
+          "reference": "pennylane_demos/ry_quarter",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/ry_quarter entry 0,1 x: (True, False): 0.02144660940672623 != 0.7285533905932733"
+        }
+      },
+      {
+        "id": "zz_erased_scalar",
+        "source": "corpus/semantic_faults/zz_erased_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "zz_erased_scalar",
+          "reference": "pennylane_demos/ising_zz_quarter2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+        }
+      },
+      {
+        "id": "negative_control_changed_to_positive",
+        "source": "corpus/semantic_faults/negative_control_changed_to_positive",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_control_changed_to_positive",
+          "reference": "quantum_katas/zero_control_x2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/zero_control_x2 column 0: (False, True): 0 != 1.0"
+        }
+      },
+      {
+        "id": "bell_change_reversed_phase",
+        "source": "corpus/semantic_faults/bell_change_reversed_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "bell_change_reversed_phase",
+          "reference": "quantum_katas/bell_change_zx2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/bell_change_zx2 entry 0,1 x: (False, False, False): 0 != 0.9999999999999996"
+        }
+      },
+      {
+        "id": "subtract_wrong_borrow_order",
+        "source": "corpus/semantic_faults/subtract_wrong_borrow_order",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "subtract_wrong_borrow_order",
+          "reference": "qualtran/add_minus_one2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/add_minus_one2 column 0: (True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "qrom_reversed_target_bits",
+        "source": "corpus/semantic_faults/qrom_reversed_target_bits",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qrom_reversed_target_bits",
+          "reference": "qualtran/qrom1",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/qrom1 column 0: (False, True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "negative_rx_missing_scalar",
+        "source": "corpus/semantic_faults/negative_rx_missing_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_rx_missing_scalar",
+          "reference": "pennylane_demos/rx_negative_quarter",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rx_negative_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "negative_ry_wrong_sign",
+        "source": "corpus/semantic_faults/negative_ry_wrong_sign",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_ry_wrong_sign",
+          "reference": "pennylane_demos/ry_negative_quarter",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/ry_negative_quarter entry 1,0 x: (False, True): 0.7285533905932741 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "cz_replaced_by_identity",
+        "source": "corpus/semantic_faults/cz_replaced_by_identity",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "cz_replaced_by_identity",
+          "reference": "quantum_katas/controlled_z2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/controlled_z2 entry 3,3 x: (True, True, True): 0 != 0.9999999999999996"
+        }
+      },
+      {
+        "id": "toffoli_ignored_second_control",
+        "source": "corpus/semantic_faults/toffoli_ignored_second_control",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "toffoli_ignored_second_control",
+          "reference": "quantum_katas/toffoli3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/toffoli3 column 1: (True, False, True): 1 != 0.0"
+        }
+      },
+      {
+        "id": "less_equal_changed_to_strict",
+        "source": "corpus/semantic_faults/less_equal_changed_to_strict",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "less_equal_changed_to_strict",
+          "reference": "qualtran/less_equal1",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/less_equal1 column 0: (False, False, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "greater_than_input_not_restored",
+        "source": "corpus/semantic_faults/greater_than_input_not_restored",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "greater_than_input_not_restored",
+          "reference": "qualtran/greater_than1",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/greater_than1 column 0: (False, True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "mixed_rotation_order_reversed",
+        "source": "corpus/semantic_faults/mixed_rotation_order_reversed",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "mixed_rotation_order_reversed",
+          "reference": "pennylane_demos/rotation_mixed_sign",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rotation_mixed_sign entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+        }
+      },
+      {
+        "id": "mixer_erased_scalar",
+        "source": "corpus/semantic_faults/mixer_erased_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "mixer_erased_scalar",
+          "reference": "pennylane_demos/qaoa_mixer2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_mixer2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+        }
+      },
+      {
+        "id": "uniform_phase_conjugated",
+        "source": "corpus/semantic_faults/uniform_phase_conjugated",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "uniform_phase_conjugated",
+          "reference": "quantum_katas/phased_uniform2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/phased_uniform2 entry 3,0 y: (True, True, True): 0.0625 != 0.5624999999999997"
+        }
+      },
+      {
+        "id": "graph_edge_erased",
+        "source": "corpus/semantic_faults/graph_edge_erased",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "graph_edge_erased",
+          "reference": "quantum_katas/graph_state2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/graph_state2 entry 3,0 x: (True, True, True): 0.0625 != 0.5624999999999997"
+        }
+      },
+      {
+        "id": "reflection_minus_missing_phase",
+        "source": "corpus/semantic_faults/reflection_minus_missing_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "reflection_minus_missing_phase",
+          "reference": "qualtran/reflection_minus1",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/reflection_minus1 entry 1,0 x: (False, True): 6.162975822039156e-33 != 0.9999999999999996"
+        }
+      },
+      {
+        "id": "controlled_reflection_missing_phase",
+        "source": "corpus/semantic_faults/controlled_reflection_missing_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "controlled_reflection_missing_phase",
+          "reference": "qualtran/control_zero_reflection2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/control_zero_reflection2 entry 0,2 x: (False, False, False): 6.162975822039156e-33 != 0.9999999999999996"
+        }
+      },
+      {
+        "id": "half_rotation_order_reversed",
+        "source": "corpus/semantic_faults/half_rotation_order_reversed",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "half_rotation_order_reversed",
+          "reference": "pennylane_demos/rotation_half_y",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rotation_half_y entry 0,0 y: (True, False): 0.7285533905932741 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "negative_zz_missing_scalar",
+        "source": "corpus/semantic_faults/negative_zz_missing_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_zz_missing_scalar",
+          "reference": "pennylane_demos/ising_zz_negative2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/ising_zz_negative2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+        }
+      },
+      {
+        "id": "controlled_h_unconditional",
+        "source": "corpus/semantic_faults/controlled_h_unconditional",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "controlled_h_unconditional",
+          "reference": "quantum_katas/controlled_h2",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/controlled_h2 column 0: (False, True): 0.2500000000000001 != 0.0"
+        }
+      },
+      {
+        "id": "bitstring_wrong_target",
+        "source": "corpus/semantic_faults/bitstring_wrong_target",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "bitstring_wrong_target",
+          "reference": "quantum_katas/zero_bitstring3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/zero_bitstring3 column 0: (True, False, True): 0 != 0.4999999999999999"
+        }
+      },
+      {
+        "id": "even_numbers_wrong_low_bit",
+        "source": "corpus/semantic_faults/even_numbers_wrong_low_bit",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "even_numbers_wrong_low_bit",
+          "reference": "quantum_katas/even_numbers3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/even_numbers3 column 0: (True, True, False): 0.2500000000000001 != 0"
+        }
+      },
+      {
+        "id": "increment_wrong_carry_order",
+        "source": "corpus/semantic_faults/increment_wrong_carry_order",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "increment_wrong_carry_order",
+          "reference": "qualtran/add_one3",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/add_one3 column 1: (False, True, False): 0 != 1.0"
+        }
+      },
+      {
+        "id": "greater_constant_wrong_threshold",
+        "source": "corpus/semantic_faults/greater_constant_wrong_threshold",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "greater_constant_wrong_threshold",
+          "reference": "qualtran/greater_constant2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/greater_constant2 column 1: (True, False, True): 1 != 0.0"
+        }
+      },
+      {
+        "id": "xor_constant_missing_high_bit",
+        "source": "corpus/semantic_faults/xor_constant_missing_high_bit",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "xor_constant_missing_high_bit",
+          "reference": "qualtran/xor_constant3",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/xor_constant3 column 0: (True, False, True): 0 != 1.0"
+        }
+      },
+      {
+        "id": "half_rx_missing_scalar",
+        "source": "corpus/semantic_faults/half_rx_missing_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "half_rx_missing_scalar",
+          "reference": "pennylane_demos/rotation_half_x",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rotation_half_x entry 1,0 x: (False, True): 1 != 0.4999999999999998"
+        }
+      },
+      {
+        "id": "half_zz_missing_scalar",
+        "source": "corpus/semantic_faults/half_zz_missing_scalar",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "half_zz_missing_scalar",
+          "reference": "pennylane_demos/ising_zz_half2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/ising_zz_half2 entry 0,0 x: (False, False, False): 1 != 0.4999999999999998"
+        }
+      },
+      {
+        "id": "edge_layer_reversed_order",
+        "source": "corpus/semantic_faults/edge_layer_reversed_order",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "edge_layer_reversed_order",
+          "reference": "pennylane_demos/qaoa_edge_layer2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_edge_layer2 entry 0,1 x: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+        }
+      },
+      {
+        "id": "two_bitstrings3_fault",
+        "source": "corpus/semantic_faults/two_bitstrings3_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "two_bitstrings3_fault",
+          "reference": "quantum_katas/two_bitstrings3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/two_bitstrings3 column 0: (True, False, True): 0 != 0.4999999999999999"
+        }
+      },
+      {
+        "id": "w2_retained3_fault",
+        "source": "corpus/semantic_faults/w2_retained3_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "w2_retained3_fault",
+          "reference": "quantum_katas/w2_retained3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/w2_retained3 column 0: (False, True, False): 0 != 0.4999999999999999"
+        }
+      },
+      {
+        "id": "even_parity3_fault",
+        "source": "corpus/semantic_faults/even_parity3_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "even_parity3_fault",
+          "reference": "quantum_katas/even_parity3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/even_parity3 column 0: (True, False, True): 0 != 0.25"
+        }
+      },
+      {
+        "id": "controlled_increment2_fault",
+        "source": "corpus/semantic_faults/controlled_increment2_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "controlled_increment2_fault",
+          "reference": "qualtran/controlled_increment2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/controlled_increment2 column 1: (True, True, False): 0 != 1.0"
+        }
+      },
+      {
+        "id": "equals1_fault",
+        "source": "corpus/semantic_faults/equals1_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "equals1_fault",
+          "reference": "qualtran/equals1",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/equals1 column 0: (False, False, True): 0 != 1.0"
+        }
+      },
+      {
+        "id": "reflection_zero2_fault",
+        "source": "corpus/semantic_faults/reflection_zero2_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "reflection_zero2_fault",
+          "reference": "qualtran/reflection_zero2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/reflection_zero2 entry 0,0 x: (False, False, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "rotation_negative_x_positive_y_fault",
+        "source": "corpus/semantic_faults/rotation_negative_x_positive_y_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "rotation_negative_x_positive_y_fault",
+          "reference": "pennylane_demos/rotation_negative_x_positive_y",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rotation_negative_x_positive_y entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+        }
+      },
+      {
+        "id": "qaoa_negative_mixer2_fault",
+        "source": "corpus/semantic_faults/qaoa_negative_mixer2_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qaoa_negative_mixer2_fault",
+          "reference": "pennylane_demos/qaoa_negative_mixer2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_negative_mixer2 entry 0,1 y: (False, False, False): 0.0625 != 0.5624999999999997"
+        }
+      },
+      {
+        "id": "qaoa_path_layer3_fault",
+        "source": "corpus/semantic_faults/qaoa_path_layer3_fault",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "qaoa_path_layer3_fault",
+          "reference": "pennylane_demos/qaoa_path_layer3",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_path_layer3 entry 0,0 x: (True, False, False, False): 0.15625000000000006 != 0.28124999999999983"
+        }
+      },
+      {
+        "id": "minus_preparation_wrong_extension",
+        "source": "corpus/semantic_faults/minus_preparation_wrong_extension",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "minus_preparation_wrong_extension",
+          "reference": "quantum_katas/minus_state1",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/minus_state1 entry 0,1 x: (True, False): 0.7285533905932741 != 0.02144660940672623"
+        }
+      },
+      {
+        "id": "negative_phase_conjugated",
+        "source": "corpus/semantic_faults/negative_phase_conjugated",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_phase_conjugated",
+          "reference": "quantum_katas/phase_negative_eighth1",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/phase_negative_eighth1 entry 1,1 y: (False, True): 0.8535533905932742 != 0.1464466094067262"
+        }
+      },
+      {
+        "id": "uniform_missing_middle_h",
+        "source": "corpus/semantic_faults/uniform_missing_middle_h",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "uniform_missing_middle_h",
+          "reference": "quantum_katas/uniform3",
+          "typecheck": "passed",
+          "semantic_mismatch": "quantum_katas/uniform3 column 0: (True, False, True): 0.2500000000000001 != 0.12499999999999997"
+        }
+      },
+      {
+        "id": "decrement_lost_high_borrow",
+        "source": "corpus/semantic_faults/decrement_lost_high_borrow",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "decrement_lost_high_borrow",
+          "reference": "qualtran/add_minus_one3",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/add_minus_one3 column 0: (True, True, False): 1 != 0.0"
+        }
+      },
+      {
+        "id": "zero_predicate_input_not_restored",
+        "source": "corpus/semantic_faults/zero_predicate_input_not_restored",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "zero_predicate_input_not_restored",
+          "reference": "qualtran/less_than_one2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/less_than_one2 column 0: (True, False, True): 1 != 0.0"
+        }
+      },
+      {
+        "id": "basis_reflection_wrong_label",
+        "source": "corpus/semantic_faults/basis_reflection_wrong_label",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "basis_reflection_wrong_label",
+          "reference": "qualtran/reflection_basis_one2",
+          "typecheck": "passed",
+          "semantic_mismatch": "qualtran/reflection_basis_one2 column 0: (True, False): 1 != 0"
+        }
+      },
+      {
+        "id": "negative_rotations_reversed",
+        "source": "corpus/semantic_faults/negative_rotations_reversed",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_rotations_reversed",
+          "reference": "pennylane_demos/rotation_both_negative",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/rotation_both_negative entry 0,0 y: (True, False): 0.6250000000000002 != 0.12499999999999994"
+        }
+      },
+      {
+        "id": "path_cost_lost_second_phase",
+        "source": "corpus/semantic_faults/path_cost_lost_second_phase",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "path_cost_lost_second_phase",
+          "reference": "pennylane_demos/qaoa_path_cost3",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_path_cost3 entry 0,0 x: (False, False, False, False): 0.8535533905932742 != 0.4999999999999999"
+        }
+      },
+      {
+        "id": "negative_edge_cost_sign",
+        "source": "corpus/semantic_faults/negative_edge_cost_sign",
+        "exit_code": 0,
+        "diagnostics": [],
+        "lanes_equal": true,
+        "expected_code": null,
+        "semantic_result": {
+          "id": "negative_edge_cost_sign",
+          "reference": "pennylane_demos/qaoa_negative_edge_layer2",
+          "typecheck": "passed",
+          "semantic_mismatch": "pennylane_demos/qaoa_negative_edge_layer2 entry 0,0 y: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+        }
+      },
+      {
+        "id": "duplicate_owner",
+        "source": "corpus/negative/duplicate_owner",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 299,
+              "end": 300,
+              "line": 9,
+              "column": 24
+            },
+            "related": []
+          }
+        ],
+        "lanes_equal": true,
+        "expected_code": "ownership",
+        "semantic_result": {
+          "id": "duplicate_owner",
+          "code": "ownership",
+          "exit_code": 1
+        }
+      },
+      {
+        "id": "measured_owner",
+        "source": "corpus/negative/measured_owner",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 299,
+              "end": 300,
+              "line": 9,
+              "column": 20
+            },
+            "related": []
+          }
+        ],
+        "lanes_equal": true,
+        "expected_code": "ownership",
+        "semantic_result": {
+          "id": "measured_owner",
+          "code": "ownership",
+          "exit_code": 1
+        }
+      },
+      {
+        "id": "measurement_adjoint",
+        "source": "corpus/negative/measurement_adjoint",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "effect",
+            "severity": "error",
+            "message": "static operation requires a unitary function",
+            "primary": {
+              "path": "main.qli",
+              "start": 284,
+              "end": 288,
+              "line": 7,
+              "column": 37
+            },
+            "related": []
+          }
+        ],
+        "lanes_equal": true,
+        "expected_code": "effect",
+        "semantic_result": {
+          "id": "measurement_adjoint",
+          "code": "effect",
+          "exit_code": 1
+        }
+      },
+      {
+        "id": "dirty_auxiliary",
+        "source": "corpus/negative/dirty_auxiliary",
+        "exit_code": 1,
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking",
+            "primary": {
+              "path": "main.qli",
+              "start": 328,
+              "end": 346,
+              "line": 9,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "lanes_equal": true,
+        "expected_code": "unsupported",
+        "semantic_result": {
+          "id": "dirty_auxiliary",
+          "code": "unsupported",
+          "exit_code": 1
+        }
+      }
+    ]
+  },
+  "independent_semantics": {
+    "status": "passed",
+    "normal_cases": 84,
+    "semantic_probes": 3253,
+    "semantic_faults_detected": 62,
+    "intentional_source_rejections": 4,
+    "tolerance": 1e-11,
+    "exhaustive_unitary_entries": false,
+    "oracle_sha256": "b861b9e7347427d4820c3d2bf3726102d87867e55c2c8bba9b59859873809dd6",
+    "compiler_and_sources_unchanged": true
+  },
+  "example_native_handles": {
+    "accepted": 10,
+    "unsupported": 4,
+    "results": [
+      {
+        "project": "examples/bell",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/bernstein_vazirani",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "d2f1221e30067109ad89cad58af13c8e6ef01877fe3b169bd6fc158f1775cbd3",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/bit_flip_code",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "b2e2ad2f43b5c3f179c11eeb1dce5d2fc4cc19b2a226fc0e0b8868e1f47fea77",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/feedback",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "6c7d6747f295e3ff93c8dcc84f12281406accaca53590f408675cfda57a032cf",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/function_contracts",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "ec8b4710ad6c5e2401daa8ce810956abefaf0b27f675d5f1624a8388c5df3e0a",
+        "program_count": 3,
+        "evidence_count": 1,
+        "source_count": 7,
+        "native_handle": {
+          "exit_code": 1,
+          "stdout": "error\tunsupported\n",
+          "stderr": "unsupported: native execution view currently requires one program without retained evidence; no legacy fallback\n"
+        }
+      },
+      {
+        "project": "examples/grover",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "4d2bef49168ea8447b67e8f835b94e78033c3a3af00fdfc58e420fd19f0f80dc",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/iterative_phase_estimation",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "5d4dc50429ef8918f798cee12a1e38a0325d6db33a32cc579fb794e85fa3bbca",
+        "program_count": 3,
+        "evidence_count": 1,
+        "source_count": 6,
+        "native_handle": {
+          "exit_code": 1,
+          "stdout": "error\tunsupported\n",
+          "stderr": "unsupported: native execution view currently requires one program without retained evidence; no legacy fallback\n"
+        }
+      },
+      {
+        "project": "examples/operation_algorithms",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "c94ab014de73ac0984726b344140a0fb488697885c83cc4ced6c64cd9a444579",
+        "program_count": 3,
+        "evidence_count": 1,
+        "source_count": 10,
+        "native_handle": {
+          "exit_code": 1,
+          "stdout": "error\tunsupported\n",
+          "stderr": "unsupported: native execution view currently requires one program without retained evidence; no legacy fallback\n"
+        }
+      },
+      {
+        "project": "examples/operation_contracts",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "9b4937f747c204d98e783f37f822f9d72d964f23ae17f70394d318d7e1cdd6b8",
+        "program_count": 5,
+        "evidence_count": 2,
+        "source_count": 5,
+        "native_handle": {
+          "exit_code": 1,
+          "stdout": "error\tunsupported\n",
+          "stderr": "unsupported: native execution view currently requires one program without retained evidence; no legacy fallback\n"
+        }
+      },
+      {
+        "project": "examples/order_finding",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "e4e7636bc07b4c4600de64d0772542371bf5e4f4cebf4beabe83619ec4191663",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/phase_estimation",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "e6ce1f8604987ab2b1a566cf928e9cc5788be4195ec6ea3149af0e303c76bbe9",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/phase_oracle",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "b469341e9005a8a69ace9194f6d2cede049a478c80ffcce68bdfb556ba26b6e6",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/protocols",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "9a08ccccf2c888e13d44730f21bf4bdca24baa4c717df14b9c8621d01fab3127",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      },
+      {
+        "project": "examples/semantic_contracts",
+        "emit_selected_lean": "passed",
+        "artifact_sha256": "0a29375ceff62464aadfd53f65f7225da8cdc41c40d041fc3727926cd06d2dfb",
+        "program_count": 1,
+        "evidence_count": 0,
+        "source_count": 0,
+        "native_handle": {
+          "exit_code": 0,
+          "stdout": "accepted\n",
+          "stderr": ""
+        }
+      }
+    ]
+  },
+  "rust_tests": {
+    "passed": 245,
+    "failed": 0,
+    "ignored": 8,
+    "suites": [
+      {
+        "suite": "authoring_ergonomics",
+        "passed": 6,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "compile",
+        "passed": 30,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "iterative_qpe",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "qli_corpus",
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "repair_diagnostics",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "sized_review_dialects",
+        "passed": 3,
+        "failed": 0,
+        "ignored": 5
+      },
+      {
+        "suite": "sized_source",
+        "passed": 27,
+        "failed": 0,
+        "ignored": 3
+      },
+      {
+        "suite": "algorithms",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "editions",
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "order_finding",
+        "passed": 10,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "project",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "review_v019",
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "review_v020",
+        "passed": 5,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "review_v021",
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "semantic_contracts",
+        "passed": 20,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "static_operations",
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "documentation",
+        "passed": 9,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "function_contracts",
+        "passed": 17,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "operation_parameters",
+        "passed": 14,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "review_v028",
+        "passed": 7,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "static_semantics",
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0
+      },
+      {
+        "suite": "tuple_shapes",
+        "passed": 8,
+        "failed": 0,
+        "ignored": 0
+      }
+    ]
+  },
+  "other_checks": [
+    {
+      "command": "python3 scripts/check_input_corpus.py",
+      "result": "passed: 87 cases, provenance, notices and frozen corpus snapshots"
+    },
+    {
+      "command": "python3 scripts/check_authoring_sessions.py",
+      "result": "passed: 16 records, 25 snapshots, 48 observations; historical commands not replayed"
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "result": "passed before adding this record; includes QLI comment references and source manifests"
+    },
+    {
+      "command": "python3 scripts/test_source_kernel.py",
+      "result": "3 tests passed"
+    },
+    {
+      "command": "python3 scripts/test_sized_corpus.py --small --record PATH",
+      "result": "passed: 6 positive widths, 16 source rejections, 4 semantic faults and 2 IR rejections"
+    }
+  ],
+  "known_std_qrate_observation": {
+    "command": "target/debug/qleisli check stdlib --qrate --format=json",
+    "exit_code": 1,
+    "code": "project",
+    "message": "invalid module path component `basis`",
+    "tracking": "https://github.com/MGYamada/Qleisli/issues/96",
+    "scope": "Documented namespace adapter gap. Bundled std modules are checked with every example; do not rename the std::basis API."
+  },
+  "skipped": {
+    "finite_corpus_cases": [
+      {
+        "id": "qualtran/less_than2",
+        "qubits": 5
+      },
+      {
+        "id": "pennylane_demos/phase_lock",
+        "qubits": 5
+      },
+      {
+        "id": "qualtran/equals2",
+        "qubits": 5
+      }
+    ],
+    "semantic_faults": [
+      "low_bit_equality_only"
+    ],
+    "reason": "Bounded policy: finite corpus execution restricted to <=4 qubits; no new maximum-size instantiations",
+    "other": [
+      "Historical authoring commands not replayed; snapshots/hash metadata checked",
+      "Not every historical fixture independently typechecked outside its test context",
+      "No full native CI, proof rebuild, publication or platform installation run for this source audit"
+    ]
+  },
+  "harness_observations": [
+    "The first temporary sized probe expected error code arithmetic for unguarded_take; the existing regression specifies size. Corrected only that probe assertion and reran successfully; no repository QLI changed."
+  ],
+  "probe_sources": {
+    "ordinary_parser": "use std::{fs, io::{self, BufRead}};\nfn main() {\n    for file in io::stdin().lock().lines() {\n        let file = file.unwrap();\n        let text = fs::read_to_string(&file).unwrap();\n        match qleisli::frontend::parser::parse_module(&text) {\n            Ok(_) => println!(\"{}\\tok\", file),\n            Err(e) => println!(\"{}\\terror\\t{}\", file, e.to_string().replace(['\\t','\\n','\\r'], \" \")),\n        }\n    }\n}\n",
+    "sized_generic": "use std::{collections::BTreeMap,fs,path::{Path,PathBuf}};\nuse qleisli::frontend::sized::ParsedProgram;\nfn collect(path:&Path, out:&mut BTreeMap<String,PathBuf>) {\n    for item in fs::read_dir(path).unwrap() {\n        let path=item.unwrap().path();\n        if path.is_dir() { collect(&path,out); }\n        else if path.extension().and_then(|s|s.to_str())==Some(\"qli\") {\n            assert!(out.insert(path.file_stem().unwrap().to_str().unwrap().into(),path.clone()).is_none(),\"duplicate module\");\n        }\n    }\n}\nfn main() {\n    let mut files=BTreeMap::new();\n    collect(Path::new(\"corpus/sized\"),&mut files);\n    collect(Path::new(\"tests/fixtures/sized_clients\"),&mut files);\n    let parsed=ParsedProgram::load(files.clone()).unwrap();\n    println!(\"coherent: {} modules accepted\",parsed.module_names().count());\n    for name in [\"amplitude\",\"order\",\"retiming\"] {\n        files.insert(name.into(),PathBuf::from(format!(\"tests/fixtures/measured_clients/{name}.qli\")));\n    }\n    let parsed=ParsedProgram::load(files).unwrap();\n    println!(\"measured: {} modules accepted\",parsed.module_names().count());\n    let rejection=ParsedProgram::load(BTreeMap::from([(\"main\".into(),PathBuf::from(\"tests/fixtures/sized_review/unguarded_take.qli\"))])).unwrap_err();\n    assert_eq!(rejection.code(),\"size\");\n    println!(\"unguarded_take rejected: {rejection}\");\n}\n"
+  }
+}

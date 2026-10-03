@@ -3,12 +3,12 @@
   "version": 1,
   "packet": "VM-22",
   "release": "0.2.2",
-  "authority": "Rust production; Lean components experimental; external schemas disabled",
+  "authority": "Lean production under approved v0.2.9 exception #276; external schemas disabled",
   "groups": [
     {
       "id": "raw-core",
       "producer": "Rust embedding, frontend and foreign adapters",
-      "consumer": "verify; independent finite extractor; execution consumes VerifiedProgram",
+      "consumer": "native Kernel::accept_raw; execution-only finite extractor; execution consumes AcceptedProgram",
       "obligation": "Complete ordered live owners, globally fresh token/wire IDs, classical SSA, effects and final outputs; no algorithm-specific meaning is inferred",
       "reference": "docs/ir-prototype.md; docs/source-resource-rules.md",
       "replacement": [
@@ -16,11 +16,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "implicit_drop_is_rejected"
       }
     },
@@ -193,7 +193,7 @@
     },
     {
       "id": "execution",
-      "producer": "VerifiedProgram, fresh sample seed and host trial policies",
+      "producer": "AcceptedProgram, fresh sample seed and host trial policies",
       "consumer": "run_closed/sample_closed/run_trials, CLI run/sample and Python methods",
       "obligation": "Execute the accepted immutable artifact; diagnostic numerical distributions and sampling are not acceptance evidence, algorithm proof or device submission",
       "reference": "docs/machine-interface-spec.md; docs/resource-semantics.md",
@@ -255,11 +255,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "wire_ids_are_never_reallocated_even_after_measurement"
       }
     },
@@ -273,11 +273,11 @@
         "VM-25"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "copied_quantum_token_is_rejected_even_for_unit"
       }
     },
@@ -291,11 +291,11 @@
         "VM-25"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "copied_quantum_token_is_rejected_even_for_unit"
       }
     },
@@ -327,11 +327,11 @@
         "VM-25"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "coherent_qif_accepts_unitary_arms_and_unit_target_phase"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "coherent_qif_rejects_aliasing_and_bad_target_indices"
       }
     },
@@ -345,11 +345,11 @@
         "VM-25"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "a_unit_register_can_be_split_into_two_unit_registers"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "copied_quantum_token_is_rejected_even_for_unit"
       }
     },
@@ -363,11 +363,11 @@
         "VM-25"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "copied_quantum_token_is_rejected_even_for_unit"
       }
     },
@@ -385,7 +385,7 @@
         "test": "independent_extraction_handles_lifts_cnot_and_toffoli"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "noninjective_and_partial_lifts_are_rejected"
       }
     },
@@ -399,11 +399,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "bell_preparation_split_and_partial_measurement"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "measured_token_cannot_be_used_again"
       }
     },
@@ -421,7 +421,7 @@
         "test": "reset_breaks_bell_correlation_and_returns_new_zero_wire"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "destructive_reset_requires_new_logical_wire"
       }
     },
@@ -439,7 +439,7 @@
         "test": "discarding_entangled_half_keeps_mixed_residual"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "implicit_drop_is_rejected"
       }
     },
@@ -453,11 +453,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "classical_constants_and_conjunction_require_fresh_visible_ssa_values"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "classical_phis_cannot_read_outputs_of_the_same_merge"
       }
     },
@@ -471,11 +471,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "nested_classical_phi_is_visible_in_its_parent_arm"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "many_branches_share_freshness_history_without_leaking_classical_scopes"
       }
     },
@@ -493,7 +493,7 @@
         "test": "toffoli_and_classical_boolean_ops_execute"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "quantum_basis_cannot_be_used_as_classical_branch_guard"
       }
     },
@@ -507,11 +507,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "classical_constants_and_conjunction_require_fresh_visible_ssa_values"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "quantum_basis_cannot_be_used_as_classical_branch_guard"
       }
     },
@@ -525,11 +525,11 @@
         "VM-26"
       ],
       "positive": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "measurement_feedback_merges_exclusive_branch_resources"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "branch_rejects_unmerged_or_mismatched_quantum_contexts"
       }
     },
@@ -547,7 +547,7 @@
         "test": "legacy_computed_target_gates_can_depend_on_source_and_auxiliary"
       },
       "negative": {
-        "path": "tests/verify.rs",
+        "path": "tests/native_raw.rs",
         "test": "use_that_changes_source_or_ancilla_basis_is_rejected"
       }
     },
@@ -1849,13 +1849,13 @@
     },
     {
       "path": "lean-kernel/Cli/Validity.lean",
-      "sha256": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9",
+      "sha256": "ccdfbc73066325e4f0d75db0aa6aeae38e309f23796e310109e21bb369dd0a81",
       "group": "hierarchy",
       "surface": null
     },
     {
       "path": "lean-kernel/Main.lean",
-      "sha256": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94",
+      "sha256": "e83ce9406572d4a1d4fd814693fd01d0d42c986cb146a5c04dd12e38ef97f12c",
       "group": "hierarchy",
       "surface": null
     },
@@ -1902,9 +1902,21 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/Protocol/NativeContract.lean",
+      "sha256": "ca5296a69c772b016ca38ce96dfdb357714c99a26f9707677cbaa568c394eee6",
+      "group": "finite-contract",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/Protocol/Observation.lean",
       "sha256": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/Product.lean",
+      "sha256": "4c36ce65067bbeccf6fca21b6c921e7df6293943e5e57b6319fa3426d3ebe55f",
+      "group": "transport",
       "surface": null
     },
     {
@@ -1933,7 +1945,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "b9bab994083c571a695792ff02a6f60c493ea1573db988b74a70777eef82ac41",
+      "sha256": "e0b03e2074d78620e5da5d0f8aee5a571d585b8d88a046ac78d0a9a3a66413f5",
       "group": "hierarchy",
       "surface": null
     },
@@ -2256,6 +2268,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
+      "sha256": "8a09a09d19ba749131b56269971091f4c8b4a58e3f720387775ee61bded22eaa",
+      "group": "finite-contract",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Qirf/Ownership.lean",
       "sha256": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
       "group": "raw-core",
@@ -2316,6 +2334,12 @@
       "surface": null
     },
     {
+      "path": "lean-kernel/QleisliKernel/Raw/ObservationScope.lean",
+      "sha256": "83986a17c17efd5fbe9c8220f0195eee9b53ec087a6b01f46c52d4145f4995b9",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
       "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
       "sha256": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
       "group": "raw-core",
@@ -2367,6 +2391,12 @@
       "path": "lean-kernel/QleisliKernel/Schema.lean",
       "sha256": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
       "group": "hierarchy",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean",
+      "sha256": "de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0",
+      "group": "raw-core",
       "surface": null
     },
     {
@@ -2479,7 +2509,7 @@
     },
     {
       "path": "lean/Qleisli/NativeValidity.lean",
-      "sha256": "845e50fc3628b80b2ec8e783aa380e274dcf67bd2a307fbe625324809dc21c67",
+      "sha256": "42bc339072dc89df5b0f6fd08b458153da5b492ba01d12fd22a27ea3405881e5",
       "group": "hierarchy",
       "surface": null
     },
@@ -2491,7 +2521,7 @@
     },
     {
       "path": "lean/Qleisli/QirfValidity.lean",
-      "sha256": "8e6a6300fabe1791223df9227e5b962fdb466691e663b2eb3de26fcd9877011b",
+      "sha256": "9813f7f221321b2515c693d4c2f76e46af9115604556f74a6822c6215d56c409",
       "group": "hierarchy",
       "surface": null
     },
@@ -2623,13 +2653,13 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "27d52247da89b710697e602996ad67ad554c5f586d654f548d543c94f1f7893c",
+      "sha256": "fcc8837550a505bc37d9f85b05c5659f06e9e27d9d78fdb3d088a3b86bb590e6",
       "group": "foreign",
       "surface": null
     },
     {
       "path": "python/qleisli/__main__.py",
-      "sha256": "1558439ab64c3961aff9d68dd4a452cb97401bc068ed5f186701f6dd5a185d9e",
+      "sha256": "7c0ca09223cb98192ca4e5a16b330685b2cee43debb0d8576acbd40fc8bffb5a",
       "group": "foreign",
       "surface": null
     },
@@ -2647,37 +2677,37 @@
     },
     {
       "path": "scripts/test_lean_branch_function.py",
-      "sha256": "d61590e65c77c63d6677b0441238a72b65b54adf5689f4bd030011b86e883acc",
+      "sha256": "2cc11b1b9314e1022f41637a866f27b7e6bf4f9da94a40f4a1892893ff377d8b",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "7b1cf3196d25ead0838ac2212c4ca85e0423b5a6d46c0c2548550338d8613bc9",
+      "sha256": "700c83c7c0098a0683ca4519f0f85c8026ef71f534df4cbf2604f8a2c82c6317",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "4da68f09466e89b9cd456fc8298ead0e4486c9f82deb184ce6aab6dc78ff1c17",
+      "sha256": "ecac7a86f35a062265eef48bd045f8904ffc8e0667aea2e945d7416219cc71b2",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw_completion.py",
-      "sha256": "0c353fd8092b5f27c92a172b3fdd896a2ff64c07d3648eb31ac59070323770bb",
+      "sha256": "6f51ec96df255d165f28956d28169cee80b53c83b0a6c69f41c05c8901567e11",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_streamed_instrument.py",
-      "sha256": "faee06c25a15f8b40489b007aff83f4fb73db176e17369ffe74455b88cb24943",
+      "sha256": "fdba1047f30a2dcde8699c3762b75dfa1f31868bc24088e3e368b8cf35b8bc10",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "eb9f7139629d0a43fd6d2dadd9907a16c2da5ea95c2df2c7b8e11942a072934a",
+      "sha256": "5863d1652709663ce577d012ceb6e45a43249ee5e5cc11d431a2fb1a0ae8a096",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2687,7 +2717,7 @@
     },
     {
       "path": "src/bin/qleisli/artifacts.rs",
-      "sha256": "5b0139862ac62bf9d5d16d4c8c3699921f1fc97f217442e906c3a0f95898497f",
+      "sha256": "a6c50b60764b070f4deeb0f1b38794c21f8d7108a5d2a88c0893e7810c974d47",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2697,7 +2727,7 @@
     },
     {
       "path": "src/bin/qleisli/interop.rs",
-      "sha256": "ffa13820fee50814dcd3ecfc08b677fe1fa36155d08ae5d175754df14eca5579",
+      "sha256": "3b543cd1c360ff647bacc2a8da52eb37f6b2cd0b4e1dc9faa971dadcb3be326a",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2707,7 +2737,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "bfeff4762aa301c16800c8dbe785691e5b5631c84931076537708d60cb3e937d",
+      "sha256": "792880ca3d3d0f8daafe5a948162c87e8055aaa90f364d79b69761ae8d4a2d4c",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2717,7 +2747,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "16c805ebcd584dd8b86c844e5bacb2cda2fe9d84dddf14745f72187d09fee54d",
+      "sha256": "bf2058bf12225c43e304be7746bb6e3f767a3eaf086f8b719ef5200fbc5d47ed",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2729,7 +2759,7 @@
     },
     {
       "path": "src/bin/qleisli/samples.rs",
-      "sha256": "eee6db63e23c5cfafccb7c6961bc7ea1666e490a661007613c2e02bac6df5c3d",
+      "sha256": "3adafc74789ad0ca1e38919dfafcde79c89f001d70c083c79257cdcb3a27a1bc",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2739,7 +2769,7 @@
     },
     {
       "path": "src/bin/qleisli/sized.rs",
-      "sha256": "1ea6fa657a515058ee3856fc8175134900e8e776249fa244f6b7eeb41c5a1bb0",
+      "sha256": "bf0be6d54c6ddf53ea1ce4ff43751d116401be2afceb498c07063f63bbd71479",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -2759,7 +2789,7 @@
     },
     {
       "path": "src/bin/qleisli/source_commands.rs",
-      "sha256": "9bdd8521b83ba4d66a344efb0dac54c876e33777f3b216d92e8435e6b2d5dcc2",
+      "sha256": "386fb4823e63dac7fb66f2b4095a72e322e83d29ce258047a29baa57566dfd60",
       "group": "execution",
       "surface": {
         "declarations": [],
@@ -2811,7 +2841,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "ea9c78e83ce1682ae9acba5c8e1ca901d6f1175a3aca67accf462250391962c9",
+      "sha256": "55eea7babd677a05d799087284e3ffa6a14408f814731f4d0af52cb572dcb6f3",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -2821,6 +2851,7 @@
         "functions": [
           "pub fn check( signature: BasisType, implementation: RawProgram, specification: RawProgram, identity: FunctionIdentity, budget: &mut Budget, ) -> Result<Self, ContractError>",
           "pub fn check_binding( &self, identity: &FunctionIdentity, implementation: &RawProgram, specification: &RawProgram, ) -> Result<(), ContractError>",
+          "pub fn checker(&self) -> &std::path::Path",
           "pub fn circuit(&self) -> &Circuit",
           "pub fn depth(&self) -> usize",
           "pub fn expanded_steps(&self) -> usize",
@@ -2841,7 +2872,7 @@
     },
     {
       "path": "src/contract/meaning.rs",
-      "sha256": "c3a68215973a5b44d919bcdd5aea20559169ff0ef0dc6e6e4f93b9318aca435e",
+      "sha256": "4605b2f0e58143919a98332b3bdaee02909a5044d902253a21060026e241e3f7",
       "group": "finite-meaning",
       "surface": {
         "declarations": [
@@ -2866,7 +2897,7 @@
     },
     {
       "path": "src/contract/mod.rs",
-      "sha256": "53ec2704e2cbb89cbfb6ee7f3394b5ca69658d007ed00029c377c28a4970bd67",
+      "sha256": "4aa9dc811c8c09aa629e7d7411fd036a7906dc128e71142627986ff31747a580",
       "group": "finite-contract",
       "surface": {
         "declarations": [
@@ -2888,6 +2919,7 @@
           "pub fn check_binding( &self, circuit: &Circuit, contract: &Contract, ) -> Result<(), ContractError>",
           "pub fn check_computed( source_bits: usize, function: &[u16], use_steps: &[CircuitStep], logical_steps: &[CircuitStep], ) -> Result<(), ContractError>",
           "pub fn check_entry(&self, entry: Option<&Encoding>) -> Result<&Encoding, ContractError>",
+          "pub fn checker(&self) -> &std::path::Path",
           "pub fn circuit(&self) -> &Circuit",
           "pub fn contract(&self) -> &Contract",
           "pub fn controlled(&self, budget: &mut Budget) -> Result<Self, ContractError>",
@@ -2898,8 +2930,8 @@
           "pub fn logical(&self) -> &Matrix",
           "pub fn map(&self) -> &Matrix",
           "pub fn matrix(&self, budget: &mut Budget) -> Result<Matrix, ContractError>",
-          "pub fn new( input: Encoding, output: Encoding, logical: Matrix, budget: &mut Budget, ) -> Result<Self, ContractError>",
-          "pub fn new( logical: BasisType, physical: BasisType, map: Matrix, budget: &mut Budget, ) -> Result<Self, ContractError>",
+          "pub fn new( input: Encoding, output: Encoding, logical: Matrix, _budget: &mut Budget, ) -> Result<Self, ContractError>",
+          "pub fn new( logical: BasisType, physical: BasisType, map: Matrix, _budget: &mut Budget, ) -> Result<Self, ContractError>",
           "pub fn new(basis: BasisType, steps: Vec<CircuitStep>) -> Result<Self, ContractError>",
           "pub fn output(&self) -> &Encoding",
           "pub fn pair(left: Self, right: Self) -> Self",
@@ -2965,7 +2997,7 @@
     },
     {
       "path": "src/frontend/compile/circuit.rs",
-      "sha256": "ebc01a224e051e19981d6a2f3a7d62abe4e287549fc2b42cbd68d9432ccf3a77",
+      "sha256": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2985,7 +3017,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+      "sha256": "9fea23f2834063d2fdc9ce67414c4ca48b840d5693b677ddc8f9ebb3ad64e4e8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -2995,7 +3027,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "f82c5a20478a1d5bfd46770f8d44734f62e0c4603c87ea212de32308d581e88e",
+      "sha256": "50f11ce3fccd9649abeca96cbb7f10a6d1ed6e1e742e2985abb24d7f36976a27",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3005,7 +3037,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+      "sha256": "d2432ea2d33bbe9c8592d3fee1d12a6ce21a63360fe72b7db3b2fed40e2e9bae",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3045,7 +3077,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
+      "sha256": "d34fa819051de9f8a3313c7f716c79ec101fc278be3238a431b2ba7e7341fcea",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3065,7 +3097,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "cc6a4c986e52ae98ca7695b921430707b815dca339bed106fae4b38bd32fc6e9",
+      "sha256": "6ff5c0d0c0500c3b385893e08f0abc5a5a32fa8d6af518e58429e4551fde1335",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3075,12 +3107,16 @@
         "functions": [
           "pub fn check_project(root: &Path) -> Result<(), CompileError>",
           "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
           "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
           "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
-          "pub fn compile_project(root: &Path) -> Result<VerifiedProgram, CompileError>",
-          "pub fn compile_project_diagnostic(root: &Path) -> Result<VerifiedProgram, Diagnostic>",
-          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<VerifiedProgram, Diagnostic>",
-          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<VerifiedProgram, Diagnostic>"
+          "pub fn compile_project(root: &Path) -> Result<AcceptedProgram, CompileError>",
+          "pub fn compile_project_diagnostic(root: &Path) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>"
         ],
         "capacity_constants": [
           "const MAX_BITS: usize = 12;",
@@ -3093,7 +3129,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "d40f5ed926e7b796bbad093b3a513cab40b6cc6ce68a7a10a3a2b75cb4b05567",
+      "sha256": "1b743356c933fb07da6484c82ae4b3ecba702be796a0d4e22dcc8712e5593abe",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3130,7 +3166,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "896b1fc4d0632b6a1d1568076023e598637eb600ac9d9fbde7db08eea7d308c3",
+      "sha256": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3186,7 +3222,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "085227ea64b414ecbfe2c17b36b9979961c3778ff8a2199beb0da7d38e8b4f04",
+      "sha256": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3206,7 +3242,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "b92a63586252f7adfbb8b3b7f54f691b4bd7b62032f0b5b391bcc85ba90e12bf",
+      "sha256": "86445800bcaa9eea13b923335e79958a97283eec916f2e2e14af315e450746b8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3229,7 +3265,7 @@
     },
     {
       "path": "src/frontend/project/edition.rs",
-      "sha256": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+      "sha256": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3241,7 +3277,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "5262d02b1f442c63c79b4a056a9bd711e4e2a45f6116bc3d25a22ad181903f85",
+      "sha256": "8614136fba9798fcf6bb911ddc301acd6f9d4059ae5a74e18e8ed5a53be0e043",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3259,7 +3295,7 @@
     },
     {
       "path": "src/frontend/project/source_file.rs",
-      "sha256": "6b4bf1001f62cfc9788a3e61b5ed25f2980e3895a19243b757d8f4c6f2c21f0f",
+      "sha256": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3389,7 +3425,7 @@
     },
     {
       "path": "src/frontend/sized/fourier.rs",
-      "sha256": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+      "sha256": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3420,7 +3456,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "2c51a011b980bb7bef3e26a8a748f6e0cfc39bab273c7a686f7eb69f11c1eb56",
+      "sha256": "4edbcf115c9756713317056b9eeefadef42543cf97e8710fd94f3346e1d89e68",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3435,7 +3471,8 @@
           "pub fn pure_graph(&self) -> &[u8]",
           "pub fn source(&self) -> &ElaboratedProgram",
           "pub fn source_events(&self) -> &[SourceEvent]",
-          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>"
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
         ],
         "capacity_constants": []
       }
@@ -3513,7 +3550,7 @@
     },
     {
       "path": "src/host.rs",
-      "sha256": "ab5309aa8d7ddbe83c247f4a0685b386b4978e967029a5a33133b21fcfdd7ab8",
+      "sha256": "97905424475c6500a9ebcd9336b8f69013350d60ca97062bd1f16a6fa8600e7c",
       "group": "execution",
       "surface": {
         "declarations": [
@@ -3592,40 +3629,8 @@
       }
     },
     {
-      "path": "src/interchange/dual.rs",
-      "sha256": "0ebb58044adcbb7e81cc9719219086986c6f1188a76a8956f12ba4f69150d87d",
-      "group": "transport",
-      "surface": {
-        "declarations": [
-          "Checked",
-          "Kernel"
-        ],
-        "functions": [
-          "pub fn artifact(&self) -> &[u8]",
-          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
-          "pub fn imported(&self) -> &Imported",
-          "pub fn into_program(self) -> VerifiedProgram",
-          "pub fn native_exact_work(&self) -> usize",
-          "pub fn new(executable: impl AsRef<Path>) -> Self",
-          "pub fn program(&self) -> &VerifiedProgram",
-          "pub fn request(&self) -> Option<&[u8]>"
-        ],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/interchange/dual/runtime.rs",
-      "sha256": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445",
-      "group": "transport",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
       "path": "src/interchange/finite_leaf.rs",
-      "sha256": "b8339fbaacccde92c418e3de8e8f6a065a9132f2ea450386332986ab2c83ea56",
+      "sha256": "095706e42eb58485d759bf866313dcfba126e2a4222dd4e9f8bb57e6a77de45a",
       "group": "finite-leaf",
       "surface": {
         "declarations": [
@@ -3648,7 +3653,7 @@
           "pub fn new(signature: BasisType, input: QuantumPort, output: QuantumPort) -> Result<Self>",
           "pub fn output(&self) -> &QuantumPort",
           "pub fn payload(&self) -> &[u8]",
-          "pub fn program(&self) -> &VerifiedProgram",
+          "pub fn program(&self) -> &AcceptedProgram",
           "pub fn signature(&self) -> &BasisType"
         ],
         "capacity_constants": []
@@ -3669,7 +3674,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "e37f3e59c6ccf49cef0d3c4a6158326f438ef7f699c6c5b4acad3c6c085d719f",
+      "sha256": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3696,6 +3701,7 @@
           "pub fn inspect(&self, payload: &[u8]) -> Result<Reconstructed>",
           "pub fn inspect_native(&self, payload: &[u8]) -> Result<NativeChecked>",
           "pub fn instrument(&self) -> &CheckedInstrument",
+          "pub fn is_instrument(&self) -> bool",
           "pub fn leaves(&self) -> &[(usize, CheckedSerializedUnitaryLeaf)]",
           "pub fn native_exact_work(&self) -> usize",
           "pub fn new(executable: impl Into<PathBuf>) -> Self",
@@ -3754,7 +3760,7 @@
     },
     {
       "path": "src/interchange/hierarchical/execution.rs",
-      "sha256": "a1674776cbc639dff94893d455b463e65e81f4aa637378b5636b92c075b11745",
+      "sha256": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
       "group": "hierarchical-execution",
       "surface": {
         "declarations": [
@@ -3769,6 +3775,9 @@
         "functions": [
           "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<InstrumentBranches>",
           "pub fn execute( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<StateVector>",
+          "pub fn execute_instrument( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<InstrumentBranches>",
+          "pub fn execute_pure( &self, input: &[[f64; 2]], reference_dimension: usize, limits: ExecutionLimits, ) -> Result<StateVector>",
+          "pub fn sample_normalized_shots<R: RandomSource>( &self, input: &[[f64; 2]], reference_dimension: usize, shots: usize, random: &mut R, limits: SamplingLimits, ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>>",
           "pub fn sample_normalized_shots<R: RandomSource>( &self, input: &[[f64; 2]], reference_dimension: usize, shots: usize, random: &mut R, limits: SamplingLimits, ) -> std::result::Result<InstrumentSamples, SamplingError<R::Error>>"
         ],
         "capacity_constants": []
@@ -3776,7 +3785,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
+      "sha256": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -3808,7 +3817,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "d4567e4e6fb406fae2c2117dd543cdb2eb50b4e4512dc5679b4c2a74a77fa035",
+      "sha256": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3816,15 +3825,15 @@
           "Imported",
           "RootInterface",
           "Version",
-          "dual",
           "finite_leaf",
           "finite_matrix",
-          "hierarchical"
+          "hierarchical",
+          "native"
         ],
         "functions": [
           "pub fn convert(bytes: &[u8], version: Version) -> Result<Vec<u8>>",
-          "pub fn export( program: &VerifiedProgram, interface: Option<&RootInterface>, version: Version, ) -> Result<Vec<u8>>",
-          "pub fn export_with_meanings( program: &VerifiedProgram, interface: Option<&RootInterface>, meanings: &[MeaningEvidence], ) -> Result<Vec<u8>>",
+          "pub fn export( program: &AcceptedProgram, interface: Option<&RootInterface>, version: Version, ) -> Result<Vec<u8>>",
+          "pub fn export_with_meanings( program: &AcceptedProgram, interface: Option<&RootInterface>, meanings: &[MeaningEvidence], ) -> Result<Vec<u8>>",
           "pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported>"
         ],
         "capacity_constants": [
@@ -3832,6 +3841,97 @@
           "const MAX_OBJECTS: usize = 65_536;",
           "const MAX_SOURCE_BYTES: usize = 1 << 20;"
         ]
+      }
+    },
+    {
+      "path": "src/interchange/native.rs",
+      "sha256": "1f6e797001b081509c6206db94f2343e4672197f9cf92dee2da9069153106b82",
+      "group": "transport",
+      "surface": {
+        "declarations": [
+          "AcceptedProgram",
+          "Checked",
+          "Kernel",
+          "NativeChecked",
+          "Proposal"
+        ],
+        "functions": [
+          "pub fn accept(&self, proposal: &Proposal) -> Result<AcceptedProgram>",
+          "pub fn accept_raw(&self, program: RawProgram) -> Result<AcceptedProgram>",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn artifact(&self) -> &[u8]",
+          "pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked>",
+          "pub fn check_program(&self, program: &AcceptedProgram) -> Result<Checked>",
+          "pub fn check_raw( &self, program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn check_with_meanings( &self, program: &AcceptedProgram, interface: Option<&RootInterface>, meanings: &[crate::contract::meaning::MeaningEvidence], request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn checker(&self) -> &Path",
+          "pub fn checker(&self) -> &Path",
+          "pub fn convert( &self, artifact: &[u8], version: Version, request: Option<&[u8]>, ) -> Result<Checked>",
+          "pub fn derived_effect(&self) -> crate::ir::Effect",
+          "pub fn exact_work(&self) -> usize",
+          "pub fn from_raw( program: &RawProgram, interface: Option<&RootInterface>, version: Version, request: Option<&[u8]>, ) -> Result<Self>",
+          "pub fn imported(&self) -> &Imported",
+          "pub fn inspect(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<NativeChecked>",
+          "pub fn into_program(self) -> AcceptedProgram",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn native_exact_work(&self) -> usize",
+          "pub fn new(artifact: &[u8], request: Option<&[u8]>) -> Result<Self>",
+          "pub fn new(executable: impl AsRef<Path>) -> Self",
+          "pub fn output_ports(&self) -> &[crate::ir::QuantumPort]",
+          "pub fn program(&self) -> &AcceptedProgram",
+          "pub fn program(&self) -> &RawProgram",
+          "pub fn raw(&self) -> &RawProgram",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn request(&self) -> Option<&[u8]>",
+          "pub fn root_interface(&self) -> Option<&RootInterface>",
+          "pub fn selected() -> Result<Self>",
+          "pub fn verify(&self, program: &RawProgram) -> Result<Checked>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/contracts.rs",
+      "sha256": "0f7e9f24fef3bc0da1cfc0f7e116e143697fab27a8faf1e029f5c17fea397ae4",
+      "group": "finite-contract",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/runtime.rs",
+      "sha256": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/native/view.rs",
+      "sha256": "c10cf04a4b938fd152b42cacd567d2faf9fbdaee9c50176725f207f75745908d",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/interchange/process.rs",
+      "sha256": "f9661d21e3b163c12aea0ad780995bd99737126d04493f606f0cef4a455c4a5a",
+      "group": "transport",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
       }
     },
     {
@@ -3846,7 +3946,7 @@
     },
     {
       "path": "src/interop/mod.rs",
-      "sha256": "886274f018ebb43d96e8502b3e1558a131060b689f290df30bc0076e6c5d9a79",
+      "sha256": "8d520dcda5fb56f47eca1dbb4ce623b335e9851c76e69e39f8bb955a7c5389f2",
       "group": "foreign",
       "surface": {
         "declarations": [
@@ -3854,8 +3954,8 @@
           "InteropErrorKind"
         ],
         "functions": [
-          "pub fn export_openqasm3(program: &VerifiedProgram) -> Result<String, InteropError>",
-          "pub fn export_qir_base(program: &VerifiedProgram) -> Result<String, InteropError>"
+          "pub fn export_openqasm3(program: &AcceptedProgram) -> Result<String, InteropError>",
+          "pub fn export_qir_base(program: &AcceptedProgram) -> Result<String, InteropError>"
         ],
         "capacity_constants": [
           "pub const MAX_OPENQASM_BYTES: usize = 1 << 20;",
@@ -3868,25 +3968,26 @@
     },
     {
       "path": "src/interop/openqasm.rs",
-      "sha256": "dda4d8db6a567f6fa742f8588af926f67351e3277ec6c9db77aa774eb1aebcc5",
+      "sha256": "e9542d809af360dd4a229e35c288fbd61c8b9dc53e3e01716a915d5f234e53bd",
       "group": "foreign",
       "surface": {
         "declarations": [],
         "functions": [
-          "pub fn import_openqasm3(source: &str) -> Result<VerifiedProgram, InteropError>"
+          "pub fn import_openqasm3(source: &str) -> Result<AcceptedProgram, InteropError>",
+          "pub fn import_openqasm3_with_kernel( source: &str, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, InteropError>"
         ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+      "sha256": "2c95c01b949a883e00cd9e2d09ecf14cb5eb414ecd7879d06ff7ce983b50ef3f",
       "group": "foreign",
       "surface": {
         "declarations": [],
         "functions": [
           "pub fn arity(self) -> usize",
-          "pub fn lower(&self) -> Result<VerifiedProgram, InteropError>",
+          "pub fn lower_with_kernel( &self, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, InteropError>",
           "pub fn name(self) -> &'static str",
           "pub fn parse(name: &str) -> Option<Self>",
           "pub fn push(&mut self, gate: Gate, wires: Vec<usize>) -> Result<(), InteropError>",
@@ -3907,7 +4008,7 @@
     },
     {
       "path": "src/ir.rs",
-      "sha256": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+      "sha256": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3949,7 +4050,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "f75f2102efc3115536699d61b0d23362f13a40535005ef83ede3a2ea9bac0797",
+      "sha256": "8557fff1c2319dd73ae56f6119d76a6295740312ebcee6bbf532da4caa356150",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -3967,15 +4068,17 @@
     },
     {
       "path": "src/sim.rs",
-      "sha256": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+      "sha256": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
       "group": "execution",
       "surface": {
         "declarations": [
+          "ExecutableProgram",
+          "Sealed",
           "SimulationError",
           "SimulationLimits"
         ],
         "functions": [
-          "pub fn run_closed( program: &VerifiedProgram, limits: SimulationLimits, ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError>"
+          "pub fn run_closed( program: &(impl ExecutableProgram + ?Sized), limits: SimulationLimits, ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError>"
         ],
         "capacity_constants": [
           "pub const MAX_SIMULATED_QUBITS: usize = 20;"
@@ -3994,7 +4097,7 @@
     },
     {
       "path": "src/sim/sampling.rs",
-      "sha256": "aeef8111325ddd4f3e48a9019d58d6f9c7f2034d7f1acf63cf79052e1fe77380",
+      "sha256": "f8913d06559195348cd6811906ef106df88f1f0b3643d7da23f013096cfcae07",
       "group": "execution",
       "surface": {
         "declarations": [
@@ -4006,14 +4109,14 @@
         ],
         "functions": [
           "pub fn new(seed: u64) -> Self",
-          "pub fn sample_closed<R: RandomSource>( program: &VerifiedProgram, random: &mut R, limits: SampleLimits, ) -> Result<Sample, SampleError<R::Error>>"
+          "pub fn sample_closed<R: RandomSource>( program: &(impl ExecutableProgram + ?Sized), random: &mut R, limits: SampleLimits, ) -> Result<Sample, SampleError<R::Error>>"
         ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/sim/state.rs",
-      "sha256": "7b0d035cc7f712c04e856e0307b5766f130a9aa343fb783fcff2c991d1f45c2f",
+      "sha256": "213bbd8ab841937f05d940d9cb87e0986ba6bf5737f3e747c598b70d206762c3",
       "group": "execution",
       "surface": {
         "declarations": [],
@@ -4023,7 +4126,7 @@
     },
     {
       "path": "src/sim/tests.rs",
-      "sha256": "9907a6e908c944b28a6822245923a08bebe85fbaa26cbd75b0fd28e34aefc657",
+      "sha256": "19ddac9bf29e910a10409ca6006c3b48a8acda0069909dc6d3bbedcfaf6469da",
       "group": "execution",
       "surface": {
         "declarations": [],
@@ -4032,47 +4135,26 @@
       }
     },
     {
-      "path": "src/verify.rs",
-      "sha256": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
-      "group": "raw-core",
-      "surface": {
-        "declarations": [
-          "ValidationError",
-          "VerifiedProgram"
-        ],
-        "functions": [
-          "pub fn derived_effect(&self) -> Effect",
-          "pub fn program(&self) -> &RawProgram",
-          "pub fn raw(&self) -> &RawProgram",
-          "pub fn verify(program: RawProgram) -> Result<VerifiedProgram, ValidationError>"
-        ],
-        "capacity_constants": [
-          "const MAX_NESTED_BRANCHES: usize = 64;",
-          "const MAX_REGISTER_BITS: u8 = 12;"
-        ]
-      }
-    },
-    {
       "path": "stdlib/src/arithmetic.qli",
-      "sha256": "7f2fea0ff5ac0b6b66fc08e0b9f25c0b351397ea19e360f3c9ec8d4e87e6cbb2",
+      "sha256": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/basis.qli",
-      "sha256": "65eaf24de59045608fc289da0823b9879df756e0ec2e679e7580e7833c7c2b02",
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/routines.qli",
-      "sha256": "8f7a073ddc5d75a56a29d86860c4d88ae3d684b8f7ed642da73c1fb17872c91c",
+      "sha256": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
       "group": "source",
       "surface": null
     },
     {
       "path": "stdlib/src/transforms.qli",
-      "sha256": "6a4f0dc06ead037bb89b7c7d976efdefea1df78f108247c00d9614f4c399ebbd",
+      "sha256": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
       "group": "source",
       "surface": null
     }
@@ -4082,16 +4164,16 @@
       "id": "raw",
       "group": "raw-core",
       "entry_points": [
-        "qleisli::verify",
-        "RawProgram/RawOp Rust embedding"
+        "interchange::native::Kernel::{accept_raw,accept,check_raw,check_program}",
+        "RawProgram/RawOp untrusted Rust proposals"
       ],
-      "status": "production Rust",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
-      "binding": "Untrusted complete owned RawProgram; private VerifiedProgram issued only by verification",
+      "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
       "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
-      "failure": "ValidationError; no VerifiedProgram on any failure",
+      "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
         "VM-25",
         "VM-26"
@@ -4107,7 +4189,7 @@
         "CheckedContract::{check,identity,then,tensor,adjoint,controlled,check_binding,check_entry}",
         "check_computed"
       ],
-      "status": "production Rust",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
@@ -4127,7 +4209,7 @@
         "FiniteMeaning::{permutation,phase,matrix,target_ir}",
         "MeaningEvidence::{check,check_binding}"
       ],
-      "status": "production Rust",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Independent specification body or finite meaning, signature and immutable dependency/source identity",
       "binding": "Reverify and extract BOTH raw bodies; compare full operators and ordered outputs, then freeze graph",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
@@ -4146,9 +4228,10 @@
       "group": "transport",
       "entry_points": [
         "interchange::{export,export_with_meanings,import,convert}",
-        "CLI emit-ir/verify-ir [--against=REQUEST]"
+        "CLI emit-ir/verify-ir [--against=REQUEST]",
+        "interchange::native::Kernel::{inspect,check_raw,check_with_meanings,convert}"
       ],
-      "status": "production Rust",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
@@ -4168,7 +4251,7 @@
         "finite_matrix::{encode,decode}",
         "finite_leaf::{check_unitary,check_serialized_unitary}"
       ],
-      "status": "production Rust transitional hierarchy premise",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Separate required Matrix/finite-matrix bytes AND exact type/input-output port boundary; never derive expected from actual payload",
       "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
       "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
@@ -4188,9 +4271,11 @@
         "compile/check_project",
         "compile/check_project_diagnostic",
         "compile/check_project_with_policy",
-        "CLI check/run/sample/emit-ir/doc"
+        "CLI check/run/sample/emit-ir/doc",
+        "compile/check_project_with_kernel",
+        "QrateSource::{compile_with_kernel,check_with_kernel}"
       ],
-      "status": "production Rust-only default",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Same generated IR independently verified; source-preservation proof remains open",
       "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
@@ -4207,9 +4292,12 @@
       "entry_points": [
         "interop::{import_openqasm3,export_openqasm3,export_qir_base}",
         "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir",
-        "Python Client/Program from_openqasm/from_qir/from_ir/compile_project and check/run/sample/to_openqasm/to_qir"
+        "Python Client/Program from_openqasm/from_qir/from_ir/compile_project and check/run/sample/to_openqasm/to_qir",
+        "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir --lean-kernel=PATH",
+        "Python Client(lean_kernel=PATH), Program methods and python -m qleisli --lean-kernel=PATH",
+        "interop::import_openqasm3_with_kernel"
       ],
-      "status": "bounded production Rust adapter; QIR reader optional",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
@@ -4227,7 +4315,7 @@
         "phase-word v1",
         "phase DAG/layout/layout DAG/phase-layout native protocols"
       ],
-      "status": "experimental Lean only; no VerifiedProgram",
+      "status": "experimental Lean only; no AcceptedProgram",
       "request": "Independent required summary/permutation/phase description and separately checked artifact claim",
       "binding": "Actual total executable definitions; native/decoder correspondence and chosen executable provenance remain explicit assumptions",
       "encoding": "Phase-word Bit summary, phase modulo256; typed owner/axis layouts and references for declared component scopes",
@@ -4270,7 +4358,7 @@
       ],
       "status": "numerical execution after Rust verification",
       "request": "Caller execution/sample/trial policy and deterministic seed; not a semantic acceptance request",
-      "binding": "Execute exact VerifiedProgram or freshly imported immutable bytes; fresh state per shot/trial; no logical owner resurrection",
+      "binding": "Execute exact AcceptedProgram or freshly imported immutable bytes; fresh state per shot/trial; no logical owner resurrection",
       "encoding": "Returned classical tuple/display order; hidden measurement histories added probabilistically; residual entanglement retained in reference execution",
       "domain": "Floating probabilities have declared rounding behavior; cannot issue exact evidence",
       "limits": "Simulator default16/cap20 qubits,65536 components,1M amplitude cells/steps; sample defaults and CLI shots/trials1M, seedu64; no new max-size checks",
@@ -4344,9 +4432,10 @@
       "entry_points": [
         "CheckedRequest::execute",
         "CheckedInstrument::execute",
-        "CheckedInstrument::sample_normalized_shots"
+        "CheckedInstrument::sample_normalized_shots",
+        "NativeChecked::{execute_pure,execute_instrument,sample_normalized_shots}"
       ],
-      "status": "experimental post-check numerical execution outside acceptance; not production sized-source CLI integration",
+      "status": "compatible default plus explicit selected native route; full authority transfer remains v0.5.0",
       "request": "execute accepts unnormalized finite complex input. sample_normalized_shots explicitly normalizes finite positive-norm input, returns its original norm, and takes positive bounded shots plus a RandomSource; independent uniform random words are a caller premise.",
       "binding": "Retained actual definitions and actual-index finite matrices; actual initialization/readout packing. Sampling calls execute afresh per shot, preserving supplied reference correlations; no cached branches hide repeated work.",
       "encoding": "reference*2^quantum_bits+basis; first quantum axis low bit; actual low-bit-first CBits packing; keep zero branches, residual/reference coherence and global phase",
@@ -4368,9 +4457,11 @@
         "ElaboratedProgram::lower",
         "HierarchyProposal::validate_initialization_moves",
         "HierarchyProposal::qpe_binding",
-        "qleisli sized check/run/sample/emit-proposal"
+        "qleisli sized check/run/sample/emit-proposal",
+        "HierarchyProposal::validate_initialization_moves_native",
+        "sized check/run/sample through native-only reports"
       ],
-      "status": "additive experimental Rust source and CLI route; untrusted producer, independently checked graph and finite leaves, no production VerifiedProgram conversion",
+      "status": "compatible default plus explicit selected native route; full authority transfer remains v0.5.0",
       "request": "Original module bytes, selected public entry and complete natural/operation bindings",
       "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence.",
       "encoding": "Explicit Q<Bit>/Q<Bits<n>>, CBit/CBits and arity-preserving tuples; zero-width owners remain linear; actual calls/repeats/owner frames preserved",
@@ -4393,7 +4484,7 @@
         "CheckedQpeInstrument::instrument",
         "CheckedQpeInstrument::candidate"
       ],
-      "status": "experimental named Lean/Rust host report; no external schema or production VerifiedProgram authority",
+      "status": "experimental named Lean/Rust host report; no external schema or production AcceptedProgram authority",
       "request": "Independent complete circuit layout/coordinate order and provider Root.Request; actual zero preparation, requested measurement order and retained target outputs",
       "binding": "Fresh whole-artifact typing/proof cache, actual provider request pairs, routed controlled powers, actual inverse-Fourier operand, full event trace and actual initialization/readout. Finite H/provider obligations remain explicit.",
       "encoding": "Full owners/type trees/axes including empty owners; exact phase, low-bit-first phase coordinates, explicit Fourier reversal and complete residual target order",
@@ -4450,13 +4541,14 @@
       ]
     },
     {
-      "id": "qirf-dual-v028",
+      "id": "qirf-native-v028",
       "group": "transport",
       "entry_points": [
-        "interchange::dual::Kernel::check",
-        "CLI check/run/sample/emit-ir/verify-ir --lean-kernel=PATH"
+        "interchange::native::Kernel::check",
+        "CLI check/run/sample/emit-ir/verify-ir --lean-kernel=PATH",
+        "interchange::native::Kernel::{inspect,verify,check_program,check_raw,check_with_meanings,convert}"
       ],
-      "status": "Explicit opt-in intersection; Rust still seals executable programs. No fallback or schema enabling.",
+      "status": "native-only production implementation; full Soundness remains pending",
       "request": "Optional independent qleisli.request v1; both original artifact and request byte arrays go to both checkers.",
       "binding": "Private Checked retains immutable artifact/request and Rust reconstruction from those bytes. Run/sample uses that reconstruction; emission writes retained bytes.",
       "encoding": "Original QIRF1/2 JSON in QLV1 length-delimited stdin; strict qleisli.qirf-dual 1 response and request-presence agreement.",
@@ -4465,6 +4557,24 @@
       "failure": "Either rejection, unsupported form, exhausted capacity, absent runtime, malformed/oversized reply, exit/reply conflict or request coverage mismatch blocks use.",
       "replacement": [
         "VM-28",
+        "VM-29"
+      ]
+    },
+    {
+      "id": "qirf-native-v029",
+      "group": "transport",
+      "entry_points": [
+        "interchange::native::{Proposal,AcceptedProgram,Kernel::accept}",
+        "sim::{run_closed,sample_closed} on AcceptedProgram"
+      ],
+      "status": "native-only production implementation; full Soundness remains pending",
+      "request": "Original optional independent request passed to the fresh Lean check",
+      "binding": "Owned immutable proposal; only native acceptance constructs the handle; decoder reads that ticket; no AcceptedProgram conversion",
+      "encoding": "QIRF1 finite-v0 or QIRF2 finite-meaning-v1, single program, no evidence/sources",
+      "domain": "Existing 19 raw constructors without retained function evidence; no additional semantic rules",
+      "limits": "Existing packet/JSON/native work bounds and reference execution limits",
+      "failure": "Explicit native rejection/transport error or unsupported execution view; never legacy fallback",
+      "replacement": [
         "VM-29"
       ]
     }
@@ -4493,7 +4603,7 @@
     {
       "id": "work",
       "scope": "shared exact arithmetic; never reset per leaf",
-      "value": "DEFAULT_EXACT_WORK=10000000; ordinary Budget is caller chosen; finite_leaf rejects budgets above ceiling",
+      "value": "Native per-decision ceiling10000000; shared caller budget charges each fresh native decision; metadata transport work is not reused across invocations",
       "source": "src/contract/mod.rs",
       "test": "tests/finite_leaf.rs#serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves",
       "replacement": [
@@ -4514,7 +4624,7 @@
     {
       "id": "receipts",
       "scope": "both raw function bodies/dependency/source graphs",
-      "value": "depth32;128 sources; aggregate1048576 bytes; identity names4096 bytes; expanded1000000",
+      "value": "Rust view depth32, native combined program/evidence graph depth32;128 sources; aggregate1048576 bytes; identity names4096 bytes; expanded1000000; lower native work bounds can reject first",
       "source": "src/contract/function.rs",
       "test": "tests/function_evidence.rs#rejects_untrusted_capacity_and_exhausted_shared_work",
       "replacement": [
@@ -4526,9 +4636,9 @@
     {
       "id": "raw-register",
       "scope": "raw verifier individual ports and table lifts",
-      "value": "12 bits/register; no aggregate live-wire cap claimed by verify",
-      "source": "src/verify.rs",
-      "test": "tests/verify.rs#oversized_register_and_deeply_nested_branch_are_rejected",
+      "value": "12 bits/register; all native QIRF structural/work/time bounds also apply",
+      "source": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "test": "tests/native_raw.rs#oversized_register_and_deeply_nested_branch_are_rejected",
       "replacement": [
         "VM-25"
       ]
@@ -4536,9 +4646,9 @@
     {
       "id": "raw-branches",
       "scope": "both active and inactive arms",
-      "value": "64 nested branches; global freshness tracked across exclusive arms",
-      "source": "src/verify.rs",
-      "test": "tests/verify.rs#branch_depth_limit_counts_empty_branches_in_both_arms",
+      "value": "64 raw branch levels; JSON depth128 and graph depth32 are independently enforced before execution",
+      "source": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+      "test": "tests/native_raw.rs#branch_depth_limit_counts_empty_branches_in_both_arms",
       "replacement": [
         "VM-26"
       ]
@@ -4630,7 +4740,7 @@
     {
       "id": "simulation",
       "scope": "numerical reference executor, separate from acceptance",
-      "value": "default16/cap20 qubits;65536 components;1M amplitude cells and steps; caller limits may be lower",
+      "value": "default16/cap20 qubits;65536 components and2^20 amplitude cells including retained outer branches;1M shared IR/circuit/copy work units; projection and branch-phi classical/quantum-owner metadata charged before allocation, including empty owners; caller limits may be lower",
       "source": "src/sim.rs",
       "test": "tests/sim.rs#nonclosed_input_and_dimension_limit_are_reported",
       "replacement": [
@@ -4640,7 +4750,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; CLI shots1..1M, host attempts\u22641M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [
@@ -4760,6 +4870,16 @@
       "replacement": [
         "VM-29"
       ]
+    },
+    {
+      "id": "source-discovery-entries",
+      "scope": "untrusted source discovery, separate from source bytes and native acceptance",
+      "value": "Bounded policy: max(64, project_bytes / 1024) directory entries; includes empty/non-source files; charged before buffering entries; Legacy explicitly unbounded",
+      "source": "src/frontend/project.rs",
+      "test": "tests/editions.rs#empty_files_and_directory_entries_consume_bounded_discovery_capacity",
+      "replacement": [
+        "VM-29"
+      ]
     }
   ],
   "corpus": {
@@ -4817,18 +4937,13 @@
   },
   "native_packaging": [
     {
-      "option": "explicit source-built optional kernel",
-      "current": "existing Kernel path and lean-kernel build; no default Lean dependency",
+      "option": "explicit matching native executable",
+      "current": "required for all runtime acceptance; QLEISLI_KERNEL or explicit Kernel/CLI selection; Cargo builds/docs remain Rust-only",
       "selected_for_dual": false
     },
     {
-      "option": "audited platform prebuilt binaries",
-      "current": "VM-28 proposal: pin provenance/hash/toolchain, platform installation and fail-closed process behavior before integration",
-      "selected_for_dual": false
-    },
-    {
-      "option": "bundled optional binary/wheel",
-      "current": "VM-28 proposal: review Rust-only default compatibility, OS/architecture support and distribution/licensing; not a current package",
+      "option": "audited platform native bundle",
+      "current": "packaging builds/audits/replays fresh source, hashes provenance and checks relocation; release platform validation is separate",
       "selected_for_dual": false
     }
   ],
@@ -4883,12 +4998,12 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
-      "tests/verification_boundary.rs": "f30839949806b3206b4c4a293d8969c154051f2f099de6a4fb90776b4c1e4ee2",
-      "tests/hierarchical_host.rs": "fe1e1a5c83a822ef360323f81ebaef15290b170f01ba1bc8e24ffc97d89f6c43",
+      "tests/verification_boundary.rs": "f21dbdd1d1cb095ee873294222b5ff2cb53e95365cc87356a054a5188bb04e5b",
+      "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
       "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded",
       "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
-      "scripts/compile_sized_corpus.py": "709ffe7cec405797f0e458afa45c242323d8c06508ac4a59c0e60f2cf2c29fed",
-      "scripts/compile_sized_instrument.py": "72b51b9e4652b98b017b1a8af40cf7d9bddbecb0d0c7aea2e47a55f2a63f4742",
+      "scripts/compile_sized_corpus.py": "6bc931a56a3585771fa79b2d82e4c8a6801970b22d057294730eb523e9939fb5",
+      "scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
       "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
       "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
       "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
@@ -4902,17 +5017,17 @@
       "scripts/test_hierarchical_request.py": "498f141cfc29868d8a89cc0f567763db88fcc9357c4f2b53bf3ea191be719d8c",
       "scripts/test_hierarchical_routed_power.py": "746d772fa7b2be51885e12f910a79548aa2ce4909607c3546f321fbaec02898d",
       "scripts/test_hierarchical_execution.py": "f3fb1b727fa22a608c1c7fae5fc6923ddb7d3216e92c50d6df7c216f5044431d",
-      "tests/hierarchical_execution.rs": "95352738bbcc67bb3736e05b89bf42dee1707c03b78f769b05142080d0e209bb",
+      "tests/hierarchical_execution.rs": "5f18806249cd22c9a0cd61814d5220cdeb6f861918c328696e8d200ee37bdb29",
       "scripts/test_hierarchical_circuit_trace.py": "5214be5ad0baf5bcb0681bd8854516737e4f9b575c6b0e021aa8fce2480d25a8",
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "e772fe9384a04ce23c0ba3e6d44ae7cb53329f781bf17fdf18902a4d6783e296",
+      "tests/sized_source.rs": "f40aaf032319517fbf2efa9b5ad0d9a508f34e7f0b55e1eae28e2ea22a131d85",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
-      "tests/hierarchical_qpe_host.rs": "6331ec7f65a9a8842bc408022e6ff3d15683ba40cb1c68ad5d3d74c44a244609",
+      "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
-      "tests/connections.rs": "263ff9fcea227374b09f6b0300506816182526bcff583220795ca0dcc3afa4d4",
+      "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",
       "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
       "tests/with_computed_diagnostics.rs": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc",
       "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",

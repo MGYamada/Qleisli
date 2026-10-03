@@ -1,0 +1,24 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-1cd264f5ba52d833)
+
+running 1 test
+test native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... FAILED
+
+failures:
+
+---- native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes stdout ----
+
+thread 'native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes' (9060424) panicked at tests/hierarchical_host.rs:706:5:
+assertion `left == right` failed
+  left: 171
+ right: 67
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 17 filtered out; finished in 1.30s
+
+error: test failed, to rerun pass `--test hierarchical_host`

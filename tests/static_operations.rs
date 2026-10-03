@@ -1,13 +1,14 @@
+mod common;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use common::accept;
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::frontend::parser::parse_module;
 use qleisli::ir::*;
 use qleisli::sim::{SimulationLimits, run_closed};
-use qleisli::verify;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 struct Root(PathBuf);
@@ -378,7 +379,7 @@ fn raw_finite_circuit_validation_rejects_forged_certificates() {
         classical_outputs: vec![],
         declared_effect: Effect::Unitary,
     };
-    verify(raw(good.clone())).unwrap();
+    accept(raw(good.clone())).unwrap();
     for (indices, permutation, phases) in [
         (vec![1], vec![0, 1], vec![0, 0]),
         (vec![0, 0], vec![0, 1, 2, 3], vec![0; 4]),
@@ -389,7 +390,7 @@ fn raw_finite_circuit_validation_rejects_forged_certificates() {
         (vec![0], vec![0, 1], vec![0, 8]),
     ] {
         assert!(
-            verify(raw(CircuitStep {
+            accept(raw(CircuitStep {
                 controls: vec![],
                 action: CircuitAction::Monomial {
                     indices,
@@ -405,7 +406,7 @@ fn raw_finite_circuit_validation_rejects_forged_certificates() {
         index: 0,
         when_one: true,
     }];
-    assert!(verify(raw(overlap)).is_err());
+    assert!(accept(raw(overlap)).is_err());
     for controls in [
         vec![BitControl {
             index: 1,
@@ -420,7 +421,7 @@ fn raw_finite_circuit_validation_rejects_forged_certificates() {
         ],
     ] {
         assert!(
-            verify(raw(CircuitStep {
+            accept(raw(CircuitStep {
                 controls,
                 action: CircuitAction::Monomial {
                     indices: vec![],

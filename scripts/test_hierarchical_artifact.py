@@ -5,6 +5,7 @@ Success here means prepared data, never verified quantum meaning. In particular,
 the deliberate phase mutation still needs the subsequent derivation checker.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
+import native_harness
 import argparse
 import hashlib
 import json
@@ -234,14 +235,9 @@ def build_and_run(source, record=None):
     commands = []
     with tempfile.TemporaryDirectory(prefix="qleisli-hierarchical-artifact-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text('name = "artifact_test"\nversion = "0.0.0"\n'
-            'defaultTargets = ["artifact-test"]\n[[require]]\nname = "qleisli_kernel"\n'
-            f'path = {json.dumps(str(ROOT / "lean-kernel"))}\n'
-            '[[lean_exe]]\nname = "artifact-test"\nroot = "Main"\n')
         (project / "Main.lean").write_text(source)
-        binary = project / ".lake/build/bin/artifact-test"
-        for argv in (["lake","build"], [str(binary)]):
+        binary = native_harness.build(project, commands)
+        for argv in ([str(binary)],):
             run = subprocess.run(argv, cwd=project, capture_output=True, text=True, timeout=240)
             commands.append(dict(argv=argv,exit_code=run.returncode,stdout=run.stdout,stderr=run.stderr))
             if run.returncode:

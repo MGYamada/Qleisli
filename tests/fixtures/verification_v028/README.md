@@ -11,7 +11,7 @@ capacity, crashes, times out or returns an inconsistent response.
 python3 scripts/package_lean_kernel.py --output /tmp/qleisli-native
 cargo build --locked --bin qleisli
 target/debug/qleisli run tests/fixtures/authoring_sessions/dual-v028/attempt-02 --lean-kernel=/tmp/qleisli-native/bin/qleisli-kernel
-python3 scripts/test_dual_verification.py --kernel /tmp/qleisli-native/bin/qleisli-kernel
+python3 scripts/test_native_verification.py --kernel /tmp/qleisli-native/bin/qleisli-kernel
 ```
 
 The bundle command requires the pinned Lean 4.30.0 toolchain. It copies source

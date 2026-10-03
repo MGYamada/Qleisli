@@ -142,7 +142,7 @@ fn incorrect_implementations_cannot_change_the_clients_meaning() {
                     apply_contract(implementation,specified_phase,q)
                 }}"
             ),
-            ErrorCode::InvalidIr,
+            ErrorCode::Contract,
         );
     }
 }
@@ -378,7 +378,7 @@ fn ordered_function_outputs_are_part_of_the_contract() {
             apply_contract(implementation,wrong,q)
         }}"
         ),
-        ErrorCode::InvalidIr,
+        ErrorCode::Contract,
     );
 }
 
@@ -410,7 +410,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
     );
     assert_eq!(
         compile_project(&root.0).unwrap_err().code,
-        ErrorCode::InvalidIr
+        ErrorCode::Contract
     );
     // Already checked immutable programs retain their original meaning.
     probability(

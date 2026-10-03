@@ -67,7 +67,7 @@ pub(super) fn flatten(
     compiler: &mut Compiler<'_>,
     module: &str,
     span: Span,
-    verified: &VerifiedProgram,
+    verified: &AcceptedProgram,
 ) -> Result<Vec<CircuitStep>, CompileError> {
     let raw = verified.program();
     let port = &raw.quantum_inputs[0];

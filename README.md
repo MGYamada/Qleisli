@@ -3,40 +3,44 @@
 Write quantum algorithms in the language you use to think about them.
 
 Qleisli is an experimental quantum programming language with a
-**Rust frontend and verifier**.
+**Rust frontend and native Lean verifier**.
 It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Published version: 0.2.8. Qleisli language edition: `"2026"`.**
+**Development version: 0.2.9 (unpublished). Latest published version: 0.2.8.**
+**Qleisli language edition: `"2026"`.**
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
-explicitly declares it in `Qargo.toml`. See [language editions](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md)
-and the [0.2.8 release](docs/releases/v0.2.8.md).
-The Rust CLI and library run with Rust alone.
-Ordinary `check`, `run`, `sample`, `emit-ir` and `verify-ir` also support
-`--lean-kernel=PATH` for [opt-in dual checking](tests/fixtures/verification_v028/README.md).
-Both checkers must accept the same IR/request; native failure blocks execution.
+explicitly declares it in `Qargo.toml`. Compatible changes are recorded in the
+[changelog](CHANGELOG.md).
+Cargo builds and documents the Rust CLI/library without Lean. Verification and
+execution require the matching native checker, selected by `--lean-kernel=PATH`
+or `QLEISLI_KERNEL`. All public entry points use Lean acceptance; the Rust
+verifier and dual API have been removed under the approved
+[v0.2.9 breaking exception](https://github.com/MGYamada/Qleisli/issues/276).
+Missing, incompatible or failing checkers reject without fallback or download.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
 The experimental sized-source pipeline uses an explicitly selected Lean kernel;
-its [source contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md#additive-rust-source-pipeline)
-describes the supported checking and lowering profiles.
-The three theorem pillars below are project goals. Current implementation and
-proof status are recorded in the [status ledger](docs/current-status.md).
+[executable clients and validation records](corpus/sized/README.md) describe
+the supported experiments.
+The three theorem pillars below are project goals. The
+[Migration decision](https://github.com/MGYamada/Qleisli/issues/276) records implementation and proof scope.
 Version 0.2.8 was published on 2026-10-03 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.8)
 and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.8).
 [Publication evidence](tests/fixtures/releases/v0.2.8/publication.json) binds the immutable source,
 registry artifact, fresh installation, hosted docs and complete GitHub downloads.
 
-[Quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-quick-reference.md) · [Type system](docs/type-system.md) · [Trust boundary](TRUST_BOUNDARY.md) · [Current status](docs/current-status.md) · [Language reference](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md) ·
-[Roadmap](docs/v0x-roadmap.md) · [Documentation](docs/documentation-map.md)
+[Quick reference](tests/fixtures/quick_reference/README.md) · [Trust boundary](TRUSTBOUNDARY.md) ·
+[Roadmap](ROADMAP.md) · [Verification migration](https://github.com/MGYamada/Qleisli/issues/276) ·
+[Algorithm drafts](docs/imaginary-v1/README.md)
 
 ## Language edition and qrate management
 
 The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
-each source. Compiler version `0.2.8`, Qleisli edition `"2026"` and the Rust
-implementation's Cargo edition `"2024"` are independent. See the
-[edition contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md) for manifest validation and migration.
+each source. Compiler version `0.2.9`, Qleisli edition `"2026"` and the Rust
+implementation's Cargo edition `"2024"` are independent. Missing manifests,
+unsupported editions and malformed schema-2 manifests are rejected.
 
 There is no `Qargo.toml` in the repository top-level directory. The
 [corpus](corpus/Qargo.toml) and [standard library](stdlib/Qargo.toml) have their
@@ -46,8 +50,7 @@ complete schema-2 manifest following
 [qargo](https://github.com/MGYamada/qargo), including its name, version and
 source/test/documentation roots. Other trees currently use edition-only
 manifests and are not qrates. **All source trees will migrate to qrate management
-in the future.** See the [edition and migration contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/language-editions.md)
-for current checking, compatibility and remaining design work. QLT execution
+in the future.** QLT execution
 remains deferred to v0.4.0 or later.
 
 ## A small example
@@ -77,11 +80,11 @@ copying a quantum value, reusing a consumed value, or silently dropping one.
 ## Try it
 
 Install **Rust 1.85 or later**. Cargo builds the Rust implementation and its TOML reader;
-the installed CLI requires no helper runtime.
+verification requires the matching native checker.
 The package is named `qleisli`, its executable is `qleisli`, and its Rust
 library is imported as `qleisli`.
-Earlier Git/path users of `qleisli-core` / `qleisli_core` should follow the
-[name migration](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md#name-migration-from-github-releases-through-020).
+Earlier Git/path users should rename the Cargo dependency `qleisli-core` to
+`qleisli` and Rust imports from `qleisli_core` to `qleisli`.
 
 Install from a source checkout:
 
@@ -89,14 +92,33 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Install this version from the registry:
+Once 0.2.9 is published, install this version from the registry:
 
 ```sh
-cargo install qleisli --version 0.2.8 --locked
+cargo install qleisli --version 0.2.9 --locked
 ```
 
-The [0.2.8 release record](docs/releases/v0.2.8.md) separates candidate validation
-from publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.8/qleisli/)
+For this unpublished checkout, build the checker with Lean 4.30.0 and select it:
+
+```sh
+(cd lean-kernel && lake build)
+export QLEISLI_KERNEL="$PWD/lean-kernel/.lake/build/bin/qleisli-kernel"
+```
+
+A release native bundle needs no Lean development installation at runtime.
+Cargo does not install or download that bundle; use the matching product version.
+Native archives are prepared as
+`qleisli-kernel-VERSION-TARGET.tar.gz`, with a matching `.sha256` checksum file,
+an audited manifest, source commit and licenses. macOS and Linux full CI builds
+produce release candidates; a candidate is not a published release. Extract the
+whole archive and select its `bin/qleisli-kernel` using the environment variable
+above. For this unpublished version, build from source until its matching assets
+appear on [GitHub Releases](https://github.com/MGYamada/Qleisli/releases).
+
+
+For the latest published release, use `--version 0.2.8` instead.
+The [0.2.8 publication evidence](tests/fixtures/releases/v0.2.8/publication.json)
+records its completed publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.8/qleisli/)
 were verified after publication, including a fresh exact-version registry install.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -156,19 +178,31 @@ in its top-level directory and pass that directory to `check` or `run`.
 not hardware results or sampled shots. Bit strings follow the returned tuple
 from left to right; probabilities are floating-point approximations. Even an
 ideally impossible outcome may appear with a tiny positive rounding residue
-in text or JSON output; see the [numerical output contract](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md#reference-execution).
+in text or JSON output; interpret these values with a numerical tolerance.
 
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
 Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
-documentation. See the [CLI and source guide](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/frontend-v0.md).
+documentation; comments are isolated as fenced text so unfinished Markdown or
+HTML cannot hide subsequent declarations. `qleisli --help` lists available commands.
+
+Bounded source loading checks each manifest once per load and separately limits
+directory entries to `max(64, project_bytes / 1024)`, including empty and non-source
+files. Source byte limits retain their independent meaning. On Unix, selected qrate
+roots anchor discovery and file reads by directory handle; this is identity binding,
+not a snapshot of concurrently modified file contents.
+
+Reference simulation reserves amplitude/component capacity across nested branches.
+Its execution budget also charges copied classical values and quantum-owner
+metadata before allocation, including sampling, reset and discard; reported
+execution work includes these copies without relaxing numerical error alarms.
+Branch phi outputs share that budget, including empty quantum owners. Sampling
+reserves projection copies before requesting randomness for each observation.
 
 For complete programs to adapt, start with the
 [protocol components](examples/protocols/README.md) or
 [operation-parameter algorithms](examples/operation_algorithms/README.md).
 Their [source corpus](tests/fixtures/qli_authoring/README.md) checks inputs,
 reference correlations and deliberate algorithm mistakes. The
-[authoring report](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/qli-authoring-feedback.md) turns observed writing
-difficulties into language-design candidates. The
 [iterative QPE example](examples/iterative_phase_estimation/README.md) exercises
 measurement feedback against coherent QPE and independent branch checks;
 [authoring records](tests/fixtures/authoring_sessions/README.md) preserve first
@@ -178,7 +212,7 @@ A GitHub Issue does not require a duplicate backlog entry or update.
 
 ## Connect existing circuits
 
-The bounded [OpenQASM 3 / QIR adapters](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md) support fixed
+The bounded OpenQASM 3 / QIR adapters support fixed
 registers, twelve exact gates and terminal measurements. OpenQASM input must
 explicitly initialize its qubits with `reset` before any gates.
 
@@ -188,7 +222,7 @@ cargo run --example interop -- qasm-to-qir tests/fixtures/interop/bell.qasm
 cargo run --example interop -- qli-to-qasm tests/fixtures/interop/terminal
 ```
 
-The [Python and CLI connection layer](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/interop-m1.1.md#structured-cli-and-python) adds structured
+The Python and CLI connection layer adds structured
 import/check/run/sample/export commands and optional QIR text/bitcode input:
 
 ```sh
@@ -198,7 +232,11 @@ cargo run --bin qleisli -- interop run tests/fixtures/interop/bell.qasm --input=
 The [Python package](python/README.md) uses the Rust executable and optionally
 PyQIR 0.12.5 for LLVM parsing. Unsupported operations reject with diagnostics;
 these are bounded terminal-circuit adapters, not device submission or full
-OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
+OpenQASM/QIR support. Every imported artifact goes through the native Lean verifier.
+Select `--lean-kernel=PATH` on every `interop` action, or pass
+`lean_kernel=PATH` to Python `Client`, or set `QLEISLI_KERNEL`.
+The selection also applies to QIR translation and subsequent program methods;
+native failure blocks checking, execution and output.
 
 <a id="north-starとリリース到達条件"></a>
 <a id="現在の優先順位-言語仕様"></a>
@@ -210,25 +248,39 @@ OpenQASM/QIR support. Every imported artifact goes through the Rust verifier.
 
 ## Status and direction
 
-**0.2.8** reduces tracked docs by approximately 54% while retaining
-active plans and imaginary-v1, and grows the finite corpus from 69 to 78 translations.
-The [release](docs/releases/v0.2.8.md) records exact-source validation and
-publication. Retired detailed
-specifications remain authoritative in the fixed 0.2.7 source; language and
-acceptance contracts are unchanged.
-The active [0.2.2 plan](docs/v0.2.2-plan.md) and
-[0.2.2–0.2.9 verification migration](docs/verification-migration-v0.2.md)
-remain current work targets. Rust retains production acceptance authority;
+**0.2.9** selects the next development version, adds identical contributor
+instructions for Codex and Claude with automated equality/size checks, and
+renames the trust policy to [TRUSTBOUNDARY.md](TRUSTBOUNDARY.md).
+Nine additional small corpus translations bring the finite inventory to 87.
+The [session](corpus/authoring/v029-small/README.md) retains source and validation.
+Selected Lean checking now covers source libraries, unused concrete bodies,
+raw Rust adapters, foreign CLI operations and Python. Sized hierarchy execution
+uses native-checked artifacts without repeating Rust leaf acceptance. The
+[VM29 record](tests/fixtures/verification_v029/README.md) gives exact scope and
+remaining gates. [Decision #276](https://github.com/MGYamada/Qleisli/issues/276)
+approves the exceptional v0.2.9 single-verifier migration. All production
+acceptance now uses Lean, including function evidence and encoded contracts;
+the Rust verifier and dual API are removed. Full Soundness remains a v0.5.0 obligation.
+[CHANGELOG](CHANGELOG.md) records this unpublished scope.
+
+The published 0.2.8 baseline is retained in its validation fixtures. The
+[adopted cutover criteria](https://github.com/MGYamada/Qleisli/issues/276)
+separate implementation, release validation and proof completion;
 external schemas remain disabled. The [VM-25 pure raw-IR profile](tests/fixtures/verification_v025/completion/README.md)
 has actual-checker complex-denotation, cleanup and retained-body binding proofs.
 The [VM-26 component](tests/fixtures/verification_v026/README.md) checks observing
 raw IR, SSA/phis and retained branch-functions. Actual matrix-free coefficients
 refine original complex instruments and prove CP/TNI/TP for finite references.
-Hierarchy/root closure and production dual integration remain VM-27–29 work.
+Hierarchy semantics, source/native/runtime correspondence and full-profile
+Soundness retain their explicitly scoped proof obligations.
 
 Future type-system breaks use v0.3.0; QLT implementation remains deferred to
 v0.4.0 or later. These targets do not establish the three general theorems or
 completion of the v1 algorithms.
+
+The requested [v0.3.1–v0.3.9 backend plan](docs/lean-backend-plan-v0.3.md)
+proposes earlier Lean backend expansion and staged Rust retirement, with local
+pass relations, independent validation and explicit compatibility/deletion gates.
 
 ## Project goals
 
@@ -239,12 +291,15 @@ in executable source that follows their mathematical structure, with shared
 components and explicit contracts. These are goals; the general theorems and
 all six general algorithm implementations are not complete.
 
-The active [v0.2.x migration goals](docs/verification-migration-v0.2.md) remain
-in force. Under **docs/ cleanup boundary at v0.3.0**, obsolete documents are
-removed now and the remaining legacy documentation is retired at v0.3.0, when
-the documentation will be written from scratch.
+The active [v0.2.x migration goals](https://github.com/MGYamada/Qleisli/issues/276) remain
+in force. Exactly two exceptions remain in `docs/` across the v0.3.0 cleanup:
+the entire `imaginary-v1/` tree and
+[lean-backend-plan-v0.3.md](docs/lean-backend-plan-v0.3.md).
+Other former documents are temporarily in `docs-old/`, with their links
+and active checking dependencies removed now. Delete that tree at the v0.3.0
+cleanup boundary; write future documentation from adopted decisions and code.
 
-The [standard-library goal](docs/stdlib-roadmap.md#adopted-library-goal) is a
+The standard-library goal is a
 **BLAS/LAPACK-like foundation for quantum computing, integrated with a textbook
 and formal specifications**. Readers should be able to learn quantum information
 by reading the library: concepts, derivations, reusable source, examples and
@@ -252,8 +307,7 @@ explicit proof status belong together. This is an adopted goal; comprehensive
 library organization and generalized APIs remain future design work.
 
 Passing the current checks is not a proof of algorithm correctness or hardware
-behavior. See the [design principles](docs/design-philosophy.md),
-[acceptance criteria](docs/release-milestones.md) and [current inventory](docs/current-status.md).
+behavior. The adopted decisions and fixture records state each checked component's scope.
 
 <a id="文書"></a>
 
@@ -270,12 +324,12 @@ Lean 4 for the production verification kernel's supported IR profile.**
 Acceptance must guarantee the independently requested contract: linear resource
 safety, declared effects, exact phase, and clean auxiliary return, including
 inputs entangled with a reference system. This is a **planned proof milestone**;
-the current bounded phase-word and DAG theorems are initial steps. See the
-[theorem scope and completion gates](docs/release-milestones.md#qleisli-soundness-theorem-v050).
+the current bounded phase-word and DAG theorems are initial steps. The
+[Migration decision](https://github.com/MGYamada/Qleisli/issues/276) states the remaining transfer gates.
 Source translation validation continues after this kernel milestone.
 
 By v1, we also aim to prove the
-[Physical Realizability Theorem](docs/release-milestones.md#physical-realizability-theorem-v1)
+Physical Realizability Theorem
 alongside a substantive Lean 4 backend. The intended chain is: the Soundness
 Theorem yields completely positive, trace-preserving (CPTP) semantics as a
 corollary for the complete computation, including all measurement outcomes;
@@ -283,12 +337,12 @@ physical realizability then constructs an isometric dilation and synthesizes
 it over a declared gate set, with the required preparation, measurement,
 discard and explicitly admitted synthesis workspace. Semantic unitarity does
 not guarantee exact synthesis on the source wires alone; clean workspace must
-return to zero and its resources must be counted ([workspace contract](docs/release-milestones.md#synthesis-workspace-contract)). The backend proof must connect the actual emitted circuit to the
+return to zero and its resources must be counted (workspace contract). The backend proof must connect the actual emitted circuit to the
 checked meaning, with exact equality or an explicitly certified approximation
 bound. CPTP validity alone does not establish that synthesis result.
 
 **The third pillar toward v1 is the
-[Resource Safety Theorem](docs/release-milestones.md#resource-safety-theorem-v1),
+Resource Safety Theorem,
 adopted on 2026-09-30 and still to prove:** well-typed programs in the supported
 resource-checked profile admit finite, statically computable resource bounds
 that are preserved by compilation. Lowering and optimization must maintain
@@ -300,18 +354,18 @@ the checked resource contract of the actual emitted program.
 | Physical Realizability | The actual target implementation realizes the checked quantum meaning. |
 | Resource Safety | Programs have finite, statically computable resource bounds preserved through compilation. |
 
-The planned [resource semantics](docs/resource-semantics.md) makes resource
+The planned resource semantics makes resource
 accounts first-class alongside types, meanings and effects: live qubits,
 auxiliary space, gate counts, depth and measurements compose with the program.
 These bounds depend on a declared cost/target model and all permitted execution
 branches. Existing ownership checks and work limits do not already prove this
 quantitative guarantee; finite does not mean efficient. The
-[dated trust-boundary amendment](TRUST_BOUNDARY.md#resource-safety-amendment-2026-09-30)
+[dated trust-boundary amendment](TRUSTBOUNDARY.md#resource-safety-amendment-2026-09-30)
 records the new proof obligation without adding a trusted estimator.
 
 These are planned theorems, not current guarantees about generated circuits or
 hardware. Our longer-term direction is to move the implementation beyond the
-frontend into Lean. [Candidate search can remain external](docs/lean-kernel-migration.md#external-search-and-the-leafrealizer-checker):
+frontend into Lean. Candidate search can remain external:
 for example, a rotation-synthesis oracle proposes circuits and witnesses for
 a proved Lean `LeafRealizer` checker. The goal is to prove or check each pass's
 correctness, not rewrite all search code. Under this project direction, a Lean backend with proofs of
@@ -319,14 +373,14 @@ its actual transformations is a prerequisite for the goal “LLMs write `.qli`;
 Lean guarantees it all the way down.” Source-to-IR translation validation and
 the remaining native compiler/runtime and device assumptions must also be
 accounted for before making that claim. The
-[backend execution policy](docs/lean-kernel-migration.md#backend-execution-must-match-kernel-definitions)
+backend execution policy
 requires source and compiled-declaration CI to reject project `unsafe def`,
 `@[implemented_by]`, `@[extern]` and `partial def`, so runtime replacements
 cannot silently escape the proved definitions.
 
 **From v0.5 onward, Qleisli will grow from individual development into a
 full-scale, community-oriented open-source project.** The
-[roadmap](docs/v0x-roadmap.md#community-development-from-v05) ties that expansion
+roadmap ties that expansion
 to a reproducible proof foundation, independent review, contributor onboarding
 and transparent maintenance. Qleisli is already open source under Apache-2.0;
 this is a change in development scale and organization.
@@ -334,9 +388,9 @@ this is a change in development scale and organization.
 
 Start with quantum programs written as they ought to be expressed, then grow
 the language with AI so it can express and check them. This
-[development method](docs/design-philosophy.md#start-with-the-quantum-programs-we-want-to-write)
+development method
 uses desired source, executable translations and concrete failures to guide
-language design. The [code-driven development procedure](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/code-driven-development.md)
+language design. The code-driven development procedure
 defines the 0.1.x foundation, concrete obstacles and acceptance experiments for
 the user-selected continuation from 0.2.0 onward.
 
@@ -347,7 +401,8 @@ Use [Issues](https://github.com/MGYamada/Qleisli/issues) for implementation task
 and bugs, and [Discussions](https://github.com/MGYamada/Qleisli/discussions) for
 language proposals and decisions. This policy is limited to GitHub operations.
 
-Start with [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+Start with [AGENTS.md](AGENTS.md) (mirrored in [CLAUDE.md](CLAUDE.md)) and
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
 The planned [QLT test language](https://github.com/MGYamada/Qleisli/issues/50) will compare `.qli`
 implementations with independent mathematical references, inspect structural
@@ -361,8 +416,8 @@ will connect proof obligations and checked counterexamples to IR and source
 locations, distinguishing contract mismatches from missing evidence and
 undecided checks. It is planned, with no implemented command or selected version.
 
-The [documentation map](docs/documentation-map.md) distinguishes current
-specifications, future designs and historical evidence.
+The VM plan distinguishes checked components from pending guarantees;
+imaginary-v1 contains future designs, and fixtures retain historical evidence.
 
 ```sh
 cargo test --all-targets
@@ -373,10 +428,10 @@ cargo clippy --all-targets -- -D warnings
 python3 scripts/check_docs.py
 ```
 
-[Lean proofs](lean/README.md) use Lean/Mathlib 4.30.0. The [release checklist](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/versioning.md#release-records-and-validation)
+[Lean proofs](lean/README.md) use Lean/Mathlib 4.30.0. The release checklist
 includes the additional proof, platform and packaging checks. Changes are
 recorded in the [changelog](CHANGELOG.md). The
-[crates.io preparation and publication procedure](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/crates-io-release.md)
+crates.io preparation and publication procedure
 separates local validation, release approval and registry publication.
 
 The [three logo concepts](assets/logo-concepts/v0.4.0/README.md) are preserved

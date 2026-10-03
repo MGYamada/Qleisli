@@ -1,0 +1,4003 @@
+{
+  "status": "passed",
+  "started_utc": "2026-10-03T11:00:46.041772+00:00",
+  "scope": "Small finite CLI clients; Rust frontend versus Rust frontend plus dual verification",
+  "environment": {
+    "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "logical_cpus": 10,
+    "python": "3.14.5",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "lean": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)"
+  },
+  "git_head": "059833cde205a3e4068f37438ec61b0eef8fdd9c",
+  "git_diff_sha256": "20453fec73bf21443b1009dc864f78cfdac80bf6e4f8122cce35a68cb6e8616d",
+  "source_sha256": {
+    "Cargo.lock": "f1086b9f8dd9bf05ed1ba7eb34d31baa1032af095d308f6eb21b0723571e263b",
+    "Cargo.toml": "14070d0447b0d72c117d855820c21835862cb61d675302be156eef19889b11ff",
+    "corpus/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "corpus/manifest.json": "778b367aee49afd2233a482698fe706d099c56e027ad6fbe535f66b4d5411325",
+    "corpus/pennylane_demos/qaoa_path_layer3/kernel.qli": "6007ab7d0b82113fd38dc93ed2b4ea5e0f040073b89117d9bbf862e8f93dcc13",
+    "corpus/pennylane_demos/qaoa_path_layer3/main.qli": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15",
+    "corpus/pennylane_demos/rotation_both_negative/kernel.qli": "7a9552173ead38987678e5a17049fb31c2ef10cb215a88412f56a3770ffed45b",
+    "corpus/pennylane_demos/rotation_both_negative/main.qli": "b566c44bc3a4ddf33fe6b3bcf2742f6a24fa357f5ef17fd43bdb635651347c8d",
+    "corpus/qualtran/add2/kernel.qli": "d312954923927e79ca31ce1d3dae1ab3d376f5cb0848ee38af052d19d0b1a6c6",
+    "corpus/qualtran/add2/main.qli": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73",
+    "corpus/qualtran/qft2/kernel.qli": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a",
+    "corpus/qualtran/qft2/main.qli": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747",
+    "corpus/quantum_katas/bell_measure/kernel.qli": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287",
+    "corpus/quantum_katas/bell_measure/main.qli": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+    "corpus/quantum_katas/grover2/kernel.qli": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+    "corpus/quantum_katas/grover2/main.qli": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+    "corpus/quantum_katas/qpe3/kernel.qli": "7bf19c837512d27e44a3a23085ded55faef863e727ffc1fc9cab4c08feeb2fee",
+    "corpus/quantum_katas/qpe3/main.qli": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0",
+    "lean-kernel/Audit.lean": "5af8e11d1a2c16367f579c111e2645d08f9c688dd26002a9a3a393ff62122baa",
+    "lean-kernel/Cli/Common.lean": "50a6d25a1207e94ef9abca1a7b4170152e0b23b19b76fc77e82e645568675587",
+    "lean-kernel/Cli/Finite.lean": "d57544b88b1a8e2493ff669def7ca98a0ae2e78ce636a733ea5834e91cf3fadc",
+    "lean-kernel/Cli/Hierarchical.lean": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff",
+    "lean-kernel/Cli/Validity.lean": "4a4bfa5fdff2ba774521d18087469b9fc5c2d48ed5fdaa12f22b4ccb712d03f9",
+    "lean-kernel/Main.lean": "7a79f3288c52bb1f548662b86da06678e028f24942954f863c7674b73181ab94",
+    "lean-kernel/Protocol/BranchFunction.lean": "c237e9d21c73f0a6759f49d705081dfde5e7c8dc8fa0c2e52224392a52226b25",
+    "lean-kernel/Protocol/Core.lean": "c952a7bf9a9bafda2c43d24405f3e039544bc79eeaa4ab000ffc522e59efc042",
+    "lean-kernel/Protocol/FiniteCodec.lean": "abc49b87f81dd3e336a046ca4d777977bffad9f5c153708011fbe20c3c4c9eed",
+    "lean-kernel/Protocol/Hierarchical.lean": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
+    "lean-kernel/Protocol/HierarchicalFinite.lean": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+    "lean-kernel/Protocol/Layout.lean": "da6b03a187ac74be6ee6b594c1b1af61bc77ea2ceb63e6a8e5afa8f78502e3d3",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean-kernel/Protocol/Qirf.lean": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+    "lean-kernel/Protocol/Raw.lean": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
+    "lean-kernel/Protocol/StreamedObservation.lean": "66021a99a796ba9f1cb65ccf9d13d88e31299284502d259b9c565be92841dd9f",
+    "lean-kernel/Protocol/Validity.lean": "f512242c02670478d264ea919225a704d9a30e2cb432e22b9ec040540b6268d0",
+    "lean-kernel/Protocol.lean": "af24cbeccb84e5148360512051cc74ec0045011c87fd1f4e3cf756f1c868d161",
+    "lean-kernel/QleisliKernel/Composition.lean": "7ca1b4cdfed280806fd42d47c2807761559c062f4427a9b539656dc44a8af6aa",
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "177f68975a739c93cbd096d9d7b677627b57286225a61513dcac38dc94516515",
+    "lean-kernel/QleisliKernel/Dag.lean": "d1528cb10d3ae52ce6bb9bc00b2ccbe0656bea22c44bec809814a09b76e1e986",
+    "lean-kernel/QleisliKernel/Exact.lean": "50a39f98e20c268c1dba0d9b1d35f099c874031d28a82a9253fbc4899ce0462c",
+    "lean-kernel/QleisliKernel/ExactCapacity.lean": "d327cdb1688f24efc33ec9e172cbf29569778d0a7d8445194dd1048a0793d601",
+    "lean-kernel/QleisliKernel/ExactMatrix.lean": "6e9968152ff0044dfd7a422bf5fc42da9a3b09d59732d4782bf947cfa1ce9410",
+    "lean-kernel/QleisliKernel/Finite.lean": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+    "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b",
+    "lean-kernel/QleisliKernel/Hierarchical/CallLowering.lean": "f506a07db4995ee900430440254c0e7c1102e5d32bad658cb9b0756d21220895",
+    "lean-kernel/QleisliKernel/Hierarchical/CircuitTrace.lean": "46ea27e589f1f61460e6e8659a65497cd2fec746d8eb55ddb8cb73bbe1e4e60c",
+    "lean-kernel/QleisliKernel/Hierarchical/Conditional.lean": "2c6ae1ebfde3d329c2893d77c78bde062bb1fcbda26154a039d8091bd36b4bdb",
+    "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean": "1e4efe077528b3c3b631735bdfa41aeafa508ea263af3e11d3d8e4f2a7640f3c",
+    "lean-kernel/QleisliKernel/Hierarchical/Derivation.lean": "53dc0763bfe18e0fbcbf4904723106eae68c144d4c5d0108d2a3f5b4f841028c",
+    "lean-kernel/QleisliKernel/Hierarchical/Finite.lean": "0ba3bc69488f9f57cccfd8d6a1d2013bb8a0c736c80d93bc837f5b76d561e169",
+    "lean-kernel/QleisliKernel/Hierarchical/FiniteBinding.lean": "d3ae233d3bec716f351f95b70f44d193b8dc8cbca13f9f50b49b08057260a03e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierBase.lean": "0efb2979b63ae3dd6e7d110b5833084c4bb2c3e0cc2c6dfa88bbe2d7a5a0ea2e",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean": "dab9d37274e5b7d614c9086b13d1306fae609ee6e8f06f4c8b22c8827866592b",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean": "a6b834a16be24bde9850532d72b66f991cc11736dac767b7a2543a9cb9ffd313",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean": "97edcde096268a7169a4ba8524c739d398d0b42d4c111f9c1e724ca9c54f8078",
+    "lean-kernel/QleisliKernel/Hierarchical/FourierStage.lean": "e0a22a0340a9bfdccd121eb216f32303cbef40fe5aea4bf2889799343d20f3ee",
+    "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean": "ccb7ed04759bd76270f08cfd841dc62fad081a0f83f1de218ebef449cb51c1b7",
+    "lean-kernel/QleisliKernel/Hierarchical/Graph.lean": "b5481da36cad98ffb3636b3a80404c4094053e5a42d50f0efa0f483595f25406",
+    "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean": "56f42f53dd9ffcdf8000dc09939cfeeadf6d1923757a70e90cbcbf975814dfdf",
+    "lean-kernel/QleisliKernel/Hierarchical/Instrument.lean": "c51d1b0d8c35237baef48d584a1753157294609e6d9a310a188e1854bd538306",
+    "lean-kernel/QleisliKernel/Hierarchical/Limits.lean": "381f7ad3470eed56bfb0463ac66e7bea1ef59575bad0a997cde65e476369ed44",
+    "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean": "9f9b47b7f2501baa6fa0eeee32e8a7b80abe6d440a98c6d6321efcb8a67a0157",
+    "lean-kernel/QleisliKernel/Hierarchical/Ports.lean": "d7e58e94cfafc9e2ad6fa2b12304440b8100cc7c7a8fc241af8d6ffc798adc19",
+    "lean-kernel/QleisliKernel/Hierarchical/Power.lean": "6dca41ad09443838f98096a101f374da36ab71698d8d2a3458c6026cb004c911",
+    "lean-kernel/QleisliKernel/Hierarchical/Preparation.lean": "a841a9a26610d39f266d1a57dac3d1312dc2374b3c7cc34673fbaff5fd1dac0c",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeInstrument.lean": "16a8bb64f8ab37800755f339d3e572687d6402fd90ab7f3faeebdd7bff9d8a4b",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeRoot.lean": "fe68609c9b3df4ae6fe608db377f883253f1b2b1eef5e7abd122a3ff8eb73ff4",
+    "lean-kernel/QleisliKernel/Hierarchical/QpeSchedule.lean": "05f2157a148246d991d48b67babfb5758e2411a41d42a2018959d846d14e4910",
+    "lean-kernel/QleisliKernel/Hierarchical/Readout.lean": "d7778da47232a789ca40be2efee9180c29cd2ba94b61d07a0a2abfbe3fa1ba8a",
+    "lean-kernel/QleisliKernel/Hierarchical/Root.lean": "d4c0a92a6b117bd2e2a08461c1dcdc3be1cbd50780cc39e63e94dae3dc0ccf9b",
+    "lean-kernel/QleisliKernel/Hierarchical/RoutedPower.lean": "b87825ff3ab228b383c2f34356ca4bbfc9ae00d0b3cef9607aa3acb631601e12",
+    "lean-kernel/QleisliKernel/Hierarchical/Rule.lean": "becc740a86dd09df2e499b133a1bf9426bb97dcf03835a2acd81647e8e0f7840",
+    "lean-kernel/QleisliKernel/Hierarchical/Structural.lean": "5d12fbf817f76943850a72a376cc0cc66155507c81796a55fa04c6be43d76d2c",
+    "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean": "2d2d3b0dfc5867ddd1a8dc5f0ae83cd477933568c53cac199c918d222ae3242a",
+    "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean": "6493361fb5384c72c0f3a192fe81d75a7c0a0eea2d266ff04bed0bc3a6048cc7",
+    "lean-kernel/QleisliKernel/Hierarchy.lean": "bbf0cf613e1bc0a5dfdbd8334b6526a9707add88ef6f36c2c563c0664d873849",
+    "lean-kernel/QleisliKernel/Interference.lean": "dd4e84865a6b7602140728061d2906cd6fcb614195bbc36b7090e95e6d3dc1b7",
+    "lean-kernel/QleisliKernel/Layout.lean": "3252fa96de9ccddc41f7a4e40e1a6df8c9c55dbf62c88bd45db0115a887c48b4",
+    "lean-kernel/QleisliKernel/LayoutDag.lean": "458f1ffd3737622fed94ce90835e9d9bf53710882b961c3b5069b6b431ecee53",
+    "lean-kernel/QleisliKernel/ObservationBinding.lean": "8c762be5845f1a37ac14885268faa0dba6d8264625bbf5a6ed1380c26026d20c",
+    "lean-kernel/QleisliKernel/PathSum.lean": "aa573fbf9b706a553145cfdcc5708dfc1cb6b9c9de707fbb97ea4171b32b3dea",
+    "lean-kernel/QleisliKernel/PhaseLayout.lean": "364a651c6beb8dd326e11e2856b25434f2448965df78c88659b797291ff2b5ec",
+    "lean-kernel/QleisliKernel/PhasePolynomial/Operations.lean": "2c1de4db33f55a4c7da81eee9264ab899afdc3518a7e4b46f304a690afcca69e",
+    "lean-kernel/QleisliKernel/PhasePolynomial.lean": "62bd1477722a0ae223cc3ebef8938473e8be1b069c19fed48a5f26cdf451b2d2",
+    "lean-kernel/QleisliKernel/PhaseWord.lean": "c084d5d13440121cd2f72e219f479fe762e9125c08c94a55d3eb48e234092926",
+    "lean-kernel/QleisliKernel/Qft.lean": "0b9d1062a8b905aa8147b5d586cf7adc4271264f6fe7ca2cc7bdda2480682074",
+    "lean-kernel/QleisliKernel/QftGraph.lean": "737b23fb404cc08df4b955e2eb876fa8ecca2cbe273d6971868f26d9126157d3",
+    "lean-kernel/QleisliKernel/Qirf/Checked.lean": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+    "lean-kernel/QleisliKernel/Qirf/Ownership.lean": "342e1eb7b80f375fca4225b5ec24d0915f2a60f587ad123dbe607a783bf4edf2",
+    "lean-kernel/QleisliKernel/Qirf/Validity.lean": "d08658d2397bb81edd2dff7e0a154e2a3a879a473a4b0ae250533edf15eaf2a2",
+    "lean-kernel/QleisliKernel/Qirf.lean": "17277e76f5154cf1624a5b6cceda3fd18186bf05e9fd7877256b4726167635bb",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean-kernel/QleisliKernel/Raw/BranchFunction.lean": "02f1124fe3b2e4b3fd4a4908f72549485fd07a7fa3d2da625e96658eaed90897",
+    "lean-kernel/QleisliKernel/Raw/Coefficient.lean": "e35cb1323c4308a55eaab2b7b7aef8d40040d66fe32512e0c6aa3d7019916108",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+    "lean-kernel/QleisliKernel/Raw/Function.lean": "6eafada4f9ab878470a28735daad5106026ba70a6cb83f0bd49004dba540c740",
+    "lean-kernel/QleisliKernel/Raw/Instrument.lean": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+    "lean-kernel/QleisliKernel/Raw/Observation.lean": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+    "lean-kernel/QleisliKernel/Raw/ObservationOwnership.lean": "a450a734cb6d1a5f9a60a0fc376c3cdc80a5240955ace8afbe7cca3668d6c075",
+    "lean-kernel/QleisliKernel/Raw/ObservationScope.lean": "83986a17c17efd5fbe9c8220f0195eee9b53ec087a6b01f46c52d4145f4995b9",
+    "lean-kernel/QleisliKernel/Raw/Ownership.lean": "ede62a26bc3edf8513279f1dd8817fe86bd4e97129bf87e2de5efe182e129409",
+    "lean-kernel/QleisliKernel/Raw/Protected.lean": "1792118b9824adb2c18d8a5c6d52b2f2c6479176a460185b316ca0ad6c5d5ac0",
+    "lean-kernel/QleisliKernel/Raw/ProtectedEvaluation.lean": "19f3b780bbedd7f78d900fb68f8593683dc3d110e108ee4c61c7de80f9b4e20d",
+    "lean-kernel/QleisliKernel/Raw/Pure.lean": "83c6c70ce4f34c06a56f9438662aef1cddfc69eb32d114b5d2b6c8adaef6a466",
+    "lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean": "8347a3ddc58802e92161e597e87d2094caca4222415fff14c23cb18801c9f021",
+    "lean-kernel/QleisliKernel/Raw/Structure.lean": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+    "lean-kernel/QleisliKernel/Raw/Trace.lean": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d",
+    "lean-kernel/QleisliKernel/Reshape.lean": "9497443e33e1b3d00b309a7599c77a24f90b0828956ec38b58afb39234bad793",
+    "lean-kernel/QleisliKernel/Schema.lean": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
+    "lean-kernel/QleisliKernel/Semantics/ClassicalScope.lean": "de9f6e8ef3bbc8f949ff435243ff1029af6715e3b997e53e9ae216b2435a07d0",
+    "lean-kernel/QleisliKernel/Semantics/Exact.lean": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303",
+    "lean-kernel/QleisliKernel/Semantics/Finite.lean": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+    "lean-kernel/QleisliKernel/Semantics/Function.lean": "119ed5646e8098dd0e6c0a569a16e517b71c6833d2b4265cb1e0bb114cd6cacc",
+    "lean-kernel/QleisliKernel/Semantics/Observation.lean": "5faf3991f8441f23b3053e87d16a2131aafecbd3dc8c75f906695878e534743e",
+    "lean-kernel/QleisliKernel/Semantics/ObservingFunction.lean": "8a5f471e7d5022f16c2bcfb5880a6480980d12dcda95b6774df3d0bf7a449161",
+    "lean-kernel/QleisliKernel/Semantics/Ownership.lean": "5cc43c57ee123990188aed8d73fe50d53731f387167a453d9a6c4b08e3961c4c",
+    "lean-kernel/QleisliKernel/Semantics/OwnershipLaws.lean": "b92a1167605ef51c87bd5fbb80083bd4176b465780ceda9b73071f83e581dfa7",
+    "lean-kernel/QleisliKernel/Semantics/PhaseWord.lean": "04992c9ed1df6b83f52f3d618d825287a50bdb51b700dc345948aafa10b6fcf1",
+    "lean-kernel/QleisliKernel/Semantics/Preparation.lean": "db784406ef6338e1b65cb0ad13af6c6b38ae5f04140b2efbecedf4c2db9201ed",
+    "lean-kernel/QleisliKernel/Semantics/Protected.lean": "9a145100d2a3b839551a9af480eeb36697d19a33da5c5b561569c6c4d775d5e0",
+    "lean-kernel/QleisliKernel/Semantics/Qirf.lean": "25b5b7ec131c13d3c4e517fcd1b8a76742d7edac9f626f3c81c9a9425907db86",
+    "lean-kernel/QleisliKernel/Semantics/Raw.lean": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+    "lean-kernel/QleisliKernel/Semantics/RawTrace.lean": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+    "lean-kernel/QleisliKernel/Semantics/Readout.lean": "0ae67265e9aa8ae355de2c7a711c14ce2b7812a5c256cb2920c7b825e06ec8bc",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/QleisliKernel.lean": "de3367514e57f77e9ac86a4f9a7bba2954de0eac047143eb113f4b21f540de58",
+    "lean-kernel/Tests.lean": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+    "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28",
+    "lean-kernel/lakefile.toml": "d58046120a9a235aea0603d4f2a91db579634b3eb37fb6a5e603387639ddd246",
+    "lean-kernel/lean-toolchain": "54727eec5cba149c18842e6deb5c41b369d66455c93ce135d7d5347c782b2325",
+    "scripts/benchmark_verification.py": "167133b66c7c7454fcc92bd726fd9cb9cf6a229529587a29809dd5a0ab1a7f4d",
+    "src/bin/qleisli/artifacts.rs": "45fdc5a15eb697589367129021ed9d0a4a44c9fafe6532f16032f313800fa8f8",
+    "src/bin/qleisli/interop.rs": "669443e56cf7f276efe0a4652b493f6807583199f0e9cf45a6c093d061768df3",
+    "src/bin/qleisli/json.rs": "b71400b838aac87d1a43391a630f611e27b83dd1d3196257e878edbdc0789481",
+    "src/bin/qleisli/options.rs": "1ca882b870e6aa35792a23d316a6cdfb2acb9e9b3a3aeb248ffe5d45c7b9ea8f",
+    "src/bin/qleisli/samples.rs": "eee6db63e23c5cfafccb7c6961bc7ea1666e490a661007613c2e02bac6df5c3d",
+    "src/bin/qleisli/sized/options.rs": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
+    "src/bin/qleisli/sized.rs": "078ba451eb4d2ec19da7d19825e29759ae967f9879de7c19971681fbfa6da0d2",
+    "src/bin/qleisli/source_commands.rs": "da3364cae04ede3dcd72f0e86d9d5aff4610c81c3cefce395e0095fe7321ee08",
+    "src/bin/qleisli.rs": "2153f4e00ed10d533a99f9f5fe01b18cc9091c1cd9c99a7a1beeb5d8e5e7b9ed",
+    "src/contract/exact.rs": "3451fd1a40b5948cb7ba2919ea1a0b2ae16a0e740950a837448620dc30c4779a",
+    "src/contract/function.rs": "ea9c78e83ce1682ae9acba5c8e1ca901d6f1175a3aca67accf462250391962c9",
+    "src/contract/meaning.rs": "c3a68215973a5b44d919bcdd5aea20559169ff0ef0dc6e6e4f93b9318aca435e",
+    "src/contract/mod.rs": "53ec2704e2cbb89cbfb6ee7f3394b5ca69658d007ed00029c377c28a4970bd67",
+    "src/frontend/ast.rs": "2c5a7d97c82d6337be23c8ed6ec4163bf1724d662dbffe9d347ce961b9b75ca4",
+    "src/frontend/compile/basis.rs": "f37a935885ab3ff57945d5fb4d3a6096ad741e0dd276a2bd42c12f707537c0ce",
+    "src/frontend/compile/circuit.rs": "ebc01a224e051e19981d6a2f3a7d62abe4e287549fc2b42cbd68d9432ccf3a77",
+    "src/frontend/compile/lower/branch.rs": "71abef9520176904ce2f372408e103b23647f44310e26cc3ed3c8254be5df755",
+    "src/frontend/compile/lower/certified.rs": "b9f156becbaceae96ab868d23b018192c82c6412892d221afc6755c386889e1e",
+    "src/frontend/compile/lower/function_contract.rs": "f82c5a20478a1d5bfd46770f8d44734f62e0c4603c87ea212de32308d581e88e",
+    "src/frontend/compile/lower/mod.rs": "f8335c78e3fa0d09b86ccf15459787232a38c9ce6fa03f05862580a48dde9b6e",
+    "src/frontend/compile/lower/operations.rs": "031060a254996cc1953ee08619c00018e8a2a5ff248c6408d583a2852c330b57",
+    "src/frontend/compile/lower/primitives.rs": "cac8010c133b972583a70d4eb09cb3235290f6d769061febfe9e6e9b8aec1906",
+    "src/frontend/compile/lower/scope.rs": "9f1a32c8b07e6bcdfbf4069b66898ebb19d5b12af783405130d44e555fd19e2d",
+    "src/frontend/compile/lower/transforms.rs": "7a23df3af5423c1c28bc78fa9c2f096cc211f867a25005cf364338fa1c47838e",
+    "src/frontend/compile/lower/value.rs": "0b41bf82f42b05885ec1258107a4e16ccc7bb2024f2fee9ba997bfebca10c2ba",
+    "src/frontend/compile/mod.rs": "488f0aca4e101cb6b69f5ea91bdb7521b3f0312b591aaab26cb01e01aba37fb6",
+    "src/frontend/compile/operations.rs": "d40f5ed926e7b796bbad093b3a513cab40b6cc6ce68a7a10a3a2b75cb4b05567",
+    "src/frontend/core.rs": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+    "src/frontend/documentation.rs": "896b1fc4d0632b6a1d1568076023e598637eb600ac9d9fbde7db08eea7d308c3",
+    "src/frontend/lexer.rs": "ec0260843907a15231277da77cc9a1b5fc13667f8a455826ca558e188a9a99cd",
+    "src/frontend/mod.rs": "342b8de6e0dacfe18dcf923ce083c6d2c8c1c5dc75760b24ed75b2234c2fe86a",
+    "src/frontend/parser.rs": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
+    "src/frontend/project/edition.rs": "83aa487d7a1172488645f68d1e03d6814b08df6af053fde5d1cd2faf601cd2b1",
+    "src/frontend/project/manifest.rs": "5262d02b1f442c63c79b4a056a9bd711e4e2a45f6116bc3d25a22ad181903f85",
+    "src/frontend/project/source_file.rs": "6b4bf1001f62cfc9788a3e61b5ed25f2980e3895a19243b757d8f4c6f2c21f0f",
+    "src/frontend/project.rs": "b92a63586252f7adfbb8b3b7f54f691b4bd7b62032f0b5b391bcc85ba90e12bf",
+    "src/frontend/sized/ast.rs": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+    "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+    "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+    "src/frontend/sized/fourier.rs": "9a49bad8f89151fde053c0b0e3db95b5d7cbba0bb7f393209d9c185ab523b7c1",
+    "src/frontend/sized/linear.rs": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
+    "src/frontend/sized/lower/preservation.rs": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+    "src/frontend/sized/lower.rs": "243cb6120bab732c11e5ff822274dd2835eab0fcd5520998bf684d7df3ee8aeb",
+    "src/frontend/sized/parser.rs": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13",
+    "src/frontend/sized/primitive.rs": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/frontend/sized.rs": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+    "src/host/factoring.rs": "cf462c2561cd38ef00103dc3f1d7a9b64dd0e32b1c21af5d49e4508216509a38",
+    "src/host.rs": "ab5309aa8d7ddbe83c247f4a0685b386b4978e967029a5a33133b21fcfdd7ab8",
+    "src/interchange/codec/evidence.rs": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+    "src/interchange/codec/operations.rs": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+    "src/interchange/codec/scalars.rs": "b7a6db4cfa70a799f4c5ee2d78d4299ae86cd55a44375d4154c681f449fc5c7c",
+    "src/interchange/codec.rs": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+    "src/interchange/dual/runtime.rs": "5d8c794590ded49733d43f73d1ec2bdc64869e44f651dab4472267d421a0a445",
+    "src/interchange/dual.rs": "1b3d1bd9351b6684de25a779b31f384798a544045d4d9b6e9f118a42750fb297",
+    "src/interchange/finite_leaf.rs": "b8339fbaacccde92c418e3de8e8f6a065a9132f2ea450386332986ab2c83ea56",
+    "src/interchange/finite_matrix.rs": "89bf0bf3264a0c5326a427debcfc3874c4e14b689b2b2ea566bee99d9da7a60a",
+    "src/interchange/hierarchical/bridge/instrument.rs": "fe5633d17f15506037d9e250aa12b881b85f2069583b8fc113487c04d894a149",
+    "src/interchange/hierarchical/bridge/qpe.rs": "649ff8bd1b2bfb67bc09322cc9eeede014c3d560d7886bc95537f86b3ab889b9",
+    "src/interchange/hierarchical/bridge/request.rs": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+    "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+    "src/interchange/hierarchical/execution.rs": "3f90dae9ad054c0d4f6f766240176103a2a445f5a7890ab535092e11fa491999",
+    "src/interchange/hierarchical/runtime.rs": "8b83cb61af9713698ecaca14432ba004c981ad3208f2d9b49dae06edc2d76ad6",
+    "src/interchange/hierarchical.rs": "13a61ac12ba13971eeda37eb06fb431c06d74beb2105ec6b3f5bf0da2f455665",
+    "src/interchange/json.rs": "016418e60bc4a1a7f7ccee03ac8aeb5b1e36c516b3c29ba890d97fe102064dcd",
+    "src/interchange/mod.rs": "892582873c20924308e9a8f171d52381b88b966b8935e1fb1ce0db62a43e672a",
+    "src/interop/export.rs": "da96e003fd0e5e4e6471b430eb5f3f5477d552943cb738cbdcd58810684714f9",
+    "src/interop/mod.rs": "e8a43256feaa4a8ef29bf5d423ae4139c4a3e6ac7381b3538bc34eb93439f479",
+    "src/interop/openqasm.rs": "dda4d8db6a567f6fa742f8588af926f67351e3277ec6c9db77aa774eb1aebcc5",
+    "src/interop/profile.rs": "9537c2f0935be5b3603504de645a084d8cf464bb9e205b2b843bd7b6eaa7459b",
+    "src/interop/qir.rs": "a03659389c83d440f99c6db795d5fb14d3a2a5b914c556e8e1b7f6dc067887c6",
+    "src/ir/compat.rs": "89f7ad8f214b8b4bb386a699fb3299d8d174fcb706e5204bd4e2f04df9e1f071",
+    "src/ir.rs": "6589ff994be0634b8a49c308f0d8732829155d35888c4c6540285fabfe599b2a",
+    "src/lib.rs": "8228f0217ce26485db9dc9061b58a32213cf2f3ae5d00499b2fa3a8f274c0f9f",
+    "src/sim/circuit.rs": "b958fc0f3691a36daa5668af0cedac6bb2ac48783263204ef0516d97f1219e17",
+    "src/sim/sampling.rs": "aeef8111325ddd4f3e48a9019d58d6f9c7f2034d7f1acf63cf79052e1fe77380",
+    "src/sim/state.rs": "7b0d035cc7f712c04e856e0307b5766f130a9aa343fb783fcff2c991d1f45c2f",
+    "src/sim/tests.rs": "9907a6e908c944b28a6822245923a08bebe85fbaa26cbd75b0fd28e34aefc657",
+    "src/sim.rs": "23af0751f1ae3e5d0586c48a8f2a898c1c54ed5d41841ee3f2606f07f1f42cf8",
+    "src/verify.rs": "39ade78af01294729ea153b3404ae443bfeeda87fc3249a77c7128cc05b1ef85",
+    "stdlib/Qargo.toml": "b8c3a5b04fd56ed78fdf90a094201c439e69be1a5c3c8d51517bfeb1fed222e0",
+    "stdlib/src/arithmetic.qli": "0107044c45bf680145593defc57aa3217522d2c46ca5e8dd1d11819d4986ebec",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/routines.qli": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+    "stdlib/src/transforms.qli": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
+    "tests/fixtures/authoring_sessions/dual-v028/attempt-02/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/dual-v028/attempt-02/main.qli": "c65d87c634e3cbb23e62b319199cb3c8d7fcec8b25e56e947911de3a9b11caf4"
+  },
+  "binary_sha256": {
+    "/Users/masa/git/Qleisli/target/release/qleisli": "371895bb1fd0347ccf3e75c24a4104b237d1cf8705b081b07f1b7df1d2182c6e",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "65254f31d6b306db68c5dd7af37bf502ed2d266df56b9bc4aa7672ad984bca7a"
+  },
+  "method": {
+    "warmups": 3,
+    "repeats": 20,
+    "case_order_seed": 2903,
+    "clock": "time.perf_counter_ns",
+    "sequential": true,
+    "route_order": "alternates each repetition and case",
+    "included": "process launch, source loading/checking, transport, JSON output; emit-ir also writes and syncs a fresh file",
+    "excluded": "binary builds, warmups, output equality assertions, untimed invocation counter",
+    "cache": "warm OS caches; fresh CLI/kernel processes; no persistent verifier",
+    "controls": "no concurrent jobs launched by the harness; no CPU pinning or control over external system load"
+  },
+  "commands": {
+    "emit_ir": [
+      "/Users/masa/git/Qleisli/target/release/qleisli",
+      "emit-ir",
+      "{source}",
+      "--output={fresh_path}",
+      "--format=json"
+    ],
+    "verify_ir": [
+      "/Users/masa/git/Qleisli/target/release/qleisli",
+      "verify-ir",
+      "{identical_artifact}",
+      "--format=json"
+    ],
+    "dual_extra": [
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/Users/masa/git/Qleisli"
+  },
+  "cases": [
+    {
+      "name": "bell",
+      "source": "corpus/quantum_katas/bell_measure",
+      "qubits": 2,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 9182375
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 8402541
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 10311416
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 9905917
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 9539167
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 9181167
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 9519042
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 8647416
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 9588917
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 8744125
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 8418083
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 9720209
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 8581250
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 8436375
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 8835625
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 8692250
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 8516625
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 9130209
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 9203625
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 9857834
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 261158458
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 261723291
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 263885125
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 268825916
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 262952500
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 269801375
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 297244208
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 262061417
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 268321709
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 269709000
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 268652458
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 262913042
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 266769875
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 274953791
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 261293667
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 276004625
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 267945000
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 261269583
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 261516250
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 268461333
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 2878667
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 2894333
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 3323000
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 3026292
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 2935916
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 3471500
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 2822416
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 3084625
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 3013708
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 3147208
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 2812291
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 2952292
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 3388834
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 3654584
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 3098250
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 3611916
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 3552500
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 3555833
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 2709958
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 3524875
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 22746709
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 22273458
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 22580125
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 22708125
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 22432250
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 22762208
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 22330333
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 22480459
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 22248709
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 22557709
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 22678500
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 22500708
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 22453166
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 22397417
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 22137625
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 22501208
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 21763667
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 22512708
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 22638334
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 22459125
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "2f6ba5d51f881a7a76fabb1029153a420bf75f444cb04a5fa92538d1958b7211",
+      "artifact_bytes": 770,
+      "native_launches": {
+        "emit-ir": 13,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.155688000000001,
+            "min_ms": 8.402541,
+            "max_ms": 10.311416,
+            "p25_ms": 8.630874500000001,
+            "p75_ms": 9.551604500000002
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 267.3574375,
+            "min_ms": 261.158458,
+            "max_ms": 297.244208,
+            "p25_ms": 261.9768855,
+            "p75_ms": 269.046687
+          },
+          "dual_over_rust": 29.201239437167363
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.0914375,
+            "min_ms": 2.709958,
+            "max_ms": 3.654584,
+            "p25_ms": 2.92552025,
+            "p75_ms": 3.48484375
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.4905835,
+            "min_ms": 21.763667,
+            "max_ms": 22.762208,
+            "p25_ms": 22.380646,
+            "p75_ms": 22.59467725
+          },
+          "dual_over_rust": 7.275121525180437
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "classical_branch",
+      "source": "tests/fixtures/authoring_sessions/dual-v028/attempt-02",
+      "qubits": 2,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 8449417
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 8350833
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 9654667
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 9486792
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 8528958
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 9137584
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 8490833
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 8224083
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 9236583
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 8674667
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 10405417
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 11016208
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 8890625
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 9559333
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 8493458
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 8155542
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 8375333
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 8081583
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 9701584
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 9494250
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 242377625
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 241066833
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 264609666
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 250480542
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 245913292
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 293394250
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 242687000
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 242278458
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 243256875
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 244466375
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 249314834
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 245978625
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 242331917
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 280220541
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 246907750
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 243362708
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 242807666
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 245054625
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 243097375
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 242686500
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 3228042
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 3352042
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 3077375
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 3547500
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 2873542
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 3440042
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 3307834
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 3316834
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 2956792
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 3442833
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 3384042
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 3515750
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 2796333
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 3449542
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 3477458
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 3319792
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 3030041
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 3372791
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 2946417
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 2948833
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 22930791
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 22960541
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 22759167
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 22631500
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 21883875
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 22961208
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 22834625
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 22876083
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 22479208
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 22711625
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 22928792
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 22498625
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 22471458
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 22933750
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 22167083
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 22804375
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 22442375
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 23007791
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 22286250
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 22469417
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "563938fd408ccbca2543a19488cee67a8901e0824ffef9259a13c42b488b9a92",
+      "artifact_bytes": 693,
+      "native_launches": {
+        "emit-ir": 12,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 8.782646,
+            "min_ms": 8.081583,
+            "max_ms": 11.016208,
+            "p25_ms": 8.430896,
+            "p75_ms": 9.51052075
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 243.91454149999998,
+            "min_ms": 241.066833,
+            "max_ms": 293.39425,
+            "p25_ms": 242.68687500000001,
+            "p75_ms": 247.509521
+          },
+          "dual_over_rust": 27.772329830896062
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.318313,
+            "min_ms": 2.796333,
+            "max_ms": 3.5475,
+            "p25_ms": 3.01172875,
+            "p75_ms": 3.44073975
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.735396,
+            "min_ms": 21.883875,
+            "max_ms": 23.007791,
+            "p25_ms": 22.47094775,
+            "p75_ms": 22.92929175
+          },
+          "dual_over_rust": 6.8514923094958196
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "grover2",
+      "source": "corpus/quantum_katas/grover2",
+      "qubits": 2,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 8517709
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 9104625
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 9299084
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 10021166
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 8870042
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 8401333
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 9821208
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 9880417
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 11186584
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 8968916
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 8780958
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 10003250
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 9157541
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 8795958
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 7598166
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 9271292
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 8117375
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 9614000
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 8684792
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 9578292
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 262000208
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 261115500
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 279312167
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 261566834
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 262334792
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 263098500
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 281432292
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 268010625
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 268526500
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 263008208
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 270686000
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 270717333
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 264404833
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 261538833
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 260847500
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 269433167
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 263467750
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 268605666
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 262300709
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 262668583
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 2956791
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 3375792
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 3599209
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 3523375
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 3408375
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 3521584
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 3271791
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 3459084
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 3352625
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 3366709
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 3365250
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 3599250
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 3055916
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 3330416
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 3608250
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 3523875
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 3384542
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 3402834
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 3538542
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 3443916
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 22433875
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 22363000
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 23073959
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 23299250
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 22685833
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 23003084
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 23197375
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 22818583
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 22782917
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 22837250
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 22814834
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 22741708
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 22337916
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 23042458
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 22624084
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 23005083
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 22726958
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 22673417
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 23177750
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 22923416
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "4d2bef49168ea8447b67e8f835b94e78033c3a3af00fdfc58e420fd19f0f80dc",
+      "artifact_bytes": 1552,
+      "native_launches": {
+        "emit-ir": 13,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.131083,
+            "min_ms": 7.598166,
+            "max_ms": 11.186584,
+            "p25_ms": 8.7569165,
+            "p75_ms": 9.665802000000001
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 263.28312500000004,
+            "min_ms": 260.8475,
+            "max_ms": 281.432292,
+            "p25_ms": 262.22558375,
+            "p75_ms": 268.81254125
+          },
+          "dual_over_rust": 28.83372377624867
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.4056045,
+            "min_ms": 2.956791,
+            "max_ms": 3.60825,
+            "p25_ms": 3.36209375,
+            "p75_ms": 3.5235000000000003
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.8167085,
+            "min_ms": 22.337916,
+            "max_ms": 23.29925,
+            "p25_ms": 22.682729,
+            "p75_ms": 23.01442675
+          },
+          "dual_over_rust": 6.6997528632581975
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "qft2",
+      "source": "corpus/qualtran/qft2",
+      "qubits": 2,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 8533792
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 8581250
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 9559833
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 9039917
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 8284250
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 9076459
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 9057041
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 8392292
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 8467875
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 9145709
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 9064750
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 8306916
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 8739750
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 10390792
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 8699375
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 8948667
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 9749167
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 9257958
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 9631875
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 8734333
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 297399625
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 299423833
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 267366625
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 262661292
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 269506792
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 263996834
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 261439417
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 275051833
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 269261542
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 263008542
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 268881417
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 264389125
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 275533708
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 265256250
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 267841459
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 268509208
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 304482917
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 272364209
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 268048250
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 273861291
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 2868584
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 3529709
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 2918833
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 3099625
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 3536167
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 2886584
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 2963583
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 2846709
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 3429292
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 3043584
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 3051791
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 2949250
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 3379375
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 2841292
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 2799834
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 3127209
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 3383250
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 3000958
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 3414166
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 3521417
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 22497875
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 23098834
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 22302125
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 22332625
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 22935917
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 22484042
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 22530208
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 22461541
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 23088375
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 22414500
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 22511500
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 22378834
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 22896792
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 22479291
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 22508666
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 22535834
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 23001958
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 22409042
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 22846584
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 22038083
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "dbcf57884286562644f176e11cbbea08b185cfdfd52144a785ef11a65251f2e3",
+      "artifact_bytes": 1141,
+      "native_launches": {
+        "emit-ir": 13,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 8.994292000000002,
+            "min_ms": 8.28425,
+            "max_ms": 10.390792,
+            "p25_ms": 8.569385500000001,
+            "p75_ms": 9.17377125
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 268.6953125,
+            "min_ms": 261.439417,
+            "max_ms": 304.482917,
+            "p25_ms": 265.03946875,
+            "p75_ms": 274.1589265
+          },
+          "dual_over_rust": 29.87398146513366
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.0476875000000003,
+            "min_ms": 2.799834,
+            "max_ms": 3.536167,
+            "p25_ms": 2.91077075,
+            "p75_ms": 3.3909789999999997
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.5032705,
+            "min_ms": 22.038083,
+            "max_ms": 23.098834,
+            "p25_ms": 22.4131355,
+            "p75_ms": 22.859136
+          },
+          "dual_over_rust": 7.383719787543834
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "qpe3",
+      "source": "corpus/quantum_katas/qpe3",
+      "qubits": 4,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 9938459
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 10180916
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 9443000
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 9753416
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 9181042
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 8360167
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 9079458
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 9587000
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 10292084
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 9125250
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 9107584
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 10923917
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 9533041
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 9524833
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 8632333
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 9247416
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 9890250
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 10501333
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 9468625
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 10205667
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 322103250
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 326100542
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 327617416
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 335723291
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 321972417
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 327321417
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 370117750
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 347499500
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 320538167
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 329354750
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 322587500
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 327554750
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 328961584
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 325674375
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 329897708
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 318716208
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 336982791
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 347435083
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 338609084
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 321029334
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 3497917
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 2934500
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 2903875
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 3760375
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 3176333
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 3049583
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 3144000
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 3376500
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 2893625
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 3511708
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 2912333
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 3299791
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 3094792
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 3502500
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 2896209
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 3466917
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 3162625
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 3536208
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 3454167
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 3044000
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 22926042
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 22698000
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 22386458
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 23058708
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 22570750
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 22462583
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 22683125
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 22551000
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 22353375
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 22712000
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 22445250
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 28419375
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 27662375
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 22753500
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 28877500
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 23097708
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 22575250
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 22823042
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 27666333
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 22391000
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "ebbc81a8d4bcdd45f50b24ba936556f5fc98345ed3e68e839a75adea3a3fdaed",
+      "artifact_bytes": 3718,
+      "native_launches": {
+        "emit-ir": 16,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.528936999999999,
+            "min_ms": 8.360167,
+            "max_ms": 10.923917,
+            "p25_ms": 9.167094,
+            "p75_ms": 9.999073249999999
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 327.58608300000003,
+            "min_ms": 318.716208,
+            "max_ms": 370.11775,
+            "p25_ms": 322.4664375,
+            "p75_ms": 336.03816600000005
+          },
+          "dual_over_rust": 34.37803009926501
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.169479,
+            "min_ms": 2.893625,
+            "max_ms": 3.760375,
+            "p25_ms": 3.016625,
+            "p75_ms": 3.474667
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.705,
+            "min_ms": 22.353375,
+            "max_ms": 28.8775,
+            "p25_ms": 22.528895749999997,
+            "p75_ms": 23.068458
+          },
+          "dual_over_rust": 7.1636379354461726
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "add2",
+      "source": "corpus/qualtran/add2",
+      "qubits": 4,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 8712708
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 9108291
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 8876375
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 9585250
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 9957708
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 9533375
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 9700208
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 9625375
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 8379750
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 9563666
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 7856875
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 10030542
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 10710791
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 9713958
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 9427917
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 8753791
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 8375333
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 8505792
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 9391542
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 9430667
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 274708417
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 266736292
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 270264500
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 263332125
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 261647458
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 268625875
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 275060333
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 269826625
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 264583541
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 260204458
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 267542083
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 263306083
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 274699417
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 260820208
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 263218625
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 302105417
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 267774125
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 261061917
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 260932083
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 267667750
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 3412791
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 3055667
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 2836625
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 3463208
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 2976167
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 3287583
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 3419292
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 3544000
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 3543500
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 2949166
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 3429750
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 3183708
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 3484834
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 2948041
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 3682833
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 3106667
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 2962958
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 2986458
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 3505834
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 3355625
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 22988250
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 22485542
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 22337833
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 23156042
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 22605042
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 22859875
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 22518334
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 22628000
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 22833500
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 22300583
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 22318416
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 22940416
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 23092417
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 22420791
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 29119750
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 22595125
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 22796833
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 22756750
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 22818500
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 23151583
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "8796d2d5a2a2b58ddde9a324d34ef14380eac95c18e5031aff7aa16067eee13b",
+      "artifact_bytes": 1498,
+      "native_launches": {
+        "emit-ir": 13,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.429292,
+            "min_ms": 7.856875,
+            "max_ms": 10.710791,
+            "p25_ms": 8.74352025,
+            "p75_ms": 9.644083250000001
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 267.1391875,
+            "min_ms": 260.204458,
+            "max_ms": 302.105417,
+            "p25_ms": 262.82583324999996,
+            "p75_ms": 269.93609375
+          },
+          "dual_over_rust": 28.33077897046777
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.321604,
+            "min_ms": 2.836625,
+            "max_ms": 3.682833,
+            "p25_ms": 2.98388525,
+            "p75_ms": 3.4686145
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.7767915,
+            "min_ms": 22.300583,
+            "max_ms": 29.11975,
+            "p25_ms": 22.510136,
+            "p75_ms": 22.952374499999998
+          },
+          "dual_over_rust": 6.857166447294742
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "qaoa_path3",
+      "source": "corpus/pennylane_demos/qaoa_path_layer3",
+      "qubits": 3,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 9718750
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 9111584
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 8316208
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 9788042
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 8752584
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 8858042
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 8971542
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 9632834
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 9954083
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 9170167
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 9267792
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 8930583
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 9097125
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 9260417
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 10356667
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 7786375
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 9690250
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 10223958
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 8741750
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 9191584
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 336925334
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 309347833
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 314524375
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 307615583
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 317598417
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 302023834
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 344533625
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 308986625
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 319538541
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 374884375
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 325863292
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 328916666
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 357916083
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 314736750
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 318978542
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 301206625
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 305368041
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 300485750
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 305790333
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 304969125
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 3409834
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 3276750
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 3594417
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 3029167
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 3612958
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 3133916
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 2881708
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 2891917
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 3101833
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 3113333
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 3368083
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 3479042
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 3492875
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 3521042
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 2999292
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 3409250
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 3017500
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 2830875
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 3067416
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 3229958
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 22964291
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 22792916
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 23595083
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 28735792
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 29576375
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 29006792
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 28030875
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 28639541
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 28587917
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 22470250
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 29180625
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 23086625
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 22889333
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 22867291
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 28904041
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 22864834
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 22390875
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 28092000
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 22426958
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 22897833
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "e4695323ada9e2e739b784f5db218830b9b30f777d9cfcf77716fd8eb8b01a92",
+      "artifact_bytes": 2738,
+      "native_launches": {
+        "emit-ir": 15,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.180875499999999,
+            "min_ms": 7.786375,
+            "max_ms": 10.356667,
+            "p25_ms": 8.91244775,
+            "p75_ms": 9.697375000000001
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 314.6305625,
+            "min_ms": 300.48575,
+            "max_ms": 374.884375,
+            "p25_ms": 305.68476,
+            "p75_ms": 326.6266355
+          },
+          "dual_over_rust": 34.27021339086888
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.181937,
+            "min_ms": 2.830875,
+            "max_ms": 3.612958,
+            "p25_ms": 3.02625025,
+            "p75_ms": 3.427136
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 23.340854,
+            "min_ms": 22.390875,
+            "max_ms": 29.576375,
+            "p25_ms": 22.866676750000003,
+            "p75_ms": 28.66360375
+          },
+          "dual_over_rust": 7.335423045773691
+        }
+      },
+      "all_emissions_byte_identical": true
+    },
+    {
+      "name": "negative_rotation",
+      "source": "corpus/pennylane_demos/rotation_both_negative",
+      "qubits": 1,
+      "samples": {
+        "emit-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 8337666
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 9961542
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 8089959
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 9155458
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 10284042
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 8094500
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 9573709
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 9296333
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 9263083
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 9050833
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 9003375
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 9271000
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 8213917
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 8418833
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 9258708
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 9385708
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 9480083
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 9506708
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 8702375
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 9420834
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 301167292
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 300471459
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 312535792
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 308326792
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 303858708
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 307057875
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 348124791
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 312202750
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 303041291
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 308379875
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 314844041
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 308708417
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 303346083
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 298190375
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 301100959
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 300583875
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 300201500
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 299780833
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 302055958
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 301120166
+            }
+          ]
+        },
+        "verify-ir": {
+          "rust": [
+            {
+              "iteration": 0,
+              "pair_position": 0,
+              "elapsed_ns": 2913250
+            },
+            {
+              "iteration": 1,
+              "pair_position": 1,
+              "elapsed_ns": 3571667
+            },
+            {
+              "iteration": 2,
+              "pair_position": 1,
+              "elapsed_ns": 3551334
+            },
+            {
+              "iteration": 3,
+              "pair_position": 1,
+              "elapsed_ns": 3337959
+            },
+            {
+              "iteration": 4,
+              "pair_position": 1,
+              "elapsed_ns": 3216250
+            },
+            {
+              "iteration": 5,
+              "pair_position": 1,
+              "elapsed_ns": 3456041
+            },
+            {
+              "iteration": 6,
+              "pair_position": 1,
+              "elapsed_ns": 3731875
+            },
+            {
+              "iteration": 7,
+              "pair_position": 1,
+              "elapsed_ns": 3237792
+            },
+            {
+              "iteration": 8,
+              "pair_position": 1,
+              "elapsed_ns": 3279083
+            },
+            {
+              "iteration": 9,
+              "pair_position": 1,
+              "elapsed_ns": 3394167
+            },
+            {
+              "iteration": 10,
+              "pair_position": 0,
+              "elapsed_ns": 2856958
+            },
+            {
+              "iteration": 11,
+              "pair_position": 0,
+              "elapsed_ns": 2809292
+            },
+            {
+              "iteration": 12,
+              "pair_position": 0,
+              "elapsed_ns": 2966292
+            },
+            {
+              "iteration": 13,
+              "pair_position": 0,
+              "elapsed_ns": 3108292
+            },
+            {
+              "iteration": 14,
+              "pair_position": 1,
+              "elapsed_ns": 3375166
+            },
+            {
+              "iteration": 15,
+              "pair_position": 0,
+              "elapsed_ns": 3005291
+            },
+            {
+              "iteration": 16,
+              "pair_position": 1,
+              "elapsed_ns": 3523667
+            },
+            {
+              "iteration": 17,
+              "pair_position": 1,
+              "elapsed_ns": 3596750
+            },
+            {
+              "iteration": 18,
+              "pair_position": 0,
+              "elapsed_ns": 3001708
+            },
+            {
+              "iteration": 19,
+              "pair_position": 0,
+              "elapsed_ns": 3042667
+            }
+          ],
+          "dual": [
+            {
+              "iteration": 0,
+              "pair_position": 1,
+              "elapsed_ns": 22605084
+            },
+            {
+              "iteration": 1,
+              "pair_position": 0,
+              "elapsed_ns": 22896792
+            },
+            {
+              "iteration": 2,
+              "pair_position": 0,
+              "elapsed_ns": 22453833
+            },
+            {
+              "iteration": 3,
+              "pair_position": 0,
+              "elapsed_ns": 28060250
+            },
+            {
+              "iteration": 4,
+              "pair_position": 0,
+              "elapsed_ns": 21868708
+            },
+            {
+              "iteration": 5,
+              "pair_position": 0,
+              "elapsed_ns": 23342958
+            },
+            {
+              "iteration": 6,
+              "pair_position": 0,
+              "elapsed_ns": 23113125
+            },
+            {
+              "iteration": 7,
+              "pair_position": 0,
+              "elapsed_ns": 21708500
+            },
+            {
+              "iteration": 8,
+              "pair_position": 0,
+              "elapsed_ns": 22784292
+            },
+            {
+              "iteration": 9,
+              "pair_position": 0,
+              "elapsed_ns": 23201834
+            },
+            {
+              "iteration": 10,
+              "pair_position": 1,
+              "elapsed_ns": 22549459
+            },
+            {
+              "iteration": 11,
+              "pair_position": 1,
+              "elapsed_ns": 22363583
+            },
+            {
+              "iteration": 12,
+              "pair_position": 1,
+              "elapsed_ns": 22597541
+            },
+            {
+              "iteration": 13,
+              "pair_position": 1,
+              "elapsed_ns": 22697084
+            },
+            {
+              "iteration": 14,
+              "pair_position": 0,
+              "elapsed_ns": 23191667
+            },
+            {
+              "iteration": 15,
+              "pair_position": 1,
+              "elapsed_ns": 22759167
+            },
+            {
+              "iteration": 16,
+              "pair_position": 0,
+              "elapsed_ns": 22348750
+            },
+            {
+              "iteration": 17,
+              "pair_position": 0,
+              "elapsed_ns": 22878875
+            },
+            {
+              "iteration": 18,
+              "pair_position": 1,
+              "elapsed_ns": 22398792
+            },
+            {
+              "iteration": 19,
+              "pair_position": 1,
+              "elapsed_ns": 22107875
+            }
+          ]
+        }
+      },
+      "artifact_sha256": "8574d72de2b0083ca957531d8bc95ebabee4641662cf407b8148141f8c2a67db",
+      "artifact_bytes": 886,
+      "native_launches": {
+        "emit-ir": 15,
+        "verify-ir": 1
+      },
+      "summary": {
+        "emit-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 9.2608955,
+            "min_ms": 8.089959,
+            "max_ms": 10.284042,
+            "p25_ms": 8.6314895,
+            "p75_ms": 9.43564625
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 303.193687,
+            "min_ms": 298.190375,
+            "max_ms": 348.124791,
+            "p25_ms": 300.971688,
+            "p75_ms": 308.4620105
+          },
+          "dual_over_rust": 32.73913273289824
+        },
+        "verify-ir": {
+          "rust": {
+            "count": 20,
+            "median_ms": 3.2584375,
+            "min_ms": 2.809292,
+            "max_ms": 3.731875,
+            "p25_ms": 3.00439525,
+            "p75_ms": 3.4729475
+          },
+          "dual": {
+            "count": 20,
+            "median_ms": 22.651084,
+            "min_ms": 21.7085,
+            "max_ms": 28.06025,
+            "p25_ms": 22.389989749999998,
+            "p75_ms": 22.95087525
+          },
+          "dual_over_rust": 6.951517099836963
+        }
+      },
+      "all_emissions_byte_identical": true
+    }
+  ],
+  "finished_utc": "2026-10-03T11:01:49.683850+00:00"
+}

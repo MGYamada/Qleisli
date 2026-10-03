@@ -121,16 +121,35 @@ fn declared_source_selection_excludes_build_outputs_and_preserves_legacy_loading
 #[test]
 fn selected_roots_reject_escape_build_directory_and_source_symlinks() {
     let root = SourceRoot::new("observe fn main()->Unit{()}");
-    for relative in ["../escape", "/tmp", "target", ""] {
+    fs::create_dir(root.0.join("src")).unwrap();
+    for relative in [
+        "../escape",
+        "/tmp",
+        "target",
+        "TARGET",
+        "Target",
+        "src/TaRgEt",
+        "",
+    ] {
         root.write(
             "Qargo.toml",
             &QRATE.replace("root='src'", &format!("root='{relative}'")),
         );
-        assert!(qrate_source_root(&root.0).is_err(), "{relative}");
+        let error = qrate_source_root(&root.0).unwrap_err();
+        if relative
+            .split('/')
+            .any(|part| part.eq_ignore_ascii_case("target"))
+        {
+            assert!(
+                error.message.contains("target build directory"),
+                "{relative}: {error:?}"
+            );
+        }
     }
     #[cfg(unix)]
     {
         fs::create_dir(root.0.join("real")).unwrap();
+        fs::remove_dir(root.0.join("src")).unwrap();
         std::os::unix::fs::symlink("real", root.0.join("src")).unwrap();
         root.write("Qargo.toml", QRATE);
         assert!(qrate_source_root(&root.0).is_err());
@@ -224,7 +243,7 @@ fn user_compositions_have_a_source_level_contract_check_before_qlt() {
     check_project(&root.0).unwrap();
     root.write("main.qli", &source.replace("h(h(q))", "h(q)"));
     let error = check_project_diagnostic(&root.0).unwrap_err();
-    assert_eq!(error.code, "invalid_ir", "{error:?}");
+    assert_eq!(error.code, "contract", "{error:?}");
     root.write(
         "main.qli",
         &source
@@ -236,6 +255,6 @@ fn user_compositions_have_a_source_level_contract_check_before_qlt() {
     );
     assert_eq!(
         check_project_diagnostic(&root.0).unwrap_err().code,
-        "invalid_ir"
+        "contract"
     );
 }

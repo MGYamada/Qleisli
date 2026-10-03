@@ -1,0 +1,320 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.63s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-dfcd7d9804c84c88)
+
+running 79 tests
+test contract::exact::tests::denominator_alignment_preserves_sign_at_capacity ... ok
+test contract::exact::tests::canonical_dyadics_and_irrational_components_remain_distinct ... ok
+test contract::exact::tests::capacity_errors_never_wrap_or_approximate ... ok
+test contract::exact::tests::exact_complex_algebra_includes_cross_terms ... ok
+test contract::exact::tests::shared_budget_cannot_be_reset_by_matrix_composition ... ok
+test contract::exact::tests::isometry_checks_cross_column_inner_products ... ok
+test contract::exact::tests::hadamard_squared_and_phase_sensitive_adjoint ... ok
+test contract::exact::tests::tensor_places_first_operand_on_low_bits ... ok
+test contract::exact::tests::dimensions_entries_and_getters_are_bounded ... ok
+test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+test contract::exact::tests::all_eighth_root_products_and_conjugates_are_exact ... ok
+test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+test frontend::project::source_file::tests::macos_nofollow_any_is_gated_by_runtime_version ... ok
+test frontend::project::source_file::tests::macos_openat_retains_parent_identity_after_path_replacement ... ok
+test frontend::project::source_file::tests::macos_fifo_source_replacement_is_rejected_without_a_writer ... ok
+test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+test frontend::project::source_file::tests::macos_legacy_walk_rejects_links_and_retains_read_requirement ... ok
+test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+test host::factoring::tests::minimality_and_work_exhaustion_are_checked ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+test interchange::codec::tests::record_wire_fields_and_work_are_stable_and_unknown_fields_are_rejected ... ok
+test interchange::codec::tests::wire_integer_bounds_retain_field_range_and_u32_error_precedence ... ok
+test interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ignored, run scripts/test_verification_decoders.py with the native decoder view
+test interchange::hierarchical::execution::tests::capability_scan_rejects_unsupported_zero_repeat_children_and_classical_inputs ... ok
+test interchange::hierarchical::execution::tests::explicit_limits_dimensions_and_numeric_overflow ... ok
+test interchange::hierarchical::execution::tests::negative_control_retains_a_zero_qubit_leaf_scalar ... ok
+test interchange::hierarchical::execution::tests::pending_metadata_is_bounded_before_wide_sequence_enqueue ... ok
+test interchange::hierarchical::execution::tests::permutation_direction_inverse_and_zero_width ... ok
+test interchange::hierarchical::execution::tests::repeats_spend_actual_work_even_under_inactive_control ... ok
+test interchange::hierarchical::execution::tests::sampling_norm_guard_rejects_zero_nonfinite_and_excessive_drift ... ok
+test interchange::hierarchical::execution::tests::sampling_uses_full_branch_weights_and_never_selects_zero_branches ... ok
+test interchange::hierarchical::execution::tests::sequence_adjoint_retains_complex_phase_and_reference ... ok
+test interchange::hierarchical::execution::tests::tensor_places_left_axes_first_and_control_keeps_global_phase ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::capacity_failure_identifies_the_selected_native_check_without_a_work_claim ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::every_failure_mode_requires_exact_eof_after_the_final_newline ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::framed_obligations_remain_mode_specific_and_reject_malformed_counts ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+test interchange::codec::tests::every_frozen_raw_operation_and_action_preserves_its_fields ... ok
+test interchange::native::runtime::tests::replies_bind_request_presence_and_reject_ambiguous_success ... ok
+test interchange::tests::display_omits_only_the_absent_pointer ... ok
+test interchange::tests::graph_checks_cycles_dangling_unused_and_every_shared_path ... ok
+test interchange::tests::shared_snapshots_charge_once_and_preserve_order_and_duplicate_checks ... ok
+test interchange::tests::source_and_identity_limits_are_aggregate_and_sources_never_resolve ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+test interop::profile::tests::gate_columns_match_independent_exact_definitions_including_phase ... ok
+test sim::sampling::tests::norm_allowance_tracks_executed_work_and_remains_bounded ... ok
+test sim::sampling::tests::rejects_nonfinite_zero_and_excessive_norm_error ... ok
+test sim::tests::certified_cleanup_alarm_is_relative_and_preserves_numerical_mass ... ok
+test sim::tests::certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries ... ok
+test contract::function::snapshot_tests::aggregate_budget_charges_each_fresh_native_decision ... ok
+test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+test contract::function::snapshot_tests::shared_storage_cannot_bypass_metadata_limits_budget_or_raw_verification ... ok
+test contract::tests::counterexample_diagnostic_preserves_the_shared_work_budget ... ok
+test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+test contract::function::snapshot_tests::shared_receipt_clones_and_binding_checks_do_not_materialize_legacy_source_copies ... ok
+test interchange::tests::strict_json_bounds_and_unicode_do_not_normalize_identities ... ok
+test interchange::hierarchical::runtime::response_diagnostics_tests::nonzero_runtime_exit_preserves_framing_errors_and_checker_rejections ... ok
+test sim::tests::certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup ... ok
+test interchange::native::runtime::tests::process_failures_never_fall_back_or_wait_beyond_the_deadline ... ok
+test sim::tests::physical_raw_auxiliary_execution_agrees_with_extracted_contracts ... ok
+test sim::tests::generated_circuits_match_exact_amplitudes_adjoint_and_control_laws ... ok
+test sim::tests::legacy_qif_matches_independent_exact_extraction_and_retains_limits ... ok
+
+test result: ok. 76 passed; 0 failed; 3 ignored; 0 measured; 1 filtered out; finished in 51.38s
+
+     Running tests/cli.rs (target/debug/deps/cli-3f0107b174d0ba7d)
+
+running 8 tests
+test non_utf8_command_reports_usage_without_panicking ... ok
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.32s
+
+     Running tests/cli_json.rs (target/debug/deps/cli_json-34e5773ad9c50490)
+
+running 7 tests
+test json_type_failure_is_located_in_the_original_source ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.46s
+
+     Running tests/documentation.rs (target/debug/deps/documentation-25276a793a82af84)
+
+running 10 tests
+test all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics ... ok
+test doc_text_normalizes_crlf_but_preserves_utf8_source_spans ... ok
+test ordinary_and_nested_comment_delimiters_follow_rust_distinctions ... ok
+test markdown_includes_private_docs_and_uses_safe_signature_fences ... ok
+test rust_style_docs_attach_to_modules_imports_and_functions_in_source_order ... ok
+test misplaced_documentation_is_rejected_in_both_parse_entry_points ... ok
+test unfinished_comment_blocks_cannot_swallow_later_declarations ... ok
+test every_bundled_module_and_public_or_private_definition_has_documentation ... ok
+test deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax ... ok
+test documentation_neither_changes_ir_nor_authorizes_invalid_ownership ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.82s
+
+     Running tests/editions.rs (target/debug/deps/editions-4ff36c62e423b111)
+
+running 11 tests
+test non_file_manifest_is_rejected_before_platform_open ... ok
+test manifest_symlinks_and_non_files_cannot_fall_back_to_an_ancestor ... ok
+test missing_manifest_has_no_default_and_all_filesystem_loaders_check_it ... ok
+test malformed_numeric_missing_and_unsupported_editions_are_rejected_before_source ... ok
+test sized_and_documentation_files_use_their_enclosing_manifest ... ok
+test empty_files_and_directory_entries_consume_bounded_discovery_capacity ... ok
+test qlt_drafts_require_an_edition_without_claiming_execution_support ... ok
+test manifest_bytes_are_bounded_and_decoded_independently_of_source_policy ... ok
+test closest_manifest_wins_without_changing_import_roots_or_skipping_invalid_files ... ok
+test full_qrate_manifest_and_toml_string_forms_select_the_same_edition ... ok
+test edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.31s
+
+     Running tests/hierarchical_host.rs (target/debug/deps/hierarchical_host-1cd264f5ba52d833)
+
+running 18 tests
+test native_actual_counts_premises_and_encodings_are_checked ... ignored, requires separately built and audited native Lean runtime
+test native_disjoint_tensor_reconstructs_both_leaves_in_one_budget ... ignored, requires separately built and audited native Lean runtime
+test native_finite_pair_and_nested_tuple_boundaries_reconstruct_without_flattening ... ignored, requires separately built and audited native Lean runtime
+test native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ignored, requires separately built and audited native Lean runtime
+test native_leaf_type_and_owner_are_bound_to_the_embedded_program ... ignored, requires separately built and audited native Lean runtime
+test native_phase_and_structural_inverse_need_no_dense_matrix_leaf ... ignored, requires separately built and audited native Lean runtime
+test native_phase_fault_remains_an_obligation_under_zero_repeat ... ignored, requires separately built and audited native Lean runtime
+test native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes ... ignored, requires separately built and audited native Lean runtime
+test native_request_detects_coordinated_body_changes_and_wrong_headers ... ignored, requires separately built and audited native Lean runtime
+test native_request_permits_different_sharing_in_both_directions ... ignored, requires separately built and audited native Lean runtime
+test native_shared_powers_reconstruct_one_bound_leaf_without_expansion ... ignored, requires separately built and audited native Lean runtime
+test vm22_frozen_hierarchy_requests_recheck_finite_premises_and_cycles ... ignored, VM-22 optional comparison requires the separately built Lean runtime
+test external_schema_ids_cannot_enable_registry_entries ... ok
+test schedule_producer_rejects_cycles_and_cross_table_aliases ... ok
+test strict_json_rejects_before_starting_an_executable ... ok
+test independent_request_transport_rejects_flags_and_invalid_references ... ok
+test instrument_codec_rejects_malformed_fields_before_execution ... ok
+test instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok
+
+test result: ok. 6 passed; 0 failed; 12 ignored; 0 measured; 0 filtered out; finished in 0.18s
+
+     Running tests/native_acceptance.rs (target/debug/deps/native_acceptance-db202cdfd95cf255)
+
+running 4 tests
+test evidence_dags_decode_from_the_native_ticket_and_execute ... ignored, requires the freshly built native Lean checker
+test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ignored, requires the freshly built native Lean checker
+test native_rejection_and_independent_requests_bind_exact_bytes ... ignored, requires the freshly built native Lean checker
+test proposals_are_untrusted_and_owned_and_missing_checkers_reject ... ok
+
+test result: ok. 1 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_paths.rs (target/debug/deps/native_paths-1ee976a76f3d0d8d)
+
+running 3 tests
+test native_report_retains_the_exact_artifact_request_and_reconstructed_program ... ignored, requires the freshly built native Lean checker
+test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ignored, requires the freshly built native Lean checker
+test raw_transport_rejects_excessive_nesting_before_serialization ... ok
+
+test result: ok. 1 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/project.rs (target/debug/deps/project-fd9430dae90d1468)
+
+running 11 tests
+test reserved_word_cannot_name_a_local_module ... ok
+test nonpublic_import_reports_calling_file_and_utf8_byte_span ... ok
+test converging_import_paths_do_not_report_a_cycle ... ok
+test std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules ... ok
+test bell_module_and_bundled_imports_resolve ... ok
+test unknown_sealed_name_is_not_reinterpreted_as_user_code ... ok
+test missing_module_and_name_are_distinct_errors ... ok
+test algorithm_routines_are_bundled_source_with_private_helpers ... ok
+test import_cycles_and_name_collisions_are_rejected ... ok
+test deep_import_cycle_reports_the_back_edge_and_cycle_path ... ok
+test long_acyclic_import_chain_loads_on_a_small_stack ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.64s
+
+     Running tests/review_v024.rs (target/debug/deps/review_v024-8a2f6cfb7e0c1493)
+
+running 8 tests
+test selected_roots_reject_escape_build_directory_and_source_symlinks ... ok
+test nested_register_pattern_names_the_actual_type_and_repairs ... ok
+test misplaced_public_import_has_a_checked_repair ... ok
+test user_compositions_have_a_source_level_contract_check_before_qlt ... ok
+test tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples ... ok
+test phase_aliases_export_as_short_exact_target_words ... ok
+test unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance ... ok
+test declared_source_selection_excludes_build_outputs_and_preserves_legacy_loading ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.87s
+
+     Running tests/review_v026.rs (target/debug/deps/review_v026-5793657047dab873)
+
+running 5 tests
+test qrate_current_directory_spelling_is_consistent ... ok
+test tuple_binding_messages_have_no_host_path ... ok
+test doc_usage_only_advertises_accepted_options ... ok
+test tuple_diagnostics_do_not_blame_returned_or_destructured_bindings ... ok
+test malformed_optional_manifest_tables_warn_without_rejecting_source ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.49s
+
+     Running tests/review_v028.rs (target/debug/deps/review_v028-fc1b70024d1459c4)
+
+running 7 tests
+test source_loading_needs_search_but_not_read_permission_on_ancestors ... ok
+test tuple_diagnostic_has_a_structured_binding_and_no_host_path ... ok
+test interop_file_io_uses_the_closed_project_code ... ok
+test byte_limits_identify_the_file_without_embedding_a_host_path ... ok
+test unreadable_source_identifies_the_failing_file_in_both_transports ... ok
+test selected_qrate_rejects_root_and_ancestor_replacement_before_loading ... ok
+test terminal_export_keeps_allocations_before_observation ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s
+
+     Running tests/sampling.rs (target/debug/deps/sampling-85dd39bd7a5ef4c9)
+
+running 8 tests
+test splitmix_words_are_the_specified_unsigned_algorithm ... ok
+test sampler_rejects_open_interfaces_before_requesting_randomness ... ok
+test discarded_entangled_half_is_sampled_and_no_state_is_reused ... ok
+test preserved_grover_trial_draws_marked_result ... ok
+test interference_probability_matches_an_independent_analytic_value ... ok
+test failures_are_errors_and_limits_apply_before_draws ... ok
+test bell_draws_follow_the_word_threshold_and_consume_deterministic_words ... ok
+test stochastic_samples_match_independent_bell_and_reset_feedback_contracts ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.99s
+
+     Running tests/semantic_contracts.rs (target/debug/deps/semantic_contracts-03181785913613a8)
+
+running 21 tests
+test evidence_is_bound_to_full_circuit_and_contract ... ok
+test impossible_circuit_shapes_are_not_capacity_failures ... ok
+test capacity_and_shared_work_exhaustion_fail_closed ... ok
+test encodings_and_logical_maps_must_be_isometric ... ok
+test non_surjective_logical_isometry_cannot_be_adjointed_or_controlled ... ok
+test changed_encoding_blocks_control_even_when_the_logical_map_is_square ... ok
+test exact_basis_tree_is_not_erased_by_equal_dimensions ... ok
+test adjoint_reverses_permutation_with_input_indexed_phases ... ok
+test entry_requires_exact_coordinates_even_for_the_same_image ... ok
+test rejected_deep_type_is_destroyed_without_recursive_stack_growth ... ok
+test primitive_evidence_preserves_exact_phase ... ok
+test malformed_circuits_never_become_checked_evidence ... ok
+test sequential_proofs_use_application_order ... ok
+test controlled_encoded_phase_preserves_the_identity_arm ... ok
+test raw_ir_contract_diagnostic_identifies_an_exact_counterexample ... ok
+test raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires ... ok
+test computed_phase_hh_and_simultaneous_x_use_the_same_equation ... ok
+test unit_has_scalar_phase_and_a_distinct_owned_type ... ok
+test raw_ir_rechecks_actual_predicate_body_and_logical_evidence ... ok
+test tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference ... ok
+test computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate ... ok
+
+test result: ok. 21 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+
+     Running tests/sim.rs (target/debug/deps/sim-b0ba904c997bde18)
+
+running 15 tests
+test bell_half_measurement_and_feedback_corrects_other_half ... ok
+test computed_predicate_controls_target_without_measuring_source ... ok
+test bell_lift_split_and_measure_has_only_matching_outcomes ... ok
+test coherent_qif_entangles_control_and_target ... ok
+test discarding_entangled_half_keeps_mixed_residual ... ok
+test computed_phase_oracle_not_function_interferes_to_one ... ok
+test join_and_permutation_lift_use_register_bit_order ... ok
+test classical_projection_copies_share_the_execution_budget ... ok
+test toffoli_and_classical_boolean_ops_execute ... ok
+test repeated_t_phase_can_leave_a_tiny_floating_point_outcome ... ok
+test scalar_phase_survives_even_without_target_wires ... ok
+test reset_breaks_bell_correlation_and_returns_new_zero_wire ... ok
+test nonclosed_input_and_dimension_limit_are_reported ... ok
+test unit_target_scalar_phase_becomes_relative_control_phase ... ok
+test nested_branches_reserve_pending_outer_components_and_amplitudes ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/sized_cli.rs (target/debug/deps/sized_cli-e0aef37db6c0dc8e)
+
+running 7 tests
+test sized_cli_native_source_check_run_and_fresh_sampling ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_cli_separates_producer_consistency_from_independent_requests ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_execution_basis_still_checks_input_width ... ok
+test sized_check_rejects_execution_basis_before_loading ... ok
+test sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading ... ok
+test sized_cli_cannot_select_private_entries_or_providers ... ok
+test sized_cli_emits_only_an_untrusted_proposal_without_a_kernel ... ok
+
+test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.04s
+

@@ -1,0 +1,112 @@
+{
+  "results": [
+    {
+      "project": "pennylane_demos/qaoa_negative_edge_layer2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_negative_edge_layer2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/qaoa_path_cost3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_path_cost3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rotation_both_negative",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/pennylane_demos/rotation_both_negative",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/add_minus_one3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/qualtran/add_minus_one3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/less_than_one2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/qualtran/less_than_one2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/reflection_basis_one2",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/qualtran/reflection_basis_one2",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/minus_state1",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/quantum_katas/minus_state1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/phase_negative_eighth1",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/quantum_katas/phase_negative_eighth1",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/uniform3",
+      "command": [
+        "target/debug/qleisli",
+        "check",
+        "corpus/authoring/v029-small/attempt-01/quantum_katas/uniform3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ]
+}

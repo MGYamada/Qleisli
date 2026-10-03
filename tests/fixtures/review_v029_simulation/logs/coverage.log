@@ -1,0 +1,16 @@
+{
+  "groups": 36,
+  "public_boundaries": 20,
+  "public_source_files": 83,
+  "constructor_variants": 232,
+  "authority": "Lean",
+  "migration": "in-progress",
+  "target_authority": "Lean",
+  "open_gates": [
+    "S05-C1",
+    "S05-C2",
+    "S05-C3",
+    "S05-C4",
+    "S05-C5"
+  ]
+}

@@ -431,7 +431,10 @@ fn unsupported_valid_pure_raw_operations_are_rejected_explicitly() {
         }],
         &[1],
     );
-    qleisli::verify(basis_lift.clone()).unwrap();
+    qleisli::interchange::native::Kernel::selected()
+        .unwrap()
+        .accept_raw(basis_lift.clone())
+        .unwrap();
     assert!(matches!(
         import_raw(basis_lift),
         Err(AdapterError::Unsupported(_))

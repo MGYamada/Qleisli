@@ -1,0 +1,1544 @@
+{
+  "format": "qleisli.vm29-coverage",
+  "version": 1,
+  "authority": "Lean",
+  "external_schemas_enabled": false,
+  "surface_sha256": "ecbe727c23b61a32346d55350ad1669268901c47c39b3b705e836309cfbd60e3",
+  "groups": [
+    {
+      "id": "raw-core",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "scalar",
+      "status": "untrusted-host",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/finite_matrix.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-contract",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/semantic_contracts.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "function-evidence",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/function_evidence.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-meaning",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/meaning_evidence.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "transport",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/interchange.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-leaf",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/finite_leaf.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "source",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/review_v021.rs",
+        "tests/static_operations.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "foreign",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/interop.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "hierarchy",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/hierarchical_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "execution",
+      "status": "untrusted-host",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/sampling.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-CertifiedCompute",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/semantic_contracts.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ApplyUnitary",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/function_evidence.rs",
+        "tests/static_operations.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Init0",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Gate",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Cnot",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Toffoli",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/function_evidence.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-QuantumIf",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Split",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Join",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-LiftBasis",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/function_evidence.rs",
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-MeasureZ",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Reset",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/sim.rs",
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-Discard",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/sim.rs",
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ClassicalConst",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ClassicalNot",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ClassicalXor",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/sim.rs",
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ClassicalAnd",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ClassicalBranch",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-ComputeUseUncompute",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/function_evidence.rs",
+        "tests/native_raw.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "readout",
+      "status": "lean-component",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "scripts/test_hierarchical_readout.py"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "preparation",
+      "status": "lean-component",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "scripts/test_hierarchical_preparation.py"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "instrument",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/hierarchical_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "hierarchical-execution",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/hierarchical_execution.rs",
+        "src/interchange/hierarchical/execution.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "sized-source",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/sized_source.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "named-qpe-host",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/hierarchical_qpe_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "raw",
+      "entry_points": [
+        "interchange::native::Kernel::{accept_raw,accept,check_raw,check_program}",
+        "RawProgram/RawOp untrusted Rust proposals"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/native_raw.rs",
+        "tests/native_paths.rs"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/native_paths.rs",
+        "test": "raw_exports_conversions_and_native_reports_share_the_original_byte_gate"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "contract",
+      "entry_points": [
+        "Circuit::new",
+        "Encoding::{new,identity}",
+        "Contract::new",
+        "CheckedContract::{check,identity,then,tensor,adjoint,controlled,check_binding,check_entry}",
+        "check_computed"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/semantic_contracts.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/semantic_contracts.rs",
+        "test": "primitive_evidence_preserves_exact_phase"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "function",
+      "entry_points": [
+        "FunctionEvidence::{check,check_binding}",
+        "FiniteMeaning::{permutation,phase,matrix,target_ir}",
+        "MeaningEvidence::{check,check_binding}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/function_evidence.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/function_evidence.rs",
+        "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "qirf",
+      "entry_points": [
+        "interchange::{export,export_with_meanings,import,convert}",
+        "CLI emit-ir/verify-ir [--against=REQUEST]",
+        "interchange::native::Kernel::{inspect,check_raw,check_with_meanings,convert}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/interchange.rs",
+        "tests/native_paths.rs"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/native_paths.rs",
+        "test": "raw_exports_conversions_and_native_reports_share_the_original_byte_gate"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-leaf",
+      "entry_points": [
+        "UnitaryBoundary::new",
+        "finite_matrix::{encode,decode}",
+        "finite_leaf::{check_unitary,check_serialized_unitary}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/finite_leaf.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/finite_leaf.rs",
+        "test": "reconstruct_hadamard_in_both_formats_and_bind_complete_bytes"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "source",
+      "entry_points": [
+        "compile/check_project",
+        "compile/check_project_diagnostic",
+        "compile/check_project_with_policy",
+        "CLI check/run/sample/emit-ir/doc",
+        "compile/check_project_with_kernel",
+        "QrateSource::{compile_with_kernel,check_with_kernel}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/review_v021.rs",
+        "tests/static_operations.rs",
+        "scripts/test_source_kernel.py"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "scripts/test_source_kernel.py",
+        "test": "test_unused_body_native_rejection_blocks_every_source_action"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "foreign",
+      "entry_points": [
+        "interop::{import_openqasm3,export_openqasm3,export_qir_base}",
+        "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir",
+        "Python Client/Program from_openqasm/from_qir/from_ir/compile_project and check/run/sample/to_openqasm/to_qir",
+        "CLI interop check/run/sample/emit-ir/emit-qasm/emit-qir --lean-kernel=PATH",
+        "Python Client(lean_kernel=PATH), Program methods and python -m qleisli --lean-kernel=PATH",
+        "interop::import_openqasm3_with_kernel"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/interop.rs",
+        "scripts/test_interop_native.py"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "scripts/test_interop_native.py",
+        "test": "test_all_actions_formats_use_real_native_checker"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "native-components",
+      "entry_points": [
+        "phase-word v1",
+        "phase DAG/layout/layout DAG/phase-layout native protocols"
+      ],
+      "status": "lean-component",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/hierarchical_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/hierarchical_host.rs",
+        "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "hierarchy-inspect",
+      "entry_points": [
+        "Kernel::new",
+        "Kernel::inspect",
+        "Kernel::check_against (ordinary root and Fourier)",
+        "Hierarchical.RoutedPower.inspect (Lean component only)"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/hierarchical_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/hierarchical_host.rs",
+        "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "execution",
+      "entry_points": [
+        "sim::{run_closed,sample_closed}",
+        "host::run_trials",
+        "CLI run/sample and Python Program methods"
+      ],
+      "status": "untrusted-host",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/sampling.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/sampling.rs",
+        "test": "stochastic_samples_match_independent_bell_and_reset_feedback_contracts"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "readout-component",
+      "entry_points": [
+        "Hierarchical.Readout.check",
+        "qleisli-kernel --readout-check (private QLM1 framing)"
+      ],
+      "status": "lean-component",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "scripts/test_hierarchical_readout.py"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "scripts/test_hierarchical_readout.py",
+        "test": "test_native_branches"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "preparation-component",
+      "entry_points": [
+        "Hierarchical.Preparation.check",
+        "qleisli-kernel --preparation-check (private QLZ1 framing)"
+      ],
+      "status": "lean-component",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "scripts/test_hierarchical_preparation.py"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "scripts/test_hierarchical_preparation.py",
+        "test": "test_zero_reference"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "instrument-composition",
+      "entry_points": [
+        "Hierarchical.Instrument.checkAll",
+        "Kernel::check_instrument",
+        "Protocol.Hierarchical.parseInstrument",
+        "--instrument-pending"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/hierarchical_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/hierarchical_host.rs",
+        "test": "native_instrument_binds_all_stages_and_reconstructs_finite_obligations"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "hierarchy-execution",
+      "entry_points": [
+        "CheckedRequest::execute",
+        "CheckedInstrument::execute",
+        "CheckedInstrument::sample_normalized_shots",
+        "NativeChecked::{execute_pure,execute_instrument,sample_normalized_shots}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/hierarchical_execution.rs",
+        "src/interchange/hierarchical/execution.rs"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/hierarchical_execution.rs",
+        "test": "small_source_clients_match_independent_complex_reference_branches"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "sized-source-proposal",
+      "entry_points": [
+        "ParsedProgram::parse",
+        "ParsedProgram::load",
+        "ParsedProgram::instantiate",
+        "Instantiation::elaborate",
+        "ElaboratedProgram::lower",
+        "HierarchyProposal::validate_initialization_moves",
+        "HierarchyProposal::qpe_binding",
+        "qleisli sized check/run/sample/emit-proposal",
+        "HierarchyProposal::validate_initialization_moves_native",
+        "sized check/run/sample through native-only reports"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/sized_source.rs"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/sized_source.rs",
+        "test": "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "named-qpe-components",
+      "entry_points": [
+        "CircuitTrace.inspect",
+        "QpeSchedule.inspect",
+        "QpeRoot.checkAll",
+        "QpeInstrument.checkAll",
+        "Kernel::check_qpe_instrument",
+        "CheckedQpeInstrument::instrument",
+        "CheckedQpeInstrument::candidate"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/hierarchical_qpe_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/hierarchical_qpe_host.rs",
+        "test": "native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "source-edition-configuration",
+      "entry_points": [
+        "Project::load",
+        "Project::load_with_policy",
+        "read_source_file",
+        "ParsedProgram::load"
+      ],
+      "status": "untrusted-host",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/review_v021.rs",
+        "tests/static_operations.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/review_v021.rs",
+        "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "lean-finite-component-v024",
+      "entry_points": [
+        "QleisliKernel.Finite.circuitMatrix",
+        "QleisliKernel.Finite.check",
+        "QleisliKernel.Finite.checkAll",
+        "QleisliKernel.Protocol.FiniteCodec.readMatrix"
+      ],
+      "status": "lean-component",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "tests/semantic_contracts.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "route_test": {
+        "path": "tests/semantic_contracts.rs",
+        "test": "primitive_evidence_preserves_exact_phase"
+      },
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback"
+    },
+    {
+      "id": "qirf-native-v028",
+      "entry_points": [
+        "interchange::native::Kernel::check",
+        "CLI check/run/sample/emit-ir/verify-ir --lean-kernel=PATH",
+        "interchange::native::Kernel::{inspect,verify,check_program,check_raw,check_with_meanings,convert}"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "evidence": [
+        "src/interchange/native.rs",
+        "scripts/test_native_verification.py",
+        "tests/fixtures/verification_v028/dual-validation.json",
+        "tests/native_paths.rs"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/native_paths.rs",
+        "test": "native_report_retains_the_exact_artifact_request_and_reconstructed_program"
+      },
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "qirf-native-v029",
+      "entry_points": [
+        "interchange::native::{Proposal,AcceptedProgram,Kernel::accept}",
+        "sim::{run_closed,sample_closed} on AcceptedProgram"
+      ],
+      "status": "native-execution",
+      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ],
+      "evidence": [
+        "src/interchange/native.rs",
+        "tests/native_acceptance.rs",
+        "scripts/test_native_acceptance_replay.py",
+        "tests/fixtures/verification_v029/native/README.md"
+      ],
+      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "legacy": "removed; no Rust acceptance fallback",
+      "route_test": {
+        "path": "tests/native_acceptance.rs",
+        "test": "native_handles_execute_bell_and_feedback_without_legacy_receipts"
+      }
+    }
+  ],
+  "gates": [
+    {
+      "id": "S05-C1",
+      "status": "open",
+      "acceptance": "Account for all enabled rules, public paths, capacities and entry premises with positive corpus/algorithm coverage. Unsupported paths reject explicitly; support removal needs a versioned migration. A vacuous always-rejecting checker is insufficient."
+    },
+    {
+      "id": "S05-C2",
+      "status": "open",
+      "acceptance": "Compose actual executable ownership/effect, arithmetic, contract, hierarchy and instrument soundness across the complete declared production profile, including exact phase and arbitrary references, without a Rust-checker or evidence-producer correctness premise."
+    },
+    {
+      "id": "S05-C3",
+      "status": "open",
+      "acceptance": "Bind the reviewed theorem to the released executable definitions with reproducible builds, declaration/axiom audits and fresh replay. Keep the runtime Mathlib-free and interpretation separate; state compiler/runtime/transport assumptions."
+    },
+    {
+      "id": "S05-C4",
+      "status": "open",
+      "acceptance": "Reconstruct evidence against independent requests and bind acceptance to the original artifacts actually executed/emitted. Pass differential, adversarial and platform checks; native/transport failure must reject without a Rust fallback."
+    },
+    {
+      "id": "S05-C5",
+      "status": "open",
+      "acceptance": "Publish coverage, assumptions, explanations and reproduction instructions; resolve blockers through independent review. Prepare contributor setup, bounded Issues, proof/code review, maintainer responsibilities and release/security-reporting procedures."
+    }
+  ],
+  "migration": {
+    "decision": "https://github.com/MGYamada/Qleisli/issues/276",
+    "target_version": "0.2.9",
+    "target_authority": "Lean",
+    "status": "in-progress",
+    "soundness_target": "0.5.0",
+    "cutover_criteria": [
+      "MIG-1",
+      "MIG-2",
+      "MIG-3",
+      "MIG-4",
+      "MIG-5"
+    ]
+  }
+}

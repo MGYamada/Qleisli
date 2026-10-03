@@ -9,8 +9,34 @@
 use std::collections::BTreeMap;
 use std::fmt;
 
-use crate::VerifiedProgram;
+use crate::AcceptedProgram;
 use crate::ir::{ClassicalPhi, QuantumPhi, RawOp, SingleGate, WireId};
+
+mod accepted {
+    pub trait Sealed {}
+    impl Sealed for crate::AcceptedProgram {}
+}
+
+/// An immutable accepted execution view. Implementations are sealed: callers
+/// cannot authorize raw IR by implementing this trait. Only native AcceptedProgram
+/// implements this interface; raw proposals never do.
+///
+/// ```compile_fail
+/// use qleisli::{ir::RawProgram, sim::ExecutableProgram};
+/// struct Unchecked(RawProgram);
+/// impl ExecutableProgram for Unchecked {
+///     fn execution_view(&self) -> &RawProgram { &self.0 }
+/// }
+/// ```
+pub trait ExecutableProgram: accepted::Sealed {
+    fn execution_view(&self) -> &crate::ir::RawProgram;
+}
+
+impl ExecutableProgram for AcceptedProgram {
+    fn execution_view(&self) -> &crate::ir::RawProgram {
+        self.raw()
+    }
+}
 
 mod circuit;
 mod state;
@@ -34,7 +60,8 @@ pub struct SimulationLimits {
     pub max_components: usize,
     /// Total complex amplitudes retained across all ensemble components.
     pub max_amplitude_cells: usize,
-    /// IR visits and expanded circuit steps, shared across all components.
+    /// IR visits, expanded circuit steps and copied state metadata entries, shared
+    /// across all components. Copies are charged before allocation.
     /// This is a step bound, not a floating-point-operation or time bound.
     pub max_execution_steps: usize,
 }
@@ -89,11 +116,18 @@ impl fmt::Display for SimulationError {
 impl std::error::Error for SimulationError {}
 
 struct ExecutionBudget {
+    copied_entries: usize,
     remaining: usize,
     max: usize,
 }
 
 impl ExecutionBudget {
+    fn charge_copies(&mut self, entries: usize) -> Result<(), SimulationError> {
+        self.charge(entries)?;
+        self.copied_entries += entries;
+        Ok(())
+    }
+
     fn charge(&mut self, amount: usize) -> Result<(), SimulationError> {
         self.remaining = self
             .remaining
@@ -148,7 +182,16 @@ fn relabel_branch(
     then_arm: bool,
     quantum_phis: &[QuantumPhi],
     classical_phis: &[ClassicalPhi],
+    budget: &mut ExecutionBudget,
 ) -> Result<Component, SimulationError> {
+    // Reserve all phi metadata before allocating it. Empty quantum owners
+    // still need an output entry; each wire needs a rename and a copied list entry.
+    budget.charge_copies(classical_phis.len())?;
+    budget.charge_copies(quantum_phis.len())?;
+    for phi in quantum_phis {
+        budget.charge_copies(phi.output_wires.len())?;
+        budget.charge_copies(phi.output_wires.len())?;
+    }
     let mut wire_renames = BTreeMap::new();
     let mut outputs = Vec::with_capacity(quantum_phis.len());
     for phi in quantum_phis {
@@ -217,7 +260,7 @@ fn execute_op(
             axes.push(aux_axis);
             run_circuit(&mut component, &axes, use_steps, budget)?;
             compute(&mut component);
-            component = component.remove_certified_zero(auxiliary)?;
+            component = component.remove_certified_zero(auxiliary, budget)?;
             component.tokens.insert(*source_out, wires);
         }
         RawOp::ApplyUnitary {
@@ -375,7 +418,7 @@ fn execute_op(
             let wires = component.take(*input)?;
             let mut outcomes = Vec::with_capacity(2);
             for outcome in [false, true] {
-                let mut branch = component.project_remove(wires[0], outcome)?;
+                let mut branch = component.project_remove(wires[0], outcome, budget)?;
                 if branch.weight() > 0.0 {
                     branch.classical.insert(*output, outcome);
                     outcomes.push(branch);
@@ -391,7 +434,7 @@ fn execute_op(
             let wires = component.take(*input)?;
             let mut branches = Vec::with_capacity(2);
             for outcome in [false, true] {
-                let mut branch = component.project_remove(wires[0], outcome)?;
+                let mut branch = component.project_remove(wires[0], outcome, budget)?;
                 if branch.weight() > 0.0 {
                     branch.add_zero_wire(*fresh_wire, limits)?;
                     branch.tokens.insert(*output, vec![*fresh_wire]);
@@ -404,17 +447,17 @@ fn execute_op(
             let wires = component.take(*input)?;
             let mut branches = vec![component];
             for wire in wires {
-                let mut next = Vec::new();
-                for branch in branches {
+                branches = map_ensemble(branches, limits, |branch, available| {
+                    let mut next = Vec::new();
                     for outcome in [false, true] {
-                        let projected = branch.project_remove(wire, outcome)?;
+                        let projected = branch.project_remove(wire, outcome, budget)?;
                         if projected.weight() > 0.0 {
                             next.push(projected);
-                            check_components(next.len(), limits)?;
+                            check_components(next.len(), available)?;
                         }
                     }
-                }
-                branches = next;
+                    Ok(next)
+                })?;
             }
             return Ok(branches);
         }
@@ -453,7 +496,9 @@ fn execute_op(
             let result = execute_ops(vec![component], arm, limits, budget)?;
             return result
                 .into_iter()
-                .map(|branch| relabel_branch(branch, then_arm, quantum_phis, classical_phis))
+                .map(|branch| {
+                    relabel_branch(branch, then_arm, quantum_phis, classical_phis, budget)
+                })
                 .collect();
         }
         RawOp::ComputeUseUncompute {
@@ -489,6 +534,55 @@ fn execute_op(
     Ok(vec![component])
 }
 
+// Give each active component only the capacity left after retaining the
+// caller's pending components and completed successors. Recursive arms inherit
+// this reduced allowance, so limits cannot reset at a branch boundary.
+fn map_ensemble(
+    ensemble: Vec<Component>,
+    limits: SimulationLimits,
+    mut execute: impl FnMut(Component, SimulationLimits) -> Result<Vec<Component>, SimulationError>,
+) -> Result<Vec<Component>, SimulationError> {
+    let mut pending_cells = ensemble
+        .iter()
+        .fold(0usize, |sum, c| sum.saturating_add(c.amplitudes.len()));
+    let mut pending_count = ensemble.len();
+    check_amplitude_cells(pending_cells, limits)?;
+    check_components(pending_count, limits)?;
+    let mut next = Vec::new();
+    let mut next_cells = 0usize;
+    for component in ensemble {
+        pending_cells -= component.amplitudes.len();
+        pending_count -= 1;
+        let available = SimulationLimits {
+            max_amplitude_cells: limits.max_amplitude_cells - pending_cells - next_cells,
+            max_components: limits.max_components - pending_count - next.len(),
+            ..limits
+        };
+        let successors = execute(component, available).map_err(|error| match error {
+            SimulationError::AmplitudeLimit { required, .. } => SimulationError::AmplitudeLimit {
+                required: required
+                    .saturating_add(pending_cells)
+                    .saturating_add(next_cells),
+                max: limits.max_amplitude_cells,
+            },
+            SimulationError::ComponentLimit { .. } => SimulationError::ComponentLimit {
+                max: limits.max_components,
+            },
+            error => error,
+        })?;
+        for successor in successors {
+            next_cells = next_cells.saturating_add(successor.amplitudes.len());
+            check_amplitude_cells(next_cells.saturating_add(pending_cells), limits)?;
+            check_components(
+                next.len().saturating_add(pending_count).saturating_add(1),
+                limits,
+            )?;
+            next.push(successor);
+        }
+    }
+    Ok(next)
+}
+
 fn execute_ops(
     mut ensemble: Vec<Component>,
     operations: &[RawOp],
@@ -496,22 +590,9 @@ fn execute_ops(
     budget: &mut ExecutionBudget,
 ) -> Result<Vec<Component>, SimulationError> {
     for operation in operations {
-        let mut next = Vec::new();
-        let mut next_cells = 0usize;
-        for component in ensemble {
-            for successor in execute_op(component, operation, limits, budget)? {
-                next_cells = next_cells.checked_add(successor.amplitudes.len()).ok_or(
-                    SimulationError::AmplitudeLimit {
-                        required: usize::MAX,
-                        max: limits.max_amplitude_cells,
-                    },
-                )?;
-                check_amplitude_cells(next_cells, limits)?;
-                next.push(successor);
-                check_components(next.len(), limits)?;
-            }
-        }
-        ensemble = next;
+        ensemble = map_ensemble(ensemble, limits, |component, available| {
+            execute_op(component, operation, available, budget)
+        })?;
     }
     Ok(ensemble)
 }
@@ -524,10 +605,10 @@ fn execute_ops(
 /// state-vector index likewise uses axis 0 as its least significant bit.
 /// Floating-point probabilities can differ slightly from their exact values.
 pub fn run_closed(
-    program: &VerifiedProgram,
+    program: &(impl ExecutableProgram + ?Sized),
     limits: SimulationLimits,
 ) -> Result<BTreeMap<Vec<bool>, f64>, SimulationError> {
-    let raw = program.raw();
+    let raw = program.execution_view();
     if !raw.quantum_inputs.is_empty() {
         return Err(SimulationError::NotClosed("quantum inputs are present"));
     }
@@ -540,6 +621,7 @@ pub fn run_closed(
     check_components(1, limits)?;
     check_amplitude_cells(1, limits)?;
     let mut budget = ExecutionBudget {
+        copied_entries: 0,
         remaining: limits.max_execution_steps,
         max: limits.max_execution_steps,
     };

@@ -45,10 +45,7 @@ def quickstart_manifest(text):
 
 
 def check_registry_links(root, landing, version):
-    # Retired contracts stay in Git history, never copied into an archive tree.
-    # Only these reviewed immutable references may differ from this release.
-    retired = {("7844a10d63880a2b6984c093e2dc7a75033d1e1e", path) for path in
-               ("docs/crates-io-release.md", "docs/language-editions.md")}
+    # Package documentation must remain usable after docs-old is deleted.
     historical = []
     for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", landing):
         require(target.startswith(("https://", "#")), f"relative registry link: {target}")
@@ -56,11 +53,12 @@ def check_registry_links(root, landing, version):
         if target.startswith(prefix):
             ref, relative = target[len(prefix):].split("/", 1)
             path = relative.split("#")[0]
-            if (ref, path) in retired:
-                historical.append(target)
-            else:
-                require(ref == "v" + version, "registry link uses an unreviewed source version")
-                require((root / path).is_file(), f"missing registry link target: {target}")
+            require(ref == "v" + version, "registry link uses an unreviewed source version")
+            require(not path.startswith("docs-old/") and (
+                not path.startswith("docs/")
+                or path == "docs/lean-backend-plan-v0.3.md"
+                or path.startswith("docs/imaginary-v1/")), "registry link targets retired documentation")
+            require((root / path).is_file(), f"missing registry link target: {target}")
     return historical
 
 
@@ -84,7 +82,9 @@ def check(root, binary):
         work = Path(directory)
         empty_path = work / "no-helper-tools"
         empty_path.mkdir()
-        env = dict(os.environ, PATH=str(empty_path))
+        selected = os.environ.get("QLEISLI_KERNEL")
+        require(selected and Path(selected).is_file(), "select a matching native checker with QLEISLI_KERNEL")
+        env = dict(os.environ, PATH=str(empty_path), QLEISLI_KERNEL=str(Path(selected).resolve()))
 
         def invoke(*args, status=0, structured=True):
             command = [str(binary), *args]
@@ -110,6 +110,11 @@ def check(root, binary):
             (project / "main.qli").write_text(body, encoding="utf-8")
 
         write_project("bell", source)
+        missing = {key: value for key, value in env.items() if key != "QLEISLI_KERNEL"}
+        rejected = subprocess.run([str(binary), "check", "bell", "--format=json"], cwd=work,
+                                  env=missing, capture_output=True, text=True, timeout=60)
+        require(rejected.returncode == 1 and json.loads(rejected.stdout)["diagnostics"][0]["code"] == "project",
+                "missing native checker must reject without discovery or download")
         invoke("check", "bell", structured=False)
         output = invoke("run", "bell", structured=False)
         text_distribution = {bits: float(weight) for bits, weight in

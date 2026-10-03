@@ -12,6 +12,25 @@ use std::{collections::BTreeMap, fs, process::Command};
 const SOURCE: &str = "observe fn main() -> CBit { true }";
 
 #[test]
+fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {
+    let root = SourceRoot::new("");
+    for i in 0..65 {
+        root.write(&format!("empty{i}.qli"), "");
+    }
+    let error = Project::load_with_policy(
+        &root.0,
+        SourcePolicy::Bounded {
+            source_bytes: 1024,
+            project_bytes: 3 * 1024,
+        },
+    )
+    .unwrap_err();
+    assert_eq!(error.code, "limit");
+    assert!(error.message.contains("directory-entry limit"), "{error:?}");
+    Project::load_with_policy(&root.0, SourcePolicy::default()).unwrap();
+}
+
+#[test]
 fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
     assert_eq!(CURRENT_EDITION, "2026");
     let root = SourceRoot::new(SOURCE);

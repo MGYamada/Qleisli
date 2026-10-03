@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Build an optional audited native kernel bundle from a fresh source copy.
-No project build outputs, result caches, Mathlib or Rust authority transfer.
+"""Build an audited native kernel bundle from a fresh source copy.
+No project build outputs, result caches, Mathlib or compiled result caches.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
@@ -116,21 +116,21 @@ def main(argv=None):
             request = json.dumps(dict(format="qleisli.request", version=1, signature=dict(tag="bit"),
                                       meaning=dict(tag="phase8", table=phases), source_snapshot=None)).encode()
             packet = b"QLV1" + len(artifact).to_bytes(4, "little") + len(request).to_bytes(4, "little") + artifact + request
-            result = subprocess.run([binary, "--qirf-dual"], input=packet, cwd=output,
+            result = subprocess.run([binary, "--qirf-native"], input=packet, cwd=output,
                                     env=environment, capture_output=True, timeout=60)
-            if (result.returncode == 0) != accepted or not result.stdout.startswith(b"qleisli.qirf-dual 1\n"):
+            if (result.returncode == 0) != accepted or not result.stdout.startswith(b"qleisli.qirf-native 1\n"):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
-            logs.append(dict(command=["bin/" + binary.name, "--qirf-dual"], exit_code=result.returncode,
+            logs.append(dict(command=["bin/" + binary.name, "--qirf-native"], exit_code=result.returncode,
                              expected_acceptance=accepted, input_sha256=hashlib.sha256(packet).hexdigest(),
                              stdout=result.stdout.decode(), stderr=result.stderr.decode()))
         manifest = dict(format="qleisli.native-bundle", version=1,
                         validation=dict(lane=args.validation, fresh_replay=args.validation == "full",
                                         scope="native package only; Mathlib proof maintenance is a separate CI job"),
                         package_version=tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"],
-                        protocol="qleisli.qirf-dual 1", toolchain=(package / "lean-toolchain").read_text().strip(),
+                        protocol="qleisli.qirf-native 1", toolchain=(package / "lean-toolchain").read_text().strip(),
                         platform=platform.system(), machine=platform.machine(), sources=sources,
                         files={p.relative_to(output).as_posix(): digest(p) for p in output.rglob("*") if p.is_file()},
-                        checks=logs, authority="opt-in dual only; no S05/source/native-compiler proof")
+                        checks=logs, authority="sole production acceptance implementation; no full S05/source/native-compiler proof")
         (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     print(f"Audited native bundle: {output}")
 

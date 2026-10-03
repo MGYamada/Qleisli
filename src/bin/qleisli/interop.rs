@@ -4,11 +4,12 @@ use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 
-use qleisli::VerifiedProgram;
-use qleisli::frontend::compile::compile_project_with_policy;
+use qleisli::AcceptedProgram;
+use qleisli::frontend::compile::compile_project_with_kernel;
 use qleisli::frontend::diagnostic::{Diagnostic, SourceLocation};
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::interchange::{self, Version};
+use qleisli::interchange;
+use qleisli::interchange::native::Kernel;
 use qleisli::interop::{self, InteropErrorKind};
 use qleisli::sim::{SimulationLimits, run_closed};
 
@@ -99,25 +100,30 @@ fn bytes(path: &Path, limit: usize) -> Result<Vec<u8>, Failure> {
     Ok(data)
 }
 
-fn load(format: &str, path: &Path) -> Result<VerifiedProgram, Failure> {
+fn load(format: &str, path: &Path, kernel: &Kernel) -> Result<AcceptedProgram, Failure> {
+    if format == "qirf" {
+        return kernel
+            .check(&bytes(path, 16 << 20)?, None)
+            .map(|checked| checked.into_program())
+            .map_err(artifact);
+    }
     match format {
-        "qli" if path != Path::new("-") => compile_project_with_policy(
+        "qli" if path != Path::new("-") => compile_project_with_kernel(
             path,
             SourcePolicy::Bounded {
                 source_bytes: 1 << 20,
                 project_bytes: 16 << 20,
             },
+            kernel,
         )
         .map_err(Failure::Diagnostic),
         "qasm" => {
             let data = bytes(path, interop::MAX_OPENQASM_BYTES)?;
             let text =
                 std::str::from_utf8(&data).map_err(|_| failure("parse", "input is not UTF-8"))?;
-            interop::import_openqasm3(text).map_err(|e| adapter(e, Some((path, text))))
+            interop::import_openqasm3_with_kernel(text, kernel)
+                .map_err(|e| adapter(e, Some((path, text))))
         }
-        "qirf" => Ok(interchange::import(&bytes(path, 16 << 20)?, None)
-            .map_err(artifact)?
-            .program),
         _ => Err(failure(
             "usage",
             "input must be qasm, qirf, or a qli project directory",
@@ -133,10 +139,14 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
     let action = args[0].to_str().ok_or_else(usage)?;
     *root = PathBuf::from(&args[1]);
     let (mut format, mut shots, mut seed, mut json) = (None, None, None, false);
+    let mut kernel = None;
     for arg in &args[2..] {
         match arg.to_str() {
             Some("--format=json") if !json => json = true,
             Some(s) if s.starts_with("--input=") && format.is_none() => format = Some(&s[8..]),
+            Some(s) if s.starts_with("--lean-kernel=") && kernel.is_none() && s.len() > 14 => {
+                kernel = Some(Kernel::new(&s[14..]));
+            }
             Some(s) if s.starts_with("--shots=") && shots.is_none() => {
                 shots = Some(natural(&s[8..]).ok_or_else(usage)?)
             }
@@ -161,26 +171,29 @@ fn execute(args: &[OsString], root: &mut PathBuf) -> Result<String, Failure> {
         // Match the source loader's absolute identities for JSON source spans.
         *root = std::fs::canonicalize(&*root).unwrap_or_else(|_| root.clone());
     }
-    let program = load(format, root)?;
+    let kernel = kernel
+        .map(Ok)
+        .unwrap_or_else(Kernel::selected)
+        .map_err(artifact)?;
+    let loaded = load(format, root, &kernel)?;
+    let program = &loaded;
     let text = match action {
         "check" => return Ok("{\"verified\":true}".into()),
         "run" => {
             return distribution_json(
-                run_closed(&program, SimulationLimits::default()).map_err(simulation_failure)?,
+                run_closed(program, SimulationLimits::default()).map_err(simulation_failure)?,
             )
             .map_err(Failure::Diagnostic);
         }
         "sample" => {
             let seed = seed.unwrap();
-            let (samples, steps) = super::samples::collect(&program, shots.unwrap(), seed)?;
+            let (samples, steps) = super::samples::collect(program, shots.unwrap(), seed)?;
             return Ok(samples_json(&samples, seed, steps, ", "));
         }
-        "emit-ir" => {
-            String::from_utf8(interchange::export(&program, None, Version::V2).map_err(artifact)?)
-                .map_err(|_| failure("format", "export is not UTF-8"))?
-        }
-        "emit-qasm" => interop::export_openqasm3(&program).map_err(|e| adapter(e, None))?,
-        "emit-qir" => interop::export_qir_base(&program).map_err(|e| adapter(e, None))?,
+        "emit-ir" => String::from_utf8(loaded.artifact().to_vec())
+            .map_err(|_| failure("format", "export is not UTF-8"))?,
+        "emit-qasm" => interop::export_openqasm3(program).map_err(|e| adapter(e, None))?,
+        "emit-qir" => interop::export_qir_base(program).map_err(|e| adapter(e, None))?,
         _ => unreachable!(),
     };
     Ok(format!("{{\"text\":{}}}", quoted(&text)))

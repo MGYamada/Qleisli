@@ -1,0 +1,29 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.71s
+     Running tests/native_acceptance.rs (target/debug/deps/native_acceptance-ac925c2e47f23d68)
+
+running 4 tests
+test proposals_are_untrusted_and_owned_and_missing_checkers_reject ... ok
+test evidence_dags_decode_from_the_native_ticket_and_execute ... ok
+test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ok
+test native_rejection_and_independent_requests_bind_exact_bytes ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.19s
+
+     Running tests/native_paths.rs (target/debug/deps/native_paths-29349f1129f0462d)
+
+running 3 tests
+test raw_transport_rejects_excessive_nesting_before_serialization ... ok
+test native_report_retains_the_exact_artifact_request_and_reconstructed_program ... ok
+test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+     Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-1acba0b81f837d83)
+
+running 2 tests
+test shared_receipts_keep_exact_bindings_and_outlive_source_changes ... ok
+test small_native_specializations_retain_exact_shared_sources ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 2.11s
+

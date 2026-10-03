@@ -1,9 +1,9 @@
-use qleisli::VerifiedProgram;
+use qleisli::AcceptedProgram;
 use qleisli::frontend::diagnostic::Diagnostic;
 use qleisli::sim::{Sample, SampleError, SampleLimits, SplitMix64, sample_closed};
 
 pub(super) fn collect(
-    program: &VerifiedProgram,
+    program: &AcceptedProgram,
     shots: u64,
     seed: u64,
 ) -> Result<(Vec<Sample>, u64), Diagnostic> {
@@ -11,7 +11,7 @@ pub(super) fn collect(
 }
 
 fn collect_with_budget(
-    program: &VerifiedProgram,
+    program: &AcceptedProgram,
     shots: u64,
     seed: u64,
     max_steps: u64,
@@ -43,21 +43,23 @@ fn collect_with_budget(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use qleisli::{ir::*, verify};
+    use qleisli::ir::*;
     #[test]
     fn aggregate_failure_does_not_return_earlier_shots() {
-        let p = verify(RawProgram {
-            quantum_inputs: vec![],
-            classical_inputs: vec![],
-            operations: vec![RawOp::ClassicalConst {
-                value: true,
-                output: ClassicalId(0),
-            }],
-            quantum_outputs: vec![],
-            classical_outputs: vec![ClassicalId(0)],
-            declared_effect: Effect::Observe,
-        })
-        .unwrap();
+        let p = qleisli::interchange::native::Kernel::selected()
+            .unwrap()
+            .accept_raw(RawProgram {
+                quantum_inputs: vec![],
+                classical_inputs: vec![],
+                operations: vec![RawOp::ClassicalConst {
+                    value: true,
+                    output: ClassicalId(0),
+                }],
+                quantum_outputs: vec![],
+                classical_outputs: vec![ClassicalId(0)],
+                declared_effect: Effect::Observe,
+            })
+            .unwrap();
         assert_eq!(collect_with_budget(&p, 2, 0, 2).unwrap().1, 2);
         assert_eq!(collect_with_budget(&p, 3, 0, 2).unwrap_err().code, "limit");
     }

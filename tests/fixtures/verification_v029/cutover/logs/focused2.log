@@ -1,0 +1,146 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.73s
+     Running tests/finite_leaf.rs (target/debug/deps/finite_leaf-8675d19d82970eca)
+
+running 16 tests
+test fresh_serialized_process_child ... ok
+test fresh_process_child ... ok
+test serialized_meaning_retains_both_byte_strings_and_exact_work ... ok
+test classical_phi_output_uses_verified_fresh_axes ... ok
+test phase_on_unit_and_zero_width_owner_are_retained ... ok
+test serialized_equations_reject_phase_shape_and_authority_flag_mutations ... ok
+test fresh_process_decodes_both_sides_and_rejects_changed_meaning ... ok
+test malformed_payload_matrix_and_outside_six_bit_boundary_reject ... ok
+test embedded_receipts_are_reconstructed_before_leaf_equality ... ok
+test fresh_process_reconstruction_rejects_a_global_phase_mutation ... ok
+test serialized_reconstruction_uses_one_budget_for_decode_and_all_leaves ... ok
+test reconstruct_hadamard_in_both_formats_and_bind_complete_bytes ... ok
+test independently_specified_cnot_and_final_axis_order ... ok
+test shared_exact_budget_is_not_reset_for_each_leaf ... ok
+test type_tree_owner_and_wire_mutations_are_not_dimension_equality ... ok
+test six_bit_identity_stays_within_the_finite_matrix_boundary ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.90s
+
+     Running tests/function_contracts.rs (target/debug/deps/function_contracts-8dfdf21718119cda)
+
+running 17 tests
+test apply_contract_is_reserved_and_has_exact_static_name_syntax ... ok
+test names_remain_shadowed_after_input_evaluation_and_dependencies_are_acyclic ... ok
+test exact_source_types_declared_effects_and_ordinary_targets_are_required ... ok
+test incorrect_implementations_cannot_change_the_clients_meaning ... ok
+test repeated_calls_reuse_one_immutable_evidence_object ... ok
+test input_ownership_is_consumed_once_and_quantum_frames_remain_owned ... ok
+test repeated_contract_calls_do_not_recompare_frozen_source_snapshots ... ok
+test dependency_source_changes_invalidate_the_previous_compilation ... ok
+test classical_branches_and_ensemble_components_share_execution_budget ... ok
+test adjoint_control_and_repetition_keep_evidence_and_relative_phase ... ok
+test ordered_function_outputs_are_part_of_the_contract ... ok
+test retained_contract_preserves_phase_with_an_entangled_reference ... ok
+test repeated_nested_contracts_share_one_execution_budget ... ok
+test nested_function_evidence_survives_external_inverse_and_control ... ok
+test zero_width_contract_phase_survives_coherent_control ... ok
+test unrelated_source_comments_do_not_multiply_contract_reuse_work ... ok
+test unchanged_client_requires_one_specification_across_private_layouts ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.99s
+
+     Running tests/function_evidence.rs (target/debug/deps/function_evidence-7413ec1929a652f9)
+
+running 19 tests
+test dependency_depth_and_expanded_execution_cost_are_bounded ... ignored, historical Rust maximum-depth/expansion stress; native transport bounds apply and maximum runs are deferred
+test a_statically_unselected_invalid_arm_is_still_rejected ... ok
+test checks_two_raw_functions_and_retains_their_full_snapshots ... ok
+test closed_classical_logic_and_both_kinds_of_phi_preserve_meaning ... ok
+test legacy_computed_phase_is_checked_against_asymmetric_direct_oracle ... ok
+test cached_dependency_equality_is_identity_based_and_clone_stable ... ok
+test independent_output_reindexing_catches_a_reversed_join ... ok
+test cached_calls_keep_opaque_dependencies_and_phase_under_control_and_adjoint ... ok
+test legacy_computed_target_gates_can_depend_on_source_and_auxiliary ... ok
+test certified_computation_reuses_only_its_rechecked_logical_meaning ... ok
+test quantum_if_extracts_both_coherent_arms_with_relative_phase ... ok
+test cached_contract_axes_follow_register_layout_and_final_output_order ... ok
+test zero_width_quantum_if_target_keeps_controlled_scalar_phase ... ok
+test rejects_untrusted_capacity_and_exhausted_shared_work ... ok
+test independent_raw_checks_share_work_across_certified_compute_regions ... ok
+test whole_function_comparison_retains_global_phase_including_unit ... ok
+test rejects_invalid_signatures_observation_and_zero_width_owner_loss ... ok
+test independent_extraction_handles_lifts_cnot_and_toffoli ... ok
+test branch_preflight_checks_both_functions_and_inactive_empty_arms ... ok
+
+test result: ok. 18 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+     Running tests/interchange.rs (target/debug/deps/interchange-0ddaeb2011472a9c)
+
+running 6 tests
+test shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration ... ok
+test malformed_transport_and_declared_root_bindings_are_rejected ... FAILED
+test nary_external_requests_reject_reassociation_and_noncanonical_arity ... ok
+test matching_types_are_required_independently_of_width_and_operator ... ok
+test portable_artifacts_run_in_fresh_processes_after_source_removal ... ok
+test fixed_size_algorithm_and_feedback_artifacts_preserve_distributions ... ok
+
+failures:
+
+---- malformed_transport_and_declared_root_bindings_are_rejected stdout ----
+
+thread 'malformed_transport_and_declared_root_bindings_are_rejected' (8430335) panicked at tests/interchange.rs:398:5:
+assertion `left == right` failed
+  left: "invalid_ir"
+ right: "limit"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    malformed_transport_and_declared_root_bindings_are_rejected
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.82s
+
+error: test failed, to rerun pass `--test interchange`
+     Running tests/native_acceptance.rs (target/debug/deps/native_acceptance-ac925c2e47f23d68)
+
+running 4 tests
+test evidence_dags_decode_from_the_native_ticket_and_execute ... ignored, requires the freshly built native Lean checker
+test native_handles_execute_bell_and_feedback_without_legacy_receipts ... ignored, requires the freshly built native Lean checker
+test native_rejection_and_independent_requests_bind_exact_bytes ... ignored, requires the freshly built native Lean checker
+test proposals_are_untrusted_and_owned_and_missing_checkers_reject ... ok
+
+test result: ok. 1 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/native_paths.rs (target/debug/deps/native_paths-29349f1129f0462d)
+
+running 3 tests
+test dual_report_retains_the_exact_artifact_request_and_reconstructed_program ... ignored, requires the freshly built native Lean checker
+test raw_exports_conversions_and_native_reports_share_the_original_byte_gate ... ignored, requires the freshly built native Lean checker
+test raw_transport_rejects_excessive_nesting_before_serialization ... ok
+
+test result: ok. 1 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/semantic_contracts.rs (target/debug/deps/semantic_contracts-fb1cd2ca467a7125)
+
+running 20 tests
+test evidence_is_bound_to_full_circuit_and_contract ... ok
+test capacity_and_shared_work_exhaustion_fail_closed ... ok
+test non_surjective_logical_isometry_cannot_be_adjointed_or_controlled ... ok
+test encodings_and_logical_maps_must_be_isometric ... ok
+test exact_basis_tree_is_not_erased_by_equal_dimensions ... ok
+test changed_encoding_blocks_control_even_when_the_logical_map_is_square ... ok
+test adjoint_reverses_permutation_with_input_indexed_phases ... ok
+test entry_requires_exact_coordinates_even_for_the_same_image ... ok
+test rejected_deep_type_is_destroyed_without_recursive_stack_growth ... ok
+test primitive_evidence_preserves_exact_phase ... ok
+test malformed_circuits_never_become_checked_evidence ... ok
+test controlled_encoded_phase_preserves_the_identity_arm ... ok
+test sequential_proofs_use_application_order ... ok
+test raw_ir_contract_diagnostic_identifies_an_exact_counterexample ... ok
+test raw_ir_retains_zero_width_ownership_and_fresh_auxiliary_wires ... ok
+test computed_phase_hh_and_simultaneous_x_use_the_same_equation ... ok
+test unit_has_scalar_phase_and_a_distinct_owned_type ... ok
+test tensor_proofs_keep_low_order_axes_and_allow_a_correlated_reference ... ok
+test raw_ir_rechecks_actual_predicate_body_and_logical_evidence ... ok
+test computed_contract_rejects_auxiliary_leakage_wrong_meaning_and_predicate ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.49s
+
+error: 1 target failed:
+    `--test interchange`

@@ -1,6 +1,6 @@
 //! Native Lean kernel launcher and independent finite differential experiment.
 //!
-//! This example grants no `VerifiedProgram` or QIRF authority. The supplied
+//! This example grants no `AcceptedProgram` or QIRF authority. The supplied
 //! executable checks the experimental phase-word artifact and a separate request.
 use std::fs;
 use std::io::Read;

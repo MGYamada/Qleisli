@@ -2,7 +2,7 @@
 
 These Qleisli-authored integration fixtures reuse the
 [retained Qualtran-derived QPE definition](../../../corpus/sized/qualtran_qpe/estimation.qli)
-through the experimental [source path](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/sized-corpus-source.md).
+through the experimental source path.
 They are Apache-2.0 local verification material, not a fourth external corpus
 or additional upstream translations. No upstream file was downloaded. The
 existing three-source intake and thirty production CLI cases are unchanged.
@@ -27,7 +27,7 @@ With phase input zero and target input one, the orbit is
 is the equally weighted mixture of QPE kernels for eigenphases k/n. Width
 three exercises phases that do not lie on a dyadic grid. The n=4,m=3 case
 matches the existing N=15 baseline: labels 0,2,4,6 each have probability 1/4.
-The [existing classical factor/retry contract](https://github.com/MGYamada/Qleisli/blob/7bfcd36916199b05d5ab11851d38d53375ccf71e/docs/arithmetic-order-finding.md)
+The existing classical factor/retry contract
 is unchanged; this new coherent path has not yet connected measurement or
 host postprocessing to its actual returned values.
 

@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.dont_write_bytecode = True
-from check_docs import check_source_doc_references, check_python_readme_version, check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_status, markdown_anchors, markdown_paths, render_status
+from check_docs import check_source_doc_references, check_python_readme_version, check_agents_budget, check_corpus_overview, check_lean, check_links, check_release_doc_links, check_project_metadata, check_docs_layout, check_retired_doc_links, markdown_anchors, markdown_paths
 
 
 class DocumentationReferences(unittest.TestCase):
@@ -40,19 +40,40 @@ class DocumentationReferences(unittest.TestCase):
         self.assertEqual(check_python_readme_version(self.root), [])
 
     def test_agents_budget_accepts_exact_limits_and_rejects_hidden_extra_lines(self):
-        self.write("AGENTS.md", "x" * 5900 + "\n" * 100)
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.write(name, "x" * 5900 + "\n" * 100)
         self.assertEqual(check_agents_budget(self.root), [])
-        self.write("AGENTS.md", "<!--\n" + "\n" * 99 + "-->\n")
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            self.write(name, "<!--\n" + "\n" * 99 + "-->\n")
         errors = check_agents_budget(self.root)
-        self.assertEqual(len(errors), 1)
-        self.assertIn("101 lines exceeds 100", errors[0])
+        self.assertEqual(len(errors), 2)
+        for name, error in zip(("AGENTS.md", "CLAUDE.md"), errors):
+            self.assertIn(f"{name}: 101 lines exceeds 100", error)
 
-    def test_agents_budget_counts_utf8_bytes_and_requires_the_file(self):
-        self.assertIn("AGENTS.md:", check_agents_budget(self.root)[0])
-        self.write("AGENTS.md", "あ" * 2001 + "\n")
+    def test_agents_budget_counts_utf8_bytes_and_requires_both_files(self):
         errors = check_agents_budget(self.root)
-        self.assertEqual(len(errors), 1)
-        self.assertIn("6004 UTF-8 bytes exceeds 6000", errors[0])
+        self.assertEqual(len(errors), 2)
+        for name, error in zip(("AGENTS.md", "CLAUDE.md"), errors):
+            self.assertIn(f"{name}:", error)
+            self.write(name, "あ" * 2001 + "\n")
+        errors = check_agents_budget(self.root)
+        self.assertEqual(len(errors), 2)
+        for name, error in zip(("AGENTS.md", "CLAUDE.md"), errors):
+            self.assertIn(f"{name}: 6004 UTF-8 bytes exceeds 6000", error)
+
+    def test_agent_instructions_reject_drift_and_a_missing_or_invalid_mirror(self):
+        for name in ("AGENTS.md", "CLAUDE.md"):
+            with self.subTest(name=name):
+                for peer in ("AGENTS.md", "CLAUDE.md"):
+                    self.write(peer, "Same working rules.\n")
+                path = self.write(name, "Different working rules.\n")
+                self.assertIn("must be byte-for-byte identical", check_agents_budget(self.root)[0])
+                path.unlink()
+                self.assertEqual(len(check_agents_budget(self.root)), 1)
+                self.assertIn(f"{name}:", check_agents_budget(self.root)[0])
+                path.write_bytes(b"\xff")
+                self.assertEqual(len(check_agents_budget(self.root)), 1)
+                self.assertIn(f"{name}:", check_agents_budget(self.root)[0])
 
     def test_corpus_links_are_part_of_normal_document_discovery(self):
         self.write("corpus/source/case/README.md", "[missing](deleted.qli)\n")
@@ -103,117 +124,76 @@ class DocumentationReferences(unittest.TestCase):
         self.write("README.crates.md", "[current](https://github.com/MGYamada/Qleisli/blob/main/README.md)\n[release history](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.4)\n")
         self.assertEqual(check_release_doc_links(self.root), [])
 
-    def status_fixture(self):
-        self.write("Cargo.toml", '[package]\nversion = "0.1.5"\n')
-        self.write("lean/lakefile.toml", 'version = "0.1.5"\n')
-        self.write("lean-kernel/lakefile.toml", 'version = "0.1.5"\n')
-        self.write("python/pyproject.toml", 'version = "0.1.5"\n')
-        self.write("python/qleisli/__init__.py", '__version__ = "0.1.5"\n')
-        for notice in ["LICENSE", "NOTICE"]:
-            self.write(notice, "fixture attribution\n")
-            self.write("python/" + notice, "fixture attribution\n")
-        data = {
-            "format": 3,
-            "release_state": "selected",
-            "current": [dict(topic="Use", state="finite", detail="current")],
-            "milestones": [dict(id=f"M{i}", state="planned", evidence="direction", open="work") for i in range(6)],
-            "inventory": [dict(rule="rule", implementation="code", tests="tests", proof="open")],
-        }
-        self.write("docs/project-status.json", json.dumps(data))
-        return data
+    def metadata_fixture(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.2.9"\n')
+        self.write("lean/lakefile.toml", 'version = "0.2.9"\n')
+        self.write("lean-kernel/lakefile.toml", 'version = "0.2.9"\n')
+        self.write("python/pyproject.toml", 'version = "0.2.9"\n')
+        self.write("python/qleisli/__init__.py", '__version__ = "0.2.9"\n')
+        for name in ("LICENSE", "NOTICE"):
+            self.write(name, "attribution\n")
+            self.write("python/" + name, "attribution\n")
 
-    def test_status_drift_is_rejected_without_rewriting_the_view(self):
-        self.status_fixture()
-        self.assertTrue(check_status(self.root))
-        self.assertEqual(check_status(self.root, write=True), [])
-        self.assertEqual(check_status(self.root), [])
-        path = self.write("docs/current-status.md", "incorrect completion claim\n")
-        self.assertIn("stale", check_status(self.root)[0])
-        self.assertEqual(path.read_text(), "incorrect completion claim\n")
+    def test_metadata_does_not_require_or_recreate_retired_docs(self):
+        self.metadata_fixture()
+        self.assertEqual(check_project_metadata(self.root), [])
+        self.assertFalse((self.root / "docs").exists())
+        self.assertFalse((self.root / "docs-old").exists())
 
-    def test_status_requires_synchronized_versions(self):
-        self.status_fixture()
-        self.write("lean/lakefile.toml", 'version = "0.1.4"\n')
-        self.assertIn("versions differ", check_status(self.root, write=True)[0])
-        self.assertFalse((self.root / "docs/current-status.md").exists())
-
-    def test_current_summary_and_inventory_are_separate_without_history(self):
-        self.status_fixture()
-        self.assertEqual(check_status(self.root, write=True), [])
-        current = (self.root / "docs/current-status.md").read_text()
-        self.assertIn("Where we are now", current)
-        self.assertFalse((self.root / "docs/status-history.md").exists())
-        inventory = (self.root / "docs/rule-inventory.md").read_text()
-        self.assertIn("| rule | code | tests | open |", inventory)
-        self.assertNotIn("| rule | code | tests | open |", current)
-        self.write("docs/rule-inventory.md", "invented proof")
-        self.assertIn("rule-inventory.md is stale", check_status(self.root)[0])
-
-    def test_retired_history_schema_is_rejected_without_recreating_it(self):
-        data = self.status_fixture()
-        data["format"] = 2
-        data["history"] = [dict(title="Old report", paragraphs=["superseded"])]
-        self.write("docs/project-status.json", json.dumps(data))
-        self.assertIn("unsupported", check_status(self.root, write=True)[0])
-        self.assertFalse((self.root / "docs/status-history.md").exists())
-
-    def test_status_requires_synchronized_executable_kernel_version(self):
-        self.status_fixture()
-        self.write("lean-kernel/lakefile.toml", 'version = "0.1.4"\n')
-        self.assertIn("versions differ", check_status(self.root, write=True)[0])
-        self.assertFalse((self.root / "docs/current-status.md").exists())
-
-    def test_status_requires_synchronized_python_version_and_notices(self):
-        for name, content, message in [
-            ("python/pyproject.toml", 'version = "0.1.4"\n', "versions differ"),
-            ("python/qleisli/__init__.py", '__version__ = "0.1.4"\n', "runtime version differs"),
-            ("python/LICENSE", "wrong license\n", "LICENSE differs"),
-            ("python/NOTICE", "missing attribution\n", "NOTICE differs"),
+    def test_metadata_still_checks_versions_runtime_and_notices(self):
+        for name, text, diagnostic in [
+            ("lean/lakefile.toml", 'version = "0.2.8"', "versions differ"),
+            ("lean-kernel/lakefile.toml", 'version = "0.2.8"', "versions differ"),
+            ("python/pyproject.toml", 'version = "0.2.8"', "versions differ"),
+            ("python/qleisli/__init__.py", '__version__ = "0.2.8"', "runtime version differs"),
+            ("python/LICENSE", "wrong", "LICENSE differs"),
+            ("python/NOTICE", "wrong", "NOTICE differs"),
         ]:
             with self.subTest(name=name):
-                self.status_fixture()
-                self.write(name, content)
-                self.assertIn(message, check_status(self.root, write=True)[0])
-                self.assertFalse((self.root / "docs/current-status.md").exists())
+                self.metadata_fixture()
+                self.write(name, text)
+                self.assertIn(diagnostic, check_project_metadata(self.root)[0])
 
-    def test_status_rejects_missing_proof_fields_and_duplicate_milestones(self):
-        data = self.status_fixture()
-        del data["inventory"][0]["proof"]
-        self.write("docs/project-status.json", json.dumps(data))
-        self.assertIn("missing or unknown", check_status(self.root)[0])
-        data = self.status_fixture()
-        data["milestones"][1]["id"] = "M0"
-        self.write("docs/project-status.json", json.dumps(data))
-        self.assertIn("once, in order", check_status(self.root)[0])
+    def test_docs_layout_retains_drafts_and_requested_backend_plan(self):
+        self.assertTrue(check_docs_layout(self.root))
+        self.write("docs/imaginary-v1/README.md", "drafts")
+        self.write("docs/imaginary-v1/nested/draft.md", "draft")
+        self.write("docs/lean-backend-plan-v0.3.md", "requested plan")
+        self.assertEqual(check_docs_layout(self.root), [])
+        self.write("docs-old/unneeded.md", "no active dependency")
+        self.assertEqual(check_docs_layout(self.root), [])
+        self.write("docs/project-status.json", "{}")
+        self.assertIn("move retired documentation", check_docs_layout(self.root)[0])
 
-    def test_status_invalid_format_and_cells_are_diagnosed(self):
-        for bad in ['{"format":', '{"format": 3}', 'null', '[]']:
-            self.status_fixture()
-            self.write("docs/project-status.json", bad)
-            self.assertTrue(check_status(self.root))
-        data = self.status_fixture()
-        data["inventory"][0]["proof"] = "open\n| invented row |"
-        self.write("docs/project-status.json", json.dumps(data))
-        self.assertIn("single-line", check_status(self.root)[0])
+    def test_retired_doc_links_reject_local_and_pinned_references(self):
+        for target in ["docs-old/design.md", "docs/type-system.md", "docs/verification-migration-v0.2.md",
+                       "docs/lean-backend-plan-v0.3-copy.md",
+                       "docs/%2e%2e/docs-old/design.md",
+                       "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/type-system.md",
+                       "https://github.com/MGYamada/Qleisli/blob/main/docs-old/design.md"]:
+            path = self.write("README.md", f"[old]({target})")
+            self.assertIn("remove retired document link", check_retired_doc_links(self.root, [path])[0])
+        path = self.write("README.md", "[decision](https://github.com/MGYamada/Qleisli/issues/276) "
+                          "[draft](docs/imaginary-v1/README.md) "
+                          "[plan](docs/lean-backend-plan-v0.3.md) "
+                          "[plan online](https://github.com/MGYamada/Qleisli/blob/main/docs/lean-backend-plan-v0.3.md) "
+                          "[upstream](https://github.com/example/repo/blob/main/docs/types.md)")
+        self.assertEqual(check_retired_doc_links(self.root, [path]), [])
 
-    def test_generated_status_references_are_checked_by_normal_link_validation(self):
-        data = self.status_fixture()
-        data["inventory"][0]["tests"] = "[`deleted_test`](../tests/rules.rs)"
-        self.write("docs/project-status.json", json.dumps(data))
-        self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
-        self.write("docs/rule-inventory.md", render_status(self.root, inventory_only=True))
-        errors, _ = check_links(self.root, [self.root / "docs/rule-inventory.md"])
-        self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
+    def test_all_maintained_markdown_is_discovered_including_new_directories(self):
+        names = ["python/README.md", ".github/ci/README.md", "new-area/nested/guide.md"]
+        expected = [self.write(name, "[old](../../docs-old/old.md)") for name in names]
+        for name in ["docs-old/old.md", "corpus/upstream/source/README.md", "target/build.md",
+                     "lean/.lake/package/README.md", ".git/README.md"]:
+            self.write(name, "archived or external")
+        self.assertEqual(set(markdown_paths(self.root)), set(expected))
+        self.assertEqual(len(check_retired_doc_links(self.root, expected[1:2])), 1)
 
-    def test_compact_status_still_validates_secondary_ledger_references(self):
-        data = self.status_fixture()
-        data["inventory"][0]["tests"] = (
-            "[`present_test`](../tests/rules.rs), [`deleted_test`](../tests/rules.rs)"
-        )
-        self.write("docs/project-status.json", json.dumps(data))
-        self.write("tests/rules.rs", "#[test]\nfn present_test() {}")
-        errors = check_status(self.root, write=True)
-        self.assertTrue(any("missing #[test] function deleted_test" in error for error in errors))
+    def test_retired_reference_definitions_html_and_bare_urls_reject(self):
+        for markdown in ['[old]: docs-old/old.md', '<a href="docs-old/old.md">old</a>',
+                         '<https://github.com/MGYamada/Qleisli/blob/main/docs-old/old.md>']:
+            path = self.write("README.md", markdown)
+            self.assertTrue(check_retired_doc_links(self.root, [path]))
 
     def test_direct_declarations_methods_and_attributed_tests(self):
         self.write("src/lower.rs", """

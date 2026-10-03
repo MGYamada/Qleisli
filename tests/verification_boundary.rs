@@ -1,14 +1,15 @@
 //! VM-22 frozen, small-system migration inputs. No new acceptance API.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
+mod common;
 use std::path::PathBuf;
 
+use common::accept;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
 use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_serialized_unitary};
 use qleisli::interchange::{self, RootInterface, Version, finite_matrix};
 use qleisli::ir::*;
-use qleisli::verify;
 
 fn port(token: u32, wires: &[u32]) -> QuantumPort {
     QuantumPort {
@@ -266,7 +267,7 @@ fn frozen_finite_artifacts_match_independent_phase_exact_requests() {
         );
         for (version, tag) in [(Version::V1, "v1"), (Version::V2, "v2")] {
             let artifact = interchange::export(
-                &verify(case.raw.clone()).unwrap(),
+                &accept(case.raw.clone()).unwrap(),
                 Some(&RootInterface {
                     input: case.boundary.signature().clone(),
                     output: case.boundary.signature().clone(),
@@ -308,10 +309,10 @@ fn frozen_raw_inputs_reject_aliases_and_missing_zero_width_owners() {
     if let RawOp::Toffoli { control_b, .. } = &mut toffoli.operations[2] {
         *control_b = TokenId(1);
     }
-    assert!(verify(toffoli).is_err());
+    assert!(accept(toffoli).is_err());
     let mut unit = all.remove(2).raw;
     unit.quantum_outputs.clear();
-    assert!(verify(unit).is_err());
+    assert!(accept(unit).is_err());
 }
 
 #[test]
@@ -319,7 +320,7 @@ fn frozen_request_rejects_axis_identity_type_and_domain_changes() {
     let mut all = cases();
     let case = all.remove(5);
     let artifact = interchange::export(
-        &verify(case.raw).unwrap(),
+        &accept(case.raw).unwrap(),
         Some(&RootInterface {
             input: case.boundary.signature().clone(),
             output: case.boundary.signature().clone(),

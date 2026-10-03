@@ -63,7 +63,7 @@ comparison retains exact Kraus operators and hidden histories, not just counts
 or probabilities. No maximum-size quantum cases are newly generated or checked.
 
 This closes the **ordinary quantum ownership component**, not
-[S05](../../../docs/release-milestones.md#qleisli-soundness-theorem-v050).
+S05.
 Full `EffectSound`, complete instrument/contract composition, hierarchical
 ownership and the analytic reader-to-Operator bridge remain open. Quantitative
 resource safety, source/compiler/execution preservation and independent

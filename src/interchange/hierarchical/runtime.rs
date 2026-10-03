@@ -1,9 +1,7 @@
 //! Bounded native process transport and strict response framing.
 //! A decoded response proposes reconstruction obligations; it is not evidence.
-use std::io::{Read, Write};
 use std::path::Path;
-use std::process::{Command, Stdio};
-use std::time::{Duration, Instant};
+use std::time::Duration;
 
 use super::{Error, Result};
 
@@ -150,63 +148,14 @@ fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
 }
 
 pub(super) fn check(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Response> {
-    response_indices(&invoke(executable, bytes, mode)?, mode)
-}
-
-fn invoke(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Vec<u8>> {
-    let mut child = Command::new(executable)
-        .arg(mode.argument())
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()
-        .map_err(|e| Error::new("io", format!("cannot start Lean runtime: {e}")))?;
-    let mut stdin = child.stdin.take().unwrap();
-    let stdout = child.stdout.take().unwrap();
-    let writer = std::thread::spawn(move || stdin.write_all(&bytes));
-    let reader = std::thread::spawn(move || {
-        let mut output = Vec::new();
-        stdout
-            .take((mode.maximum() + 1) as u64)
-            .read_to_end(&mut output)
-            .map(|_| output)
-    });
-    let deadline = Instant::now() + Duration::from_secs(60);
-    let status = loop {
-        match child.try_wait() {
-            Ok(Some(status)) => break Ok(status),
-            Ok(None) if Instant::now() < deadline => std::thread::sleep(Duration::from_millis(10)),
-            Ok(None) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                break Err(Error::limit("Lean runtime inspection timed out"));
-            }
-            Err(e) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                break Err(Error::new("io", format!("Lean runtime wait failed: {e}")));
-            }
-        }
-    };
-    let written = writer
-        .join()
-        .map_err(|_| Error::new("io", "runtime input thread failed"))?;
-    let output = reader
-        .join()
-        .map_err(|_| Error::new("io", "runtime output thread failed"))?
-        .map_err(|e| Error::new("io", format!("runtime output failed: {e}")))?;
-    let status = status?;
-    if output.len() > mode.maximum() {
-        return Err(Error::limit("runtime response exceeds limit"));
-    }
-    if !status.success() {
-        return match response_indices(&output, mode) {
-            Err(error) => Err(error),
-            Ok(_) => Err(Error::new("io", "failed runtime returned success data")),
-        };
-    }
-    written.map_err(|e| Error::new("io", format!("runtime input failed: {e}")))?;
-    Ok(output)
+    crate::interchange::process::invoke(
+        executable,
+        bytes,
+        mode.argument(),
+        Duration::from_secs(60),
+        mode.maximum(),
+        |bytes| response_indices(bytes, mode),
+    )
 }
 
 #[cfg(test)]

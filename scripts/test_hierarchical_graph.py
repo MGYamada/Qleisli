@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 This checks graph scheduling, not external IR projection or quantum semantics.
 """
+import native_harness
 import argparse
 import hashlib
 import json
@@ -122,19 +123,14 @@ def report (name : String) (nodes : Nodes) (roots : List Nat) (order : Array Nat
     commands = []
     with tempfile.TemporaryDirectory(prefix="qleisli-hierarchical-graph-") as directory:
         project = Path(directory)
-        (project / "lean-toolchain").write_text((ROOT / "lean-kernel/lean-toolchain").read_text())
-        (project / "lakefile.toml").write_text(
-            'name = "hierarchical_graph_test"\nversion = "0.0.0"\n'
-            'defaultTargets = ["graph-test"]\n[[require]]\nname = "qleisli_kernel"\n'
-            f'path = {json.dumps(str(ROOT / "lean-kernel"))}\n'
-            '[[lean_exe]]\nname = "graph-test"\nroot = "Main"\n')
         (project / "Main.lean").write_text(source)
-        for command in (["lake", "build"], [str(project / ".lake/build/bin/graph-test")]):
+        binary = native_harness.build(project, commands)
+        for command in ([str(binary)],):
             result = subprocess.run(command, cwd=project, capture_output=True, text=True, timeout=180)
             commands.append(dict(argv=command, exit_code=result.returncode,
                                  stdout=result.stdout, stderr=result.stderr))
             assert result.returncode == 0, commands[-1]
-        binary_hash = hashlib.sha256((project / ".lake/build/bin/graph-test").read_bytes()).hexdigest()
+        binary_hash = hashlib.sha256(binary.read_bytes()).hexdigest()
     results = {}
     for line in commands[-1]["stdout"].splitlines():
         name, code, *stats = line.split("|")

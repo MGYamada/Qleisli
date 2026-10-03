@@ -38,7 +38,7 @@ was added. Earlier VM28 records describe the pre-refactor implementation.
 ## Remaining theorem obligations
 
 This is a proof-enabling refactor and a composed bounded theorem, not completion
-of [S05](../../../docs/release-milestones.md#qleisli-soundness-theorem-v050).
+of S05.
 The root postconditions are **structural refinement facts**, not definitions of
 independent `ResourceSafe` or `EffectSound`. Roots without a finite request do
 not acquire an algorithm specification or a new full-instrument theorem.

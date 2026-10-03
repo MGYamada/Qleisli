@@ -16,12 +16,13 @@ import signal
 import subprocess
 import sys
 import time
+import native_harness
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / ".github/ci/native-comparisons.json"
 RUST_TOOLCHAIN = "1.98.1"
 LEAN_TOOLCHAIN = "leanprover/lean4:v4.30.0"
-TASK_ENVIRONMENT = {"QLEISLI_HIERARCHY_KERNEL", "QLEISLI_DUAL_KERNEL"}
+TASK_ENVIRONMENT = {"QLEISLI_HIERARCHY_KERNEL", "QLEISLI_KERNEL"}
 
 
 def execution_environment() -> dict[str, str]:
@@ -74,8 +75,9 @@ def source_binding(root: Path, expected_head: str | None, environment: dict | No
     head = output(["git", "rev-parse", "HEAD"])
     if expected_head and head != expected_head:
         raise ValueError("comparison checkout differs from GITHUB_SHA")
-    if output(["git", "status", "--porcelain=v1", "--untracked-files=all"]):
-        raise ValueError("comparison checkout has tracked or untracked changes")
+    changed = output(["git", "status", "--porcelain=v1", "--untracked-files=all"])
+    if changed:
+        raise ValueError("comparison checkout has tracked or untracked changes:\n" + changed)
     pin = (root / "lean-kernel/lean-toolchain").read_text().strip()
     if pin != LEAN_TOOLCHAIN:
         raise ValueError("unexpected Lean toolchain pin")
@@ -88,6 +90,24 @@ def source_binding(root: Path, expected_head: str | None, environment: dict | No
                 cargo_version=cargo, environment=environment)
 
 
+def launch_command(command: list[str]) -> list[str]:
+    """Use the already version-checked tools with either Rustup or native Cargo.
+
+    +toolchain is Rustup proxy syntax, not a Cargo argument. The runner binds
+    actual rustc/cargo versions and RUSTUP_TOOLCHAIN before and after every run.
+    Only the identical pin can be removed; an override remains an error.
+    """
+    if Path(command[0]).name in {"cargo", "rustc", "rustdoc"} and len(command) > 1 and command[1].startswith("+"):
+        if command[1] != "+" + RUST_TOOLCHAIN:
+            raise ValueError("comparison command overrides the pinned Rust toolchain")
+        return command[:1] + command[2:]
+    return command
+
+
+def record_command(template: list[str], directory: Path) -> list[str]:
+    return [arg.replace("{record}", str(directory / "record.json")) for arg in template]
+
+
 def run_task(task: dict, root: Path, directory: Path, timeout: float, environment: dict) -> dict:
     directory.mkdir()
     started = time.monotonic()
@@ -96,11 +116,12 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
     try:
         with log_path.open("w") as log:
             for template in task["commands"]:
-                command = [str(directory / "record.json") if arg == "{record}" else arg for arg in template]
-                log.write(json.dumps(command) + "\n")
+                command = record_command(template, directory)
+                executed = launch_command(command)
+                log.write(json.dumps(dict(command=command, executed_command=executed)) + "\n")
                 log.flush()
                 before = time.monotonic()
-                with subprocess.Popen(command, cwd=root, env=environment | task.get("env", {}),
+                with subprocess.Popen(executed, cwd=root, env=environment | task.get("env", {}),
                                       stdout=log, stderr=subprocess.STDOUT, start_new_session=True) as process:
                     try:
                         code = process.wait(timeout=timeout)
@@ -109,7 +130,7 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
                         os.killpg(process.pid, signal.SIGKILL)
                         process.wait()
                         raise TimeoutError(f"command exceeded {timeout} seconds")
-                results.append(dict(command=command, exit_code=code, seconds=time.monotonic() - before))
+                results.append(dict(command=command, executed_command=executed, exit_code=code, seconds=time.monotonic() - before))
                 if code != 0:
                     raise ValueError(f"command exited {code}")
         return dict(id=task["id"], status="passed", commands=results,
@@ -132,8 +153,8 @@ def verify_coverage(report: dict, tasks: list[dict], binding: dict, manifest_has
         if result.get("status") != "passed" or len(result.get("commands", [])) != len(task["commands"]):
             raise ValueError(f"failed or incomplete comparison: {task['id']}")
         for observed, template in zip(result["commands"], task["commands"]):
-            command = [str(Path(result["log"]).parent / "record.json") if arg == "{record}" else arg for arg in template]
-            if observed.get("command") != command or observed.get("exit_code") != 0:
+            command = record_command(template, Path(result["log"]).parent)
+            if observed.get("command") != command or observed.get("executed_command") != launch_command(command) or observed.get("exit_code") != 0:
                 raise ValueError(f"wrong or failed comparison command: {task['id']}")
 
 
@@ -173,12 +194,18 @@ def main() -> int:
         environment = execution_environment()
         binding = source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment)
         report.update(binding=binding, manifest_sha256=manifest_hash, expected_ids=[task["id"] for task in tasks])
-        report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900, environment)
+        build_path = args.output / "native-build.json"
+        report["native_build_commands"] = []
+        native_harness.prepare(build_path, report["native_build_commands"])
+        report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900,
+                                  environment | {native_harness.BUILD_ENV: str(build_path),
+                                  "QLEISLI_KERNEL": str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")})
+        native_harness.validate(build_path)
         if source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment) != binding or hashlib.sha256(MANIFEST.read_bytes()).hexdigest() != manifest_hash:
             raise ValueError("source or toolchain changed during comparisons")
         verify_coverage(report, tasks, binding, manifest_hash)
         report["status"] = "passed"
-    except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as failure:
+    except (OSError, ValueError, KeyError, TypeError, RuntimeError, subprocess.SubprocessError) as failure:
         report["error"] = str(failure)
         print(f"Native CI: {failure}", file=sys.stderr)
     report["elapsed_seconds"] = time.monotonic() - started

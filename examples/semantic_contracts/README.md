@@ -28,5 +28,5 @@ Changing the simultaneous flip body to
 fails and exact cleanup is unproved.
 
 This bounded implementation is progress toward the
-[v0.1 release milestone](../../docs/release-milestones.md), not a claim that
+v0.1 release milestone, not a claim that
 all release conditions or general compiler soundness have been completed.

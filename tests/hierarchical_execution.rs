@@ -55,6 +55,37 @@ fn frozen_finite_leaf_executes_through_its_actual_definition_index() {
     };
     let input = [[1.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 2.0]];
     let result = checked.execute(&input, 2, limits).unwrap();
+    let native = kernel()
+        .check_against_native(
+            &std::fs::read(root.join("h.qirh")).unwrap(),
+            &std::fs::read(root.join("h.request.json")).unwrap(),
+        )
+        .unwrap();
+    assert!(!native.is_instrument());
+    let direct = native.execute_pure(&input, 2, limits).unwrap();
+    assert_eq!(direct.amplitudes, result.amplitudes);
+    assert_eq!(direct.steps, result.steps);
+    assert_eq!(
+        native
+            .execute_instrument(&input, 2, limits)
+            .unwrap_err()
+            .code,
+        "unsupported"
+    );
+    assert_eq!(
+        native
+            .execute_pure(
+                &input,
+                2,
+                ExecutionLimits {
+                    max_steps: direct.steps - 1,
+                    ..limits
+                }
+            )
+            .unwrap_err()
+            .code,
+        "limit"
+    );
     let h = std::f64::consts::FRAC_1_SQRT_2;
     compare(
         &result.amplitudes,
@@ -156,6 +187,23 @@ fn small_source_clients_match_independent_complex_reference_branches() {
                 checked.reconstruction().native_exact_work()
             );
             let result = checked.execute(&input, reference, limits).unwrap();
+            let direct = native.execute_pure(&input, reference, limits).unwrap();
+            assert_eq!(direct.amplitudes, result.amplitudes);
+            assert_eq!(direct.steps, result.steps);
+            assert_eq!(
+                native
+                    .execute_pure(
+                        &input,
+                        reference,
+                        ExecutionLimits {
+                            max_steps: direct.steps - 1,
+                            ..limits
+                        }
+                    )
+                    .unwrap_err()
+                    .code,
+                "limit"
+            );
             assert_eq!(result.quantum_bits, output_bits);
             let error = compare(&result.amplitudes, &expected);
             assert_eq!(
@@ -226,6 +274,39 @@ fn small_source_clients_match_independent_complex_reference_branches() {
                 checked.reconstruction().native_exact_work()
             );
             let result = checked.execute(&input, reference, limits).unwrap();
+            assert!(native.is_instrument());
+            let direct = native
+                .execute_instrument(&input, reference, limits)
+                .unwrap();
+            assert_eq!(direct.branches, result.branches);
+            assert_eq!(direct.steps, result.steps);
+            assert_eq!(
+                native
+                    .execute_pure(&input, reference, limits)
+                    .unwrap_err()
+                    .code,
+                "unsupported"
+            );
+            let sampling = SamplingLimits {
+                max_shots: 4,
+                execution: limits,
+            };
+            let old_shots = checked
+                .sample_normalized_shots(&input, reference, 4, &mut SplitMix64::new(71), sampling)
+                .unwrap();
+            let direct_shots = native
+                .sample_normalized_shots(&input, reference, 4, &mut SplitMix64::new(71), sampling)
+                .unwrap();
+            assert_eq!(direct_shots.steps, old_shots.steps);
+            assert_eq!(
+                direct_shots.input_norm_squared,
+                old_shots.input_norm_squared
+            );
+            for (a, b) in direct_shots.shots.iter().zip(&old_shots.shots) {
+                assert_eq!(a.outcome, b.outcome);
+                assert_eq!(a.probability, b.probability);
+                assert_eq!(a.amplitudes, b.amplitudes);
+            }
             assert_eq!(result.residual_quantum_bits, output_bits);
             assert_eq!(result.measured_bits, measured_bits);
             assert_eq!(result.branches.len(), 1 << measured_bits);

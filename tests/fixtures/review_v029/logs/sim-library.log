@@ -1,0 +1,28 @@
+   Compiling qleisli v0.2.9 (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.70s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-dfcd7d9804c84c88)
+
+running 8 tests
+test sim::sampling::tests::norm_allowance_tracks_executed_work_and_remains_bounded ... ok
+test sim::sampling::tests::rejects_nonfinite_zero_and_excessive_norm_error ... ok
+test sim::tests::certified_cleanup_alarm_is_relative_and_preserves_numerical_mass ... ok
+test sim::tests::certified_cleanup_alarm_is_scale_invariant_at_underflow_boundaries ... ok
+test sim::tests::certified_compute_execution_alarms_if_internal_state_violates_exact_cleanup ... ok
+test sim::tests::physical_raw_auxiliary_execution_agrees_with_extracted_contracts ... ok
+test sim::tests::generated_circuits_match_exact_amplitudes_adjoint_and_control_laws ... ok
+test sim::tests::legacy_qif_matches_independent_exact_extraction_and_retains_limits ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 72 filtered out; finished in 53.88s
+
+     Running tests/sampling.rs (target/debug/deps/sampling-85dd39bd7a5ef4c9)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 8 filtered out; finished in 0.00s
+
+     Running tests/sim.rs (target/debug/deps/sim-b0ba904c997bde18)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 0.00s
+

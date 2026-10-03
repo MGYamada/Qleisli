@@ -1,0 +1,65 @@
+{
+  "format": "qleisli.release-followup",
+  "version": 1,
+  "failed_ci_run": 37141484534,
+  "failed_commit": "b0fedc6bf3eb3723eec26e4e9e99e12ec6e059a8",
+  "changes": [
+    "Bind the interop test environment to its explicit --kernel argument before constructing Python clients or comparing selection routes.",
+    "Use fresh native acceptance in the retained research adapter and its valid-unsupported-input regression; remove the last two qleisli::verify calls from Rust source."
+  ],
+  "validation": {
+    "research_tests": "43 passed, including the existing 5,425 independent phase/control comparisons",
+    "research_fmt": "passed",
+    "research_clippy": "passed with -D warnings",
+    "interop_without_inherited_kernel": "10 tests, 1 optional PyQIR skip",
+    "interop_without_inherited_kernel_with_pyqir": "10 tests passed, no skips",
+    "verification_inventory_and_production_coverage": "passed; no source binding changes required",
+    "documentation_and_whitespace": "passed"
+  },
+  "scope": "No production Rust or Lean definition changed. A new exact-commit full release run and publication remain pending.",
+  "records": {
+    "ci-kernel-failed.log.gz": {
+      "raw_sha256": "ddea0a8343beb6339b19153bf84b4514d87b398b4142b8709d59878c85621384",
+      "stored_sha256": "aacda42b9f23c8099ff0b93385560650d5593ea11e01ac8e36288dcd144a4dbb"
+    },
+    "ci-distribution-failed.log.gz": {
+      "raw_sha256": "07f72067ed2ec60b44924c32429fe90ff20a9cecc553bdaba4c9ff0970fc46c7",
+      "stored_sha256": "9906c21c2bb8761f87056565d2ef4a88222f032762a3a683b9fb8631b8a71f89"
+    },
+    "ci-msrv-failed.log.gz": {
+      "raw_sha256": "a1fc6fa61a04429f2d303d57fc46b5a022c4b153e1a8ee9debf8a02eb9fff576",
+      "stored_sha256": "ac6496f49e1fd57ef97f13e633635cf01dfc3c66219e4cdb938df14bfc654317"
+    },
+    "research-native.stdout.gz": {
+      "raw_sha256": "f5ab98f64e97aa08277c9669732da56d3467bfc8158b2b6037dc094b1e34ef1d",
+      "stored_sha256": "ffa3d9ad7990282d60ec40dc91710facbff339d91cb412a4c8bba7c085de27d9"
+    },
+    "research-native.stderr.gz": {
+      "raw_sha256": "a70c600b672219f6de65d6553ac5f728fe168d6e65be9c61ad3775e820626d0a",
+      "stored_sha256": "72987b38cbdfe8710cc40820e70d617500cb27039a20d914760346cb0c15ae5e"
+    },
+    "interop-explicit-selection.stderr.gz": {
+      "raw_sha256": "6b36f9339223c70c028e424536a0b5ca6c4278c815b6f4a3ab8fa628d3e63587",
+      "stored_sha256": "6a279f6e8e53d5d01a29c769bbdc846ae9ca582b9487838d380df062bdcd80df"
+    },
+    "interop-explicit-selection-pyqir.stderr.gz": {
+      "raw_sha256": "ff4463abf00ed4cd8ed55ced8faead4a3a7a2f05815162e1f7808c9ba41b431d",
+      "stored_sha256": "6145c07528773d979e5b09910cc2e2a22a4edca863ee163600a6facc90799908"
+    },
+    "research-native.command.json": {
+      "sha256": "c8a917cdab3e01e6a911778f195ae6559133b474acbf2a12f04ede8ce44e69bd"
+    },
+    "interop-explicit-selection.command.json": {
+      "sha256": "8ad0ffdfec526710fabaa90b335024fe5c71bf9c1bacff7e105a4882cab307e7"
+    },
+    "interop-explicit-selection-pyqir.command.json": {
+      "sha256": "4fa8f2bf49b265ee0e34213bb8f62aa00a917582c146807c61b98b265db3db0a"
+    },
+    "interop-explicit-selection-pyqir.json": {
+      "sha256": "240ceda791aa1f2023307e4c55abfec16603af8bb5f00fcbfe9a4cd4cbcf29de"
+    },
+    "native-results-before-fix.json": {
+      "sha256": "2b06e8041ecda521cecfe85759dcb2760d9c9fa9824632a6d8d2e5bf53751673"
+    }
+  }
+}

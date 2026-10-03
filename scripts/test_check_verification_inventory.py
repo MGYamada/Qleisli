@@ -150,7 +150,7 @@ class InventoryTests(unittest.TestCase):
             self.bad('external schema enabled')
         finally: path.write_text(original)
         self.data['native_packaging'][0]['selected_for_dual']=True
-        self.bad('does not select production dual')
+        self.bad('forbids dual packaging')
 
     def test_inventory_cannot_transfer_production_authority(self):
         self.data['authority']='Lean only'

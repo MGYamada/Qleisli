@@ -192,7 +192,7 @@ def main():
   hReport "h-budget-reset" qft8 {h} 2000001
   hReport "h-oversized-payload" (changed qft8 {leaf} (fun d => {{d with body := .leaf ⟨Array.replicate 16777217 0⟩}})) {h} 2000000
 '''
-    for name, payload, expected in [('wrong-x', text(wrong_x), 'contract'), ('negative-h', text(negative), 'contract'), ('empty-h', '', 'format')]:
+    for name, payload, expected in [('wrong-x', text(wrong_x), 'contract'), ('negative-h', text(negative), 'contract'), ('empty-h', '', 'limit')]:
         source += f'  emitH {json.dumps(name)} 8 (changed qft8 {leaf} (fun d => {{d with body := .leaf ({json.dumps(payload)}).toUTF8}})) {h} {json.dumps(expected)}\n'
     source += f'  emitH "stale-renamed-h" 8 (renamed qft8) {h} "contract"\n'
     if args.save_source:

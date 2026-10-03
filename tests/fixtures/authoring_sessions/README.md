@@ -54,7 +54,7 @@ For the next session:
 4. Link semantic oracles, not just compilation. State context differences when
    comparing attempts; no model success-rate claim follows from these records.
 5. Track newly exposed friction in a GitHub Issue or the
-   [backlog](https://github.com/MGYamada/Qleisli/blob/abe42496fbfccf3ba605ff12cd58c9e7c68dfb45/docs/v0.2.0-backlog.md). A GitHub Issue needs no duplicate
+   backlog. A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
 `python3 scripts/check_authoring_sessions.py` checks hashes, source inventories,

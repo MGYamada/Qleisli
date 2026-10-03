@@ -8,14 +8,17 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 import argparse
 import cmath
 import datetime
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
+import tomllib
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -296,6 +299,30 @@ def reference_column(case, column):
     n = case["qubits"]
     dim = 1 << n
     state = [complex(i == column) for i in range(dim)]
+    if name == "minus_state1":
+        return [(-1) ** (row * (column ^ 1)) / math.sqrt(2) for row in range(2)]
+    if name == "phase_negative_eighth1":
+        return [cmath.exp(-1j * math.pi * column / 4) * int(row == column)
+                for row in range(2)]
+    if name == "uniform3":
+        return [(-1) ** ((row & column).bit_count()) / math.sqrt(8) for row in range(8)]
+    if name == "add_minus_one3":
+        return [complex(row == (column - 1) % 8) for row in range(8)]
+    if name == "less_than_one2":
+        expected = column ^ (4 if (column & 3) < 1 else 0)
+        return [complex(row == expected) for row in range(8)]
+    if name == "reflection_basis_one2":
+        return [(-1 if column == 1 else 1) * int(row == column) for row in range(4)]
+    if name == "rotation_both_negative":
+        matrix = [[1+1j, 1+1j], [-1+1j, 1-1j]]
+        return [matrix[row][column] / 2 for row in range(2)]
+    if name == "qaoa_path_cost3":
+        z = [1 - 2 * ((column >> j) & 1) for j in range(3)]
+        phase = cmath.exp(-1j * math.pi * (z[0] * z[1] + z[1] * z[2]) / 4)
+        return [phase * int(row == column) for row in range(8)]
+    if name == "qaoa_negative_edge_layer2":
+        phase = cmath.exp(1j * math.pi * (-1) ** column.bit_count() / 4)
+        return [phase * (-1j) ** ((row ^ column).bit_count()) / 2 for row in range(4)]
     if name == "two_bitstrings3":
         return [(-1) ** ((column & 1) * (row & 1)) / math.sqrt(2)
                 if ((row >> 1) & 1) == (((column >> 1) & 1) ^ (row & 1) ^ 1)
@@ -685,60 +712,121 @@ def check_semantic_fault(fault, case, binary):
     raise ValueError(f"semantic fault escaped the oracle: {fault['id']}")
 
 
-def main():
+def save_report(path, report):
+    """Atomically preserve failed and incomplete runs as well as successful ones."""
+    if path is None:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as stream:
+        temporary = Path(stream.name)
+        try:
+            json.dump(report, stream, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        except BaseException:
+            temporary.unlink()
+            raise
+    try:
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def record_failure(report, stage, identifier, error):
+    failure = dict(stage=stage, id=identifier, type=type(error).__name__, message=str(error))
+    for name in ("stdout", "stderr"):
+        value = getattr(error, name, None)
+        if value is not None:
+            failure[name] = value.decode(errors="replace") if isinstance(value, bytes) else value
+    report["failures"].append(failure)
+
+
+def check_negative(case, binary):
+    process = subprocess.run([str(binary), "check", str(local(CORPUS, case["project"])), "--format=json"], capture_output=True, text=True, timeout=30)
+    require(process.returncode == 1 and not process.stderr, f"negative case accepted: {case['id']}: {process.stdout} {process.stderr}")
+    output = json.loads(process.stdout)
+    require(output["outcome"] == "error" and output["result"] is None, "negative JSON result")
+    require(output["diagnostics"][0]["code"] == case["expected_code"], f"wrong negative diagnostic: {case['id']}")
+    return {"id": case["id"], "code": case["expected_code"], "exit_code": process.returncode}
+
+
+def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
+    """Retain completed cases even when a peer fails, times out or crashes."""
+    def completed(stage, identifier, action):
+        try:
+            report[stage].append(action())
+        except Exception as error:
+            record_failure(report, stage, identifier, error)
+        report[stage].sort(key=lambda row: row["id"])
+        save_report(path, report)
+
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures = {pool.submit(check_case, case, binary, exhaustive): case["id"] for case in cases}
+        for future in as_completed(futures):
+            completed("cases", futures[future], future.result)
+    by_id = {case["id"]: case for case in cases}
+    for fault in faults:
+        completed("semantic_faults", fault["id"], lambda: check_semantic_fault(fault, by_id[fault["reference"]], binary))
+    for case in negatives:
+        completed("negative_cases", case["id"], lambda: check_negative(case, binary))
+
+
+def input_binding(cases, faults, negatives, binary):
+    sources = {str(p.relative_to(CORPUS)): sha256(p)
+               for case in cases + faults + negatives
+               for p in sorted(local(CORPUS, case["project"]).glob("*.qli"))}
+    return dict(compiler_sha256=sha256(binary), oracle_script_sha256=sha256(Path(__file__)),
+                manifest_sha256=sha256(CORPUS / "manifest.json"), source_sha256=sources,
+                semantic_fault_manifest_sha256=sha256(CORPUS / "semantic_faults/manifest.json"),
+                negative_manifest_sha256=sha256(CORPUS / "negative/manifest.json"),
+                semantic_fault_source_sha256={str(p.relative_to(CORPUS)): sha256(p)
+                    for fault in faults for p in sorted(local(CORPUS, fault["project"]).glob("*.qli"))})
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("binary", nargs="?", type=Path)
     parser.add_argument("--case", help="single source/case ID")
     parser.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
     parser.add_argument("--report", type=Path)
-    args = parser.parse_args()
-    manifest = check_manifest()
-    if not args.binary:
-        print(f"Corpus policy, provenance, notices and authoring snapshots: passed ({len(manifest['cases'])} cases / 3 sources)")
-        return
-    binary = args.binary.resolve()
-    cases = [c for c in manifest["cases"] if not args.case or c["id"] == args.case]
-    require(bool(cases), "unknown corpus case")
-    with ThreadPoolExecutor(max_workers=4) as pool:
-        results = list(pool.map(lambda case: check_case(case, binary, args.exhaustive), cases))
-    by_id = {c["id"]: c for c in cases}
-    faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"]
-              if f["reference"] in by_id]
-    fault_results = [check_semantic_fault(f, by_id[f["reference"]], binary) for f in faults]
-    negative_results = []
-    for case in json.loads((CORPUS / "negative/manifest.json").read_text())["cases"]:
-        process = subprocess.run([str(binary), "check", str(local(CORPUS, case["project"])), "--format=json"], capture_output=True, text=True, timeout=30)
-        require(process.returncode == 1 and not process.stderr, f"negative case accepted: {case['id']}")
-        output = json.loads(process.stdout)
-        require(output["outcome"] == "error" and output["result"] is None, "negative JSON result")
-        require(output["diagnostics"][0]["code"] == case["expected_code"], f"wrong negative diagnostic: {case['id']}")
-        negative_results.append({"id": case["id"], "code": case["expected_code"], "exit_code": process.returncode})
-    report = {
-        "format": 1,
-        "created_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "project_version": re.search(
-            r'^version\s*=\s*"([^"]+)"',
-            (ROOT / "Cargo.toml").read_text().split("[package]", 1)[1].split("\n[", 1)[0],
-            re.MULTILINE,
-        ).group(1),
-        "compiler_sha256": sha256(binary),
-        "oracle_script_sha256": sha256(Path(__file__)),
-        "manifest_sha256": sha256(CORPUS / "manifest.json"),
-        "source_sha256": {str(p.relative_to(CORPUS)): sha256(p) for c in cases for p in sorted((CORPUS / c["project"]).glob("*.qli"))},
-        "exhaustive_unitary_entries": args.exhaustive,
-        "upstream_frameworks_executed": False,
-        "tolerance": TOLERANCE,
-        "cases": results,
-        "negative_cases": negative_results,
-        "semantic_faults": fault_results,
-        "semantic_fault_manifest_sha256": sha256(CORPUS / "semantic_faults/manifest.json"),
-        "semantic_fault_source_sha256": {str(p.relative_to(CORPUS)): sha256(p)
-                                         for f in faults for p in sorted(local(CORPUS, f["project"]).glob("*.qli"))},
-    }
-    if args.report:
-        args.report.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Passed {len(results)} cases, {sum(r['semantic_probes'] for r in results)} semantic probes, all shipped mains and {len(negative_results)} rejection cases; detected {len(fault_results)} type-correct semantic faults; upstream frameworks not executed.")
+    args = parser.parse_args(argv)
+    report = dict(format=1, status="incomplete", failures=[], cases=[], semantic_faults=[], negative_cases=[],
+                  created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                  exhaustive_unitary_entries=args.exhaustive, upstream_frameworks_executed=False, tolerance=TOLERANCE)
+    save_report(args.report, report)
+    try:
+        report["manifest_sha256"] = sha256(CORPUS / "manifest.json")
+        manifest = check_manifest()
+        if not args.binary:
+            report.update(status="passed", scope="provenance only", case_count=len(manifest["cases"]))
+            print(f"Corpus policy, provenance, notices and authoring snapshots: passed ({len(manifest['cases'])} cases / 3 sources)")
+            return 0
+        binary = args.binary.resolve()
+        cases = [c for c in manifest["cases"] if not args.case or c["id"] == args.case]
+        require(bool(cases), "unknown corpus case")
+        ids = {case["id"] for case in cases}
+        faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"] if f["reference"] in ids]
+        negatives = json.loads((CORPUS / "negative/manifest.json").read_text())["cases"]
+        binding = input_binding(cases, faults, negatives, binary)
+        report.update(binding, expected_ids={name: [case["id"] for case in items] for name, items in
+                      [("cases", cases), ("semantic_faults", faults), ("negative_cases", negatives)]})
+        report["project_version"] = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
+        save_report(args.report, report)
+        run_checks(cases, faults, negatives, binary, args.exhaustive, report, args.report)
+        require(binding == input_binding(cases, faults, negatives, binary), "validation inputs changed during the run")
+        report["status"] = "failed" if report["failures"] else "passed"
+    except (Exception, KeyboardInterrupt) as error:
+        record_failure(report, "run", args.case, error)
+        report["status"] = "failed"
+    finally:
+        save_report(args.report, report)
+    if report["status"] != "passed":
+        print(json.dumps(report["failures"], indent=2), file=sys.stderr)
+        return 1
+    print(f"Passed {len(report['cases'])} cases, {sum(r['semantic_probes'] for r in report['cases'])} semantic probes and {len(report['negative_cases'])} rejection cases; detected {len(report['semantic_faults'])} type-correct semantic faults; upstream frameworks not executed.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

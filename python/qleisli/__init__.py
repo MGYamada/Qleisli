@@ -10,7 +10,7 @@ from pathlib import Path
 import subprocess
 import sys
 
-__version__ = "0.2.8"
+__version__ = "0.2.9"
 __all__ = ["Client", "Program", "QleisliError"]
 
 
@@ -39,11 +39,14 @@ def _bytes(value, limit):
 
 
 class Client:
-    def __init__(self, executable=None, *, timeout=60):
+    def __init__(self, executable=None, *, timeout=60, lean_kernel=None):
         self.executable = os.fspath(executable or os.environ.get("QLEISLI_BIN", "qleisli"))
         if not isinstance(timeout, (int, float)) or not math.isfinite(timeout) or timeout <= 0:
             raise ValueError("timeout must be finite and positive")
         self.timeout = timeout
+        self.lean_kernel = None if lean_kernel is None else os.fsdecode(os.fspath(lean_kernel))
+        if self.lean_kernel is not None and (not self.lean_kernel or "\0" in self.lean_kernel):
+            raise ValueError("lean_kernel must be a nonempty executable path")
 
     def _process(self, args, data=None):
         try:
@@ -56,6 +59,8 @@ class Client:
 
     def _call(self, action, format, *, data=None, path="-", shots=None, seed=None):
         args = [self.executable, "interop", action, os.fspath(path), f"--input={format}"]
+        if self.lean_kernel is not None:
+            args.append(f"--lean-kernel={self.lean_kernel}")
         if action == "sample":
             if type(shots) is not int or not 1 <= shots <= 1_000_000:
                 raise ValueError("shots must be an integer in 1..1000000")

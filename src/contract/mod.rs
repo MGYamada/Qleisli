@@ -1,7 +1,7 @@
 //! Bounded, exact semantic evidence for finite pure circuit implementations.
 //!
-//! Checked values have private fields. Their constructors validate the
-//! operator equation or derive it using a qualified composition rule. They
+//! Checked values have private fields and a fresh Lean decision. Encodings,
+//! matrices and circuits are proposals; native checking decides their equations. They
 //! describe encoded inputs; possession of a theorem is not ownership of, or
 //! preparation evidence for, a quantum state. Raw IR always rechecks evidence.
 
@@ -99,30 +99,27 @@ impl fmt::Display for ContractDiagnostic {
     }
 }
 
-fn check_equation(actual: &Matrix, expected: &Matrix) -> Result<(), ContractDiagnostic> {
+// Diagnostic only, called after a native rejection. Equality here can neither
+// issue evidence nor change a rejection to acceptance.
+pub(crate) fn equation_counterexample(actual: &Matrix, expected: &Matrix) -> Option<String> {
     if actual.rows() != expected.rows() || actual.cols() != expected.cols() {
-        return Err(ContractError::EquationMismatch.into());
+        return None;
     }
-    // Retain a counterexample from the matrices already computed under the
-    // caller's budget. The first column is a logical input basis state.
     for column in 0..actual.cols() {
         for row in 0..actual.rows() {
             let index = row * actual.cols() + column;
-            let actual = actual.entries()[index];
-            let expected = expected.entries()[index];
-            if actual != expected {
-                return Err(ContractDiagnostic {
-                    error: ContractError::EquationMismatch,
-                    detail: Some(format!(
-                        "input column {column}, output row {row} (zero-based): actual {}, expected {}",
-                        actual.diagnostic(),
-                        expected.diagnostic()
-                    )),
-                });
+            let a = actual.entries()[index];
+            let b = expected.entries()[index];
+            if a != b {
+                return Some(format!(
+                    "input column {column}, output row {row} (zero-based): actual {}, expected {}",
+                    a.diagnostic(),
+                    b.diagnostic()
+                ));
             }
         }
     }
-    Ok(())
+    None
 }
 
 /// The exact basis tree of one owned quantum register, including Unit nodes.
@@ -223,7 +220,8 @@ impl BasisType {
     }
 }
 
-/// A checked flat circuit. Its basis fixes tensor order and type identity.
+/// A bounded flat circuit proposal. Its basis fixes tensor order and type identity.
+/// Construction is not semantic acceptance; native checking is required.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Circuit {
     basis: BasisType,
@@ -244,11 +242,15 @@ impl Circuit {
         // Bound untrusted vectors before traversing their contents.
         for step in steps {
             if step.controls.len() > bits {
-                return Err(ContractError::Limit("too many circuit controls"));
+                return Err(ContractError::InvalidCircuit(
+                    "too many circuit controls".into(),
+                ));
             }
             if let CircuitAction::Contract { indices, .. } = &step.action {
                 if indices.len() > bits {
-                    return Err(ContractError::Limit("too many contract axes"));
+                    return Err(ContractError::InvalidCircuit(
+                        "too many contract axes".into(),
+                    ));
                 }
             }
             if let CircuitAction::Monomial {
@@ -261,14 +263,53 @@ impl Circuit {
                     || permutation.len() > (1 << bits)
                     || phases.len() > (1 << bits)
                 {
-                    return Err(ContractError::Limit(
-                        "contract circuit table exceeds its register",
+                    return Err(ContractError::InvalidCircuit(
+                        "contract circuit table exceeds its register".into(),
                     ));
                 }
             }
         }
-        crate::verify::check_circuit(steps, bits, &[])
-            .map_err(|e| ContractError::InvalidCircuit(e.message))?;
+        for step in steps {
+            if step.controls.iter().any(|c| c.index >= bits) {
+                return Err(ContractError::InvalidCircuit(
+                    "control index exceeds circuit coordinates".into(),
+                ));
+            }
+            match &step.action {
+                CircuitAction::Hadamard { target } if *target >= bits => {
+                    return Err(ContractError::InvalidCircuit(
+                        "target index exceeds circuit coordinates".into(),
+                    ));
+                }
+                CircuitAction::Monomial {
+                    indices,
+                    permutation,
+                    phases,
+                } => {
+                    let dim = 1usize << indices.len();
+                    if indices.iter().any(|&i| i >= bits)
+                        || permutation.len() != dim
+                        || phases.len() != dim
+                        || permutation.iter().any(|&n| usize::from(n) >= dim)
+                        || phases.iter().any(|&n| n >= 8)
+                    {
+                        return Err(ContractError::InvalidCircuit(
+                            "monomial proposal exceeds its coordinate representation".into(),
+                        ));
+                    }
+                }
+                CircuitAction::Contract {
+                    indices, evidence, ..
+                } if indices.iter().any(|&i| i >= bits)
+                    || indices.len() != evidence.signature().bits()? =>
+                {
+                    return Err(ContractError::InvalidCircuit(
+                        "function proposal coordinate mismatch".into(),
+                    ));
+                }
+                _ => {}
+            }
+        }
         Ok(())
     }
 
@@ -387,15 +428,12 @@ impl Encoding {
         logical: BasisType,
         physical: BasisType,
         map: Matrix,
-        budget: &mut Budget,
+        _budget: &mut Budget,
     ) -> Result<Self, ContractError> {
         if map.cols() != 1usize << logical.bits()? || map.rows() != 1usize << physical.bits()? {
             return Err(ContractError::Type(
                 "encoding dimensions do not match its exact types",
             ));
-        }
-        if !map.is_isometry(budget)? {
-            return Err(ContractError::NotIsometric);
         }
         Ok(Self {
             logical,
@@ -437,15 +475,12 @@ impl Contract {
         input: Encoding,
         output: Encoding,
         logical: Matrix,
-        budget: &mut Budget,
+        _budget: &mut Budget,
     ) -> Result<Self, ContractError> {
         if logical.cols() != input.map.cols() || logical.rows() != output.map.cols() {
             return Err(ContractError::Type(
                 "logical operator does not match the encoding domains",
             ));
-        }
-        if !logical.is_isometry(budget)? {
-            return Err(ContractError::NotIsometric);
         }
         Ok(Self {
             input,
@@ -469,9 +504,75 @@ impl Contract {
 pub struct CheckedContract {
     circuit: Circuit,
     contract: Contract,
+    native: std::sync::Arc<crate::interchange::native::NativeChecked>,
+}
+
+struct ContractProposal {
+    circuit: Circuit,
+    contract: Contract,
 }
 
 impl CheckedContract {
+    fn accept_proposal(
+        proposal: ContractProposal,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractError> {
+        Self::accept_proposal_diagnostic(proposal, budget).map_err(|error| error.error)
+    }
+
+    fn accept_proposal_diagnostic(
+        proposal: ContractProposal,
+        budget: &mut Budget,
+    ) -> Result<Self, ContractDiagnostic> {
+        budget.charge(1)?;
+        let native_error = |error: crate::interchange::Error| {
+            if error.code == "limit" {
+                ContractError::Limit("native contract work/profile limit")
+            } else if error.code == "contract" {
+                ContractError::EquationMismatch
+            } else {
+                ContractError::InvalidCircuit(error.to_string())
+            }
+        };
+        let result = crate::interchange::native::Kernel::selected()
+            .and_then(|kernel| kernel.check_encoded(&proposal.circuit, &proposal.contract));
+        let native = match result {
+            Ok(native) => native,
+            Err(error) => {
+                let error = native_error(error);
+                let detail = if error == ContractError::EquationMismatch {
+                    (|| {
+                        let actual = proposal
+                            .circuit
+                            .matrix(budget)?
+                            .compose(&proposal.contract.input.map, budget)?;
+                        let expected = proposal
+                            .contract
+                            .output
+                            .map
+                            .compose(&proposal.contract.logical, budget)?;
+                        Ok::<_, ContractError>(equation_counterexample(&actual, &expected))
+                    })()
+                    .ok()
+                    .flatten()
+                } else {
+                    None
+                };
+                return Err(ContractDiagnostic { error, detail });
+            }
+        };
+        budget.charge(native.exact_work())?;
+        Ok(Self {
+            circuit: proposal.circuit,
+            contract: proposal.contract,
+            native: std::sync::Arc::new(native),
+        })
+    }
+
+    pub fn checker(&self) -> &std::path::Path {
+        self.native.checker()
+    }
+
     pub fn circuit(&self) -> &Circuit {
         &self.circuit
     }
@@ -498,24 +599,24 @@ impl CheckedContract {
                 ContractError::Type("circuit type does not match the physical encodings").into(),
             );
         }
-        let lhs = circuit
-            .matrix(budget)?
-            .compose(&contract.input.map, budget)?;
-        let rhs = contract.output.map.compose(&contract.logical, budget)?;
-        check_equation(&lhs, &rhs)?;
-        Ok(Self { circuit, contract })
+        Self::accept_proposal_diagnostic(ContractProposal { circuit, contract }, budget)
     }
 
-    /// Identity primitive; no simulation is needed for this known equality.
+    /// Submit an identity proposal with the caller's encoding to Lean.
     pub fn identity(encoding: Encoding) -> Result<Self, ContractError> {
-        Ok(Self {
-            circuit: Circuit::new(encoding.physical.clone(), vec![])?,
-            contract: Contract {
-                logical: Matrix::identity(encoding.map.cols())?,
-                input: encoding.clone(),
-                output: encoding,
+        let mut work = Budget::new(DEFAULT_EXACT_WORK);
+        let budget = &mut work;
+        Self::accept_proposal(
+            ContractProposal {
+                circuit: Circuit::new(encoding.physical.clone(), vec![])?,
+                contract: Contract {
+                    logical: Matrix::identity(encoding.map.cols())?,
+                    input: encoding.clone(),
+                    output: encoding,
+                },
             },
-        })
+            budget,
+        )
     }
 
     pub fn check_binding(
@@ -538,7 +639,7 @@ impl CheckedContract {
         Ok(&self.contract.output)
     }
 
-    /// Derive next ∘ self without re-evaluating either physical circuit.
+    /// Propose next ∘ self and obtain a fresh native acceptance of the composition.
     pub fn then(&self, next: &Self, budget: &mut Budget) -> Result<Self, ContractError> {
         // Checked constructors bind both physical interfaces to the circuit's
         // exact basis tree. Matching middle encodings therefore also fixes the
@@ -559,17 +660,20 @@ impl CheckedContract {
             .chain(&next.circuit.steps)
             .cloned()
             .collect();
-        Ok(Self {
-            circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
-            contract: Contract {
-                input: self.contract.input.clone(),
-                output: next.contract.output.clone(),
-                logical: next
-                    .contract
-                    .logical
-                    .compose(&self.contract.logical, budget)?,
+        Self::accept_proposal(
+            ContractProposal {
+                circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
+                contract: Contract {
+                    input: self.contract.input.clone(),
+                    output: next.contract.output.clone(),
+                    logical: next
+                        .contract
+                        .logical
+                        .compose(&self.contract.logical, budget)?,
+                },
             },
-        })
+            budget,
+        )
     }
 
     /// First operand occupies the low tensor axes. This does not assert separability.
@@ -588,17 +692,20 @@ impl CheckedContract {
                     map: a.map.tensor(&b.map, budget)?,
                 })
             };
-        Ok(Self {
-            circuit: Circuit::new(physical.clone(), steps)?,
-            contract: Contract {
-                input: encoding(&self.contract.input, &other.contract.input, budget)?,
-                output: encoding(&self.contract.output, &other.contract.output, budget)?,
-                logical: self
-                    .contract
-                    .logical
-                    .tensor(&other.contract.logical, budget)?,
+        Self::accept_proposal(
+            ContractProposal {
+                circuit: Circuit::new(physical.clone(), steps)?,
+                contract: Contract {
+                    input: encoding(&self.contract.input, &other.contract.input, budget)?,
+                    output: encoding(&self.contract.output, &other.contract.output, budget)?,
+                    logical: self
+                        .contract
+                        .logical
+                        .tensor(&other.contract.logical, budget)?,
+                },
             },
-        })
+            budget,
+        )
     }
 
     /// The physical circuit is unitary by construction. The logical map must
@@ -611,14 +718,17 @@ impl CheckedContract {
         }
         let mut steps = self.circuit.steps.clone();
         invert_steps(&mut steps);
-        Ok(Self {
-            circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
-            contract: Contract {
-                input: self.contract.output.clone(),
-                output: self.contract.input.clone(),
-                logical: self.contract.logical.adjoint(budget)?,
+        Self::accept_proposal(
+            ContractProposal {
+                circuit: Circuit::new(self.circuit.basis.clone(), steps)?,
+                contract: Contract {
+                    input: self.contract.output.clone(),
+                    output: self.contract.input.clone(),
+                    logical: self.contract.logical.adjoint(budget)?,
+                },
             },
-        })
+            budget,
+        )
     }
 
     /// Construct control of a known circuit, with identical input/output E.
@@ -657,14 +767,17 @@ impl CheckedContract {
                     self.contract.logical.entries()[row * old_dim + col];
             }
         }
-        Ok(Self {
-            circuit: Circuit::new(physical, steps)?,
-            contract: Contract {
-                input: encoding.clone(),
-                output: encoding,
-                logical: Matrix::new(dimension, dimension, entries)?,
+        Self::accept_proposal(
+            ContractProposal {
+                circuit: Circuit::new(physical, steps)?,
+                contract: Contract {
+                    input: encoding.clone(),
+                    output: encoding,
+                    logical: Matrix::new(dimension, dimension, entries)?,
+                },
             },
-        })
+            budget,
+        )
     }
 }
 

@@ -1,0 +1,1633 @@
+{
+  "format": 1,
+  "status": "passed",
+  "workers": 4,
+  "run_id": null,
+  "attempt": null,
+  "binding": {
+    "head": "7935610cfcfb46a74c19db5c114482fdc09da6f4",
+    "lean_pin": "leanprover/lean4:v4.30.0",
+    "lean_version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+    "rust_version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "environment": {
+      "HOME": "/Users/masa",
+      "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+      "TMPDIR": "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/",
+      "RUSTUP_TOOLCHAIN": "1.98.1",
+      "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+      "PYTHONNOUSERSITE": "1",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "LC_ALL": "C",
+      "LANG": "C"
+    }
+  },
+  "manifest_sha256": "ad939c0907bc4bd9031797183b22649c2be7ce4ca1f24f228ccc864dab8dcc28",
+  "expected_ids": [
+    "lean-hierarchy",
+    "lean-layout",
+    "lean-layout-dag",
+    "lean-phase-layout",
+    "lean-phase-operations",
+    "hierarchical-gradient",
+    "hierarchical-fourier-stage",
+    "lean-interference",
+    "lean-exact",
+    "lean-finite",
+    "lean-raw",
+    "lean-raw-completion",
+    "lean-observation",
+    "lean-branch-function",
+    "lean-streamed-instrument",
+    "lean-qft",
+    "lean-qft-semantic",
+    "lean-qft-graph",
+    "lean-qpe",
+    "lean-controlled-power",
+    "hierarchical-graph",
+    "hierarchical-artifact",
+    "hierarchical-typing",
+    "hierarchical-contract-typing",
+    "hierarchical-structural",
+    "lean-reshape",
+    "hierarchical-readout",
+    "hierarchical-preparation",
+    "hierarchical-instrument",
+    "instrument-host",
+    "hierarchical-execution",
+    "compact-sized-graph",
+    "sized-instrument",
+    "sized-qpe-readout",
+    "hierarchical-power",
+    "hierarchical-routed-power",
+    "hierarchical-circuit-trace",
+    "hierarchical-qpe-schedule",
+    "hierarchical-qpe-root",
+    "hierarchical-qpe-instrument",
+    "sized-source-native",
+    "sized-review-dialects-native",
+    "sized-cli-native",
+    "named-qpe-native",
+    "hierarchical-derivation",
+    "hierarchical-calls",
+    "hierarchical-finite",
+    "hierarchical-conditional",
+    "hierarchical-request",
+    "hierarchical-host",
+    "verification-baseline",
+    "hierarchical-fourier-base",
+    "hierarchical-fourier-body",
+    "hierarchical-wiring",
+    "hierarchical-fourier-root",
+    "hierarchical-fourier-host",
+    "sized-corpus",
+    "sized-qft",
+    "rust-fourier-factoring",
+    "sized-qpe",
+    "sized-arithmetic",
+    "sized-qpe-clients",
+    "hierarchical-qft",
+    "hierarchical-qft-shared-gradient",
+    "dual-verification",
+    "lean-kernel-self-test"
+  ],
+  "native_build_commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay/lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (210 jobs).\n",
+      "stderr": "",
+      "seconds": 0.15063837502384558
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "cwd": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay/lean-kernel",
+      "exit": 0,
+      "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+      "stderr": "",
+      "seconds": 0.07937229197705165
+    }
+  ],
+  "tasks": [
+    {
+      "id": "compact-sized-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_compact_sized_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_compact_sized_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 0.1805637499783188
+        }
+      ],
+      "seconds": 0.1810021250275895,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/compact-sized-graph/command.log"
+    },
+    {
+      "id": "dual-verification",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "build",
+            "--locked",
+            "--offline",
+            "--bin",
+            "qleisli"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--offline",
+            "--bin",
+            "qleisli"
+          ],
+          "exit_code": 0,
+          "seconds": 0.24109125003451481
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_dual_verification.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/dual-verification/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_dual_verification.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/dual-verification/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 7.527670792012941
+        },
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "dual",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "dual",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 0.6656984170549549
+        }
+      ],
+      "seconds": 8.435123791976366,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/dual-verification/command.log"
+    },
+    {
+      "id": "hierarchical-artifact",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_artifact.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_artifact.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.7648991250316612
+        }
+      ],
+      "seconds": 2.7659930830122903,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-artifact/command.log"
+    },
+    {
+      "id": "hierarchical-calls",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_calls.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_calls.py"
+          ],
+          "exit_code": 0,
+          "seconds": 4.864406167005654
+        }
+      ],
+      "seconds": 4.86482708400581,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-calls/command.log"
+    },
+    {
+      "id": "hierarchical-circuit-trace",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_circuit_trace.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_circuit_trace.py"
+          ],
+          "exit_code": 0,
+          "seconds": 7.97629354102537
+        }
+      ],
+      "seconds": 7.976697624952067,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-circuit-trace/command.log"
+    },
+    {
+      "id": "hierarchical-conditional",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_conditional.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_conditional.py"
+          ],
+          "exit_code": 0,
+          "seconds": 9.668985625030473
+        }
+      ],
+      "seconds": 9.669428625027649,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-conditional/command.log"
+    },
+    {
+      "id": "hierarchical-contract-typing",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_contract_typing.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_contract_typing.py"
+          ],
+          "exit_code": 0,
+          "seconds": 3.3987488340353593
+        }
+      ],
+      "seconds": 3.3990950000006706,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-contract-typing/command.log"
+    },
+    {
+      "id": "hierarchical-derivation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_derivation.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_derivation.py"
+          ],
+          "exit_code": 0,
+          "seconds": 15.757725333969574
+        }
+      ],
+      "seconds": 15.758287458971608,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-derivation/command.log"
+    },
+    {
+      "id": "hierarchical-execution",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_execution.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_execution.py"
+          ],
+          "exit_code": 0,
+          "seconds": 11.879768583050463
+        }
+      ],
+      "seconds": 11.880118999979459,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-execution/command.log"
+    },
+    {
+      "id": "hierarchical-finite",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_finite.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_finite.py"
+          ],
+          "exit_code": 0,
+          "seconds": 3.6748491670005023
+        }
+      ],
+      "seconds": 3.675248791987542,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-finite/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-base",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_base.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_base.py"
+          ],
+          "exit_code": 0,
+          "seconds": 18.900187625025865
+        }
+      ],
+      "seconds": 18.900869417004287,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-fourier-base/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-body",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_body.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_body.py"
+          ],
+          "exit_code": 0,
+          "seconds": 21.42447429097956
+        }
+      ],
+      "seconds": 21.424855707969982,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-fourier-body/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 27.468704833008815
+        }
+      ],
+      "seconds": 27.469052708009258,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-fourier-host/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-root",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_root.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_root.py"
+          ],
+          "exit_code": 0,
+          "seconds": 28.01091783400625
+        }
+      ],
+      "seconds": 28.01133554097032,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-fourier-root/command.log"
+    },
+    {
+      "id": "hierarchical-fourier-stage",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_stage.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_fourier_stage.py"
+          ],
+          "exit_code": 0,
+          "seconds": 10.84525091695832
+        }
+      ],
+      "seconds": 10.84552320902003,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-fourier-stage/command.log"
+    },
+    {
+      "id": "hierarchical-gradient",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_gradient.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_gradient.py"
+          ],
+          "exit_code": 0,
+          "seconds": 9.414362833020277
+        }
+      ],
+      "seconds": 9.414663458010182,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-gradient/command.log"
+    },
+    {
+      "id": "hierarchical-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 5.734819332952611
+        }
+      ],
+      "seconds": 5.735361083003227,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-graph/command.log"
+    },
+    {
+      "id": "hierarchical-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 38.77450233302079
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_finite_binding.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_finite_binding.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.118141249986365
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_verification_decoders.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-host/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_verification_decoders.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-host/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 10.352379292016849
+        }
+      ],
+      "seconds": 55.24607695901068,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-host/command.log"
+    },
+    {
+      "id": "hierarchical-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 1.9700293330242857
+        }
+      ],
+      "seconds": 1.9703159999917261,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-instrument/command.log"
+    },
+    {
+      "id": "hierarchical-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 5.093305749993306
+        }
+      ],
+      "seconds": 5.093837417021859,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-power/command.log"
+    },
+    {
+      "id": "hierarchical-preparation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_preparation.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_preparation.py"
+          ],
+          "exit_code": 0,
+          "seconds": 5.023847624950577
+        }
+      ],
+      "seconds": 5.02415758301504,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-preparation/command.log"
+    },
+    {
+      "id": "hierarchical-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.310088417027146
+        }
+      ],
+      "seconds": 6.310432999976911,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qft/command.log"
+    },
+    {
+      "id": "hierarchical-qft-shared-gradient",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py",
+            "--construction",
+            "shared-gradient"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qft.py",
+            "--construction",
+            "shared-gradient"
+          ],
+          "exit_code": 0,
+          "seconds": 11.721685500000603
+        }
+      ],
+      "seconds": 11.722001040994655,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qft-shared-gradient/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 16.134168416028842
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_qpe_instrument_host.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qpe-instrument/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_qpe_instrument_host.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qpe-instrument/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 12.317938249965664
+        }
+      ],
+      "seconds": 28.45274762500776,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qpe-instrument/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-root",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_root.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_root.py"
+          ],
+          "exit_code": 0,
+          "seconds": 16.041245500033256
+        }
+      ],
+      "seconds": 16.041761500004213,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qpe-root/command.log"
+    },
+    {
+      "id": "hierarchical-qpe-schedule",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_schedule.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_qpe_schedule.py"
+          ],
+          "exit_code": 0,
+          "seconds": 7.1713693329948
+        }
+      ],
+      "seconds": 7.171787291008513,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-qpe-schedule/command.log"
+    },
+    {
+      "id": "hierarchical-readout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_readout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_readout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 7.118266957986634
+        }
+      ],
+      "seconds": 7.118650833959691,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-readout/command.log"
+    },
+    {
+      "id": "hierarchical-request",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_request.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_request.py"
+          ],
+          "exit_code": 0,
+          "seconds": 76.34736816701479
+        }
+      ],
+      "seconds": 76.3477805419825,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-request/command.log"
+    },
+    {
+      "id": "hierarchical-routed-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_routed_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_routed_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.563054290949367
+        }
+      ],
+      "seconds": 6.563476041017566,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-routed-power/command.log"
+    },
+    {
+      "id": "hierarchical-structural",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_structural.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_structural.py"
+          ],
+          "exit_code": 0,
+          "seconds": 3.363974958017934
+        }
+      ],
+      "seconds": 3.3652832910302095,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-structural/command.log"
+    },
+    {
+      "id": "hierarchical-typing",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_typing.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_typing.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.495237333001569
+        }
+      ],
+      "seconds": 2.4956104169832543,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-typing/command.log"
+    },
+    {
+      "id": "hierarchical-wiring",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_hierarchical_wiring.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_hierarchical_wiring.py"
+          ],
+          "exit_code": 0,
+          "seconds": 19.67051199998241
+        }
+      ],
+      "seconds": 19.670894292008597,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/hierarchical-wiring/command.log"
+    },
+    {
+      "id": "instrument-host",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_instrument_host.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_instrument_host.py"
+          ],
+          "exit_code": 0,
+          "seconds": 79.9366160419886
+        }
+      ],
+      "seconds": 79.93702066596597,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/instrument-host/command.log"
+    },
+    {
+      "id": "lean-branch-function",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_branch_function.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-branch-function/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_branch_function.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-branch-function/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 65.85384812502889
+        }
+      ],
+      "seconds": 65.85447516699787,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-branch-function/command.log"
+    },
+    {
+      "id": "lean-controlled-power",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_controlled_power.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_controlled_power.py"
+          ],
+          "exit_code": 0,
+          "seconds": 3.8672740000183694
+        }
+      ],
+      "seconds": 3.8676635829615407,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-controlled-power/command.log"
+    },
+    {
+      "id": "lean-exact",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_exact.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_exact.py"
+          ],
+          "exit_code": 0,
+          "seconds": 20.808360834023915
+        }
+      ],
+      "seconds": 20.808710083016194,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-exact/command.log"
+    },
+    {
+      "id": "lean-finite",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_finite.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_finite.py"
+          ],
+          "exit_code": 0,
+          "seconds": 45.04682420799509
+        }
+      ],
+      "seconds": 45.04713775002165,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-finite/command.log"
+    },
+    {
+      "id": "lean-hierarchy",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_hierarchy.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_hierarchy.py"
+          ],
+          "exit_code": 0,
+          "seconds": 16.821156374993734
+        }
+      ],
+      "seconds": 16.821646875003353,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-hierarchy/command.log"
+    },
+    {
+      "id": "lean-interference",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_interference.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_interference.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.909468542027753
+        }
+      ],
+      "seconds": 6.909729125036392,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-interference/command.log"
+    },
+    {
+      "id": "lean-kernel-self-test",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "run",
+            "--example",
+            "lean_kernel",
+            "--",
+            "lean-kernel/.lake/build/bin/qleisli-kernel",
+            "--self-test"
+          ],
+          "executed_command": [
+            "cargo",
+            "run",
+            "--example",
+            "lean_kernel",
+            "--",
+            "lean-kernel/.lake/build/bin/qleisli-kernel",
+            "--self-test"
+          ],
+          "exit_code": 0,
+          "seconds": 33.35082304099342
+        }
+      ],
+      "seconds": 33.351601791975554,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-kernel-self-test/command.log"
+    },
+    {
+      "id": "lean-layout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_layout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_layout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 5.707988500013016
+        }
+      ],
+      "seconds": 5.708383582998067,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-layout/command.log"
+    },
+    {
+      "id": "lean-layout-dag",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_layout_dag.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_layout_dag.py"
+          ],
+          "exit_code": 0,
+          "seconds": 3.676278042024933
+        }
+      ],
+      "seconds": 3.678297541977372,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-layout-dag/command.log"
+    },
+    {
+      "id": "lean-observation",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-observation/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-observation/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 37.32053025002824
+        }
+      ],
+      "seconds": 37.320878125028685,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-observation/command.log"
+    },
+    {
+      "id": "lean-phase-layout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_phase_layout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_phase_layout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 9.706466667004861
+        }
+      ],
+      "seconds": 9.70972487499239,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-phase-layout/command.log"
+    },
+    {
+      "id": "lean-phase-operations",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_phase_operations.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_phase_operations.py"
+          ],
+          "exit_code": 0,
+          "seconds": 1.9634461250388995
+        }
+      ],
+      "seconds": 1.96368100005202,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-phase-operations/command.log"
+    },
+    {
+      "id": "lean-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.5687306249747053
+        }
+      ],
+      "seconds": 2.5689725420088507,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-qft/command.log"
+    },
+    {
+      "id": "lean-qft-graph",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft_graph.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft_graph.py"
+          ],
+          "exit_code": 0,
+          "seconds": 7.890336791984737
+        }
+      ],
+      "seconds": 7.890742584015243,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-qft-graph/command.log"
+    },
+    {
+      "id": "lean-qft-semantic",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qft.py",
+            "--small",
+            "--semantic"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qft.py",
+            "--small",
+            "--semantic"
+          ],
+          "exit_code": 0,
+          "seconds": 2.4553338330006227
+        }
+      ],
+      "seconds": 2.4556914580170996,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-qft-semantic/command.log"
+    },
+    {
+      "id": "lean-qpe",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_qpe.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_qpe.py"
+          ],
+          "exit_code": 0,
+          "seconds": 4.591350124974269
+        }
+      ],
+      "seconds": 4.591941374994349,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-qpe/command.log"
+    },
+    {
+      "id": "lean-raw",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "exit_code": 0,
+          "seconds": 24.123096625029575
+        }
+      ],
+      "seconds": 24.12341383297462,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-raw/command.log"
+    },
+    {
+      "id": "lean-raw-completion",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_raw_completion.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-raw-completion/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_raw_completion.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-raw-completion/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 59.64133725001011
+        }
+      ],
+      "seconds": 59.64173358300468,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-raw-completion/command.log"
+    },
+    {
+      "id": "lean-reshape",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_reshape.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_reshape.py"
+          ],
+          "exit_code": 0,
+          "seconds": 4.502344333974179
+        }
+      ],
+      "seconds": 4.5026506669819355,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-reshape/command.log"
+    },
+    {
+      "id": "lean-streamed-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_streamed_instrument.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-streamed-instrument/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_streamed_instrument.py",
+            "--record",
+            "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-streamed-instrument/record.json"
+          ],
+          "exit_code": 0,
+          "seconds": 28.48812979197828
+        }
+      ],
+      "seconds": 28.488402583054267,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/lean-streamed-instrument/command.log"
+    },
+    {
+      "id": "named-qpe-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--lib",
+            "native_named_qpe",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--lib",
+            "native_named_qpe",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 3.3965032079722732
+        }
+      ],
+      "seconds": 3.397200125036761,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/named-qpe-native/command.log"
+    },
+    {
+      "id": "rust-fourier-factoring",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_rust_fourier_factoring.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_rust_fourier_factoring.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.746995124965906
+        }
+      ],
+      "seconds": 2.7473371669766493,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/rust-fourier-factoring/command.log"
+    },
+    {
+      "id": "sized-arithmetic",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "exit_code": 0,
+          "seconds": 6.933939459035173
+        }
+      ],
+      "seconds": 6.934344916022383,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-arithmetic/command.log"
+    },
+    {
+      "id": "sized-cli-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_cli",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_cli",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 2.3331780830048956
+        }
+      ],
+      "seconds": 2.333583291969262,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-cli-native/command.log"
+    },
+    {
+      "id": "sized-corpus",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "exit_code": 0,
+          "seconds": 1.7473806660273112
+        }
+      ],
+      "seconds": 1.7477564999717288,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-corpus/command.log"
+    },
+    {
+      "id": "sized-instrument",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_instrument.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_instrument.py"
+          ],
+          "exit_code": 0,
+          "seconds": 7.424824542016722
+        }
+      ],
+      "seconds": 7.425195708987303,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-instrument/command.log"
+    },
+    {
+      "id": "sized-qft",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qft.py",
+            "--small"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qft.py",
+            "--small"
+          ],
+          "exit_code": 0,
+          "seconds": 4.787526042026002
+        }
+      ],
+      "seconds": 4.787959583976772,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-qft/command.log"
+    },
+    {
+      "id": "sized-qpe",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "exit_code": 0,
+          "seconds": 2.765220374974888
+        }
+      ],
+      "seconds": 2.76561058399966,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-qpe/command.log"
+    },
+    {
+      "id": "sized-qpe-clients",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "exit_code": 0,
+          "seconds": 4.218349583039526
+        }
+      ],
+      "seconds": 4.2186968750320375,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-qpe-clients/command.log"
+    },
+    {
+      "id": "sized-qpe-readout",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe_readout.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe_readout.py"
+          ],
+          "exit_code": 0,
+          "seconds": 4.211901290982496
+        }
+      ],
+      "seconds": 4.212410125008319,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-qpe-readout/command.log"
+    },
+    {
+      "id": "sized-review-dialects-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_review_dialects",
+            "native",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_review_dialects",
+            "native",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 3.393491707975045
+        }
+      ],
+      "seconds": 3.3938893749727868,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-review-dialects-native/command.log"
+    },
+    {
+      "id": "sized-source-native",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "+1.98.1",
+            "test",
+            "--test",
+            "sized_source",
+            "--",
+            "--ignored"
+          ],
+          "executed_command": [
+            "cargo",
+            "test",
+            "--test",
+            "sized_source",
+            "--",
+            "--ignored"
+          ],
+          "exit_code": 0,
+          "seconds": 7.900556250009686
+        }
+      ],
+      "seconds": 7.900926500034984,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/sized-source-native/command.log"
+    },
+    {
+      "id": "verification-baseline",
+      "status": "passed",
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "build",
+            "--bin",
+            "qleisli"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--bin",
+            "qleisli"
+          ],
+          "exit_code": 0,
+          "seconds": 0.23842558299656957
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_verification_baseline.py",
+            "target/debug/qleisli",
+            "--kernel",
+            "lean-kernel/.lake/build/bin/qleisli-kernel"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_verification_baseline.py",
+            "target/debug/qleisli",
+            "--kernel",
+            "lean-kernel/.lake/build/bin/qleisli-kernel"
+          ],
+          "exit_code": 0,
+          "seconds": 4.427590207953472
+        }
+      ],
+      "seconds": 4.666709166020155,
+      "log": "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-debt-validation-132fs5ay-logs/native-final/verification-baseline/command.log"
+    }
+  ],
+  "elapsed_seconds": 262.0679760830244
+}
