@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+## 0.2.9 — 2026-10-04
+
+Published to crates.io and GitHub with macOS arm64 and Linux x86-64 native
+checkers. [Publication evidence](tests/fixtures/releases/v0.2.9/publication.json)
+binds the checked commit, full CI, fresh installation and public downloads.
+
 - Migrate the retained research raw-IR adapter to native acceptance and make
   foreign/Python comparison tests bind both environment and per-call selection
   to the requested checker, including CI jobs without an inherited kernel path.
