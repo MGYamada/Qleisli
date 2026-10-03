@@ -44,6 +44,26 @@ def quickstart_manifest(text):
     return matches[0]
 
 
+def check_registry_links(root, landing, version):
+    # Retired contracts stay in Git history, never copied into an archive tree.
+    # Only these reviewed immutable references may differ from this release.
+    retired = {("7844a10d63880a2b6984c093e2dc7a75033d1e1e", path) for path in
+               ("docs/crates-io-release.md", "docs/language-editions.md")}
+    historical = []
+    for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", landing):
+        require(target.startswith(("https://", "#")), f"relative registry link: {target}")
+        prefix = "https://github.com/MGYamada/Qleisli/blob/"
+        if target.startswith(prefix):
+            ref, relative = target[len(prefix):].split("/", 1)
+            path = relative.split("#")[0]
+            if (ref, path) in retired:
+                historical.append(target)
+            else:
+                require(ref == "v" + version, "registry link uses an unreviewed source version")
+                require((root / path).is_file(), f"missing registry link target: {target}")
+    return historical
+
+
 def check(root, binary):
     package = tomllib.loads((root / "Cargo.toml").read_text())["package"]
     registry = root / package["readme"]
@@ -56,14 +76,7 @@ def check(root, binary):
     for text in [readme, landing]:
         require(install in text, "quickstart install command differs from manifest")
     # The registry page must not depend on relative repository links or MathJax.
-    for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", landing):
-        require(target.startswith(("https://", "#")), f"relative registry link: {target}")
-        prefix = "https://github.com/MGYamada/Qleisli/blob/"
-        if target.startswith(prefix):
-            ref, relative = target[len(prefix):].split("/", 1)
-            require(ref == "v" + package["version"], "registry link uses a different source version")
-            require((root / relative.split("#")[0]).is_file(),
-                    f"missing registry link target: {target}")
+    historical = check_registry_links(root, landing, package["version"])
     require("```math" not in landing and "$$" not in landing,
             "registry README requires a math renderer")
 
@@ -144,7 +157,8 @@ observe fn main() -> (CBit, CBit) {
                 "reuse of a measured owner did not produce an ownership diagnostic")
     return {"package": package["name"], "version": package["version"],
             "binary": str(binary), "readmes": "matching Bell source and version",
-            "registry_links": "absolute; repository targets exist locally",
+            "registry_links": "absolute; current targets exist locally; retired contracts use reviewed immutable refs",
+            "historical_registry_links_pending_live_check": historical,
             "checks": ["Bell check/run/sample in text and JSON", "embedded qft2",
                        "reject measured-owner reuse"],
             "execution": "temporary directory; empty helper-tool PATH",

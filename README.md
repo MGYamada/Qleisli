@@ -89,10 +89,10 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Install the latest published version from the registry (0.2.8 is still in development):
+Install this version from the registry once its publication is complete:
 
 ```sh
-cargo install qleisli --version 0.2.7 --locked
+cargo install qleisli --version 0.2.8 --locked
 ```
 
 The [0.2.7 release record](https://github.com/MGYamada/Qleisli/blob/v0.2.7/docs/releases/v0.2.7.md) separates candidate validation

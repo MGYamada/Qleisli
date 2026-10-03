@@ -146,7 +146,8 @@ breaking-change boundary.
 - [Release and validation record](https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/releases/v0.2.8.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Version-pinned documentation links target the planned `v0.2.8` tag; it is not yet published.
+Current documentation links target `v0.2.8`; retired contracts use immutable
+source references from the preceding release.
 Packaged files contain the current specifications and release record;
 source validation, tagging and publication are recorded separately.
 
