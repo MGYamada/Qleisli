@@ -6,6 +6,9 @@ use std::time::Instant;
 
 use super::{Error, Result};
 
+pub(super) const REJECTION_MESSAGE: &str =
+    "Lean native checker rejected the artifact/request; no fallback";
+
 fn response(bytes: &[u8], requested: bool) -> Result<usize> {
     let text =
         std::str::from_utf8(bytes).map_err(|_| Error::format("invalid native response UTF-8"))?;
@@ -28,7 +31,7 @@ fn response(bytes: &[u8], requested: bool) -> Result<usize> {
                 if code == "kernel" {
                     "native checker product version differs from the Rust package"
                 } else {
-                    "Lean native checker rejected the artifact/request; no fallback"
+                    REJECTION_MESSAGE
                 },
             ))
         }

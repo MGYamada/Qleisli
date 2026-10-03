@@ -740,9 +740,9 @@ pub fn import(bytes: &[u8], request: Option<&[u8]>) -> Result<Imported> {
         .map(|checked| checked.imported)
 }
 
-type RootParts = (RawProgram, Option<RootInterface>, Vec<(String, String)>);
-fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<RootParts> {
-    let value = json::parse(native.artifact())?;
+// Structural transport parsing only: this neither checks semantics nor issues a handle.
+// Share it with optional diagnostics after native rejection, preserving field locations.
+fn envelope(value: &Value) -> Result<(Version, &[Value], &[Value], usize)> {
     value.fields(&[
         "format",
         "version",
@@ -753,21 +753,43 @@ fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<
         "root",
         "root_interface",
     ])?;
-    if value.field("format")?.text()? != "qleisli.finite-ir" {
-        return Err(Error::format("unknown artifact format"));
+    if value.field("format")?.text().map_err(|e| e.at("/format"))? != "qleisli.finite-ir" {
+        return Err(Error::format("unknown artifact format").at("/format"));
     }
-    let version = match value.field("version")?.number()? {
+    let version = match value
+        .field("version")?
+        .number()
+        .map_err(|e| e.at("/version"))?
+    {
         1 => Version::V1,
         2 => Version::V2,
-        _ => return Err(Error::format("unknown QIRF version")),
+        _ => return Err(Error::format("unknown QIRF version").at("/version")),
     };
-    if value.field("profile")?.text()? != version.profile() {
-        return Err(Error::format("version/profile mismatch"));
+    if value
+        .field("profile")?
+        .text()
+        .map_err(|e| e.at("/profile"))?
+        != version.profile()
+    {
+        return Err(Error::format("version/profile mismatch").at("/profile"));
     }
-    let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
-    let programs = value.field("programs")?.array()?;
-    let entries = value.field("evidence")?.array()?;
+    let programs = value
+        .field("programs")?
+        .array()
+        .map_err(|e| e.at("/programs"))?;
+    let entries = value
+        .field("evidence")?
+        .array()
+        .map_err(|e| e.at("/evidence"))?;
     let root = index(value.field("root")?, programs.len()).map_err(|e| e.at("/root"))?;
+    Ok((version, programs, entries, root))
+}
+
+type RootParts = (RawProgram, Option<RootInterface>, Vec<(String, String)>);
+fn decode_native(native: &native::NativeChecked, budget: &mut Budget) -> Result<RootParts> {
+    let value = json::parse(native.artifact())?;
+    let (version, programs, entries, root) = envelope(&value)?;
+    let snapshot = sources(value.field("sources")?).map_err(|e| e.at("/sources"))?;
     let order = graph(programs, entries, root, version)?;
     let mut checked = vec![None; programs.len()];
     let mut receipts = vec![None; entries.len()];

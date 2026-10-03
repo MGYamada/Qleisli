@@ -79,7 +79,20 @@ impl Kernel {
     /// unsupported form, exhausted capacity or transport failure blocks use.
     /// A separate request is optional and checked independently by Lean.
     pub fn check(&self, artifact: &[u8], request: Option<&[u8]>) -> Result<Checked> {
-        let native = self.inspect(artifact, request)?;
+        let native = self.inspect(artifact, request).map_err(|mut failure| {
+            // Diagnose only an already rejected artifact. The native code and
+            // message remain authoritative, including for request-only failures.
+            if matches!(failure.code, "format" | "invalid_ir")
+                && failure.message == runtime::REJECTION_MESSAGE
+            {
+                if let Err(detail) = super::json::parse(artifact)
+                    .and_then(|value| super::envelope(&value).map(|_| ()))
+                {
+                    failure.json_pointer = detail.json_pointer;
+                }
+            }
+            failure
+        })?;
         Self::decode_checked(native)
     }
 

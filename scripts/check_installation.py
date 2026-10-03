@@ -113,7 +113,7 @@ def check(root, binary):
         missing = {key: value for key, value in env.items() if key != "QLEISLI_KERNEL"}
         rejected = subprocess.run([str(binary), "check", "bell", "--format=json"], cwd=work,
                                   env=missing, capture_output=True, text=True, timeout=60)
-        require(rejected.returncode == 1 and json.loads(rejected.stdout)["diagnostics"][0]["code"] == "kernel",
+        require(rejected.returncode == 1 and json.loads(rejected.stdout)["diagnostics"][0]["code"] == "project",
                 "missing native checker must reject without discovery or download")
         invoke("check", "bell", structured=False)
         output = invoke("run", "bell", structured=False)

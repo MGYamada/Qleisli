@@ -123,6 +123,7 @@ class NativeCI(unittest.TestCase):
         tasks, report = self.run_tasks([[command], [command, command]])
         verify_coverage(report, tasks, {"head": "a"}, "hash")
         self.assertNotEqual(report["tasks"][0]["commands"][0]["command"][-1], report["tasks"][1]["commands"][0]["command"][-1])
+
         mutations = []
         for mutate in (lambda r: r["tasks"].pop(),
                        lambda r: r["tasks"].append(r["tasks"][0]),
@@ -140,6 +141,20 @@ class NativeCI(unittest.TestCase):
         for mutated in mutations:
             with self.assertRaises(ValueError):
                 verify_coverage(mutated, tasks, {"head": "a"}, "hash")
+
+    def test_nested_record_paths_stay_inside_each_task_output(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "outputs"
+            output.mkdir()
+            script = ("import pathlib,sys; p=pathlib.Path(sys.argv[1]); "
+                      "p.parent.mkdir(parents=True); p.write_text('nested')")
+            tasks = [dict(id="nested", name="nested record", commands=[
+                [sys.executable, "-c", script, "{record}/interop-native.json"]])]
+            results = execute(tasks, root, output, 1, 5)
+            self.assertEqual(results[0]["status"], "passed")
+            self.assertEqual((output / "nested/record.json/interop-native.json").read_text(), "nested")
+            self.assertFalse((root / "{record}").exists())
 
     def test_failure_and_timeout_do_not_skip_other_groups_or_pass(self):
         fail = [sys.executable, "-c", "raise SystemExit(2)"]

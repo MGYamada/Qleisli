@@ -60,7 +60,10 @@ def cases():
     entry = copy.deepcopy(unit); entry['identity']['implementation'] = 'λ'*2048
     add('utf8_identity_boundary', [entry])
     entry = copy.deepcopy(unit); entry['identity']['sources'] = [dict(name='', source='')]
-    add('empty_source_name_allowed', [entry])
+    # The component permits an empty provenance name. The public native QIRF
+    # envelope independently requires nonempty source path labels after #276.
+    add('empty_source_name_allowed', [entry], native_expected=False,
+        native_boundary='QIRF requires nonempty source path labels')
     add('missing_binding', [unit], False, bindings=[])
     add('extra_binding', [], False, bindings=[unit])
     for field, value in [('accepted', True), ('matrix', finite.description(finite.identity(1)))]:
@@ -73,9 +76,11 @@ def cases():
                 steps=[finite.call([], i-1) for _ in range(repeat)])], 1)
             entries.append(attached(dict(signature=['unit'], implementation=body, specification=body), str(i)))
         return entries
-    add('depth_32', graph(32, 1), counts=[1]*32, depths=list(range(1, 33)))
+    add('depth_32', graph(32, 1), counts=[1]*32, depths=list(range(1, 33)),
+        native_expected=False, native_boundary='production QIRF graph/work bounds')
     add('depth_33', graph(33, 1), False)
-    add('expanded_524288', graph(20, 2), counts=[2**i for i in range(20)], depths=list(range(1, 21)))
+    add('expanded_524288', graph(20, 2), counts=[2**i for i in range(20)], depths=list(range(1, 21)),
+        native_expected=False, native_boundary='production QIRF graph/work bounds')
     add('expanded_1048576_rejected', graph(21, 2), False)
     for name, index in [('self_dependency', 0), ('forward_dependency', 1)]:
         body = raw.program(0, [raw.op('apply_unitary', input=0, output=1, steps=[finite.call([], index)])], 1)
@@ -216,12 +221,12 @@ def main():
         for case, actual in zip(all_cases, outputs):
             assert actual['accepted']==case['expected'], (case['name'],actual)
             other = rust.get(case['name'])
-            if other: assert actual['accepted']==other['accepted'], (case['name'],actual,other)
+            if other: assert other['accepted']==case.get('native_expected', actual['accepted']), (case['name'],actual,other)
             if not actual['accepted']: continue
             if 'counts' in case:
                 assert [r['expanded'] for r in actual['result']['receipts']]==case['counts'],case['name']
                 assert [r['depth'] for r in actual['result']['receipts']]==case['depths'],case['name']
-                if other:
+                if other and other['accepted']:
                     assert other['counts']==case['counts'] and other['depths']==case['depths'],(case['name'],other)
             if case['mode']=='bounded':
                 matrix=actual['result']['matrix']; oracle=case['oracle']
@@ -235,6 +240,7 @@ def main():
             rust_stdout_sha256=hashlib.sha256(rust_output.encode()).hexdigest())
     args.record.parent.mkdir(parents=True,exist_ok=True)
     report=dict(status='passed',native_cases=len(all_cases),rust_comparisons=len(rust),independent_matrices=matrices,
+        native_boundary_differences=[dict(name=c['name'],component=c['expected'],native=c['native_expected'],reason=c['native_boundary']) for c in all_cases if 'native_expected' in c],
         max_semantic_qubits=3,wide_cases='metadata only; no vectors, matrices or maximum-size corpus',
         native_bindings=bindings,commands=log,
         source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in

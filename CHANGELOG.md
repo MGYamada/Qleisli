@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Repair distribution CI follow-ups: retain QIRF envelope pointers after native
+  rejection, update diagnostic/work expectations, isolate nested CI output paths,
+  and keep QPE response-fault tests on the intended protocol while finite leaves
+  use the real checker. Record the stricter public QIRF limits separately from
+  component-level comparison results.
 - Prepare native checker distribution archives for macOS/Linux with SHA-256
   files, retained runtime licenses, installation instructions, exact source
   commit binding and required fresh Lean replay. Full CI retains the candidates;

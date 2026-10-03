@@ -2677,7 +2677,7 @@
     },
     {
       "path": "scripts/test_lean_branch_function.py",
-      "sha256": "da0c08ed5e0dd8e492dc54a9d7593f55f509c1bb148dad12d8a810a26bd340f7",
+      "sha256": "2cc11b1b9314e1022f41637a866f27b7e6bf4f9da94a40f4a1892893ff377d8b",
       "group": "raw-core",
       "surface": null
     },
@@ -2695,7 +2695,7 @@
     },
     {
       "path": "scripts/test_lean_raw_completion.py",
-      "sha256": "721d7b0968da632e9baa911bf431941c13df5702d8ad83fd2a9e31b566c46936",
+      "sha256": "6f51ec96df255d165f28956d28169cee80b53c83b0a6c69f41c05c8901567e11",
       "group": "raw-core",
       "surface": null
     },
@@ -3817,7 +3817,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "0a760c1a06f29bc4a1156c840377decc913352a753d614adf672865e9dff77af",
+      "sha256": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3845,7 +3845,7 @@
     },
     {
       "path": "src/interchange/native.rs",
-      "sha256": "f0ac2b4e43867bd5bae4214a42044fa4929ec8dfa4e243f5492547b116fb93bf",
+      "sha256": "1f6e797001b081509c6206db94f2343e4672197f9cf92dee2da9069153106b82",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -3906,7 +3906,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "2d71b10230268a71059e84cf065b7c4a986c5ca0d5791a05f892a7f91b2cd1ef",
+      "sha256": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4999,7 +4999,7 @@
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
       "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
       "tests/verification_boundary.rs": "f21dbdd1d1cb095ee873294222b5ff2cb53e95365cc87356a054a5188bb04e5b",
-      "tests/hierarchical_host.rs": "38e6a619aa34a8b1bceb18151c952589393a6703464e470ceaf009a7b6d18e3f",
+      "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
       "scripts/test_hierarchical_readout.py": "a5fdce47c937fc1deb4ef64d44455b7c738b361c570f703afda88ffc913e2ded",
       "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
       "scripts/compile_sized_corpus.py": "6bc931a56a3585771fa79b2d82e4c8a6801970b22d057294730eb523e9939fb5",
@@ -5025,7 +5025,7 @@
       "tests/sized_source.rs": "f40aaf032319517fbf2efa9b5ad0d9a508f34e7f0b55e1eae28e2ea22a131d85",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
-      "tests/hierarchical_qpe_host.rs": "6331ec7f65a9a8842bc408022e6ff3d15683ba40cb1c68ad5d3d74c44a244609",
+      "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "828798e31469ea28871dbd185f85a7e7f363c3a2dbaf2f1ad5ebc58ee1724b93",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",
       "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",

@@ -30,7 +30,8 @@ fn main() -> std::process::ExitCode {
         }
         Err(error) => {
             println!("error\t{}", error.code);
-            eprintln!("{error}");
+            // Keep the replay protocol independent of optional diagnostic locations.
+            eprintln!("{}: {}", error.code, error.message);
             std::process::ExitCode::FAILURE
         }
     }

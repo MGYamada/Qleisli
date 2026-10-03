@@ -75,8 +75,9 @@ def source_binding(root: Path, expected_head: str | None, environment: dict | No
     head = output(["git", "rev-parse", "HEAD"])
     if expected_head and head != expected_head:
         raise ValueError("comparison checkout differs from GITHUB_SHA")
-    if output(["git", "status", "--porcelain=v1", "--untracked-files=all"]):
-        raise ValueError("comparison checkout has tracked or untracked changes")
+    changed = output(["git", "status", "--porcelain=v1", "--untracked-files=all"])
+    if changed:
+        raise ValueError("comparison checkout has tracked or untracked changes:\n" + changed)
     pin = (root / "lean-kernel/lean-toolchain").read_text().strip()
     if pin != LEAN_TOOLCHAIN:
         raise ValueError("unexpected Lean toolchain pin")
@@ -111,7 +112,7 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
     try:
         with log_path.open("w") as log:
             for template in task["commands"]:
-                command = [str(directory / "record.json") if arg == "{record}" else arg for arg in template]
+                command = [arg.replace("{record}", str(directory / "record.json")) for arg in template]
                 executed = launch_command(command)
                 log.write(json.dumps(dict(command=command, executed_command=executed)) + "\n")
                 log.flush()

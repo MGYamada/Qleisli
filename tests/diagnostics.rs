@@ -118,7 +118,7 @@ unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
     );
     let root = SourceRoot::new(&source);
     let failure = check_project(&root.0).unwrap_err();
-    assert_eq!(failure.code, ErrorCode::InvalidIr, "{failure}");
+    assert_eq!(failure.code, ErrorCode::Contract, "{failure}");
     assert_eq!(failure.span.start, source.find("apply_contract").unwrap());
     assert!(
         failure.message.contains("input column 0, output row 0"),

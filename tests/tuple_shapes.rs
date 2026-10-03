@@ -57,7 +57,7 @@ fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
 fn same_shape_wrong_permutation_does_not_pass_identity_evidence() {
     let root = SourceRoot::new(include_str!("fixtures/tuple_shapes/wrong_permutation.qli"));
     let error = check_project(&root.0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::InvalidIr);
+    assert_eq!(error.code, ErrorCode::Contract);
     assert!(error.message.contains("exact"), "{error}");
 }
 

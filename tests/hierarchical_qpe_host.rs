@@ -83,6 +83,9 @@ fn qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations() {
     use std::os::unix::fs::PermissionsExt;
     let root = directory();
     let (payload, request, candidate) = files(&root, "finite-provider");
+    let real_kernel =
+        std::fs::canonicalize(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").unwrap()).unwrap();
+    assert!(!real_kernel.to_string_lossy().contains('\''));
     let runtime = root.join("fake-runtime");
     for entry in std::fs::read_dir(root.join("bad-responses")).unwrap() {
         let entry = entry.unwrap();
@@ -93,8 +96,8 @@ fn qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations() {
         std::fs::write(
             &runtime,
             format!(
-                "#!/bin/sh\ncat > '{}'\nprintf '%s' '{response}'\n",
-                frame.display()
+                "#!/bin/sh\nif [ \"$1\" != '--qpe-instrument-pending' ]; then exec '{}' \"$@\"; fi\ncat > '{}'\nprintf '%s' '{response}'\n",
+                real_kernel.display(), frame.display()
             ),
         )
         .unwrap();
