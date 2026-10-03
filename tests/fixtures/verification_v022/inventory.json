@@ -2707,7 +2707,7 @@
     },
     {
       "path": "src/bin/qleisli/json.rs",
-      "sha256": "ff2c48f6f06f9b7f71a80feafd9d60a82f374503b88575e8773994e2e232c443",
+      "sha256": "bfeff4762aa301c16800c8dbe785691e5b5631c84931076537708d60cb3e937d",
       "group": "foreign",
       "surface": {
         "declarations": [],

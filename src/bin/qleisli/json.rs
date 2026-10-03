@@ -41,7 +41,11 @@ fn path_label(root: &Path, path: &Path) -> Option<String> {
         return Some(format!("std://{}", slash_path(relative)?));
     }
     if let Ok(relative) = path.strip_prefix(root) {
-        return slash_path(relative);
+        return if relative.as_os_str().is_empty() {
+            Some(".".into())
+        } else {
+            slash_path(relative)
+        };
     }
     // A selected source root may be below its owning qrate manifest. Only
     // that ancestor filename can escape the source root, without host labels.
