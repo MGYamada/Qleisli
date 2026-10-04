@@ -1,0 +1,443 @@
+{
+  "status": "observed-pre-implementation",
+  "commands": 28,
+  "source_and_binary_stable": true,
+  "results": [
+    {
+      "case": "id",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/id/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "id",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "helper-move",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/helper-move/main.qli",
+            "start": 95,
+            "end": 99
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "helper-move",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "ordered-unit-bit",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/ordered-unit-bit/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "ordered-unit-bit",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "phase-eighth",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/phase-eighth/main.qli",
+            "start": 128,
+            "end": 132
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "phase-eighth",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "provider-apply",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/provider-apply/main.qli",
+            "start": 103,
+            "end": 107
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "provider-apply",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "provider-control",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/provider-control/main.qli",
+            "start": 103,
+            "end": 107
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "provider-control",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "expression is outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 231,
+            "end": 249,
+            "line": 3,
+            "column": 105
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "unit-as-bits0",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/unit-as-bits0/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "unit-as-bits0",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "register types are outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 108,
+            "end": 115,
+            "line": 2,
+            "column": 35
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "bits0-as-unit",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/bits0-as-unit/main.qli",
+            "start": 111,
+            "end": 115
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "bits0-as-unit",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "register types are outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 96,
+            "end": 103,
+            "line": 2,
+            "column": 23
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "duplicate-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/duplicate-owner/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "duplicate-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 129,
+            "end": 130,
+            "line": 2,
+            "column": 56
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "lost-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/lost-owner/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "lost-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` was not returned or explicitly consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 91,
+            "end": 92,
+            "line": 2,
+            "column": 18
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "wildcard-owner",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/wildcard-owner/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "wildcard-owner",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "wildcard would discard quantum ownership",
+          "primary": {
+            "path": "main.qli",
+            "start": 117,
+            "end": 118,
+            "line": 2,
+            "column": 44
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "zero-fold-invalid",
+      "profile": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/zero-fold-invalid/main.qli",
+            "start": 96,
+            "end": 100
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "zero-fold-invalid",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "expression is outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 116,
+            "end": 172,
+            "line": 2,
+            "column": 43
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "ordinary-unit",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "ordinary-unit",
+      "profile": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "empty-bits",
+      "profile": "selected",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "empty-bits",
+      "profile": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "register types are outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 96,
+            "end": 103,
+            "line": 2,
+            "column": 23
+          },
+          "related": []
+        }
+      ]
+    }
+  ]
+}

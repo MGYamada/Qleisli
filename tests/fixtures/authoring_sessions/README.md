@@ -161,3 +161,12 @@ an explicit Unit-parameter source before CLI changes. Its four actual baseline
 observations separate an unavailable command form from hierarchy profile
 rejection. Zero physical width does not supply a missing runtime argument.
 The existing mixed and parameter-pattern first sources remain unchanged.
+
+The [quantum Unit study](quantum-unit-v030/session.json) preserves fourteen
+informed first projects and 28 actual checks using the existing selected-source
+CLI. Q<Unit> identity, helper, scalar and provider candidates still encounter
+the sized basis-profile restriction; finite checks separately expose ownership
+rejections and existing capabilities. Ordinary Unit and Q<Bits<0>> controls
+remain distinct. Earlier profile rejection does not establish a downstream
+type/ownership condition, and checking an empty main does not execute the open
+phase function. Original source/manifest hashes precede all observations.

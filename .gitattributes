@@ -107,3 +107,5 @@ tests/fixtures/frontend_v030/mixed-booleans/*/*stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/mixed-booleans/test-repair.patch -text -whitespace
 # Preserve selected-source CLI libtest transcripts, including final blank lines.
 tests/fixtures/frontend_v030/selected-source-cli/*/*stdout.txt -text -whitespace
+# Retain the exact reviewed diff, including its blank context-line prefixes.
+tests/fixtures/constitution_v030/issue-count-109/documentation-results/0.stdout.txt -text -whitespace

@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "task": "Exact quantum Unit owners in the common selected-source hierarchy boundary",
+  "baseline_commit": "c89871fa490807c12150d70fdbac5c28763ae88b",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; deployed model and sampling unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve desired Q<Unit> flows and known type/owner counterexamples before changing the sized projection or port representation; no source was repaired.",
+      "sha256": {
+        "id/main.qli": "21d31caac5774c55a29b8cc2e5693479ea9a873772f9d44400345f3df9d5ba0a",
+        "helper-move/main.qli": "00214f896611efc7e21bc24969d7eb63ee2e7b5ac015459da30cd5a9f387bd79",
+        "ordered-unit-bit/main.qli": "3a58d35866c8b02f0459b9af4b8f2b4ca42afbb2c21743233c62ec8b049f46c6",
+        "phase-eighth/main.qli": "34a50331b7a0dac91ba539752d48e800e987362b587cc86fbd3c1388d6f56b96",
+        "provider-apply/main.qli": "b827cba068b6aa7eebc4ef0a9270b226278e70bb7baa124ca1d2be4ca99c254a",
+        "provider-control/main.qli": "c38383f0e152b7eff0dc73a5523d200da407a7e2f69d85dc515ef17aa8981f53",
+        "unit-as-bits0/main.qli": "d5ca0d2610ce1ba940c8607d15931ca1616d49f7f91f9d78fec93a2f0e43ea88",
+        "bits0-as-unit/main.qli": "e4f3287c397f00d490e5301f40ec71642f00f85ff083f9683f3093cbd999c2a3",
+        "duplicate-owner/main.qli": "3d2db4dbe528ac58229239619f419a391cd6476e74d3c8f4c10c5c8563d583e0",
+        "lost-owner/main.qli": "a15beb2f4e92bac53704182399e2cee07846bfc2f3c04d5ef2f14a222be1d07e",
+        "wildcard-owner/main.qli": "2fd80b73af325bb867fa6d103a7b48b238891685b14d6b0fdc6ddf4dea5770f6",
+        "zero-fold-invalid/main.qli": "70c80623e2765516c16ea2570df1c38dc55ec0e6c53492132c705b3638021a65",
+        "ordinary-unit/main.qli": "42a4763d2c20ad8d9a1d1f7632b7d40a4d87f11e468226ef23fc52dbaf39c14b",
+        "empty-bits/main.qli": "c28fdf082791ff7d6490b6e4bdb4f1d57ae60d86aca7bbde4815fb82f46725b8"
+      },
+      "observations": [
+        "observations/id-selected.json",
+        "observations/id-finite.json",
+        "observations/helper-move-selected.json",
+        "observations/helper-move-finite.json",
+        "observations/ordered-unit-bit-selected.json",
+        "observations/ordered-unit-bit-finite.json",
+        "observations/phase-eighth-selected.json",
+        "observations/phase-eighth-finite.json",
+        "observations/provider-apply-selected.json",
+        "observations/provider-apply-finite.json",
+        "observations/provider-control-selected.json",
+        "observations/provider-control-finite.json",
+        "observations/unit-as-bits0-selected.json",
+        "observations/unit-as-bits0-finite.json",
+        "observations/bits0-as-unit-selected.json",
+        "observations/bits0-as-unit-finite.json",
+        "observations/duplicate-owner-selected.json",
+        "observations/duplicate-owner-finite.json",
+        "observations/lost-owner-selected.json",
+        "observations/lost-owner-finite.json",
+        "observations/wildcard-owner-selected.json",
+        "observations/wildcard-owner-finite.json",
+        "observations/zero-fold-invalid-selected.json",
+        "observations/zero-fold-invalid-finite.json",
+        "observations/ordinary-unit-selected.json",
+        "observations/ordinary-unit-finite.json",
+        "observations/empty-bits-selected.json",
+        "observations/empty-bits-finite.json"
+      ]
+    }
+  ]
+}

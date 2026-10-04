@@ -1,0 +1,121 @@
+{
+  "status": "independent-intended-laws-not-execution-results",
+  "cases": [
+    {
+      "id": "id",
+      "kind": "desired",
+      "source": "attempt-01/id/main.qli",
+      "independent_target": "One Unit owner, no physical axes; identity coefficient +1.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "helper-move",
+      "kind": "desired",
+      "source": "attempt-01/helper-move/main.qli",
+      "independent_target": "Call consumes and returns the owner; fresh call-local source identities do not erase it.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "ordered-unit-bit",
+      "kind": "desired",
+      "source": "attempt-01/ordered-unit-bit/main.qli",
+      "independent_target": "Two distinct owners; sole physical bit stays unchanged while owner order changes.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "phase-eighth",
+      "kind": "desired",
+      "source": "attempt-01/phase-eighth/main.qli",
+      "independent_target": "Existing finite primitive means scalar omega=exp(i*pi/4), not +1 or absent work.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "provider-apply",
+      "kind": "desired",
+      "source": "attempt-01/provider-apply/main.qli",
+      "independent_target": "Reuse defined Apply(U) syntax and exact Unit provider identity; no invented operation API.",
+      "selected_arguments": [
+        "--operation=U=main::identity"
+      ],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "provider-control",
+      "kind": "desired",
+      "source": "attempt-01/provider-control/main.qli",
+      "independent_target": "Existing controlled(U)(c,q) form with identity provider: control bit unchanged and Unit owner retained.",
+      "selected_arguments": [
+        "--operation=U=main::identity"
+      ],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "unit-as-bits0",
+      "kind": "counterexample",
+      "source": "attempt-01/unit-as-bits0/main.qli",
+      "independent_target": "Reject exact type mismatch; width zero is insufficient.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "bits0-as-unit",
+      "kind": "counterexample",
+      "source": "attempt-01/bits0-as-unit/main.qli",
+      "independent_target": "Reject reverse exact type mismatch; no implicit coherence.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "duplicate-owner",
+      "kind": "counterexample",
+      "source": "attempt-01/duplicate-owner/main.qli",
+      "independent_target": "Reject copying one zero-width quantum owner.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "lost-owner",
+      "kind": "counterexample",
+      "source": "attempt-01/lost-owner/main.qli",
+      "independent_target": "Reject dropping a zero-width quantum owner; ordinary Unit is not elimination.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "wildcard-owner",
+      "kind": "counterexample",
+      "source": "attempt-01/wildcard-owner/main.qli",
+      "independent_target": "Reject a wildcard that silently consumes a quantum owner.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "zero-fold-invalid",
+      "kind": "counterexample",
+      "source": "attempt-01/zero-fold-invalid/main.qli",
+      "independent_target": "The zero-iteration body must still reject dropping/reusing its quantum carry; an earlier profile rejection does not establish this judgment.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "ordinary-unit",
+      "kind": "control",
+      "source": "attempt-01/ordinary-unit/main.qli",
+      "independent_target": "Existing ordinary Unit copy is allowed and has zero value ports; it remains one declared runtime argument.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    },
+    {
+      "id": "empty-bits",
+      "kind": "control",
+      "source": "attempt-01/empty-bits/main.qli",
+      "independent_target": "Existing sized empty-register identity retains one bits(0) owner; it is not Q<Unit>.",
+      "selected_arguments": [],
+      "physical_qubits_max": 1
+    }
+  ]
+}
