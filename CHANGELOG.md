@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Select explicitly migrated Qleisli fixtures in external-format and Lean
+  comparison clients while retaining original source hashes and independent
+  format, phase and probability checks (#27, #32).
 - Preserve the exact routed-control experiment as in-memory source evidence;
   distinguish its unused historical manifests from schema-2 filesystem admission
   instead of rewriting recorded inputs (#303).

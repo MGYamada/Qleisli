@@ -6,6 +6,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 import json
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_fixture
 import subprocess
 import sys
 import tempfile
@@ -152,7 +153,7 @@ class Connections(unittest.TestCase):
                          {"distribution": [{"bits": [], "probability": 1.0}]})
 
     def test_project_and_raw_ir_reverification(self):
-        p = self.client.compile_project(FIXTURES / "terminal")
+        p = self.client.compile_project(current_source_fixture(FIXTURES / "terminal"))
         self.assertEqual(self.client.from_ir(p.artifact).run(), p.run())
         self.assertTrue(p.check()["verified"])
         for mutated in [b"{}", p.artifact.rstrip()[:-1], p.artifact + b"garbage"]:

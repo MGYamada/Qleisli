@@ -10,6 +10,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_fixture
 import subprocess
 import sys
 import tempfile
@@ -46,7 +47,7 @@ class PublicNative(unittest.TestCase):
         cls.artifact_path = cls.directory / "bell.qirf"
         cls.artifact_path.write_bytes(cls.artifact)
         cls.inputs = [("qasm", FIXTURES / "bell.qasm"),
-                      ("qli", FIXTURES / "terminal"), ("qirf", cls.artifact_path)]
+                      ("qli", current_source_fixture(FIXTURES / "terminal")), ("qirf", cls.artifact_path)]
 
     @classmethod
     def tearDownClass(cls):
@@ -149,7 +150,7 @@ class PublicNative(unittest.TestCase):
     def test_python_imports_and_every_program_method_use_selected_kernel(self):
         base, selected = Client(BINARY), Client(BINARY, lean_kernel=KERNEL)
         constructors = [lambda c: c.from_openqasm((FIXTURES / "bell.qasm").read_bytes()),
-                        lambda c: c.compile_project(FIXTURES / "terminal"),
+                        lambda c: c.compile_project(current_source_fixture(FIXTURES / "terminal")),
                         lambda c: c.from_ir(self.artifact)]
         for construct in constructors:
             a, b = construct(base), construct(selected)

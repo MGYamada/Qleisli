@@ -11,6 +11,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from current_source_fixtures import current_source_fixture, source_hashes
 import random
 import subprocess
 import tempfile
@@ -102,17 +103,21 @@ def source_check(binary, log):
     source = FIXTURE / "first_source/main.qli"
     assert hashlib.sha256(source.read_bytes()).hexdigest() == json.loads(
         (FIXTURE / "baseline.json").read_text())["source_sha256"]
-    command = [str(binary.resolve()), "run", str(source.parent), "--format=json"]
+    project = current_source_fixture(source.parent)
+    command = [str(binary.resolve()), "run", str(project), "--format=json"]
     run = subprocess.run(command, capture_output=True, text=True, timeout=15)
-    log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr))
+    log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr,
+                    executed_source_sha256=source_hashes(project)))
     assert run.returncode == 0, run.stderr
     assert json.loads(run.stdout)["result"]["distribution"] == [dict(bits=[True, False, False], probability=1)]
     wrong = FIXTURE / "wrong_reversal/main.qli"
     assert hashlib.sha256(wrong.read_bytes()).hexdigest() == json.loads(
         (FIXTURE / "wrong-reversal-baseline.json").read_text())["source_sha256"]
-    command = [str(binary.resolve()), "run", str(wrong.parent), "--format=json"]
+    project = current_source_fixture(wrong.parent)
+    command = [str(binary.resolve()), "run", str(project), "--format=json"]
     run = subprocess.run(command, capture_output=True, text=True, timeout=15)
-    log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr))
+    log.append(dict(command=command, exit=run.returncode, stdout=run.stdout, stderr=run.stderr,
+                    executed_source_sha256=source_hashes(project)))
     assert run.returncode == 0, run.stderr
     actual = {sum(int(bit) << i for i, bit in enumerate(row["bits"])): row["probability"]
               for row in json.loads(run.stdout)["result"]["distribution"]}

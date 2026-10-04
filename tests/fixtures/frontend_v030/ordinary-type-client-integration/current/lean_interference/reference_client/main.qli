@@ -1,0 +1,15 @@
+use std::quantum::h;
+use std::quantum::t;
+use std::quantum::cnot;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+unitary fn interference(q: Q<Bit>) -> Q<Bit> {
+    h(t(h(h(t(h(q))))))
+}
+
+observe fn main() -> (Bit, Bit) {
+    let (q, reference) = cnot(h(init0()), init0());
+    let q = interference(q);
+    (measure_z(q), measure_z(reference))
+}

@@ -1,0 +1,6 @@
+test_project_and_raw_ir_reverification (__main__.Connections.test_project_and_raw_ir_reverification) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.591s
+
+OK

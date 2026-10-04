@@ -1,0 +1,241 @@
+[
+  {
+    "name": "historical-terminal-emit-qasm",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "interop",
+      "emit-qasm",
+      "/Users/masa/git/Qleisli/tests/fixtures/interop/terminal",
+      "--input=qli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "seconds": 0.017449583974666893,
+    "stdout": "results/historical-terminal-emit-qasm.stdout.txt",
+    "stderr": "results/historical-terminal-emit-qasm.stderr.txt",
+    "stdout_sha256": "217ce5e93fe3f76b80d3328c4a32100aebdd1c39b6760b4483a3b03ad316ff59",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "historical-terminal-emit-qir",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "interop",
+      "emit-qir",
+      "/Users/masa/git/Qleisli/tests/fixtures/interop/terminal",
+      "--input=qli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "seconds": 0.004919416969642043,
+    "stdout": "results/historical-terminal-emit-qir.stdout.txt",
+    "stderr": "results/historical-terminal-emit-qir.stderr.txt",
+    "stdout_sha256": "6cb848c89201f6d2bf1a62a86b841f9e4a7e567c4410ed9ae563352e82c1f819",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-phase_layout",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_lean_phase_layout.py",
+      "--source-only",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 0.5589318329584785,
+    "stdout": "results/source-phase_layout.stdout.txt",
+    "stderr": "results/source-phase_layout.stderr.txt",
+    "stdout_sha256": "db5806750692fa91a061249c8254be54dc8de88c498a27de195c9317cd151083",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-interference",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_lean_interference.py",
+      "--source-only",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 1.2923254999914207,
+    "stdout": "results/source-interference.stdout.txt",
+    "stderr": "results/source-interference.stderr.txt",
+    "stdout_sha256": "db9c2f34ed58920deb8e5a453eb366ec5b542891fdeeb688562c0eec5096586e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-qft",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_lean_qft.py",
+      "--source-only",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 1.5033747080015019,
+    "stdout": "results/source-qft.stdout.txt",
+    "stderr": "results/source-qft.stderr.txt",
+    "stdout_sha256": "e6af49b1f1b65850d175efdde38562f160f853af8a6b6ea6f51e7c1795714770",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-qpe",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_lean_qpe.py",
+      "--source-only",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 1.9393182080239058,
+    "stdout": "results/source-qpe.stdout.txt",
+    "stderr": "results/source-qpe.stderr.txt",
+    "stdout_sha256": "1d6567884304198068bcc5c85f00763a965c4d4324a4f514f7e4fc3489547c1f",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-controlled_power",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_lean_controlled_power.py",
+      "--source-only",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 1.2520044580451213,
+    "stdout": "results/source-controlled_power.stdout.txt",
+    "stderr": "results/source-controlled_power.stderr.txt",
+    "stdout_sha256": "498e55eef8f33b8c7904b1d917635e4e40111db0cafd913e86dde07b06df67c8",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "source-kernel",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "/Users/masa/git/Qleisli/scripts/test_source_kernel.py"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 15.248041875020135,
+    "stdout": "results/source-kernel.stdout.txt",
+    "stderr": "results/source-kernel.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "7957052ce2927c2c229862b04dd8db06edb0c2f1d5516229c5b53294c17e9cf0"
+  },
+  {
+    "name": "current-terminal-check",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "interop",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
+      "--input=qli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 0.40592979098437354,
+    "stdout": "results/current-terminal-check.stdout.txt",
+    "stderr": "results/current-terminal-check.stderr.txt",
+    "stdout_sha256": "6b3b291db240c66443988dd91115bf0f299b6327c2418e13778513a3c969748b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "current-terminal-emit-qasm",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "interop",
+      "emit-qasm",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
+      "--input=qli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 0.43106629099929705,
+    "stdout": "results/current-terminal-emit-qasm.stdout.txt",
+    "stderr": "results/current-terminal-emit-qasm.stderr.txt",
+    "stdout_sha256": "d30e9c93ae02872485a3be7b602d241880b169897929de1cd228ebce98acc73c",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "current-terminal-emit-qir",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "interop",
+      "emit-qir",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal",
+      "--input=qli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 0.40635566698620096,
+    "stdout": "results/current-terminal-emit-qir.stdout.txt",
+    "stderr": "results/current-terminal-emit-qir.stderr.txt",
+    "stdout_sha256": "ebb27e83a03009e303239ed5337d6e5af658265f449439a1583c84d51a5fb787",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "external-terminal-oracles",
+    "argv": [
+      "/private/tmp/qleisli-review-interop-venv/bin/python",
+      "-c",
+      "import pathlib,sys,types;sys.path.insert(0,'scripts');import test_interop_external as t;t.OPTIONS=types.SimpleNamespace(llvm_as='/opt/homebrew/opt/llvm/bin/llvm-as',opt='/opt/homebrew/opt/llvm/bin/opt');c=t.ExternalFormats();p=pathlib.Path('tests/fixtures/frontend_v030/ordinary-type-client-integration/results');c.check_qasm((p/'terminal.qasm').read_text(),['h','cx'],[1,0]);c.check_qir((p/'terminal.ll').read_text(),2,2);print('Existing terminal QASM and LLVM/QIR oracles passed on selected main-CLI exports.')"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 1.0682907499722205,
+    "stdout": "results/external-terminal-oracles.stdout.txt",
+    "stderr": "results/external-terminal-oracles.stderr.txt",
+    "stdout_sha256": "5613e23d2c33d98379d74dfa3bde872a402d53222665c38a55bf2ef654fdaf98",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "python-project-reverification",
+    "argv": [
+      "/private/tmp/qleisli-v028-release-python/bin/python",
+      "/Users/masa/git/Qleisli/scripts/test_connections.py",
+      "Connections.test_project_and_raw_ir_reverification",
+      "-v"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 0.6556620839983225,
+    "stdout": "results/python-project-reverification.stdout.txt",
+    "stderr": "results/python-project-reverification.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "a5770103ac6ac1f83977020f89c17acac3ffc7bdda6b33ab979246a526ae97d7"
+  },
+  {
+    "name": "selected-native-clients",
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "-c",
+      "import os,pathlib,sys,unittest;sys.path.insert(0,'scripts');import test_interop_native as t;t.BINARY=pathlib.Path(os.environ['QLEISLI_BIN']);t.KERNEL=pathlib.Path(os.environ['QLEISLI_KERNEL']);s=unittest.TestSuite(t.PublicNative(n) for n in ['test_all_actions_formats_use_real_native_checker','test_python_imports_and_every_program_method_use_selected_kernel']);r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "seconds": 7.282155458000489,
+    "stdout": "results/selected-native-clients.stdout.txt",
+    "stderr": "results/selected-native-clients.stderr.txt",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "a150f337fa366c5e7a1c65398a1619dfba57e5ab52580d1859606786865a6acd"
+  }
+]

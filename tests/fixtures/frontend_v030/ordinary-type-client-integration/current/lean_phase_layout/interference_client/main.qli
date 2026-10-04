@@ -1,0 +1,18 @@
+use std::quantum::t;
+use std::quantum::h;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+
+unitary fn phase_swap(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    (b, t(a))
+}
+
+// Interference exposes phases that direct computational-basis measurement cannot.
+observe fn main() -> (Bit, Bit) {
+    let (a, b) = phase_swap(h(init0()), h(init0()));
+    let (a, b) = phase_swap(a, b);
+    let (a, b) = qif(a, b) { 0 => identity, 1 => t };
+    (measure_z(h(a)), measure_z(h(b)))
+}

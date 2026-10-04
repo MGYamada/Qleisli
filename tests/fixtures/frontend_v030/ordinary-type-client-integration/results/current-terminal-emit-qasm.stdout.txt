@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"interop emit-qasm","outcome":"ok","diagnostics":[],"result":{"text":"OPENQASM 3.0;\u000ainclude \"stdgates.inc\";\u000aqubit[2] q;\u000abit[2] c;\u000areset q;\u000ah q[0];\u000acx q[0], q[1];\u000ac[0] = measure q[1];\u000ac[1] = measure q[0];\u000a"}}
