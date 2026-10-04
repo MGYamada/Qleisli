@@ -190,7 +190,7 @@ Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
 
 The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
-proposal for ordinary Unit/Bit/products, including specialized ordinary helper
+proposal for Unit/Bit/Q<Bit>/products, including specialized ordinary helper
 calls and static folds. Its `source()` retains whole parameter/result trees and
 the original source instance. Native `Kernel::accept` must check `proposal()`
 before execution. `validate_source_steps` separately compares the exact accepted
@@ -200,9 +200,25 @@ are represented and checked, but `sim::run_closed` still requires a closed
 artifact. A closed source wrapper is a distinct specialization of an open
 function, not execution of that original open artifact.
 
-This Raw adapter currently rejects quantum/Bits values, primitives and operation
-providers. Mixed classical/quantum execution, measured Boolean postprocessing,
-explicit runtime invocation and CLI integration remain unfinished. The existing
+Finite and sized Raw emission share quantum registers, fresh identities and the
+actual init0/H/X/CNOT/measurement transitions. A measurement consumes its owner
+and produces an ordinary Bit that may be used by Boolean operations. Physical
+state spans pending arguments and suspended callers; separate ownership never
+implies that those subsystems are separable. Each call gets its own source-ID
+environment while global token, wire and classical supplies remain fresh.
+
+The Raw adapter supports `phase[j,k]` only when its exact angle is an integral
+multiple of an eighth turn: the existing source domain requires `k <= 8` and
+`j < 2^k`, and `8*j / 2^k` must be an integer. That many T gates implement the
+phase, including zero gates for the identity. Smaller angles are not rounded.
+For example, `phase[1,3]` and `phase[2,4]` are exactly T, while `phase[1,4]`
+requires the existing hierarchy phase target. This is a target capability
+distinction, not a source type or edition distinction. The adapter enforces the
+existing 16-live-wire bound across whole call frames, before allocation.
+
+This Raw adapter still rejects Bits values, other quantum basis shapes,
+controlled-phase primitives and operation providers. Explicit runtime invocation,
+runtime branches and CLI integration remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
 decision is never retried as weaker Raw validity. General product and `Q<Unit>`

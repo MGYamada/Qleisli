@@ -118,10 +118,13 @@ PATHS = {
         ('src/bin/qleisli/sized.rs', ['if let Some(path) = o.output', 'untrusted-proposal', 'source_meaning_verified']),
         ('src/frontend/sized.rs', ['pub fn parse(', 'pub fn instantiate(']),
         ('src/frontend/sized/raw.rs', ['pub struct RawSourceProposal', 'pub fn validate_source_steps(', 'native::Proposal::from_raw']),
+        ('src/frontend/raw_state.rs', ['pub(crate) struct RawState', 'pub(crate) fn cnot(', 'pub(crate) fn measure_z(']),
         ('src/frontend/sized/raw/preservation.rs', ['pub(super) fn validate(', 'RawOp::ClassicalAnd', 'RawOp::ClassicalXor']),
     ], [('tests/sized_source.rs', 'untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming'),
         ('tests/sized_cli.rs', 'sized_cli_emits_only_an_untrusted_proposal_without_a_kernel'),
         ('tests/ordinary_booleans.rs', 'all_four_truth_rows_match_independent_constants_in_both_profiles'),
+        ('tests/mixed_booleans.rs', 'pending_first_argument_keeps_entangled_owner_during_later_argument_measurement'),
+        ('tests/mixed_booleans.rs', 'representable_phases_match_independent_exact_targets_and_interference'),
         ('src/frontend/sized/raw.rs', 'raw_source_replay_rejects_native_valid_semantic_and_structural_mutations')]),
     'checked-views': path_rule('checked-view', 'contract function named-qpe-components', '', [
         ('src/contract/mod.rs', ['pub fn check_binding(', 'pub fn check_entry(']),

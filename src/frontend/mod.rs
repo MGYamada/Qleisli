@@ -12,6 +12,7 @@ pub mod lexer;
 mod ordinary;
 pub mod parser;
 pub mod project;
+mod raw_state;
 mod resolve;
 mod scanner;
 pub mod sized;

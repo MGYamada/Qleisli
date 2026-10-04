@@ -24,28 +24,29 @@ impl Lowerer<'_, '_> {
             module,
             span,
             env_size(env)
-                .saturating_add(total_size(self.registers.values().map(Register::size)))
+                .saturating_add(total_size(self.raw.registers.values().map(Register::size)))
                 .saturating_mul(2),
         )?;
-        let entry_registers = self.registers.clone();
-        let outer_ops = std::mem::take(&mut self.operations);
+        let entry_registers = self.raw.registers.clone();
+        let outer_ops = std::mem::take(&mut self.raw.operations);
         let outer_sources = std::mem::take(&mut self.operation_sources);
         let entry_effect = self.effect;
         let entry_effect_source = self.effect_source.clone();
         let mut then_env = env.clone();
         let then_result = self.block(module, then_block, &mut then_env)?;
-        let then_ops = std::mem::take(&mut self.operations);
+        let then_ops = std::mem::take(&mut self.raw.operations);
         let then_sources = std::mem::take(&mut self.operation_sources);
-        let mut then_registers = std::mem::replace(&mut self.registers, entry_registers.clone());
+        let mut then_registers =
+            std::mem::replace(&mut self.raw.registers, entry_registers.clone());
         let then_effect = self.effect;
         let then_effect_source = self.effect_source.take();
         self.effect = entry_effect;
         self.effect_source = entry_effect_source;
         let mut else_env = env.clone();
         let else_result = self.block(module, else_block, &mut else_env)?;
-        let else_ops = std::mem::replace(&mut self.operations, outer_ops);
+        let else_ops = std::mem::replace(&mut self.raw.operations, outer_ops);
         let else_sources = std::mem::replace(&mut self.operation_sources, outer_sources);
-        let mut else_registers = std::mem::take(&mut self.registers);
+        let mut else_registers = std::mem::take(&mut self.raw.registers);
         if then_effect >= self.effect {
             self.effect_source = then_effect_source;
         }
@@ -114,7 +115,7 @@ impl Lowerer<'_, '_> {
             })?;
             self.merge_register(module, span, slot, then_reg, else_reg, &mut quantum_phis)?;
         }
-        let branch_index = self.operations.len();
+        let branch_index = self.raw.operations.len();
         for (arm, sources) in [(0, then_sources), (1, else_sources)] {
             for (path, source) in sources {
                 let mut nested_path = vec![branch_index, arm];
@@ -122,7 +123,7 @@ impl Lowerer<'_, '_> {
                 self.operation_sources.insert(nested_path, source);
             }
         }
-        self.operations.push(RawOp::ClassicalBranch {
+        self.raw.operations.push(RawOp::ClassicalBranch {
             condition,
             then_ops,
             else_ops,
@@ -161,7 +162,7 @@ impl Lowerer<'_, '_> {
             output: token,
             output_wires: wires.clone(),
         });
-        self.registers.insert(
+        self.raw.registers.insert(
             slot,
             Register {
                 token,

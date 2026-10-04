@@ -3192,7 +3192,7 @@
     },
     {
       "path": "src/frontend/compile/lower/branch.rs",
-      "sha256": "44ac4d45b6379d09b9f336fe98c4abc924757dab73a5000c891909b26ac94959",
+      "sha256": "123fa3537170f92c4e81181beec07563b159cacb4aed12aeaa2245a3e5482caa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3202,7 +3202,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "be81a25690eac259b7d750af972e1465ba26ede3dbb7c70f2d1724d56b72b80f",
+      "sha256": "b6550482f5306014cf2dab857e223544f4ca214fe12acf06d5cee9dd93a22a2a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3212,7 +3212,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "333e9eaffb1851f1c71d563a367ac5ffbad8075c51d8296024c74a1cd18ea301",
+      "sha256": "0612bef4d7bfe09d3fca529fb97597784f580a841c162ab01e37d27a5e882b6a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3222,7 +3222,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "cb07a0907559728938642a81b89cd8b505bb80e1c2f60537d5deaddffb3a2f94",
+      "sha256": "cd4e8186d77d46642817dc4485bd5b3c5537a2e03541f9f2932741f1aace1414",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3242,7 +3242,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+      "sha256": "ba9791c919ca0dbe702f14c5358b0faa2f2a01a28ceb5236089d6e2ab30e1856",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3272,7 +3272,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "8d72d9349ab3d43ca5c43dc1e452c1da7ede71cf5ddcb77dbdb0339be49b6453",
+      "sha256": "5b6db4005beffeb1818ef6bbac976fcaee8526cc806a44b7cceb95433e69e3c8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3397,7 +3397,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "58c38c5da572b42e5c79bf46b15e11170928851ca47e9157bd824d040ce0ce43",
+      "sha256": "62787f245c30605229d6d47952d1503f8b298a85a40c2818952ab3466d8ef3b0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3511,6 +3511,16 @@
     {
       "path": "src/frontend/project/source_file.rs",
       "sha256": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/raw_state.rs",
+      "sha256": "51fa55839f21992a4a719044910cb3010d9ca44924fa2009e102aace4cbc623b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3840,7 +3850,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "6658fee53a7341c87883e9ad7ca5b90e91dde71af3499daed372533a6a9e5bbf",
+      "sha256": "bb981f599caf04ff1d8384ba96e9fc471fc43266bcd7e09176ec791e284b2a1a",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3856,13 +3866,14 @@
           "const MAX_CALLS: usize = 1_024;",
           "const MAX_CELLS: usize = 100_000;",
           "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE_QUBITS: usize = 16;",
           "const MAX_OPERATIONS: usize = 10_000;"
         ]
       }
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "d26e921ed18167c56e40a9168dbd740265da10925c1e02dbbf5648a3628078a3",
+      "sha256": "e3e1a8d799b9c67fd27d1fb8bcff3b086fc59b48351a370c8c25ef9d4e7c54e6",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3871,6 +3882,7 @@
           "const MAX_CALLS: usize = 1024;",
           "const MAX_CELLS: usize = 100_000;",
           "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE: usize = 16;",
           "const MAX_STEPS: usize = 10_000;"
         ]
       }
@@ -4804,10 +4816,10 @@
       ],
       "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
       "request": "Original module bytes, selected public entry and complete natural/operation bindings",
-      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite ordinary proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration.",
-      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite ordinary Unit/Bit/product Raw adapter; no implicit same-width coercions",
-      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile; ordinary Raw proposals support Unit/Bit/products and calls only; mixed execution and explicit runtime invocation remain unfinished",
-      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent",
+      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output.",
+      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. General basis/primitive/provider/branch targets, explicit runtime invocation and CLI convergence remain unfinished.",
+      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission.",
       "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts.",
       "replacement": [
         "VM-28"

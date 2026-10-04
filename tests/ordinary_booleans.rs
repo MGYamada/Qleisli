@@ -268,15 +268,11 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
 }
 
 #[test]
-fn raw_capability_boundary_explicitly_rejects_quantum_mixed_and_bits_targets() {
+fn raw_capability_boundary_explicitly_rejects_unimplemented_bits_targets() {
     for source in [
-        "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }",
-        "pub unitary fn f(b: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { (not b,q) }",
         "pub unitary fn f(b: Bits<1>) -> Bits<1> { b }",
         "pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { q }",
         "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
-        "use std::quantum::init0; use std::observe::measure_z;
-         pub observe fn f() -> Bit { measure_z(init0()) }",
     ] {
         // Checking and elaboration succeed. This failure is the selected Raw
         // target's stated capability boundary, not a parser/type workaround.
@@ -286,9 +282,7 @@ fn raw_capability_boundary_explicitly_rejects_quantum_mixed_and_bits_targets() {
         assert_eq!(error.module(), Some("main"), "{error}");
         assert!(error.span().end > error.span().start, "{error}");
         assert!(
-            error
-                .message()
-                .starts_with("finite ordinary source lowering"),
+            error.message().starts_with("finite source lowering"),
             "{error}"
         );
     }
@@ -327,7 +321,13 @@ fn false_and_measurement_is_eager_and_cannot_hide_observation_effects() {
         steps[2].inputs()[1].identity(),
         steps[1].output().identity()
     );
-    assert_eq!(graph.lower_raw().unwrap_err().code(), "unsupported");
+    let mixed = accept(&graph);
+    assert_eq!(mixed.derived_effect(), Effect::Observe);
+    assert!(matches!(mixed.raw().operations[1], RawOp::MeasureZ { .. }));
+    assert!(matches!(
+        mixed.raw().operations[2],
+        RawOp::ClassicalAnd { .. }
+    ));
 
     // The existing finite endpoint supports this quantum example. Inspect the
     // actual accepted operations: output zero alone cannot show measurement ran.

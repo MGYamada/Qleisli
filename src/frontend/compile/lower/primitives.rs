@@ -125,14 +125,8 @@ impl Lowerer<'_, '_> {
         );
         match name {
             "init0" => {
-                let wire = self.wire();
-                let value = self.register(Ty::bit(), vec![wire]);
-                let slot = self.quantum(module, span, &value, true)?;
-                self.operations.push(RawOp::Init0 {
-                    output: self.registers[&slot].token,
-                    wire,
-                });
-                Ok(value)
+                let slot = self.raw.init0();
+                Ok(Value::quantum(slot, Ty::bit()))
             }
             "h" | "x" | "z" | "t" | "s" | "sdg" | "tdg" => {
                 let value = args.pop().expect("one argument");
@@ -152,14 +146,9 @@ impl Lowerer<'_, '_> {
                     _ => 1,
                 };
                 for _ in 0..repetitions {
-                    let output = self.token();
-                    let reg = self.registers.get_mut(&slot).expect("owned register");
-                    self.operations.push(RawOp::Gate {
-                        gate,
-                        input: reg.token,
-                        output,
-                    });
-                    reg.token = output;
+                    self.raw.gate_bit(gate, slot).map_err(|failure| {
+                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                    })?;
                 }
                 Ok(value)
             }
@@ -169,10 +158,10 @@ impl Lowerer<'_, '_> {
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
                 if name == "phase_eighth" {
                     let output = self.token();
-                    let reg = self.registers.get_mut(&slot).expect("owned register");
+                    let reg = self.raw.registers.get_mut(&slot).expect("owned register");
                     // The zero-axis monomial is the existing exact scalar action.
                     // It also acts on Q<Unit>; no ancilla or physical wire is added.
-                    self.operations.push(RawOp::ApplyUnitary {
+                    self.raw.operations.push(RawOp::ApplyUnitary {
                         input: reg.token,
                         output,
                         steps: vec![CircuitStep {
@@ -204,30 +193,31 @@ impl Lowerer<'_, '_> {
                         "gate operands alias one quantum register",
                     ));
                 }
-                let inputs: Vec<_> = slots
-                    .iter()
-                    .map(|slot| self.registers[slot].token)
-                    .collect();
-                let outputs: Vec<_> = slots.iter().map(|_| self.token()).collect();
-                self.operations.push(if name == "cnot" {
-                    RawOp::Cnot {
-                        control: inputs[0],
-                        target: inputs[1],
-                        control_out: outputs[0],
-                        target_out: outputs[1],
-                    }
+                if name == "cnot" {
+                    self.raw.cnot(slots[0], slots[1]).map_err(|failure| {
+                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                    })?;
                 } else {
-                    RawOp::Toffoli {
+                    let inputs: Vec<_> = slots
+                        .iter()
+                        .map(|slot| self.raw.registers[slot].token)
+                        .collect();
+                    let outputs: Vec<_> = slots.iter().map(|_| self.token()).collect();
+                    self.raw.operations.push(RawOp::Toffoli {
                         control_a: inputs[0],
                         control_b: inputs[1],
                         target: inputs[2],
                         control_a_out: outputs[0],
                         control_b_out: outputs[1],
                         target_out: outputs[2],
+                    });
+                    for (slot, output) in slots.iter().zip(outputs) {
+                        self.raw
+                            .registers
+                            .get_mut(slot)
+                            .expect("owned register")
+                            .token = output;
                     }
-                });
-                for (slot, output) in slots.iter().zip(outputs) {
-                    self.registers.get_mut(slot).expect("owned register").token = output;
                 }
                 let mut args = args.into_iter();
                 let a = args.next().expect("first input");
@@ -243,7 +233,7 @@ impl Lowerer<'_, '_> {
                 let value = args.pop().expect("one input");
                 let slot =
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
-                let reg = self.registers.remove(&slot).expect("owned register");
+                let reg = self.raw.registers.remove(&slot).expect("owned register");
                 let Some(mut fields) = reg.basis.into_pair() else {
                     return Err(self.error(
                         module,
@@ -259,10 +249,10 @@ impl Lowerer<'_, '_> {
                 let right = self.register(b, reg.wires[width..].to_vec());
                 let left_slot = self.quantum(module, span, &left, false)?;
                 let right_slot = self.quantum(module, span, &right, false)?;
-                self.operations.push(RawOp::Split {
+                self.raw.operations.push(RawOp::Split {
                     input: reg.token,
-                    left: self.registers[&left_slot].token,
-                    right: self.registers[&right_slot].token,
+                    left: self.raw.registers[&left_slot].token,
+                    right: self.raw.registers[&right_slot].token,
                     left_bits: self
                         .compiler
                         .narrow_u8(module, span, width, "split width")?,
@@ -281,8 +271,8 @@ impl Lowerer<'_, '_> {
                         "join operands alias",
                     ));
                 }
-                let a = self.registers.remove(&a).expect("owned register");
-                let b = self.registers.remove(&b).expect("owned register");
+                let a = self.raw.registers.remove(&a).expect("owned register");
+                let b = self.raw.registers.remove(&b).expect("owned register");
                 if a.wires.len() + b.wires.len() > MAX_BITS {
                     return Err(self.error(
                         module,
@@ -295,10 +285,10 @@ impl Lowerer<'_, '_> {
                 wires.extend(b.wires);
                 let value = self.register(Ty::pair(a.basis, b.basis), wires);
                 let slot = self.quantum(module, span, &value, false)?;
-                self.operations.push(RawOp::Join {
+                self.raw.operations.push(RawOp::Join {
                     left: a.token,
                     right: b.token,
-                    output: self.registers[&slot].token,
+                    output: self.raw.registers[&slot].token,
                 });
                 Ok(value)
             }
@@ -311,24 +301,25 @@ impl Lowerer<'_, '_> {
                     name != "discard",
                     source_args.first(),
                 )?;
-                let reg = self.registers.remove(&slot).expect("owned register");
                 if name == "measure_z" {
-                    let output = self.classical();
-                    self.operations.push(RawOp::MeasureZ {
-                        input: reg.token,
-                        output,
-                    });
+                    let output = self.raw.measure_z(slot).map_err(|failure| {
+                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                    })?;
                     Ok(Value::Classical(output))
                 } else if name == "discard" {
-                    self.operations.push(RawOp::Discard { input: reg.token });
+                    let reg = self.raw.registers.remove(&slot).expect("owned register");
+                    self.raw
+                        .operations
+                        .push(RawOp::Discard { input: reg.token });
                     Ok(Value::Unit)
                 } else {
+                    let reg = self.raw.registers.remove(&slot).expect("owned register");
                     let wire = self.wire();
                     let value = self.register(Ty::bit(), vec![wire]);
                     let slot = self.quantum(module, span, &value, true)?;
-                    self.operations.push(RawOp::Reset {
+                    self.raw.operations.push(RawOp::Reset {
                         input: reg.token,
-                        output: self.registers[&slot].token,
+                        output: self.raw.registers[&slot].token,
                         fresh_wire: wire,
                     });
                     Ok(value)

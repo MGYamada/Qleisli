@@ -17,6 +17,7 @@ mod value;
 use value::{Binding, Env, Register, Slot, Value, env_size};
 
 use super::*;
+use crate::frontend::raw_state::RawState;
 use crate::ir::*;
 
 #[derive(Clone, Copy)]
@@ -86,15 +87,10 @@ fn verification_error(
 // Every emitted program must still pass the independent IR verifier.
 struct Lowerer<'c, 'p> {
     compiler: &'c mut Compiler<'p>,
-    registers: BTreeMap<Slot, Register>,
-    operations: Vec<RawOp>,
+    raw: RawState<std::convert::Infallible>,
     operation_sources: OperationSources,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
-    next_token: u32,
-    next_wire: u32,
-    next_classical: u32,
-    next_slot: u32,
     effect: Effect,
     // Origin of the strongest derived effect; diagnostic metadata only.
     effect_source: Option<(String, Span)>,
@@ -129,37 +125,20 @@ impl Lowerer<'_, '_> {
         self.compiler.error(module, span, code, message)
     }
     fn token(&mut self) -> TokenId {
-        let id = TokenId(self.next_token);
-        self.next_token += 1;
-        id
+        self.raw.token()
     }
     fn wire(&mut self) -> WireId {
-        let id = WireId(self.next_wire);
-        self.next_wire += 1;
-        id
+        self.raw.wire()
     }
     fn classical(&mut self) -> ClassicalId {
-        let id = ClassicalId(self.next_classical);
-        self.next_classical += 1;
-        id
+        self.raw.classical()
     }
     fn slot(&mut self) -> Slot {
-        let id = self.next_slot;
-        self.next_slot += 1;
-        id
+        self.raw.slot()
     }
 
     fn register(&mut self, basis: Ty, wires: Vec<WireId>) -> Value {
-        let slot = self.slot();
-        let token = self.token();
-        self.registers.insert(
-            slot,
-            Register {
-                token,
-                wires,
-                basis: basis.clone(),
-            },
-        );
+        let slot = self.raw.register(basis.clone(), wires);
         Value::quantum(slot, basis)
     }
 
@@ -186,7 +165,7 @@ impl Lowerer<'_, '_> {
                 let Value::Quantum(slot, _) = &value else {
                     unreachable!()
                 };
-                let reg = &self.registers[slot];
+                let reg = &self.raw.registers[slot];
                 quantum.push(QuantumPort {
                     token: reg.token,
                     wires: reg.wires.clone(),
@@ -528,13 +507,13 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.depth += 1;
-        let first_operation = self.operations.len();
+        let first_operation = self.raw.operations.len();
         let result = self.expr_inner(module, expr, env);
         self.depth -= 1;
         let value = result?;
         // Nested expressions/callees already supplied more precise positions.
         // Fill only the operations emitted directly by this expression.
-        for index in first_operation..self.operations.len() {
+        for index in first_operation..self.raw.operations.len() {
             self.operation_sources
                 .entry(vec![index])
                 .or_insert_with(|| (module.to_owned(), expr.span));
@@ -599,7 +578,7 @@ impl Lowerer<'_, '_> {
                 };
                 let value = self.expr(module, input, env)?;
                 let slot = self.quantum(module, input.span, &value, false)?;
-                let basis = self.registers[&slot].basis.clone();
+                let basis = self.raw.registers[&slot].basis.clone();
                 let access = if matches!(expr.kind, ExprKind::Adjoint { .. }) {
                     Access::Adjoint
                 } else {
@@ -672,7 +651,7 @@ impl Lowerer<'_, '_> {
                 self.quantum(module, control.span, &c, true)?;
                 let q = self.expr(module, target, env)?;
                 let slot = self.quantum(module, target.span, &q, false)?;
-                let basis = self.registers[&slot].basis.clone();
+                let basis = self.raw.registers[&slot].basis.clone();
                 let axes: Vec<_> = (1..=basis.basis_bits().expect("basis")).collect();
                 let mut steps = Vec::new();
                 let mut operation_arm = false;
@@ -782,16 +761,9 @@ impl Lowerer<'_, '_> {
                         )),
                     })
                     .collect::<Result<Vec<_>, _>>()?;
-                let output = self.classical();
-                let operation = ordinary::emit(operation, &inputs, output).ok_or_else(|| {
-                    self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::InvalidIr,
-                        "Boolean operand count changed during lowering",
-                    )
+                let output = self.raw.boolean(operation, &inputs).map_err(|failure| {
+                    self.error(module, expr.span, ErrorCode::InvalidIr, failure.to_string())
                 })?;
-                self.operations.push(operation);
                 Ok(Value::Classical(output))
             }
             ExprKind::Name(name) => {
@@ -894,7 +866,7 @@ impl Lowerer<'_, '_> {
                     }
                     let value = values.into_iter().next().expect("one argument");
                     let slot = self.quantum(module, expr.span, &value, false)?;
-                    let basis = self.registers[&slot].basis.clone();
+                    let basis = self.raw.registers[&slot].basis.clone();
                     let steps = self
                         .operation_steps(module, callee, &basis, env, Access::Apply)?
                         .expect("bound operation");
@@ -1003,8 +975,8 @@ impl Lowerer<'_, '_> {
 
     fn apply_circuit(&mut self, slot: Slot, steps: Vec<CircuitStep>) {
         let output = self.token();
-        let reg = self.registers.get_mut(&slot).expect("owned register");
-        self.operations.push(RawOp::ApplyUnitary {
+        let reg = self.raw.registers.get_mut(&slot).expect("owned register");
+        self.raw.operations.push(RawOp::ApplyUnitary {
             input: reg.token,
             output,
             steps,
@@ -1091,14 +1063,9 @@ impl Lowerer<'_, '_> {
             .charge(module, name.span, ty.tree_size().nodes.saturating_mul(3))?;
         let mut inner = Lowerer {
             compiler: self.compiler,
-            registers: BTreeMap::new(),
-            operations: vec![],
+            raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             tuple_binding_origins: Vec::new(),
-            next_token: 0,
-            next_wire: 0,
-            next_classical: 0,
-            next_slot: 0,
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
@@ -1124,8 +1091,8 @@ impl Lowerer<'_, '_> {
         let raw = RawProgram {
             quantum_inputs,
             classical_inputs,
-            operations: inner.operations,
-            quantum_outputs: vec![inner.registers[&slot].token],
+            operations: inner.raw.operations,
+            quantum_outputs: vec![inner.raw.registers[&slot].token],
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };
@@ -1157,8 +1124,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let slot = self.quantum(module, span, &input, false)?;
         self.compiler
-            .charge(module, span, self.registers[&slot].size())?;
-        let reg = self.registers[&slot].clone();
+            .charge(module, span, self.raw.registers[&slot].size())?;
+        let reg = self.raw.registers[&slot].clone();
         let mut result_ty = None;
         let mut table = Vec::new();
         let mut seen = BTreeSet::new();
@@ -1201,13 +1168,13 @@ impl Lowerer<'_, '_> {
         let mut wires = reg.wires.clone();
         wires.extend((reg.wires.len()..bits).map(|_| self.wire()));
         let output = self.token();
-        self.operations.push(RawOp::LiftBasis {
+        self.raw.operations.push(RawOp::LiftBasis {
             input: reg.token,
             output,
             output_wires: wires.clone(),
             table,
         });
-        self.registers.insert(
+        self.raw.registers.insert(
             slot,
             Register {
                 token: output,
@@ -1258,12 +1225,12 @@ impl Lowerer<'_, '_> {
             module,
             function.span,
             &predicate,
-            &self.registers[&source_slot].basis,
+            &self.raw.registers[&source_slot].basis,
         )?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
         let ancilla_slot = self.quantum(module, span, &ancilla, true)?;
-        let initial_token = self.registers[&ancilla_slot].token;
+        let initial_token = self.raw.registers[&ancilla_slot].token;
         // This first source form exposes only the ancilla and classical outer
         // values. Other quantum registers remain in the surrounding frame.
         self.compiler.charge(module, body.span, env_size(env))?;
@@ -1279,7 +1246,7 @@ impl Lowerer<'_, '_> {
             })
             .collect();
         self.bind_env(binder, Binding::Live(ancilla), &mut local);
-        let start = self.operations.len();
+        let start = self.raw.operations.len();
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
@@ -1305,7 +1272,7 @@ impl Lowerer<'_, '_> {
         }
         let mut expected_input = initial_token;
         let mut use_ops = Vec::new();
-        for operation in &self.operations[start..] {
+        for operation in &self.raw.operations[start..] {
             match operation {
                 RawOp::Gate { gate, input, output } if matches!(gate, SingleGate::Z | SingleGate::T) && *input == expected_input => {
                     use_ops.push(ProtectedUse::ProtectedGate { bit: ProtectedBit { region: ProtectedRegion::Ancilla, index: 0 }, gate: *gate });
@@ -1314,11 +1281,12 @@ impl Lowerer<'_, '_> {
                 _ => return Err(self.error(module, body.span, ErrorCode::Unsupported, "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking")),
             }
         }
-        self.operations.truncate(start);
+        self.raw.operations.truncate(start);
         // The temporary gates become one protected operation below; their old
         // operation paths must not label this operation or a later expression.
         self.operation_sources.split_off(&vec![start]);
         let ancilla = self
+            .raw
             .registers
             .remove(&ancilla_slot)
             .expect("returned ancilla");
@@ -1332,10 +1300,11 @@ impl Lowerer<'_, '_> {
         }
         let output = self.token();
         let source_reg = self
+            .raw
             .registers
             .get_mut(&source_slot)
             .expect("protected source");
-        self.operations.push(RawOp::ComputeUseUncompute {
+        self.raw.operations.push(RawOp::ComputeUseUncompute {
             source: source_reg.token,
             source_out: output,
             targets: vec![],
@@ -1374,14 +1343,9 @@ fn lower_function_inner(
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
         compiler,
-        registers: BTreeMap::new(),
-        operations: Vec::new(),
+        raw: RawState::new(),
         operation_sources: BTreeMap::new(),
         tuple_binding_origins: Vec::new(),
-        next_token: 0,
-        next_wire: 0,
-        next_classical: 0,
-        next_slot: 0,
         effect: Effect::Unitary,
         effect_source: None,
         depth: 0,
@@ -1435,14 +1399,14 @@ fn lower_function_inner(
     }
     outputs(
         &result,
-        &lower.registers,
+        &lower.raw.registers,
         &mut quantum_outputs,
         &mut classical_outputs,
     );
     let raw = RawProgram {
         quantum_inputs,
         classical_inputs,
-        operations: lower.operations,
+        operations: lower.raw.operations,
         quantum_outputs,
         classical_outputs,
         declared_effect: effect(decl.kind),

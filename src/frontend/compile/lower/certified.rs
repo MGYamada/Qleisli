@@ -23,8 +23,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let source_slot = self.quantum(module, span, &source, false)?;
         self.compiler
-            .charge(module, span, self.registers[&source_slot].size())?;
-        let source_reg = self.registers[&source_slot].clone();
+            .charge(module, span, self.raw.registers[&source_slot].size())?;
+        let source_reg = self.raw.registers[&source_slot].clone();
         if source_reg.wires.len() >= MAX_CONTRACT_BITS {
             return Err(self.error(
                 module,
@@ -112,7 +112,7 @@ impl Lowerer<'_, '_> {
         }
         let wire = self.wire();
         let output = self.token();
-        self.operations.push(RawOp::CertifiedCompute {
+        self.raw.operations.push(RawOp::CertifiedCompute {
             source: source_reg.token,
             source_out: output,
             ancilla_wires: vec![wire],
@@ -120,7 +120,8 @@ impl Lowerer<'_, '_> {
             use_steps,
             logical_steps,
         });
-        self.registers
+        self.raw
+            .registers
             .get_mut(&source_slot)
             .expect("owned source")
             .token = output;
@@ -155,14 +156,9 @@ impl Lowerer<'_, '_> {
         )?;
         let mut inner = Lowerer {
             compiler: self.compiler,
-            registers: BTreeMap::new(),
-            operations: vec![],
+            raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             tuple_binding_origins: Vec::new(),
-            next_token: 0,
-            next_wire: 0,
-            next_classical: 0,
-            next_slot: 0,
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
@@ -224,8 +220,8 @@ impl Lowerer<'_, '_> {
         let raw = RawProgram {
             quantum_inputs,
             classical_inputs,
-            operations: inner.operations,
-            quantum_outputs: vec![inner.registers[&slot].token],
+            operations: inner.raw.operations,
+            quantum_outputs: vec![inner.raw.registers[&slot].token],
             classical_outputs: vec![],
             declared_effect: Effect::Unitary,
         };

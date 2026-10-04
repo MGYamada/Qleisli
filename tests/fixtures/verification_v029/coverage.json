@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "5a6fbf9c955c8cf1a41096a51020b7f1e4def62af976d05ae0c39387e5377896",
+  "surface_sha256": "5d5f16324d9523dab3682548075b539a381925e17ffb23791abeea6b350e2f4b",
   "groups": [
     {
       "id": "raw-core",
@@ -1358,7 +1358,8 @@
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/sized_source.rs",
-        "tests/ordinary_booleans.rs"
+        "tests/ordinary_booleans.rs",
+        "tests/mixed_booleans.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2151,6 +2152,14 @@
           ]
         },
         {
+          "path": "src/frontend/raw_state.rs",
+          "markers": [
+            "pub(crate) struct RawState",
+            "pub(crate) fn cnot(",
+            "pub(crate) fn measure_z("
+          ]
+        },
+        {
           "path": "src/frontend/sized/raw/preservation.rs",
           "markers": [
             "pub(super) fn validate(",
@@ -2173,15 +2182,23 @@
           "test": "all_four_truth_rows_match_independent_constants_in_both_profiles"
         },
         {
+          "path": "tests/mixed_booleans.rs",
+          "test": "pending_first_argument_keeps_entangled_owner_during_later_argument_measurement"
+        },
+        {
+          "path": "tests/mixed_booleans.rs",
+          "test": "representable_phases_match_independent_exact_targets_and_interference"
+        },
+        {
           "path": "src/frontend/sized/raw.rs",
           "test": "raw_source_replay_rejects_native_valid_semantic_and_structural_mutations"
         }
       ],
-      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound ordinary finite proposal for explicit native acceptance",
-      "checked_artifact": "Untrusted hierarchy payload, producer comparison request and source metadata",
+      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance",
+      "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
       "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
-      "gaps": "Producer consistency is not independent source meaning. Native initialization-move binding is an additional check on already checked artifacts, not general source preservation.; mixed quantum/Boolean Raw support, runtime invocation and CLI integration remain incomplete"
+      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete."
     },
     {
       "id": "checked-views",

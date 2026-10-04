@@ -147,3 +147,11 @@ failures distinguish projection and transport limits from source typing.
 These historical results remain unchanged while common Boolean preparation and
 source-bound execution are implemented. Mixed quantum execution and open
 classical invocation remain separate unfinished parts of that work.
+
+The [mixed Boolean study](mixed-boolean-v030/session.json) preserves twelve
+complete first projects and thirty-five observations of the preceding CLI.
+Independent Bell and pending-argument expectations retain measurement order and
+caller correlations. Its existing hierarchy accepts the recorded fine phase;
+the following Raw implementation's exact-eighth limitation is a selected-target
+boundary, not a language-wide rejection. Original sources and observations are
+unchanged; independent mixed execution tests accompany the new shared state.

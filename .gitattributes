@@ -103,3 +103,5 @@ tests/fixtures/review_v030alpha/hosted-lint-37221444899/failure-excerpt.txt -tex
 # Preserve exact Boolean first-run transcripts and the explicit test repair diff.
 tests/fixtures/frontend_v030/ordinary-booleans/*/*stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ordinary-booleans/test-repair.patch -text -whitespace
+tests/fixtures/frontend_v030/mixed-booleans/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/mixed-booleans/test-repair.patch -text -whitespace

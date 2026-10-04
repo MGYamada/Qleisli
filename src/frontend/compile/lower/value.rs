@@ -10,9 +10,10 @@
 use std::collections::BTreeMap;
 
 use super::super::{TreeSize, Ty, total_size};
-use crate::ir::{ClassicalId, TokenId, WireId};
+use crate::ir::ClassicalId;
 
-pub(super) type Slot = u32;
+pub(super) use crate::frontend::raw_state::Slot;
+pub(super) type Register = crate::frontend::raw_state::Register<std::convert::Infallible>;
 pub(super) type Env = BTreeMap<crate::frontend::resolve::locals::BinderKey, Binding>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -133,18 +134,5 @@ impl Value {
             Self::Tuple(fields) => Some(fields),
             _ => None,
         }
-    }
-}
-
-#[derive(Clone)]
-pub(super) struct Register {
-    pub(super) token: TokenId,
-    pub(super) wires: Vec<WireId>,
-    pub(super) basis: Ty,
-}
-
-impl Register {
-    pub(super) fn size(&self) -> usize {
-        1 + self.wires.len() + self.basis.tree_size().nodes
     }
 }

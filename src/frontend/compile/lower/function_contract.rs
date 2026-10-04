@@ -18,8 +18,8 @@ impl Lowerer<'_, '_> {
     ) -> Result<Value, CompileError> {
         let slot = self.quantum(module, span, &input, false)?;
         self.compiler
-            .charge(module, span, self.registers[&slot].size())?;
-        let basis = self.registers[&slot].basis.clone();
+            .charge(module, span, self.raw.registers[&slot].size())?;
+        let basis = self.raw.registers[&slot].basis.clone();
         let bits = basis.basis_bits().expect("quantum basis");
         if bits > MAX_CONTRACT_BITS {
             return Err(self.error(
