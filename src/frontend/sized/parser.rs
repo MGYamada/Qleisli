@@ -141,13 +141,11 @@ impl Projection<'_, '_> {
             .params
             .iter()
             .map(|parameter| {
-                let source::PatternKind::Name(name) = &parameter.pattern.kind else {
-                    return Err(unsupported(
-                        parameter.pattern.span,
-                        "function parameters must be names",
-                    ));
-                };
-                Ok((self.binding(name), self.ty(&parameter.ty)?, name.span))
+                Ok((
+                    self.pattern(&parameter.pattern)?,
+                    self.ty(&parameter.ty)?,
+                    parameter.pattern.span,
+                ))
             })
             .collect::<Result<_>>()?;
         let requires = declaration
@@ -212,12 +210,7 @@ impl Projection<'_, '_> {
                     .collect::<Result<_>>()?,
                 pattern.span,
             ),
-            source::PatternKind::Wildcard => {
-                return Err(unsupported(
-                    pattern.span,
-                    "implicit wildcard discard is unsupported",
-                ));
-            }
+            source::PatternKind::Wildcard => Pattern::Wildcard(pattern.span),
         })
     }
     fn argument(&self, operation: &source::StaticOp) -> Result<Argument> {

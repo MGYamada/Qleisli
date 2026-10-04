@@ -116,9 +116,15 @@ Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.
 That pattern matches only ordinary `Unit`, not an empty tuple, `Bits<0>`,
 `Q<Unit>` or `Q<Bits<0>>`. Nonempty tuple patterns preserve the same immediate
-arity and recursively match each child's exact shape. Ordinary runtime function
-parameters remain names; use `let` to destructure their values. Basis function
-parameters and coherent basis lifts also support patterns.
+arity and recursively match each child's exact shape. Ordinary function
+parameters, `let` bindings, basis function parameters and coherent basis lifts
+use this same pattern shape rule. A typed parameter remains one argument:
+`unitary fn f((a, b): (Bit, Bit), (): Unit) -> Bit { a xor b }` takes two
+arguments. Matching its first
+argument does not flatten the calling convention. Parameter names must be
+unique across the complete parameter list and distinct from static parameters.
+An ordinary wildcard may ignore unrestricted data; it cannot discard a quantum
+owner, including one nested inside an ordinary product or having zero width.
 
 The binder in `do () <- q; pure ()` describes the ordinary Unit basis of its
 quantum input. The existing coherent lift still consumes and returns a

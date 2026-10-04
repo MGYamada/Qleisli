@@ -190,11 +190,22 @@ fn declaration(f: &Function) -> Result<Scope> {
         }
     }
     let mut arguments = BTreeSet::new();
-    for (name, t, span) in &f.arguments {
-        if !arguments.insert(&name.name) {
-            return Err(err("name", *span, "duplicate runtime parameter"));
+    for (pattern, t, span) in &f.arguments {
+        // Parameter uniqueness covers the complete argument list, not only
+        // each individual product pattern. Wildcards introduce no name.
+        let mut pending = vec![pattern];
+        while let Some(pattern) = pending.pop() {
+            match pattern {
+                Pattern::Name(name, span) => {
+                    if !arguments.insert(&name.name) {
+                        return Err(err("name", *span, "duplicate runtime parameter"));
+                    }
+                }
+                Pattern::Tuple(fields, _) => pending.extend(fields.iter().rev()),
+                Pattern::Wildcard(_) => {}
+            }
         }
-        bind_name(name, ty(t, &scope, *span)?, *span, &mut scope)?;
+        bind(pattern, ty(t, &scope, *span)?, &mut scope)?;
     }
     let _ = ty(&f.result, &scope, f.span)?;
     Ok(scope)
@@ -254,6 +265,16 @@ fn bind_name(name: &BindingName, t: Ty, span: Span, scope: &mut Scope) -> Result
 fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
     fn go(pattern: &Pattern, t: Ty, scope: &mut Scope, names: &mut BTreeSet<String>) -> Result<()> {
         match (pattern, t.kind) {
+            (Pattern::Wildcard(span), kind) => {
+                if (Ty { kind }).linear() {
+                    return Err(err(
+                        "ownership",
+                        *span,
+                        "wildcard would discard quantum ownership",
+                    ));
+                }
+                Ok(())
+            }
             (Pattern::Name(name, span), kind) => {
                 if !names.insert(name.name.clone()) {
                     return Err(err("name", *span, "duplicate name in binding pattern"));

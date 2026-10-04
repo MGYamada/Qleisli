@@ -111,6 +111,16 @@ spellings are represented by the shared syntax. Unsupported finite constructs
 receive a located profile rejection; parsing a spelling does not add backend
 support. This implementation step does not add `Op<A,B>`/Basis-generic features.
 
+Ordinary and basis function parameters use the existing name, wildcard and
+tuple pattern syntax. The colon annotates the entire parameter pattern, and
+the source argument list keeps that parameter as one argument. For example,
+`unitary fn first((a, _): (Bit, Bit)) -> Bit { a }` takes one ordinary pair.
+Pattern checking preserves exact arity and nesting, rejects duplicate parameter
+names and checks quantum ownership even in unused declarations. Tuple patterns
+do not implicitly split a quantum register. Argument expressions retain their
+evaluation order and effects before callee binding; a wildcard or Unit pattern
+does not erase the computation that produced its argument.
+
 ## Declaration resolution and current profiles
 
 An imported declaration retains its canonical module and declaration name.

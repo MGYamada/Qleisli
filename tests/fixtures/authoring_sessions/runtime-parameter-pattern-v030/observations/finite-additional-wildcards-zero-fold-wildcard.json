@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/zero-fold-wildcard",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T17:52:24.139416+00:00",
+  "elapsed_seconds": 0.005435791972558945,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"expression is outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":123,\"end\":170,\"line\":2,\"column\":50},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "source_sha256": "3dad54f5fe7e944f1873627192b784a93899a46c11d449dfc566eb54d950add1",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "74857d08147f27d919021c4eda54b0f7d7edeccba35fa2c17a1bdb19c57e05bd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "profile": "finite",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "expression is outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 123,
+          "end": 170,
+          "line": 2,
+          "column": 50
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -266,29 +266,30 @@ impl Lowerer<'_, '_> {
             ));
         }
         let mut env = Env::new();
+        let mut names = BTreeSet::new();
         for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
-            let PatternKind::Name(name) = &param.pattern.kind else {
-                unreachable!("ordinary parameters are parsed as names")
-            };
             let (module, span) = site.map_or((key_name.0.as_str(), param.span), |site| {
                 (site.module, site.args[index].span)
             });
             self.compiler
                 .charge(module, span, value.tree_size().nodes)?;
             if value.ty() != ty {
+                let argument = match &param.pattern.kind {
+                    PatternKind::Name(name) => format!("argument `{}`", name.text),
+                    _ => format!("argument {}", index + 1),
+                };
                 return Err(self.error(
                     module,
                     span,
                     ErrorCode::TypeMismatch,
                     format!(
-                        "argument `{}` has the wrong type: expected `{}`, found `{}`",
-                        name.text,
+                        "{argument} has the wrong type: expected `{}`, found `{}`",
                         ty.runtime(),
                         value.ty().runtime()
                     ),
                 ));
             }
-            self.bind_env(name, Binding::Live(value), &mut env);
+            self.bind(&key_name.0, &param.pattern, value, &mut env, &mut names)?;
         }
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
@@ -311,18 +312,16 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        self.no_owned_bindings(
-            &key_name.0,
-            body.span,
-            &env,
-            decl.params.iter().filter_map(|param| {
-                if let PatternKind::Name(name) = &param.pattern.kind {
-                    Some(name)
-                } else {
-                    None
-                }
-            }),
-        )?;
+        let mut pending: Vec<_> = decl.params.iter().rev().map(|p| &p.pattern).collect();
+        let mut parameter_names = Vec::new();
+        while let Some(pattern) = pending.pop() {
+            match &pattern.kind {
+                PatternKind::Name(name) => parameter_names.push(name),
+                PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+                PatternKind::Wildcard => {}
+            }
+        }
+        self.no_owned_bindings(&key_name.0, body.span, &env, parameter_names)?;
         if self.effect > effect(decl.kind) {
             let (module, span) = self
                 .effect_source

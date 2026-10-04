@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Accept exact ordinary function parameter patterns through the common parser
+  and finite/sized checking. Keep whole argument types, source arity and effects;
+  reject duplicate names and implicit quantum-owner discard (#32, #43).
 - Restrict native round-trip compilation to current corpus provider roots,
   preserving migration archives as history. Select an explicit canonical
   bare-CR diagnostic input while retaining its original bytes (#27, #32).

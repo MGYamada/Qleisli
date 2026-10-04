@@ -1,0 +1,11 @@
+{
+  "format": 1,
+  "before_test_sha256": "1e1ed5ed7731a1cc240b68aeed260f06dd5e67b8755a8b99e9ade7a53df7e823",
+  "test_after_semantic_edit_sha256": "f76b64767fcfb743d845e56f3a9d5dd9f97901048cc08e8ffcbb583a586e5e14",
+  "retained_first_validation": {
+    "tests/fixtures/frontend_v030/runtime-parameter-patterns/latest/result.json": "f64c13b45c7a1d4f6c53fb43f8c4be4b35d2c173a9eb314facf12727c04db828",
+    "tests/fixtures/frontend_v030/runtime-parameter-patterns/latest/3.stdout.txt": "47e67a15d5ee8e39f18678870fe12da6daf5dc969344ad788e48c17e8db921d4"
+  },
+  "first_validation_result": "4 of 8 new integration tests passed; four failed due to test authoring or expected diagnostic precedence. No production repair follows from these failures.",
+  "scope": "Only current test-input selection and assertions change. Six separately named derivatives; original sources and baseline observations remain unchanged."
+}

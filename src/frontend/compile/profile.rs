@@ -31,16 +31,6 @@ pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
     }
     for parameter in &declaration.params {
         ty(&parameter.ty)?;
-        // Parsed ordinary parameters are names. Recheck that source-profile
-        // boundary for callers constructing or mutating the public AST.
-        if declaration.kind != FnKind::Basis
-            && !matches!(parameter.pattern.kind, PatternKind::Name(_))
-        {
-            return Err((
-                parameter.pattern.span,
-                "ordinary function parameters require names in the finite profile; destructure with let",
-            ));
-        }
     }
     ty(&declaration.return_type)?;
     if let FnBody::Quantum(body) = &declaration.body {

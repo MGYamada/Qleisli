@@ -1,0 +1,54 @@
+{
+  "format": "qleisli.historical-source-client-derivative",
+  "version": 1,
+  "status": "prepared-not-executed",
+  "baseline_git_commit": "56eb0725b77670be38d11ce450c1d525b90a5636",
+  "contract": "Issue #32 runtime parameter patterns: one exact typed pattern remains one argument, and ordinary nonlinear values may be dropped.",
+  "finding": "The former active negative expected a parse error for an ordinary parameter pattern. Once that pattern is supported, the frozen CBit spelling still causes a parse error and would falsely preserve the old pattern-rejection expectation. This was found by static source/control-flow review.",
+  "original": {
+    "path": "tests/fixtures/ergonomics/ordinary_parameter_pattern.qli",
+    "sha256": "5590df14b82b224fad81a8d495f3f5c01175e53fbcb9de3bbe25c163a7c3f567",
+    "bytes": 57
+  },
+  "previous_selected_derivative": {
+    "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/ordinary_parameter_pattern.qli",
+    "sha256": "5590df14b82b224fad81a8d495f3f5c01175e53fbcb9de3bbe25c163a7c3f567",
+    "bytes": 57
+  },
+  "current": {
+    "path": "tests/fixtures/frontend_v030/runtime-parameter-patterns/current/ergonomics/ordinary_parameter_pattern/main.qli",
+    "sha256": "535c421c36d5e00669104a66f7285b97fe2bc84fa5bdb55c0866202a9907bf71",
+    "bytes": 224
+  },
+  "manifest": {
+    "path": "tests/fixtures/frontend_v030/runtime-parameter-patterns/current/ergonomics/ordinary_parameter_pattern/Qargo.toml",
+    "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "bytes": 45
+  },
+  "transformations": [
+    "Replace all three CBit type tokens with Bit.",
+    "Rename the function unsupported to first to describe its now-supported ordinary pair projection.",
+    "Add copyright/license comment and a closed observe entry calling first on (0,0), (0,1), (1,0), (1,1), in that order."
+  ],
+  "expected": {
+    "ordinary_argument_count": 1,
+    "ordinary_argument_type": "(Bit,Bit)",
+    "result_type": "Bit",
+    "entry_output_bits": [
+      0,
+      0,
+      1,
+      1
+    ],
+    "entry_output_probability": 1
+  },
+  "consumer": {
+    "path": "tests/authoring_ergonomics.rs",
+    "test": "ordinary_parameter_patterns_execute_with_canonical_ordinary_types",
+    "before_sha256": "20e551a222f0642e08c7dbfa364461b66d01bcdbb04b2a267d33d5aa804be0f5",
+    "after_sha256": "7782cb1175da1a30ced2d330f779787b905c810080d0bbb95592357e957daa6c"
+  },
+  "historical_rejection": "The active test separately checks that the unchanged original spelling rejects specifically at CBit with the removed-type diagnostic.",
+  "performed": "Static review, exact source transformation and SHA-256 inventory checks only.",
+  "not_performed": "No Rust/Lean build, parser/native invocation, compilation or runtime test has been run for this derivative. Bounded integration validation is a separate record."
+}

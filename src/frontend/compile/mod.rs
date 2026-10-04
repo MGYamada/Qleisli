@@ -948,9 +948,34 @@ mod snapshot_tests {
     }
 
     #[test]
-    fn constructed_ordinary_parameter_patterns_reject_before_name_only_lowering() {
-        let source = "unitary fn keep(u: Unit) -> Unit { u }";
+    fn constructed_ordinary_parameter_patterns_use_runtime_binding_rules() {
+        let source = "unitary fn keep(u: Unit) -> Unit { () }";
         for kind in [PatternKind::Tuple(vec![]), PatternKind::Wildcard] {
+            let mut project = project(0);
+            let module = project.modules.get_mut("main").unwrap();
+            module.source = source.into();
+            module.ast = crate::frontend::parser::parse_module(source).unwrap();
+            let parameter = &mut module.ast.decls[0].params[0];
+            parameter.pattern.kind = kind;
+            assert!(
+                process_loaded_project(Path::new("main.qli"), &project, false)
+                    .expect("constructed ordinary Unit pattern")
+                    .is_none()
+            );
+        }
+        let source = "unitary fn keep(q: Q<Bit>) -> Q<Bit> { q }";
+        for (kind, code, message) in [
+            (
+                PatternKind::Tuple(vec![]),
+                ErrorCode::TypeMismatch,
+                "empty pattern requires ordinary Unit",
+            ),
+            (
+                PatternKind::Wildcard,
+                ErrorCode::Ownership,
+                "wildcard would discard quantum ownership",
+            ),
+        ] {
             let mut project = project(0);
             let module = project.modules.get_mut("main").unwrap();
             module.source = source.into();
@@ -959,15 +984,11 @@ mod snapshot_tests {
             let span = parameter.pattern.span;
             parameter.pattern.kind = kind;
             let error = process_loaded_project(Path::new("main.qli"), &project, false)
-                .expect_err("constructed runtime parameter must reject");
-            assert_eq!(error.code, ErrorCode::Unsupported);
+                .expect_err("constructed pattern cannot eliminate a quantum owner");
+            assert_eq!(error.code, code);
             assert_eq!(error.path, PathBuf::from("main.qli"));
             assert_eq!(error.span, span);
-            assert!(
-                error
-                    .message
-                    .contains("ordinary function parameters require names")
-            );
+            assert!(error.message.contains(message));
         }
     }
 

@@ -102,6 +102,7 @@ pub(super) enum Argument {
 #[derive(Clone, Debug)]
 pub(super) enum Pattern {
     Name(BindingName, Span),
+    Wildcard(Span),
     Tuple(Vec<Pattern>, Span),
 }
 #[derive(Clone, Debug)]
@@ -144,7 +145,8 @@ pub(super) struct Function {
     pub name: String,
     pub effect: Effect,
     pub parameters: Vec<Parameter>,
-    pub arguments: Vec<(BindingName, Type, Span)>,
+    /// One pattern and whole type per source argument; never flattened binders.
+    pub arguments: Vec<(Pattern, Type, Span)>,
     pub result: Type,
     pub requires: Vec<Requirement>,
     pub body: Block,

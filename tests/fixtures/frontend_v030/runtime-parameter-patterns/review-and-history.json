@@ -1,0 +1,97 @@
+{
+  "kind": "assistant-source-review-not-guardian-adoption",
+  "base_commit": "56eb0725b77670be38d11ce450c1d525b90a5636",
+  "reviewed_current_sources": [
+    {
+      "path": "src/frontend/ast.rs",
+      "before": "d030ccea0dcd5a22362e2f80cc49d1134dcd8b7a32b6af245259f24de39a763e",
+      "after": "20a42f9c0ad7c8d85f4904bea1aa7e0b3ca1ee8dc691a8903c6622ebf9a22d2b",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "before": "79d47195a752f803be7945e3bdd147a1de123eda721fde69d5ec061d1a9f4b89",
+      "after": "b06662afe8e73a2b03e518cb5cf86335543228e0070fe87e951b6d2434e6f639",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "before": "a8556edf08cc8caa528027c34f8cdbddfbb24d5432cf611c726c0b78e32d9618",
+      "after": "83bea0f04833006e25c1cba0a9ca356cf523ff51f5b47a7939ce961d5be5bd7d",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "before": "dfb9427d236eab2f0ff3465499f864858dfe394ec18ffec7708b5de9c010fe85",
+      "after": "886473517bf31a37ddb87bfe469967882351f5f5abe163e923691de2f5923748",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before": "02d30ba4a770080de0d30b152e4afc42a3b9f9ed14034efae01aeb0c2a0107d0",
+      "after": "fd68ff0147e10432fbb6d17b9313a94789a6fa83ebed4bef4c4860802854f05a",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "before": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+      "after": "dbaa96f9b74cfb468274490de5068d06fab5d7d6760adcb097f3e434ca3a0e87",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "before": "fe15a7da31c865b0aca9dab5e9f88bcc1a46d269e0f6ce3c6480900c6ec4433e",
+      "after": "79110e1bdf64af8dc17251b149d1955a152ae895cc0b02dda609531f93e49456",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before": "e759d8626606dbe7885954385aceff51103870a634bf6fa468c76b711b68ad26",
+      "after": "ce48e618321e083622d8072e183a87b33f0faa983909f39b63a456fbc2ff9ca8",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "before": "a06c1c226f4463248c89816ad7b8f172c877141f61b5c94a131893ed87f0e3c0",
+      "after": "f095dc55e81c12eff8b1a36baabc2878ddf85f9da35b73293cb9bb3b808bb870",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "before": "79219b953f65f7e54cc201aa7ae2e34d6de5917aefe1086fc7f6c7b0fe1c105e",
+      "after": "fa4375a8c98b8b3f7a30d14a8e17dd9a0eb3c4f4e59285760c6b86da69ea0a7c",
+      "surface_changed": false
+    }
+  ],
+  "review_scope": "Independent source review of whole-argument shape/arity, lexical identity, all-parameter/static collision checks, recursive quantum wildcard rejection, retained inputs/effects and public constructed ASTs; independent small reference/permutation/phase expectations. Root actual execution found test input grammar/entry mistakes and retained separate repairs. No new Lean rule, proof or guarantee admission.",
+  "successful_tests_per_toolchain": 75,
+  "selected_source_manifest_sha256": "01da76951cc4d2e13b228399eb77e539464d839a128612160de58209409f1705",
+  "study_manifests": {
+    "first-files.json": {
+      "sha256": "6b4d696ce0e5e550996c0fe6323350dfef1687c7453d91a21645ae55aedad93c",
+      "file_count": 48,
+      "unchanged": true
+    },
+    "files.json": {
+      "sha256": "1148f4a18122f46fce2385f16a1a8213d2dce0a5ed9069f5d07652a91c35b6bd",
+      "file_count": 131,
+      "unchanged": true
+    },
+    "repair-files.json": {
+      "sha256": "5435a761078230a1fa22f9a12005154bf7158e30a2b4dea917537c4b8522c850",
+      "file_count": 10,
+      "unchanged": true
+    }
+  },
+  "unchanged_protected_files": {
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "GOVERNANCE.md": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080"
+  },
+  "historical_inventory_fields_unchanged": [
+    "corpus",
+    "comparison"
+  ],
+  "full_ci_status": "Separate hosted run 37221444899 remains in progress on prior pushed head56eb072 / PR mergeaffcee3ca1b4385e22b66bfb269b20db22458326; it does not validate this new patch."
+}

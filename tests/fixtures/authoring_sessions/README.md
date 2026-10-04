@@ -131,3 +131,11 @@ one broader runtime parameter-pattern draft remains a parse rejection. The
 study separates ordinary Unit matching from coherent basis lifting and retains
 effectful-body/scalar-phase obligations for the implementation; it neither
 rewrites historical observations nor claims that the new patterns already work.
+
+The [runtime parameter-pattern study](runtime-parameter-pattern-v030/session.json)
+preserves exact ordinary Unit/product/wildcard parameters, ownership and
+declaration counterexamples, and existing named controls before implementation.
+Its 39 first finite/sized checks retain the original diagnostics; separate
+follow-ups preserve three unchanged named-control IR artifacts. Parameter trees
+remain distinct from argument lists, and the later bounded tests separate source
+checking, native acceptance and independent phase/reference expectations.

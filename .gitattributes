@@ -96,3 +96,6 @@ tests/fixtures/review_v030alpha/hosted-source-clients/validation/*.stdout.txt -t
 tests/fixtures/review_v030alpha/roundtrip-current-source-selection/*.stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-distribution-37218876223/14.stdout -text -whitespace
 tests/fixtures/review_v030alpha/hosted-distribution-37218876223/failure-excerpt.txt -text -whitespace
+# Retain parameter-pattern libtest output with its original final blank line.
+tests/fixtures/frontend_v030/runtime-parameter-patterns/*/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch -text -whitespace

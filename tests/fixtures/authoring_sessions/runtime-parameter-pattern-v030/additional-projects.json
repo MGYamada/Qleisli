@@ -1,0 +1,32 @@
+[
+  {
+    "category": "additional-wildcards",
+    "name": "let-wildcard",
+    "path": "additional-wildcards/let-wildcard",
+    "source_sha256": "744aafec8e2941dd97eb90473530301d52681350c302cde7eb899d9018a77eb4",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Same nonlinear wildcard policy in let binding, without parameter syntax changes."
+  },
+  {
+    "category": "additional-wildcards",
+    "name": "zero-fold-wildcard",
+    "path": "additional-wildcards/zero-fold-wildcard",
+    "source_sha256": "3dad54f5fe7e944f1873627192b784a93899a46c11d449dfc566eb54d950add1",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Same nonlinear wildcard policy in a zero-iteration fold; body remains generically checked."
+  },
+  {
+    "category": "additional-wildcards",
+    "name": "quantum-let-wildcard",
+    "path": "additional-wildcards/quantum-let-wildcard",
+    "source_sha256": "6827faad127444ba7718ce7d9758ba4a17d6c70d06c1f4dd1e88cf9a21b039ea",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Wildcard let must continue rejecting quantum ownership loss."
+  }
+]

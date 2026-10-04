@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T17:54:12.738599+00:00",
+  "elapsed_seconds": 0.005557791970204562,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"register types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":96,\"end\":103,\"line\":2,\"column\":23},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "binary_sha256": "74857d08147f27d919021c4eda54b0f7d7edeccba35fa2c17a1bdb19c57e05bd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "register types are outside the finite lowering profile",
+        "primary": {
+          "path": "main.qli",
+          "start": 96,
+          "end": 103,
+          "line": 2,
+          "column": 23
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

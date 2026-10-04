@@ -1,0 +1,61 @@
+{
+  "status": "observed",
+  "commands": [
+    {
+      "name": "closed-named-unit",
+      "mode": "finite",
+      "exit_code": 0,
+      "observation": "observations/followup-finite-closed-named-unit.json"
+    },
+    {
+      "name": "closed-named-swap",
+      "mode": "finite",
+      "exit_code": 0,
+      "observation": "observations/followup-finite-closed-named-swap.json"
+    },
+    {
+      "name": "zero-fold-quantum-wildcard",
+      "mode": "finite",
+      "exit_code": 1,
+      "observation": "observations/followup-finite-zero-fold-quantum-wildcard.json"
+    },
+    {
+      "name": "zero-fold-quantum-wildcard",
+      "mode": "sized",
+      "exit_code": 1,
+      "observation": "observations/followup-sized-zero-fold-quantum-wildcard.json"
+    },
+    {
+      "name": "let-nested-quantum-wildcard",
+      "mode": "finite",
+      "exit_code": 1,
+      "observation": "observations/followup-finite-let-nested-quantum-wildcard.json"
+    },
+    {
+      "name": "let-nested-quantum-wildcard",
+      "mode": "sized",
+      "exit_code": 1,
+      "observation": "observations/followup-sized-let-nested-quantum-wildcard.json"
+    },
+    {
+      "name": "closed-named-unit",
+      "mode": "emit-ir",
+      "exit_code": 0,
+      "observation": "observations/followup-emit-ir-closed-named-unit.json"
+    },
+    {
+      "name": "closed-named-swap",
+      "mode": "emit-ir",
+      "exit_code": 0,
+      "observation": "observations/followup-emit-ir-closed-named-swap.json"
+    },
+    {
+      "name": "named-effectful-unit",
+      "mode": "emit-ir",
+      "exit_code": 0,
+      "observation": "observations/followup-emit-ir-named-effectful-unit.json"
+    }
+  ],
+  "sources_and_executables_unchanged": true,
+  "scope": "Reuse the frozen prior CLI while production edits may begin. No current-working-tree rebuild or full source stability claim."
+}

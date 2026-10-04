@@ -39,6 +39,28 @@ fn patterned_basis_contracts_and_nary_clients_execute() {
 }
 
 #[test]
+fn ordinary_parameter_patterns_execute_with_canonical_ordinary_types() {
+    // Preserve the old source as a removed-type counterexample, rather than
+    // mistaking its CBit rejection for rejection of the now-supported pattern.
+    let legacy = source("ordinary_parameter_pattern");
+    let error = parse_module(&legacy).unwrap_err();
+    assert!(error.message.contains("CBit/CBits types were removed"));
+    assert_eq!(&legacy[error.span.start..error.span.end], "CBit");
+
+    let current = include_str!(
+        "fixtures/frontend_v030/runtime-parameter-patterns/current/ergonomics/ordinary_parameter_pattern/main.qli"
+    );
+    let program = compile_project(&SourceRoot::new(current).0).unwrap();
+    let result = run_closed(&program, SimulationLimits::default()).unwrap();
+    // The sole typed argument is an ordinary pair. Returning its first field
+    // and dropping its second field yields this complete four-input truth table.
+    assert_eq!(
+        result,
+        std::collections::BTreeMap::from([(vec![false, false, true, true], 1.0)])
+    );
+}
+
+#[test]
 fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
     for (name, code) in [
         ("duplicate_pattern", "ownership"),
@@ -49,7 +71,6 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
         ("basis_capture", "unknown_name"),
         ("basis_call_arity", "arity"),
         ("basis_value_not_callable", "type_mismatch"),
-        ("ordinary_parameter_pattern", "parse"),
         ("wildcard_not_injective", "ownership"),
         ("nary_duplicate_owner", "ownership"),
         ("nary_duplicate_binding", "ownership"),

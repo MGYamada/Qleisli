@@ -6,6 +6,30 @@ use std::collections::BTreeMap;
 
 const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];
 
+#[test]
+fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
+    for kind in ["basis", "iso", "unitary", "observe"] {
+        let source = format!(
+            "{kind} fn f(((a,_),()): ((Bit,Bit),Unit), _: Unit, (): Unit) -> Unit {{ () }}"
+        );
+        let syntax = parse_module(&source).unwrap();
+        let parameters = &syntax.decls[0].params;
+        assert_eq!(parameters.len(), 3);
+        let first = &parameters[0].pattern;
+        assert_eq!(&source[first.span.start..first.span.end], "((a,_),())");
+        let PatternKind::Tuple(fields) = &first.kind else {
+            panic!("one product argument retains its pattern tree");
+        };
+        assert_eq!(fields.len(), 2);
+        assert!(matches!(&fields[0].kind, PatternKind::Tuple(children) if children.len() == 2));
+        assert!(matches!(&fields[1].kind, PatternKind::Tuple(children) if children.is_empty()));
+        assert!(matches!(parameters[1].pattern.kind, PatternKind::Wildcard));
+        assert!(
+            matches!(&parameters[2].pattern.kind, PatternKind::Tuple(children) if children.is_empty())
+        );
+    }
+}
+
 fn prepare(source: &str, naturals: BTreeMap<String, u32>) {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
         .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))

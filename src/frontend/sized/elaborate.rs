@@ -688,9 +688,11 @@ impl Builder<'_> {
                 moved: BTreeSet::new(),
             };
             let mut inputs = Vec::new();
-            for (name, ty, span) in &function.arguments {
+            for (pattern, ty, span) in &function.arguments {
                 let value = frame.fresh(&concrete_type(ty, &resolved_naturals, *span)?, *span)?;
-                bind_name(name, value.clone(), *span, &mut scope, &mut frame)?;
+                // Destructuring binds the value's fields, but the declared
+                // argument and its exact input interface remain whole.
+                bind(pattern, value.clone(), &mut scope, &mut frame)?;
                 inputs.push(value);
             }
             self.charge_cells(inputs.iter().map(SourceValue::cells).sum(), function.span)?;
@@ -1385,6 +1387,16 @@ fn bind_name(
 }
 fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Frame) -> Result<()> {
     match pattern {
+        Pattern::Wildcard(span) => {
+            if value.ty.linear() {
+                return Err(error(
+                    "ownership",
+                    *span,
+                    "wildcard would discard quantum ownership",
+                ));
+            }
+            Ok(())
+        }
         Pattern::Name(name, span) => bind_name(name, value, *span, scope, frame),
         Pattern::Tuple(patterns, span) => {
             if value.ty.pattern_fields(patterns.len()).is_none()

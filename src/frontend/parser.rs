@@ -305,15 +305,7 @@ impl Parser {
         let mut params = Vec::new();
         if !self.at(&TokenKind::RParen) {
             loop {
-                let pattern = if kind == FnKind::Basis {
-                    self.pattern()?
-                } else {
-                    let name = self.ident()?;
-                    Pattern {
-                        span: name.span,
-                        kind: PatternKind::Name(name),
-                    }
-                };
+                let pattern = self.pattern()?;
                 self.expect(&TokenKind::Colon)?;
                 let ty = if kind == FnKind::Basis {
                     self.basis_type()?

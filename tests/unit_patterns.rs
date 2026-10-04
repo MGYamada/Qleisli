@@ -95,10 +95,10 @@ fn unit_basis_patterns_keep_exact_unary_function_and_predicate_arity() {
 }
 
 #[test]
-fn runtime_parameter_pattern_grammar_is_not_implicitly_expanded() {
+fn runtime_parameter_pattern_now_uses_the_common_exact_shape_rule() {
     let input = source("desired-unsupported", "runtime-parameter-pattern");
-    let error = parse_module(&input).unwrap_err();
-    assert_eq!(&input[error.span.start..error.span.end], "(");
+    parse_module(&input).unwrap();
+    check_project(&SourceRoot::new(&input).0).unwrap();
 }
 
 #[test]

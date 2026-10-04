@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+unitary fn first((a,b): (Bit,Bit)) -> Bit { a }
+
+observe fn main() -> (Bit,Bit,Bit,Bit) {
+    (first((0,0)),first((0,1)),first((1,0)),first((1,1)))
+}

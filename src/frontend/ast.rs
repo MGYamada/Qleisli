@@ -65,8 +65,8 @@ pub struct Decl {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Param {
-    /// Basis functions accept name/wildcard/product patterns. Ordinary
-    /// function parameters remain names. Tuple nodes retain their immediate arity.
+    /// One typed pattern is one argument. Name/wildcard/product patterns retain
+    /// immediate tuple arity; their ownership rules depend on the value's type.
     pub pattern: Pattern,
     pub ty: Type,
     pub span: Span,
