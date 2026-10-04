@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Restore contextual type words such as `Q` and `Op` as static natural names
+  in the shared parser, including comparisons, dimensions and specialization;
+  preserve ordinary runtime and operation-binder keyword rules (#32).
 - Keep the native round-trip fixture recorder warning-free under the actual
   Rust 1.85 Clippy toolchain while preserving its emitted proposal bytes.
 - Separate append-only admitted guarantee identities from current evidence in

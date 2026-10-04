@@ -267,17 +267,7 @@ impl Parser {
             }
             loop {
                 self.expect(&TokenKind::Static)?;
-                // The sized profile historically permits type words as Nat
-                // names. Keep this contextual: operation/runtime identifiers
-                // still use the ordinary reserved-word rules.
-                let natural = self.tokens.get(self.pos + 2).is_some_and(
-                    |token| matches!(&token.kind, TokenKind::Ident(name) if name == "Nat"),
-                );
-                let name = if natural {
-                    self.natural_ident()?
-                } else {
-                    self.ident()?
-                };
+                let name = self.ident()?;
                 self.expect(&TokenKind::Colon)?;
                 let kind = if self.word("Nat") {
                     self.bump();
@@ -402,12 +392,14 @@ impl Parser {
 
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
-        if Self::natural_name(&self.current().kind).is_some()
-            || matches!(
-                self.current().kind,
-                TokenKind::Zero | TokenKind::One | TokenKind::Natural(_) | TokenKind::LParen
-            )
-        {
+        if matches!(
+            self.current().kind,
+            TokenKind::Ident(_)
+                | TokenKind::Zero
+                | TokenKind::One
+                | TokenKind::Natural(_)
+                | TokenKind::LParen
+        ) {
             let natural = self.natural()?;
             let kind = if self.consume(&TokenKind::LBracket).is_some() {
                 let NatKind::Name(text) = natural.kind else {
@@ -588,10 +580,8 @@ impl Parser {
                                 .map_err(|_| parser.error("natural literal exceeds i128 limit"))?,
                         )
                     }
-                    kind => match Self::natural_name(kind) {
-                        Some(name) => NatKind::Name(name.to_owned()),
-                        None => return Err(parser.error("expected a static natural expression")),
-                    },
+                    TokenKind::Ident(name) => NatKind::Name(name.clone()),
+                    _ => return Err(parser.error("expected a static natural expression")),
                 };
                 parser.bump();
                 Self::natural_node(kind, token.span)
@@ -1122,7 +1112,7 @@ impl Parser {
         {
             let open = self.bump();
             self.bump();
-            let index = self.natural_ident()?;
+            let index = self.ident()?;
             self.expect_word("in")?;
             let start = self.natural()?;
             self.expect(&TokenKind::DotDot)?;
@@ -1605,31 +1595,6 @@ impl Parser {
         Ok(left)
     }
 
-    // Type words retain their lexer classification and meaning in type/runtime
-    // syntax. Only a static-natural grammar position treats them as names.
-    fn natural_name(kind: &TokenKind) -> Option<&str> {
-        match kind {
-            TokenKind::Ident(name) => Some(name),
-            TokenKind::Q => Some("Q"),
-            TokenKind::Op => Some("Op"),
-            TokenKind::Unit => Some("Unit"),
-            TokenKind::Bit => Some("Bit"),
-            TokenKind::CBit => Some("CBit"),
-            _ => None,
-        }
-    }
-
-    fn natural_ident(&mut self) -> Result<Ident, ParseError> {
-        match Self::natural_name(&self.current().kind) {
-            Some(name) if name != "_" => {
-                let text = name.to_owned();
-                let span = self.bump().span;
-                Ok(Ident { text, span })
-            }
-            _ => Err(self.error("expected an identifier")),
-        }
-    }
-
     fn ident(&mut self) -> Result<Ident, ParseError> {
         match &self.current().kind {
             TokenKind::Ident(name) if name != "_" => {
@@ -1679,6 +1644,3 @@ impl Parser {
         }
     }
 }
-
-#[cfg(test)]
-mod tests;

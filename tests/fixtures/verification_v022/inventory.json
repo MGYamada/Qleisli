@@ -3419,7 +3419,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
+      "sha256": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3435,6 +3435,16 @@
           "const MAX_NESTING: usize = 64;",
           "const MAX_TUPLE_FIELDS: usize = 64;"
         ]
+      }
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "sha256": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
       }
     },
     {
