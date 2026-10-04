@@ -56,9 +56,13 @@ class ConstitutionalRecords(unittest.TestCase):
             checker.check_constitution(self.root, **kwargs)
 
     def git(self, *args):
+        # These disposable repositories must not leave background maintenance
+        # writing .git after the subprocess returns and cleanup begins.
         return subprocess.run(["git", "-C", str(self.root), "-c", "user.name=Record Test",
                                "-c", "user.email=record-test@example.invalid", "-c", "commit.gpgsign=false",
-                               "-c", "core.hooksPath=/dev/null", *args], check=True, capture_output=True).stdout
+                               "-c", "core.hooksPath=/dev/null", "-c", "maintenance.auto=false",
+                               "-c", "gc.auto=0", "-c", "gc.autoDetach=false", *args],
+                              check=True, capture_output=True).stdout
 
     def commit(self):
         self.git("add", "--all")

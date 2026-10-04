@@ -37,3 +37,9 @@ tests/fixtures/verification_v029/cutover/logs/contract-tests.log -text -whitespa
 tests/fixtures/verification_v029/cutover/logs/handles-tests.log -text -whitespace
 tests/fixtures/verification_v029/cutover/logs/review20-final.log -text -whitespace
 tests/fixtures/verification_v029/cutover/logs/rust-tests.log -text -whitespace
+
+# Preserve reviewed patch context and deliberately noncanonical lexical inputs.
+tests/fixtures/constitution_v030/candidate.patch -text -whitespace
+tests/fixtures/constitution_v030/ownership-rename.patch -text -whitespace
+tests/fixtures/constitution_v030/witness-weakening/mutation.patch -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/*.qli -text -whitespace
