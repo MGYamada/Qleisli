@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Preserve the exact routed-control experiment as in-memory source evidence;
+  distinguish its unused historical manifests from schema-2 filesystem admission
+  instead of rewriting recorded inputs (#303).
 - Check scoped release readiness from a reviewed criterion base, complete
   evidence and exact same-run CI receipts/artifacts. Preserve pending broader
   obligations and require real replay of admitted guarantees; missing inputs

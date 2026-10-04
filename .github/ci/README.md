@@ -17,6 +17,14 @@ scoped acceptance and exact-candidate validation evidence. This is the first ide
 component of #141, not complete interpretation/proof/artifact enforcement.
 Human decisions and changes to enforcement code or workflows still need review.
 
+Edition coverage distinguishes filesystem projects from exact historical
+in-memory experiments. `scripts/edition_history.json` pins the original routed
+control experiment, generator, 42 sources and 14 unused manifests. The generator
+passed source strings directly to `ParsedProgram`; its malformed manifests were
+never filesystem-admission evidence. The checker preserves those bytes and
+reports them separately. Changed or additional inputs do not inherit this
+classification; ordinary projects still require a valid schema-2 manifest.
+
 The v4 ledger separates append-only admitted identities from current evidence
 bindings. Explicit code registrations bind reviewed human events and exact
 proposal entries; fixed verifier profiles name their precise identity coverage.
