@@ -1856,17 +1856,23 @@ fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
 #[test]
 fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
     use qleisli::frontend::parser::parse_module;
-    for source in [
-        include_str!("fixtures/frontend_v030/common-parser/multi-declaration.qli").to_owned(),
-        "pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}".into(),
-    ] {
-        let ast = parse_module(&source).unwrap();
-        assert_eq!(ast.decls.len(), 2);
-        let error = ParsedProgram::parse(sources(&source)).unwrap_err();
-        assert_eq!(error.code(), "unsupported");
-        assert_eq!(error.span(), ast.decls[1].span);
-        assert!(error.message().contains("one function per module"));
+    let acyclic = include_str!("fixtures/frontend_v030/common-parser/multi-declaration.qli");
+    let ast = parse_module(acyclic).unwrap();
+    assert_eq!(ast.decls.len(), 2);
+    let parsed = ParsedProgram::parse(sources(acyclic)).unwrap();
+    assert_eq!(parsed.syntax("main"), Some(&ast));
+    for entry in ["main::f", "main::g"] {
+        parsed
+            .instantiate(entry, BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
     }
+    let cycle = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}";
+    assert_eq!(parse_module(cycle).unwrap().decls.len(), 2);
+    let error = ParsedProgram::parse(sources(cycle)).unwrap_err();
+    assert_eq!(error.code(), "cycle");
+    assert!(error.message().contains("mutually recursive"));
 }
 
 #[test]
@@ -2042,7 +2048,7 @@ fn indexed_projection_preserves_profile_diagnostic_order_before_resolution() {
             "z",
         ),
         (
-            format!("{ordinary} {ordinary}"),
+            format!("{ordinary} {unsupported}"),
             "not valid source".to_owned(),
             "a",
         ),

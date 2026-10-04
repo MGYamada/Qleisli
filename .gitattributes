@@ -63,3 +63,7 @@ tests/fixtures/review_v030alpha/static-natural-type-words/*.stdout.txt -text -wh
 tests/fixtures/review_v030alpha/static-natural-type-words/root-isolated/*.stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/static-natural-type-words/root-msrv-tests/stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/sized-lexical/sized-source.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/multi-declaration/after/focused-tests.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/after/latest-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/after/msrv-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/sized-declarations-independent/validation/sized-declarations.stdout -text -whitespace

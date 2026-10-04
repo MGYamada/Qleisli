@@ -16,8 +16,27 @@ fn unsupported(span: Span, message: &str) -> Error {
     )
 }
 
-pub(super) fn project(module: &source::Module, index: Option<&Index<'_>>) -> Result<Module> {
-    Projection { index }.module(module)
+pub(super) fn project(module: &source::Module) -> Result<Module> {
+    if module.decls.is_empty() {
+        return Err(unsupported(
+            module.span,
+            "requires at least one ordinary function",
+        ));
+    }
+    Ok(Module {
+        functions: module
+            .decls
+            .iter()
+            .map(|declaration| project_declaration(declaration, None))
+            .collect::<Result<_>>()?,
+    })
+}
+
+pub(super) fn project_declaration(
+    declaration: &source::Decl,
+    index: Option<&Index<'_>>,
+) -> Result<Function> {
+    Projection { index }.function(declaration)
 }
 
 struct Projection<'a, 'ast> {
@@ -82,14 +101,7 @@ impl Projection<'_, '_> {
             source::Count::Power(n) => Count::Power(self.natural(n)),
         }
     }
-    fn module(&self, module: &source::Module) -> Result<Module> {
-        if module.decls.len() != 1 {
-            return Err(unsupported(
-                module.decls.get(1).map_or(module.span, |d| d.span),
-                "permits one function per module until declaration-identity cycle checking is available",
-            ));
-        }
-        let declaration = &module.decls[0];
+    fn function(&self, declaration: &source::Decl) -> Result<Function> {
         let effect = match declaration.kind {
             source::FnKind::Unitary => Effect::Unitary,
             source::FnKind::Iso => Effect::Iso,
@@ -160,18 +172,16 @@ impl Projection<'_, '_> {
         let source::FnBody::Quantum(body) = &declaration.body else {
             return Err(unsupported(declaration.span, "requires a runtime block"));
         };
-        Ok(Module {
-            function: Function {
-                lexical: self.index.map(|index| Arc::new(index.table.clone())),
-                name: declaration.name.text.clone(),
-                effect,
-                parameters,
-                arguments,
-                result: self.ty(&declaration.return_type)?,
-                requires,
-                body: self.block(body)?,
-                span: declaration.span,
-            },
+        Ok(Function {
+            lexical: self.index.map(|index| Arc::new(index.table.clone())),
+            name: declaration.name.text.clone(),
+            effect,
+            parameters,
+            arguments,
+            result: self.ty(&declaration.return_type)?,
+            requires,
+            body: self.block(body)?,
+            span: declaration.span,
         })
     }
 

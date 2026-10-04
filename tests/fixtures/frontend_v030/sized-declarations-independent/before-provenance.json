@@ -1,0 +1,9 @@
+{
+  "commit": "0d93a186fbe2e1345542595b75f680f867e1e4e5",
+  "observer_executable_sha256": "6869aacc2d3e5a7bb11b3bf08be81ae41d700ca26433318af16adc828a0e3ea4",
+  "source_identity": "../lexical-resolution/after/source-identity.json",
+  "source_identity_sha256": "8d7f4896dc5625ae50f160cda9c34c925374f34e111b24c7ea4e523b79a06386",
+  "executables": "../lexical-resolution/after/executables.json",
+  "all_production_hashes_match_commit": 96,
+  "capture": "before.json and additional-before.json use this unchanged retained executable. Sources were saved before observation."
+}

@@ -8,7 +8,7 @@ use qleisli::frontend::{
 use std::{collections::BTreeMap, fs, path::PathBuf};
 
 #[test]
-fn recorded_profile_differences_remain_explicit() {
+fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
     let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/frontend_v030/shared-resolution/initial-study");
     for (case, finite, sized) in [
@@ -18,7 +18,8 @@ fn recorded_profile_differences_remain_explicit() {
         ("reserved-module", false, true),
         ("underscore-module", false, true),
         ("private-unused-import", false, false),
-        ("same-module-two-declarations", true, false),
+        // #32 removes this adapter restriction; historical outputs stay intact.
+        ("same-module-two-declarations", true, true),
         ("duplicate-declarations", false, false),
         ("moved-local-shadows-import", true, false),
         ("declaration-call-cycle", true, false),

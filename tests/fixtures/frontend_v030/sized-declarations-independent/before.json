@@ -1,0 +1,194 @@
+[
+  {
+    "case": "phase-same",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: main:114..165: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "phase-backward",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: main:77..137: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "phase-split",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: ok\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "providers",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/b.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: a:64..114: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/b.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "unused-type",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:42..81: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"result does not match the function return type: expected `Q<Bit>`, found `Unit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type/main.qli\", span: Span { start: 78, end: 80 }, line: 2, column: 37 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "unused-owner",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:42..93: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner/main.qli\", span: Span { start: 90, end: 91 }, line: 2, column: 49 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "unused-static-arm",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:42..129: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm/main.qli\", span: Span { start: 96, end: 128 }, line: 2, column: 55 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "zero-fold-capture",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:42..148: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli\", span: Span { start: 102, end: 141 }, line: 2, column: 61 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "sibling-cycle",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:41..77: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "unused-provider-cycle",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:47..83: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "self-recursion",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:95..137: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "nondecreasing-recursion",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:93..135: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "private-import",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli:9..15: `dep::hidden` is not public\nsized.parse: dep:50..88: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"`dep::hidden` is not public\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli\", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "collision",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli:9..13: name `gate` collides with another declaration or import\nsized.parse: main:57..93: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli\", span: Span { start: 9, end: 13 }, line: 1, column: 10 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "duplicate",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli:53..58: duplicate declaration `entry`\nsized.parse: main:42..79: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"project\", message: \"duplicate declaration `entry`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli\", span: Span { start: 53, end: 58 }, line: 2, column: 12 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "rename",
+    "argv": [
+      "/private/tmp/qleisli-lexical-after-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/main.qli:14..16: parse error: expected `;`, found identifier\nsized.parse: main:14..16: parse: expected `;`, found identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `;`, found identifier\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/main.qli\", span: Span { start: 14, end: 16 }, line: 1, column: 15 }) }\n",
+    "stderr": ""
+  }
+]

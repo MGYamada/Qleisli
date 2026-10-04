@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli:18..23: sealed module `std::quantum` has no public name `phase`
+sized.parse: ok
+finite.check: Diagnostic { code: "project", message: "sealed module `std::quantum` has no public name `phase`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }

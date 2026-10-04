@@ -1,0 +1,145 @@
+{
+  "format": "qleisli.preserved-authoring-study",
+  "version": 1,
+  "source_directory": "/private/tmp/qleisli-multidecl-study-fae0",
+  "snapshot_directory": "initial-study",
+  "baseline": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "status": "byte-identical historical source/session/observation snapshot; no new execution",
+  "cases": [
+    "private-forward-sibling",
+    "public-sibling-provider",
+    "same-name-separate-modules",
+    "import-terminal-bindings",
+    "unused-bad-function",
+    "mutual-siblings",
+    "duplicate-siblings",
+    "private-imported-sibling",
+    "import-rename-still-unsupported",
+    "import-collides-sibling"
+  ],
+  "files": {
+    "duplicate-siblings/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "duplicate-siblings/main.qli": {
+      "sha256": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741",
+      "bytes": 72
+    },
+    "import-collides-sibling/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "import-collides-sibling/dep.qli": {
+      "sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "bytes": 41
+    },
+    "import-collides-sibling/main.qli": {
+      "sha256": "1df82d61a60c0aabd2343b97bb48424206a9e0b8b140e2af2c822a93d7f41f3b",
+      "bytes": 95
+    },
+    "import-rename-still-unsupported/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "import-rename-still-unsupported/dep.qli": {
+      "sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "bytes": 41
+    },
+    "import-rename-still-unsupported/main.qli": {
+      "sha256": "a345d9aa61b2d318b15bb3dece7ded5803fce1965edfefbcbf03c5a2d189edc3",
+      "bytes": 68
+    },
+    "import-terminal-bindings/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "import-terminal-bindings/a.qli": {
+      "sha256": "b0b2437b842a54c120072806b5e3a91cd992593e2b45be34d3f9e4bd2906db7d",
+      "bytes": 41
+    },
+    "import-terminal-bindings/b.qli": {
+      "sha256": "71d62682d8a24a73f9ee16bd951d4a528a6a32d920d325e383c5e90e69c48470",
+      "bytes": 42
+    },
+    "import-terminal-bindings/main.qli": {
+      "sha256": "15d47c56a182c989eec046eb70321ad019126921d928cfb105815338ff679877",
+      "bytes": 123
+    },
+    "mutual-siblings/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "mutual-siblings/main.qli": {
+      "sha256": "b97a39eea8cca4e7dca9776e12fcfc12abb8054155a5cec65034496cbd45907c",
+      "bytes": 78
+    },
+    "observations.json": {
+      "sha256": "ea4cad81df080cf857c510d3421728c6329e10a5a62c2983f697fcecf41a717a",
+      "bytes": 7542
+    },
+    "private-forward-sibling/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "private-forward-sibling/main.qli": {
+      "sha256": "d86bb79dd6af8564d4341fc7e44099a09c6831416c81b99013a125529c771ce8",
+      "bytes": 85
+    },
+    "private-imported-sibling/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "private-imported-sibling/dep.qli": {
+      "sha256": "4b46fa141d4a192dfd3b33fdb1465bd11e816290cd0b8830e2789ae7b2b13cd9",
+      "bytes": 90
+    },
+    "private-imported-sibling/main.qli": {
+      "sha256": "b2f900a8017fdd62e7427e3e0ca7e9e7a4ed466af6ef2406e990b3bb4037f5eb",
+      "bytes": 62
+    },
+    "public-sibling-provider/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "public-sibling-provider/main.qli": {
+      "sha256": "d8a45795a59d776689e3f1f7fccd09ee75880b072b57a4ce90c9534103e80ff8",
+      "bytes": 118
+    },
+    "same-name-separate-modules/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "same-name-separate-modules/a.qli": {
+      "sha256": "d5f354c30921b1715a4bb3d3fe13485588133aa4bd5c41bbf1c36955890a9b5b",
+      "bytes": 88
+    },
+    "same-name-separate-modules/b.qli": {
+      "sha256": "d5f354c30921b1715a4bb3d3fe13485588133aa4bd5c41bbf1c36955890a9b5b",
+      "bytes": 88
+    },
+    "same-name-separate-modules/main.qli": {
+      "sha256": "6c48d699b5e8f71e34fdce7bfa78168a20253b83894f1551d48d591d4631968f",
+      "bytes": 77
+    },
+    "session.json": {
+      "sha256": "57cd94a96b46cc2f8c5573dc62eb0005f0f55afdf9b2d6abe82c7afe873acdcc",
+      "bytes": 2113
+    },
+    "unused-bad-function/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "unused-bad-function/main.qli": {
+      "sha256": "4e142765ab163e10274032c7b86182c1b88627a697b45b6006ca8a1f58c54c0a",
+      "bytes": 74
+    }
+  },
+  "validation": {
+    "all_copied_bytes_identical": true,
+    "all_original_session_source_hashes_match": true,
+    "original_source_files": 17,
+    "observations": 10
+  },
+  "limits": "Original argv, absolute paths, diagnostic text, exit codes and session claims are preserved verbatim. This manifest authenticates copied content only; it does not rerun or independently authenticate the historical process."
+}

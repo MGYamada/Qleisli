@@ -1,0 +1,2 @@
+use std::quantum::phase;pub unitary fn gate(q:Q<Bit>)->Q<Bit>{a_helper(q)}
+unitary fn a_helper(q:Q<Bit>)->Q<Bit>{phase[1,2](q)}

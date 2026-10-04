@@ -1,0 +1,41 @@
+{
+  "baseline": "../lexical-resolution/after",
+  "baseline_commit": "0d93a186fbe2e1345542595b75f680f867e1e4e5",
+  "unchanged_observations": [
+    "additional-shadow-static-missing-argument",
+    "additional-shadow-static-valid-argument",
+    "duplicate-pattern",
+    "finite-branch-check",
+    "finite-branch-run",
+    "finite-rebind-check",
+    "finite-rebind-run",
+    "fold-two-activations",
+    "hide-live-owner",
+    "initializer-rebind",
+    "moved-shadows-import",
+    "provider-h-check",
+    "provider-h-run",
+    "provider-x-check",
+    "provider-x-run",
+    "shadow-static-operation",
+    "sized-fold-check",
+    "sized-fold-run",
+    "sized-recursive-check",
+    "sized-recursive-run",
+    "static-branch-rebind",
+    "zero-fold-capture"
+  ],
+  "intentionally_changed": {
+    "multiple-unused-invalid": {
+      "before": "finite.load: ok, 1 local modules\nsized.parse: main:41..78: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` was not returned or explicitly consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/multiple-unused-invalid/main.qli\", span: Span { start: 18, end: 19 }, line: 1, column: 19 }) }\n",
+      "after": "finite.load: ok, 1 local modules\nsized.parse: main:34..39: unsupported: sized preparation profile: unsupported runtime expression\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` was not returned or explicitly consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/multiple-unused-invalid/main.qli\", span: Span { start: 18, end: 19 }, line: 1, column: 19 }) }\n"
+    },
+    "multiple-acyclic": {
+      "before": "finite.load: ok, 1 local modules\nsized.parse: main:39..84: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available\nfinite.check: ok\n",
+      "after": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: ok\n"
+    }
+  },
+  "proposal_bytes_equal": 6,
+  "native_checks_after": 6,
+  "one_qubit_executions_after": 6
+}

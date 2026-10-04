@@ -94,9 +94,10 @@ deep sized natural types therefore reach the common limit one level earlier
 than the removed parser. These are engineering limits, not the constitutional
 quantitative Resource Safety theorem.
 
-All declarations remain in the common AST. The sized profile currently rejects
-a second declaration at that declaration's span, pending common checking of
-multiple declarations and their recursion rules. Existing empty sized type/pattern/block,
+All declarations remain in the common AST. The sized profile projects every
+supported ordinary function in source order and checks each declaration,
+including unused siblings, before preparation succeeds. Empty sized modules
+remain unsupported. Existing empty sized type/pattern/block,
 empty `yield`, empty specialization brackets and parameter trailing-comma
 spellings are represented by the shared syntax. Unsupported finite constructs
 receive a located profile rejection; parsing a spelling does not add backend
@@ -114,22 +115,32 @@ continues to shadow a declaration with the same name; failed local lookup does
 not fall back to that declaration. Evidence retains the original source,
 dependencies, canonical names and static bindings.
 
-The current shared declaration resolver preserves these temporary differences
-between the existing checking profiles:
+The current shared declaration resolver has the following profile boundaries:
 
 | Condition | Finite project | Sized explicit module map |
 | --- | --- | --- |
 | Unused import cycle | Rejected | Permitted; actual call/provider cycles are still checked |
 | Import of the module's own declaration | Rejected as a collision, or as private | Permitted for that same declaration, including private visibility |
 | Declaration recursion | Rejected | Only the existing checked decreasing self-call is permitted |
-| Multiple declarations in a module | Checked, including unused declarations | Rejected by the current profile |
+| Multiple declarations in a module | Checked, including unused declarations | Checked, including unused declarations |
+
+Same-module sibling calls may refer forward or backward and may use private
+declarations. Every declaration has its own lexical table; its identity is
+distinct from its source position and from equal names in other modules.
+Sized self-recursion must call the identical declaration and satisfy the
+existing natural-parameter decrease check. Mutual call/provider cycles remain
+rejected. Checking all generic bodies includes static branches and zero-count
+fold bodies; it does not certify every concrete specialization or bypass the
+independent native checks on actual proposals.
 
 Existing module-name and primitive-set restrictions remain profile-specific.
 The sized API loads only the supplied module map and its specified primitives;
 it does not implicitly discover bundled source modules. Common declaration
-identity does not yet unify local owner/static-binder checking or grant the
-final 0.3.0 syntax. The implementation contract and remaining convergence are
-tracked in [#41](https://github.com/MGYamada/Qleisli/issues/41) and
+and lexical identities are shared, while the finite and sized type, effect and
+ownership judgments still require convergence. This does not grant the final
+0.3.0 syntax. The implementation contract and remaining convergence are tracked
+in [#32](https://github.com/MGYamada/Qleisli/issues/32),
+[#41](https://github.com/MGYamada/Qleisli/issues/41) and
 [#65](https://github.com/MGYamada/Qleisli/issues/65).
 
 ## Migration and evidence
@@ -142,8 +153,8 @@ this change; its diagnostic now comes from the shared character rule.
 Reserved-word identifiers in old sized source must be renamed. Misplaced docs
 must move to their module/declaration attachment boundary. Unclosed block
 comments now use the common `unterminated block comment` diagnostic. The former
-one-function parse error is now a profile restriction after the complete Module
-is parsed; no additional recursion becomes valid. Edition remains 2026 because
+one-function restriction is removed: supported ordinary siblings share one
+module, while mutual recursion remains rejected. Edition remains 2026 because
 edition names the constitutional regime, while release compatibility records
 these source changes.
 
@@ -162,5 +173,14 @@ original profile observations, 25 matching command results and five identical
 small proposals, including distinct same-named providers and decreasing
 self-recursion. Private Rust debug representations are not canonical names or
 evidence formats; their printed fields change with the internal resolver.
+
+`tests/fixtures/frontend_v030/lexical-resolution/` retains the subsequent shared
+local/static binding comparisons. The `multi-declaration/` and
+`sized-declarations-independent/` packets preserve original rejected siblings,
+their declared acceptance/diagnostic changes, and independent small phase/axis
+comparisons of split-module and same-module programs. Earlier failed sources
+and results remain historical evidence. Existing single-declaration observations
+and six small proposal byte sequences are unchanged by the sibling extension;
+newly accepted source still undergoes its actual native check.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

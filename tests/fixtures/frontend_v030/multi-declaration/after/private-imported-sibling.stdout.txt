@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-imported-sibling/main.qli:9..15: `dep::helper` is not public
+sized.parse: main:0..16: visibility: dependency dep::helper is private
+finite.check: Diagnostic { code: "project", message: "`dep::helper` is not public", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/private-imported-sibling/main.qli", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }

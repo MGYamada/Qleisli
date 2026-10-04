@@ -142,7 +142,7 @@ impl ParsedProgram {
                 };
                 Error::new(code, e.span, e.message).in_module(name)
             })?;
-            let projected = parser::project(&module, None).map_err(|e| e.in_module(name))?;
+            let projected = parser::project(&module).map_err(|e| e.in_module(name))?;
             syntax.insert(name.clone(), module);
             modules.insert(name.clone(), projected);
         }
@@ -158,11 +158,12 @@ impl ParsedProgram {
                 &module.decls[declaration.ast_index],
                 |_| None,
             );
-            modules.insert(
-                declaration.name.0.clone(),
-                parser::project(module, Some(&index))
-                    .map_err(|error| error.in_module(&declaration.name.0))?,
-            );
+            modules
+                .get_mut(&declaration.name.0)
+                .expect("projected module")
+                .functions[declaration.ast_index] =
+                parser::project_declaration(&module.decls[declaration.ast_index], Some(&index))
+                    .map_err(|error| error.in_module(&declaration.name.0))?;
         }
         let mut program = Self {
             sources,
@@ -225,9 +226,9 @@ impl ParsedProgram {
             .modules
             .get_key_value(&declaration.name.0)
             .expect("resolved module");
-        // The current projection rejects multiple declarations before resolution.
-        debug_assert_eq!(parsed.function.name, declaration.name.1);
-        (module, &parsed.function)
+        let function = &parsed.functions[declaration.ast_index];
+        debug_assert_eq!(function.name, declaration.name.1);
+        (module, function)
     }
 
     fn resolution_error(failure: Failure) -> Error {

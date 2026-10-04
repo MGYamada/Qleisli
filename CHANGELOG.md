@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check every supported ordinary declaration in sized modules, including
+  private and forward siblings and unused bodies. Preserve distinct definition
+  identities, public host-entry visibility, decreasing self-recursion and
+  rejection of mutual call/provider cycles (#32).
 - Resolve local, basis, static-natural and static-operation bindings through
   common structural identities in both finite compilation and sized checking
   and elaboration. Preserve dynamic ownership, source diagnostic order,

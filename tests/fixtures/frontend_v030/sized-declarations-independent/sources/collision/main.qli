@@ -1,0 +1,3 @@
+use dep::gate;
+pub unitary fn entry(q:Q<Bit>)->Q<Bit>{q}
+unitary fn gate(q:Q<Bit>)->Q<Bit>{q}

@@ -3579,7 +3579,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "f17ee82e54e40b3c0df4286a34e2918eebde287ad7cb9a3e6ebb302b6d4614c2",
+      "sha256": "e2928779d30d4b45e7227a77f5bb013fa827e5ed62af112803de747fdf9a10a7",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3617,7 +3617,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "d096e015d055b4f0f82dcbb8b148fce66b0892c1e2632c4ec13461f7c703a724",
+      "sha256": "71a944c9df4a2d125fb87b33d7c0c0a2b08d505a7619a23bedd4262b688b5d75",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3631,7 +3631,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "2f118dd45410114d820f020a26e725d176c12208509aebc8dd94fd7665b4775a",
+      "sha256": "dbc35aa8970e68722e5e8e224229e20cbcb9c390d07acb08939bfd81091f9986",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3790,7 +3790,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "f3e86eb4aa196451c64c15e7180d04beca3730c7b9ce885fad5d159137600917",
+      "sha256": "25fc2251f393e830540a5cd63bb0dedfc1354c1e791d32ef8222c425898facd4",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5313,7 +5313,7 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "9ff2f4460b57546bf35ae7228c82d996df8ae5503dee9ea6524247ec90573253",
+      "tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",

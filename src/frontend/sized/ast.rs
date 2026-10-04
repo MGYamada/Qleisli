@@ -157,5 +157,6 @@ pub(super) struct Function {
 }
 #[derive(Clone, Debug)]
 pub(super) struct Module {
-    pub function: Function,
+    /// Exactly one projection per common declaration, in original source order.
+    pub functions: Vec<Function>,
 }

@@ -1,0 +1,110 @@
+[
+  {
+    "case": "ambiguous-import",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli:19..23: name `gate` collides with another declaration or import\nsized.parse: main:12..24: name: ambiguous imported name gate\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli\", span: Span { start: 19, end: 23 }, line: 1, column: 20 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "collision",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli:9..13: name `gate` collides with another declaration or import\nsized.parse: main:0..14: name: import shadows the local function\nfinite.check: Diagnostic { code: \"project\", message: \"name `gate` collides with another declaration or import\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli\", span: Span { start: 9, end: 13 }, line: 1, column: 10 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "duplicate",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli:53..58: duplicate declaration `entry`\nsized.parse: main:53..58: name: duplicate declaration entry\nfinite.check: Diagnostic { code: \"project\", message: \"duplicate declaration `entry`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli\", span: Span { start: 53, end: 58 }, line: 2, column: 12 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "nondecreasing-recursion",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:83..90: cycle: self-recursion needs a strictly decreasing natural argument\nfinite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "phase-backward",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: ok\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "phase-same",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: ok\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "phase-split",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: ok\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "private-import",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli:9..15: `dep::hidden` is not public\nsized.parse: main:0..16: visibility: dependency dep::hidden is private\nfinite.check: Diagnostic { code: \"project\", message: \"`dep::hidden` is not public\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli\", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "providers",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/b.qli:18..23: sealed module `std::quantum` has no public name `phase`\nsized.parse: ok\nfinite.check: Diagnostic { code: \"project\", message: \"sealed module `std::quantum` has no public name `phase`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/b.qli\", span: Span { start: 18, end: 23 }, line: 1, column: 19 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "rename",
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/main.qli:14..16: parse error: expected `;`, found identifier\nsized.parse: main:14..16: parse: expected `;`, found identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `;`, found identifier\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/main.qli\", span: Span { start: 14, end: 16 }, line: 1, column: 15 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "self-recursion",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: ok\nfinite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "sibling-cycle",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "source-order-errors",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:77..79: type: type or tuple/size shape mismatch: expected Bit, found Tuple([])\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors/main.qli\", span: Span { start: 128, end: 129 }, line: 3, column: 48 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "unused-owner",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:90..91: ownership: unbound or consumed value q\nfinite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner/main.qli\", span: Span { start: 90, end: 91 }, line: 2, column: 49 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "unused-provider-cycle",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported\nfinite.check: Diagnostic { code: \"recursive_call\", message: \"recursive function calls are not supported\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/main.qli\", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "unused-static-arm",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:125..126: ownership: unbound or consumed value q\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm/main.qli\", span: Span { start: 96, end: 128 }, line: 2, column: 55 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "unused-type",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:78..80: type: type or tuple/size shape mismatch: expected Bit, found Tuple([])\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"result does not match the function return type: expected `Q<Bit>`, found `Unit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type/main.qli\", span: Span { start: 78, end: 80 }, line: 2, column: 37 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  },
+  {
+    "case": "zero-fold-capture",
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:139..140: ownership: unbound or consumed value r\nfinite.check: Diagnostic { code: \"unsupported\", message: \"expression is outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli\", span: Span { start: 102, end: 141 }, line: 2, column: 61 }) }\n",
+    "stderr": "",
+    "exit_code": 0
+  }
+]

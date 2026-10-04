@@ -1,0 +1,2 @@
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}
+unitary fn unused(q:Q<Bit>)->(){()}

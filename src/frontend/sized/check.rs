@@ -327,52 +327,52 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
             .imports(owner, &program.syntax[module], Profile::Sized)
             .map_err(ParsedProgram::resolution_error)?;
         let parsed = program.modules.get_mut(module).expect("projected module");
-        Arc::make_mut(
-            parsed
-                .function
-                .lexical
-                .as_mut()
-                .expect("indexed sized function"),
-        )
-        .bind_globals(|name| {
-            program
+        for function in &mut parsed.functions {
+            Arc::make_mut(function.lexical.as_mut().expect("indexed sized function")).bind_globals(
+                |name| {
+                    program
+                        .resolution
+                        .local(owner, name)
+                        .map(Target::Declaration)
+                        .or_else(|| imports.imports.get(name).copied())
+                },
+            );
+        }
+        // Source order controls diagnostics; DefId controls identity. They are
+        // deliberately independent, including for forward sibling calls.
+        for function in &program.modules[module].functions {
+            let id = program
                 .resolution
-                .local(owner, name)
-                .map(Target::Declaration)
-                .or_else(|| imports.imports.get(name).copied())
-        });
-        let parsed = &program.modules[module];
-        let id = program
-            .resolution
-            .local(owner, &parsed.function.name)
-            .expect("projected declaration");
-        let result = (|| {
-            let mut scope = declaration(&parsed.function)?;
-            let expected = ty(&parsed.function.result, &scope, parsed.function.span)?;
-            let mut checker = Checker {
-                program,
-                definition: id,
-                function: &parsed.function,
-                edges: BTreeSet::new(),
-            };
-            checker.block(&parsed.function.body, &mut scope, Some(&expected))?;
-            if scope.values.values().any(|binding| binding.ty.linear()) {
-                return Err(err(
-                    "ownership",
-                    parsed.function.body.span,
-                    "function leaves live quantum arguments unconsumed",
-                ));
-            }
-            Ok(checker.edges)
-        })();
-        edges.insert(
-            id,
-            result
-                .map_err(|e| e.in_module(module))?
-                .into_iter()
-                .map(|id| (id, Span::default()))
-                .collect(),
-        );
+                .local(owner, &function.name)
+                .expect("projected declaration");
+            let result = (|| {
+                let mut scope = declaration(function)?;
+                let expected = ty(&function.result, &scope, function.span)?;
+                let mut checker = Checker {
+                    program,
+                    definition: id,
+                    function,
+                    edges: BTreeSet::new(),
+                };
+                checker.block(&function.body, &mut scope, Some(&expected))?;
+                if scope.values.values().any(|binding| binding.ty.linear()) {
+                    return Err(err(
+                        "ownership",
+                        function.body.span,
+                        "function leaves live quantum arguments unconsumed",
+                    ));
+                }
+                Ok(checker.edges)
+            })();
+            edges.insert(
+                id,
+                result
+                    .map_err(|e| e.in_module(module))?
+                    .into_iter()
+                    .map(|id| (id, Span::default()))
+                    .collect(),
+            );
+        }
         program.resolution.set_scope(owner, imports);
     }
     // Every self-call has already passed the symbolic decrease check above.
