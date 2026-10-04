@@ -99,3 +99,4 @@ tests/fixtures/review_v030alpha/hosted-distribution-37218876223/failure-excerpt.
 # Retain parameter-pattern libtest output with its original final blank line.
 tests/fixtures/frontend_v030/runtime-parameter-patterns/*/*.stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch -text -whitespace
+tests/fixtures/review_v030alpha/hosted-lint-37221444899/failure-excerpt.txt -text -whitespace

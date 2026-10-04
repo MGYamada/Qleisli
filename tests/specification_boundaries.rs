@@ -94,8 +94,6 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     }
     for a in [false, true] {
         for b in [false, true] {
-            let av = u8::from(a);
-            let bv = u8::from(b);
             let left = if a { "x(init0())" } else { "init0()" };
             let right = if b { "x(init0())" } else { "init0()" };
             deterministic(
