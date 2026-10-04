@@ -11,16 +11,16 @@
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 use qleisli::AcceptedProgram;
-use qleisli::contract::exact::Budget;
+use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
 use qleisli::interchange::native::{Kernel, Proposal};
 use qleisli::interchange::{Version, export_with_meanings};
 use qleisli::ir::{
-    BasisShape, BitControl, CircuitAction, CircuitStep, Effect, QuantumPort, RawOp, RawProgram,
-    SingleGate, TokenId, WireId,
+    BasisShape, BitControl, CircuitAction, CircuitStep, ClassicalId, Effect, QuantumPhi,
+    QuantumPort, RawOp, RawProgram, SingleGate, TokenId, WireId,
 };
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -221,6 +221,344 @@ fn identity() -> FunctionIdentity {
     }
 }
 
+/// Count actual receipt edges after native decoding, including both snapshots
+/// and both branch arms. A traversal implementation alone is not coverage.
+fn receipt_coverage(program: &RawProgram) -> BTreeMap<&'static str, usize> {
+    fn steps(
+        steps: &[CircuitStep],
+        placement: &'static str,
+        snapshot: &'static str,
+        branch: Option<bool>,
+        pending: &mut Vec<Arc<FunctionEvidence>>,
+        counts: &mut BTreeMap<&'static str, usize>,
+    ) {
+        for step in steps {
+            if let CircuitAction::Contract { evidence, .. } = &step.action {
+                *counts.entry(placement).or_default() += 1;
+                if snapshot != "root" {
+                    *counts.entry(snapshot).or_default() += 1;
+                }
+                if let Some(arm) = branch {
+                    *counts
+                        .entry(if arm { "then_calls" } else { "else_calls" })
+                        .or_default() += 1;
+                }
+                pending.push(Arc::clone(evidence));
+            }
+        }
+    }
+    fn ops(
+        list: &[RawOp],
+        snapshot: &'static str,
+        branch: Option<bool>,
+        pending: &mut Vec<Arc<FunctionEvidence>>,
+        counts: &mut BTreeMap<&'static str, usize>,
+    ) {
+        for op in list {
+            match op {
+                RawOp::ApplyUnitary { steps: calls, .. } => {
+                    steps(
+                        calls,
+                        "apply_unitary_calls",
+                        snapshot,
+                        branch,
+                        pending,
+                        counts,
+                    );
+                }
+                RawOp::CertifiedCompute {
+                    use_steps,
+                    logical_steps,
+                    ..
+                } => {
+                    steps(
+                        use_steps,
+                        "certified_use_calls",
+                        snapshot,
+                        branch,
+                        pending,
+                        counts,
+                    );
+                    steps(
+                        logical_steps,
+                        "certified_logical_calls",
+                        snapshot,
+                        branch,
+                        pending,
+                        counts,
+                    );
+                }
+                RawOp::ClassicalBranch {
+                    then_ops, else_ops, ..
+                } => {
+                    ops(then_ops, snapshot, Some(true), pending, counts);
+                    ops(else_ops, snapshot, Some(false), pending, counts);
+                }
+                _ => {}
+            }
+        }
+    }
+    let (mut counts, mut pending, mut seen) = (BTreeMap::new(), Vec::new(), BTreeSet::new());
+    ops(&program.operations, "root", None, &mut pending, &mut counts);
+    while let Some(receipt) = pending.pop() {
+        if seen.insert(Arc::as_ptr(&receipt) as usize) {
+            *counts.entry("unique_receipts").or_default() += 1;
+            ops(
+                &receipt.implementation().operations,
+                "implementation_calls",
+                None,
+                &mut pending,
+                &mut counts,
+            );
+            ops(
+                &receipt.specification().operations,
+                "specification_calls",
+                None,
+                &mut pending,
+                &mut counts,
+            );
+        } else {
+            *counts.entry("shared_receipts").or_default() += 1;
+        }
+    }
+    counts
+}
+
+fn phase_matrix(exponent: i32) -> Matrix {
+    Matrix::new(
+        2,
+        2,
+        vec![
+            Exact::one(),
+            Exact::zero(),
+            Exact::zero(),
+            Exact::phase(exponent),
+        ],
+    )
+    .unwrap()
+}
+
+fn call(receipt: &Arc<FunctionEvidence>) -> CircuitStep {
+    CircuitStep {
+        controls: vec![],
+        action: CircuitAction::Contract {
+            indices: vec![0],
+            evidence: Arc::clone(receipt),
+            adjoint: false,
+        },
+    }
+}
+
+fn named_receipt(
+    name: &str,
+    implementation: RawProgram,
+    specification: RawProgram,
+) -> Arc<FunctionEvidence> {
+    Arc::new(
+        FunctionEvidence::check(
+            BasisType::Bit,
+            implementation,
+            specification,
+            FunctionIdentity {
+                implementation: name.into(),
+                ..identity()
+            },
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap(),
+    )
+}
+
+fn certified(receipt: &Arc<FunctionEvidence>, output: u32) -> RawOp {
+    RawOp::CertifiedCompute {
+        source: TokenId(0),
+        source_out: TokenId(output),
+        ancilla_wires: vec![WireId(1)],
+        function: vec![0, 1],
+        use_steps: vec![call(receipt)],
+        logical_steps: vec![call(receipt)],
+    }
+}
+
+fn record_case(name: &str, bytes: &[u8], counts: &BTreeMap<&'static str, usize>) {
+    // The fixture recorder preserves these exact accepted proposals separately
+    // from the immutable 799-pair baseline. The gate itself always runs in CI.
+    let hex = bytes
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    println!("ROUNDTRIP_ARTIFACT\t{name}\t{hex}");
+    println!("ROUNDTRIP_COVERAGE\t{name}\t{counts:?}");
+}
+
+#[test]
+fn positive_evidence_coverage_reaches_every_retained_path() {
+    let kernel = kernel();
+    let t = named_receipt(
+        "coverage:T",
+        gates(&[SingleGate::T]),
+        FiniteMeaning::phase(BasisType::Bit, vec![0, 1])
+            .unwrap()
+            .target_ir()
+            .unwrap(),
+    );
+    // Two distinct parents share T; one retains it in the implementation and
+    // the other in the specification. The accepted graph must retain both.
+    let calls = || circuit(1, vec![call(&t), call(&t)]);
+    let s_impl = named_receipt(
+        "coverage:S-implementation",
+        calls(),
+        gates(&[SingleGate::T, SingleGate::T]),
+    );
+    let s_spec = named_receipt(
+        "coverage:S-specification",
+        gates(&[SingleGate::T, SingleGate::T]),
+        calls(),
+    );
+    let mut computed = gates(&[]);
+    computed.operations = vec![certified(&t, 1)];
+    computed.quantum_outputs = vec![TokenId(1)];
+    let branch = |condition| RawProgram {
+        quantum_inputs: vec![port(1)],
+        classical_inputs: vec![],
+        operations: vec![
+            RawOp::ClassicalConst {
+                value: condition,
+                output: ClassicalId(0),
+            },
+            RawOp::ClassicalBranch {
+                condition: ClassicalId(0),
+                then_ops: vec![RawOp::ApplyUnitary {
+                    input: TokenId(0),
+                    output: TokenId(1),
+                    steps: vec![call(&s_impl)],
+                }],
+                else_ops: vec![certified(&t, 2)],
+                quantum_phis: vec![QuantumPhi {
+                    then_token: TokenId(1),
+                    else_token: TokenId(2),
+                    output: TokenId(3),
+                    output_wires: vec![WireId(2)],
+                }],
+                classical_phis: vec![],
+            },
+        ],
+        quantum_outputs: vec![TokenId(3)],
+        classical_outputs: vec![],
+        declared_effect: Effect::Unitary,
+    };
+    let cases = [
+        (
+            "nested-shared-dag",
+            circuit(1, vec![call(&s_impl), call(&s_spec)]),
+            4,
+            vec![
+                "apply_unitary_calls",
+                "implementation_calls",
+                "specification_calls",
+                "shared_receipts",
+            ],
+        ),
+        (
+            "certified-use-and-logical",
+            computed,
+            1,
+            vec![
+                "certified_use_calls",
+                "certified_logical_calls",
+                "shared_receipts",
+            ],
+        ),
+        (
+            "branch-true",
+            branch(true),
+            2,
+            vec![
+                "then_calls",
+                "else_calls",
+                "implementation_calls",
+                "certified_use_calls",
+                "certified_logical_calls",
+            ],
+        ),
+        (
+            "branch-false",
+            branch(false),
+            1,
+            vec![
+                "then_calls",
+                "else_calls",
+                "implementation_calls",
+                "certified_use_calls",
+                "certified_logical_calls",
+            ],
+        ),
+    ];
+    let mut total = BTreeMap::new();
+    for (name, raw, phase, required) in cases {
+        let bytes = Proposal::from_raw(&raw, None, Version::V2, None)
+            .unwrap()
+            .artifact()
+            .to_vec();
+        let checked = kernel.check(&bytes, None).unwrap();
+        assert_eq!(
+            bytes,
+            encode(checked.program()),
+            "{name}: accepted shape or bindings changed"
+        );
+        let counts = receipt_coverage(checked.program().raw());
+        for key in required {
+            assert!(
+                counts.get(key).copied().unwrap_or(0) > 0,
+                "{name}: missing {key}"
+            );
+        }
+        let found = receipts(checked.program().raw());
+        assert_eq!(found.len(), counts["unique_receipts"]);
+        assert_eq!(
+            assert_cache_matches_implementation(checked.program(), name),
+            found.len()
+        );
+        for receipt in found {
+            let expected = match receipt.identity().implementation.as_str() {
+                "coverage:T" => phase_matrix(1),
+                "coverage:S-implementation" | "coverage:S-specification" => phase_matrix(2),
+                other => panic!("{name}: unexpected receipt {other}"),
+            };
+            assert_eq!(
+                receipt.meaning(),
+                &expected,
+                "{name}: independent receipt coefficients"
+            );
+        }
+        // Check the complete decoded root against an independent 2x2 phase
+        // table, including the selected branch and cleanup's logical action.
+        let meaning = MeaningEvidence::check(
+            checked.program().raw().clone(),
+            FiniteMeaning::phase(BasisType::Bit, vec![0, phase]).unwrap(),
+            identity(),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        assert_eq!(
+            meaning
+                .receipt()
+                .circuit()
+                .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap(),
+            phase_matrix(i32::from(phase))
+        );
+        for (&key, &count) in &counts {
+            *total.entry(key).or_insert(0) += count;
+        }
+        record_case(name, &bytes, &counts);
+    }
+    assert_eq!(
+        total["unique_receipts"], 8,
+        "positive evidence coverage shrank"
+    );
+}
+
 #[test]
 fn qirf2_meaning_entries_execute_the_checked_table() {
     use SingleGate::{H, T, X, Z};
@@ -257,6 +595,7 @@ fn qirf2_meaning_entries_execute_the_checked_table() {
             FiniteMeaning::phase(pair(), vec![0, 0, 0, 4]),
         ),
     ];
+    let mut covered = 0;
     for (name, implementation, target) in cases {
         let target = target.unwrap();
         let bits = target.signature().bits().unwrap();
@@ -304,7 +643,14 @@ fn qirf2_meaning_entries_execute_the_checked_table() {
             restored, bytes,
             "{name}: meaning round trip changed the artifact"
         );
+        record_case(
+            &format!("meaning/{name}"),
+            &bytes,
+            &receipt_coverage(checked.program().raw()),
+        );
+        covered += 1;
     }
+    assert_eq!(covered, 7, "positive meaning coverage shrank");
 }
 
 #[test]

@@ -536,6 +536,14 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::StaticIf { .. }
+            | ExprKind::StaticFold { .. }
+            | ExprKind::Controlled { .. } => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "expression is outside the finite lowering profile",
+            )),
             ExprKind::ApplyContract {
                 implementation,
                 specification,
@@ -551,10 +559,26 @@ impl Lowerer<'_, '_> {
                     env,
                 )
             }
-            ExprKind::Adjoint { function, input }
-            | ExprKind::RepeatStatic {
-                function, input, ..
-            } => {
+            ExprKind::Adjoint { input, .. } | ExprKind::RepeatStatic { input, .. } => {
+                let function = match &expr.kind {
+                    ExprKind::Adjoint {
+                        operation:
+                            StaticOp {
+                                kind: StaticOpKind::Name(name),
+                                ..
+                            },
+                        ..
+                    } => name,
+                    ExprKind::RepeatStatic { function, .. } => function,
+                    _ => {
+                        return Err(self.error(
+                            module,
+                            expr.span,
+                            ErrorCode::Unsupported,
+                            "finite adjoint requires a function name",
+                        ));
+                    }
+                };
                 let value = self.expr(module, input, env)?;
                 let slot = self.quantum(module, input.span, &value, false)?;
                 let basis = self.registers[&slot].basis.clone();

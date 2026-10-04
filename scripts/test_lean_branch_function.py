@@ -126,9 +126,8 @@ def rust_compare(records, project, log):
             commands.append('let receipt=FunctionEvidence::check('+finite.rust_basis(entry['signature'])+','+
                 observation.rust_program(entry['implementation'])+','+observation.rust_program(entry['specification'])+','+
                 completion.rust_identity(entry['identity'])+',&mut budget).ok()?;')
-            commands.append('receipt.check_binding(&'+completion.rust_identity(binding['identity'])+',&'+
+            commands.append('receipt.check_binding(&'+finite.rust_basis(binding['signature'])+',&'+completion.rust_identity(binding['identity'])+',&'+
                 observation.rust_program(binding['implementation'])+',&'+observation.rust_program(binding['specification'])+').ok()?;')
-            commands.append('if receipt.signature()!=&'+finite.rust_basis(binding['signature'])+'{return None;}')
             commands.append('receipts.push(std::sync::Arc::new(receipt));')
         if len(case['functions'])!=len(case['bindings']):commands.append('return None;')
         commands.append('Some(receipts.iter().map(|r|(r.depth(),r.expanded_steps())).collect::<Vec<_>>())')

@@ -2,7 +2,7 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli::contract::{ContractError, FunctionEvidence, FunctionIdentity};
+use qleisli::contract::{BasisType, ContractError, FunctionEvidence, FunctionIdentity};
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
@@ -140,7 +140,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         let receipt = Arc::clone(receipts(&program.program().operations)[0]);
         let identity: FunctionIdentity = receipt.identity().clone();
         receipt
-            .check_binding(&identity, receipt.implementation(), receipt.specification())
+            .check_binding(
+                &BasisType::Bit,
+                &identity,
+                receipt.implementation(),
+                receipt.specification(),
+            )
             .unwrap();
         for mutation in 0..5 {
             let mut changed = identity.clone();
@@ -160,7 +165,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
                 }
             }
             assert_eq!(
-                receipt.check_binding(&changed, receipt.implementation(), receipt.specification()),
+                receipt.check_binding(
+                    &BasisType::Bit,
+                    &changed,
+                    receipt.implementation(),
+                    receipt.specification()
+                ),
                 Err(ContractError::EvidenceMismatch)
             );
         }
@@ -169,7 +179,12 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         drop(root);
         // Neither recompilation nor removal mutates the owned, frozen receipt.
         receipt
-            .check_binding(&identity, receipt.implementation(), receipt.specification())
+            .check_binding(
+                &BasisType::Bit,
+                &identity,
+                receipt.implementation(),
+                receipt.specification(),
+            )
             .unwrap();
         assert_eq!(
             run_closed(&program, SimulationLimits::default()).unwrap()[&vec![true]],

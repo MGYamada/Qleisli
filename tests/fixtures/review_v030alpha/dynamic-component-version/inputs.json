@@ -1,0 +1,234 @@
+[
+  {
+    "kind": "preparation",
+    "request": {
+      "inputs": {
+        "quantum": [
+          {
+            "owner": 4,
+            "basis": [
+              {
+                "tag": "unit"
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": []
+      },
+      "fresh": [
+        {
+          "owner": 7,
+          "basis": [
+            {
+              "tag": "bit"
+            }
+          ],
+          "axes": [
+            13
+          ]
+        }
+      ]
+    },
+    "packet": {
+      "initializations": [
+        {
+          "interface": {
+            "inputs": {
+              "quantum": [
+                {
+                  "owner": 4,
+                  "basis": [
+                    {
+                      "tag": "unit"
+                    }
+                  ],
+                  "axes": []
+                }
+              ],
+              "classical": []
+            },
+            "outputs": {
+              "quantum": [
+                {
+                  "owner": 4,
+                  "basis": [
+                    {
+                      "tag": "unit"
+                    }
+                  ],
+                  "axes": []
+                },
+                {
+                  "owner": 7,
+                  "basis": [
+                    {
+                      "tag": "bit"
+                    }
+                  ],
+                  "axes": [
+                    13
+                  ]
+                }
+              ],
+              "classical": []
+            }
+          },
+          "effect": "iso",
+          "body": {
+            "tag": "init0",
+            "output": 7
+          }
+        }
+      ],
+      "outputs": {
+        "quantum": [
+          {
+            "owner": 4,
+            "basis": [
+              {
+                "tag": "unit"
+              }
+            ],
+            "axes": []
+          },
+          {
+            "owner": 7,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              13
+            ]
+          }
+        ],
+        "classical": []
+      }
+    }
+  },
+  {
+    "kind": "readout",
+    "request": {
+      "inputs": {
+        "quantum": [
+          {
+            "owner": 4,
+            "basis": [
+              {
+                "tag": "unit"
+              }
+            ],
+            "axes": []
+          },
+          {
+            "owner": 7,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              13
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "owners": [
+        7
+      ],
+      "result": 99
+    },
+    "packet": {
+      "measurements": [
+        {
+          "interface": {
+            "inputs": {
+              "quantum": [
+                {
+                  "owner": 4,
+                  "basis": [
+                    {
+                      "tag": "unit"
+                    }
+                  ],
+                  "axes": []
+                },
+                {
+                  "owner": 7,
+                  "basis": [
+                    {
+                      "tag": "bit"
+                    }
+                  ],
+                  "axes": [
+                    13
+                  ]
+                }
+              ],
+              "classical": []
+            },
+            "outputs": {
+              "quantum": [
+                {
+                  "owner": 4,
+                  "basis": [
+                    {
+                      "tag": "unit"
+                    }
+                  ],
+                  "axes": []
+                }
+              ],
+              "classical": [
+                {
+                  "value": 11,
+                  "basis": [
+                    {
+                      "tag": "bit"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "effect": "observe",
+          "body": {
+            "tag": "observe_z",
+            "input": 7,
+            "output": 11
+          }
+        }
+      ],
+      "pack": [
+        11
+      ],
+      "outputs": {
+        "quantum": [
+          {
+            "owner": 4,
+            "basis": [
+              {
+                "tag": "unit"
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": [
+          {
+            "value": 99,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

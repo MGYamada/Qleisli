@@ -4,6 +4,7 @@ mod basis;
 mod circuit;
 mod lower;
 mod operations;
+mod profile;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -479,7 +480,10 @@ impl Compiler<'_> {
                 decl.static_params.iter().map(|p| &p.name.text).collect();
             for name in called_names(decl)
                 .into_iter()
-                .chain(decl.static_params.iter().filter_map(|p| p.meaning.as_ref()))
+                .chain(decl.static_params.iter().filter_map(|p| match &p.kind {
+                    StaticParamKind::Operation { meaning, .. } => meaning.as_ref(),
+                    StaticParamKind::Natural => None,
+                }))
             {
                 if static_names.contains(&name.text) {
                     continue;
@@ -619,8 +623,13 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
                     stack.push(Node::Expr(input));
                     stack.push(Node::Names(vec![implementation, specification]));
                 }
-                ExprKind::Adjoint { function, input }
-                | ExprKind::RepeatStatic {
+                ExprKind::Adjoint { operation, input } => {
+                    stack.push(Node::Expr(input));
+                    let mut names = Vec::new();
+                    operations::called_static_names(operation, &mut names);
+                    stack.push(Node::Names(names));
+                }
+                ExprKind::RepeatStatic {
                     function, input, ..
                 } => {
                     stack.push(Node::Expr(input));
@@ -635,6 +644,9 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
                     stack.extend([Node::Expr(control), Node::Expr(target)]);
                     stack.push(Node::Names(vec![zero, one]));
                 }
+                ExprKind::StaticIf { .. }
+                | ExprKind::StaticFold { .. }
+                | ExprKind::Controlled { .. } => {} // Rejected by the finite-profile preflight.
                 ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
                 ExprKind::Not(input) => stack.push(Node::Expr(input)),
                 ExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Expr)),
@@ -923,6 +935,11 @@ fn process_loaded_project_with_kernel(
         exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
         closed_meanings: BTreeMap::new(),
     };
+    for (key, declaration) in &compiler.declarations {
+        if let Err((span, message)) = profile::check(declaration) {
+            return Err(compiler.error(&key.0, span, ErrorCode::Unsupported, message));
+        }
+    }
     let order = compiler.order()?;
     let entry = ("main".to_owned(), "main".to_owned());
     if let Some(decl) = compiler.declarations.get(&entry).copied() {

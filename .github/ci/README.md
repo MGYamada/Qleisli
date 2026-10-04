@@ -91,7 +91,9 @@ regressions are added (69 commands total). Full hierarchy execution also compare
 decisions and named-QPE residual/reference coefficients against independent
 small-system oracles. These tests do not claim a universal parser/compiler proof.
 
-The current manifest contains 67 groups and 77 commands.
+The current manifest contains 67 groups and 79 commands. Preparation/readout
+transport tests require the exact product version, exercise both dynamic modes,
+and distinguish version rejection from malformed or semantically invalid frames.
 
 The native-paths group exercises the single Lean acceptance boundary through
 source, raw, QIRF, foreign and Python entry points. Environment selection and
@@ -101,7 +103,8 @@ audit the matching kernel, then set an absolute `QLEISLI_KERNEL` path.
 
 The native-acceptance group exercises immutable accepted handles and replays all
 799 retained original Rust/Lean decision pairs. Those input bytes and baseline
-results are immutable. The obsolete two-verifier generator has been removed;
+results are immutable. It also requires the accepted-artifact round-trip suite,
+including receipt-path coverage, as a distinct command. The obsolete two-verifier generator has been removed;
 current Rust adapters are not described as an independent semantic verifier.
 Transport failures never count as matched semantic rejection. Existing pure
 component proofs, independent semantic oracles and audit jobs remain required.

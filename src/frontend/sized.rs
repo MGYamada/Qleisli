@@ -2,7 +2,7 @@
 //!
 //! These values retain source and report generic checking results. They are not
 //! verified IR, execution handles, or evidence of source preservation. The finite
-//! frontend and its public syntax tree are independent of this module.
+//! frontend shares its source parser and syntax tree with this profile.
 
 mod ast;
 mod check;
@@ -87,9 +87,15 @@ impl std::error::Error for Error {}
 #[derive(Clone, Debug)]
 pub struct ParsedProgram {
     sources: BTreeMap<String, String>,
+    syntax: BTreeMap<String, super::ast::Module>,
     modules: BTreeMap<String, ast::Module>,
 }
 impl ParsedProgram {
+    /// The retained common source AST. It is untrusted syntax, not checked IR.
+    pub fn syntax(&self, module: &str) -> Option<&super::ast::Module> {
+        self.syntax.get(module)
+    }
+
     /// Parse and check every supplied module, including unused imports and both
     /// arms of static branches. Imports must resolve within this complete map or
     /// to a primitive explicitly specified by this bounded profile.
@@ -103,6 +109,7 @@ impl ParsedProgram {
         }
         let mut total = 0usize;
         let mut modules = BTreeMap::new();
+        let mut syntax = BTreeMap::new();
         for (name, source) in &sources {
             if !valid_module_name(name) {
                 return Err(
@@ -120,12 +127,24 @@ impl ParsedProgram {
                 )
                 .in_module(name));
             }
-            modules.insert(
-                name.clone(),
-                parser::parse(source).map_err(|e| e.in_module(name))?,
-            );
+            let module = super::parser::parse_bounded_module(source).map_err(|e| {
+                let code = if e.message.contains("limit") || e.message.starts_with("source exceeds")
+                {
+                    "limit"
+                } else {
+                    "parse"
+                };
+                Error::new(code, e.span, e.message).in_module(name)
+            })?;
+            let projected = parser::project(&module).map_err(|e| e.in_module(name))?;
+            syntax.insert(name.clone(), module);
+            modules.insert(name.clone(), projected);
         }
-        let program = Self { sources, modules };
+        let program = Self {
+            sources,
+            syntax,
+            modules,
+        };
         check::program(&program)?;
         Ok(program)
     }

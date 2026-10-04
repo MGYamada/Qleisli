@@ -1,0 +1,2 @@
+finite: error 40..53 outer documentation must precede a function or use item
+sized: ok

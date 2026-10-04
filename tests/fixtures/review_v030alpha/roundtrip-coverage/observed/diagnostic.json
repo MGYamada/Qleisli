@@ -1,0 +1,8 @@
+{
+  "status": "incomplete-attempt",
+  "summary": "All four Rust tests passed in 58.30 seconds. The recorder then failed with missing or changed positive cases because libtest prefixes the first output line. No completed results.json was produced.",
+  "files": {
+    "cargo.stderr.gz": "4fb8d5ece0b0e0358ecdd067cd17929399adefe961dba2b8288b083443511040",
+    "cargo.stdout.gz": "f5189e9f6d0b2dd64ac4e65b5d6a1cf4b891c9b93dfee753b1c16973e355e77f"
+  }
+}

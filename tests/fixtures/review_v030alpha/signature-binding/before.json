@@ -1,0 +1,18 @@
+{
+  "baseline_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "command": [
+    "cargo",
+    "run",
+    "--offline",
+    "--quiet",
+    "--manifest-path",
+    "/private/tmp/qleisli-binding265-before-9zdzyq06/Cargo.toml"
+  ],
+  "exit_code": 0,
+  "source_sha256": "3a4b3faa190f95bc0cedc879afebd7facad11b2a961b7c9bdde1cd5faf51bd47",
+  "function_source_sha256": "a7605360780d0a280bba8c7de355fdb2d037b3df77e83b378d4a55c43335f5f0",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout_sha256": "0b56dd0be535801fe4c360fe8af1821e027a403ec208712cf64133a76658a097",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Old host attachment API; actual matching native receipt, three bits, exact unequal type trees. Not a native acceptance bypass."
+}

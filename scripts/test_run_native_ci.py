@@ -26,14 +26,15 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 67)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 77)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 79)
         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
             task["commands"] = [command for command in task["commands"]
                                 if command not in (["python3", "scripts/test_hierarchical_finite_binding.py"],
                                     ["python3", "scripts/test_verification_decoders.py", "--record", "{record}"],
-                                    ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"])]
+                                    ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"],
+                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"])]
         digest = hashlib.sha256(json.dumps(inventory, sort_keys=True).encode()).hexdigest()
         # v0.2.6 workflow commands, replacing only isolated --record paths.
         self.assertEqual(digest, "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e")
@@ -66,10 +67,15 @@ class NativeCI(unittest.TestCase):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-qpe-instrument')
         self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])
 
+    def test_dynamic_component_version_checks_are_required(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-preparation')
+        self.assertIn(['python3', 'scripts/test_instrument_transport.py', '--record', '{record}'], task['commands'])
+
     def test_native_handles_and_original_input_replay_are_required(self):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'native-acceptance')
         self.assertEqual(task['commands'], [
             ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],
+            ['cargo', '+1.98.1', 'test', '--test', 'native_roundtrip', '--', '--nocapture'],
             ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--example', 'native_acceptance'],
             ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
         ])

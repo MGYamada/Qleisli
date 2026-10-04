@@ -50,14 +50,22 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     for source in [
         "unitary fn f[static U:Op<Bit>,](q:Q<Bit>)->Q<Bit>{q}",
         "basis fn f[static U:Op<Bit>](b:Bit)->Bit{b}",
-        "unitary fn f(q:Q<Bit>)->Q<Bit>{g[](q)}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(01,u)](q)}",
-        "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(4097,u)](q)}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{inverse_op(u)}",
         "unitary fn meaning(q:Q<Bit>)->Q<Bit>{q}",
     ] {
         assert!(parse_module(source).is_err(), "{source}");
     }
+    // These are existing sized spellings now represented by the common AST.
+    // The finite backend still rejects out-of-profile counts before lowering.
+    parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{g[](q)}").unwrap();
+    let source = "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(4097,u)](q)}";
+    parse_module(source).unwrap();
+    let root = SourceRoot::new(source);
+    assert_eq!(
+        check_project(&root.0).unwrap_err().code,
+        ErrorCode::Unsupported
+    );
     std::thread::Builder::new()
         .stack_size(2 * 1024 * 1024)
         .spawn(|| {

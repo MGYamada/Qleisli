@@ -1,4 +1,5 @@
 //! Source preparation regressions; none of these tests issues IR evidence.
+mod common;
 use qleisli::frontend::sized::{OperationBinding, ParsedProgram};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
@@ -1808,15 +1809,19 @@ fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
     assert_eq!((e.span().start, e.span().end), (0, 130));
     let source = "// 日本語\r\n/* α /* β */";
     let e = ParsedProgram::parse(sources(source)).unwrap_err();
-    assert_eq!(e.message(), "unterminated comment");
+    assert_eq!(e.message(), "unterminated block comment");
     assert_eq!(&source[e.span().start..e.span().end], "/* α /* β */");
 }
 
 #[test]
-fn shared_scanner_keeps_sized_contextual_words_and_numeral_diagnostics() {
+fn common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics() {
     let source = "pub unitary fn fn(q: Q<Bit>) -> Q<Bit> { q }";
-    ParsedProgram::parse(sources(source)).unwrap();
-    assert!(qleisli::frontend::parser::parse_module(source).is_err());
+    let sized = ParsedProgram::parse(sources(source)).unwrap_err();
+    let common = qleisli::frontend::parser::parse_module(source).unwrap_err();
+    assert_eq!(
+        (sized.span(), sized.message()),
+        (common.span, common.message.as_str())
+    );
     for digits in ["00", "01"] {
         let source =
             format!("// λ\r\npub unitary fn f(q: Q<Bits<{digits}>>) -> Q<Bits<0>> {{ q }}");
@@ -1825,4 +1830,134 @@ fn shared_scanner_keeps_sized_contextual_words_and_numeral_diagnostics() {
         assert_eq!(e.message(), "natural literal has a leading zero");
         assert_eq!(&source[e.span().start..e.span().end], digits);
     }
+}
+
+#[test]
+fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
+    use qleisli::frontend::{parser::parse_module, project::Project};
+    for source in [
+        include_str!("fixtures/frontend_v030/common-parser/shared.qli"),
+        include_str!("fixtures/frontend_v030/common-parser/contextual-type-name.qli"),
+        include_str!("fixtures/frontend_v030/common-parser/static-fold.qli"),
+        include_str!("fixtures/frontend_v030/common-parser/counted-control.qli"),
+        include_str!("fixtures/frontend_v030/common-parser/empty-owner.qli"),
+        include_str!("fixtures/frontend_v030/common-parser/empty-block.qli"),
+    ] {
+        let ast = parse_module(source).unwrap();
+        let sized = ParsedProgram::parse(sources(source)).unwrap();
+        assert_eq!(sized.syntax("main"), Some(&ast));
+        assert_eq!(sized.source("main"), Some(source));
+        let root = common::SourceRoot::new(source);
+        let project = Project::load(&root.0).unwrap();
+        assert_eq!(project.module("main").unwrap().ast, ast);
+    }
+}
+
+#[test]
+fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
+    use qleisli::frontend::parser::parse_module;
+    for source in [
+        include_str!("fixtures/frontend_v030/common-parser/multi-declaration.qli").to_owned(),
+        "pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}".into(),
+    ] {
+        let ast = parse_module(&source).unwrap();
+        assert_eq!(ast.decls.len(), 2);
+        let error = ParsedProgram::parse(sources(&source)).unwrap_err();
+        assert_eq!(error.code(), "unsupported");
+        assert_eq!(error.span(), ast.decls[1].span);
+        assert!(error.message().contains("one function per module"));
+    }
+}
+
+#[test]
+fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
+    use qleisli::frontend::{
+        compile::{ErrorCode, check_project},
+        parser::parse_module,
+    };
+    for source in [
+        "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{q}",
+        "pub unitary fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{q}",
+        "pub unitary fn f(q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {q}}",
+        "pub unitary fn f(q:Q<Bit>)->Q<Bit>{}",
+    ] {
+        parse_module(source).unwrap();
+        let root = common::SourceRoot::new(source);
+        let error = check_project(&root.0).unwrap_err();
+        assert_eq!(error.code, ErrorCode::Unsupported, "{source}: {error}");
+        assert!(error.span.start <= error.span.end && error.span.end <= source.len());
+    }
+    let source =
+        "pub unitary fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {U(q)}}";
+    parse_module(source).unwrap();
+    reject(source, "access");
+    let source = "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{let copy=q; q}";
+    parse_module(source).unwrap();
+    reject(source, "ownership");
+    let source = "pub unitary fn f(q:Q<Unit>)->Q<Unit>{q}";
+    let ast = parse_module(source).unwrap();
+    let error = ParsedProgram::parse(sources(source)).unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.span().start >= ast.decls[0].params[0].ty.span.start);
+}
+
+#[test]
+fn contextual_controlled_and_reserved_words_have_one_classification() {
+    use qleisli::frontend::{
+        ast::{ExprKind, FnBody},
+        parser::parse_module,
+    };
+    let source = include_str!("fixtures/frontend_v030/common-parser/runtime-controlled-name.qli");
+    let ast = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &ast.decls[1].body else {
+        panic!("runtime body")
+    };
+    assert!(
+        matches!(&body.result.kind,ExprKind::Call { callee,.. } if callee.text == "controlled")
+    );
+    let source = include_str!("fixtures/frontend_v030/common-parser/counted-control.qli");
+    let ast = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &ast.decls[0].body else {
+        panic!("runtime body")
+    };
+    assert!(matches!(&body.result.kind, ExprKind::Controlled { .. }));
+    for word in [
+        "fn", "Bit", "Q", "true", "not", "meaning", "static", "Adjoint",
+    ] {
+        let source = format!("pub unitary fn {word}(q:Q<Bit>)->Q<Bit>{{q}}");
+        let common = parse_module(&source).unwrap_err();
+        let sized = ParsedProgram::parse(sources(&source)).unwrap_err();
+        assert_eq!(
+            (sized.span(), sized.message()),
+            (common.span, common.message.as_str())
+        );
+    }
+}
+
+#[test]
+fn existing_empty_sized_spellings_remain_common_syntax() {
+    use qleisli::frontend::parser::parse_module;
+    for source in [
+        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}",
+        "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}",
+        "pub unitary fn f(q:Q<Bit>,)->Q<Bit>{q}",
+    ] {
+        let ast = parse_module(source).unwrap();
+        let sized = ParsedProgram::parse(sources(source)).unwrap();
+        assert_eq!(sized.syntax("main"), Some(&ast));
+    }
+    let source = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}";
+    let ast = parse_module(source).unwrap();
+    let qleisli::frontend::ast::FnBody::Quantum(body) = &ast.decls[0].body else {
+        panic!("body")
+    };
+    assert_eq!(&source[body.result.span.start..body.result.span.end], "q[]");
+    reject(
+        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield;}}",
+        "parse",
+    );
+    reject(
+        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){}}",
+        "parse",
+    );
 }

@@ -1025,6 +1025,14 @@
           "declaration": "CBit",
           "group": "source"
         },
+        "Bits": {
+          "declaration": "Bits(Natural)",
+          "group": "source"
+        },
+        "CBits": {
+          "declaration": "CBits(Natural)",
+          "group": "source"
+        },
         "Q": {
           "declaration": "Q(Box<Type>)",
           "group": "source"
@@ -1094,7 +1102,7 @@
           "group": "source"
         },
         "Adjoint": {
-          "declaration": "Adjoint { function: Ident, input: Box<Expr>, }",
+          "declaration": "Adjoint { operation: StaticOp, input: Box<Expr>, }",
           "group": "source"
         },
         "RepeatStatic": {
@@ -1103,6 +1111,18 @@
         },
         "QuantumIf": {
           "declaration": "QuantumIf { control: Box<Expr>, target: Box<Expr>, zero: Ident, one: Ident, }",
+          "group": "source"
+        },
+        "Controlled": {
+          "declaration": "Controlled { operation: StaticOp, args: Vec<Expr>, }",
+          "group": "source"
+        },
+        "StaticIf": {
+          "declaration": "StaticIf { predicate: Predicate, then_branch: Block, else_branch: Block, }",
+          "group": "source"
+        },
+        "StaticFold": {
+          "declaration": "StaticFold { index: Ident, start: Natural, end: Natural, carry: Pattern, initial: Box<Expr>, body: Block, }",
           "group": "source"
         },
         "Name": {
@@ -1202,7 +1222,15 @@
           "group": "source"
         },
         "Repeat": {
-          "declaration": "Repeat(u16, Box<StaticOp>)",
+          "declaration": "Repeat(Count, Box<StaticOp>)",
+          "group": "source"
+        },
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
+        "Specialize": {
+          "declaration": "Specialize { name: Ident, arguments: Vec<StaticOp>, }",
           "group": "source"
         },
         "Conjugate": {
@@ -1483,6 +1511,42 @@
         },
         "FatArrow": {
           "declaration": "FatArrow",
+          "group": "source"
+        },
+        "Plus": {
+          "declaration": "Plus",
+          "group": "source"
+        },
+        "Minus": {
+          "declaration": "Minus",
+          "group": "source"
+        },
+        "Star": {
+          "declaration": "Star",
+          "group": "source"
+        },
+        "Caret": {
+          "declaration": "Caret",
+          "group": "source"
+        },
+        "DotDot": {
+          "declaration": "DotDot",
+          "group": "source"
+        },
+        "EqualEqual": {
+          "declaration": "EqualEqual",
+          "group": "source"
+        },
+        "NotEqual": {
+          "declaration": "NotEqual",
+          "group": "source"
+        },
+        "LessEqual": {
+          "declaration": "LessEqual",
+          "group": "source"
+        },
+        "GreaterEqual": {
+          "declaration": "GreaterEqual",
           "group": "source"
         },
         "Not": {
@@ -1818,6 +1882,104 @@
         "Numerical": {
           "declaration": "Numerical(&'static str)",
           "group": "hierarchical-execution"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "StaticParamKind",
+      "members": {
+        "Natural": {
+          "declaration": "Natural",
+          "group": "source"
+        },
+        "Operation": {
+          "declaration": "Operation { basis: Type, meaning: Option<Ident> }",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Requirement",
+      "members": {
+        "Access": {
+          "declaration": "Access(AccessConstraint)",
+          "group": "source"
+        },
+        "Predicate": {
+          "declaration": "Predicate(Predicate)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "NatKind",
+      "members": {
+        "Number": {
+          "declaration": "Number(i128)",
+          "group": "source"
+        },
+        "Name": {
+          "declaration": "Name(String)",
+          "group": "source"
+        },
+        "Add": {
+          "declaration": "Add(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        },
+        "Sub": {
+          "declaration": "Sub(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        },
+        "Mul": {
+          "declaration": "Mul(Box<Natural>, Box<Natural>)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Compare",
+      "members": {
+        "Eq": {
+          "declaration": "Eq",
+          "group": "source"
+        },
+        "Ne": {
+          "declaration": "Ne",
+          "group": "source"
+        },
+        "Lt": {
+          "declaration": "Lt",
+          "group": "source"
+        },
+        "Le": {
+          "declaration": "Le",
+          "group": "source"
+        },
+        "Gt": {
+          "declaration": "Gt",
+          "group": "source"
+        },
+        "Ge": {
+          "declaration": "Ge",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "Count",
+      "members": {
+        "Natural": {
+          "declaration": "Natural(Natural)",
+          "group": "source"
+        },
+        "Power": {
+          "declaration": "Power(Natural)",
+          "group": "source"
         }
       }
     }
@@ -2269,7 +2431,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
-      "sha256": "8a09a09d19ba749131b56269971091f4c8b4a58e3f720387775ee61bded22eaa",
+      "sha256": "22d62557d3b0eb0a196cee06c5a83950fd5bdf73c272395381ccbe285d310728",
       "group": "finite-contract",
       "surface": null
     },
@@ -2683,7 +2845,7 @@
     },
     {
       "path": "scripts/test_lean_branch_function.py",
-      "sha256": "2cc11b1b9314e1022f41637a866f27b7e6bf4f9da94a40f4a1892893ff377d8b",
+      "sha256": "41ecbe863bcf07aeeb0283ffb4893812f355e1737f26965a011b0d36430f851a",
       "group": "raw-core",
       "surface": null
     },
@@ -2701,7 +2863,7 @@
     },
     {
       "path": "scripts/test_lean_raw_completion.py",
-      "sha256": "6f51ec96df255d165f28956d28169cee80b53c83b0a6c69f41c05c8901567e11",
+      "sha256": "2ace88cea6c55d01ac19e398777655cebd2f5b717185b3e87716b53c661bb818",
       "group": "raw-core",
       "surface": null
     },
@@ -2847,7 +3009,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "a7605360780d0a280bba8c7de355fdb2d037b3df77e83b378d4a55c43335f5f0",
+      "sha256": "dd8bc84054cb830d55702f5102c531d93df3432969b56072bcf88561f0d91ee8",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -2856,7 +3018,7 @@
         ],
         "functions": [
           "pub fn check( signature: BasisType, implementation: RawProgram, specification: RawProgram, identity: FunctionIdentity, budget: &mut Budget, ) -> Result<Self, ContractError>",
-          "pub fn check_binding( &self, identity: &FunctionIdentity, implementation: &RawProgram, specification: &RawProgram, ) -> Result<(), ContractError>",
+          "pub fn check_binding( &self, signature: &BasisType, identity: &FunctionIdentity, implementation: &RawProgram, specification: &RawProgram, ) -> Result<(), ContractError>",
           "pub fn checker(&self) -> &std::path::Path",
           "pub fn circuit(&self) -> &Circuit",
           "pub fn depth(&self) -> usize",
@@ -2878,7 +3040,7 @@
     },
     {
       "path": "src/contract/meaning.rs",
-      "sha256": "4605b2f0e58143919a98332b3bdaee02909a5044d902253a21060026e241e3f7",
+      "sha256": "5928730da1973c9c2e2ae0627a397eb164f610d59da32f0ec297698da4b3a73d",
       "group": "finite-meaning",
       "surface": {
         "declarations": [
@@ -2955,7 +3117,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "2c5a7d97c82d6337be23c8ed6ec4163bf1724d662dbffe9d347ce961b9b75ca4",
+      "sha256": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
       "group": "source",
       "surface": {
         "declarations": [
@@ -2964,6 +3126,8 @@
           "BasisExpr",
           "BasisExprKind",
           "Block",
+          "Compare",
+          "Count",
           "Decl",
           "Expr",
           "ExprKind",
@@ -2971,13 +3135,18 @@
           "FnKind",
           "Ident",
           "Module",
+          "NatKind",
+          "Natural",
           "Param",
           "Pattern",
           "PatternKind",
+          "Predicate",
+          "Requirement",
           "Span",
           "StaticOp",
           "StaticOpKind",
           "StaticParam",
+          "StaticParamKind",
           "Stmt",
           "StmtKind",
           "Type",
@@ -3043,7 +3212,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "d2432ea2d33bbe9c8592d3fee1d12a6ce21a63360fe72b7db3b2fed40e2e9bae",
+      "sha256": "4d409be367c44555ac2c8fa367bd96f0f5418c013d9f1f87a7da2a574ed192f2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3053,7 +3222,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "031060a254996cc1953ee08619c00018e8a2a5ff248c6408d583a2852c330b57",
+      "sha256": "eb4b6e1f1c71683ec8769911d91b04c7690f7b5dcfc0365166e189f071fe3c15",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3103,7 +3272,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "6ff5c0d0c0500c3b385893e08f0abc5a5a32fa8d6af518e58429e4551fde1335",
+      "sha256": "02200d5197275124faaa14d84f15fa8ea71dac4c7f284b1a45f69dcdbe53a668",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3135,7 +3304,17 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "1b743356c933fb07da6484c82ae4b3ecba702be796a0d4e22dcc8712e5593abe",
+      "sha256": "0f3064f5c02ed615b2fd4116f73049c16416b891a728e59bbdef8fec49b071d1",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "sha256": "8916be769b047b70eb3ed9adf58350f6137db3f0850dbbd77b0668f93e08360f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3191,7 +3370,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "099548ff59e2555dc5a4509b962f78c2dd9d87a18afd07dd85c2662d5f0c4231",
+      "sha256": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3228,7 +3407,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "497ec4fae1e05ebf3aac655e893a32a74f32e2efd11254a1c374f561646de4df",
+      "sha256": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3311,7 +3490,7 @@
     },
     {
       "path": "src/frontend/scanner.rs",
-      "sha256": "320aaa0972a2aec5fd76b80a0313810e1143b377dbcf77530eca955edfac57b2",
+      "sha256": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3326,7 +3505,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "bbd58e800c041a1cdee05722dfff3c53a352305ba23281aa2e06569d8a945af5",
+      "sha256": "8e4c70a9ebdbe4daa495c413177d14a519df094a2682b947ca153ea9755366b5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3352,7 +3531,8 @@
           "pub fn parse(sources: BTreeMap<String, String>) -> Result<Self>",
           "pub fn program(&self) -> &ParsedProgram",
           "pub fn source(&self, module: &str) -> Option<&str>",
-          "pub fn span(&self) -> Span"
+          "pub fn span(&self) -> Span",
+          "pub fn syntax(&self, module: &str) -> Option<&super::ast::Module>"
         ],
         "capacity_constants": [
           "const MAX_MODULES: usize = 64;",
@@ -3363,7 +3543,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "f8c330c5a3f026431041f29c3bfbdafde1e8c8cbdd667c8af96e3378f5938f0b",
+      "sha256": "2fa4488b3a2bf7389b002f335021169f123dcd58d6c6b15614c037535ac3157c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3532,7 +3712,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "c468cf3604f8ec13275ac1f73c3ec368dcdefd5efc35f043e3187dbb7b21f34d",
+      "sha256": "5f29afc4b0b0da4c45468f3eed0dc5de0e7007f345976e31fac1cecd9dc84e98",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4192,7 +4372,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -4214,7 +4394,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -4232,10 +4412,10 @@
       ],
       "status": "native-only production implementation; full Soundness remains pending",
       "request": "Independent specification body or finite meaning, signature and immutable dependency/source identity",
-      "binding": "Reverify and extract BOTH raw bodies; compare full operators and ordered outputs, then freeze graph",
+      "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -4256,7 +4436,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -4277,7 +4457,7 @@
       "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
       "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
       "failure": "Reject shape/domain/phase/request/identity mismatch and capacity; no Lean seal or production hierarchy value",
       "replacement": [
         "VM-23",
@@ -4300,7 +4480,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Same generated IR independently verified; source-preservation proof remains open",
       "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
-      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
+      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; source tree4096/depth64; calls/static expansion1M work/depth64; source policy1MiB/file16MiB/project or explicit legacy",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -4322,7 +4502,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
+      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -4729,7 +4909,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -4771,7 +4951,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [
@@ -5026,7 +5206,7 @@
       "scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
       "scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
       "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
-      "scripts/instrument_transport.py": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+      "scripts/instrument_transport.py": "662a2aab4a0029c88fc9246f7ebda898c30af507f79fa79ef3478b369d207b63",
       "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
       "scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
       "scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
@@ -5043,7 +5223,7 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "fb2f2b6650969419d7f99fd458df10aca91556b90a36d4736910aaf244f9940e",
+      "tests/sized_source.rs": "09c0496a9eeedfdc5d0ee58ae4a73cc8eaedf4803a82c3031472bb0a52dcd9b2",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",

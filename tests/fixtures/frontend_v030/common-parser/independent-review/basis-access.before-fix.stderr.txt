@@ -1,0 +1,4 @@
+
+thread 'main' (10511330) panicked at /private/tmp/qleisli-common-parser-review/documentation.rs:63:13:
+assertion failed: matches!(tokens[opening].kind, TokenKind::LBrace)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

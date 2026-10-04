@@ -1,20 +1,9 @@
-//! Private source representation; never verification evidence.
+//! Temporary checked-profile projection of the common source AST; never evidence.
+//! No parser or source-token interpretation belongs here.
 use super::Span;
 
-#[derive(Clone, Debug)]
-pub(super) struct Natural {
-    pub kind: NatKind,
-    pub span: Span,
-    pub depth: usize,
-}
-#[derive(Clone, Debug)]
-pub(super) enum NatKind {
-    Number(i128),
-    Name(String),
-    Add(Box<Natural>, Box<Natural>),
-    Sub(Box<Natural>, Box<Natural>),
-    Mul(Box<Natural>, Box<Natural>),
-}
+pub(super) use crate::frontend::ast::{Compare, Count, NatKind, Natural, Predicate};
+
 #[derive(Clone, Debug)]
 pub(super) enum Basis {
     Bit,
@@ -38,21 +27,6 @@ pub(super) enum Parameter {
     Natural(String),
     Operation(String, Basis),
 }
-#[derive(Clone, Copy, Debug)]
-pub(super) enum Compare {
-    Eq,
-    Ne,
-    Lt,
-    Le,
-    Gt,
-    Ge,
-}
-#[derive(Clone, Debug)]
-pub(super) struct Predicate {
-    pub left: Natural,
-    pub comparison: Compare,
-    pub right: Natural,
-}
 #[derive(Clone, Debug)]
 pub(super) enum Requirement {
     Predicate(Predicate),
@@ -63,11 +37,6 @@ pub(super) enum Argument {
     Natural(Natural),
     Definition(String, Vec<Argument>, Span),
     Repeat(Count, Box<Argument>, Span),
-}
-#[derive(Clone, Debug)]
-pub(super) enum Count {
-    Natural(Natural),
-    Power(Natural),
 }
 #[derive(Clone, Debug)]
 pub(super) enum Pattern {

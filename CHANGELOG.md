@@ -6,6 +6,19 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Parse finite and sized source with one grammar and recursive AST. Project the
+  shared AST into the existing sized checker and reject unsupported finite forms
+  before lowering. Preserve bounded source/proposal comparisons, explicit profile
+  limits and diagnostics for reserved words and documentation migration (#32).
+- Forward the required product version through dynamic preparation/readout
+  transports and require their native regression checks in CI (#289).
+- Expand small accepted-artifact round trips to nested shared circuits,
+  compute/uncompute and both conditional branches, comparing actual cached
+  matrices with independent exact oracles. Require this suite in CI (#288).
+- Require the expected exact basis tree in `FunctionEvidence::check_binding`,
+  rejecting same-width tuple and Unit substitutions inside the attachment API.
+  Migrate Rust callers and native comparison harnesses to the complete check
+  without changing native acceptance or evidence construction (#265).
 - Specify the 0.3.0 target ordinary/quantum type boundary, Bit literals, exact
   tree equality, zero-width owner phase and explicit generic responsibilities.
   Record these ordinary design choices separately from implementation and

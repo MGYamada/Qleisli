@@ -1,0 +1,138 @@
+{
+  "kind": "informed bounded parser migration experiment; no native acceptance",
+  "baseline_commit": "061636d76a5f502a80ab33deacca9ca548298d82",
+  "compiler_argv": [
+    "rustc",
+    "--edition=2024",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/observe.rs",
+    "--extern",
+    "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-common-parser-before"
+  ],
+  "observer_sha256": "5669ede20da33c7e46293b41dd3e81c97a0c43f2fd90c641cb6c667a5f06220d",
+  "observations": [
+    {
+      "name": "shared",
+      "source": "shared.qli",
+      "sha256": "6243bd964fe8689cfbd619db94bda7b73e61feb1b415b36f063fecafd63ea996",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "shared.before.stdout.txt",
+      "stderr": "shared.before.stderr.txt"
+    },
+    {
+      "name": "contextual-type-name",
+      "source": "contextual-type-name.qli",
+      "sha256": "1871ae9bc99b046fdc42a2cf009180f2e08d67b7ec690e4ab8b8cd5c3fcd13b9",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "contextual-type-name.before.stdout.txt",
+      "stderr": "contextual-type-name.before.stderr.txt"
+    },
+    {
+      "name": "reserved-name",
+      "source": "reserved-name.qli",
+      "sha256": "c10b65391c66eec4f2513c2abb3e0c1051790704035b3c1e913df6572f4ffeb7",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/reserved-name.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "reserved-name.before.stdout.txt",
+      "stderr": "reserved-name.before.stderr.txt"
+    },
+    {
+      "name": "misplaced-doc",
+      "source": "misplaced-doc.qli",
+      "sha256": "308185f804dc7a65aab82b7af9510083990861195a0c91bad146fd30f3b0389e",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/misplaced-doc.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "misplaced-doc.before.stdout.txt",
+      "stderr": "misplaced-doc.before.stderr.txt"
+    },
+    {
+      "name": "multi-declaration",
+      "source": "multi-declaration.qli",
+      "sha256": "9dbbdbe1adf9cda96d15f9cb862e6c164354c4647055ec7d88725ece574cce69",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/multi-declaration.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "multi-declaration.before.stdout.txt",
+      "stderr": "multi-declaration.before.stderr.txt"
+    },
+    {
+      "name": "static-fold",
+      "source": "static-fold.qli",
+      "sha256": "a409a31d935afa7209fef23da297c559987aa98e9bf41218105efa1af6297b83",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "static-fold.before.stdout.txt",
+      "stderr": "static-fold.before.stderr.txt"
+    },
+    {
+      "name": "counted-control",
+      "source": "counted-control.qli",
+      "sha256": "a9862c48fad185280c3491375efa6c2cec9bf9cbc214d3c1f441f47fb9683894",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/counted-control.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "counted-control.before.stdout.txt",
+      "stderr": "counted-control.before.stderr.txt"
+    },
+    {
+      "name": "empty-owner",
+      "source": "empty-owner.qli",
+      "sha256": "68e1a26f32b5e9353388451841a509635d67c03fc680d2d08447ada826799c5e",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "empty-owner.before.stdout.txt",
+      "stderr": "empty-owner.before.stderr.txt"
+    },
+    {
+      "name": "empty-block",
+      "source": "empty-block.qli",
+      "sha256": "de29b74bce633500826de06fec35865d5968aaf55a5b5f4f8fb884c5b661f2f3",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-block.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "empty-block.before.stdout.txt",
+      "stderr": "empty-block.before.stderr.txt"
+    },
+    {
+      "name": "runtime-controlled-name",
+      "source": "runtime-controlled-name.qli",
+      "sha256": "c9acda54fe69a2a175eda501f2c34d44424f9956a5dbc7f7cfd8c5086b22881c",
+      "argv": [
+        "/private/tmp/qleisli-common-parser-before",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/runtime-controlled-name.qli"
+      ],
+      "exit_code": 0,
+      "stdout": "runtime-controlled-name.before.stdout.txt",
+      "stderr": "runtime-controlled-name.before.stderr.txt"
+    }
+  ]
+}

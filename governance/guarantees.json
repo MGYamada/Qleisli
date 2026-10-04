@@ -101,6 +101,6 @@
   "scope": "Three binding interpretations retain their broader pending obligations. Two scoped ordinary QLV1 guarantees have been formally discharged and admitted under the recorded human adequacy judgment. No production-wide QS, PR or quantitative RS discharge is claimed.",
   "current_evidence": {
     "path": "governance/guarantees/current-evidence.json",
-    "sha256": "76f3f166c1389b8deac0dc17327eab8af9481e6850215a24b7b8422429ebb37d"
+    "sha256": "35b3978916f575f91c2087171e434122079c8f604ba9aefaea891df21106633c"
   }
 }

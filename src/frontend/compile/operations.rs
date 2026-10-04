@@ -205,11 +205,23 @@ impl Compiler<'_> {
         self.signature(key)?;
         let mut bindings = Bindings::new();
         for p in &decl.static_params {
-            let basis = self.ty(&key.0, &p.basis, true)?;
+            let StaticParamKind::Operation {
+                basis: source_basis,
+                meaning: source_meaning,
+            } = &p.kind
+            else {
+                return Err(self.error(
+                    &key.0,
+                    p.name.span,
+                    ErrorCode::Unsupported,
+                    "finite profile does not support Nat parameters",
+                ));
+            };
+            let basis = self.ty(&key.0, source_basis, true)?;
             contract_basis(&basis)
                 .bits()
-                .map_err(|e| self.op_error(&key.0, p.basis.span, e))?;
-            let meaning = if let Some(m) = &p.meaning {
+                .map_err(|e| self.op_error(&key.0, source_basis.span, e))?;
+            let meaning = if let Some(m) = source_meaning {
                 let k = self.meaning_key(&key.0, m)?;
                 let target = &self.meanings[&k];
                 if target.basis != basis {
@@ -242,7 +254,15 @@ impl Compiler<'_> {
                 },
             );
         }
-        for constraint in &decl.requires {
+        for requirement in &decl.requires {
+            let Requirement::Access(constraint) = requirement else {
+                return Err(self.error(
+                    &key.0,
+                    decl.span,
+                    ErrorCode::Unsupported,
+                    "finite profile does not support size predicates",
+                ));
+            };
             let Some(op) = bindings.get_mut(&constraint.name.text) else {
                 return Err(self.error(
                     &key.0,
@@ -430,7 +450,32 @@ impl Compiler<'_> {
                 basis = Ty::pair(Ty::Bit, basis);
                 ([caps[2]; 3], Node::Controlled(a))
             }
-            StaticOpKind::Repeat(n, ..) => (caps, Node::Repeat(*n, a)),
+            StaticOpKind::Repeat(count, ..) => {
+                let Count::Natural(Natural {
+                    kind: NatKind::Number(n),
+                    ..
+                }) = count
+                else {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Unsupported,
+                        "finite repetition requires a literal count",
+                    ));
+                };
+                let n = u16::try_from(*n)
+                    .ok()
+                    .filter(|n| *n <= 4096)
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            span,
+                            ErrorCode::Limit,
+                            "static repetition exceeds 4096",
+                        )
+                    })?;
+                (caps, Node::Repeat(n, a))
+            }
             StaticOpKind::Then(..) | StaticOpKind::Tensor(..) | StaticOpKind::Conjugate(..) => {
                 let b = b.expect("binary constructor");
                 let mut access = std::array::from_fn(|i| caps[i] && b.access[i]);
@@ -720,6 +765,13 @@ impl Operation {
 pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Ident>) {
     match &op.kind {
         StaticOpKind::Name(n) => names.push(n),
+        StaticOpKind::Natural(_) => {}
+        StaticOpKind::Specialize { name, arguments } => {
+            names.push(name);
+            for argument in arguments {
+                called_static_names(argument, names);
+            }
+        }
         StaticOpKind::Bind {
             implementation,
             meaning,

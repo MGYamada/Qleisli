@@ -1,675 +1,249 @@
-//! Bounded parser with a temporary projection of the common physical scanner.
+//! Temporary projection of the single common AST into the sized checker profile.
+//!
+//! This module never reads source text or tokens. Its located rejections are
+//! profile restrictions, not a competing grammar or verification authority.
 use super::ast::*;
 use super::{Error, Result, Span};
+use crate::frontend::ast as source;
 
-#[derive(Clone)]
-struct Token {
-    text: String,
-    span: Span,
+fn unsupported(span: Span, message: &str) -> Error {
+    Error::new(
+        "unsupported",
+        span,
+        format!("sized preparation profile: {message}"),
+    )
 }
-fn error(span: Span, message: impl Into<String>) -> Error {
-    Error::new("parse", span, message)
-}
-fn natural_node(kind: NatKind, span: Span) -> Result<Natural> {
-    let depth = match &kind {
-        NatKind::Number(_) | NatKind::Name(_) => 1,
-        NatKind::Add(a, b) | NatKind::Sub(a, b) | NatKind::Mul(a, b) => 1 + a.depth.max(b.depth),
-    };
-    if depth > 128 {
-        return Err(Error::new(
-            "limit",
-            span,
-            "natural expression depth exceeds 128",
+
+pub(super) fn project(module: &source::Module) -> Result<Module> {
+    if module.decls.len() != 1 {
+        return Err(unsupported(
+            module.decls.get(1).map_or(module.span, |d| d.span),
+            "permits one function per module until declaration-identity cycle checking is available",
         ));
     }
-    Ok(Natural { kind, span, depth })
-}
-// Temporary token projection only. Character, UTF-8, trivia and comment
-// scanning belong to the common frontend; this adapter preserves the existing
-// contextual words, numeral rule, punctuation and capacity until one grammar
-// replaces both parsers.
-fn tokens(source: &str) -> Result<Vec<Token>> {
-    tokens_with_limits(source, 10_000, 64)
-}
-
-fn tokens_with_limits(
-    source: &str,
-    max_tokens: usize,
-    max_comment_depth: usize,
-) -> Result<Vec<Token>> {
-    use crate::frontend::scanner::{ErrorKind, Kind, Scanner};
-    let mut scanner = Scanner::new(source, Some(max_comment_depth), false);
-    let mut result = Vec::new();
-    loop {
-        let mut token = scanner.next().map_err(|e| {
-            error(
-                e.span,
-                match e.kind {
-                    ErrorKind::Forbidden(message) => message.to_owned(),
-                    ErrorKind::Unexpected(_) => "unsupported sized-source character".into(),
-                    ErrorKind::UnterminatedComment => "unterminated comment".into(),
-                    ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),
-                },
-            )
-        })?;
-        match token.kind {
-            Kind::Word | Kind::Eof => {}
-            Kind::Numeral => {
-                if token.span.end - token.span.start > 1
-                    && source.as_bytes()[token.span.start] == b'0'
-                {
-                    return Err(error(token.span, "natural literal has a leading zero"));
-                }
-            }
-            Kind::Punctuation(ch) => {
-                let suffix = match ch {
-                    ':' => Some(':'),
-                    '-' => Some('>'),
-                    '.' => Some('.'),
-                    '=' | '!' | '<' | '>' => Some('='),
-                    _ => None,
-                };
-                let joined = suffix.is_some_and(|next| scanner.join(&mut token, next));
-                if !joined && !"[]{}(),;:<>+-*=^".contains(ch) {
-                    return Err(error(token.span, "unsupported sized-source character"));
-                }
-            }
-        }
-        let eof = token.kind == Kind::Eof;
-        // Count projected tokens, not physical punctuation atoms; EOF and
-        // comments do not consume the historical 10,000-token allowance.
-        if !eof && result.len() >= max_tokens {
-            return Err(Error::new(
-                "limit",
-                token.span,
-                format!("source exceeds {max_tokens} tokens"),
+    let declaration = &module.decls[0];
+    let effect = match declaration.kind {
+        source::FnKind::Unitary => Effect::Unitary,
+        source::FnKind::Iso => Effect::Iso,
+        source::FnKind::Observe => Effect::Observe,
+        _ => {
+            return Err(unsupported(
+                declaration.span,
+                "requires an ordinary function",
             ));
         }
-        result.push(Token {
-            text: source[token.span.start..token.span.end].into(),
-            span: token.span,
-        });
-        if eof {
-            return Ok(result);
-        }
-    }
-}
-#[cfg(test)]
-mod token_tests {
-    use super::*;
-
-    #[test]
-    fn projected_punctuation_keeps_adjacency_and_legacy_sized_grouping() {
-        let source = "<-> ==> >= > = >/*λ*/= :: :/*x*/: .. != <=";
-        let scanned = tokens(source).unwrap();
-        assert_eq!(
-            scanned.iter().map(|t| t.text.as_str()).collect::<Vec<_>>(),
-            [
-                "<", "->", "==", ">", ">=", ">", "=", ">", "=", "::", ":", ":", "..", "!=", "<=",
-                ""
-            ]
-        );
-        for token in scanned {
-            assert_eq!(&source[token.span.start..token.span.end], token.text);
-        }
-        for source in [".", "!", "|", "!/* comment */="] {
-            let e = tokens(source).err().unwrap();
-            assert_eq!(e.code(), "parse");
-            assert_eq!(e.span(), Span::new(0, 1));
-        }
-    }
-
-    #[test]
-    fn projected_token_capacity_counts_pairs_but_not_comments_or_eof() {
-        let source = "/* λ */ <= == x // tail\r\n";
-        let scanned = tokens_with_limits(source, 3, 2).unwrap();
-        assert_eq!(scanned.len(), 4);
-        assert_eq!(
-            scanned.last().unwrap().span,
-            Span::new(source.len(), source.len())
-        );
-        let e = tokens_with_limits(source, 2, 2).err().unwrap();
-        assert_eq!(e.code(), "limit");
-        assert_eq!(&source[e.span().start..e.span().end], "x");
-        assert_eq!(e.message(), "source exceeds 2 tokens");
-        assert_eq!(tokens_with_limits("/* only */", 0, 2).unwrap().len(), 1);
-    }
-
-    #[test]
-    fn comment_capacity_is_independent_of_token_capacity() {
-        assert!(tokens_with_limits("/* /* λ */ */ x", 1, 2).is_ok());
-        let e = tokens_with_limits("/* /* λ */ */ x", 1, 1).err().unwrap();
-        assert_eq!(e.code(), "parse");
-        assert_eq!(e.message(), "comment nesting exceeds 1");
-        assert_eq!(e.span(), Span::new(0, 5));
-    }
-}
-
-pub(super) fn parse(source: &str) -> Result<Module> {
-    let mut p = Parser {
-        tokens: tokens(source)?,
-        position: 0,
-        depth: 0,
     };
-    p.module()
-}
-struct Parser {
-    tokens: Vec<Token>,
-    position: usize,
-    depth: usize,
-}
-impl Parser {
-    fn current(&self) -> &Token {
-        &self.tokens[self.position]
-    }
-    fn at(&self, s: &str) -> bool {
-        self.current().text == s
-    }
-    fn eat(&mut self, s: &str) -> bool {
-        if self.at(s) {
-            self.position += 1;
-            true
-        } else {
-            false
-        }
-    }
-    fn need(&mut self, s: &str) -> Result<()> {
-        if self.eat(s) {
-            Ok(())
-        } else {
-            Err(error(self.current().span, format!("expected `{s}`")))
-        }
-    }
-    fn name(&mut self) -> Result<(String, Span)> {
-        let t = self.current().clone();
-        if t.text
-            .as_bytes()
-            .first()
-            .is_some_and(|b| b.is_ascii_alphabetic() || *b == b'_')
-        {
-            self.position += 1;
-            Ok((t.text, t.span))
-        } else {
-            Err(error(t.span, "expected identifier"))
-        }
-    }
-    fn nested<T>(&mut self, f: impl FnOnce(&mut Self) -> Result<T>) -> Result<T> {
-        if self.depth >= 64 {
-            return Err(Error::new(
-                "limit",
-                self.current().span,
-                "sized syntax nesting exceeds 64",
-            ));
-        }
-        self.depth += 1;
-        let r = f(self);
-        self.depth -= 1;
-        r
-    }
-    fn module(&mut self) -> Result<Module> {
-        let mut imports = Vec::new();
-        while self.eat("use") {
-            let (mut path, start) = self.name()?;
-            while self.eat("::") {
-                path.push_str("::");
-                path.push_str(&self.name()?.0);
-            }
-            let end = self.current().span;
-            self.need(";")?;
-            imports.push((path, Span::cover(start, end)));
-        }
-        let start = self.current().span;
-        let public = self.eat("pub");
-        let effect = match self.name()?.0.as_str() {
-            "unitary" => Effect::Unitary,
-            "iso" => Effect::Iso,
-            "observe" => Effect::Observe,
-            _ => {
-                return Err(error(
-                    start,
-                    "expected ordinary unitary, iso or observe function",
-                ));
-            }
-        };
-        self.need("fn")?;
-        let (name, _) = self.name()?;
-        let mut parameters = Vec::new();
-        if self.eat("[") {
-            loop {
-                self.need("static")?;
-                let (name, _) = self.name()?;
-                self.need(":")?;
-                let param = if self.eat("Nat") {
-                    Parameter::Natural(name)
-                } else {
-                    self.need("Op")?;
-                    self.need("<")?;
-                    let ty = self.basis()?;
-                    self.need(">")?;
-                    Parameter::Operation(name, ty)
-                };
-                parameters.push(param);
-                if !self.eat(",") {
-                    break;
-                }
-            }
-            self.need("]")?;
-        }
-        self.need("(")?;
-        let mut arguments = Vec::new();
-        if !self.at(")") {
-            loop {
-                let (name, span) = self.name()?;
-                self.need(":")?;
-                arguments.push((name, self.ty()?, span));
-                if !self.eat(",") || self.at(")") {
-                    break;
-                }
-            }
-        }
-        self.need(")")?;
-        self.need("->")?;
-        let result = self.ty()?;
-        let mut requires = Vec::new();
-        if self.eat("requires") {
-            loop {
-                if matches!(
-                    self.current().text.as_str(),
-                    "Apply" | "Adjoint" | "Controlled"
-                ) {
-                    let (kind, span) = self.name()?;
-                    self.need("(")?;
-                    let (name, _) = self.name()?;
-                    self.need(")")?;
-                    requires.push(Requirement::Access(kind, name, span));
-                } else {
-                    requires.push(Requirement::Predicate(self.predicate()?));
-                }
-                if !self.eat(",") {
-                    break;
-                }
-            }
-        }
-        let body = self.block(false)?;
-        if !self.at("") {
-            return Err(error(
-                self.current().span,
-                "this preparation profile permits one function per module",
-            ));
-        }
-        let span = Span::cover(start, body.span);
-        Ok(Module {
-            imports,
-            function: Function {
-                name,
-                public,
-                effect,
-                parameters,
-                arguments,
-                result,
-                requires,
-                body,
-                span,
-            },
-        })
-    }
-    fn basis(&mut self) -> Result<Basis> {
-        if self.eat("Bit") {
-            Ok(Basis::Bit)
-        } else {
-            self.need("Bits")?;
-            self.need("<")?;
-            let n = self.natural()?;
-            self.need(">")?;
-            Ok(Basis::Bits(n))
-        }
-    }
-    fn ty(&mut self) -> Result<Type> {
-        self.nested(|p| {
-            if p.eat("Q") {
-                p.need("<")?;
-                let b = p.basis()?;
-                p.need(">")?;
-                Ok(Type::Quantum(b))
-            } else if p.eat("CBit") {
-                Ok(Type::CBit)
-            } else if p.eat("CBits") {
-                p.need("<")?;
-                let n = p.natural()?;
-                p.need(">")?;
-                Ok(Type::CBits(n))
-            } else {
-                p.need("(")?;
-                let mut fields = Vec::new();
-                if !p.at(")") {
-                    loop {
-                        fields.push(p.ty()?);
-                        if fields.len() > 64 {
-                            return Err(Error::new(
-                                "limit",
-                                p.current().span,
-                                "tuple arity exceeds 64",
-                            ));
-                        }
-                        if !p.eat(",") {
-                            break;
-                        }
-                    }
-                }
-                p.need(")")?;
-                if fields.len() == 1 {
-                    return Err(error(
-                        p.current().span,
-                        "single-field tuple types are unsupported",
+    let parameters = declaration
+        .static_params
+        .iter()
+        .map(|parameter| {
+            Ok(match &parameter.kind {
+                source::StaticParamKind::Natural => Parameter::Natural(parameter.name.text.clone()),
+                source::StaticParamKind::Operation {
+                    basis: ty,
+                    meaning: None,
+                } => Parameter::Operation(parameter.name.text.clone(), basis(ty)?),
+                source::StaticParamKind::Operation {
+                    meaning: Some(meaning),
+                    ..
+                } => {
+                    return Err(unsupported(
+                        meaning.span,
+                        "meaning-refined operation parameters are not supported",
                     ));
                 }
-                Ok(Type::Tuple(fields))
-            }
+            })
         })
-    }
-    fn natural(&mut self) -> Result<Natural> {
-        let mut a = self.factor()?;
-        while self.at("+") || self.at("-") {
-            let sub = self.eat("-");
-            if !sub {
-                self.need("+")?;
-            }
-            let b = self.factor()?;
-            let span = Span::cover(a.span, b.span);
-            a = natural_node(
-                if sub {
-                    NatKind::Sub(Box::new(a), Box::new(b))
-                } else {
-                    NatKind::Add(Box::new(a), Box::new(b))
-                },
-                span,
-            )?;
-        }
-        Ok(a)
-    }
-    fn factor(&mut self) -> Result<Natural> {
-        let mut a = self.atom()?;
-        while self.eat("*") {
-            let b = self.atom()?;
-            let span = Span::cover(a.span, b.span);
-            a = natural_node(NatKind::Mul(Box::new(a), Box::new(b)), span)?;
-        }
-        Ok(a)
-    }
-    fn atom(&mut self) -> Result<Natural> {
-        self.nested(|p| {
-            let token = p.current().clone();
-            if p.eat("(") {
-                let n = p.natural()?;
-                p.need(")")?;
-                Ok(n)
-            } else if token
-                .text
-                .as_bytes()
-                .first()
-                .is_some_and(u8::is_ascii_digit)
-            {
-                p.position += 1;
-                let n = token
-                    .text
-                    .parse()
-                    .map_err(|_| Error::new("limit", token.span, "natural literal exceeds i128"))?;
-                natural_node(NatKind::Number(n), token.span)
-            } else {
-                let (name, span) = p.name()?;
-                natural_node(NatKind::Name(name), span)
-            }
-        })
-    }
-    fn predicate(&mut self) -> Result<Predicate> {
-        let left = self.natural()?;
-        let comparison = match self.current().text.as_str() {
-            "==" => Compare::Eq,
-            "!=" => Compare::Ne,
-            "<" => Compare::Lt,
-            "<=" => Compare::Le,
-            ">" => Compare::Gt,
-            ">=" => Compare::Ge,
-            _ => return Err(error(self.current().span, "expected static comparison")),
-        };
-        self.position += 1;
-        Ok(Predicate {
-            left,
-            comparison,
-            right: self.natural()?,
-        })
-    }
-    fn argument(&mut self) -> Result<Argument> {
-        self.nested(|p| {
-            if p.eat("repeat_op") {
-                let span = p.tokens[p.position - 1].span;
-                p.need("(")?;
-                let n = p.natural()?;
-                let count = if p.eat("^") {
-                    if !matches!(n.kind, NatKind::Number(2)) {
-                        return Err(error(n.span, "only 2^e repetition counts are supported"));
-                    }
-                    Count::Power(p.atom()?)
-                } else {
-                    Count::Natural(n)
-                };
-                p.need(",")?;
-                let child = p.argument()?;
-                p.need(")")?;
-                Ok(Argument::Repeat(count, Box::new(child), span))
-            } else {
-                let n = p.natural()?;
-                if p.eat("[") {
-                    let NatKind::Name(name) = n.kind else {
-                        return Err(error(n.span, "only a function can have static arguments"));
-                    };
-                    let args = p.arguments_end("]")?;
-                    Ok(Argument::Definition(name, args, n.span))
-                } else {
-                    Ok(Argument::Natural(n))
-                }
-            }
-        })
-    }
-    fn arguments_end(&mut self, end: &str) -> Result<Vec<Argument>> {
-        let mut args = Vec::new();
-        if !self.at(end) {
-            loop {
-                args.push(self.argument()?);
-                if !self.eat(",") {
-                    break;
-                }
-            }
-        }
-        self.need(end)?;
-        Ok(args)
-    }
-    fn pattern(&mut self) -> Result<Pattern> {
-        self.nested(|p| {
-            let start = p.current().span;
-            if p.eat("(") {
-                let mut fields = Vec::new();
-                if !p.at(")") {
-                    loop {
-                        fields.push(p.pattern()?);
-                        if fields.len() > 64 {
-                            return Err(Error::new(
-                                "limit",
-                                p.current().span,
-                                "tuple arity exceeds 64",
-                            ));
-                        }
-                        if !p.eat(",") {
-                            break;
-                        }
-                    }
-                }
-                let end = p.current().span;
-                p.need(")")?;
-                if fields.len() == 1 {
-                    return Err(error(start, "single-field tuple patterns are unsupported"));
-                }
-                Ok(Pattern::Tuple(fields, Span::cover(start, end)))
-            } else {
-                let (n, s) = p.name()?;
-                if n == "_" {
-                    return Err(error(s, "implicit wildcard discard is unsupported"));
-                }
-                Ok(Pattern::Name(n, s))
-            }
-        })
-    }
-    fn runtime_arguments(&mut self) -> Result<Vec<Expr>> {
-        self.need("(")?;
-        let mut args = Vec::new();
-        if !self.at(")") {
-            loop {
-                args.push(self.expr()?);
-                if !self.eat(",") {
-                    break;
-                }
-            }
-        }
-        self.need(")")?;
-        Ok(args)
-    }
-    fn expr(&mut self) -> Result<Expr> {
-        self.nested(Self::expr_inner)
-    }
-    fn expr_inner(&mut self) -> Result<Expr> {
-        let start = self.current().span;
-        let kind = if self.eat("if") {
-            self.need("static")?;
-            let predicate = self.predicate()?;
-            let a = self.block(false)?;
-            self.need("else")?;
-            ExprKind::If(predicate, a, self.block(false)?)
-        } else if self.eat("for") {
-            self.need("static")?;
-            let (index, _) = self.name()?;
-            self.need("in")?;
-            let start = self.natural()?;
-            self.need("..")?;
-            let end = self.natural()?;
-            self.need("carry")?;
-            let carry = self.pattern()?;
-            self.need("=")?;
-            let initial = Box::new(self.expr()?);
-            let body = self.block(true)?;
-            ExprKind::Fold {
-                index,
-                start,
-                end,
-                carry,
-                initial,
-                body,
-            }
-        } else if self.eat("adjoint") {
-            self.need("(")?;
-            let op = self.argument()?;
-            self.need(",")?;
-            let input = Box::new(self.expr()?);
-            self.need(")")?;
-            ExprKind::Adjoint(op, input)
-        } else if self.eat("controlled") {
-            self.need("(")?;
-            let op = self.argument()?;
-            self.need(")")?;
-            ExprKind::Controlled(op, self.runtime_arguments()?)
-        } else if self.eat("(") {
-            let mut fields = Vec::new();
-            if !self.at(")") {
-                loop {
-                    fields.push(self.expr()?);
-                    if fields.len() > 64 {
-                        return Err(Error::new(
-                            "limit",
-                            self.current().span,
-                            "tuple arity exceeds 64",
-                        ));
-                    }
-                    if !self.eat(",") {
-                        break;
-                    }
-                }
-            }
-            self.need(")")?;
-            if fields.len() == 1 {
-                // Parentheses group an expression; a comma is required to
-                // construct a tuple and singleton tuples are unsupported.
-                let mut grouped = fields.pop().unwrap();
-                grouped.span = Span::cover(start, self.tokens[self.position - 1].span);
-                return Ok(grouped);
-            }
-            ExprKind::Tuple(fields)
-        } else {
-            let (name, _) = self.name()?;
-            let args = if self.eat("[") {
-                self.arguments_end("]")?
-            } else {
-                Vec::new()
+        .collect::<Result<_>>()?;
+    let arguments = declaration
+        .params
+        .iter()
+        .map(|parameter| {
+            let source::PatternKind::Name(name) = &parameter.pattern.kind else {
+                return Err(unsupported(
+                    parameter.pattern.span,
+                    "function parameters must be names",
+                ));
             };
-            if self.at("(") {
-                ExprKind::Call(name, args, self.runtime_arguments()?)
-            } else if args.is_empty() {
-                ExprKind::Name(name)
-            } else {
-                return Err(error(
-                    start,
-                    "static function reference is not a runtime value",
-                ));
-            }
-        };
-        let end = self.tokens[self.position.saturating_sub(1)].span;
-        Ok(Expr {
-            kind,
-            span: Span::cover(start, end),
+            Ok((name.text.clone(), ty(&parameter.ty)?, name.span))
         })
-    }
-    fn block(&mut self, fold: bool) -> Result<Block> {
-        self.nested(|p| {
-            let start = p.current().span;
-            p.need("{")?;
-            let mut statements = Vec::new();
-            loop {
-                if p.eat("let") {
-                    let pattern = p.pattern()?;
-                    p.need("=")?;
-                    let value = p.expr()?;
-                    p.need(";")?;
-                    statements.push(Statement::Let(pattern, value));
-                    continue;
+        .collect::<Result<_>>()?;
+    let requires = declaration
+        .requires
+        .iter()
+        .map(|requirement| match requirement {
+            source::Requirement::Predicate(predicate) => Requirement::Predicate(predicate.clone()),
+            source::Requirement::Access(access) => Requirement::Access(
+                match access.access {
+                    source::Access::Apply => "Apply",
+                    source::Access::Adjoint => "Adjoint",
+                    source::Access::Controlled => "Controlled",
                 }
-                let yielded = p.eat("yield");
-                if yielded && !fold {
-                    return Err(error(
-                        p.current().span,
-                        "yield is only valid in a static fold",
-                    ));
-                }
-                let result = if p.at("}") {
-                    Expr {
-                        kind: ExprKind::Tuple(Vec::new()),
-                        span: p.current().span,
-                    }
-                } else {
-                    p.expr()?
-                };
-                if p.eat(";") && !yielded {
-                    statements.push(Statement::Drop(result));
-                    continue;
-                }
-                if fold && !yielded {
-                    return Err(error(result.span, "static fold requires yield"));
-                }
-                let end = p.current().span;
-                p.need("}")?;
-                return Ok(Block {
-                    statements,
-                    result: Box::new(result),
-                    span: Span::cover(start, end),
-                });
-            }
+                .into(),
+                access.name.text.clone(),
+                access.span,
+            ),
         })
+        .collect();
+    let source::FnBody::Quantum(body) = &declaration.body else {
+        return Err(unsupported(declaration.span, "requires a runtime block"));
+    };
+    Ok(Module {
+        imports: module
+            .uses
+            .iter()
+            .map(|item| {
+                (
+                    item.path
+                        .iter()
+                        .map(|i| i.text.as_str())
+                        .collect::<Vec<_>>()
+                        .join("::"),
+                    item.span,
+                )
+            })
+            .collect(),
+        function: Function {
+            name: declaration.name.text.clone(),
+            public: declaration.public,
+            effect,
+            parameters,
+            arguments,
+            result: ty(&declaration.return_type)?,
+            requires,
+            body: block(body)?,
+            span: declaration.span,
+        },
+    })
+}
+
+fn basis(ty: &source::Type) -> Result<Basis> {
+    match &ty.kind {
+        source::TypeKind::Bit => Ok(Basis::Bit),
+        source::TypeKind::Bits(n) => Ok(Basis::Bits(n.clone())),
+        _ => Err(unsupported(
+            ty.span,
+            "operation/quantum basis must be Bit or Bits<n>",
+        )),
     }
+}
+fn ty(ty: &source::Type) -> Result<Type> {
+    Ok(match &ty.kind {
+        source::TypeKind::Q(inner) => Type::Quantum(basis(inner)?),
+        source::TypeKind::CBit => Type::CBit,
+        source::TypeKind::CBits(n) => Type::CBits(n.clone()),
+        source::TypeKind::Tuple(fields) => {
+            Type::Tuple(fields.iter().map(self::ty).collect::<Result<_>>()?)
+        }
+        _ => return Err(unsupported(ty.span, "unsupported runtime type")),
+    })
+}
+fn pattern(pattern: &source::Pattern) -> Result<Pattern> {
+    Ok(match &pattern.kind {
+        source::PatternKind::Name(name) => Pattern::Name(name.text.clone(), name.span),
+        source::PatternKind::Tuple(fields) => Pattern::Tuple(
+            fields.iter().map(self::pattern).collect::<Result<_>>()?,
+            pattern.span,
+        ),
+        source::PatternKind::Wildcard => {
+            return Err(unsupported(
+                pattern.span,
+                "implicit wildcard discard is unsupported",
+            ));
+        }
+    })
+}
+fn argument(operation: &source::StaticOp) -> Result<Argument> {
+    Ok(match &operation.kind {
+        source::StaticOpKind::Name(name) => Argument::Natural(Natural {
+            kind: NatKind::Name(name.text.clone()),
+            span: name.span,
+            depth: 1,
+        }),
+        source::StaticOpKind::Natural(n) => Argument::Natural(n.clone()),
+        source::StaticOpKind::Specialize { name, arguments } => Argument::Definition(
+            name.text.clone(),
+            arguments.iter().map(argument).collect::<Result<_>>()?,
+            name.span,
+        ),
+        source::StaticOpKind::Repeat(count, child) => {
+            Argument::Repeat(count.clone(), Box::new(argument(child)?), operation.span)
+        }
+        _ => {
+            return Err(unsupported(
+                operation.span,
+                "unsupported static operation constructor",
+            ));
+        }
+    })
+}
+fn expr(expr: &source::Expr) -> Result<Expr> {
+    let kind = match &expr.kind {
+        source::ExprKind::Name(name) => ExprKind::Name(name.text.clone()),
+        source::ExprKind::Unit => ExprKind::Tuple(vec![]),
+        source::ExprKind::Tuple(fields) => {
+            ExprKind::Tuple(fields.iter().map(self::expr).collect::<Result<_>>()?)
+        }
+        source::ExprKind::Call {
+            callee,
+            static_args,
+            args,
+        } => ExprKind::Call(
+            callee.text.clone(),
+            static_args.iter().map(argument).collect::<Result<_>>()?,
+            args.iter().map(self::expr).collect::<Result<_>>()?,
+        ),
+        source::ExprKind::Adjoint { operation, input } => {
+            ExprKind::Adjoint(argument(operation)?, Box::new(self::expr(input)?))
+        }
+        source::ExprKind::Controlled { operation, args } => ExprKind::Controlled(
+            argument(operation)?,
+            args.iter().map(self::expr).collect::<Result<_>>()?,
+        ),
+        source::ExprKind::StaticIf {
+            predicate,
+            then_branch,
+            else_branch,
+        } => ExprKind::If(predicate.clone(), block(then_branch)?, block(else_branch)?),
+        source::ExprKind::StaticFold {
+            index,
+            start,
+            end,
+            carry,
+            initial,
+            body,
+        } => ExprKind::Fold {
+            index: index.text.clone(),
+            start: start.clone(),
+            end: end.clone(),
+            carry: pattern(carry)?,
+            initial: Box::new(self::expr(initial)?),
+            body: block(body)?,
+        },
+        _ => return Err(unsupported(expr.span, "unsupported runtime expression")),
+    };
+    Ok(Expr {
+        kind,
+        span: expr.span,
+    })
+}
+fn block(block: &source::Block) -> Result<Block> {
+    let statements = block
+        .statements
+        .iter()
+        .map(|statement| {
+            Ok(match &statement.kind {
+                source::StmtKind::Let {
+                    pattern: binder,
+                    value,
+                } => Statement::Let(pattern(binder)?, expr(value)?),
+                source::StmtKind::Expr(value) => Statement::Drop(expr(value)?),
+            })
+        })
+        .collect::<Result<_>>()?;
+    Ok(Block {
+        statements,
+        result: Box::new(expr(&block.result)?),
+        span: block.span,
+    })
 }

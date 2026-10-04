@@ -45,3 +45,7 @@ tests/fixtures/constitution_v030/witness-weakening/mutation.patch -text -whitesp
 tests/fixtures/frontend_v030/shared-scanner/*.qli -text -whitespace
 tests/fixtures/frontend_v030/shared-scanner/independent-review/results/adapter-unit.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/shared-scanner/independent-review/results/integration.stdout.txt -text -whitespace
+# Common-parser evidence includes original CRLF bytes and libtest output.
+tests/fixtures/frontend_v030/common-parser/shared.qli -text -whitespace
+tests/fixtures/frontend_v030/common-parser/integration.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/common-parser/unit.stdout.txt -text -whitespace

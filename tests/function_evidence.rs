@@ -142,28 +142,81 @@ fn checks_two_raw_functions_and_retains_their_full_snapshots() {
     assert_eq!(theorem.depth(), 1);
     assert_eq!(theorem.expanded_steps(), 2);
     theorem
-        .check_binding(&identity(), &implementation, &specification)
+        .check_binding(
+            &BasisType::Bit,
+            &identity(),
+            &implementation,
+            &specification,
+        )
         .unwrap();
     let mut renamed = identity();
     renamed.implementation.push_str("_changed");
     assert_eq!(
-        theorem.check_binding(&renamed, &implementation, &specification),
+        theorem.check_binding(&BasisType::Bit, &renamed, &implementation, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     let mut edited = identity();
     edited.sources[0].1.push(' ');
     assert_eq!(
-        theorem.check_binding(&edited, &implementation, &specification),
+        theorem.check_binding(&BasisType::Bit, &edited, &implementation, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     assert_eq!(
-        theorem.check_binding(&identity(), &specification, &specification),
+        theorem.check_binding(&BasisType::Bit, &identity(), &specification, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     assert_eq!(
-        theorem.check_binding(&identity(), &implementation, &implementation),
+        theorem.check_binding(
+            &BasisType::Bit,
+            &identity(),
+            &implementation,
+            &implementation
+        ),
         Err(ContractError::EvidenceMismatch)
     );
+}
+
+#[test]
+fn attachment_requires_the_exact_expected_basis_tree() {
+    let cases = [
+        (
+            BasisType::Tuple(vec![BasisType::Bit; 3]),
+            BasisType::pair(
+                BasisType::Bit,
+                BasisType::pair(BasisType::Bit, BasisType::Bit),
+            ),
+        ),
+        (
+            BasisType::Unit,
+            BasisType::pair(BasisType::Unit, BasisType::Unit),
+        ),
+        (
+            BasisType::Bit,
+            BasisType::pair(BasisType::Unit, BasisType::Bit),
+        ),
+    ];
+    for (retained, substituted) in cases {
+        let bits = retained.bits().unwrap();
+        assert_eq!(bits, substituted.bits().unwrap());
+        assert_ne!(retained, substituted);
+        let program = raw(bits as u8, vec![], 0);
+        let receipt = FunctionEvidence::check(
+            retained.clone(),
+            program.clone(),
+            program.clone(),
+            identity(),
+            &mut work(),
+        )
+        .unwrap();
+        assert_eq!(
+            receipt.check_binding(&retained, &identity(), &program, &program),
+            Ok(())
+        );
+        assert_eq!(
+            receipt.check_binding(&substituted, &identity(), &program, &program),
+            Err(ContractError::EvidenceMismatch)
+        );
+    }
 }
 
 #[test]
@@ -720,6 +773,7 @@ fn cached_calls_keep_opaque_dependencies_and_phase_under_control_and_adjoint() {
     assert_eq!(evidence.meaning(), child.meaning());
     child
         .check_binding(
+            evidence.signature(),
             evidence.identity(),
             evidence.implementation(),
             evidence.specification(),
@@ -739,7 +793,12 @@ fn cached_dependency_equality_is_identity_based_and_clone_stable() {
     let parent = check(0, implementation, raw(0, vec![], 0));
     let replaced = flat(0, vec![call(Arc::new(separate), vec![], false)]);
     assert_eq!(
-        parent.check_binding(parent.identity(), &replaced, parent.specification()),
+        parent.check_binding(
+            &BasisType::Unit,
+            parent.identity(),
+            &replaced,
+            parent.specification()
+        ),
         Ok(()) // Equal complete native snapshots can have distinct host Arc identities.
     );
 }

@@ -177,7 +177,11 @@ impl MeaningEvidence {
         if target != &self.target {
             return Err(ContractError::EvidenceMismatch);
         }
-        self.receipt
-            .check_binding(identity, implementation, &target.target_ir()?)
+        self.receipt.check_binding(
+            target.signature(),
+            identity,
+            implementation,
+            &target.target_ir()?,
+        )
     }
 }

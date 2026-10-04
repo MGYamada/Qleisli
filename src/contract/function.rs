@@ -320,14 +320,17 @@ impl FunctionEvidence {
         self.expanded_steps
     }
 
-    /// Check exact attachment, including both raw functions and source bytes.
+    /// Check exact attachment of the basis tree, both raw functions and source bytes.
+    /// Equal bit widths do not identify different tuple trees or Unit factors.
     pub fn check_binding(
         &self,
+        signature: &BasisType,
         identity: &FunctionIdentity,
         implementation: &RawProgram,
         specification: &RawProgram,
     ) -> Result<(), ContractError> {
-        if !self.identity.matches(identity)
+        if signature != &self.signature
+            || !self.identity.matches(identity)
             || !same_snapshot(implementation, &self.implementation)?
             || !same_snapshot(specification, &self.specification)?
         {
@@ -1160,7 +1163,9 @@ mod snapshot_tests {
             specification: "specification".into(),
             sources: sources.as_ref().clone(),
         };
-        first.check_binding(&expected, &raw(), &raw()).unwrap();
+        first
+            .check_binding(&BasisType::Unit, &expected, &raw(), &raw())
+            .unwrap();
         let (implementation, specification, borrowed) = first.identity_parts();
         assert_eq!(implementation, expected.implementation);
         assert_eq!(specification, expected.specification);

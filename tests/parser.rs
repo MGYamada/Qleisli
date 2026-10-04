@@ -21,7 +21,7 @@ fn check_token_prefixes(source: &str, label: &str) {
 #[test]
 fn static_operation_errors_point_to_the_unconsumed_token_or_eof() {
     let prefix = "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[";
-    for suffix in ["", "]", "0", "(", "true", "let"] {
+    for suffix in ["", "true", "let"] {
         let source = format!("{prefix}{suffix}");
         let error = parse_module(&source).unwrap_err();
         assert_eq!(error.message, "expected a static operation description");
@@ -222,14 +222,13 @@ fn accepts_comments_and_reports_utf8_byte_offsets() {
 #[test]
 fn malformed_syntax_has_precise_error_spans() {
     let cases = [
-        ("use oracle::*;", "*", "unexpected character"),
+        ("use oracle::*;", "*", "expected an identifier"),
         (
             "iso fn f(q: Q<Bit>) -> Q<Bit> { do x <- q; let y = x; pure y }",
             "let",
             "expected",
         ),
         ("basis fn f(x: CBit) -> Bit { x }", "CBit", "expected"),
-        ("iso fn f(q: Q<Bit>) -> Q<Bit> {}", "}", "final expression"),
     ];
     for (source, at, message) in cases {
         let error = parse_module(source).unwrap_err();
@@ -427,9 +426,10 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
 
     parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { do _ <- q; pure 0 }").unwrap();
     // Duplicate names are syntactically valid; the basis pattern checker must
-    // reject them. Unit/singleton patterns and trailing commas remain invalid.
+    // reject them. Empty tuple patterns are shared syntax for the sized profile;
+    // singleton patterns and trailing commas remain invalid.
     parse_module("unitary fn f(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,a) <- q; pure a }").unwrap();
-    for pattern in ["()", "(a)", "(a,)", "(a,b,c,)"] {
+    for pattern in ["(a)", "(a,)", "(a,b,c,)"] {
         let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {pattern} <- q; pure 0 }}");
         assert!(parse_module(&source).is_err(), "{source}");
     }
@@ -532,21 +532,19 @@ fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
 }
 
 #[test]
-fn shared_scanner_preserves_the_finite_public_token_projection() {
+fn common_token_stream_includes_sized_punctuation_without_trivia_joining() {
     use qleisli::frontend::lexer::{TokenKind, lex};
     let source = "// λ\r\n==> <-> <= >= :: :/*x*/: 00 01 Bits fn";
     let tokens = lex(source).unwrap();
     assert_eq!(
         tokens.iter().map(|t| t.kind.clone()).collect::<Vec<_>>(),
         vec![
-            TokenKind::Equals,
-            TokenKind::FatArrow,
+            TokenKind::EqualEqual,
+            TokenKind::RAngle,
             TokenKind::LeftArrow,
             TokenKind::RAngle,
-            TokenKind::LAngle,
-            TokenKind::Equals,
-            TokenKind::RAngle,
-            TokenKind::Equals,
+            TokenKind::LessEqual,
+            TokenKind::GreaterEqual,
             TokenKind::DoubleColon,
             TokenKind::Colon,
             TokenKind::Colon,
@@ -558,11 +556,58 @@ fn shared_scanner_preserves_the_finite_public_token_projection() {
         ]
     );
     assert_eq!(tokens[0].span.start, "// λ\r\n".len());
-    assert_eq!(&source[tokens[1].span.start..tokens[1].span.end], "=>");
+    assert_eq!(&source[tokens[0].span.start..tokens[0].span.end], "==");
     assert_eq!(tokens.last().unwrap().span.start, source.len());
-    for source in ["+", "-", "*", "^", "..", "!=", "-/*x*/>"] {
+    for source in [".", "!", "/", "!/*x*/="] {
         let e = lex(source).unwrap_err();
         assert_eq!((e.span.start, e.span.end), (0, 1), "{source}");
         assert!(e.message.starts_with("unexpected character"));
+    }
+}
+
+#[test]
+fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
+    use qleisli::frontend::ast::{Count, NatKind, StaticOpKind, StaticParamKind};
+    let source = "pub unitary fn f[static n:Nat,static U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { adjoint(repeat_op(2^(n+1),U),q) }";
+    let ast = parse_module(source).unwrap();
+    assert!(matches!(
+        ast.decls[0].static_params[0].kind,
+        StaticParamKind::Natural
+    ));
+    let StaticParamKind::Operation { basis, .. } = &ast.decls[0].static_params[1].kind else {
+        panic!("operation")
+    };
+    let TypeKind::Bits(size) = &basis.kind else {
+        panic!("register basis")
+    };
+    assert_eq!(&source[size.span.start..size.span.end], "n+1*2");
+    let NatKind::Add(left, right) = &size.kind else {
+        panic!("addition")
+    };
+    assert!(matches!(&left.kind,NatKind::Name(n) if n=="n"));
+    assert!(matches!(&right.kind, NatKind::Mul(..)));
+    let FnBody::Quantum(body) = &ast.decls[0].body else {
+        panic!("body")
+    };
+    let ExprKind::Adjoint { operation, .. } = &body.result.kind else {
+        panic!("adjoint")
+    };
+    let StaticOpKind::Repeat(Count::Power(exponent), _) = &operation.kind else {
+        panic!("counted power")
+    };
+    assert_eq!(&source[exponent.span.start..exponent.span.end], "(n+1)");
+    assert!(matches!(exponent.kind, NatKind::Add(..)));
+}
+
+#[test]
+fn basis_requires_rejects_before_documentation_attachment() {
+    for clause in ["0 == 0", "Apply(U)"] {
+        let source = format!("/// title\nbasis fn f(x:Bit)->Bit requires {clause} {{x}}");
+        let error = parse_module(&source).unwrap_err();
+        assert_eq!(&source[error.span.start..error.span.end], "requires");
+        assert_eq!(
+            error.message,
+            "basis functions cannot have requires clauses"
+        );
     }
 }

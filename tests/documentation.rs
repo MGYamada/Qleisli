@@ -259,7 +259,7 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
 }
 
 #[test]
-fn shared_scanner_retains_docs_without_adding_a_second_attachment_rule() {
+fn common_parser_shares_documentation_attachment_with_sized_source() {
     use qleisli::frontend::sized::ParsedProgram;
     use std::collections::BTreeMap;
     let source = "//! 日本語\r\n/** outer /* nested */ */ pub unitary fn f(q: Q<Bit>) -> Q<Bit> { /*! α\r\nβ */ q }";
@@ -268,8 +268,8 @@ fn shared_scanner_retains_docs_without_adding_a_second_attachment_rule() {
     assert_eq!(documented.declaration_docs[0][1].text, " α\nβ ");
     let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     assert_eq!(sized.source("main"), Some(source));
-    // Attachment is still a finite-AST check in this scanner-only step.
-    // Retain this explicit difference until the common AST replaces both parsers.
+    assert_eq!(sized.syntax("main"), Some(&documented.syntax));
+    // Sized source now uses the same declaration attachment boundary.
     let misplaced = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { /// misplaced\n q }";
     assert!(
         parse_module(misplaced)
@@ -277,5 +277,11 @@ fn shared_scanner_retains_docs_without_adding_a_second_attachment_rule() {
             .message
             .contains("documentation")
     );
-    ParsedProgram::parse(BTreeMap::from([("main".into(), misplaced.into())])).unwrap();
+    let error =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), misplaced.into())])).unwrap_err();
+    let common = parse_module(misplaced).unwrap_err();
+    assert_eq!(
+        (error.span(), error.message()),
+        (common.span, common.message.as_str())
+    );
 }

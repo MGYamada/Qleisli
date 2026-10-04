@@ -288,6 +288,12 @@
         [
           "python3",
           "scripts/test_hierarchical_preparation.py"
+        ],
+        [
+          "python3",
+          "scripts/test_instrument_transport.py",
+          "--record",
+          "{record}"
         ]
       ]
     },
@@ -784,6 +790,15 @@
           "native_acceptance",
           "--",
           "--include-ignored"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "native_roundtrip",
+          "--",
+          "--nocapture"
         ],
         [
           "cargo",
