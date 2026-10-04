@@ -1,6 +1,6 @@
 //! Source preparation regressions; none of these tests issues IR evidence.
 mod common;
-use qleisli::frontend::sized::{OperationBinding, ParsedProgram};
+use qleisli::frontend::sized::{HierarchyEligibility, OperationBinding, ParsedProgram};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
@@ -1152,12 +1152,68 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
             .elaborate()
             .unwrap();
         let error = prepared.check_lowering_profile().unwrap_err();
+        assert_eq!(
+            prepared.hierarchy_eligibility().unwrap(),
+            HierarchyEligibility::Ineligible(error.clone())
+        );
         assert_eq!(error.code(), "unsupported");
         assert!(error.message().contains(reason), "{error}");
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start && error.span().end <= source.len());
-        assert_eq!(prepared.lower().unwrap_err().message(), error.message());
+        assert_eq!(prepared.lower().unwrap_err(), error);
     }
+}
+
+#[test]
+fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
+    let prepare = |source: &str| {
+        ParsedProgram::parse(sources(source))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+    };
+    let source = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let unused = 0; q }";
+    let prepared = prepare(source);
+    let HierarchyEligibility::Ineligible(error) = prepared.hierarchy_eligibility().unwrap() else {
+        panic!("unused Boolean work must remain outside the hierarchy profile");
+    };
+    assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(&source[error.span().start..error.span().end], "0");
+    assert_eq!(prepared.check_lowering_profile().unwrap_err(), error);
+    assert_eq!(prepared.lower().unwrap_err(), error);
+
+    let pure = prepare("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
+    assert_eq!(
+        pure.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Eligible
+    );
+    pure.check_lowering_profile().unwrap();
+    pure.lower().unwrap();
+
+    // Signature admission does not turn a later body restriction into another
+    // target-selection opportunity: lowering still reports its actual error.
+    let source = "use std::quantum::h; use std::observe::measure_z;
+        use std::classical::{empty_bits,prepend_bit};
+        pub observe fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Bits<1>) {
+            let b = measure_z(q); let r = h(r); (r,prepend_bit[0](b,empty_bits()))
+        }";
+    let prepared = prepare(source);
+    assert_eq!(
+        prepared.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Eligible
+    );
+    prepared.check_lowering_profile().unwrap();
+    let error = prepared.lower().unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(&source[error.span().start..error.span().end], "h(r)");
+    assert_eq!(
+        error.message(),
+        "quantum gate after observation requires a preservation proof"
+    );
 }
 
 #[test]

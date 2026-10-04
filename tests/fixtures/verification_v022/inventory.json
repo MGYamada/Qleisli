@@ -1974,6 +1974,20 @@
           "group": "source"
         }
       }
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "name": "HierarchyEligibility",
+      "members": {
+        "Eligible": {
+          "declaration": "Eligible",
+          "group": "sized-source"
+        },
+        "Ineligible": {
+          "declaration": "Ineligible(Error)",
+          "group": "sized-source"
+        }
+      }
     }
   ],
   "sources": [
@@ -2885,7 +2899,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "5863d1652709663ce577d012ceb6e45a43249ee5e5cc11d431a2fb1a0ae8a096",
+      "sha256": "9d6a8e673e3b7fa2cbf5e2cc1adfd0c728e6b2c1bc64d7af025befee05c04e69",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2925,7 +2939,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "bf2058bf12225c43e304be7746bb6e3f767a3eaf086f8b719ef5200fbc5d47ed",
+      "sha256": "12d035d41e4c13d416dfd4384543c26aff84aece56449d33bd1304b5935884c3",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -2947,23 +2961,13 @@
     },
     {
       "path": "src/bin/qleisli/sized.rs",
-      "sha256": "bf0be6d54c6ddf53ea1ce4ff43751d116401be2afceb498c07063f63bbd71479",
+      "sha256": "6d9a085bf363ba58dfe163aff89fd7ff96cd94df7312cb619d6e9d9827b4fee1",
       "surface": {
         "declarations": [],
         "functions": [],
         "capacity_constants": []
       },
       "group": "sized-source"
-    },
-    {
-      "path": "src/bin/qleisli/sized/options.rs",
-      "sha256": "183aea61d421e38fa694838c738166f4e60deaedb650493979a5e1664005ea69",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
     },
     {
       "path": "src/bin/qleisli/source_commands.rs",
@@ -3597,7 +3601,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "458dc1aeafa386e5655aebab8c2a9ba80dcafe8b98087edc7d538256b60b9523",
+      "sha256": "c9af379e3b919c3913a92645085e6aa245c6c4299ca09d54ba83c7cff398e871",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3659,11 +3663,12 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "2915b7ed85898a028b29300ab756db25e98faae2ec8e4a7258256de514ef89f1",
+      "sha256": "ba14cdbf3e8bf7c6c2c54967513cc2b114524a340c0472c92b935f71f0aac2c7",
       "group": "sized-source",
       "surface": {
         "declarations": [
           "ElaboratedProgram",
+          "HierarchyEligibility",
           "SourceDefinition",
           "SourceOperation",
           "SourceStep",
@@ -3684,6 +3689,7 @@
           "pub fn fields(&self) -> &[SourceType]",
           "pub fn fields(&self) -> &[SourceValue]",
           "pub fn fold_iterations(&self) -> usize",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
           "pub fn identity(&self) -> Option<u32>",
           "pub fn inputs(&self) -> &[SourceValue]",
           "pub fn inputs(&self) -> &[SourceValue]",
@@ -3756,7 +3762,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "ed28c8af68dd35e48d5d696d4ebab8d85cd4248fe6e5c103dd013df5faa95f03",
+      "sha256": "814080dccc4362efe15783312a52bad87d038984979fb0e1489fc879b6436499",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4508,6 +4514,26 @@
       "sha256": "b92f596bbf251ce73502cea353d0666b2dacd6104895cebe703880c0bd1d2bb8",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "src/bin/qleisli/source_plan.rs",
+      "group": "sized-source",
+      "sha256": "25d60db1bd50d91f671db43234b471f8a35a2460640f80f35583e737a6a00a90",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/source_plan/options.rs",
+      "group": "sized-source",
+      "sha256": "0a24e134ad446b3179e44c1da4a55f8cddbe69b0d7990470d75254014574c217",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -4812,15 +4838,17 @@
         "HierarchyProposal::validate_initialization_moves_native",
         "sized check/run/sample through native-only reports",
         "ElaboratedProgram::lower_raw",
-        "RawSourceProposal::validate_source_steps"
+        "RawSourceProposal::validate_source_steps",
+        "ElaboratedProgram::hierarchy_eligibility",
+        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
       ],
       "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
       "request": "Original module bytes, selected public entry and complete natural/operation bindings",
-      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output.",
+      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope.",
       "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
-      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. General basis/primitive/provider/branch targets, explicit runtime invocation and CLI convergence remain unfinished.",
-      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission.",
-      "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts.",
+      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished.",
+      "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged.",
+      "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
       "replacement": [
         "VM-28"
       ]

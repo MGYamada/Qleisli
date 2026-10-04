@@ -19,6 +19,8 @@ mod samples;
 mod sized;
 #[path = "qleisli/source_commands.rs"]
 mod source_commands;
+#[path = "qleisli/source_plan.rs"]
+mod source_plan;
 
 fn write_stdout(bytes: &[u8], description: &str) -> ExitCode {
     match std::io::stdout().lock().write_all(bytes) {
@@ -47,11 +49,20 @@ fn report(root: &std::path::Path, error: Diagnostic) {
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
-    if args.first().is_some_and(|arg| arg == "sized") {
-        return sized::run(&args[1..]);
+    if let Some(index) = args
+        .iter()
+        .position(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+        .filter(|&index| args[index] == "sized")
+    {
+        let mut selected = args.clone();
+        selected.remove(index);
+        return sized::run(&selected);
     }
     if args.first().is_some_and(|arg| arg == "interop") {
         return interop::run(&args[1..]);
+    }
+    if source_plan::selected(&args) {
+        return source_plan::run(&args, false);
     }
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);

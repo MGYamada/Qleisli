@@ -21,7 +21,8 @@ use std::path::PathBuf;
 
 pub use super::ast::Span;
 pub use elaborate::{
-    ElaboratedProgram, SourceDefinition, SourceOperation, SourceStep, SourceType, SourceValue,
+    ElaboratedProgram, HierarchyEligibility, SourceDefinition, SourceOperation, SourceStep,
+    SourceType, SourceValue,
 };
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,

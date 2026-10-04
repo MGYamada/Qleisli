@@ -93,20 +93,26 @@ target/runtime or quantitative Resource Safety claims.
 | Foreign export | Consumes `AcceptedProgram` and emits target text. Input acceptance does not prove preservation of the emitted OpenQASM/QIR or target execution. QIRF export separately performs a fresh native validity check on its output; output validity alone is not a translation theorem. |
 | `sim`, `host`, hierarchy execution and sampling | Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation. |
 
-The sized pipeline parses, instantiates, elaborates and lowers **untrusted
-proposals**. `qleisli sized emit-proposal` writes the proposal and returns before
-constructing a kernel; its result says `untrusted-proposal`. Sized `check`,
-`run` and `sample` subsequently use the dedicated request, Fourier, instrument
-or named-QPE native routes, plus required initialization-move binding. Their
-report records `source_meaning_verified: false`. Producer consistency,
-independent caller composition and named-QPE requests have different scopes;
-none implicitly proves general source lowering preservation.
+Explicit module-map source selection parses, instantiates, elaborates and
+lowers **untrusted proposals**. Ordinary commands and the legacy `sized`
+prefix use the same selected-source execution plan. `emit-proposal` writes
+transport without constructing a kernel and reports `untrusted-proposal`.
+The preselected Raw route uses ordinary native acceptance and then separately
+compares the accepted instructions with the retained source steps. The
+hierarchy route retains dedicated request, Fourier, instrument or named-QPE
+checking and required initialization-move binding. A native failure cannot
+switch routes or discard the caller's request. Selected checking/execution results retain
+`source_meaning_verified: false`; native validity, producer consistency,
+caller composition and named-QPE requests have distinct scopes. Neither
+source-step comparison nor general lowering preservation follows merely from
+an accepted proposal. See [selected-source execution](type-model.md#selected-source-execution)
+for the remaining invocation and checking-profile boundaries.
 
 ## Durable coverage check
 
 `tests/fixtures/verification_v029/coverage.json` separates current implementation,
 published 0.2.9 validation, unpublished development and open proof obligations.
-It retains all 36 coverage groups, 20 boundary entry lists, 232 constructor
+It retains all 36 coverage groups, 20 boundary entry lists, current constructor
 variants and the 19 RawOp variants. Mixed boundary rows refer to individually
 classified paths; a public surface containing a constructor or `doc` is not
 counted wholesale as native acceptance.

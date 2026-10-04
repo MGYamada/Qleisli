@@ -155,3 +155,9 @@ caller correlations. Its existing hierarchy accepts the recorded fine phase;
 the following Raw implementation's exact-eighth limitation is a selected-target
 boundary, not a language-wide rejection. Original sources and observations are
 unchanged; independent mixed execution tests accompany the new shared state.
+
+The [selected-source CLI study](selected-source-cli-v030/session.json) preserves
+an explicit Unit-parameter source before CLI changes. Its four actual baseline
+observations separate an unavailable command form from hierarchy profile
+rejection. Zero physical width does not supply a missing runtime argument.
+The existing mixed and parameter-pattern first sources remain unchanged.

@@ -1,8 +1,8 @@
 //! Bounded untrusted proposal generation. Native reconstruction is still required.
 use super::primitive::Primitive;
 use super::{
-    ElaboratedProgram, Error, Result, SourceDefinition, SourceOperation, SourceStep, SourceType,
-    SourceValue, Span,
+    ElaboratedProgram, Error, HierarchyEligibility, Result, SourceDefinition, SourceOperation,
+    SourceStep, SourceType, SourceValue, Span,
 };
 use crate::contract::{
     BasisType,
@@ -1184,10 +1184,18 @@ impl Lower<'_> {
     }
 }
 
-/// Check root signature/effect admission to the selected transport profile
-/// without narrowing generic source typing. Body lowering still checks each
-/// operation and its concrete capability requirements.
+/// Preserve the existing preflight error API using the same typed classification
+/// used by target selection. Internal/limit failures are never reclassified.
 pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+    match hierarchy_eligibility(source)? {
+        HierarchyEligibility::Eligible => Ok(()),
+        HierarchyEligibility::Ineligible(error) => Err(error),
+    }
+}
+
+/// Classify only explicit profile mismatches without narrowing generic source
+/// typing. Body lowering still checks each operation and concrete capability.
+pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<HierarchyEligibility> {
     let root = &source.definitions()[source.root()];
     let unsupported = |message: &str| {
         Error::new("unsupported", root.span(), message).in_module(
@@ -1202,23 +1210,23 @@ pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
         .flat_map(leaves)
         .any(|input| !input.ty().is_quantum())
     {
-        return Err(unsupported(
+        return Ok(HierarchyEligibility::Ineligible(unsupported(
             "selected sized lowering profile requires quantum entry values; classical entry values are unsupported",
-        ));
+        )));
     }
     if root.effect() == "iso" {
-        return Err(unsupported(
+        return Ok(HierarchyEligibility::Ineligible(unsupported(
             "selected sized lowering profile supports unitary roots and initialize/unitary/readout observe roots; iso roots are unsupported",
-        ));
+        )));
     }
     if root.effect() == "unitary"
         && leaves(root.output())
             .iter()
             .any(|output| !output.ty().is_quantum())
     {
-        return Err(unsupported(
+        return Ok(HierarchyEligibility::Ineligible(unsupported(
             "selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported",
-        ));
+        )));
     }
     if root.effect() == "observe" {
         let classical: Vec<_> = leaves(root.output())
@@ -1226,23 +1234,23 @@ pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
             .filter(|output| !output.ty().is_quantum())
             .collect();
         if classical.len() != 1 || classical[0].ty().kind() != "bits" {
-            return Err(unsupported(
+            return Ok(HierarchyEligibility::Ineligible(unsupported(
                 "selected sized lowering profile requires an observe root returning exactly one Bits value",
-            ));
+            )));
         }
     }
     for definition in source.definitions() {
         for step in definition.steps() {
             if step.boolean().is_some() {
-                return Err(Error::new(
+                return Ok(HierarchyEligibility::Ineligible(Error::new(
                     "unsupported",
                     step.span(),
                     "hierarchical transport does not support ordinary Boolean source steps; select an explicitly supported finite target",
-                ).in_module(step.module()));
+                ).in_module(step.module())));
             }
         }
     }
-    Ok(())
+    Ok(HierarchyEligibility::Eligible)
 }
 
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {

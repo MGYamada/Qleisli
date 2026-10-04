@@ -132,6 +132,50 @@ decoding and runtime correspondence do not become proved merely because the
 checker is implemented in Lean. Full supported-profile Soundness remains a
 separate proof milestone; ratification does not complete it.
 
+## Exact constitutional obligations
+
+The human Guardian adopted **EXACT-2026-01** for edition 2026. The exact
+reviewed supplement is repository file `governance/proposals/exactness-2026.md`,
+with SHA-256 `b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179`.
+The separate `governance/interpretations/exactness-2026-adoption.json` records
+the actual human judgment. [Issue #311](https://github.com/MGYamada/Qleisli/issues/311)
+identifies both records. The reviewed file's candidate notice is immutable
+history, not its current adoption status.
+
+An epsilon-bound approximation cannot replace an applicable exact QS, PR or
+quantitative RS obligation. Exact phase, coherent control, all-input clean
+return and dirty restoration retain their stated contracts. An approximate
+artifact may carry checked engineering claims, but those claims do not make
+it the source's exact constitutional realization. Exact equality in a
+separately permitted quotient is distinct from approximation; this supplement
+admits no quotient or waiver of an existing phase contract.
+
+Numerical and interval computation may construct evidence for a final exact
+proposition checked at the designated independent boundary. Floating-point
+observations and an error certificate alone are insufficient. An independently
+checked exact admitted artifact remains eligible for a checked resource bound
+even if its construction used an internal parameter named epsilon. A cost
+bound for an approximate implementation does not supply missing exact source
+correspondence. Target assumptions remain explicit; this is not a claim of
+noiseless physical hardware.
+
+The supplement preserves all implementation criteria of
+[#31](https://github.com/MGYamada/Qleisli/issues/31) and
+[#163](https://github.com/MGYamada/Qleisli/issues/163), while distinguishing
+their engineering approximation contracts from constitutional discharge.
+[#309](https://github.com/MGYamada/Qleisli/issues/309) remains a 0.3.1 coefficient
+extension and [#310](https://github.com/MGYamada/Qleisli/issues/310) a v1+ paradigm
+design. Neither is implemented by this ruling. A future edition decision is
+necessary before epsilon can enter constitutional truth conditions, and it
+still cannot weaken historical guarantees under Article IV.
+
+EXACT-2026-01 applies across the existing three jurisdictions; it is not a
+fourth Fundamental Theorem. Adoption adds no discharged guarantee. The two
+scoped QLV1 admissions and the original three broader pending obligations
+retain their identities and status; additional proof and enforcement duties
+remain separate. [Issue #311](https://github.com/MGYamada/Qleisli/issues/311)
+tracks the interpretation's integration.
+
 ## Change and impact review
 
 A language feature, semantic breaking change, or change to the acceptance or

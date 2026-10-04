@@ -1,0 +1,7 @@
+{
+  "scripts/check_release_ready.py": "70f687dcc99c816882e58b22e4f50ca2131660ad3f70e18fa981551d5ebc3351",
+  "scripts/test_check_release_ready.py": "057408833cf226384971a7b76e61fc3ebc72dd9f2fd5d1daa000066876b4dc58",
+  "scripts/check_constitution.py": "424f8e9b9bedbc5cbbd49915b600026e5db8ad933460aa24e2f7a7c8c7cba8e1",
+  "scripts/test_check_constitution.py": "96398e481aabbc318d0e563bb841298771f73bef9d46261f8cbdab469467b24c",
+  "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+}

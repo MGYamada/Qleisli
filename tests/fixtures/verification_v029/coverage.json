@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "5d5f16324d9523dab3682548075b539a381925e17ffb23791abeea6b350e2f4b",
+  "surface_sha256": "8ba3c82780dbf42c5a879a7d5f26abedb29a18023ddf213bf37258512d0ced50",
   "groups": [
     {
       "id": "raw-core",
@@ -1352,7 +1352,9 @@
         "HierarchyProposal::validate_initialization_moves_native",
         "sized check/run/sample through native-only reports",
         "ElaboratedProgram::lower_raw",
-        "RawSourceProposal::validate_source_steps"
+        "RawSourceProposal::validate_source_steps",
+        "ElaboratedProgram::hierarchy_eligibility",
+        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -1771,6 +1773,14 @@
           ]
         },
         {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "fn raw_execute(",
+            "native::Kernel::new(kernel).accept(proposal.proposal())",
+            "proposal.validate_source_steps(&checked)"
+          ]
+        },
+        {
           "path": "src/interchange/mod.rs",
           "markers": [
             "pub fn import(",
@@ -1821,6 +1831,10 @@
         {
           "path": "scripts/test_interop_native.py",
           "test": "test_all_actions_formats_use_real_native_checker"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_mixed_sources_keep_independent_distributions_and_scope"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2131,7 +2145,15 @@
         {
           "path": "src/bin/qleisli/sized.rs",
           "markers": [
-            "if let Some(path) = o.output",
+            "super::source_plan::run(args, true)"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "fn prepare(",
+            "fn execute(",
+            "prepared.payload()",
             "untrusted-proposal",
             "source_meaning_verified"
           ]
@@ -2176,6 +2198,14 @@
         {
           "path": "tests/sized_cli.rs",
           "test": "sized_cli_emits_only_an_untrusted_proposal_without_a_kernel"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_open_signature_checks_and_proposals_do_not_claim_closed_execution"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_caller_h_request_rejects_x_once_without_a_raw_retry"
         },
         {
           "path": "tests/ordinary_booleans.rs",

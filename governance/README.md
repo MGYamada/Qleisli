@@ -10,6 +10,13 @@
 - [Guarantee ledger](guarantees.json) records those three interpretations as
   binding pending broader obligations and two discharged scoped QS guarantees.
   Existing proofs are not automatically admitted as constitutional discharges.
+- [Exactness adoption](interpretations/exactness-2026-adoption.json) records
+  the Guardian's adoption of EXACT-2026-01 on 2026-10-05. The
+  [reviewed supplement](proposals/exactness-2026.md) retains its historical
+  candidate status and exact approved bytes. It applies across QS, PR and RS;
+  it creates no fourth jurisdiction or discharged guarantee. Ledger schema v5
+  retains the three broader obligations, adds the pending supplement, and
+  preserves both admitted guarantees and their current evidence bindings.
 - [Initial scoped QS admission](guarantees/initial-2026-admission.json) records
   the subsequent human adequacy judgment for the exact
   [reviewed proposal](proposals/initial-guarantees.json): ordinary QLV1 ownership
@@ -35,6 +42,13 @@ records against the selected base. The earlier bootstrap ledger remains at
 interpretation event authorizes that transition, not a proof discharge. The
 later admission has its own event, and preserves the preceding pending ledger
 at `tests/fixtures/constitution_v030/pending-ledger.json`.
+The exactness transition accepts a genuine schema-v4 Git base and separately
+protects the new text and adoption event. It rejects removal, rollback,
+fabricated discharge and changed bytes during evidence checking. Scoped release
+disclosures must retain all four pending interpretation IDs, including EXACT.
+The verifier returns the digest of the ledger bytes it actually checked.
+Receipt production and release consumption bind that digest to their captured
+ledger before reporting readiness; equal counts cannot substitute for identity.
 
 `--require-release-ready` rejects the current incomplete proof-enforcement
 state. Current evidence is separate from the historical admission. It must bind

@@ -35,6 +35,7 @@ fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     ] {
         let root = SourceRoot::new(source);
         let output = cli(&root)
+            .arg("--ir-profile=hierarchy")
             .arg(format!(
                 "--kernel={}",
                 root.0.join("absent-kernel").display()

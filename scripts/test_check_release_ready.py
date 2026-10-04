@@ -62,8 +62,14 @@ class SyntheticRelease(unittest.TestCase):
         self.write('release/issue-snapshot.txt', b'Synthetic criterion for test only.\n')
         self.write('release/review.txt', b'Synthetic review; not human authority or an Issue decision.\n')
         self.write('release/evidence.txt', b'Synthetic positive/negative/implementation reference.\n')
-        self.ledger = dict(discharged_guarantees=[{'id': name} for name in ['QS-QLV1-OWNERSHIP-2026-01', 'QS-QLV1-SCOPE-2026-01']],
-                           pending_obligations=[{'id': name} for name in ['PR-2026-01', 'QS-2026-01', 'RS-2026-01']])
+        # Match the actual ledger's distinct binding/pending identity fields.
+        # The prior {'id': ...} pending fixture concealed a production KeyError.
+        interpretations = ['PR-2026-01', 'QS-2026-01', 'RS-2026-01']
+        self.ledger = dict(
+            binding_interpretations=[dict(id=name, jurisdiction=name[:2]) for name in interpretations],
+            discharged_guarantees=[{'id': name} for name in ['QS-QLV1-OWNERSHIP-2026-01', 'QS-QLV1-SCOPE-2026-01']],
+            pending_obligations=[dict(interpretation=name, formalization_status='pending-coverage-and-adequacy-review',
+                                     proof_status='not-discharged', evidence_bindings=[]) for name in interpretations])
         self.write(checker.LEDGER, encoded(self.ledger))
         self.requirements = dict(format='qleisli.release-requirements', version=1, release_line='0.3.0',
                                 identities=checker.IDENTITIES, groups=checker.GROUPS,
@@ -78,7 +84,7 @@ class SyntheticRelease(unittest.TestCase):
             schema_registry=self.ref('lean/schema-registry.json'),
             proof_scope=dict(claim='scoped-pre-v1', ledger_sha256=self.ref(checker.LEDGER)['sha256'],
                              admitted=sorted(row['id'] for row in self.ledger['discharged_guarantees']),
-                             pending=sorted(row['id'] for row in self.ledger['pending_obligations'])),
+                             pending=sorted(row['interpretation'] for row in self.ledger['pending_obligations'])),
             issues=[dict(id=number, criteria=[dict(id='C1', disposition='implemented', review=self.ref('release/review.txt'),
                         evidence={role: self.ref('release/evidence.txt') for role in checker.ROLES})]) for number in sorted(checker.ISSUES)])
         self.write(checker.ACCEPTANCE, encoded(self.acceptance))
@@ -112,7 +118,7 @@ class SyntheticRelease(unittest.TestCase):
         self.needs = {'changes': dict(result='success', outputs=dict(profile='full', proof_lane='full', head=self.head))}
         self.payloads = {job: {} for job in checker.SUITES}
         proof = dict(format='qleisli.release-constitution', version=1, context=self.context,
-                     ledger_sha256=self.ref(checker.LEDGER)['sha256'], result=dict(RESULT, mode='current-Lean-replay'))
+                     ledger_sha256=self.ref(checker.LEDGER)['sha256'], result=dict(self.constitution_result(), mode='current-Lean-replay'))
         self.payloads['check-lean']['constitution.json'] = encoded(proof)
         tracked = checker.tracked_files(self.root, self.head)
         source = archive(tracked)
@@ -148,11 +154,17 @@ class SyntheticRelease(unittest.TestCase):
         self.needs[job] = dict(result='success', outputs=dict(release_receipt_sha256=checker.digest(raw)))
         self.env['RELEASE_NEEDS_JSON'] = json.dumps(self.needs)
 
+    def constitution_result(self):
+        result = dict(RESULT, ledger_sha256=self.ref(checker.LEDGER)['sha256'])
+        if 'supplemental_interpretations' in self.ledger:
+            result['supplemental_pending_obligations'] = len(self.ledger['supplemental_interpretations'])
+        return result
+
     def check(self):
         # Only the already separately tested expensive/version/constitutional
         # services are simulated. Artifact, Git, coverage, provenance and CLI
         # helpers remain production code. No synthetic record enters real ledger.
-        with patch.object(checker, 'version_plan', return_value={}), patch('check_constitution.check_constitution', return_value=RESULT) as constitutional:
+        with patch.object(checker, 'version_plan', return_value={}), patch('check_constitution.check_constitution', return_value=self.constitution_result()) as constitutional:
             result = checker.check(self.root, base_ref=self.base, env=self.env, evidence=self.evidence)
             constitutional.assert_called_once_with(self.root, base_ref=self.base)
             return result
@@ -167,6 +179,82 @@ class SyntheticRelease(unittest.TestCase):
         result=self.check()
         self.assertEqual((result['admitted'], result['pending']), (2,3))
         self.assertEqual(result['publication'], 'not-authorized-or-performed')
+
+    def add_exactness_supplement(self):
+        # Synthetic references intentionally point to labelled synthetic review
+        # bytes. The constitutional service is mocked here, never human authority.
+        self.ledger['supplemental_interpretations'] = [dict(
+            id='EXACT-2026-01', jurisdictions=['QS', 'PR', 'RS'],
+            applies_to=['QS-2026-01', 'PR-2026-01', 'RS-2026-01'],
+            adoption=self.ref('release/review.txt'), reviewed_text=self.ref('release/review.txt'),
+            formalization_status='pending-coverage-and-adequacy-review',
+            proof_status='not-discharged', evidence_bindings=[])]
+        self.write(checker.LEDGER, encoded(self.ledger))
+        self.update_acceptance(lambda x: x['proof_scope'].update(
+            ledger_sha256=self.ref(checker.LEDGER)['sha256'],
+            pending=['EXACT-2026-01', 'PR-2026-01', 'QS-2026-01', 'RS-2026-01']))
+
+    def test_live_ledger_row_shapes_disclose_three_obligations_and_exactness(self):
+        # Read actual production rows independently of the synthetic fixture.
+        # This would fail with KeyError('id') under the old pending extraction.
+        ledger = json.loads((ROOT / checker.LEDGER).read_bytes())
+        disclosure = checker.proof_disclosures(ledger)
+        self.assertEqual(disclosure['pending'],
+                         ['EXACT-2026-01', 'PR-2026-01', 'QS-2026-01', 'RS-2026-01'])
+        self.assertEqual(disclosure['admitted'],
+                         ['QS-QLV1-OWNERSHIP-2026-01', 'QS-QLV1-SCOPE-2026-01'])
+        self.assertEqual({row['jurisdiction'] for row in ledger['binding_interpretations']},
+                         {'QS', 'PR', 'RS'})
+
+    def test_complete_synthetic_supplement_remains_pending_and_in_live_receipt(self):
+        self.add_exactness_supplement()
+        result = self.check()
+        self.assertEqual((result['admitted'], result['pending']), (2, 4))
+        self.assertEqual(result['publication'], 'not-authorized-or-performed')
+        proof = json.loads(self.payloads['check-lean']['constitution.json'])
+        self.assertEqual(proof['result']['pending_obligations'], 3)
+        self.assertEqual(proof['result']['supplemental_pending_obligations'], 1)
+        # A pre-supplement success receipt cannot stand for the active ledger,
+        # even with updated ledger digest and trusted producer digest.
+        del proof['result']['supplemental_pending_obligations']
+        self.payloads['check-lean']['constitution.json'] = encoded(proof)
+        self.refresh_job('check-lean')
+        self.reject('mismatched guarantee replay')
+
+    def test_hidden_supplement_and_fabricated_supplement_discharge_reject(self):
+        self.add_exactness_supplement()
+        original = copy.deepcopy(self.acceptance)
+        changes = [
+            lambda scope: scope['pending'].remove('EXACT-2026-01'),
+            lambda scope: scope['admitted'].append('EXACT-2026-01'),
+            lambda scope: scope['pending'].append('EXACT-2026-01'),
+        ]
+        for change in changes:
+            with self.subTest(change=change):
+                self.acceptance = copy.deepcopy(original)
+                self.update_acceptance(lambda x: change(x['proof_scope']))
+                self.reject('proof scope')
+
+    def test_pending_identity_scope_and_status_must_bind_actual_ledger_rows(self):
+        self.add_exactness_supplement()
+        changes = [
+            lambda x: x['pending_obligations'][0].update(id='PR-2026-01'),
+            lambda x: x['pending_obligations'][0].update(interpretation='unadopted'),
+            lambda x: x['pending_obligations'].append(x['pending_obligations'][0]),
+            lambda x: x['pending_obligations'][0].update(proof_status='discharged'),
+            lambda x: x['supplemental_interpretations'].append(x['supplemental_interpretations'][0]),
+            lambda x: x['supplemental_interpretations'][0].update(id='QS-2026-01'),
+            lambda x: x['supplemental_interpretations'][0].update(applies_to=['unadopted']),
+            lambda x: x['supplemental_interpretations'][0].update(jurisdictions=['EXACT']),
+            lambda x: x['supplemental_interpretations'][0].update(proof_status='discharged'),
+            lambda x: x['supplemental_interpretations'][0].update(evidence_bindings=[{'proof': 'invented'}]),
+        ]
+        for change in changes:
+            with self.subTest(change=change):
+                ledger = copy.deepcopy(self.ledger)
+                change(ledger)
+                with self.assertRaises(PacketError):
+                    checker.proof_disclosures(ledger)
 
     def test_missing_duplicate_issue_and_removed_criterion_reject(self):
         original=copy.deepcopy(self.acceptance)
@@ -270,19 +358,58 @@ class SyntheticRelease(unittest.TestCase):
 
     def test_live_receipt_uses_fixed_verifier_and_rechecks_inputs(self):
         path=Path(self.temp.name)/'live.json'
-        with patch('check_constitution.check_constitution',return_value=dict(RESULT,mode='current-Lean-replay')) as verifier:
+        bound_result = dict(self.constitution_result(), mode='current-Lean-replay')
+        with patch('check_constitution.check_constitution',return_value=bound_result) as verifier:
             checker.record_constitution(self.root,path,self.env)
             verifier.assert_called_once_with(self.root,verify_lean=True)
         record=json.loads(path.read_bytes())
         self.assertEqual(record['ledger_sha256'],self.ref(checker.LEDGER)['sha256'])
+        self.assertEqual(record['result']['ledger_sha256'],record['ledger_sha256'])
         self.assertEqual(record['result']['mode'],'current-Lean-replay')
         with self.assertRaisesRegex(PacketError,'outside candidate'):
             checker.record_constitution(self.root,self.root/'bad-output.json',self.env)
         def change(*args,**kwargs):
             self.write(checker.LEDGER,b'{}')
-            return dict(RESULT,mode='current-Lean-replay')
+            return bound_result
         with patch('check_constitution.check_constitution',side_effect=change), self.assertRaisesRegex(ValueError,'candidate is dirty'):
             checker.record_constitution(self.root,Path(self.temp.name)/'changed.json',self.env)
+
+    def test_live_producer_rejects_missing_or_different_validated_ledger_digest(self):
+        bound = dict(self.constitution_result(), mode='current-Lean-replay')
+        other_bytes = (self.root / checker.LEDGER).read_bytes() + b'\n'
+        for digest in [None, checker.digest(other_bytes)]:
+            result = dict(bound)
+            if digest is None:
+                del result['ledger_sha256']
+            else:
+                result['ledger_sha256'] = digest
+            output = Path(self.temp.name) / ('missing.json' if digest is None else 'different.json')
+            with self.subTest(digest=digest), patch('check_constitution.check_constitution', return_value=result):
+                with self.assertRaisesRegex(PacketError, 'validated different ledger bytes'):
+                    checker.record_constitution(self.root, output, self.env)
+                self.assertFalse(output.exists(), 'a mismatched validation must not create a receipt')
+
+    def test_readiness_rejects_temporary_validator_ledger_even_with_matching_receipt(self):
+        self.add_exactness_supplement()
+        bound = self.constitution_result()
+        # The simulated validator inspected a different byte identity while the
+        # outer candidate and both before/after reads stayed unchanged. Counts
+        # and a mutually consistent producer receipt cannot bridge this gap.
+        other_bytes = (self.root / checker.LEDGER).read_bytes() + b'\n'
+        for digest in [None, checker.digest(other_bytes)]:
+            result = dict(bound)
+            if digest is None:
+                del result['ledger_sha256']
+            else:
+                result['ledger_sha256'] = digest
+            proof = json.loads(self.payloads['check-lean']['constitution.json'])
+            proof['result'] = dict(result, mode='current-Lean-replay')
+            self.payloads['check-lean']['constitution.json'] = encoded(proof)
+            self.refresh_job('check-lean')
+            with self.subTest(digest=digest), patch.object(checker, 'version_plan', return_value={}), \
+                    patch('check_constitution.check_constitution', return_value=result):
+                with self.assertRaisesRegex(PacketError, 'validated different ledger bytes'):
+                    checker.check(self.root, base_ref=self.base, env=self.env, evidence=self.evidence)
 
     def cli(self, *args, env=None):
         # Preserve OS/tool lookup, but supply trust context only from this test.

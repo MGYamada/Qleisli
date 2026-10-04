@@ -9,6 +9,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -77,7 +78,18 @@ CONTINUITY_PATHS = tuple(f"{CONTINUITY_ROOT}/{name}" for name in (
 FROZEN_IDENTITIES_PATH = "tests/fixtures/constitution_v030/ledger-continuity/frozen-identities.json"
 FROZEN_IDENTITIES_SHA256 = "6a2f99413d8357f3cdc4ba5b1b42e2bb21d03c781816ec91890d8159f2ee51e4"
 LEDGER_HISTORY_PATHS = (ledger_policy.V3_PATH, FROZEN_IDENTITIES_PATH)
-FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS + CONTINUITY_PATHS + LEDGER_HISTORY_PATHS
+INITIAL_FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS + CONTINUITY_PATHS + LEDGER_HISTORY_PATHS
+EXACTNESS_ID = "EXACT-2026-01"
+EXACTNESS_ADOPTION_PATH = "governance/interpretations/exactness-2026-adoption.json"
+EXACTNESS_ADOPTION_SHA256 = "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59"
+EXACTNESS_REVIEWED_PATH = "governance/proposals/exactness-2026.md"
+EXACTNESS_REVIEWED_SHA256 = "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+SUPPLEMENT_PATHS = (EXACTNESS_ADOPTION_PATH, EXACTNESS_REVIEWED_PATH)
+FROZEN_PATHS = INITIAL_FROZEN_PATHS + SUPPLEMENT_PATHS
+SUPPLEMENT_SCOPE = (
+    ledger_policy.V4_SCOPE + " EXACT-2026-01 is an additional binding interpretation across QS, PR and RS; "
+    "its additional proof and enforcement obligations remain pending. It creates no fourth jurisdiction or discharged guarantee."
+)
 INTERPRETATIONS = {
     "QS-2026-01": ("QS", "1. Candidate QS-2026-01 — Meaning of accepted programs"),
     "PR-2026-01": ("PR", "2. Candidate PR-2026-01 — Accepted target realizations"),
@@ -231,18 +243,19 @@ def validate_ledger(ledger, *, label="guarantee ledger", allow_bootstrap=False,
     registrations = admission_registrations() if _registrations is None else _registrations
     profiles = verifier_profiles() if _profiles is None else _profiles
     version = ledger.get("version") if type(ledger) is dict else None
-    if type(version) is not int or version not in {1, 2, 3, 4}:
+    if type(version) is not int or version not in {1, 2, 3, 4, 5}:
         raise PacketError(f"{label}: unsupported ledger schema; cannot discard obligations from another schema")
     exact_keys(ledger, {"format", "version", "edition", "status", "ratification", "scope", *LEDGER_LISTS}
                | ({"current_evidence"} if version == 3 else
-                  {"current_bindings", "previous_ledger"} if version == 4 else set()), label)
-    if version < 4 and not allow_bootstrap:
-        raise PacketError(f"{label}: active ledger must be v4; cannot roll back to pending or bootstrap or a prior admitted schema")
+                  {"current_bindings", "previous_ledger"} if version >= 4 else set())
+               | ({"supplemental_interpretations"} if version == 5 else set()), label)
+    if version < 5 and not allow_bootstrap:
+        raise PacketError(f"{label}: active ledger must be v5; cannot roll back to pending or bootstrap or a prior admitted schema")
     require_fields({key: ledger[key] for key in ("format", "version", "edition", "status", "scope")},
                    dict(format="qleisli.guarantee-ledger", version=version, edition="2026",
                         status={1: "bootstrap-awaiting-initial-interpretations", 2: "active-pending-discharge",
-                                3: "active-scoped-guarantees", 4: "active-scoped-guarantees"}[version],
-                        scope={1: BOOTSTRAP_SCOPE, 2: LEDGER_SCOPE, 3: ADMITTED_SCOPE, 4: ledger_policy.V4_SCOPE}[version]), label)
+                                3: "active-scoped-guarantees", 4: "active-scoped-guarantees", 5: "active-scoped-guarantees"}[version],
+                        scope={1: BOOTSTRAP_SCOPE, 2: LEDGER_SCOPE, 3: ADMITTED_SCOPE, 4: ledger_policy.V4_SCOPE, 5: SUPPLEMENT_SCOPE}[version]), label)
     require_fields(ledger["ratification"], dict(path=EVENT_PATH, sha256=EVENT_SHA256), f"{label} ratification")
     for field in LEDGER_LISTS if version == 1 else (("discharged_guarantees",) if version == 2 else ()):
         if type(ledger[field]) is not list or ledger[field]:
@@ -268,7 +281,7 @@ def validate_ledger(ledger, *, label="guarantee ledger", allow_bootstrap=False,
                 or SHA256.fullmatch(ledger["current_evidence"]["sha256"]) is None):
             raise PacketError(f"{label}: invalid current evidence binding")
 
-    if version == 4:
+    if version >= 4:
         require_fields(ledger["previous_ledger"], dict(path=ledger_policy.V3_PATH, sha256=ledger_policy.V3_SHA256),
                        f"{label} previous ledger")
         entries = ledger_policy.validate_entries(ledger["discharged_guarantees"], registrations, hashed=True,
@@ -301,12 +314,62 @@ def validate_ledger(ledger, *, label="guarantee ledger", allow_bootstrap=False,
                 require_fields(row, dict(interpretation=identifier, formalization_status="pending-coverage-and-adequacy-review",
                                         proof_status="not-discharged", evidence_bindings=[]),
                                f"{label} pending obligation {identifier}")
-    if version == 4:
+    if version >= 4:
         jurisdictions = {row["id"]: row["jurisdiction"] for row in ledger["binding_interpretations"]}
         for entry in entries.values():
             if jurisdictions.get(entry["interpretation"]) != entry["jurisdiction"]:
                 raise PacketError(f"{label}: admitted guarantee must reference a retained interpretation with matching jurisdiction")
+    if version == 5:
+        rows = ledger["supplemental_interpretations"]
+        if type(rows) is not list or len(rows) != 1:
+            raise PacketError(f"{label}: require the one adopted exactness supplement")
+        require_fields(rows[0], supplemental_interpretation(), f"{label} exactness supplement")
     return version
+
+
+def supplemental_interpretation():
+    """The recorded human supplement is interpretation authority, not admission."""
+    return dict(id=EXACTNESS_ID, jurisdictions=["QS", "PR", "RS"], applies_to=list(INTERPRETATIONS),
+                adoption=dict(path=EXACTNESS_ADOPTION_PATH, sha256=EXACTNESS_ADOPTION_SHA256),
+                reviewed_text=dict(path=EXACTNESS_REVIEWED_PATH, sha256=EXACTNESS_REVIEWED_SHA256),
+                formalization_status="pending-coverage-and-adequacy-review",
+                proof_status="not-discharged", evidence_bindings=[])
+
+
+def validate_exactness_adoption(event):
+    exact_keys(event, {"format", "version", "edition", "adopted_on", "timezone", "guardian",
+                       "interpretation_ids", "jurisdictions", "reviewed_packet", "provenance", "recording",
+                       "status", "scope"}, "exactness adoption")
+    require_fields({key: event[key] for key in ("format", "version", "edition", "adopted_on", "timezone", "status",
+                                                "interpretation_ids", "jurisdictions")},
+                   dict(format="qleisli.human-interpretation-adoption", version=1, edition="2026",
+                        adopted_on="2026-10-05", timezone="Asia/Tokyo", status="binding-pending-discharge",
+                        interpretation_ids=[EXACTNESS_ID], jurisdictions=["QS", "PR", "RS"]), "exactness adoption")
+    require_fields(event["guardian"], dict(name="Masahiko G. Yamada",
+                   capacity="sole natural-human holder of the Constitution Guardian Office",
+                   appointment_record=dict(path=EVENT_PATH, sha256=EVENT_SHA256)), "exactness Guardian")
+    require_fields(event["reviewed_packet"], dict(reviewed_path=EXACTNESS_REVIEWED_PATH,
+                   snapshot_path=EXACTNESS_REVIEWED_PATH, sha256=EXACTNESS_REVIEWED_SHA256), "exactness reviewed packet")
+    for field, keys in (("provenance", {"kind", "conversation_id", "question_item_id", "question", "answer",
+                                       "first_clock_observation_after_reply_utc", "timestamp_note"}),
+                        ("recording", {"transcriber", "authority", "authentication_limit"})):
+        exact_keys(event[field], keys, f"exactness {field}")
+        if any(type(value) is not str or not value.strip() for value in event[field].values()):
+            raise PacketError(f"exactness {field}: expected nonempty recorded strings")
+    if event["provenance"]["kind"] != "direct-user-message":
+        raise PacketError("exactness adoption: expected the recorded direct human message")
+    if type(event["scope"]) is not str or not event["scope"].strip():
+        raise PacketError("exactness adoption: missing scope")
+
+
+def validate_supplement_snapshots(snapshots):
+    # Authenticate the captured bytes themselves. Subsequent valid reads must
+    # not hide an invalid initial/final snapshot during evidence dispatch.
+    for path, expected in ((EXACTNESS_ADOPTION_PATH, EXACTNESS_ADOPTION_SHA256),
+                           (EXACTNESS_REVIEWED_PATH, EXACTNESS_REVIEWED_SHA256)):
+        if hashlib.sha256(snapshots[path]).hexdigest() != expected:
+            raise PacketError(f"frozen artifact snapshot: SHA-256 mismatch: {path}")
+    validate_exactness_adoption(json_object(snapshots[EXACTNESS_ADOPTION_PATH], "exactness adoption"))
 
 
 def git(root, *args):
@@ -349,7 +412,8 @@ def check_base(root, base_ref, *, ledger=None, _registrations=None, _profiles=No
     # later evidence is a valid migration source, not an incomplete admission.
     for anchor, names in ((EVENT_PATH, RATIFICATION_PATHS), (ADOPTION_PATH, INTERPRETATION_PATHS),
                           (ADMISSION_PATH, GUARANTEE_PATHS), (CONTINUITY_BASELINE, CONTINUITY_PATHS),
-                          (ledger_policy.V3_PATH, LEDGER_HISTORY_PATHS)):
+                          (ledger_policy.V3_PATH, LEDGER_HISTORY_PATHS),
+                          (EXACTNESS_ADOPTION_PATH, SUPPLEMENT_PATHS)):
         already_recorded = previous[anchor] is not None
         for name in names:
             before = previous[name]
@@ -361,7 +425,7 @@ def check_base(root, base_ref, *, ledger=None, _registrations=None, _profiles=No
                 raise PacketError(f"trusted base: protected artifact changed: {name}")
     before_ledger = previous[LEDGER_PATH]
     if before_ledger is None:
-        if any(previous[path] is not None for path in (EVENT_PATH, ADOPTION_PATH, ADMISSION_PATH)):
+        if any(previous[path] is not None for path in (EVENT_PATH, ADOPTION_PATH, ADMISSION_PATH, EXACTNESS_ADOPTION_PATH)):
             raise PacketError("trusted base: recorded ratification has no ledger; cannot silently bootstrap it")
     else:
         if previous[EVENT_PATH] is None:
@@ -383,13 +447,17 @@ def check_base(root, base_ref, *, ledger=None, _registrations=None, _profiles=No
                 raise PacketError("trusted base: archived pending ledger must preserve the previous ledger bytes")
         elif previous[ADMISSION_PATH] is None:
             raise PacketError("trusted base: active v3 ledger is missing its scoped guarantee admission event")
+        if version == 5 and previous[EXACTNESS_ADOPTION_PATH] is None:
+            raise PacketError("trusted base: supplemented ledger is missing its exactness adoption event")
+        if version < 5 and previous[EXACTNESS_ADOPTION_PATH] is not None:
+            raise PacketError("trusted base: exactness adoption cannot retain an older ledger without its supplement")
         if version >= 3:
-            if version == 4 and previous[ledger_policy.V3_PATH] is None:
+            if version >= 4 and previous[ledger_policy.V3_PATH] is None:
                 raise PacketError("trusted base: v4 ledger is missing its immutable v3 history")
             current = ledger if ledger is not None else json_object(read_file(root, LEDGER_PATH), LEDGER_PATH)
             validate_ledger(current, _registrations=_registrations, _profiles=_profiles)
             ledger_policy.preserve_entries(prior_ledger["discharged_guarantees"], current["discharged_guarantees"],
-                                           before_hashed=version == 4)
+                                           before_hashed=version >= 4)
             # Future registered events/proposals receive the same historical
             # non-replacement protection as the initial fixed admission group.
             for entry in prior_ledger["discharged_guarantees"]:
@@ -441,11 +509,15 @@ def check_constitution(root=ROOT, *, base_ref=None, require_release_ready=False,
     entries = ledger_policy.validate_entries(ledger["discharged_guarantees"], registrations, hashed=True)
     ledger_policy.preserve_entries(historical["discharged_guarantees"], ledger["discharged_guarantees"], before_hashed=False)
     selected = ledger_policy.validate_bindings(ledger["current_bindings"], entries, profiles)
-    ledger_policy.validate_frozen_snapshots(protected_snapshots, FROZEN_IDENTITIES_PATH, FROZEN_IDENTITIES_SHA256)
+    ledger_policy.validate_frozen_snapshots({name: protected_snapshots[name] for name in INITIAL_FROZEN_PATHS},
+                                            FROZEN_IDENTITIES_PATH, FROZEN_IDENTITIES_SHA256)
+    validate_supplement_snapshots(protected_snapshots)
     ledger_policy.dispatch(root, LEDGER_PATH, ledger_bytes, entries, selected, verify_lean=verify_lean,
                            protected_snapshots=protected_snapshots)
 
     return {"admitted_guarantees": len(entries), "pending_obligations": len(ledger["pending_obligations"]),
+            "supplemental_pending_obligations": len(ledger["supplemental_interpretations"]),
+            "ledger_sha256": hashlib.sha256(ledger_bytes).hexdigest(),
             "mode": "current-Lean-replay" if verify_lean else "source-identity-only"}
 
 
@@ -469,7 +541,7 @@ def main(argv=None):
     mode = "fixed current Lean verifiers replayed" if args.verify_lean else "current source/evidence identity is checked, not a fresh Lean replay"
     print(f"Recorded edition 2026 ratification, appointment, interpretation adoption and {count} scoped guarantee admissions verified. "
           "Human transcript authenticity is not independently established by hashes. "
-          f"Three broader binding interpretations remain pending; {mode}. "
+          f"Three broader obligations and one exactness supplement retain pending proof/enforcement duties; {mode}. "
           "full constitutional CI and release approval remain separate.")
     return 0
 

@@ -1,0 +1,25 @@
+{
+  "kind": "Final integration identity record; performed verification records are referenced separately",
+  "base_commit": "a26e29bc19e06324e8b394d9d1dbb97ea2d163e1",
+  "protected_artifacts_sha256": {
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "GOVERNANCE.md": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+    "governance/ratification-2026.json": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+    "governance/interpretations/initial-2026-reviewed.txt": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+    "governance/interpretations/initial-2026-adoption.json": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+    "governance/guarantees/initial-2026-admission.json": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+    "governance/guarantees/current-evidence.json": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575"
+  },
+  "protected_artifacts_unchanged_from_base": true,
+  "ledger_changed_fields": [
+    "scope",
+    "supplemental_interpretations",
+    "version"
+  ],
+  "live_replay_result_sha256": "b314bac9db7ae2dc8f4e17134e3d77a662358f717ac542fc1fb7bdfbf5f2f45f",
+  "constitutional_tests": 63,
+  "release_tests": 28,
+  "source_only_and_docs": "root-checks.json",
+  "mdbook_validation": "tests/fixtures/frontend_v030/selected-source-cli/metadata-final/result.json",
+  "scope": "Two guarantees, three original broader pending duties, one supplemental pending interpretation; no release readiness, guarantee discharge, publication or completion of the108-Issue plan."
+}

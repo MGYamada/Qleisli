@@ -110,6 +110,57 @@ def indexed(rows, label, expected=None):
     return result
 
 
+def proof_disclosures(ledger):
+    """Extract obligations from a constitutionally validated ledger, fail closed.
+
+    Pending base obligations name their interpretation; supplement rows have
+    their own IDs and apply to existing jurisdictions. Neither is a discharge.
+    Human adoption and pinned evidence are validated by check_constitution;
+    this check binds the release's disclosure to those actual row identities.
+    """
+    bindings = indexed(ledger["binding_interpretations"], "binding interpretations")
+    admitted = indexed(ledger["discharged_guarantees"], "admitted guarantees")
+    for label, rows in [("binding interpretation", bindings), ("admitted guarantee", admitted)]:
+        for identifier in rows:
+            nonempty(identifier, label + " ID")
+    pending = set()
+    rows = ledger["pending_obligations"]
+    require(type(rows) is list, "pending obligations: require a list")
+    for row in rows:
+        exact_keys(row, {"interpretation", "formalization_status", "proof_status", "evidence_bindings"},
+                   "pending obligation")
+        identifier = row["interpretation"]
+        nonempty(identifier, "pending interpretation ID")
+        require(identifier in bindings and identifier not in pending,
+                "pending obligation: unbound or duplicate interpretation")
+        require(row["proof_status"] == "not-discharged" and row["evidence_bindings"] == [],
+                "pending obligation: fabricated discharge or evidence")
+        pending.add(identifier)
+    supplements = indexed(ledger.get("supplemental_interpretations", []), "supplemental interpretations")
+    for identifier, row in supplements.items():
+        nonempty(identifier, "supplemental interpretation ID")
+        exact_keys(row, {"id", "jurisdictions", "applies_to", "adoption", "reviewed_text",
+                         "formalization_status", "proof_status", "evidence_bindings"},
+                   "supplemental interpretation")
+        require(identifier not in bindings and identifier not in pending,
+                "supplemental interpretation duplicates a base interpretation")
+        applies = row["applies_to"]
+        require(type(applies) is list and bool(applies)
+                and all(type(item) is str and item in bindings for item in applies)
+                and len(set(applies)) == len(applies), "supplemental interpretation: unbound or duplicate scope")
+        jurisdictions = row["jurisdictions"]
+        require(type(jurisdictions) is list
+                and all(type(item) is str and item in {"QS", "PR", "RS"} for item in jurisdictions)
+                and len(set(jurisdictions)) == len(jurisdictions)
+                and set(jurisdictions) == {bindings[item]["jurisdiction"] for item in applies},
+                "supplemental interpretation: mismatched or new jurisdiction")
+        require(row["proof_status"] == "not-discharged" and row["evidence_bindings"] == [],
+                "supplemental interpretation: fabricated discharge or evidence")
+        pending.add(identifier)
+    require(not pending.intersection(admitted), "pending interpretation advertised as an admitted guarantee")
+    return {"admitted": sorted(admitted), "pending": sorted(pending)}
+
+
 def requirements(root, base, snapshot):
     require(type(base) is str and COMMIT.fullmatch(base), "require caller-selected exact trusted base commit")
     require(git(root, "rev-parse", base + "^{commit}").decode().strip() == base, "trusted base is not a commit")
@@ -187,8 +238,8 @@ def acceptance(root, expected, raw_requirements, snapshot, ledger):
     exact_keys(scope, {"claim", "ledger_sha256", "admitted", "pending"}, "proof scope")
     require(scope["claim"] == "scoped-pre-v1", "this gate cannot establish full constitutional conformance")
     require(scope["ledger_sha256"] == digest(snapshot.read(root, LEDGER)), "stale proof-status disclosure")
-    for field, ledger_key in [("admitted", "discharged_guarantees"), ("pending", "pending_obligations")]:
-        require(type(scope[field]) is list and scope[field] == sorted(row["id"] for row in ledger[ledger_key]),
+    for field, identifiers in proof_disclosures(ledger).items():
+        require(type(scope[field]) is list and scope[field] == identifiers,
                 f"proof scope {field}: removed guarantee, fabricated discharge or hidden pending duty")
     return data
 
@@ -234,6 +285,8 @@ def record_constitution(root, output, env):
     context = capture_context(root, env)
     before = read_file(root, LEDGER)
     result = check_constitution(root, verify_lean=True)
+    require(type(result) is dict and result.get("ledger_sha256") == digest(before),
+            "constitutional verifier validated different ledger bytes")
     require(capture_context(root, env) == context and read_file(root, LEDGER) == before,
             "source/evidence changed during live constitutional replay")
     write_json(output, dict(format="qleisli.release-constitution", version=1, context=context,
@@ -366,9 +419,12 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
         require(env["GITHUB_REF"] == f"refs/tags/v{version}", "release tag and product version differ")
     require(not version_plan(root, version), "product versions are not synchronized")
     from check_constitution import check_constitution
+    ledger_bytes = snapshot.read(root, LEDGER)
     result = check_constitution(root, base_ref=base_ref)
-    ledger = json_object(snapshot.read(root, LEDGER), LEDGER)
-    acceptance(root, expected, raw, snapshot, ledger)
+    require(type(result) is dict and result.get("ledger_sha256") == digest(ledger_bytes),
+            "constitutional verifier validated different ledger bytes")
+    ledger = json_object(ledger_bytes, LEDGER)
+    accepted = acceptance(root, expected, raw, snapshot, ledger)
     require(evidence is not None or env.get("RELEASE_EVIDENCE"), "missing downloaded producer evidence directory")
     directory = Path(evidence or env["RELEASE_EVIDENCE"]).resolve()
     require(not directory.is_relative_to(root), "verification receipts must be outside candidate commit")
@@ -387,7 +443,7 @@ def _check(root=ROOT, *, base_ref=None, env=None, evidence=None):
     require(hosted_context(root, env) == context, "candidate changed during readiness verification")
     return dict(format="qleisli.release-readiness", version=1, context=context, product_version=version,
                 identities=IDENTITIES, status="ready-scoped-candidate", publication="not-authorized-or-performed",
-                admitted=result["admitted_guarantees"], pending=result["pending_obligations"])
+                admitted=result["admitted_guarantees"], pending=len(accepted["proof_scope"]["pending"]))
 
 
 def check(root=ROOT, *, base_ref=None, env=None, evidence=None):

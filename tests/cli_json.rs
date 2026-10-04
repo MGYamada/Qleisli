@@ -164,7 +164,7 @@ fn json_command_identity_is_independent_of_leading_options() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    let usage = include_str!("fixtures/verification_v029/usage.txt")
+    let usage = include_str!("fixtures/frontend_v030/selected-source-cli/usage.txt")
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [

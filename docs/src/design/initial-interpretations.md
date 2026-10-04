@@ -26,6 +26,13 @@ Subsequent admission: the human Guardian has approved
 scope, with their checked proof evidence. They discharge only those recorded
 components; the three broader obligations in this interpretation remain pending.
 
+Subsequent interpretation: the Guardian adopted **EXACT-2026-01** on
+2026-10-05 (Asia/Tokyo). Its [separate exactness supplement](../reference/authority.md#exact-constitutional-obligations)
+rules out epsilon relaxation of constitutional truth conditions while
+preserving checked numerical assistance to exact propositions. It applies to
+these three jurisdictions, changes none of their historical records and
+discharges no guarantee. This chapter retains the initial packet below.
+
 This packet records initial applications of the three existing obligations in
 `CONSTITUTION.md`, under Articles V–VIII. It adds no
 Fundamental Theorem and changes no constitutional text. Its mathematical scope

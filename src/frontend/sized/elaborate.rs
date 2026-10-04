@@ -325,9 +325,26 @@ pub struct ElaboratedProgram {
     calls: usize,
     folds: usize,
 }
+
+/// Preflight admission to the hierarchical transport profile, not acceptance
+/// evidence or a promise that body lowering and native checking will succeed.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum HierarchyEligibility {
+    Eligible,
+    /// An explicit root signature, effect or ordinary Boolean-step mismatch.
+    Ineligible(Error),
+}
+
 impl ElaboratedProgram {
+    /// Classify explicit hierarchical profile mismatches without treating other
+    /// failures as a reason to select another target. Any checking error is
+    /// returned separately; eligible bodies still require full lowering checks.
+    pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility> {
+        super::lower::hierarchy_eligibility(self)
+    }
     /// Preflight the root signature and declared effect against the selected
-    /// hierarchical transport profile. Generic source checking is separate;
+    /// hierarchical transport profile, including ordinary Boolean steps.
+    /// Generic source checking is separate;
     /// `lower` performs body and operation-specific capability checks before
     /// generating a proposal. This preflight issues no acceptance evidence.
     pub fn check_lowering_profile(&self) -> Result<()> {

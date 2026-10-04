@@ -82,7 +82,7 @@ class ConstitutionalRecords(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("two scoped guarantee admissions verified", result.stdout)
         self.assertIn("not independently established", result.stdout)
-        self.assertIn("Three broader binding interpretations remain pending", result.stdout)
+        self.assertIn("Three broader obligations and one exactness supplement retain pending proof/enforcement duties", result.stdout)
         result = subprocess.run([sys.executable, str(script), "--root", str(self.root), "--require-release-ready"],
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 1)
@@ -213,7 +213,7 @@ class ConstitutionalRecords(unittest.TestCase):
                 self.rejected("ratification")
 
     def test_active_schema_cannot_admit_fabricated_guarantees_or_interpretations(self):
-        for field, value in (("version", True), ("version", 5), ("edition", "2027"),
+        for field, value in (("version", True), ("version", 6), ("edition", "2027"),
                              ("status", "release-ready"), ("scope", "No obligations apply."),
                              ("discharged_guarantees", [{"theorem": "Soundness", "proved": True}]),
                              ("pending_obligations", [{"name": "QS"}]),
@@ -235,7 +235,7 @@ class ConstitutionalRecords(unittest.TestCase):
         shutil.copyfile(ROOT / checker.EVENT_PATH, path)
         self.write_json(checker.LEDGER_PATH, self.ledger)
         path = self.root / checker.LEDGER_PATH
-        path.write_text(path.read_text().replace('"version": 4', '"version": 4, "version": 4'))
+        path.write_text(path.read_text().replace('"version": 5', '"version": 5, "version": 5'))
         self.rejected("duplicate JSON field")
 
     def test_duplicate_fields_reject_in_adoption_even_with_edited_pin(self):
@@ -275,7 +275,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_admitted_base_allows_later_continuity_baseline_without_re_admission(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS, *checker.SUPPLEMENT_PATHS)}
         current_bytes = (self.root / checker.CURRENT_PATH).read_bytes()
         old_current = json.loads(current_bytes)
         old_current["version"] = 1
@@ -324,7 +324,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_ratified_v1_base_allows_initial_interpretation_adoption_without_later_files(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS, *checker.SUPPLEMENT_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.bootstrap_bytes)
@@ -338,7 +338,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v1_transition_preserves_exact_bootstrap_bytes(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS, *checker.SUPPLEMENT_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.bootstrap_bytes + b"\n")
@@ -364,7 +364,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_previously_populated_v1_ledger_cannot_be_discarded_during_upgrade(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS, *checker.LEDGER_HISTORY_PATHS, *checker.SUPPLEMENT_PATHS)}
         for field in checker.LEDGER_LISTS:
             with self.subTest(field=field):
                 for name in later:
@@ -382,7 +382,7 @@ class ConstitutionalRecords(unittest.TestCase):
     def test_base_with_unsupported_future_ledger_cannot_be_reset_to_v2(self):
         self.git("init", "--quiet")
         ledger = copy.deepcopy(self.ledger)
-        ledger["version"] = 5
+        ledger["version"] = 6
         ledger["discharged_guarantees"] = [{"interpretation": "QS-2026-01", "proof": "future-admission"}]
         self.write_json(checker.LEDGER_PATH, ledger)
         base = self.commit()
@@ -517,7 +517,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v2_pending_base_allows_first_scoped_admission_and_preserves_history(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in checker.GUARANTEE_PATHS}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.GUARANTEE_PATHS, *checker.SUPPLEMENT_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.pending_bytes)
@@ -553,7 +553,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v2_to_v3_upgrade_requires_faithful_pending_ledger_archive(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in checker.GUARANTEE_PATHS}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.GUARANTEE_PATHS, *checker.SUPPLEMENT_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.pending_bytes + b"\n")
@@ -682,15 +682,20 @@ class ConstitutionalRecords(unittest.TestCase):
     def test_exact_v3_base_migrates_and_cannot_be_rolled_back_from_v4(self):
         self.git("init", "--quiet")
         historical = (self.root / checker.ledger_policy.V3_PATH).read_bytes()
+        supplements = {name: (self.root / name).read_bytes() for name in checker.SUPPLEMENT_PATHS}
+        for name in supplements:
+            (self.root / name).unlink()
         (self.root / checker.ledger_policy.V3_PATH).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(historical)
         base = self.commit()
         (self.root / checker.ledger_policy.V3_PATH).write_bytes(historical)
+        for name, data in supplements.items():
+            (self.root / name).write_bytes(data)
         self.write_json(checker.LEDGER_PATH, self.ledger)
         checker.check_constitution(self.root, base_ref=base)
         v4_base = self.commit()
         (self.root / checker.LEDGER_PATH).write_bytes(historical)
-        self.rejected("active ledger must be v4", base_ref=v4_base)
+        self.rejected("active ledger must be v5", base_ref=v4_base)
 
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v3_unknown_prior_guarantee_cannot_be_ignored_by_archiving_familiar_snapshot(self):
@@ -871,6 +876,169 @@ class ConstitutionalRecords(unittest.TestCase):
                     return response
                 profile = policy.VerifierProfile(original.name, original.identities, original.evidence_path, unbound)
                 self.rejected("fixed verifier validated different evidence", _profiles=(profile,))
+
+
+    def historical_v4(self):
+        historical = copy.deepcopy(self.ledger)
+        historical["version"] = 4
+        historical["scope"] = checker.ledger_policy.V4_SCOPE
+        del historical["supplemental_interpretations"]
+        return historical
+
+    def test_exactness_is_separate_binding_interpretation_not_fourth_jurisdiction_or_discharge(self):
+        result = checker.check_constitution(self.root)
+        self.assertEqual(result, dict(admitted_guarantees=2, pending_obligations=3,
+                                     supplemental_pending_obligations=1,
+                                     ledger_sha256=self.digest(checker.LEDGER_PATH), mode="source-identity-only"))
+        self.assertEqual(len(self.ledger["binding_interpretations"]), 3)
+        self.assertEqual(self.ledger["supplemental_interpretations"], [checker.supplemental_interpretation()])
+        original = json.loads((self.root / checker.ledger_policy.V3_PATH).read_bytes())
+        self.assertEqual(self.ledger["binding_interpretations"], original["binding_interpretations"])
+        self.assertEqual(self.ledger["pending_obligations"], original["pending_obligations"])
+        checker.ledger_policy.preserve_entries(original["discharged_guarantees"],
+                                               self.ledger["discharged_guarantees"], before_hashed=False)
+
+    def test_returned_ledger_identity_binds_validated_bytes_without_a_later_reread(self):
+        original = (self.root / checker.LEDGER_PATH).read_bytes()
+        reread = original + b"\n"
+        reads = []
+        real_read = checker.read_file
+        def timed_read(root, name):
+            if name != checker.LEDGER_PATH:
+                return real_read(root, name)
+            reads.append(name)
+            return original if len(reads) == 1 else reread
+        # Only the constitutional checker's initial read is replaced. The real validator
+        # and its final unchanged checks still inspect the genuine ledger.
+        # A digest from a new return-time read would certify different bytes.
+        with patch.object(checker, "read_file", side_effect=timed_read):
+            result = checker.check_constitution(self.root)
+        self.assertEqual(reads, [checker.LEDGER_PATH])
+        self.assertEqual(result["ledger_sha256"], hashlib.sha256(original).hexdigest())
+        self.assertNotEqual(result["ledger_sha256"], hashlib.sha256(reread).hexdigest())
+
+    def test_supplement_cannot_be_missing_duplicated_weakened_or_marked_discharged(self):
+        row = checker.supplemental_interpretation()
+        for rows in ([], [row, row], False):
+            with self.subTest(rows=rows):
+                ledger = copy.deepcopy(self.ledger)
+                ledger["supplemental_interpretations"] = rows
+                self.write_json(checker.LEDGER_PATH, ledger)
+                self.rejected("exactness supplement")
+        for key, value in (("id", "EXACT-UNKNOWN"), ("jurisdictions", ["EXACT"]),
+                           ("jurisdictions", ["QS", "PR"]), ("applies_to", ["QS-2026-01"]),
+                           ("proof_status", "discharged"), ("formalization_status", "complete"),
+                           ("evidence_bindings", [{"proof": "fake"}]), ("approved", True),
+                           ("adoption", {"path": checker.EXACTNESS_ADOPTION_PATH, "sha256": "0" * 64}),
+                           ("reviewed_text", {"path": "../outside.md", "sha256": checker.EXACTNESS_REVIEWED_SHA256})):
+            with self.subTest(key=key, value=value):
+                ledger = copy.deepcopy(self.ledger)
+                ledger["supplemental_interpretations"][0][key] = value
+                self.write_json(checker.LEDGER_PATH, ledger)
+                self.rejected("exactness supplement")
+
+    def test_supplement_event_schema_is_specific_and_does_not_infer_human_authority(self):
+        original = json.loads((self.root / checker.EXACTNESS_ADOPTION_PATH).read_bytes())
+        checker.validate_exactness_adoption(original)
+        for key, value in (("version", True), ("edition", 2026), ("interpretation_ids", []),
+                           ("interpretation_ids", ["QS-2026-01"]), ("jurisdictions", ["EXACT"]),
+                           ("adopted_on", "2026-10-04"), ("status", "discharged"),
+                           ("guardian", {"name": "AI", "capacity": "approved"}),
+                           ("reviewed_packet", {"reviewed_path": checker.EXACTNESS_REVIEWED_PATH,
+                                                "snapshot_path": checker.EXACTNESS_REVIEWED_PATH, "sha256": "0" * 64})):
+            with self.subTest(key=key):
+                event = copy.deepcopy(original)
+                event[key] = value
+                with self.assertRaises(PacketError):
+                    checker.validate_exactness_adoption(event)
+        event = copy.deepcopy(original)
+        event["provenance"]["answer"] = "The assistant approves by default."
+        self.write_json(checker.EXACTNESS_ADOPTION_PATH, event)
+        ledger = copy.deepcopy(self.ledger)
+        ledger["supplemental_interpretations"][0]["adoption"]["sha256"] = self.digest(checker.EXACTNESS_ADOPTION_PATH)
+        self.write_json(checker.LEDGER_PATH, ledger)
+        self.rejected("exactness supplement|SHA-256 mismatch")
+
+    def test_exactness_duplicate_fields_reject_even_with_replaced_local_event_pin(self):
+        path = self.root / checker.EXACTNESS_ADOPTION_PATH
+        path.write_text(path.read_text().replace('"version": 1', '"version": 1, "version": 1'))
+        with patch.object(checker, "EXACTNESS_ADOPTION_SHA256", self.digest(checker.EXACTNESS_ADOPTION_PATH)):
+            ledger = copy.deepcopy(self.ledger)
+            ledger["supplemental_interpretations"] = [checker.supplemental_interpretation()]
+            self.write_json(checker.LEDGER_PATH, ledger)
+            self.rejected("duplicate JSON field")
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_actual_v4_to_v5_transition_preserves_all_prior_entries_and_rejects_rollback(self):
+        self.git("init", "--quiet")
+        prior = self.historical_v4()
+        saved = {name: (self.root / name).read_bytes() for name in checker.SUPPLEMENT_PATHS}
+        for name in saved:
+            (self.root / name).unlink()
+        self.write_json(checker.LEDGER_PATH, prior)
+        base = self.commit()
+        for name, data in saved.items():
+            (self.root / name).write_bytes(data)
+        self.write_json(checker.LEDGER_PATH, self.ledger)
+        checker.check_constitution(self.root, base_ref=base)
+        active = self.commit()
+        self.write_json(checker.LEDGER_PATH, prior)
+        self.rejected("active ledger must be v5", base_ref=active)
+        self.write_json(checker.LEDGER_PATH, self.ledger)
+        checker.check_constitution(self.root, base_ref=active)
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_supplement_stage_cannot_reintroduce_missing_event_text_or_ledger(self):
+        self.git("init", "--quiet")
+        for name, message in ((checker.EXACTNESS_ADOPTION_PATH, "missing its exactness adoption"),
+                              (checker.EXACTNESS_REVIEWED_PATH, "recorded stage is missing"),
+                              (checker.LEDGER_PATH, "no ledger")):
+            with self.subTest(name=name):
+                path = self.root / name
+                original = path.read_bytes()
+                path.unlink()
+                base = self.commit()
+                path.write_bytes(original)
+                self.rejected(message, base_ref=base)
+        self.write_json(checker.LEDGER_PATH, self.historical_v4())
+        old = self.commit()
+        self.write_json(checker.LEDGER_PATH, self.ledger)
+        self.rejected("exactness adoption cannot retain an older ledger", base_ref=old)
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_reviewed_supplement_is_protected_before_adoption_anchor(self):
+        self.git("init", "--quiet")
+        event_path = self.root / checker.EXACTNESS_ADOPTION_PATH
+        event = event_path.read_bytes()
+        event_path.unlink()
+        self.write_json(checker.LEDGER_PATH, self.historical_v4())
+        base = self.commit()
+        event_path.write_bytes(event)
+        self.write_json(checker.LEDGER_PATH, self.ledger)
+        checker.check_constitution(self.root, base_ref=base)
+        path = self.root / checker.EXACTNESS_REVIEWED_PATH
+        path.write_bytes(path.read_bytes() + b"\nChanged before introduction.\n")
+        self.rejected("protected artifact changed", base_ref=base)
+
+    def test_supplement_snapshots_reject_invalid_captured_bytes_and_mid_dispatch_changes(self):
+        snapshots = {name: (self.root / name).read_bytes() for name in checker.SUPPLEMENT_PATHS}
+        checker.validate_supplement_snapshots(snapshots)
+        for name in checker.SUPPLEMENT_PATHS:
+            bad = dict(snapshots)
+            bad[name] += b"\nUnapproved change.\n"
+            with self.subTest(name=name), self.assertRaisesRegex(PacketError, "frozen artifact snapshot: SHA-256 mismatch"):
+                checker.validate_supplement_snapshots(bad)
+        original = checker.verifier_profiles()[0]
+        for name in checker.SUPPLEMENT_PATHS:
+            path = self.root / name
+            saved = path.read_bytes()
+            def changed(root, *, verify_lean):
+                path.write_bytes(saved + b"\nUnapproved concurrent change.\n")
+                return {"current_evidence_sha256": self.ledger["current_bindings"][0]["evidence"]["sha256"]}
+            profile = checker.ledger_policy.VerifierProfile(original.name, original.identities, original.evidence_path, changed)
+            with self.subTest(name=name):
+                self.rejected("evidence changed during verification", _profiles=(profile,))
+            path.write_bytes(saved)
 
 
 if __name__ == "__main__":

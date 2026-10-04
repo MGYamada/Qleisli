@@ -1,6 +1,6 @@
 {
   "format": "qleisli.guarantee-ledger",
-  "version": 4,
+  "version": 5,
   "edition": "2026",
   "status": "active-scoped-guarantees",
   "ratification": {
@@ -100,7 +100,7 @@
       "identity_sha256": "1ab1b9925a69c0d4f2153f74a8772d15298940bf7c5f97f3fdea1a4c2ee02c89"
     }
   ],
-  "scope": "Registered scoped guarantees retain their admitted meanings and current evidence bindings. The three binding interpretations retain their broader pending obligations. No production-wide QS, PR or quantitative RS discharge is claimed.",
+  "scope": "Registered scoped guarantees retain their admitted meanings and current evidence bindings. The three binding interpretations retain their broader pending obligations. No production-wide QS, PR or quantitative RS discharge is claimed. EXACT-2026-01 is an additional binding interpretation across QS, PR and RS; its additional proof and enforcement obligations remain pending. It creates no fourth jurisdiction or discharged guarantee.",
   "previous_ledger": {
     "path": "governance/guarantees/initial-v3-ledger.json",
     "sha256": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e"
@@ -116,6 +116,32 @@
         "path": "governance/guarantees/current-evidence.json",
         "sha256": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575"
       }
+    }
+  ],
+  "supplemental_interpretations": [
+    {
+      "id": "EXACT-2026-01",
+      "jurisdictions": [
+        "QS",
+        "PR",
+        "RS"
+      ],
+      "applies_to": [
+        "QS-2026-01",
+        "PR-2026-01",
+        "RS-2026-01"
+      ],
+      "adoption": {
+        "path": "governance/interpretations/exactness-2026-adoption.json",
+        "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59"
+      },
+      "reviewed_text": {
+        "path": "governance/proposals/exactness-2026.md",
+        "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+      },
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
     }
   ]
 }

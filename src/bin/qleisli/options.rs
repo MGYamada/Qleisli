@@ -10,6 +10,7 @@ pub(super) const USAGE: &str = "usage:
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
   qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
+  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]
   qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]
   interop always returns JSON; qli input takes a project directory.
@@ -20,7 +21,13 @@ source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; -
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   Bounded projects allow max(64, project byte limit / 1024) directory entries.
   --legacy-source-limits cannot be combined with explicit byte limits.
-  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
+selected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION
+  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy
+  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL
+  --request=PATH or --qpe-provider=PATH lock the hierarchy route.
+  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.
+  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.
+  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
   doc produces Markdown text; verify-ir does not accept source-options.";
 
 pub(super) struct Options {

@@ -97,6 +97,9 @@ interpretations as binding pending broader obligations. A later human judgment
 admitted [two scoped QLV1 guarantees](initial-guarantees.md), for ownership and
 classical scope, with their checked evidence. The earlier bootstrap and pending
 ledger states remain historical evidence.
+The subsequent [exactness interpretation](../reference/authority.md#exact-constitutional-obligations)
+applies across those three jurisdictions and retains separate pending proof
+and enforcement duties. Its adoption does not discharge a new guarantee.
 
 An edition identifies a **constitutional regime**, not syntax. The 0.3.0
 language migration remains in edition 2026. Source trees explicitly select

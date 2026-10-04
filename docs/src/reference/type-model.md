@@ -217,8 +217,8 @@ distinction, not a source type or edition distinction. The adapter enforces the
 existing 16-live-wire bound across whole call frames, before allocation.
 
 This Raw adapter still rejects Bits values, other quantum basis shapes,
-controlled-phase primitives and operation providers. Explicit runtime invocation,
-runtime branches and CLI integration remain unfinished. The existing
+controlled-phase primitives and operation providers. Checked open runtime
+invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
 decision is never retried as weaker Raw validity. General product and `Q<Unit>`
@@ -227,6 +227,49 @@ also remain unfinished profile obligations.
 Successful generic checking does not imply successful concrete lowering.
 These limits do not establish separate type universes or close the remaining
 [#27](https://github.com/MGYamada/Qleisli/issues/27) work.
+
+### Selected-source execution
+
+The ordinary `check`, `run`, `sample` and `emit-proposal` commands accept an
+explicit `--entry=module::function` and repeated `--module=name=PATH` bindings,
+with the existing `--nat`, `--operation` and `--operation-nat` forms. The legacy
+`sized` prefix delegates to the same selected-source execution plan. This is
+an adapter transition; it does not complete the final grammar/CLI migration.
+Directory/qrate input retains its existing project loader and checks all
+concrete declarations. Explicit module maps check every supplied declaration
+generically and seek native acceptance only for the selected specialization.
+Results distinguish those scopes; a selected success does not certify every
+possible specialization or converge the two remaining checking policies.
+Selected commands return a JSON result object; `--format=json` uses the common
+`qleisli.result` envelope for success and diagnostics. Without that flag,
+errors remain text on stderr, as in the legacy selected-input command.
+
+`--ir-profile=auto|raw|hierarchy` selects an IR/checker route, not a physical
+target model. Auto uses the hierarchy for its supported root signature,
+effect and source-step profile; an explicit capability mismatch selects Raw.
+Generic errors and capacity failures are not profile selectors. A caller
+request or named-QPE provider fixes the hierarchy route; combining one with
+explicit Raw rejects before native checking. After a route is selected, its
+lowering or native failure propagates without retrying a weaker route.
+
+Raw checking retains the original source signature. Raw `run` and `sample`
+require zero declared runtime parameters and no quantum result. A Unit
+parameter is still an argument, even though it has zero physical width.
+Any explicit `--basis`, including zero, rejects on Raw; it remains a quantum
+input selector for hierarchy execution. Native acceptance precedes the
+independent source-step comparison and actual Raw execution. The result
+reports native validity, no caller request, the step comparison and
+`source_meaning_verified: false`. Hierarchy results retain their separate
+producer-consistency, caller-composition or named-QPE scope and do not claim
+the Raw step comparison.
+
+Selected inputs accept `--lean-kernel` (`--kernel` is an alias) or an explicitly
+configured `QLEISLI_KERNEL`; duplicate aliases reject. No download or alternate
+checker fallback occurs. Selected sampling retains its 1024-shot capacity;
+project sampling retains its separate 1,000,000-shot capacity. These are
+current adapter limits, not quantitative resource certificates.
+`emit-proposal` writes untrusted transport without invoking a kernel. It is
+distinct from project `emit-ir`, which freshly verifies its emitted artifact.
 
 All frontend output remains an untrusted proposal. Existing native root,
 request, contract, hierarchy and finite-leaf gates remain mandatory. The

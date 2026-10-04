@@ -6,12 +6,25 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Record the Guardian's adopted EXACT-2026-01 interpretation: epsilon error
+  bounds cannot replace edition-2026 exact QS, PR or RS obligations. Preserve
+  the Constitution, three original interpretations, two admitted guarantees
+  and current evidence; protect the additive ledger-v5 transition and pending
+  release disclosure. Read actual pending-ledger identities in the release
+  gate instead of the incompatible test-only row shape, and bind receipts to
+  the exact ledger bytes returned by verification (#311, #142).
+- Connect explicit module/entry source selection and the legacy `sized`
+  adapter to one CLI execution plan. Select Raw or hierarchy before native
+  checking, preserve independent requests and reject unsupported invocations
+  without falling back after a failed check. Keep source/native check scopes
+  explicit; final frontend convergence and open runtime invocation remain
+  unfinished (#32, #250).
 - Share ordinary Boolean type checking, eager operand evaluation and Raw
   instruction emission across finite and sized source preparation. Add a
   source-bound Unit/Bit/Q<Bit>/product Raw proposal and independent step replay.
   Share physical register state and primitive transitions for mixed calls,
   measurement postprocessing and exact eighth-turn phases, preserving pending
-  owners and caller entanglement. General target and CLI integration remain
+  owners and caller entanglement. General physical target capabilities remain
   unfinished (#32).
 - Accept exact ordinary function parameter patterns through the common parser
   and finite/sized checking. Keep whole argument types, source arity and effects;
