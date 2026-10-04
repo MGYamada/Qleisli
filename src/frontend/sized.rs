@@ -13,6 +13,7 @@ mod parser;
 mod primitive;
 mod qpe;
 
+use super::resolve::{DefId, Failure, FailureKind, Resolution};
 use std::collections::BTreeMap;
 use std::fmt;
 use std::path::PathBuf;
@@ -24,6 +25,10 @@ pub use elaborate::{
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,
 };
+
+pub(super) fn primitive_path(path: &str) -> Option<&'static str> {
+    primitive::Primitive::lookup(path).map(|p| p.signature().path)
+}
 
 type Result<T> = std::result::Result<T, Error>;
 pub use qpe::QpeBindingProposal;
@@ -89,6 +94,7 @@ pub struct ParsedProgram {
     sources: BTreeMap<String, String>,
     syntax: BTreeMap<String, super::ast::Module>,
     modules: BTreeMap<String, ast::Module>,
+    resolution: Resolution,
 }
 impl ParsedProgram {
     /// The retained common source AST. It is untrusted syntax, not checked IR.
@@ -140,12 +146,15 @@ impl ParsedProgram {
             syntax.insert(name.clone(), module);
             modules.insert(name.clone(), projected);
         }
-        let program = Self {
+        let resolution = Resolution::new(syntax.iter().map(|(name, ast)| (name.as_str(), ast)))
+            .map_err(Self::resolution_error)?;
+        let mut program = Self {
             sources,
             syntax,
             modules,
+            resolution,
         };
-        check::program(&program)?;
+        check::program(&mut program)?;
         Ok(program)
     }
 
@@ -194,6 +203,37 @@ impl ParsedProgram {
         Self::parse(sources)
     }
 
+    fn definition(&self, id: DefId) -> (&str, &ast::Function) {
+        let declaration = self.resolution.declaration(id);
+        let (module, parsed) = self
+            .modules
+            .get_key_value(&declaration.name.0)
+            .expect("resolved module");
+        // The current projection rejects multiple declarations before resolution.
+        debug_assert_eq!(parsed.function.name, declaration.name.1);
+        (module, &parsed.function)
+    }
+
+    fn resolution_error(failure: Failure) -> Error {
+        let (code, message) = match failure.kind {
+            FailureKind::InvalidPath => ("module", "definition path needs module::function".into()),
+            FailureKind::MissingModule(module) => {
+                ("module", format!("missing dependency module {module}"))
+            }
+            FailureKind::MissingName { module, name }
+            | FailureKind::UnknownPrimitive { module, name } => {
+                ("name", format!("no function {module}::{name}"))
+            }
+            FailureKind::Private(path) => ("visibility", format!("dependency {path} is private")),
+            FailureKind::Collision(_) => ("name", "import shadows the local function".into()),
+            FailureKind::DuplicateImport(name) => {
+                ("name", format!("ambiguous imported name {name}"))
+            }
+            FailureKind::Duplicate(name) => ("name", format!("duplicate declaration {name}")),
+        };
+        Error::new(code, failure.span, message).in_module(&failure.module)
+    }
+
     /// Complete original text, including comments and line endings.
     pub fn source(&self, module: &str) -> Option<&str> {
         self.sources.get(module).map(String::as_str)
@@ -212,10 +252,12 @@ impl ParsedProgram {
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, OperationBinding>,
     ) -> Result<Instantiation> {
-        check::instantiate(self, entry, &naturals, &operations)?;
+        let (entry_id, operation_ids) = check::instantiate(self, entry, &naturals, &operations)?;
         Ok(Instantiation {
             program: self.clone(),
             entry: entry.into(),
+            entry_id,
+            operation_ids,
             naturals,
             operations,
         })
@@ -249,6 +291,8 @@ impl OperationBinding {
 pub struct Instantiation {
     program: ParsedProgram,
     entry: String,
+    entry_id: DefId,
+    operation_ids: BTreeMap<String, DefId>,
     naturals: BTreeMap<String, u32>,
     operations: BTreeMap<String, OperationBinding>,
 }

@@ -149,7 +149,7 @@ impl Lowerer<'_, '_> {
                     "project exceeds 256 distinct operation specializations",
                 ));
             }
-            self.compiler.instances.push((key.clone(), identity));
+            self.compiler.instances.push((*key, identity));
         }
         Ok(bindings)
     }

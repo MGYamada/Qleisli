@@ -53,3 +53,5 @@ tests/fixtures/review_v030alpha/realization-boundary/0.stdout.txt -text -whitesp
 tests/fixtures/frontend_v030/shared-types/finite-unit.stdout -text -whitespace
 tests/fixtures/frontend_v030/shared-types/integration.stdout -text -whitespace
 tests/fixtures/frontend_v030/shared-types/unit.stdout -text -whitespace
+tests/fixtures/frontend_v030/shared-resolution/scoped-tests-completion.log -text -whitespace
+tests/fixtures/frontend_v030/shared-resolution/unit-contract-clippy.log -text -whitespace

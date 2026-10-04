@@ -66,6 +66,7 @@ impl Compiler<'_> {
 
     pub(super) fn compile_basis(&mut self, key: &Key) -> Result<BasisFunction, CompileError> {
         let decl = self.declarations[key];
+        let key_name = self.resolution.declaration(*key).name.clone();
         let (params, result) = self.signature(key)?;
         let bits: usize = params
             .iter()
@@ -73,7 +74,7 @@ impl Compiler<'_> {
             .sum();
         if bits > MAX_BITS {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 decl.span,
                 ErrorCode::Limit,
                 "basis function domain exceeds 12 bits",
@@ -91,7 +92,7 @@ impl Compiler<'_> {
                 let label = (label >> offset) & ((1 << width) - 1);
                 if let PatternKind::Name(name) = &param.pattern.kind {
                     // Retain the existing work accounting for legacy binders.
-                    self.charge(&key.0, param.span, ty.tree_size().nodes)?;
+                    self.charge(&key_name.0, param.span, ty.tree_size().nodes)?;
                     env.insert(
                         name.text.clone(),
                         BasisValue {
@@ -100,14 +101,14 @@ impl Compiler<'_> {
                         },
                     );
                 } else {
-                    env.extend(self.bind_basis_pattern(&key.0, &param.pattern, ty, label)?);
+                    env.extend(self.bind_basis_pattern(&key_name.0, &param.pattern, ty, label)?);
                 }
                 offset += width;
             }
-            let value = self.eval_basis(&key.0, body, &env, 0)?;
+            let value = self.eval_basis(&key_name.0, body, &env, 0)?;
             if value.ty != result {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     body.span,
                     ErrorCode::TypeMismatch,
                     format!("basis result does not match its declared type: expected `{result}`, found `{}`", value.ty),

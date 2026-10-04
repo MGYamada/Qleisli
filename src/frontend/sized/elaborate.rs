@@ -10,6 +10,7 @@ const MAX_DEPTH: usize = 16;
 const MAX_STEPS: usize = 10_000;
 const MAX_CELLS: usize = 100_000;
 
+use crate::frontend::resolve::{DefId, ModuleId, Target};
 use crate::frontend::types::Kind as TypeKind;
 
 /// Concrete exact source tree. Accessors retain the current sized profile's
@@ -340,7 +341,7 @@ fn error(code: &'static str, span: Span, message: impl Into<String>) -> Error {
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct Key {
-    path: String,
+    definition: DefId,
     naturals: BTreeMap<String, u32>,
     operations: BTreeMap<String, OperationKey>,
 }
@@ -370,7 +371,7 @@ struct Scope {
 }
 struct Frame {
     module: String,
-    imports: BTreeMap<String, String>,
+    owner: ModuleId,
     effect: Effect,
     steps: Vec<SourceStep>,
     next_value: u32,
@@ -396,7 +397,7 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     // invalid concrete source body, even if no executable step invokes it.
     for (name, binding) in &instance.operations {
         let id = builder.function(
-            &binding.definition,
+            instance.operation_ids[name],
             binding.naturals.clone(),
             BTreeMap::new(),
             0,
@@ -406,13 +407,19 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
             name.clone(),
             SourceOperation {
                 kind: OperationKind::Definition(id),
-                module: instance.entry.rsplit_once("::").unwrap().0.into(),
+                module: instance
+                    .program
+                    .resolution
+                    .declaration(instance.entry_id)
+                    .name
+                    .0
+                    .clone(),
                 span: Span::default(),
                 repetitions: 1,
             },
         );
     }
-    let root = builder.function(&instance.entry, instance.naturals.clone(), operations, 0)?;
+    let root = builder.function(instance.entry_id, instance.naturals.clone(), operations, 0)?;
     Ok(ElaboratedProgram {
         instance: instance.clone(),
         definitions: builder.definitions,
@@ -523,34 +530,25 @@ impl Builder<'_> {
         }
         Ok(())
     }
-    fn declaration(&self, path: &str) -> Result<(String, Function)> {
-        let (module, name) = path
-            .rsplit_once("::")
-            .ok_or_else(|| error("module", Span::default(), "invalid concrete function path"))?;
-        let parsed =
-            self.program.modules.get(module).ok_or_else(|| {
-                error("module", Span::default(), "missing concrete source module")
-            })?;
-        if parsed.function.name != name {
-            return Err(error("name", Span::default(), "missing concrete function"));
-        }
-        Ok((module.into(), parsed.function.clone()))
+    fn declaration(&self, id: DefId) -> (String, Function) {
+        let (module, function) = self.program.definition(id);
+        (module.into(), function.clone())
     }
     fn function(
         &mut self,
-        path: &str,
+        definition: DefId,
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, SourceOperation>,
         depth: usize,
     ) -> Result<usize> {
         self.enter(Span::default())?;
-        let result = self.function_inner(path, naturals, operations, depth);
+        let result = self.function_inner(definition, naturals, operations, depth);
         self.active_frames -= 1;
         result
     }
     fn function_inner(
         &mut self,
-        path: &str,
+        definition: DefId,
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, SourceOperation>,
         depth: usize,
@@ -567,7 +565,7 @@ impl Builder<'_> {
             ));
         }
         let key = Key {
-            path: path.into(),
+            definition,
             naturals: naturals.clone(),
             operations: operations
                 .iter()
@@ -584,7 +582,8 @@ impl Builder<'_> {
                 "concrete source recursion does not decrease",
             ));
         }
-        let (module, function) = self.declaration(path)?;
+        let (module, function) = self.declaration(definition);
+        let path = self.program.resolution.path(definition);
         let result = (|| {
             let expected_naturals: BTreeSet<_> = function
                 .parameters
@@ -646,15 +645,9 @@ impl Builder<'_> {
                     }
                 }
             }
-            let mut imports: BTreeMap<_, _> = self.program.modules[&module]
-                .imports
-                .iter()
-                .map(|(path, _)| (path.rsplit("::").next().unwrap().into(), path.clone()))
-                .collect();
-            imports.insert(function.name.clone(), path.into());
             let mut frame = Frame {
                 module: module.clone(),
-                imports,
+                owner: self.program.resolution.declaration(definition).module,
                 effect: function.effect,
                 steps: Vec::new(),
                 next_value: 0,
@@ -699,7 +692,7 @@ impl Builder<'_> {
             }
             self.charge_cells(output.cells(), function.span)?;
             let definition = SourceDefinition {
-                path: path.into(),
+                path,
                 naturals,
                 operations,
                 inputs,
@@ -736,7 +729,7 @@ impl Builder<'_> {
         }
         Ok(definition.output.ty.clone())
     }
-    fn resolve(&self, name: &str, scope: &Scope, frame: &Frame, span: Span) -> Result<String> {
+    fn resolve(&self, name: &str, scope: &Scope, frame: &Frame, span: Span) -> Result<Target> {
         if scope.shadows.contains(name)
             || scope.naturals.contains_key(name)
             || scope.operations.contains_key(name)
@@ -747,15 +740,14 @@ impl Builder<'_> {
                 "concrete function name is lexically shadowed",
             ));
         }
-        frame
-            .imports
-            .get(name)
-            .cloned()
+        self.program
+            .resolution
+            .lookup(frame.owner, name)
             .ok_or_else(|| error("name", span, "unresolved concrete function"))
     }
     fn arguments(
         &mut self,
-        path: &str,
+        definition: DefId,
         arguments: &[Argument],
         scope: &Scope,
         frame: &Frame,
@@ -763,20 +755,20 @@ impl Builder<'_> {
         span: Span,
     ) -> Result<(BTreeMap<String, u32>, BTreeMap<String, SourceOperation>)> {
         self.enter(span)?;
-        let result = self.arguments_inner(path, arguments, scope, frame, depth, span);
+        let result = self.arguments_inner(definition, arguments, scope, frame, depth, span);
         self.active_frames -= 1;
         result
     }
     fn arguments_inner(
         &mut self,
-        path: &str,
+        definition: DefId,
         arguments: &[Argument],
         scope: &Scope,
         frame: &Frame,
         depth: usize,
         span: Span,
     ) -> Result<(BTreeMap<String, u32>, BTreeMap<String, SourceOperation>)> {
-        let (_, function) = self.declaration(path)?;
+        let (_, function) = self.declaration(definition);
         if arguments.len() != function.parameters.len() {
             return Err(error(
                 "static",
@@ -890,9 +882,16 @@ impl Builder<'_> {
         depth: usize,
         span: Span,
     ) -> Result<SourceOperation> {
-        let path = self.resolve(name, scope, frame, span)?;
-        let (naturals, operations) = self.arguments(&path, arguments, scope, frame, depth, span)?;
-        let id = self.function(&path, naturals, operations, depth + 1)?;
+        let Target::Declaration(definition) = self.resolve(name, scope, frame, span)? else {
+            return Err(error(
+                "unsupported",
+                span,
+                "primitive operation references are outside this preparation profile",
+            ));
+        };
+        let (naturals, operations) =
+            self.arguments(definition, arguments, scope, frame, depth, span)?;
+        let id = self.function(definition, naturals, operations, depth + 1)?;
         self.provider_type(id, span)?;
         Ok(SourceOperation {
             kind: OperationKind::Definition(id),
@@ -1021,8 +1020,10 @@ impl Builder<'_> {
                         .collect::<Result<_>>()?;
                     return self.operation_step(StepKind::Apply(op), values, frame, span);
                 }
-                let path = self.resolve(name, scope, frame, span)?;
-                if let Some(kind) = Primitive::lookup(&path) {
+                let target = self.resolve(name, scope, frame, span)?;
+                if let Target::Primitive(_) = target {
+                    let kind = Primitive::lookup(&self.program.resolution.target_path(target))
+                        .expect("resolved primitive");
                     let naturals = arguments
                         .iter()
                         .map(|a| {
@@ -1052,9 +1053,12 @@ impl Builder<'_> {
                         0,
                     )
                 } else {
+                    let Target::Declaration(definition) = target else {
+                        unreachable!("primitive handled above")
+                    };
                     let (naturals, operations) =
-                        self.arguments(&path, arguments, scope, frame, depth, span)?;
-                    let id = self.function(&path, naturals, operations.clone(), depth + 1)?;
+                        self.arguments(definition, arguments, scope, frame, depth, span)?;
+                    let id = self.function(definition, naturals, operations.clone(), depth + 1)?;
                     let definition = &self.definitions[id];
                     let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
                     let output = definition.output.ty.clone();

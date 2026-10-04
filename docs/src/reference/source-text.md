@@ -95,13 +95,42 @@ than the removed parser. These are engineering limits, not the constitutional
 quantitative Resource Safety theorem.
 
 All declarations remain in the common AST. The sized profile currently rejects
-a second declaration at that declaration's span, pending declaration identity
-and same-module cycle checking. Existing empty sized type/pattern/block,
+a second declaration at that declaration's span, pending common checking of
+multiple declarations and their recursion rules. Existing empty sized type/pattern/block,
 empty `yield`, empty specialization brackets and parameter trailing-comma
 spellings are represented by the shared syntax. Unsupported finite constructs
 receive a located profile rejection; parsing a spelling does not add backend
 support. This implementation step does not select final canonical syntax or
 add `Op<A,B>`/Basis-generic features.
+
+## Declaration resolution and current profiles
+
+An imported declaration retains its canonical module and declaration name.
+Visibility is checked before use: a private declaration cannot be imported from
+another module or selected as a host entry. A sized host-supplied provider is
+checked from the entry module's context, including when the provider is unused.
+Imports add no runtime action or verification privilege. A moved local binding
+continues to shadow a declaration with the same name; failed local lookup does
+not fall back to that declaration. Evidence retains the original source,
+dependencies, canonical names and static bindings.
+
+The current shared declaration resolver preserves these temporary differences
+between the existing checking profiles:
+
+| Condition | Finite project | Sized explicit module map |
+| --- | --- | --- |
+| Unused import cycle | Rejected | Permitted; actual call/provider cycles are still checked |
+| Import of the module's own declaration | Rejected as a collision, or as private | Permitted for that same declaration, including private visibility |
+| Declaration recursion | Rejected | Only the existing checked decreasing self-call is permitted |
+| Multiple declarations in a module | Checked, including unused declarations | Rejected by the current profile |
+
+Existing module-name and primitive-set restrictions remain profile-specific.
+The sized API loads only the supplied module map and its specified primitives;
+it does not implicitly discover bundled source modules. Common declaration
+identity does not yet unify local owner/static-binder checking or grant the
+final 0.3.0 syntax. The implementation contract and remaining convergence are
+tracked in [#41](https://github.com/MGYamada/Qleisli/issues/41) and
+[#65](https://github.com/MGYamada/Qleisli/issues/65).
 
 ## Migration and evidence
 
@@ -127,5 +156,11 @@ source observations, independent review counterexamples, exact commands/results
 and four small before/after proposals with identical bytes. It also records the
 shared-depth edge above. These are bounded migration evidence, not a general
 source-preservation proof, new formal guarantee or native acceptance claim.
+
+`tests/fixtures/frontend_v030/shared-resolution/` retains the resolver's ten
+original profile observations, 25 matching command results and five identical
+small proposals, including distinct same-named providers and decreasing
+self-recursion. Private Rust debug representations are not canonical names or
+evidence formats; their printed fields change with the internal resolver.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

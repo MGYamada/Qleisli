@@ -71,7 +71,10 @@ fn verification_error(
             ErrorCode::InvalidIr
         },
         match &compiler.checking {
-            Some(key) => format!("{failure} while checking {}::{}", key.0, key.1),
+            Some(key) => format!(
+                "{failure} while checking {}",
+                compiler.resolution.path(*key)
+            ),
             None => failure.to_string(),
         },
     )
@@ -207,9 +210,10 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
+        let key_name = self.compiler.resolution.declaration(*key).name.clone();
         if self.depth >= MAX_DEPTH {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 decl.span,
                 ErrorCode::Limit,
                 "function expansion exceeds the initial depth limit",
@@ -231,19 +235,21 @@ impl Lowerer<'_, '_> {
         site: Option<CallSite<'_>>,
     ) -> Result<Value, CompileError> {
         let decl = self.compiler.declarations[key];
-        self.compiler.tick(&key.0, decl.span)?;
+        let key_name = self.compiler.resolution.declaration(*key).name.clone();
+        self.compiler.tick(&key_name.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
         if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 decl.span,
                 ErrorCode::TypeMismatch,
                 "basis functions are used only in basis expressions and with_computed",
             ));
         }
         if args.len() != params.len() {
-            let (module, span) =
-                site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
+            let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+                (site.module, site.span)
+            });
             return Err(self.error(
                 module,
                 span,
@@ -256,7 +262,7 @@ impl Lowerer<'_, '_> {
             let PatternKind::Name(name) = &param.pattern.kind else {
                 unreachable!("ordinary parameters are parsed as names")
             };
-            let (module, span) = site.map_or((key.0.as_str(), param.span), |site| {
+            let (module, span) = site.map_or((key_name.0.as_str(), param.span), |site| {
                 (site.module, site.args[index].span)
             });
             self.compiler
@@ -282,12 +288,12 @@ impl Lowerer<'_, '_> {
         let FnBody::Quantum(body) = &decl.body else {
             unreachable!("ordinary function")
         };
-        let value = self.block(&key.0, body, &mut env)?;
+        let value = self.block(&key_name.0, body, &mut env)?;
         self.compiler
-            .charge(&key.0, body.result.span, value.tree_size().nodes)?;
+            .charge(&key_name.0, body.result.span, value.tree_size().nodes)?;
         if value.ty() != return_ty {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 body.result.span,
                 ErrorCode::TypeMismatch,
                 format!(
@@ -298,7 +304,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         self.no_owned_bindings(
-            &key.0,
+            &key_name.0,
             body.span,
             &env,
             decl.params.iter().filter_map(|param| {
@@ -313,7 +319,7 @@ impl Lowerer<'_, '_> {
             let (module, span) = self
                 .effect_source
                 .as_ref()
-                .map_or((key.0.as_str(), decl.span), |(module, span)| {
+                .map_or((key_name.0.as_str(), decl.span), |(module, span)| {
                     (module.as_str(), *span)
                 });
             return Err(self.error(
@@ -330,8 +336,9 @@ impl Lowerer<'_, '_> {
         }
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
-        let (module, span) =
-            site.map_or((key.0.as_str(), decl.span), |site| (site.module, site.span));
+        let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
+            (site.module, site.span)
+        });
         self.add_effect(module, span, effect(decl.kind));
         Ok(value)
     }
@@ -1334,9 +1341,10 @@ pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
 ) -> Result<AcceptedProgram, CompileError> {
+    let key_name = compiler.resolution.declaration(*key).name.clone();
     lower_function_inner(compiler, key, BTreeMap::new(), false)?.ok_or_else(|| {
         compiler.error(
-            &key.0,
+            &key_name.0,
             compiler.declarations[key].span,
             ErrorCode::InvalidIr,
             "missing concrete program",
@@ -1351,6 +1359,7 @@ fn lower_function_inner(
     abstract_check: bool,
 ) -> Result<Option<AcceptedProgram>, CompileError> {
     let decl = compiler.declarations[key];
+    let key_name = compiler.resolution.declaration(*key).name.clone();
     let (params, _) = compiler.signature(key)?;
     let mut lower = Lowerer {
         compiler,
@@ -1373,7 +1382,7 @@ fn lower_function_inner(
     // Signature types are already bounded; account for constructing their
     // value tree and the register's copy of each quantum basis type.
     lower.compiler.charge(
-        &key.0,
+        &key_name.0,
         decl.span,
         total_size(params.iter().map(|ty| ty.tree_size().nodes)).saturating_mul(2),
     )?;
@@ -1382,7 +1391,7 @@ fn lower_function_inner(
         .map(|ty| {
             lower.input(
                 ty,
-                &key.0,
+                &key_name.0,
                 decl.span,
                 &mut quantum_inputs,
                 &mut classical_inputs,
@@ -1440,7 +1449,7 @@ fn lower_function_inner(
             verification_error(
                 lower.compiler,
                 &lower.operation_sources,
-                &key.0,
+                &key_name.0,
                 decl.span,
                 failure,
                 limit,

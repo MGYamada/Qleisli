@@ -1,0 +1,2 @@
+finite.load: /private/tmp/qleisli-resolution-study-6daea68/private-unused-import/a.qli:7..8: `b::g` is not public
+sized.parse: a:0..9: visibility: dependency b::g is private

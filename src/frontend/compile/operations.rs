@@ -126,10 +126,11 @@ impl Compiler<'_> {
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
         let decl = self.declarations[key];
-        let basis = self.ty(&key.0, &decl.return_type, Stage::Basis)?;
+        let key_name = self.resolution.declaration(*key).name.clone();
+        let basis = self.ty(&key_name.0, &decl.return_type, Stage::Basis)?;
         contract_basis(&basis)
             .bits()
-            .map_err(|e| self.op_error(&key.0, decl.span, e))?;
+            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
         let FnBody::Meaning {
             permutation,
             function,
@@ -137,9 +138,9 @@ impl Compiler<'_> {
         else {
             unreachable!()
         };
-        let Callee::User(fkey) = self.resolve(&key.0, function)? else {
+        let Callee::User(fkey) = self.resolve(&key_name.0, function)? else {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "meaning requires an ordinary total basis function",
@@ -147,7 +148,7 @@ impl Compiler<'_> {
         };
         let f = self.basis.get(&fkey).ok_or_else(|| {
             self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "meaning requires an ordinary total basis function",
@@ -160,7 +161,7 @@ impl Compiler<'_> {
         };
         if f.params != [basis.clone()] || f.result != result {
             return Err(self.error(
-                &key.0,
+                &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
                 "meaning function has the wrong exact basis signature",
@@ -173,16 +174,18 @@ impl Compiler<'_> {
                 contract_basis(&basis),
                 f.table
                     .iter()
-                    .map(|x| self.narrow_u8(&key.0, function.span, usize::from(*x), "phase label"))
+                    .map(|x| {
+                        self.narrow_u8(&key_name.0, function.span, usize::from(*x), "phase label")
+                    })
                     .collect::<Result<_, _>>()?,
             )
         }
-        .map_err(|e| self.op_error(&key.0, decl.span, e))?;
+        .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
         let matrix = target
             .matrix(&mut self.exact_work)
-            .map_err(|e| self.op_error(&key.0, decl.span, e))?;
+            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
         self.meanings.insert(
-            key.clone(),
+            *key,
             DeclaredMeaning {
                 basis,
                 target,
@@ -204,6 +207,7 @@ impl Compiler<'_> {
     }
     pub(super) fn abstract_bindings(&mut self, key: &Key) -> Result<Bindings, CompileError> {
         let decl = self.declarations[key];
+        let key_name = self.resolution.declaration(*key).name.clone();
         self.signature(key)?;
         let mut bindings = Bindings::new();
         for p in &decl.static_params {
@@ -213,29 +217,29 @@ impl Compiler<'_> {
             } = &p.kind
             else {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     p.name.span,
                     ErrorCode::Unsupported,
                     "finite profile does not support Nat parameters",
                 ));
             };
-            let basis = self.ty(&key.0, source_basis, Stage::Basis)?;
+            let basis = self.ty(&key_name.0, source_basis, Stage::Basis)?;
             contract_basis(&basis)
                 .bits()
-                .map_err(|e| self.op_error(&key.0, source_basis.span, e))?;
+                .map_err(|e| self.op_error(&key_name.0, source_basis.span, e))?;
             let meaning = if let Some(m) = source_meaning {
-                let k = self.meaning_key(&key.0, m)?;
+                let k = self.meaning_key(&key_name.0, m)?;
                 let target = &self.meanings[&k];
                 if target.basis != basis {
                     return Err(self.error(
-                        &key.0,
+                        &key_name.0,
                         m.span,
                         ErrorCode::TypeMismatch,
                         "parameter and meaning basis trees differ",
                     ));
                 }
                 let cost = target.matrix.entries().len();
-                self.charge(&key.0, m.span, cost)?;
+                self.charge(&key_name.0, m.span, cost)?;
                 Some(self.meanings[&k].matrix.clone())
             } else {
                 None
@@ -248,7 +252,7 @@ impl Compiler<'_> {
                     meaning,
                     node: Arc::new(Node::Abstract(format!(
                         "{}::{}::{}",
-                        key.0, key.1, p.name.text
+                        key_name.0, key_name.1, p.name.text
                     ))),
                     depth: 1,
                     nodes: 1,
@@ -259,7 +263,7 @@ impl Compiler<'_> {
         for requirement in &decl.requires {
             let Requirement::Access(constraint) = requirement else {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     decl.span,
                     ErrorCode::Unsupported,
                     "finite profile does not support size predicates",
@@ -267,7 +271,7 @@ impl Compiler<'_> {
             };
             let Some(op) = bindings.get_mut(&constraint.name.text) else {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     constraint.name.span,
                     ErrorCode::UnknownName,
                     "access constraint must name a static parameter",
@@ -276,7 +280,7 @@ impl Compiler<'_> {
             let index = access_index(constraint.access);
             if op.access[index] {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     constraint.name.span,
                     ErrorCode::Capability,
                     "duplicate access constraint",
@@ -307,6 +311,7 @@ impl Compiler<'_> {
             }
         };
         let decl = self.declarations[&key];
+        let key_name = self.resolution.declaration(key).name.clone();
         if decl.kind != FnKind::Unitary {
             return Err(self.error(
                 module,
@@ -354,7 +359,7 @@ impl Compiler<'_> {
                 ));
             }
         }
-        let cache = (key.clone(), mkey.clone());
+        let cache = (key, mkey);
         if let Some(op) = self.providers.get(&cache) {
             let cost = op.copy_size();
             self.charge(module, name.span, cost)?;
@@ -371,10 +376,10 @@ impl Compiler<'_> {
         })?;
         let implementation = program.program().clone();
         let identity = RetainedIdentity::shared(
-            format!("{}::{}", key.0, key.1),
+            format!("{}::{}", key_name.0, key_name.1),
             mkey.as_ref().map_or_else(
-                || format!("{}::{}", key.0, key.1),
-                |m| format!("meaning {}::{}", m.0, m.1),
+                || format!("{}::{}", key_name.0, key_name.1),
+                |m| format!("meaning {}", self.resolution.path(*m)),
             ),
             sources,
         );

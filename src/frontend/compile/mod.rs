@@ -13,7 +13,8 @@ use std::sync::Arc;
 
 use super::ast::*;
 use super::diagnostic::{Diagnostic, coordinates};
-use super::project::{ImportOrigin, Project, SourcePolicy};
+use super::project::{Project, SourcePolicy};
+use super::resolve::{self, DefId, Resolution, Target};
 use crate::{AcceptedProgram, ir::Effect};
 
 const MAX_BITS: usize = 12;
@@ -21,7 +22,13 @@ const MAX_WORK: usize = 1_000_000;
 const MAX_DEPTH: usize = 64;
 const MAX_TREE_NODES: usize = 4096;
 const MAX_TREE_DEPTH: usize = 64;
-type Key = (String, String);
+type Key = DefId;
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+enum MeaningCacheKey {
+    Declaration(Key),
+    Sealed(String, String),
+}
 
 /// Stable categories for consumers; `message` is explanatory text.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -132,6 +139,7 @@ impl BasisFunction {
 struct Compiler<'a> {
     kernel: crate::interchange::native::Kernel,
     project: &'a Project,
+    resolution: Resolution,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, AcceptedProgram>,
@@ -148,7 +156,7 @@ struct Compiler<'a> {
     work: usize,
     checking: Option<Key>,
     exact_work: crate::contract::exact::Budget,
-    closed_meanings: BTreeMap<Key, crate::contract::exact::Matrix>,
+    closed_meanings: BTreeMap<MeaningCacheKey, crate::contract::exact::Matrix>,
 }
 
 impl Compiler<'_> {
@@ -180,9 +188,9 @@ impl Compiler<'_> {
             let (line, column) = coordinates(&self.project.modules[module].source, span);
             let (owner, location, context) = match &self.checking {
                 Some(key) => (
-                    key.0.as_str(),
+                    self.resolution.declaration(*key).name.0.as_str(),
                     self.declarations[key].span,
-                    format!(" while checking {}::{}", key.0, key.1),
+                    format!(" while checking {}", self.resolution.path(*key)),
                 ),
                 None => (module, span, String::new()),
             };
@@ -276,26 +284,20 @@ impl Compiler<'_> {
     }
 
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
-        let key = (module.to_owned(), name.text.clone());
-        if self.declarations.contains_key(&key) {
-            return Ok(Callee::User(key));
+        let owner = self.resolution.module(module).expect("known module");
+        match self.resolution.lookup(owner, &name.text) {
+            Some(Target::Declaration(id)) => Ok(Callee::User(id)),
+            Some(Target::Primitive(id)) => Ok(Callee::Sealed(id.module.into(), id.name.into())),
+            None => Err(self.error(
+                module,
+                name.span,
+                ErrorCode::UnknownName,
+                format!(
+                    "unknown function `{}`; standard operations require an explicit import",
+                    name.text
+                ),
+            )),
         }
-        if let Some(import) = self.project.modules[module].imports.get(&name.text) {
-            return Ok(if import.origin == ImportOrigin::Sealed {
-                Callee::Sealed(import.module.clone(), import.name.clone())
-            } else {
-                Callee::User((import.module.clone(), import.name.clone()))
-            });
-        }
-        Err(self.error(
-            module,
-            name.span,
-            ErrorCode::UnknownName,
-            format!(
-                "unknown function `{}`; standard operations require an explicit import",
-                name.text
-            ),
-        ))
     }
 
     fn ty(&mut self, module: &str, ty: &Type, stage: Stage) -> Result<Ty, CompileError> {
@@ -335,11 +337,12 @@ impl Compiler<'_> {
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
         let decl = self.declarations[key];
+        let key_name = self.resolution.declaration(*key).name.clone();
         let mut names = BTreeSet::new();
         for param in &decl.static_params {
             if !names.insert(&param.name.text) {
                 return Err(self.error(
-                    &key.0,
+                    &key_name.0,
                     param.name.span,
                     ErrorCode::Ownership,
                     "duplicate static parameter",
@@ -354,7 +357,7 @@ impl Compiler<'_> {
                     PatternKind::Name(name) => {
                         if !names.insert(&name.text) {
                             return Err(self.error(
-                                &key.0,
+                                &key_name.0,
                                 name.span,
                                 ErrorCode::Ownership,
                                 "duplicate parameter name",
@@ -366,7 +369,7 @@ impl Compiler<'_> {
                 }
             }
             let ty = self.ty(
-                &key.0,
+                &key_name.0,
                 &param.ty,
                 if decl.kind == FnKind::Basis {
                     Stage::Basis
@@ -377,14 +380,14 @@ impl Compiler<'_> {
             if decl.kind == FnKind::Basis && !matches!(param.pattern.kind, PatternKind::Name(_)) {
                 // Reuse the coherent basis-pattern binding judgment. A zero
                 // label suffices to validate shape; enumeration binds all labels.
-                self.bind_basis_pattern(&key.0, &param.pattern, &ty, 0)?;
+                self.bind_basis_pattern(&key_name.0, &param.pattern, &ty, 0)?;
             }
             params.push(ty);
         }
         Ok((
             params,
             self.ty(
-                &key.0,
+                &key_name.0,
                 &decl.return_type,
                 if decl.kind == FnKind::Basis {
                     Stage::Basis
@@ -398,7 +401,7 @@ impl Compiler<'_> {
     /// Iterative topological ordering also checks calls in unused declarations.
     fn order(&self) -> Result<Vec<Key>, CompileError> {
         let mut pending = BTreeMap::<Key, BTreeSet<Key>>::new();
-        let mut users = BTreeMap::<Key, Vec<Key>>::new();
+
         for (key, decl) in &self.declarations {
             let mut dependencies = BTreeSet::new();
             let static_names: BTreeSet<_> =
@@ -413,41 +416,22 @@ impl Compiler<'_> {
                 if static_names.contains(&name.text) {
                     continue;
                 }
-                if let Callee::User(target) = self.resolve(&key.0, name)? {
+                if let Callee::User(target) =
+                    self.resolve(&self.resolution.declaration(*key).name.0, name)?
+                {
                     dependencies.insert(target);
                 }
             }
-            for target in &dependencies {
-                users.entry(target.clone()).or_default().push(key.clone());
-            }
-            pending.insert(key.clone(), dependencies);
+            pending.insert(*key, dependencies);
         }
-        let mut ready: BTreeSet<_> = pending
-            .iter()
-            .filter(|(_, deps)| deps.is_empty())
-            .map(|(key, _)| key.clone())
-            .collect();
-        let mut order = Vec::new();
-        while let Some(key) = ready.pop_first() {
-            order.push(key.clone());
-            for user in users.get(&key).into_iter().flatten() {
-                let dependencies = pending.get_mut(user).expect("known caller");
-                dependencies.remove(&key);
-                if dependencies.is_empty() {
-                    ready.insert(user.clone());
-                }
-            }
-            pending.remove(&key);
-        }
-        if let Some((key, _)) = pending.first_key_value() {
-            return Err(self.error(
-                &key.0,
-                self.declarations[key].name.span,
+        resolve::order(pending).map_err(|key| {
+            self.error(
+                &self.resolution.declaration(key).name.0,
+                self.declarations[&key].name.span,
                 ErrorCode::RecursiveCall,
                 "recursive function calls are not supported",
-            ));
-        }
-        Ok(order)
+            )
+        })
     }
 }
 
@@ -821,15 +805,25 @@ fn process_loaded_project_with_kernel(
     require_entry: bool,
     kernel: Option<&crate::interchange::native::Kernel>,
 ) -> Result<Option<AcceptedProgram>, CompileError> {
-    let declarations = project
-        .modules
-        .iter()
-        .flat_map(|(module, source)| {
-            source
-                .ast
-                .decls
-                .iter()
-                .map(move |decl| ((module.clone(), decl.name.text.clone()), decl))
+    let resolution = project.resolution().map_err(|failure| {
+        let failure = failure.into_diagnostic();
+        let location = failure.primary.expect("located resolution error");
+        CompileError {
+            code: ErrorCode::Project,
+            path: location.path,
+            span: location.span,
+            line: location.line,
+            column: location.column,
+            message: failure.message,
+        }
+    })?;
+    let declarations = resolution
+        .declarations()
+        .map(|(id, declaration)| {
+            (
+                id,
+                &project.modules[&declaration.name.0].ast.decls[declaration.ast_index],
+            )
         })
         .collect();
     let kernel = kernel
@@ -847,6 +841,7 @@ fn process_loaded_project_with_kernel(
     let mut compiler = Compiler {
         kernel,
         project,
+        resolution,
         declarations,
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
@@ -862,12 +857,19 @@ fn process_loaded_project_with_kernel(
     };
     for (key, declaration) in &compiler.declarations {
         if let Err((span, message)) = profile::check(declaration) {
-            return Err(compiler.error(&key.0, span, ErrorCode::Unsupported, message));
+            return Err(compiler.error(
+                &compiler.resolution.declaration(*key).name.0,
+                span,
+                ErrorCode::Unsupported,
+                message,
+            ));
         }
     }
     let order = compiler.order()?;
-    let entry = ("main".to_owned(), "main".to_owned());
-    if let Some(decl) = compiler.declarations.get(&entry).copied() {
+    let entry = compiler.resolution.qualified("main::main").ok();
+    if let Some((entry, decl)) =
+        entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
+    {
         let (_, result) = compiler.signature(&entry)?;
         if decl.kind != FnKind::Observe
             || !decl.params.is_empty()
@@ -894,21 +896,21 @@ fn process_loaded_project_with_kernel(
     // All basis functions precede their callers; ordinary functions may only
     // invoke them through a coherent lift or with_computed predicate.
     for key in &order {
-        compiler.checking = Some(key.clone());
+        compiler.checking = Some(*key);
         if compiler.declarations[key].kind == FnKind::Basis {
             let function = compiler.compile_basis(key)?;
-            compiler.basis.insert(key.clone(), function);
+            compiler.basis.insert(*key, function);
         }
     }
     for key in &order {
-        compiler.checking = Some(key.clone());
+        compiler.checking = Some(*key);
         if compiler.declarations[key].kind == FnKind::Meaning {
             compiler.compile_meaning(key)?;
         }
     }
     let mut main = None;
     for key in &order {
-        compiler.checking = Some(key.clone());
+        compiler.checking = Some(*key);
         if !compiler.declarations[key].static_params.is_empty() {
             let bindings = compiler.abstract_bindings(key)?;
             lower::check_generic(&mut compiler, key, bindings)?;
@@ -917,10 +919,10 @@ fn process_loaded_project_with_kernel(
             FnKind::Basis | FnKind::Meaning
         ) {
             let program = lower::lower_function(&mut compiler, key)?;
-            if *key == entry {
+            if Some(*key) == entry {
                 main = Some(program.clone());
             }
-            compiler.checked.insert(key.clone(), program);
+            compiler.checked.insert(*key, program);
         }
     }
     Ok(main)
@@ -961,6 +963,10 @@ mod snapshot_tests {
         Compiler {
             kernel: crate::interchange::native::Kernel::selected().expect("explicit test kernel"),
             project,
+            resolution: project
+                .resolution()
+                .map_err(|failure| failure.into_diagnostic())
+                .expect("valid test project"),
             declarations: BTreeMap::new(),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),

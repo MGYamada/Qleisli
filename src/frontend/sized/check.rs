@@ -7,6 +7,7 @@ use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 
+use crate::frontend::resolve::{self, DefId, Failure, Profile, Target};
 use crate::frontend::types::Kind;
 type Ty = crate::frontend::types::Type<Linear>;
 impl Ty {
@@ -276,51 +277,6 @@ fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
     }
     go(pattern, t, scope, &mut BTreeSet::new())
 }
-fn definition<'a>(
-    program: &'a ParsedProgram,
-    path: &str,
-    span: Span,
-) -> Result<(&'a str, &'a Function)> {
-    let (module, name) = path
-        .rsplit_once("::")
-        .ok_or_else(|| err("module", span, "definition path needs module::function"))?;
-    let (module, parsed) = program.modules.get_key_value(module).ok_or_else(|| {
-        err(
-            "module",
-            span,
-            format!("missing dependency module {module}"),
-        )
-    })?;
-    if parsed.function.name != name {
-        return Err(err("name", span, format!("no function {path}")));
-    }
-    Ok((module, &parsed.function))
-}
-fn imports(program: &ParsedProgram, module: &str) -> Result<BTreeMap<String, String>> {
-    let source = &program.modules[module];
-    let mut result = BTreeMap::new();
-    for (path, span) in &source.imports {
-        if Primitive::lookup(path).is_none() {
-            visible_definition(program, path, Some(module), *span)?;
-        }
-        let name = path.rsplit("::").next().unwrap();
-        if name == source.function.name && path != &format!("{module}::{name}") {
-            return Err(err("name", *span, "import shadows the local function"));
-        }
-        if result.insert(name.into(), path.clone()).is_some() {
-            return Err(err(
-                "name",
-                *span,
-                format!("ambiguous imported name {name}"),
-            ));
-        }
-    }
-    result
-        .entry(source.function.name.clone())
-        .or_insert_with(|| format!("{module}::{}", source.function.name));
-    Ok(result)
-}
-
 /// Host entry selection has no module privilege. Providers are selected in the
 /// entry module's context, with the same visibility rule as source imports.
 fn visible_definition<'a>(
@@ -328,29 +284,52 @@ fn visible_definition<'a>(
     path: &str,
     requester: Option<&str>,
     span: Span,
-) -> Result<(&'a str, &'a Function)> {
-    let (owner, function) = definition(program, path, span)?;
-    if requester != Some(owner) && !function.public {
+) -> Result<(DefId, &'a str, &'a Function)> {
+    let id = program.resolution.qualified(path).map_err(|kind| {
+        let mut error = ParsedProgram::resolution_error(Failure {
+            module: String::new(),
+            span,
+            kind,
+        });
+        error.module = None;
+        error
+    })?;
+    let (owner, function) = program.definition(id);
+    if !program.resolution.visible(
+        id,
+        requester.and_then(|name| program.resolution.module(name)),
+    ) {
         return Err(
             err("visibility", span, format!("dependency {path} is private"))
                 .in_module(requester.unwrap_or(owner)),
         );
     }
-    Ok((owner, function))
+    Ok((id, owner, function))
 }
 
-pub(super) fn program(program: &ParsedProgram) -> Result<()> {
-    let mut edges: BTreeMap<String, BTreeSet<String>> = BTreeMap::new();
-    for (module, parsed) in &program.modules {
+pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
+    let mut edges = BTreeMap::new();
+    let names: Vec<_> = program.modules.keys().cloned().collect();
+    for module in &names {
+        let parsed = &program.modules[module];
+        let owner = program.resolution.module(module).expect("known module");
+        let imports = program
+            .resolution
+            .imports(owner, &program.syntax[module], Profile::Sized)
+            .map_err(ParsedProgram::resolution_error)?;
+        let id = program
+            .resolution
+            .local(owner, &parsed.function.name)
+            .expect("projected declaration");
         let result = (|| {
-            let names = imports(program, module)?;
             let mut scope = declaration(&parsed.function)?;
             let expected = ty(&parsed.function.result, &scope, parsed.function.span)?;
             let mut checker = Checker {
                 program,
                 module,
+                definition: id,
                 function: &parsed.function,
-                imports: names,
+                imports: &imports.imports,
                 edges: BTreeSet::new(),
             };
             checker.block(&parsed.function.body, &mut scope, Some(&expected))?;
@@ -363,46 +342,36 @@ pub(super) fn program(program: &ParsedProgram) -> Result<()> {
             }
             Ok(checker.edges)
         })();
-        edges.insert(module.clone(), result.map_err(|e| e.in_module(module))?);
+        edges.insert(
+            id,
+            result
+                .map_err(|e| e.in_module(module))?
+                .into_iter()
+                .map(|id| (id, Span::default()))
+                .collect(),
+        );
+        program.resolution.set_scope(owner, imports);
     }
-    fn visit(
-        node: &str,
-        edges: &BTreeMap<String, BTreeSet<String>>,
-        active: &mut BTreeSet<String>,
-        done: &mut BTreeSet<String>,
-    ) -> Result<()> {
-        if done.contains(node) {
-            return Ok(());
-        }
-        if !active.insert(node.into()) {
-            return Err(err(
-                "cycle",
-                Span::default(),
-                "mutually recursive dependency cycle is unsupported",
-            )
-            .in_module(node));
-        }
-        for next in &edges[node] {
-            if next != node {
-                visit(next, edges, active, done)?;
-            }
-        }
-        active.remove(node);
-        done.insert(node.into());
-        Ok(())
-    }
-    let mut done = BTreeSet::new();
-    for name in edges.keys() {
-        visit(name, &edges, &mut BTreeSet::new(), &mut done)?;
+    // Every self-call has already passed the symbolic decrease check above.
+    if let Some((_, _, path)) = resolve::cycle(edges.keys().copied(), &edges, true) {
+        let id = *path.last().expect("cycle target");
+        return Err(err(
+            "cycle",
+            Span::default(),
+            "mutually recursive dependency cycle is unsupported",
+        )
+        .in_module(&program.resolution.declaration(id).name.0));
     }
     Ok(())
 }
+
 struct Checker<'a> {
     program: &'a ParsedProgram,
     module: &'a str,
     function: &'a Function,
-    imports: BTreeMap<String, String>,
-    edges: BTreeSet<String>,
+    definition: DefId,
+    imports: &'a BTreeMap<String, Target>,
+    edges: BTreeSet<DefId>,
 }
 impl Checker<'_> {
     fn effect(&self, effect: Effect, span: Span) -> Result<()> {
@@ -416,7 +385,7 @@ impl Checker<'_> {
             ))
         }
     }
-    fn resolve(&mut self, name: &str, scope: &Scope, span: Span) -> Result<String> {
+    fn resolve(&mut self, name: &str, scope: &Scope, span: Span) -> Result<Target> {
         if scope.shadows.contains(name)
             || scope.naturals.contains_key(name)
             || scope.operations.contains_key(name)
@@ -427,26 +396,33 @@ impl Checker<'_> {
                 format!("{name} is shadowed or is not a transparent function"),
             ));
         }
-        let path = self
-            .imports
-            .get(name)
-            .cloned()
+        let owner = self
+            .program
+            .resolution
+            .module(self.module)
+            .expect("known module");
+        let target = self
+            .program
+            .resolution
+            .local(owner, name)
+            .map(Target::Declaration)
+            .or_else(|| self.imports.get(name).copied())
             .ok_or_else(|| err("name", span, format!("unresolved function {name}")))?;
-        if Primitive::lookup(&path).is_none() {
-            self.edges
-                .insert(definition(self.program, &path, span)?.0.into());
+        if let Target::Declaration(id) = target {
+            self.edges.insert(id);
         }
-        Ok(path)
+        Ok(target)
     }
+
     fn specialize(
         &mut self,
-        path: &str,
+        id: DefId,
         args: &[Argument],
         scope: &Scope,
         span: Span,
         recursion: bool,
     ) -> Result<(Vec<Ty>, Ty, Effect)> {
-        let (_, f) = definition(self.program, path, span)?;
+        let (_, f) = self.program.definition(id);
         if args.len() != f.parameters.len() {
             return Err(err("static", span, "wrong number of static arguments"));
         }
@@ -483,7 +459,7 @@ impl Checker<'_> {
             }
         }
         call_capacity(requirements(f, &target, span), span)?;
-        if recursion && path == format!("{}::{}", self.module, self.function.name) {
+        if recursion && id == self.definition {
             let mut decreases = false;
             for p in &f.parameters {
                 if let Parameter::Natural(name) = p {
@@ -560,15 +536,14 @@ impl Checker<'_> {
         scope: &Scope,
         span: Span,
     ) -> Result<Operation> {
-        let path = self.resolve(name, scope, span)?;
-        if Primitive::lookup(&path).is_some() {
+        let Target::Declaration(id) = self.resolve(name, scope, span)? else {
             return Err(err(
                 "unsupported",
                 span,
                 "primitive operation references are outside this preparation profile",
             ));
-        }
-        let (inputs, result, effect) = self.specialize(&path, args, scope, span, true)?;
+        };
+        let (inputs, result, effect) = self.specialize(id, args, scope, span, true)?;
         let group = match inputs.as_slice() {
             [input] => input.clone(),
             _ => Ty::tuple(inputs.clone()),
@@ -678,11 +653,15 @@ impl Checker<'_> {
                     self.expr(&runtime[0], scope, Some(&op.ty))?;
                     op.ty
                 } else {
-                    let path = self.resolve(name, scope, span)?;
-                    let (inputs, result, effect) = if let Some(name) = Primitive::lookup(&path) {
-                        primitive_signature(name, args, scope, span)?
-                    } else {
-                        self.specialize(&path, args, scope, span, true)?
+                    let target = self.resolve(name, scope, span)?;
+                    let (inputs, result, effect) = match target {
+                        Target::Primitive(_) => {
+                            let primitive =
+                                Primitive::lookup(&self.program.resolution.target_path(target))
+                                    .expect("resolved primitive");
+                            primitive_signature(primitive, args, scope, span)?
+                        }
+                        Target::Declaration(id) => self.specialize(id, args, scope, span, true)?,
                     };
                     self.effect(effect, span)?;
                     if inputs.len() != runtime.len() {
@@ -945,10 +924,11 @@ pub(super) fn instantiate(
     entry: &str,
     naturals: &BTreeMap<String, u32>,
     operations: &BTreeMap<String, OperationBinding>,
-) -> Result<()> {
-    let (module, f) = visible_definition(program, entry, None, Span::default())?;
+) -> Result<(DefId, BTreeMap<String, DefId>)> {
+    let (entry_id, module, f) = visible_definition(program, entry, None, Span::default())?;
     let result = (|| {
         let mut scope = concrete_scope(f, naturals)?;
+        let mut provider_ids = BTreeMap::new();
         let expected: BTreeSet<_> = f
             .parameters
             .iter()
@@ -970,7 +950,7 @@ pub(super) fn instantiate(
         for p in &f.parameters {
             if let Parameter::Operation(name, b) = p {
                 let binding = &operations[name];
-                let (_, provider) =
+                let (provider_id, _, provider) =
                     visible_definition(program, &binding.definition, Some(module), f.span)?;
                 if provider
                     .parameters
@@ -983,6 +963,7 @@ pub(super) fn instantiate(
                         "concrete providers with operation parameters are unsupported",
                     ));
                 }
+                provider_ids.insert(name.clone(), provider_id);
                 let provider_scope = concrete_scope(provider, &binding.naturals)?;
                 requirements(provider, &provider_scope, f.span)?;
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
@@ -1021,7 +1002,7 @@ pub(super) fn instantiate(
             let _ = ty(t, &scope, f.span)?;
         }
         let _ = ty(&f.result, &scope, f.span)?;
-        Ok(())
+        Ok((entry_id, provider_ids))
     })();
     result.map_err(|e| e.in_module(module))
 }

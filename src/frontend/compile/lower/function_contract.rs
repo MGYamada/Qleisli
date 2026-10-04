@@ -31,7 +31,7 @@ impl Lowerer<'_, '_> {
         }
         let implementation_key = self.contract_function(module, implementation, &basis, env)?;
         let specification_key = self.contract_function(module, specification, &basis, env)?;
-        let cache_key = (implementation_key.clone(), specification_key.clone());
+        let cache_key = (implementation_key, specification_key);
         let evidence = if let Some(evidence) = self.compiler.function_evidence.get(&cache_key) {
             // Only this compiler populates the cache, using the exact resolved
             // keys and independently checked raw functions below. The loaded
@@ -40,8 +40,8 @@ impl Lowerer<'_, '_> {
             // comparisons. External evidence still uses check_binding.
             Arc::clone(evidence)
         } else {
-            let implementation_name = format!("{}::{}", implementation_key.0, implementation_key.1);
-            let specification_name = format!("{}::{}", specification_key.0, specification_key.1);
+            let implementation_name = self.compiler.resolution.path(implementation_key);
+            let specification_name = self.compiler.resolution.path(specification_key);
             let sources = self.compiler.retained_sources(module, span)?;
             let snapshot_size = total_size(
                 [&implementation_key, &specification_key]

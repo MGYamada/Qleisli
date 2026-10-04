@@ -89,23 +89,8 @@ pub(super) fn project(module: &source::Module) -> Result<Module> {
         return Err(unsupported(declaration.span, "requires a runtime block"));
     };
     Ok(Module {
-        imports: module
-            .uses
-            .iter()
-            .map(|item| {
-                (
-                    item.path
-                        .iter()
-                        .map(|i| i.text.as_str())
-                        .collect::<Vec<_>>()
-                        .join("::"),
-                    item.span,
-                )
-            })
-            .collect(),
         function: Function {
             name: declaration.name.text.clone(),
-            public: declaration.public,
             effect,
             parameters,
             arguments,

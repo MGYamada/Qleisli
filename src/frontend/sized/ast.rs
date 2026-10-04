@@ -79,7 +79,6 @@ pub(super) struct Block {
 #[derive(Clone, Debug)]
 pub(super) struct Function {
     pub name: String,
-    pub public: bool,
     pub effect: Effect,
     pub parameters: Vec<Parameter>,
     pub arguments: Vec<(String, Type, Span)>,
@@ -90,6 +89,5 @@ pub(super) struct Function {
 }
 #[derive(Clone, Debug)]
 pub(super) struct Module {
-    pub imports: Vec<(String, Span)>,
     pub function: Function,
 }

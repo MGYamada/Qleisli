@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share declaration identities, import visibility and dependency graph traversal
+  across finite compilation and sized checking/elaboration. Retain existing
+  profile differences, canonical evidence names and provider identities; local
+  owner scopes and the final source cutover remain separate (#32, #41, #65).
 - Prove adjacent protected literal phases commute on arbitrary joint/reference
   states, and connect both successful executable matrix checks to identical
   complex entries and actions. Retain shared-control and zero-target examples

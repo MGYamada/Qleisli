@@ -1,0 +1,80 @@
+test finite_and_sized_checkers_agree_on_common_linear_ownership ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 426.03s
+
+     Running tests/sized_cli.rs (target/debug/deps/sized_cli-47f5e96001afe2e4)
+
+running 7 tests
+test sized_cli_native_source_check_run_and_fresh_sampling ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_cli_separates_producer_consistency_from_independent_requests ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_check_rejects_execution_basis_before_loading ... ok
+test sized_execution_basis_still_checks_input_width ... ok
+test sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading ... ok
+test sized_cli_cannot_select_private_entries_or_providers ... ok
+test sized_cli_emits_only_an_untrusted_proposal_without_a_kernel ... ok
+
+test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running tests/sized_source.rs (target/debug/deps/sized_source-9c7800cc21e8c647)
+
+running 37 tests
+test common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics ... ok
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test contextual_controlled_and_reserved_words_have_one_classification ... ok
+test existing_empty_sized_spellings_remain_common_syntax ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test lowering_profile_preflight_identifies_unsupported_root_signatures ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test shadowing_moves_tuple_shape_and_effects ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test common_syntax_does_not_grant_missing_profile_or_capability_support ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test explicit_module_loading_retains_the_same_ast_as_project_loading ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 34 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running tests/source_scope.rs (target/debug/deps/source_scope-6eac0bc2e97f79a8)
+
+running 3 tests
+test equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner ... ok
+test nested_projection_restores_classical_entries_and_preserves_mixed_pending_ownership ... ok
+test local_spent_names_expire_but_entry_spent_names_still_hide_functions ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.02s
+
+     Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-8900d00ebda85b47)
+
+running 4 tests
+test distinct_contract_pairs_and_static_providers_share_one_project_snapshot ... ignored, historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274
+test full_256_specializations_survive_a_100kb_project_and_unrelated_comments ... ignored, historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274
+test shared_receipts_keep_exact_bindings_and_outlive_source_changes ... ok
+test small_native_specializations_retain_exact_shared_sources ... ok
+
+test result: ok. 2 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 1.80s
+
+

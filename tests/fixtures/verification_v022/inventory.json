@@ -3168,7 +3168,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "c831576502b85bfad857fa4331d5d93c644ae707c9f89830b8321b663d0cae53",
+      "sha256": "f45afe7cf2a7e376bca150bf6fe2ba85dc0fce9c3182c03424cf927da5e55209",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3208,7 +3208,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "f3cc34b229727baefd12223573e9eada57b12b407a22651f6e316adfab06bec2",
+      "sha256": "ff375c0f2471bcd4f1f7a454441d2f8653c6f1e541d5f167c72bd2b863451771",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3218,7 +3218,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "9113a5e2984ac170b2c4252d094062fbe6ec85ecc7639c49e4d8a2883f95e59d",
+      "sha256": "2611551d230d68d1b147db7eb5cf42281efc54ab43edd58e3505f7730cd4b307",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3228,7 +3228,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "eb4b6e1f1c71683ec8769911d91b04c7690f7b5dcfc0365166e189f071fe3c15",
+      "sha256": "d19183f56cfa640927a681e5d69924e7d9d5e2c8841a0da96173de6474fa299a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3258,7 +3258,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "d34fa819051de9f8a3313c7f716c79ec101fc278be3238a431b2ba7e7341fcea",
+      "sha256": "ae7d1e2f6bcbccd5eeaffe846aad53970d398186f0b10d88b80c4141a1835d46",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3278,7 +3278,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "59bcae91d84ca2bd38ebe6079c94e52975c60b919e9e76162b6e04e3682c259d",
+      "sha256": "9ec24dd5722796d0d089eb3f213e5b21a22c4b462b7e7d920d99e603a5f242f1",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3310,7 +3310,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "f9080cce5aee892f2a841db73db4e649ad179f4b7ef2d86ae0ae9e43679921e6",
+      "sha256": "abfe91f3ce8977961009185b424afb50ac138e38f2a884974f7532089d66e0b0",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3393,7 +3393,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "79240de8d16e346b0f1cae5b99de4bf7b9fd694db4b53f948cb2670fdd5bf3fa",
+      "sha256": "c7b00487d60e4dd63bc4f7738a9f91bf905fbdfa44b185892da5784118663004",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3433,7 +3433,7 @@
     },
     {
       "path": "src/frontend/project.rs",
-      "sha256": "86445800bcaa9eea13b923335e79958a97283eec916f2e2e14af315e450746b8",
+      "sha256": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3495,6 +3495,32 @@
       }
     },
     {
+      "path": "src/frontend/resolve.rs",
+      "sha256": "47c1117fa9990cf3b3e57b91f03d30b3589a0ca7353ecfbc0fa334979cd88587",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn declaration(&self, id: DefId) -> &Declaration",
+          "pub fn declarations(&self) -> impl Iterator<Item = (DefId, &Declaration)>",
+          "pub fn imports( &self, caller: ModuleId, ast: &Module, profile: Profile, ) -> Result<Scope, Failure>",
+          "pub fn local(&self, module: ModuleId, name: &str) -> Option<DefId>",
+          "pub fn lookup(&self, module: ModuleId, name: &str) -> Option<Target>",
+          "pub fn module(&self, name: &str) -> Option<ModuleId>",
+          "pub fn module_name(&self, id: ModuleId) -> &str",
+          "pub fn modules(&self) -> impl Iterator<Item = ModuleId> + '_",
+          "pub fn new<'a>( modules: impl IntoIterator<Item = (&'a str, &'a Module)>, ) -> Result<Self, Failure>",
+          "pub fn path(&self, id: DefId) -> String",
+          "pub fn qualified(&self, path: &str) -> Result<DefId, FailureKind>",
+          "pub fn scope(&self, module: ModuleId) -> &Scope",
+          "pub fn set_scope(&mut self, module: ModuleId, scope: Scope)",
+          "pub fn target_path(&self, target: Target) -> String",
+          "pub fn visible(&self, id: DefId, requester: Option<ModuleId>) -> bool"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/scanner.rs",
       "sha256": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
       "group": "source",
@@ -3511,7 +3537,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "8e4c70a9ebdbe4daa495c413177d14a519df094a2682b947ca153ea9755366b5",
+      "sha256": "48a6b5ad17b8604b97aca3833dc75b934d19eb4ab8306bea20309371b7a19ade",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3549,7 +3575,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "2fa4488b3a2bf7389b002f335021169f123dcd58d6c6b15614c037535ac3157c",
+      "sha256": "8913091f8a985e874bbd9e1d833b399f348d0b693c0a0f8dda6d6d0fec5465a7",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3559,7 +3585,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "b328921be85c34cb60030a98f86a7d425db65a15a733ea143f757debf92e8146",
+      "sha256": "ceccd42868a5e59d2ee7ddcd55b2cc87e3ec68e1b9de508d23d4b153c97191e9",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3569,7 +3595,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "22f367d04d3da37a921f4190a5a319298150f3c732596ab5205a5133efb8ba1f",
+      "sha256": "420d7954d8a6dfe746d133f749dc0917d67090be5f1eb248b06bba1cfbbc32d3",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3718,7 +3744,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "5f29afc4b0b0da4c45468f3eed0dc5de0e7007f345976e31fac1cecd9dc84e98",
+      "sha256": "0e0ada101175ec1280e84fc002f43b81ca2361ede6d0d1adf62887aa97f7f6e1",
       "group": "sized-source",
       "surface": {
         "declarations": [],

@@ -46,10 +46,12 @@ impl Lowerer<'_, '_> {
         }
         let target = self.compiler.resolve(module, name)?;
         let key = match &target {
-            Callee::User(key) => key.clone(),
+            Callee::User(key) => super::super::MeaningCacheKey::Declaration(*key),
             // The polymorphic sealed aliases have a different dimension for
             // each exact basis tree. Never reuse a Bit matrix for Unit/product.
-            Callee::Sealed(namespace, gate) => (namespace.clone(), format!("{gate}:{basis}")),
+            Callee::Sealed(namespace, gate) => {
+                super::super::MeaningCacheKey::Sealed(namespace.clone(), format!("{gate}:{basis}"))
+            }
         };
         if let Some(matrix) = self.compiler.closed_meanings.get(&key) {
             let cost = matrix.entries().len();

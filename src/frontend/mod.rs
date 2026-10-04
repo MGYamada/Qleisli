@@ -11,6 +11,7 @@ pub mod documentation;
 pub mod lexer;
 pub mod parser;
 pub mod project;
+mod resolve;
 mod scanner;
 pub mod sized;
 mod types;
