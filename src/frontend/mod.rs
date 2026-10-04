@@ -11,6 +11,7 @@ pub mod documentation;
 pub mod lexer;
 pub mod parser;
 pub mod project;
+mod scanner;
 pub mod sized;
 
 /// Language edition for the current grammar, in-memory source APIs and bundled

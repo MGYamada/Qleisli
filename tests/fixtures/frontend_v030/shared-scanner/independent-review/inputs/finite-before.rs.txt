@@ -1,7 +1,7 @@
 //! ASCII-keyword lexer with UTF-8 byte positions.
 
 use super::ast::Span;
-use super::documentation::DocComment;
+use super::documentation::{DocComment, DocStyle};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum TokenKind {
@@ -226,29 +226,57 @@ pub(crate) fn lex_documented(source: &str) -> Result<(Vec<Token>, Vec<DocComment
 }
 
 fn scan(source: &str, retain_docs: bool) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
-    use super::scanner::{ErrorKind, Kind, Scanner};
-    let mut scanner = Scanner::new(source, None, retain_docs);
+    let mut lexer = Lexer { source, pos: 0 };
     let mut tokens = Vec::new();
-    loop {
-        let mut token = scanner.next().map_err(|error| LexError {
-            message: match error.kind {
-                ErrorKind::Forbidden(message) => message.into(),
-                ErrorKind::Unexpected(ch) => format!("unexpected character `{ch}`"),
-                ErrorKind::UnterminatedComment => "unterminated block comment".into(),
-                ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),
-            },
-            span: error.span,
-        })?;
-        let text = &source[token.span.start..token.span.end];
-        let kind = match token.kind {
-            Kind::Word => keyword_kind(text).unwrap_or_else(|| TokenKind::Ident(text.into())),
-            Kind::Numeral => match text {
+    let mut docs = Vec::new();
+    while let Some(ch) = lexer.peek() {
+        if ch == '\r' && !source[lexer.pos..].starts_with("\r\n") {
+            return Err(LexError {
+                message: "bare carriage return is forbidden; use LF or CRLF".into(),
+                span: Span::new(lexer.pos, lexer.pos + 1),
+            });
+        }
+        if matches!(ch, ' ' | '\t' | '\n' | '\r') {
+            lexer.bump();
+            continue;
+        }
+        if source[lexer.pos..].starts_with("//") || source[lexer.pos..].starts_with("/*") {
+            if let Some(comment) = lexer.comment(retain_docs)? {
+                docs.push(comment);
+            }
+            continue;
+        }
+
+        let start = lexer.pos;
+        if let Some(message) = forbidden_character(ch) {
+            return Err(LexError {
+                message: message.to_owned(),
+                span: Span::new(start, start + ch.len_utf8()),
+            });
+        }
+        let kind = if ch.is_ascii_alphabetic() || ch == '_' {
+            lexer.bump();
+            while lexer
+                .peek()
+                .is_some_and(|c| c.is_ascii_alphanumeric() || c == '_')
+            {
+                lexer.bump();
+            }
+            let name = &source[start..lexer.pos];
+            keyword_kind(name).unwrap_or_else(|| TokenKind::Ident(name.to_owned()))
+        } else if ch.is_ascii_digit() {
+            lexer.bump();
+            while lexer.peek().is_some_and(|c| c.is_ascii_digit()) {
+                lexer.bump();
+            }
+            match &source[start..lexer.pos] {
                 "0" => TokenKind::Zero,
                 "1" => TokenKind::One,
-                digits => TokenKind::Natural(digits.into()),
-            },
-            Kind::Eof => TokenKind::Eof,
-            Kind::Punctuation(ch) => match ch {
+                digits => TokenKind::Natural(digits.to_owned()),
+            }
+        } else {
+            lexer.bump();
+            match ch {
                 '(' => TokenKind::LParen,
                 '[' => TokenKind::LBracket,
                 ']' => TokenKind::RBracket,
@@ -258,29 +286,162 @@ fn scan(source: &str, retain_docs: bool) -> Result<(Vec<Token>, Vec<DocComment>)
                 '>' => TokenKind::RAngle,
                 ',' => TokenKind::Comma,
                 ';' => TokenKind::Semicolon,
-                '=' if scanner.join(&mut token, '>') => TokenKind::FatArrow,
+                '=' if lexer.peek() == Some('>') => {
+                    lexer.bump();
+                    TokenKind::FatArrow
+                }
                 '=' => TokenKind::Equals,
                 '|' => TokenKind::Pipe,
-                ':' if scanner.join(&mut token, ':') => TokenKind::DoubleColon,
+                ':' if lexer.peek() == Some(':') => {
+                    lexer.bump();
+                    TokenKind::DoubleColon
+                }
                 ':' => TokenKind::Colon,
-                '-' if scanner.join(&mut token, '>') => TokenKind::Arrow,
-                '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
+                '-' if lexer.peek() == Some('>') => {
+                    lexer.bump();
+                    TokenKind::Arrow
+                }
+                '<' if lexer.peek() == Some('-') => {
+                    lexer.bump();
+                    TokenKind::LeftArrow
+                }
                 '<' => TokenKind::LAngle,
                 _ => {
                     return Err(LexError {
                         message: format!("unexpected character `{ch}`"),
-                        span: token.span,
+                        span: Span::new(start, lexer.pos),
                     });
                 }
-            },
+            }
         };
-        let eof = kind == TokenKind::Eof;
         tokens.push(Token {
             kind,
-            span: token.span,
+            span: Span::new(start, lexer.pos),
         });
-        if eof {
-            return Ok((tokens, scanner.into_docs()));
+    }
+    tokens.push(Token {
+        kind: TokenKind::Eof,
+        span: Span::new(source.len(), source.len()),
+    });
+    Ok((tokens, docs))
+}
+
+fn forbidden_character(ch: char) -> Option<&'static str> {
+    if matches!(
+        ch,
+        '\u{061c}' | '\u{200e}' | '\u{200f}' | '\u{202a}'..='\u{202e}' | '\u{2066}'..='\u{2069}'
+    ) {
+        Some("bidirectional control character is forbidden")
+    } else if matches!(
+        ch,
+        '\u{000b}' | '\u{000c}' | '\u{0085}' | '\u{2028}' | '\u{2029}'
+    ) {
+        Some("unsupported line separator is forbidden")
+    } else if ch.is_whitespace() {
+        Some("unsupported whitespace; use ASCII space, tab, LF, or CRLF")
+    } else if ch.is_control() {
+        Some("control character is forbidden")
+    } else {
+        None
+    }
+}
+
+struct Lexer<'a> {
+    source: &'a str,
+    pos: usize,
+}
+
+impl Lexer<'_> {
+    fn comment(&mut self, retain_docs: bool) -> Result<Option<DocComment>, LexError> {
+        let start = self.pos;
+        let rest = &self.source[start..];
+        let line = rest.starts_with("//");
+        let style = if rest.starts_with("//!") || rest.starts_with("/*!") {
+            Some(DocStyle::Inner)
+        } else if (rest.starts_with("///") && !rest.starts_with("////"))
+            || (rest.starts_with("/**") && !rest.starts_with("/***") && !rest.starts_with("/**/"))
+        {
+            Some(DocStyle::Outer)
+        } else {
+            None
+        };
+        self.pos += 2;
+        let content_end;
+        let span_end;
+        if line {
+            while let Some(ch) = self.peek() {
+                if ch == '\n' {
+                    break;
+                }
+                self.comment_character(ch, style.is_some())?;
+                self.bump();
+            }
+            // CRLF is one line ending, but all source offsets stay original.
+            content_end =
+                if self.source[start..self.pos].ends_with('\r') && self.peek() == Some('\n') {
+                    self.pos - 1
+                } else {
+                    self.pos
+                };
+            span_end = content_end;
+        } else {
+            let mut depth = 1usize;
+            while depth != 0 {
+                if self.source[self.pos..].starts_with("/*") {
+                    depth += 1;
+                    self.pos += 2;
+                } else if self.source[self.pos..].starts_with("*/") {
+                    depth -= 1;
+                    self.pos += 2;
+                } else if let Some(ch) = self.peek() {
+                    self.comment_character(ch, style.is_some())?;
+                    self.bump();
+                } else {
+                    return Err(LexError {
+                        message: "unterminated block comment".into(),
+                        span: Span::new(start, self.pos),
+                    });
+                }
+            }
+            content_end = self.pos - 2;
+            span_end = self.pos;
+        }
+        Ok(if retain_docs {
+            style.map(|style| DocComment {
+                style,
+                text: self.source[start + 3..content_end].replace("\r\n", "\n"),
+                span: Span::new(start, span_end),
+            })
+        } else {
+            None
+        })
+    }
+
+    fn comment_character(&self, ch: char, _doc: bool) -> Result<(), LexError> {
+        let message = if ch == '\r' && !self.source[self.pos..].starts_with("\r\n") {
+            Some("bare carriage return is forbidden; use LF or CRLF")
+        } else if matches!(ch, ' ' | '\t' | '\n' | '\r') {
+            None
+        } else {
+            forbidden_character(ch)
+        };
+        if let Some(message) = message {
+            Err(LexError {
+                message: message.into(),
+                span: Span::new(self.pos, self.pos + ch.len_utf8()),
+            })
+        } else {
+            Ok(())
+        }
+    }
+
+    fn peek(&self) -> Option<char> {
+        self.source[self.pos..].chars().next()
+    }
+
+    fn bump(&mut self) {
+        if let Some(ch) = self.peek() {
+            self.pos += ch.len_utf8();
         }
     }
 }

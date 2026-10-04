@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share physical source scanning between finite and sized frontends, preserving
+  original UTF-8 spans, contextual token adapters and existing capacity limits.
+  Sized comments now follow the same control-character and whitespace rules;
+  retain old/new diagnostics and proposal comparisons for the migration (#32).
 - Record the human ratification of the edition-2026 Constitution and adoption of
   governance, effective 2026-10-04 (Asia/Tokyo), appointing Masahiko G. Yamada as
   initial Guardian. Preserve the exact approved hashes, human reply, Draft 5,

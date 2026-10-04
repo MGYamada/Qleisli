@@ -530,3 +530,39 @@ fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
         parse_module(&format!("unitary fn f() -> CBit {{ {expression} }}")).unwrap();
     }
 }
+
+#[test]
+fn shared_scanner_preserves_the_finite_public_token_projection() {
+    use qleisli::frontend::lexer::{TokenKind, lex};
+    let source = "// λ\r\n==> <-> <= >= :: :/*x*/: 00 01 Bits fn";
+    let tokens = lex(source).unwrap();
+    assert_eq!(
+        tokens.iter().map(|t| t.kind.clone()).collect::<Vec<_>>(),
+        vec![
+            TokenKind::Equals,
+            TokenKind::FatArrow,
+            TokenKind::LeftArrow,
+            TokenKind::RAngle,
+            TokenKind::LAngle,
+            TokenKind::Equals,
+            TokenKind::RAngle,
+            TokenKind::Equals,
+            TokenKind::DoubleColon,
+            TokenKind::Colon,
+            TokenKind::Colon,
+            TokenKind::Natural("00".into()),
+            TokenKind::Natural("01".into()),
+            TokenKind::Ident("Bits".into()),
+            TokenKind::Fn,
+            TokenKind::Eof,
+        ]
+    );
+    assert_eq!(tokens[0].span.start, "// λ\r\n".len());
+    assert_eq!(&source[tokens[1].span.start..tokens[1].span.end], "=>");
+    assert_eq!(tokens.last().unwrap().span.start, source.len());
+    for source in ["+", "-", "*", "^", "..", "!=", "-/*x*/>"] {
+        let e = lex(source).unwrap_err();
+        assert_eq!((e.span.start, e.span.end), (0, 1), "{source}");
+        assert!(e.message.starts_with("unexpected character"));
+    }
+}

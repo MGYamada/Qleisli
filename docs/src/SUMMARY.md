@@ -11,6 +11,10 @@
 - [Primitive boundary and admission](reference/primitive-boundary.md)
 - [Initial scoped QS guarantees](design/initial-guarantees.md)
 
+# Language Reference
+
+- [Source text and lexical boundary](reference/source-text.md)
+
 # Design candidates
 
 - [Type foundation and common frontend](design/type-foundation.md)

@@ -43,3 +43,5 @@ tests/fixtures/constitution_v030/candidate.patch -text -whitespace
 tests/fixtures/constitution_v030/ownership-rename.patch -text -whitespace
 tests/fixtures/constitution_v030/witness-weakening/mutation.patch -text -whitespace
 tests/fixtures/frontend_v030/shared-scanner/*.qli -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/independent-review/results/adapter-unit.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/shared-scanner/independent-review/results/integration.stdout.txt -text -whitespace

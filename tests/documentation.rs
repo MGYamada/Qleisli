@@ -257,3 +257,25 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
     }
     assert_eq!((public, private), (12, 1));
 }
+
+#[test]
+fn shared_scanner_retains_docs_without_adding_a_second_attachment_rule() {
+    use qleisli::frontend::sized::ParsedProgram;
+    use std::collections::BTreeMap;
+    let source = "//! 日本語\r\n/** outer /* nested */ */ pub unitary fn f(q: Q<Bit>) -> Q<Bit> { /*! α\r\nβ */ q }";
+    let documented = parse_documented_module(source).unwrap();
+    assert_eq!(documented.module_docs[0].text, " 日本語");
+    assert_eq!(documented.declaration_docs[0][1].text, " α\nβ ");
+    let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    assert_eq!(sized.source("main"), Some(source));
+    // Attachment is still a finite-AST check in this scanner-only step.
+    // Retain this explicit difference until the common AST replaces both parsers.
+    let misplaced = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { /// misplaced\n q }";
+    assert!(
+        parse_module(misplaced)
+            .unwrap_err()
+            .message
+            .contains("documentation")
+    );
+    ParsedProgram::parse(BTreeMap::from([("main".into(), misplaced.into())])).unwrap();
+}

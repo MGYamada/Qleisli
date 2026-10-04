@@ -1,4 +1,4 @@
-//! Bounded parser with a temporary projection of the common physical scanner.
+//! A bounded contextual lexer/parser; the finite public token enum is unchanged.
 use super::ast::*;
 use super::{Error, Result, Span};
 
@@ -24,127 +24,92 @@ fn natural_node(kind: NatKind, span: Span) -> Result<Natural> {
     }
     Ok(Natural { kind, span, depth })
 }
-// Temporary token projection only. Character, UTF-8, trivia and comment
-// scanning belong to the common frontend; this adapter preserves the existing
-// contextual words, numeral rule, punctuation and capacity until one grammar
-// replaces both parsers.
 fn tokens(source: &str) -> Result<Vec<Token>> {
-    tokens_with_limits(source, 10_000, 64)
-}
-
-fn tokens_with_limits(
-    source: &str,
-    max_tokens: usize,
-    max_comment_depth: usize,
-) -> Result<Vec<Token>> {
-    use crate::frontend::scanner::{ErrorKind, Kind, Scanner};
-    let mut scanner = Scanner::new(source, Some(max_comment_depth), false);
+    let bytes = source.as_bytes();
+    let mut i = 0;
     let mut result = Vec::new();
-    loop {
-        let mut token = scanner.next().map_err(|e| {
-            error(
-                e.span,
-                match e.kind {
-                    ErrorKind::Forbidden(message) => message.to_owned(),
-                    ErrorKind::Unexpected(_) => "unsupported sized-source character".into(),
-                    ErrorKind::UnterminatedComment => "unterminated comment".into(),
-                    ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),
-                },
-            )
-        })?;
-        match token.kind {
-            Kind::Word | Kind::Eof => {}
-            Kind::Numeral => {
-                if token.span.end - token.span.start > 1
-                    && source.as_bytes()[token.span.start] == b'0'
-                {
-                    return Err(error(token.span, "natural literal has a leading zero"));
-                }
-            }
-            Kind::Punctuation(ch) => {
-                let suffix = match ch {
-                    ':' => Some(':'),
-                    '-' => Some('>'),
-                    '.' => Some('.'),
-                    '=' | '!' | '<' | '>' => Some('='),
-                    _ => None,
-                };
-                let joined = suffix.is_some_and(|next| scanner.join(&mut token, next));
-                if !joined && !"[]{}(),;:<>+-*=^".contains(ch) {
-                    return Err(error(token.span, "unsupported sized-source character"));
-                }
-            }
+    while i < bytes.len() {
+        if bytes[i].is_ascii_whitespace() {
+            i += 1;
+            continue;
         }
-        let eof = token.kind == Kind::Eof;
-        // Count projected tokens, not physical punctuation atoms; EOF and
-        // comments do not consume the historical 10,000-token allowance.
-        if !eof && result.len() >= max_tokens {
-            return Err(Error::new(
-                "limit",
-                token.span,
-                format!("source exceeds {max_tokens} tokens"),
+        if bytes[i..].starts_with(b"//") {
+            while i < bytes.len() && bytes[i] != b'\n' {
+                i += 1;
+            }
+            continue;
+        }
+        if bytes[i..].starts_with(b"/*") {
+            let start = i;
+            i += 2;
+            let mut depth = 1;
+            while i < bytes.len() && depth > 0 {
+                if bytes[i..].starts_with(b"/*") {
+                    depth += 1;
+                    i += 2;
+                } else if bytes[i..].starts_with(b"*/") {
+                    depth -= 1;
+                    i += 2;
+                } else {
+                    i += 1;
+                }
+                if depth > 64 {
+                    return Err(error(Span::new(start, i), "comment nesting exceeds 64"));
+                }
+            }
+            if depth != 0 {
+                return Err(error(Span::new(start, i), "unterminated comment"));
+            }
+            continue;
+        }
+        let start = i;
+        if bytes[i].is_ascii_alphabetic() || bytes[i] == b'_' {
+            i += 1;
+            while i < bytes.len() && (bytes[i].is_ascii_alphanumeric() || bytes[i] == b'_') {
+                i += 1;
+            }
+        } else if bytes[i].is_ascii_digit() {
+            i += 1;
+            while i < bytes.len() && bytes[i].is_ascii_digit() {
+                i += 1;
+            }
+            if i - start > 1 && bytes[start] == b'0' {
+                return Err(error(
+                    Span::new(start, i),
+                    "natural literal has a leading zero",
+                ));
+            }
+        } else if [b"::", b"->", b"..", b"==", b"!=", b"<=", b">="]
+            .iter()
+            .any(|symbol| bytes[i..].starts_with(*symbol))
+        {
+            i += 2;
+        } else if b"[]{}(),;:<>+-*=^".contains(&bytes[i]) {
+            i += 1;
+        } else {
+            return Err(error(
+                Span::new(i, i + source[i..].chars().next().unwrap().len_utf8()),
+                "unsupported sized-source character",
             ));
         }
         result.push(Token {
-            text: source[token.span.start..token.span.end].into(),
-            span: token.span,
+            text: source[start..i].into(),
+            span: Span::new(start, i),
         });
-        if eof {
-            return Ok(result);
+        if result.len() > 10_000 {
+            return Err(Error::new(
+                "limit",
+                Span::new(start, i),
+                "source exceeds 10000 tokens",
+            ));
         }
     }
+    result.push(Token {
+        text: String::new(),
+        span: Span::new(i, i),
+    });
+    Ok(result)
 }
-#[cfg(test)]
-mod token_tests {
-    use super::*;
-
-    #[test]
-    fn projected_punctuation_keeps_adjacency_and_legacy_sized_grouping() {
-        let source = "<-> ==> >= > = >/*λ*/= :: :/*x*/: .. != <=";
-        let scanned = tokens(source).unwrap();
-        assert_eq!(
-            scanned.iter().map(|t| t.text.as_str()).collect::<Vec<_>>(),
-            [
-                "<", "->", "==", ">", ">=", ">", "=", ">", "=", "::", ":", ":", "..", "!=", "<=",
-                ""
-            ]
-        );
-        for token in scanned {
-            assert_eq!(&source[token.span.start..token.span.end], token.text);
-        }
-        for source in [".", "!", "|", "!/* comment */="] {
-            let e = tokens(source).err().unwrap();
-            assert_eq!(e.code(), "parse");
-            assert_eq!(e.span(), Span::new(0, 1));
-        }
-    }
-
-    #[test]
-    fn projected_token_capacity_counts_pairs_but_not_comments_or_eof() {
-        let source = "/* λ */ <= == x // tail\r\n";
-        let scanned = tokens_with_limits(source, 3, 2).unwrap();
-        assert_eq!(scanned.len(), 4);
-        assert_eq!(
-            scanned.last().unwrap().span,
-            Span::new(source.len(), source.len())
-        );
-        let e = tokens_with_limits(source, 2, 2).err().unwrap();
-        assert_eq!(e.code(), "limit");
-        assert_eq!(&source[e.span().start..e.span().end], "x");
-        assert_eq!(e.message(), "source exceeds 2 tokens");
-        assert_eq!(tokens_with_limits("/* only */", 0, 2).unwrap().len(), 1);
-    }
-
-    #[test]
-    fn comment_capacity_is_independent_of_token_capacity() {
-        assert!(tokens_with_limits("/* /* λ */ */ x", 1, 2).is_ok());
-        let e = tokens_with_limits("/* /* λ */ */ x", 1, 1).err().unwrap();
-        assert_eq!(e.code(), "parse");
-        assert_eq!(e.message(), "comment nesting exceeds 1");
-        assert_eq!(e.span(), Span::new(0, 5));
-    }
-}
-
 pub(super) fn parse(source: &str) -> Result<Module> {
     let mut p = Parser {
         tokens: tokens(source)?,

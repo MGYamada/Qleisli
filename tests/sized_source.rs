@@ -1764,3 +1764,65 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         );
     }
 }
+
+#[test]
+fn common_scanner_applies_the_finite_character_policy_to_sized_source() {
+    use qleisli::frontend::lexer::lex;
+    let declaration = "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }";
+    for bad in [
+        '\r', '\u{000b}', '\u{000c}', '\0', '\u{202e}', '\u{2028}', '\u{0085}', '\u{00a0}',
+    ] {
+        for (open, close) in [
+            ("", ""),
+            ("//", "\n"),
+            ("//!", "\n"),
+            ("///", "\n"),
+            ("/*", "*/"),
+            ("/*!", "*/"),
+            ("/** ", "*/"),
+        ] {
+            let source = format!("// 日本語\r\n{open}{bad}x{close}{declaration}");
+            let finite = lex(&source).unwrap_err();
+            let sized = ParsedProgram::parse(sources(&source)).unwrap_err();
+            assert_eq!(sized.code(), "parse");
+            assert_eq!(sized.span(), finite.span, "{source:?}");
+            assert_eq!(sized.message(), finite.message, "{source:?}");
+            assert_eq!(
+                &source[sized.span().start..sized.span().end],
+                bad.to_string()
+            );
+        }
+    }
+    for source in [
+        format!("// 日本語\r\n/* α /* β */ γ */{declaration}\r\n"),
+        format!("/* \u{200b} \u{feff} */{declaration}"),
+        format!("{}λ{}{declaration}", "/*".repeat(64), "*/".repeat(64)),
+    ] {
+        let parsed = ParsedProgram::parse(sources(&source)).unwrap();
+        assert_eq!(parsed.source("main"), Some(source.as_str()));
+    }
+    let source = format!("{}λ{}{declaration}", "/*".repeat(65), "*/".repeat(65));
+    let e = ParsedProgram::parse(sources(&source)).unwrap_err();
+    assert_eq!(e.code(), "parse");
+    assert_eq!(e.message(), "comment nesting exceeds 64");
+    assert_eq!((e.span().start, e.span().end), (0, 130));
+    let source = "// 日本語\r\n/* α /* β */";
+    let e = ParsedProgram::parse(sources(source)).unwrap_err();
+    assert_eq!(e.message(), "unterminated comment");
+    assert_eq!(&source[e.span().start..e.span().end], "/* α /* β */");
+}
+
+#[test]
+fn shared_scanner_keeps_sized_contextual_words_and_numeral_diagnostics() {
+    let source = "pub unitary fn fn(q: Q<Bit>) -> Q<Bit> { q }";
+    ParsedProgram::parse(sources(source)).unwrap();
+    assert!(qleisli::frontend::parser::parse_module(source).is_err());
+    for digits in ["00", "01"] {
+        let source =
+            format!("// λ\r\npub unitary fn f(q: Q<Bits<{digits}>>) -> Q<Bits<0>> {{ q }}");
+        let e = ParsedProgram::parse(sources(&source)).unwrap_err();
+        assert_eq!(e.code(), "parse");
+        assert_eq!(e.message(), "natural literal has a leading zero");
+        assert_eq!(&source[e.span().start..e.span().end], digits);
+    }
+}
