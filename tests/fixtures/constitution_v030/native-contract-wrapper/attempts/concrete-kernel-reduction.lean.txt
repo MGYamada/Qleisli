@@ -1,0 +1,37 @@
+import Qleisli.Finite
+import QleisliKernel.Qirf.Contract
+namespace Qleisli.NativeContract.WrapperExamples
+open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
+open QleisliKernel.Finite
+
+def unitMinus : Matrix := ⟨1,1,[QleisliKernel.Exact.Scalar.phase 4]⟩
+def tGate : Matrix := ⟨2,2,[.one,.zero,.zero,QleisliKernel.Exact.Scalar.phase 1]⟩
+def asymmetric : Matrix := ⟨4,4,
+  [.zero,.zero,QleisliKernel.Exact.Scalar.phase 2,.zero,
+   .one,.zero,.zero,.zero,
+   .zero,.zero,.zero,QleisliKernel.Exact.Scalar.phase 4,
+   .zero,QleisliKernel.Exact.Scalar.phase 1,.zero,.zero]⟩
+def identity (n : Nat) : Matrix := ⟨n,n,(List.range (n*n)).map
+  (fun index => if index / n == index % n then Scalar.one else Scalar.zero)⟩
+def contract (signature : Basis) (meaning : Matrix) : Contract :=
+  ⟨⟨signature,signature,identity meaning.rows⟩,
+   ⟨signature,signature,identity meaning.rows⟩,meaning⟩
+def reconstructs (signature : Basis) (meaning : Matrix) : Bool :=
+  match (circuitMatrix [⟨signature,meaning⟩] (QleisliKernel.Qirf.contractCircuit signature)).run 1000000 with
+  | (.ok actual,_) => actual == meaning
+  | _ => false
+def checks (signature : Basis) (meaning : Matrix) : Bool :=
+  let required := contract signature meaning
+  match (check [⟨signature,meaning⟩] (QleisliKernel.Qirf.contractCircuit signature) required required).run 1000000 with
+  | (.ok actual,_) => actual == meaning
+  | _ => false
+
+example : reconstructs [.unit] unitMinus = true := by decide
+example : reconstructs [.bit] tGate = true := by decide
+example : reconstructs [.pair,.bit,.bit] asymmetric = true := by decide
+example : checks [.unit] unitMinus = true := by decide
+example : checks [.bit] tGate = true := by decide
+set_option maxHeartbeats 800000 in
+example : checks [.pair,.bit,.bit] asymmetric = true := by decide
+
+end Qleisli.NativeContract.WrapperExamples

@@ -15,6 +15,7 @@
 
 - [Source text and lexical boundary](reference/source-text.md)
 - [Ordinary types, quantum owners and equality](reference/type-model.md)
+- [Realization, specialization and resources](reference/realization.md)
 
 # Design candidates
 

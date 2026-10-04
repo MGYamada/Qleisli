@@ -49,3 +49,4 @@ tests/fixtures/frontend_v030/shared-scanner/independent-review/results/integrati
 tests/fixtures/frontend_v030/common-parser/shared.qli -text -whitespace
 tests/fixtures/frontend_v030/common-parser/integration.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/common-parser/unit.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/realization-boundary/0.stdout.txt -text -whitespace

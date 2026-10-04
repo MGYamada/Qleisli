@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prove that the encoded native-contract wrapper computes the original root's
+  exact matrix, including zero-width phase and ordered axes. Connect actual
+  byte acceptance to the original `BodyMeaning` and encoded equation for any
+  reference amplitude function; preserve existing guarantee admission scopes.
+- Specify closed specialization, exact forward realization, workspace and
+  quantitative resource boundaries in the Language Reference (#120, #127).
+  Distinguish actual target evidence from synthesis completeness and from the
+  existing bounded export checks.
 - Parse finite and sized source with one grammar and recursive AST. Project the
   shared AST into the existing sized checker and reject unsupported finite forms
   before lowering. Preserve bounded source/proposal comparisons, explicit profile

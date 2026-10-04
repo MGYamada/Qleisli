@@ -23,12 +23,14 @@ CONTRACT_PROOF = {
         'and check_sound establish RootMeaning for both request kinds. For leaf requests, leaf_meaning '
         'establishes original-body instrument meaning for the bounded closed unitary fragment, exact '
         'requested matrix/signature/ordered ports, and an actual verification of the output port; '
-        'leaf_reference_laws extends both whole-space inverse laws to any finite reference.'
+        'leaf_reference_laws extends both whole-space inverse laws to any finite reference. '
+        'For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, '
+        'exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper '
+        'coefficients equal the original reconstructed matrix, including zero-width phase and axis order. '
+        'encoded_reference extends the equation to every reference amplitude function.'
     ),
     'gaps': (
-        'Encoded requests retain checkContract success and RootMeaning, but original-root to finite-wrapper '
-        'matrix correspondence and the encoded equation for the original root remain open. This separate '
-        'protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
+        'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
         'preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, '
         'clean-release and quantitative RS claims remain separate. These bridge theorems are not a new '
         'guarantee admission or S05 closure.'
@@ -78,7 +80,14 @@ PATHS = {
         ('lean-kernel/QleisliKernel/Qirf/Contract.lean', ['theorem checkContract_bound']),
         ('lean/Qleisli/Qirf.lean', ['theorem reconstruct_semantics', 'theorem check_semantics']),
         ('lean/Qleisli/NativeContract.lean', ['structure LeafMeaning ', 'theorem check_root_meaning',
-         'theorem leaf_meaning', 'theorem leaf_reference_laws', 'theorem check_sound']),
+         'theorem leaf_meaning', 'theorem leaf_reference_laws', 'theorem check_sound',
+         'structure EncodedMeaning ', 'theorem encoded_meaning', 'theorem check_encoded_sound',
+         'theorem encoded_reference']),
+        ('lean/Qleisli/NativeContractWrapper.lean', ['theorem circuitMatrix_entries',
+         'theorem check_encoded_original', 'theorem check_reference_original']),
+        ('tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean', [
+         '#check @Qleisli.NativeContract.Wrapper.circuitMatrix_entries',
+         '#check @Qleisli.NativeContract.check_encoded_sound']),
         ('tests/fixtures/constitution_v030/native-contract-bridge/Review.lean', [
          '#check @QleisliKernel.Protocol.NativeContract.check_acceptance',
          '#check @Qleisli.NativeContract.check_sound', '#print Qleisli.NativeContract.LeafMeaning']),

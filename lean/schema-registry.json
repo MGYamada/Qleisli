@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "7d5d5c511764c05dd741b2c97fca63fc3b364cbd162fb04fcabfc938b5849b0a",
+    "sha256": "68e1317698d9304f7239f7520fb08be90a04bd3b61abdbda7d680ef1630cf516",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -53,7 +53,8 @@
       "lean/Qleisli/InstrumentExamples.lean": "68e3f4b59ffb3dadd1e49f18d246cb0077a94bc814b6ea709d9a27c833cc88c1",
       "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6",
       "lean/Qleisli/Kraus.lean": "00d400bd717f0631c17403790a282c1a2d59c80194d9e3b134842c8be1f0b511",
-      "lean/Qleisli/NativeContract.lean": "1e6496718892c84cb9e0c3fc543010c458f0021c1743fb88f292991b9c8f6b62",
+      "lean/Qleisli/NativeContract.lean": "132bc5b71db33ad8b11f20344808d966e7f7a281fc140654cbea772c57a3f3cc",
+      "lean/Qleisli/NativeContractWrapper.lean": "f34ae8f366332ca48b6376a9f1f46d1beae52aac316ce79b1d496647aa75ecbb",
       "lean/Qleisli/NativeHierarchy.lean": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
       "lean/Qleisli/NativeValidity.lean": "f71992f9e9521def99a20bda9b44b1a94aeadc00fd3b9d27eb417a238957f664",
       "lean/Qleisli/Phi.lean": "4c9a8ade1a252553cfc707a19ad5c1f3a50d245c4fdecef0846b4ce438fe3135",

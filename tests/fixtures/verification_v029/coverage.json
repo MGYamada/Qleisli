@@ -1878,7 +1878,26 @@
             "theorem check_root_meaning",
             "theorem leaf_meaning",
             "theorem leaf_reference_laws",
-            "theorem check_sound"
+            "theorem check_sound",
+            "structure EncodedMeaning ",
+            "theorem encoded_meaning",
+            "theorem check_encoded_sound",
+            "theorem encoded_reference"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeContractWrapper.lean",
+          "markers": [
+            "theorem circuitMatrix_entries",
+            "theorem check_encoded_original",
+            "theorem check_reference_original"
+          ]
+        },
+        {
+          "path": "tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean",
+          "markers": [
+            "#check @Qleisli.NativeContract.Wrapper.circuitMatrix_entries",
+            "#check @Qleisli.NativeContract.check_encoded_sound"
           ]
         },
         {
@@ -1903,8 +1922,8 @@
       "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}",
       "checked_artifact": "QLV1 QIRF plus qleisli.native-contract request: encoded contract or leaf signature/ports/exact matrix",
       "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> Qirf.checkContract (encoded), or Validity.checkRoot and Qirf.check (leaf)",
-      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for both request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference.",
-      "gaps": "Encoded requests retain checkContract success and RootMeaning, but original-root to finite-wrapper matrix correspondence and the encoded equation for the original root remain open. This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
+      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for both request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function.",
+      "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {
       "id": "source-documentation",
