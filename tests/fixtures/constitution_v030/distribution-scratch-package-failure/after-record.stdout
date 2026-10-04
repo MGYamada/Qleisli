@@ -1,0 +1,30 @@
+[
+  {
+    "case": "test_failed_package_preserves_unverified_crate_before_cleanup",
+    "fail_package": true,
+    "status": "failed",
+    "work": "removed",
+    "candidate_bytes_preserved": true
+  },
+  {
+    "case": "test_partial_copy_failure_preserves_sole_crate_and_original_failure",
+    "fail_package": false,
+    "status": "failed",
+    "work": "retained",
+    "candidate_bytes_preserved": true
+  },
+  {
+    "case": "test_partial_copy_failure_preserves_sole_crate_and_original_failure",
+    "fail_package": true,
+    "status": "failed",
+    "work": "retained",
+    "candidate_bytes_preserved": true
+  },
+  {
+    "case": "test_failed_crate_preservation_keeps_external_target_without_retaining_work",
+    "fail_package": true,
+    "status": "failed",
+    "work": "removed",
+    "candidate_bytes_preserved": true
+  }
+]

@@ -125,3 +125,17 @@ including receipt-path coverage, as a distinct command. The obsolete two-verifie
 current Rust adapters are not described as an independent semantic verifier.
 Transport failures never count as matched semantic rejection. Existing pure
 component proofs, independent semantic oracles and audit jobs remain required.
+
+## Local distribution work directories
+
+`scripts/check_distribution.py --report PATH` retains the report, command logs,
+crate and source archive beside the report. Extracted sources, the temporary
+installation and default Cargo targets live in a separate owned work directory
+and are removed on success or failure. `--keep-work` retains that directory for
+debugging; its location and cleanup status are recorded in the report. A failed
+cleanup makes the validation fail and preserves the original validation error.
+If Cargo emits a crate and then fails verification, the archive is retained as
+unverified evidence. A failed durable copy retains the owned work with an
+explicit preservation-error reason; partial copies never count as artifacts.
+An explicit external `--target-dir` remains the caller's responsibility and is
+never deleted by this cleanup. Historical output directories are unaffected.

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Validate the production package and complete source archive of a clean HEAD.
 
-Artifacts, logs and the JSON report are retained outside the checkout. Uses
-installed Git, Cargo/Rust and Python only; Cargo runs offline. This is the
-distribution gate, not a replacement for MSRV, Lean or exact-commit CI checks.
+Archives, logs and the JSON report are retained outside the checkout. Owned
+build work is removed unless --keep-work is requested; an explicit --target-dir
+remains caller-owned. Uses installed Git, Cargo/Rust and Python only; Cargo runs
+offline. This gate does not replace MSRV, Lean or exact-commit CI checks.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import argparse
@@ -14,6 +15,7 @@ import io
 import json
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -266,7 +268,17 @@ class Commands:
         return output.read_bytes()
 
 
-def validate(root, report_path, target_dir=None):
+def retain_crate(source, destination):
+    """Publish complete bytes only; a failed copy remains explicitly partial."""
+    partial = destination.with_suffix(destination.suffix + ".partial")
+    data = source.read_bytes()
+    with partial.open("xb") as handle:
+        handle.write(data)
+    partial.rename(destination)
+    return {"path": str(destination), "sha256": digest(data)}
+
+
+def validate(root, report_path, target_dir=None, *, keep_work=False):
     require(not report_path.is_relative_to(root), "report must be outside the source tree")
     require(not report_path.exists(), "report already exists; choose a new report path")
     report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -275,10 +287,12 @@ def validate(root, report_path, target_dir=None):
     report = {"format": "qleisli.distribution-validation", "version": 1,
               "started_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
               "status": "failed", "source_root": str(root), "artifacts": str(artifacts),
+              "work": {"path": None, "status": "not-created", "keep_requested": keep_work},
               "commands": [], "candidate": {"clean": False},
               "scope": "clean HEAD production package and complete repository source archive",
               "not_run": ["MSRV matrix", "Lean build/axiom audit", "hosted CI",
                           "tagging", "push", "publication"]}
+    work = None
     try:
         candidate = clean_candidate(root)
         report["candidate"] = candidate
@@ -286,8 +300,15 @@ def validate(root, report_path, target_dir=None):
         report["tracked_files"] = {name: {"sha256": digest(file.data), "mode": oct(file.mode)}
                                    for name, file in tracked.items()}
         report["source_attribution"] = license_inventory(tracked)
-        target = (target_dir or artifacts / "target").resolve()
-        require(not target.is_relative_to(root), "target directory must be outside source tree")
+        if target_dir is not None:
+            require(not target_dir.resolve().is_relative_to(root),
+                    "target directory must be outside source tree")
+        work = Path(tempfile.mkdtemp(prefix=report_path.stem + "-work-",
+                                     dir=report_path.parent))
+        report["work"].update(path=str(work), status="active")
+        target = (target_dir if target_dir is not None else work / "target").resolve()
+        report["cargo_target"] = {"path": str(target),
+                                  "ownership": "caller" if target_dir is not None else "validator"}
         commands = Commands(artifacts, report)
         report["rustc"] = commands.run(["rustc", "--version"], root).decode().strip()
         report["cargo"] = commands.run(["cargo", "--version"], root).decode().strip()
@@ -307,21 +328,45 @@ def validate(root, report_path, target_dir=None):
         report["source_archive"] = {"path": str(archive_path),
                                     "sha256": digest(archive_path.read_bytes()),
                                     "file_count": len(archived), "excluded_tracked_files": []}
-        source = artifacts / "source"
+        source = work / "source"
         extract_checked(archived, source)
         check_source_roots(archived)
         commands.run([sys.executable, "scripts/check_input_corpus.py"], source)
         commands.run([sys.executable, "scripts/check_lean_kernel.py"], source)
         commands.run([sys.executable, "scripts/check_schema_registry.py", "--source-only"], source)
         listed = commands.run(["cargo", "package", "--offline", "--list"], root).decode().splitlines()
-        commands.run(["cargo", "package", "--offline", "--target-dir", target / "package"], root)
         crate_path = target / "package" / "package" / (prefix + ".crate")
         crate_copy = artifacts / crate_path.name
-        with crate_copy.open("xb") as handle:
-            handle.write(crate_path.read_bytes())
+
+        def record_preservation_failure(error):
+            report["artifact_preservation_error"] = f"crate preservation failed: {error}"
+            report["unretained_crate_path"] = str(crate_path)
+            if target_dir is None:
+                # Do not delete the only candidate bytes when durable storage
+                # failed (for example, because the destination is full).
+                report["work"]["retention_reason"] = "artifact-preservation-failed"
+
+        try:
+            commands.run(["cargo", "package", "--offline", "--target-dir", target / "package"], root)
+        except (DistributionError, OSError):
+            try:
+                if crate_path.exists():
+                    report["unverified_crate"] = {
+                        **retain_crate(crate_path, crate_copy), "cargo_verification": "failed",
+                        # A caller-owned target can contain an older archive.
+                        # Capturing these bytes does not bind them to this run.
+                        "candidate_binding": "not-verified", "source_path": str(crate_path)}
+            except OSError as error:
+                record_preservation_failure(error)
+            raise
+        try:
+            crate_record = retain_crate(crate_path, crate_copy)
+        except OSError as error:
+            record_preservation_failure(error)
+            raise
         contents = read_archive(crate_copy, prefix=prefix)
         report["package_attribution"] = check_package(contents, tracked, listed, candidate)
-        packaged_source = artifacts / "packaged-source"
+        packaged_source = work / "packaged-source"
         extract_checked(contents, packaged_source)
         # Without --no-deps Cargo also parses/checks the generated lockfile.
         packaged_metadata = json.loads(commands.run(
@@ -334,7 +379,7 @@ def validate(root, report_path, target_dir=None):
                     and (packaged_source / name).read_bytes() == file.data
                     and (packaged_source / name).stat().st_mode & 0o777 == file.mode
                     for name, file in contents.items()), "packaged files changed during validation")
-        report["crate"] = {"path": str(crate_copy), "sha256": digest(crate_copy.read_bytes()),
+        report["crate"] = {**crate_record,
                            "file_count": len(contents), "cargo_verification": "passed",
                            "extracted_metadata_and_lock": "validated offline with --locked"}
         # Exercise the distribution's documentation and actual installed binary,
@@ -344,14 +389,14 @@ def validate(root, report_path, target_dir=None):
                      packaged_source)
         commands.run(["cargo", "test", "--offline", "--locked", "--doc",
                       "--target-dir", target / "package-docs"], packaged_source)
-        install_root = artifacts / "installed"
+        install_root = work / "installed"
         commands.run(["cargo", "install", "--path", packaged_source, "--offline", "--locked",
                       "--bin", "qleisli", "--root", install_root,
-                      "--target-dir", target / "install"], artifacts)
+                      "--target-dir", target / "install"], work)
         executable = install_root / "bin" / ("qleisli.exe" if os.name == "nt" else "qleisli")
         report["installed_quickstart"] = json.loads(commands.run(
             [sys.executable, packaged_source / "scripts/check_installation.py", executable],
-            artifacts))
+            work))
         commands.run(["cargo", "test", "--offline", "--all-targets", "--target-dir",
                       target / "source-production"], source)
         commands.run(["cargo", "test", "--offline", "--all-targets", "--manifest-path",
@@ -379,6 +424,20 @@ def validate(root, report_path, target_dir=None):
     except (DistributionError, OSError, ValueError, tarfile.TarError, StopIteration) as error:
         report["error"] = str(error)
     finally:
+        if work is not None:
+            if keep_work or report["work"].get("retention_reason"):
+                report["work"]["status"] = "retained"
+            else:
+                try:
+                    # Only this invocation's private directory is owned here.
+                    # Explicit Cargo target directories are never removed.
+                    shutil.rmtree(work)
+                    report["work"]["status"] = "removed"
+                except OSError as error:
+                    report["work"]["status"] = "cleanup-failed"
+                    report["cleanup_error"] = f"work directory cleanup failed: {error}"
+                    report["status"] = "failed"
+                    report.setdefault("error", report["cleanup_error"])
         report["finished_utc"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
         with report_path.open("x") as handle:
             json.dump(report, handle, indent=2, sort_keys=True)
@@ -391,15 +450,22 @@ def main():
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--target-dir", type=Path)
+    parser.add_argument("--keep-work", action="store_true",
+                        help="retain extracted sources, installation and owned Cargo build work")
     args = parser.parse_args()
     try:
-        report = validate(args.root.resolve(), args.report.resolve(), args.target_dir)
+        report = validate(args.root.resolve(), args.report.resolve(), args.target_dir,
+                          keep_work=args.keep_work)
     except (DistributionError, OSError) as error:
         print(error, file=sys.stderr)
         return 1
     print(f"Distribution validation {report['status']}; report: {args.report.resolve()}")
     if report["status"] != "passed":
         print(report["error"], file=sys.stderr)
+        if report.get("cleanup_error") not in {None, report["error"]}:
+            print(report["cleanup_error"], file=sys.stderr)
+        if report.get("artifact_preservation_error") not in {None, report["error"]}:
+            print(report["artifact_preservation_error"], file=sys.stderr)
         return 1
     return 0
 

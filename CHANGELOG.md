@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Remove owned distribution build work after success or failure while keeping
+  reports, logs and candidate archives. Add `--keep-work` for debugging and
+  preserve caller-owned external Cargo targets (#142).
 - Use canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` through common
   source type classification. Reject retired classical spellings with migration
   diagnostics; migrate active clients and keep explicit historical translations.
