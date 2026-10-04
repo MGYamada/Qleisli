@@ -1,0 +1,23 @@
+{
+  "argv": [
+    "python3",
+    "scripts/test_check_release_ready.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "source_sha256": {
+    "scripts/check_release_ready.py": "0939fe105e455d47dc59f54a94d9a61e01f1243657351773f2a428819ded9bf0",
+    "scripts/test_check_release_ready.py": "cc16e1984cb4761065878cffb8c2cf1f90093662df090c5a961efed27cc66dff"
+  },
+  "scope": "Release checker synthetic/adversarial suite only; no Rust/Lean build or actual release readiness claim.",
+  "scope_change": {
+    "before": 108,
+    "after": 109,
+    "added_to_G02": [
+      311
+    ],
+    "other_groups_and_issue_order_unchanged": true
+  }
+}

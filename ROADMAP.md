@@ -45,7 +45,8 @@ were subsequently admitted after proof review and explicit human approval; the
 [guarantee record](docs/src/design/initial-guarantees.md) states their exact
 scope and assumptions. The three broader obligations remain pending. The
 [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
-tracks the 108 selected issues. Edition 2026 identifies the constitutional
+tracks the 109 selected issues, including the exactness interpretation in #311.
+Edition 2026 identifies the constitutional
 regime and remains unchanged by the syntax, type-system and CLI migration.
 
 **Documentation cleanup completed for v0.3.0-alpha:** `docs/` retains the entire

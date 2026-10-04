@@ -1,0 +1,153 @@
+{
+  "format": "qleisli.issue-count-documentation-checks",
+  "version": 1,
+  "status": "passed",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--",
+        ".github/ci/README.md",
+        "CHANGELOG.md",
+        "ROADMAP.md",
+        "docs/src/design/ratification.md",
+        "scripts/check_release_ready.py",
+        "scripts/test_check_release_ready.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:40.661583+00:00",
+      "finished_at_utc": "2026-10-04T23:10:40.685465+00:00",
+      "seconds": 0.023562040994875133,
+      "exit_code": 0,
+      "stdout": {
+        "path": "0.stdout.txt",
+        "sha256": "6a195b9ae1b5020a551adc894b360a457e2dde0bf9358bf32f1ce6fce39c7035"
+      },
+      "stderr": {
+        "path": "0.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:40.686459+00:00",
+      "finished_at_utc": "2026-10-04T23:10:40.714220+00:00",
+      "seconds": 0.027766124985646456,
+      "exit_code": 0,
+      "stdout": {
+        "path": "1.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "1.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:40.714487+00:00",
+      "finished_at_utc": "2026-10-04T23:10:40.730211+00:00",
+      "seconds": 0.015742583957035094,
+      "exit_code": 0,
+      "stdout": {
+        "path": "2.stdout.txt",
+        "sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96"
+      },
+      "stderr": {
+        "path": "2.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "pinned_version_matches": true
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:40.730852+00:00",
+      "finished_at_utc": "2026-10-04T23:10:42.706829+00:00",
+      "seconds": 1.9759909159620292,
+      "exit_code": 0,
+      "stdout": {
+        "path": "3.stdout.txt",
+        "sha256": "9b5e403903a70c7cb5cd8d22c9733e1d33b5834390a28f1fa60c0ed94fffae88"
+      },
+      "stderr": {
+        "path": "3.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:42.708394+00:00",
+      "finished_at_utc": "2026-10-04T23:10:42.784019+00:00",
+      "seconds": 0.07564970798557624,
+      "exit_code": 0,
+      "stdout": {
+        "path": "4.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "4.stderr.txt",
+        "sha256": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-04T23:10:42.785284+00:00",
+      "finished_at_utc": "2026-10-04T23:10:43.145159+00:00",
+      "seconds": 0.3598970840102993,
+      "exit_code": 0,
+      "stdout": {
+        "path": "5.stdout.txt",
+        "sha256": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572"
+      },
+      "stderr": {
+        "path": "5.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "inputs_unchanged_during_run": true,
+  "changed_inputs": [],
+  "files": {
+    "0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "0.stdout.txt": "6a195b9ae1b5020a551adc894b360a457e2dde0bf9358bf32f1ce6fce39c7035",
+    "1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "1.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "2.stdout.txt": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+    "3.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "3.stdout.txt": "9b5e403903a70c7cb5cd8d22c9733e1d33b5834390a28f1fa60c0ed94fffae88",
+    "4.stderr.txt": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb",
+    "4.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "5.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "5.stdout.txt": "192d5b802ede871ace358936d38873fc706327a1d1dc32efc1e94229858d8572",
+    "after.json": "1e14cc5fc9aa819ed60b51121129216543cf9cea8f15c488feb38b67c1acadd7",
+    "before.json": "1e14cc5fc9aa819ed60b51121129216543cf9cea8f15c488feb38b67c1acadd7",
+    "commands.json": "677f09b31c78c7bbfa3a0ab5e487668c5e7fdb3162371ca7c79f1e2fe7385a74",
+    "record.py": "e173df4d830bc73d9bd6b6851c7ee3729bf90a57f5cbced2597429ba66fad356"
+  },
+  "input_scope": "Book sources/configuration, selected active prose, checkers and packet context; not a full repository snapshot.",
+  "scope": "Local documentation checks only. No Rust/Lean build, GitHub fetch, release approval or new Guardian act."
+}

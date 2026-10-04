@@ -262,6 +262,40 @@ class SyntheticRelease(unittest.TestCase):
             with self.subTest(change=change):
                 self.acceptance=copy.deepcopy(original); self.update_acceptance(change); self.reject('ID')
 
+    def test_prior_108_issue_candidate_cannot_omit_exactness_requirement_or_acceptance(self):
+        self.assertEqual(len(checker.ISSUES), 109)
+        self.assertIn(311, checker.GROUPS['G02'])
+        current_requirements = copy.deepcopy(self.requirements)
+        current_acceptance = copy.deepcopy(self.acceptance)
+        previous_ids = checker.ISSUES - {311}
+        self.assertEqual(len(previous_ids), 108)
+        cases = [
+            ('previous groups and criteria', True, True, '13 groups/109 Issues'),
+            ('updated groups without Issue 311 criteria', False, True,
+             'reviewed Issues: missing or unexpected IDs'),
+            ('updated requirements without Issue 311 acceptance', False, False,
+             'acceptance Issues: missing or unexpected IDs'),
+        ]
+        for label, old_groups, old_criteria, diagnostic in cases:
+            with self.subTest(case=label):
+                self.requirements = copy.deepcopy(current_requirements)
+                if old_groups:
+                    self.requirements['groups']['G02'].remove(311)
+                if old_criteria:
+                    self.requirements['issues'] = [row for row in self.requirements['issues']
+                                                   if row['id'] != 311]
+                    self.assertEqual({row['id'] for row in self.requirements['issues']}, previous_ids)
+                self.write(checker.REQUIREMENTS, encoded(self.requirements))
+                self.base = self.commit()
+                self.acceptance = copy.deepcopy(current_acceptance)
+                self.acceptance['issues'] = [row for row in self.acceptance['issues'] if row['id'] != 311]
+                self.assertEqual({row['id'] for row in self.acceptance['issues']}, previous_ids)
+                self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
+                self.write(checker.ACCEPTANCE, encoded(self.acceptance))
+                self.head = self.commit()
+                self.refresh_receipts()
+                self.reject(diagnostic)
+
     def test_candidate_cannot_rewrite_criterion_or_exclude_required_work(self):
         self.update_acceptance(lambda x:x['issues'][0]['criteria'][0].update(disposition='explicit-later-version'))
         self.reject('unauthorized exclusion')

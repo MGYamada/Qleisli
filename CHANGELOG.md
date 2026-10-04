@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Include #311 in the maintainer-confirmed 109-Issue release scope and progress
+  denominator. Require its criteria and evidence in release readiness; preserve
+  the original 108 targets and historical validation records (#142).
 - Record the Guardian's adopted EXACT-2026-01 interpretation: epsilon error
   bounds cannot replace edition-2026 exact QS, PR or RS obligations. Preserve
   the Constitution, three original interpretations, two admitted guarantees
