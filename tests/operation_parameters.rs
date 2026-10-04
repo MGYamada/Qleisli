@@ -453,3 +453,34 @@ fn static_circuit_width_step_and_instance_limits_reject_without_panics() {
     assert_eq!(error.code, ErrorCode::Limit);
     assert!(error.message.contains("256 distinct"), "{error}");
 }
+
+#[test]
+fn lexical_runtime_shadow_preserves_static_call_rejection_order() {
+    // The static candidate determines the legacy argument-first diagnostic;
+    // it does not permit invoking a runtime value that shadows that parameter.
+    for (source, code, message, text) in [
+        (
+            include_str!(
+                "fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
+            ),
+            ErrorCode::UnknownName,
+            "unknown value `missing`",
+            "missing",
+        ),
+        (
+            include_str!(
+                "fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
+            ),
+            ErrorCode::TypeMismatch,
+            "a local or spent runtime value cannot be a static operation",
+            "U",
+        ),
+    ] {
+        let root = SourceRoot::new(source);
+        let error = check_project(&root.0).unwrap_err();
+        assert_eq!(error.code, code);
+        assert_eq!(error.message, message);
+        assert_eq!(&source[error.span.start..error.span.end], text);
+        assert_eq!(error.span.start, source.rfind(text).unwrap());
+    }
+}

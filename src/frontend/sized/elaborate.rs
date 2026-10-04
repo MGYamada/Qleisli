@@ -10,8 +10,9 @@ const MAX_DEPTH: usize = 16;
 const MAX_STEPS: usize = 10_000;
 const MAX_CELLS: usize = 100_000;
 
-use crate::frontend::resolve::{DefId, ModuleId, Target};
+use crate::frontend::resolve::{DefId, Target};
 use crate::frontend::types::Kind as TypeKind;
+use std::sync::Arc;
 
 /// Concrete exact source tree. Accessors retain the current sized profile's
 /// public tags: bit/bits denote quantum owners, cbit/cbits ordinary data.
@@ -363,15 +364,14 @@ struct Binding {
 }
 #[derive(Clone)]
 struct Scope {
-    naturals: BTreeMap<String, u32>,
-    operations: BTreeMap<String, SourceOperation>,
-    values: BTreeMap<String, Binding>,
-    shadows: BTreeSet<String>,
+    naturals: BTreeMap<BinderKey, u32>,
+    operations: BTreeMap<BinderKey, SourceOperation>,
+    values: BTreeMap<BinderKey, Binding>,
     moved: BTreeSet<usize>,
 }
 struct Frame {
     module: String,
-    owner: ModuleId,
+    lexical: Arc<Table>,
     effect: Effect,
     steps: Vec<SourceStep>,
     next_value: u32,
@@ -429,7 +429,7 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     })
 }
 
-fn natural(n: &Natural, values: &BTreeMap<String, u32>) -> Result<u32> {
+fn natural(n: &Natural, values: &BTreeMap<BinderKey, u32>) -> Result<u32> {
     let fail = || {
         error(
             "limit",
@@ -439,8 +439,8 @@ fn natural(n: &Natural, values: &BTreeMap<String, u32>) -> Result<u32> {
     };
     match &n.kind {
         NatKind::Number(n) => u32::try_from(*n).map_err(|_| fail()),
-        NatKind::Name(name) => values
-            .get(name)
+        NatKind::Name(name) => name
+            .get(values)
             .copied()
             .ok_or_else(|| error("static", n.span, format!("missing concrete natural {name}"))),
         NatKind::Add(a, b) => natural(a, values)?
@@ -454,7 +454,7 @@ fn natural(n: &Natural, values: &BTreeMap<String, u32>) -> Result<u32> {
             .ok_or_else(fail),
     }
 }
-fn predicate(p: &Predicate, values: &BTreeMap<String, u32>) -> Result<bool> {
+fn predicate(p: &Predicate, values: &BTreeMap<BinderKey, u32>) -> Result<bool> {
     let a = natural(&p.left, values)?;
     let b = natural(&p.right, values)?;
     Ok(match p.comparison {
@@ -466,7 +466,11 @@ fn predicate(p: &Predicate, values: &BTreeMap<String, u32>) -> Result<bool> {
         Compare::Ge => a >= b,
     })
 }
-fn concrete_type(t: &ast::Type, values: &BTreeMap<String, u32>, span: Span) -> Result<SourceType> {
+fn concrete_type(
+    t: &ast::Type,
+    values: &BTreeMap<BinderKey, u32>,
+    span: Span,
+) -> Result<SourceType> {
     let ty = SourceType {
         kind: match t {
             ast::Type::Quantum(Basis::Bit) => TypeKind::Q(Box::new(SourceType::bit())),
@@ -590,7 +594,7 @@ impl Builder<'_> {
                 .iter()
                 .filter_map(|p| {
                     if let Parameter::Natural(n) = p {
-                        Some(n)
+                        Some(&n.name)
                     } else {
                         None
                     }
@@ -601,7 +605,7 @@ impl Builder<'_> {
                 .iter()
                 .filter_map(|p| {
                     if let Parameter::Operation(n, _) = p {
-                        Some(n)
+                        Some(&n.name)
                     } else {
                         None
                     }
@@ -616,9 +620,17 @@ impl Builder<'_> {
                     "concrete bindings do not match declaration",
                 ));
             }
+            let resolved_naturals: BTreeMap<_, _> = function
+                .parameters
+                .iter()
+                .filter_map(|parameter| match parameter {
+                    Parameter::Natural(name) => Some((name.key().clone(), naturals[&name.name])),
+                    Parameter::Operation(..) => None,
+                })
+                .collect();
             for requirement in &function.requires {
                 if let Requirement::Predicate(p) = requirement {
-                    if !predicate(p, &naturals)? {
+                    if !predicate(p, &resolved_naturals)? {
                         return Err(error(
                             "size",
                             p.left.span,
@@ -630,10 +642,10 @@ impl Builder<'_> {
             for p in &function.parameters {
                 if let Parameter::Operation(name, basis) = p {
                     let target_type =
-                        self.provider_type(operations[name].target(), function.span)?;
+                        self.provider_type(operations[&name.name].target(), function.span)?;
                     let required = concrete_type(
                         &ast::Type::Quantum(basis.clone()),
-                        &naturals,
+                        &resolved_naturals,
                         function.span,
                     )?;
                     if target_type != required {
@@ -647,7 +659,7 @@ impl Builder<'_> {
             }
             let mut frame = Frame {
                 module: module.clone(),
-                owner: self.program.resolution.declaration(definition).module,
+                lexical: Arc::clone(function.lexical.as_ref().expect("indexed sized function")),
                 effect: function.effect,
                 steps: Vec::new(),
                 next_value: 0,
@@ -656,15 +668,23 @@ impl Builder<'_> {
                 peak: 0,
             };
             let mut scope = Scope {
-                naturals: naturals.clone(),
-                operations: operations.clone(),
+                naturals: resolved_naturals.clone(),
+                operations: function
+                    .parameters
+                    .iter()
+                    .filter_map(|parameter| match parameter {
+                        Parameter::Operation(name, _) => {
+                            Some((name.key().clone(), operations[&name.name].clone()))
+                        }
+                        Parameter::Natural(_) => None,
+                    })
+                    .collect(),
                 values: BTreeMap::new(),
-                shadows: BTreeSet::new(),
                 moved: BTreeSet::new(),
             };
             let mut inputs = Vec::new();
             for (name, ty, span) in &function.arguments {
-                let value = frame.fresh(&concrete_type(ty, &naturals, *span)?, *span)?;
+                let value = frame.fresh(&concrete_type(ty, &resolved_naturals, *span)?, *span)?;
                 bind_name(name, value.clone(), *span, &mut scope, &mut frame)?;
                 inputs.push(value);
             }
@@ -672,7 +692,7 @@ impl Builder<'_> {
             let output = self.block(&function.body, &mut scope, &mut frame, depth)?;
             expected(
                 &output,
-                &concrete_type(&function.result, &naturals, function.span)?,
+                &concrete_type(&function.result, &resolved_naturals, function.span)?,
                 function.body.span,
             )?;
             if scope.values.values().any(|b| b.value.ty.linear()) {
@@ -729,21 +749,22 @@ impl Builder<'_> {
         }
         Ok(definition.output.ty.clone())
     }
-    fn resolve(&self, name: &str, scope: &Scope, frame: &Frame, span: Span) -> Result<Target> {
-        if scope.shadows.contains(name)
-            || scope.naturals.contains_key(name)
-            || scope.operations.contains_key(name)
-        {
-            return Err(error(
+    fn resolve(
+        &self,
+        name: &Reference,
+        _scope: &Scope,
+        frame: &Frame,
+        span: Span,
+    ) -> Result<Target> {
+        match name.target(&frame.lexical) {
+            ResolvedUse::Local(_) => Err(error(
                 "name",
                 span,
                 "concrete function name is lexically shadowed",
-            ));
+            )),
+            ResolvedUse::Global(target) => Ok(target),
+            ResolvedUse::Unresolved => Err(error("name", span, "unresolved concrete function")),
         }
-        self.program
-            .resolution
-            .lookup(frame.owner, name)
-            .ok_or_else(|| error("name", span, "unresolved concrete function"))
     }
     fn arguments(
         &mut self,
@@ -784,10 +805,13 @@ impl Builder<'_> {
                     let Argument::Natural(n) = a else {
                         return Err(error("static", span, "expected concrete natural"));
                     };
-                    naturals.insert(name.clone(), natural(n, &scope.naturals)?);
+                    naturals.insert(name.name.clone(), natural(n, &scope.naturals)?);
                 }
                 Parameter::Operation(name, _) => {
-                    operations.insert(name.clone(), self.operation(a, scope, frame, depth, span)?);
+                    operations.insert(
+                        name.name.clone(),
+                        self.operation(a, scope, frame, depth, span)?,
+                    );
                 }
             }
         }
@@ -818,7 +842,9 @@ impl Builder<'_> {
             Argument::Natural(Natural {
                 kind: NatKind::Name(name),
                 ..
-            }) if scope.operations.contains_key(name) => Ok(scope.operations[name].clone()),
+            }) if name.get(&scope.operations).is_some() => {
+                Ok(name.get(&scope.operations).unwrap().clone())
+            }
             Argument::Natural(Natural {
                 kind: NatKind::Name(name),
                 span,
@@ -861,7 +887,7 @@ impl Builder<'_> {
     }
     fn provider(
         &mut self,
-        name: &str,
+        name: &Reference,
         arguments: &[Argument],
         scope: &Scope,
         frame: &Frame,
@@ -875,7 +901,7 @@ impl Builder<'_> {
     }
     fn provider_inner(
         &mut self,
-        name: &str,
+        name: &Reference,
         arguments: &[Argument],
         scope: &Scope,
         frame: &Frame,
@@ -920,7 +946,6 @@ impl Builder<'_> {
         depth: usize,
     ) -> Result<SourceValue> {
         let initial = scope.values.clone();
-        let shadows = scope.shadows.clone();
         let initial_ids: BTreeSet<_> = initial.values().map(|b| b.identity).collect();
         for statement in &block.statements {
             match statement {
@@ -955,7 +980,6 @@ impl Builder<'_> {
             .into_iter()
             .filter(|(_, b)| !scope.moved.contains(&b.identity))
             .collect();
-        scope.shadows = shadows;
         Ok(result)
     }
     fn expr(
@@ -980,7 +1004,7 @@ impl Builder<'_> {
         let span = expr.span;
         match &expr.kind {
             ExprKind::Name(name) => {
-                let b = scope.values.get(name).cloned().ok_or_else(|| {
+                let b = name.get(&scope.values).cloned().ok_or_else(|| {
                     error(
                         "ownership",
                         span,
@@ -988,7 +1012,9 @@ impl Builder<'_> {
                     )
                 })?;
                 if b.value.ty.linear() {
-                    scope.values.remove(name);
+                    scope
+                        .values
+                        .remove(name.local.as_ref().expect("resolved runtime binding"));
                     scope.moved.insert(b.identity);
                 }
                 Ok(b.value)
@@ -1013,7 +1039,7 @@ impl Builder<'_> {
                 Ok(SourceValue::tuple(values))
             }
             ExprKind::Call(name, arguments, inputs) => {
-                if let Some(op) = scope.operations.get(name).cloned() {
+                if let Some(op) = name.get(&scope.operations).cloned() {
                     let values = inputs
                         .iter()
                         .map(|e| self.expr(e, scope, frame, depth))
@@ -1133,7 +1159,7 @@ impl Builder<'_> {
                 for index_value in start..end {
                     let mut inner = scope.clone();
                     inner.values.retain(|_, b| !b.value.ty.linear());
-                    inner.naturals.insert(index.clone(), index_value);
+                    inner.naturals.insert(index.key().clone(), index_value);
                     bind(carry, value, &mut inner, frame)?;
                     value = self.block(body, &mut inner, frame, depth)?;
                     expected(&value, &carry_type, body.span)?;
@@ -1306,7 +1332,7 @@ fn quantum_ids(value: &SourceValue) -> BTreeSet<u32> {
     }
 }
 fn bind_name(
-    name: &str,
+    name: &BindingName,
     value: SourceValue,
     span: Span,
     scope: &mut Scope,
@@ -1315,7 +1341,7 @@ fn bind_name(
     let retained: usize = scope
         .values
         .iter()
-        .filter(|(key, _)| key.as_str() != name)
+        .filter(|(key, _)| name.shadowed.as_ref() != Some(*key))
         .map(|(_, b)| b.value.cells())
         .sum();
     if retained.saturating_add(value.cells()) > 16_384 {
@@ -1325,10 +1351,11 @@ fn bind_name(
             "concrete scope exceeds 16384 retained value cells",
         ));
     }
-    if scope.naturals.contains_key(name)
-        || scope.operations.contains_key(name)
-        || scope.values.get(name).is_some_and(|b| b.value.ty.linear())
-    {
+    if name.shadowed.as_ref().is_some_and(|key| {
+        scope.naturals.contains_key(key)
+            || scope.operations.contains_key(key)
+            || scope.values.get(key).is_some_and(|b| b.value.ty.linear())
+    }) {
         return Err(error(
             "ownership",
             span,
@@ -1339,10 +1366,12 @@ fn bind_name(
     frame.next_binding = identity
         .checked_add(1)
         .ok_or_else(|| error("limit", span, "binding identity exhausted"))?;
+    if let Some(previous) = &name.shadowed {
+        scope.values.remove(previous);
+    }
     scope
         .values
-        .insert(name.into(), Binding { identity, value });
-    scope.shadows.insert(name.into());
+        .insert(name.key().clone(), Binding { identity, value });
     Ok(())
 }
 fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Frame) -> Result<()> {

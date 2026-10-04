@@ -1,6 +1,6 @@
 //! Bounded exact linear implication by rational relaxation of integer constraints.
 //! Unsatisfiability proves an obligation; incomplete search never supplies evidence.
-use super::ast::{Compare, NatKind, Natural, Predicate};
+use super::ast::{BinderKey, Compare, NatKind, Natural, Predicate};
 use super::{Error, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -16,10 +16,26 @@ pub(super) fn at<T>(result: Result<T>, span: Span, obligation: &str) -> Result<T
     })
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct Linear {
     pub constant: i128,
-    pub terms: BTreeMap<String, i128>,
+    pub terms: BTreeMap<BinderKey, i128>,
+}
+impl std::fmt::Debug for Linear {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        struct Terms<'a>(&'a BTreeMap<BinderKey, i128>);
+        impl std::fmt::Debug for Terms<'_> {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                f.debug_map()
+                    .entries(self.0.iter().map(|(key, value)| (&key.name, value)))
+                    .finish()
+            }
+        }
+        f.debug_struct("Linear")
+            .field("constant", &self.constant)
+            .field("terms", &Terms(&self.terms))
+            .finish()
+    }
 }
 impl Linear {
     pub fn constant(n: i128) -> Self {
@@ -28,10 +44,10 @@ impl Linear {
             terms: BTreeMap::new(),
         }
     }
-    pub fn variable(name: &str) -> Self {
+    pub fn variable(name: &BinderKey) -> Self {
         Self {
             constant: 0,
-            terms: BTreeMap::from([(name.into(), 1)]),
+            terms: BTreeMap::from([(name.clone(), 1)]),
         }
     }
     pub fn scale(&self, n: i128) -> Result<Self> {
@@ -80,7 +96,7 @@ pub(super) struct Context {
     pub alternatives: Vec<Vec<Linear>>,
 }
 impl Context {
-    pub fn natural(names: impl IntoIterator<Item = String>) -> Result<Self> {
+    pub fn natural(names: impl IntoIterator<Item = BinderKey>) -> Result<Self> {
         Ok(Self {
             alternatives: vec![
                 names
@@ -277,7 +293,7 @@ fn unsatisfiable(mut constraints: Vec<Linear>) -> Result<bool> {
 }
 pub(super) fn natural(
     expr: &Natural,
-    names: &BTreeMap<String, Linear>,
+    names: &BTreeMap<BinderKey, Linear>,
     context: &Context,
 ) -> Result<Linear> {
     at(
@@ -288,12 +304,12 @@ pub(super) fn natural(
 }
 fn natural_inner(
     expr: &Natural,
-    names: &BTreeMap<String, Linear>,
+    names: &BTreeMap<BinderKey, Linear>,
     context: &Context,
 ) -> Result<Linear> {
     let result = match &expr.kind {
         NatKind::Number(n) => Linear::constant(*n),
-        NatKind::Name(name) => names.get(name).cloned().ok_or_else(|| {
+        NatKind::Name(name) => name.get(names).cloned().ok_or_else(|| {
             Error::new("static", expr.span, format!("unknown natural name {name}"))
         })?,
         NatKind::Add(a, b) => natural(a, names, context)?.add(&natural(b, names, context)?)?,
@@ -329,7 +345,7 @@ fn natural_inner(
 }
 pub(super) fn predicate(
     p: &Predicate,
-    names: &BTreeMap<String, Linear>,
+    names: &BTreeMap<BinderKey, Linear>,
     context: &Context,
     truth: bool,
 ) -> Result<Context> {

@@ -50,10 +50,10 @@ proposed public contract. Paths refer to the
 
 | Area | Current finite frontend | Current sized frontend | Required common result |
 | --- | --- | --- | --- |
-| Syntax | `ast.rs`, `lexer.rs`, `parser.rs`; one shared grammar produces the recursive module AST with declarations and imports. A finite-profile preflight rejects unsupported forms before lowering. | Uses the same parsed module and spans; `sized/parser.rs` projects that AST into the existing sized checker. Its current profile still permits one function per module. | Common parsing and declaration identities are implemented; converge lexical bindings and profile checking next. Backend choice cannot select a grammar. |
+| Syntax | `ast.rs`, `lexer.rs`, `parser.rs`; one shared grammar produces the recursive module AST with declarations and imports. A finite-profile preflight rejects unsupported forms before lowering. | Uses the same parsed module and spans; `sized/parser.rs` projects that AST into the existing sized checker. Its current profile still permits one function per module. | Common parsing, declaration identities and lexical identities are implemented; converge all-declaration and profile checking next. Backend choice cannot select a grammar. |
 | Types | Uses the shared internal `types::Type<N>` with explicit `Q`, exact tuple shape and a separate basis/runtime stage. Current source-level ordinary `Bit` still rejects. | Symbolic and concrete types use the same internal tree with symbolic or closed sizes; existing source spellings and public accessors remain profile adapters. | Shared structural equality and linear classification are implemented. Converge the source typing judgments and canonical ordinary `Bit` / `Bits<n>` surface next. |
 | Ordinary finite expressions | Separate `BasisExpr` and ordinary expression variants; `0/1` are basis literals and `true/false` are ordinary `CBit` literals. | Sized expressions focus on providers, static conditions and folds. | One expression/pattern tree; staging is a checked judgment, not a second parser. |
-| Modules and names | `project.rs` loads source trees; the shared `resolve.rs` declaration table supplies imports, visibility, canonical names and graph traversal to compilation. | Explicit module maps use that same table for checking, host/provider selection and concrete elaboration. Existing profile policies remain explicit. | Collection-local definition identities and global lookup are implemented. Converge lexical binding identities, multi-declaration checking and cycle/profile rules next; preserve canonical source/evidence identity rather than serializing these internal IDs. |
+| Modules and names | `project.rs` loads source trees; the shared declaration and lexical tables supply imports, visibility, canonical names, graph traversal and local/static binding identities to compilation. | Explicit module maps use those same tables for generic checking, natural substitution, host/provider selection and concrete elaboration. Existing profile policies remain explicit. | Collection-local definition and lexical identities drive both consumers. Converge multi-declaration checking and cycle/profile rules next; preserve canonical source/evidence identity rather than serializing these internal IDs. |
 | Generic checking | Finite static operation parameters and abstract capability checks. | Symbolic natural constraints, explicit providers, decreasing self-recursion and bounded concrete elaboration. | One generic judgment and one specialization engine, with explicit constraints and source provenance. |
 | Owners and effects | Checked during finite lowering; lexical projection and complete branch frames are explicit. | Separate symbolic and concrete ownership checks; tuple shape, moved binding identities and static carries are explicit. | One source ownership/effect judgment before lowering, plus independent downstream IR checking. |
 | Lowering | Finite raw/QIRF proposals reach `native::Kernel`. | `ElaboratedProgram::lower` emits an untrusted hierarchy proposal, then dedicated native checks apply. | Two backend adapters consume the same typed source representation. Neither adapter redefines source typing or grants acceptance. |
@@ -65,6 +65,24 @@ up to 12 bits, concrete sized registers up to eight, and elaboration has separat
 call/fold/depth/storage limits. Common parsing does not silently raise any
 capacity, impose a dense finite limit on every hierarchy, or turn an unsupported
 lowering profile into a source typing error.
+
+Lexical binder, use-site and scope IDs are assigned by structural traversal of
+each declaration. Source spans and names remain diagnostic metadata. The
+finite consumer's temporary address index borrows the immutable AST; projected
+sized syntax retains only owned IDs and a shared table. Initializers resolve
+before their new binder, nested scopes restore their entry bindings, and spent
+or hidden local names keep shadowing global candidates. Runtime ownership IDs
+remain distinct for each call or fold activation. Shared natural algebra now
+uses binder identities, so equal spellings in different definitions do not
+identify size variables. This unifies resolution; the finite and sized typing
+and effect judgments still require convergence.
+
+The sized public `ParsedProgram`, `Instantiation` and `ElaboratedProgram` derived
+Rust `Debug` output includes additional private projection metadata. Their
+`Clone`, `Send` and `Sync` capabilities are retained. CLI diagnostics, public
+type accessors and retained proposal bytes are unchanged by this resolution
+unit; the contextual-natural parser repair has its separately recorded
+parse-to-profile diagnostic changes.
 
 ## Proposed judgments and type identity
 

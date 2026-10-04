@@ -36,7 +36,13 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(function)
+            .is_some_and(|key| env.contains_key(key))
+            || self.bound_operation(function).is_some()
+        {
             return Err(self.error(
                 module,
                 function.span,
@@ -192,8 +198,8 @@ impl Lowerer<'_, '_> {
             .iter()
             .map(|(name, binding)| (name.clone(), binding.hidden()))
             .collect();
-        local.insert(data_binder.text.clone(), Binding::Live(*data));
-        local.insert(ancilla_binder.text.clone(), Binding::Live(*ancilla));
+        inner.bind_env(data_binder, Binding::Live(*data), &mut local);
+        inner.bind_env(ancilla_binder, Binding::Live(*ancilla), &mut local);
         let result = inner.block(module, body, &mut local)?;
         inner.no_owned_bindings(module, body.span, &local, [data_binder, ancilla_binder])?;
         if inner.effect != Effect::Unitary {

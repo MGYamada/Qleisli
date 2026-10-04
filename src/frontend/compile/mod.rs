@@ -136,10 +136,13 @@ impl BasisFunction {
     }
 }
 
+use super::resolve::locals::{BinderKey, Forest, Index, ResolvedUse};
+
 struct Compiler<'a> {
     kernel: crate::interchange::native::Kernel,
     project: &'a Project,
     resolution: Resolution,
+    locals: Forest<'a>,
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, AcceptedProgram>,
@@ -284,8 +287,7 @@ impl Compiler<'_> {
     }
 
     fn resolve(&self, module: &str, name: &Ident) -> Result<Callee, CompileError> {
-        let owner = self.resolution.module(module).expect("known module");
-        match self.resolution.lookup(owner, &name.text) {
+        match self.locals.usage(name).global {
             Some(Target::Declaration(id)) => Ok(Callee::User(id)),
             Some(Target::Primitive(id)) => Ok(Callee::Sealed(id.module.into(), id.name.into())),
             None => Err(self.error(
@@ -406,13 +408,12 @@ impl Compiler<'_> {
             let mut dependencies = BTreeSet::new();
             let static_names: BTreeSet<_> =
                 decl.static_params.iter().map(|p| &p.name.text).collect();
-            for name in called_names(decl)
-                .into_iter()
-                .chain(decl.static_params.iter().filter_map(|p| match &p.kind {
+            for name in called_names(decl, &self.locals).into_iter().chain(
+                decl.static_params.iter().filter_map(|p| match &p.kind {
                     StaticParamKind::Operation { meaning, .. } => meaning.as_ref(),
                     StaticParamKind::Natural => None,
-                }))
-            {
+                }),
+            ) {
                 if static_names.contains(&name.text) {
                     continue;
                 }
@@ -443,38 +444,20 @@ fn effect(kind: FnKind) -> Effect {
     }
 }
 
-fn called_names(decl: &Decl) -> Vec<&Ident> {
-    fn pattern_names(pattern: &Pattern) -> Vec<&Ident> {
-        let mut pending = vec![pattern];
-        let mut names = Vec::new();
-        while let Some(pattern) = pending.pop() {
-            match &pattern.kind {
-                PatternKind::Name(name) => names.push(name),
-                PatternKind::Tuple(fields) => pending.extend(fields),
-                PatternKind::Wildcard => {}
-            }
-        }
-        names
-    }
+fn called_names<'a>(decl: &'a Decl, locals: &Forest<'_>) -> Vec<&'a Ident> {
     enum Node<'a> {
         Expr(&'a Expr),
         Basis(&'a BasisExpr),
-        Block(&'a Block, Vec<&'a Ident>),
-        Bind(Vec<&'a Ident>),
-        Unbind(Vec<&'a Ident>),
+        Block(&'a Block),
         Names(Vec<&'a Ident>),
     }
     if let FnBody::Meaning { function, .. } = &decl.body {
         return vec![function];
     }
-    let mut locals = BTreeMap::<&str, usize>::new();
-    for name in decl.params.iter().flat_map(|p| pattern_names(&p.pattern)) {
-        *locals.entry(&name.text).or_default() += 1;
-    }
     let mut stack = vec![match &decl.body {
         FnBody::Meaning { .. } => unreachable!(),
         FnBody::Basis(expr) => Node::Basis(expr),
-        FnBody::Quantum(block) => Node::Block(block, vec![]),
+        FnBody::Quantum(block) => Node::Block(block),
     }];
     let mut names = Vec::new();
     while let Some(node) = stack.pop() {
@@ -482,43 +465,13 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
             Node::Names(calls) => names.extend(
                 calls
                     .into_iter()
-                    .filter(|n| !locals.contains_key(n.text.as_str())),
+                    .filter(|n| !matches!(locals.usage(n).target, ResolvedUse::Local(_))),
             ),
-            Node::Bind(bindings) => {
-                for name in bindings {
-                    *locals.entry(&name.text).or_default() += 1;
-                }
-            }
-            Node::Unbind(bindings) => {
-                for name in bindings {
-                    let count = locals
-                        .get_mut(name.text.as_str())
-                        .expect("entered lexical binding");
-                    *count -= 1;
-                    if *count == 0 {
-                        locals.remove(name.text.as_str());
-                    }
-                }
-            }
-            Node::Block(block, extra) => {
-                let mut bindings = extra.clone();
-                for name in extra {
-                    *locals.entry(&name.text).or_default() += 1;
-                }
-                bindings.extend(block.statements.iter().flat_map(|stmt| match &stmt.kind {
-                    StmtKind::Let { pattern, .. } => pattern_names(pattern),
-                    StmtKind::Expr(_) => vec![],
-                }));
-                stack.push(Node::Unbind(bindings));
+            Node::Block(block) => {
                 stack.push(Node::Expr(&block.result));
-                // Initializers precede their bindings. Spent local names keep
-                // shadowing declarations until the containing scope ends.
                 for stmt in block.statements.iter().rev() {
                     match &stmt.kind {
-                        StmtKind::Let { pattern, value } => {
-                            stack.push(Node::Bind(pattern_names(pattern)));
-                            stack.push(Node::Expr(value));
-                        }
+                        StmtKind::Let { value, .. } => stack.push(Node::Expr(value)),
                         StmtKind::Expr(expr) => stack.push(Node::Expr(expr)),
                     }
                 }
@@ -582,8 +535,8 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
                 } => {
                     stack.extend([
                         Node::Expr(condition),
-                        Node::Block(then_branch, vec![]),
-                        Node::Block(else_branch, vec![]),
+                        Node::Block(then_branch),
+                        Node::Block(else_branch),
                     ]);
                 }
                 ExprKind::CoherentLift {
@@ -591,35 +544,26 @@ fn called_names(decl: &Decl) -> Vec<&Ident> {
                     basis,
                     binder,
                 } => {
-                    let bindings = pattern_names(binder);
-                    stack.extend([
-                        Node::Unbind(bindings.clone()),
-                        Node::Basis(basis),
-                        Node::Bind(bindings),
-                        Node::Expr(input),
-                    ]);
+                    let _ = binder;
+                    stack.extend([Node::Basis(basis), Node::Expr(input)]);
                 }
                 ExprKind::WithComputed {
                     source,
                     function,
-                    binder,
                     body,
+                    ..
                 } => {
-                    stack.extend([Node::Block(body, vec![binder]), Node::Expr(source)]);
+                    stack.extend([Node::Block(body), Node::Expr(source)]);
                     stack.push(Node::Names(vec![function]));
                 }
                 ExprKind::CertifiedComputed {
                     source,
                     function,
                     logical,
-                    data_binder,
-                    ancilla_binder,
                     body,
+                    ..
                 } => {
-                    stack.extend([
-                        Node::Block(body, vec![data_binder, ancilla_binder]),
-                        Node::Expr(source),
-                    ]);
+                    stack.extend([Node::Block(body), Node::Expr(source)]);
                     stack.push(Node::Names(vec![function, logical]));
                 }
             },
@@ -843,6 +787,7 @@ fn process_loaded_project_with_kernel(
         project,
         resolution,
         declarations,
+        locals: Forest::default(),
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
@@ -864,6 +809,14 @@ fn process_loaded_project_with_kernel(
                 message,
             ));
         }
+    }
+    for (key, declaration) in &compiler.declarations {
+        let owner = compiler.resolution.declaration(*key).module;
+        compiler
+            .locals
+            .insert(Index::new(*key, declaration, |name| {
+                compiler.resolution.lookup(owner, name)
+            }));
     }
     let order = compiler.order()?;
     let entry = compiler.resolution.qualified("main::main").ok();
@@ -968,6 +921,7 @@ mod snapshot_tests {
                 .map_err(|failure| failure.into_diagnostic())
                 .expect("valid test project"),
             declarations: BTreeMap::new(),
+            locals: Forest::default(),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),
             function_evidence: BTreeMap::new(),

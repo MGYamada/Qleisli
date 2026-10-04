@@ -6,6 +6,7 @@ use super::{Error, OperationBinding, ParsedProgram, Result, Span};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
+use std::sync::Arc;
 
 use crate::frontend::resolve::{self, DefId, Failure, Profile, Target};
 use crate::frontend::types::Kind;
@@ -36,11 +37,10 @@ struct Operation {
 }
 #[derive(Clone)]
 struct Scope {
-    naturals: BTreeMap<String, Linear>,
-    operations: BTreeMap<String, Operation>,
+    naturals: BTreeMap<BinderKey, Linear>,
+    operations: BTreeMap<BinderKey, Operation>,
     context: Context,
-    values: BTreeMap<String, Binding>,
-    shadows: BTreeSet<String>,
+    values: BTreeMap<BinderKey, Binding>,
     moved: BTreeSet<usize>,
     next_binding: Rc<Cell<usize>>,
 }
@@ -131,7 +131,7 @@ fn declaration(f: &Function) -> Result<Scope> {
         let name = match p {
             Parameter::Natural(n) | Parameter::Operation(n, _) => n,
         };
-        if !names.insert(name.clone()) {
+        if !names.insert(name.name.clone()) {
             return Err(err(
                 "name",
                 f.span,
@@ -139,7 +139,7 @@ fn declaration(f: &Function) -> Result<Scope> {
             ));
         }
         if matches!(p, Parameter::Natural(_)) {
-            naturals.insert(name.clone(), Linear::variable(name));
+            naturals.insert(name.key().clone(), Linear::variable(name.key()));
         }
     }
     let mut scope = Scope {
@@ -147,7 +147,6 @@ fn declaration(f: &Function) -> Result<Scope> {
         naturals,
         operations: BTreeMap::new(),
         values: BTreeMap::new(),
-        shadows: BTreeSet::new(),
         moved: BTreeSet::new(),
         next_binding: Rc::new(Cell::new(0)),
     };
@@ -169,7 +168,7 @@ fn declaration(f: &Function) -> Result<Scope> {
     for p in &f.parameters {
         if let Parameter::Operation(name, b) = p {
             scope.operations.insert(
-                name.clone(),
+                name.key().clone(),
                 Operation {
                     ty: basis(b, &scope)?,
                     access: BTreeSet::new(),
@@ -179,13 +178,17 @@ fn declaration(f: &Function) -> Result<Scope> {
     }
     for requirement in &f.requires {
         if let Requirement::Access(kind, name, span) = requirement {
-            let op = scope.operations.get_mut(name).ok_or_else(|| {
-                err(
-                    "access",
-                    *span,
-                    format!("access requirement names no operation parameter: {name}"),
-                )
-            })?;
+            let op = name
+                .local
+                .as_ref()
+                .and_then(|key| scope.operations.get_mut(key))
+                .ok_or_else(|| {
+                    err(
+                        "access",
+                        *span,
+                        format!("access requirement names no operation parameter: {name}"),
+                    )
+                })?;
             if !op.access.insert(kind.clone()) {
                 return Err(err(
                     "access",
@@ -197,7 +200,7 @@ fn declaration(f: &Function) -> Result<Scope> {
     }
     let mut arguments = BTreeSet::new();
     for (name, t, span) in &f.arguments {
-        if !arguments.insert(name) {
+        if !arguments.insert(&name.name) {
             return Err(err("name", *span, "duplicate runtime parameter"));
         }
         bind_name(name, ty(t, &scope, *span)?, *span, &mut scope)?;
@@ -205,12 +208,12 @@ fn declaration(f: &Function) -> Result<Scope> {
     let _ = ty(&f.result, &scope, f.span)?;
     Ok(scope)
 }
-fn bind_name(name: &str, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
+fn bind_name(name: &BindingName, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
     t.bounded(span)?;
     let retained: usize = scope
         .values
         .iter()
-        .filter(|(key, _)| key.as_str() != name)
+        .filter(|(key, _)| name.shadowed.as_ref() != Some(*key))
         .map(|(_, b)| b.ty.cells())
         .sum();
     if retained.saturating_add(t.cells()) > 16_384 {
@@ -220,16 +223,21 @@ fn bind_name(name: &str, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
             "scope exceeds 16384 retained type cells",
         ));
     }
-    if name == "_" || scope.naturals.contains_key(name) || scope.operations.contains_key(name) {
+    if name.name == "_"
+        || name.shadowed.as_ref().is_some_and(|key| {
+            scope.naturals.contains_key(key) || scope.operations.contains_key(key)
+        })
+    {
         return Err(err(
             "name",
             span,
             format!("binding {name} shadows a static parameter/index or discards a value"),
         ));
     }
-    if scope
-        .values
-        .get(name)
+    if name
+        .shadowed
+        .as_ref()
+        .and_then(|key| scope.values.get(key))
         .is_some_and(|binding| binding.ty.linear())
     {
         return Err(err(
@@ -244,17 +252,19 @@ fn bind_name(name: &str, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
             .checked_add(1)
             .ok_or_else(|| err("limit", span, "binding identity exhausted"))?,
     );
+    if let Some(previous) = &name.shadowed {
+        scope.values.remove(previous);
+    }
     scope
         .values
-        .insert(name.into(), Binding { identity, ty: t });
-    scope.shadows.insert(name.into());
+        .insert(name.key().clone(), Binding { identity, ty: t });
     Ok(())
 }
 fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
     fn go(pattern: &Pattern, t: Ty, scope: &mut Scope, names: &mut BTreeSet<String>) -> Result<()> {
         match (pattern, t.kind) {
             (Pattern::Name(name, span), kind) => {
-                if !names.insert(name.clone()) {
+                if !names.insert(name.name.clone()) {
                     return Err(err("name", *span, "duplicate name in binding pattern"));
                 }
                 bind_name(name, Ty { kind }, *span, scope)
@@ -311,12 +321,27 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
     let mut edges = BTreeMap::new();
     let names: Vec<_> = program.modules.keys().cloned().collect();
     for module in &names {
-        let parsed = &program.modules[module];
         let owner = program.resolution.module(module).expect("known module");
         let imports = program
             .resolution
             .imports(owner, &program.syntax[module], Profile::Sized)
             .map_err(ParsedProgram::resolution_error)?;
+        let parsed = program.modules.get_mut(module).expect("projected module");
+        Arc::make_mut(
+            parsed
+                .function
+                .lexical
+                .as_mut()
+                .expect("indexed sized function"),
+        )
+        .bind_globals(|name| {
+            program
+                .resolution
+                .local(owner, name)
+                .map(Target::Declaration)
+                .or_else(|| imports.imports.get(name).copied())
+        });
+        let parsed = &program.modules[module];
         let id = program
             .resolution
             .local(owner, &parsed.function.name)
@@ -326,10 +351,8 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
             let expected = ty(&parsed.function.result, &scope, parsed.function.span)?;
             let mut checker = Checker {
                 program,
-                module,
                 definition: id,
                 function: &parsed.function,
-                imports: &imports.imports,
                 edges: BTreeSet::new(),
             };
             checker.block(&parsed.function.body, &mut scope, Some(&expected))?;
@@ -367,10 +390,8 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
 
 struct Checker<'a> {
     program: &'a ParsedProgram,
-    module: &'a str,
     function: &'a Function,
     definition: DefId,
-    imports: &'a BTreeMap<String, Target>,
     edges: BTreeSet<DefId>,
 }
 impl Checker<'_> {
@@ -385,29 +406,25 @@ impl Checker<'_> {
             ))
         }
     }
-    fn resolve(&mut self, name: &str, scope: &Scope, span: Span) -> Result<Target> {
-        if scope.shadows.contains(name)
-            || scope.naturals.contains_key(name)
-            || scope.operations.contains_key(name)
-        {
-            return Err(err(
-                "name",
-                span,
-                format!("{name} is shadowed or is not a transparent function"),
-            ));
-        }
-        let owner = self
-            .program
-            .resolution
-            .module(self.module)
-            .expect("known module");
-        let target = self
-            .program
-            .resolution
-            .local(owner, name)
-            .map(Target::Declaration)
-            .or_else(|| self.imports.get(name).copied())
-            .ok_or_else(|| err("name", span, format!("unresolved function {name}")))?;
+    fn resolve(&mut self, name: &Reference, _scope: &Scope, span: Span) -> Result<Target> {
+        let target = match name.target(
+            self.function
+                .lexical
+                .as_ref()
+                .expect("indexed sized function"),
+        ) {
+            ResolvedUse::Local(_) => {
+                return Err(err(
+                    "name",
+                    span,
+                    format!("{name} is shadowed or is not a transparent function"),
+                ));
+            }
+            ResolvedUse::Global(target) => target,
+            ResolvedUse::Unresolved => {
+                return Err(err("name", span, format!("unresolved function {name}")));
+            }
+        };
         if let Target::Declaration(id) = target {
             self.edges.insert(id);
         }
@@ -431,7 +448,6 @@ impl Checker<'_> {
             operations: BTreeMap::new(),
             context: scope.context.clone(),
             values: BTreeMap::new(),
-            shadows: BTreeSet::new(),
             moved: BTreeSet::new(),
             next_binding: Rc::clone(&scope.next_binding),
         };
@@ -441,7 +457,7 @@ impl Checker<'_> {
                     return Err(err("static", span, "expected natural argument"));
                 };
                 target.naturals.insert(
-                    name.clone(),
+                    name.key().clone(),
                     linear::natural(n, &scope.naturals, &scope.context)?,
                 );
             }
@@ -455,7 +471,7 @@ impl Checker<'_> {
                     &scope.context,
                     span,
                 )?;
-                target.operations.insert(name.clone(), op);
+                target.operations.insert(name.key().clone(), op);
             }
         }
         call_capacity(requirements(f, &target, span), span)?;
@@ -463,8 +479,8 @@ impl Checker<'_> {
             let mut decreases = false;
             for p in &f.parameters {
                 if let Parameter::Natural(name) = p {
-                    let old = &scope.naturals[name];
-                    let new = &target.naturals[name];
+                    let old = &scope.naturals[name.key()];
+                    let new = &target.naturals[name.key()];
                     prove(
                         &scope.context,
                         new,
@@ -506,11 +522,11 @@ impl Checker<'_> {
             Argument::Natural(Natural {
                 kind: NatKind::Name(name),
                 ..
-            }) if scope.operations.contains_key(name) => {
-                if scope.values.contains_key(name) {
+            }) if name.get(&scope.operations).is_some() => {
+                if name.get(&scope.values).is_some() {
                     return Err(err("name", span, "operation parameter is shadowed"));
                 }
-                Ok(scope.operations[name].clone())
+                Ok(name.get(&scope.operations).unwrap().clone())
             }
             Argument::Natural(Natural {
                 kind: NatKind::Name(name),
@@ -531,7 +547,7 @@ impl Checker<'_> {
     }
     fn provider(
         &mut self,
-        name: &str,
+        name: &Reference,
         args: &[Argument],
         scope: &Scope,
         span: Span,
@@ -563,7 +579,6 @@ impl Checker<'_> {
     }
     fn block(&mut self, block: &Block, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
         let initial = scope.values.clone();
-        let initial_shadows = scope.shadows.clone();
         let outer_identities: BTreeSet<_> =
             initial.values().map(|binding| binding.identity).collect();
         for statement in &block.statements {
@@ -599,14 +614,13 @@ impl Checker<'_> {
             .into_iter()
             .filter(|(_, binding)| !scope.moved.contains(&binding.identity))
             .collect();
-        scope.shadows = initial_shadows;
         Ok(result)
     }
     fn expr(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
         let span = expr.span;
         let result = match &expr.kind {
             ExprKind::Name(name) => {
-                let binding = scope.values.get(name).cloned().ok_or_else(|| {
+                let binding = name.get(&scope.values).cloned().ok_or_else(|| {
                     err(
                         "ownership",
                         span,
@@ -614,7 +628,9 @@ impl Checker<'_> {
                     )
                 })?;
                 if binding.ty.linear() {
-                    scope.values.remove(name);
+                    scope
+                        .values
+                        .remove(name.local.as_ref().expect("resolved runtime binding"));
                     scope.moved.insert(binding.identity);
                 }
                 binding.ty
@@ -641,7 +657,7 @@ impl Checker<'_> {
                 Ty::tuple(result)
             }
             ExprKind::Call(name, args, runtime) => {
-                if let Some(op) = scope.operations.get(name).cloned() {
+                if let Some(op) = name.get(&scope.operations).cloned() {
                     if !args.is_empty() || runtime.len() != 1 {
                         return Err(err(
                             "type",
@@ -724,10 +740,7 @@ impl Checker<'_> {
                 initial,
                 body,
             } => {
-                if scope.naturals.contains_key(index)
-                    || scope.operations.contains_key(index)
-                    || scope.shadows.contains(index)
-                {
+                if index.shadowed.is_some() {
                     return Err(err(
                         "name",
                         span,
@@ -747,7 +760,7 @@ impl Checker<'_> {
                 let mut inner = scope.clone();
                 // Quantum resources enter a fold only through its explicit carry.
                 inner.values.retain(|_, binding| !binding.ty.linear());
-                let i = Linear::variable(index);
+                let i = Linear::variable(index.key());
                 inner.context = inner.context.push(&[
                     linear::at(start.sub(&i), span, "while checking fold bound")?,
                     linear::at(
@@ -757,7 +770,7 @@ impl Checker<'_> {
                     )?,
                     i.scale(-1)?,
                 ]);
-                inner.naturals.insert(index.clone(), i);
+                inner.naturals.insert(index.key().clone(), i);
                 bind(carry, carry_ty.clone(), &mut inner)?;
                 self.block(body, &mut inner, Some(&carry_ty))?;
                 if inner.values.values().any(|binding| binding.ty.linear()) {
@@ -790,14 +803,18 @@ fn access(op: &Operation, kind: &str, span: Span) -> Result<()> {
 fn requirements(f: &Function, scope: &Scope, span: Span) -> Result<()> {
     for requirement in &f.requires {
         match requirement {
-            Requirement::Access(kind, name, _) => access(
-                scope
-                    .operations
-                    .get(name)
-                    .ok_or_else(|| err("access", span, "missing operation argument"))?,
-                kind,
-                span,
-            )?,
+            Requirement::Access(kind, name, _) => {
+                access(
+                    scope
+                        .operations
+                        .get(name.local.as_ref().ok_or_else(|| {
+                            err("access", span, "unresolved operation requirement")
+                        })?)
+                        .ok_or_else(|| err("access", span, "missing operation argument"))?,
+                    kind,
+                    span,
+                )?
+            }
             Requirement::Predicate(p) => {
                 let counterexample = linear::predicate(p, &scope.naturals, &scope.context, false)?;
                 if counterexample.feasible(span, "while checking callee natural premise")? {
@@ -890,7 +907,7 @@ fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>) -> Result<Scop
         .iter()
         .filter_map(|p| {
             if let Parameter::Natural(n) = p {
-                Some(n.clone())
+                Some(n.name.clone())
             } else {
                 None
             }
@@ -906,14 +923,20 @@ fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>) -> Result<Scop
     // Concrete entry sizes are diagnostic preparation data, not capacities of a
     // future runtime or coefficient domain. Keep construction bounded and small.
     let scope = Scope {
-        naturals: naturals
+        naturals: f
+            .parameters
             .iter()
-            .map(|(name, n)| (name.clone(), Linear::constant(i128::from(*n))))
+            .filter_map(|parameter| match parameter {
+                Parameter::Natural(name) => Some((
+                    name.key().clone(),
+                    Linear::constant(i128::from(naturals[&name.name])),
+                )),
+                Parameter::Operation(..) => None,
+            })
             .collect(),
         operations: BTreeMap::new(),
         context: Context::natural([])?,
         values: BTreeMap::new(),
-        shadows: BTreeSet::new(),
         moved: BTreeSet::new(),
         next_binding: Rc::new(Cell::new(0)),
     };
@@ -934,7 +957,7 @@ pub(super) fn instantiate(
             .iter()
             .filter_map(|p| {
                 if let Parameter::Operation(n, _) = p {
-                    Some(n.clone())
+                    Some(n.name.clone())
                 } else {
                     None
                 }
@@ -949,7 +972,7 @@ pub(super) fn instantiate(
         }
         for p in &f.parameters {
             if let Parameter::Operation(name, b) = p {
-                let binding = &operations[name];
+                let binding = &operations[&name.name];
                 let (provider_id, _, provider) =
                     visible_definition(program, &binding.definition, Some(module), f.span)?;
                 if provider
@@ -963,7 +986,7 @@ pub(super) fn instantiate(
                         "concrete providers with operation parameters are unsupported",
                     ));
                 }
-                provider_ids.insert(name.clone(), provider_id);
+                provider_ids.insert(name.name.clone(), provider_id);
                 let provider_scope = concrete_scope(provider, &binding.naturals)?;
                 requirements(provider, &provider_scope, f.span)?;
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
@@ -989,7 +1012,7 @@ pub(super) fn instantiate(
                 )?;
                 expect(&output, &basis(b, &scope)?, &scope.context, f.span)?;
                 scope.operations.insert(
-                    name.clone(),
+                    name.key().clone(),
                     Operation {
                         ty: output,
                         access: all_access(),

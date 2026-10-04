@@ -104,6 +104,14 @@ struct Lowerer<'c, 'p> {
 }
 
 impl Lowerer<'_, '_> {
+    fn bind_env(&self, name: &Ident, value: Binding, env: &mut Env) {
+        let id = self.compiler.locals.binder(name);
+        if let Some(old) = self.compiler.locals.info(id).shadowed {
+            env.remove(self.compiler.locals.key(old));
+        }
+        env.insert(self.compiler.locals.key(id).clone(), value);
+    }
+
     fn add_effect(&mut self, module: &str, span: Span, effect: Effect) {
         if effect > self.effect {
             self.effect_source = Some((module.to_owned(), span));
@@ -280,7 +288,7 @@ impl Lowerer<'_, '_> {
                     ),
                 ));
             }
-            env.insert(name.text.clone(), Binding::Live(value));
+            self.bind_env(name, Binding::Live(value), &mut env);
         }
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
@@ -356,7 +364,7 @@ impl Lowerer<'_, '_> {
         {
             let span = bindings
                 .into_iter()
-                .find(|binding| binding.text == *name)
+                .find(|binding| binding.text == name.name)
                 .map_or(fallback, |binding| binding.span);
             Err(self.error(
                 module,
@@ -386,7 +394,6 @@ impl Lowerer<'_, '_> {
             .charge(module, block.span, env_size(env).saturating_mul(2))?;
         let mut entry = env.clone();
         let mut local = env.clone();
-        let mut rebound = BTreeSet::new();
         for stmt in &block.statements {
             self.compiler.tick(module, stmt.span)?;
             match &stmt.kind {
@@ -394,7 +401,6 @@ impl Lowerer<'_, '_> {
                     let value = self.expr(module, value, &mut local)?;
                     let mut names = BTreeSet::new();
                     self.bind(module, pattern, value, &mut local, &mut names)?;
-                    rebound.extend(names);
                 }
                 StmtKind::Expr(expr) => {
                     let value = self.expr(module, expr, &mut local)?;
@@ -410,14 +416,8 @@ impl Lowerer<'_, '_> {
             }
         }
         let result = self.expr(module, &block.result, &mut local)?;
-        scope::close_scope(&mut entry, &local, &rebound).map_err(|name| {
-            // A direct rebinding supersedes an earlier binder of the same name.
-            // Nested scopes diagnose their own locals before returning here.
-            let span = block.statements.iter().rev().find_map(|stmt| {
-                if let StmtKind::Let { pattern, .. } = &stmt.kind {
-                    scope::binding_span(pattern, name)
-                } else { None }
-            }).unwrap_or(block.span);
+        scope::close_scope(&mut entry, &local, &BTreeSet::new()).map_err(|name| {
+            let span = self.compiler.locals.info(name.id).span;
             self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
         *env = entry;
@@ -452,8 +452,13 @@ impl Lowerer<'_, '_> {
                         "duplicate name in a binding pattern",
                     ));
                 }
-                if env
-                    .get(&name.text)
+                let binder = self.compiler.locals.binder(name);
+                if self
+                    .compiler
+                    .locals
+                    .info(binder)
+                    .shadowed
+                    .and_then(|old| env.get(self.compiler.locals.key(old)))
                     .and_then(Binding::as_ref)
                     .is_some_and(Value::owns_quantum)
                 {
@@ -478,7 +483,7 @@ impl Lowerer<'_, '_> {
                         }),
                     );
                 }
-                env.insert(name.text.clone(), Binding::Live(value));
+                self.bind_env(name, Binding::Live(value), env);
             }
             PatternKind::Tuple(patterns) => {
                 let actual = value.ty();
@@ -797,14 +802,19 @@ impl Lowerer<'_, '_> {
                 Ok(Value::Classical(output))
             }
             ExprKind::Name(name) => {
-                let binding = env.get_mut(&name.text).ok_or_else(|| {
-                    self.error(
-                        module,
-                        name.span,
-                        ErrorCode::UnknownName,
-                        format!("unknown value `{}`", name.text),
-                    )
-                })?;
+                let binding = self
+                    .compiler
+                    .locals
+                    .local_key(name)
+                    .and_then(|key| env.get_mut(key))
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            name.span,
+                            ErrorCode::UnknownName,
+                            format!("unknown value `{}`", name.text),
+                        )
+                    })?;
                 let value = match binding {
                     Binding::Live(value) => value,
                     Binding::Consumed => {
@@ -857,8 +867,13 @@ impl Lowerer<'_, '_> {
                 // Keep legacy ordinary-call resolution and diagnostics. New
                 // static calls resolve descriptions after runtime arguments.
                 let legacy_target =
-                    if static_args.is_empty() && !self.bindings.contains_key(&callee.text) {
-                        if env.contains_key(&callee.text) {
+                    if static_args.is_empty() && self.bound_operation(callee).is_none() {
+                        if self
+                            .compiler
+                            .locals
+                            .local_key(callee)
+                            .is_some_and(|key| env.contains_key(key))
+                        {
                             return Err(self.error(
                                 module,
                                 callee.span,
@@ -875,7 +890,7 @@ impl Lowerer<'_, '_> {
                     .map(|arg| self.expr(module, arg, env))
                     .collect::<Result<Vec<_>, _>>()?;
                 self.static_name(module, callee, env)?;
-                if self.bindings.contains_key(&callee.text) {
+                if self.bound_operation(callee).is_some() {
                     if !static_args.is_empty() || values.len() != 1 {
                         return Err(self.error(
                             module,
@@ -953,7 +968,13 @@ impl Lowerer<'_, '_> {
                 body,
             } => {
                 let source = self.expr(module, source, env)?;
-                if env.contains_key(&function.text) || self.bindings.contains_key(&function.text) {
+                if self
+                    .compiler
+                    .locals
+                    .local_key(function)
+                    .is_some_and(|key| env.contains_key(key))
+                    || self.bound_operation(function).is_some()
+                {
                     return Err(self.error(
                         module,
                         function.span,
@@ -1005,7 +1026,13 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
     ) -> Result<Vec<CircuitStep>, CompileError> {
-        if env.contains_key(&name.text) || self.bindings.contains_key(&name.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(name)
+            .is_some_and(|key| env.contains_key(key))
+            || self.bound_operation(name).is_some()
+        {
             return Err(self.error(
                 module,
                 name.span,
@@ -1267,7 +1294,7 @@ impl Lowerer<'_, '_> {
                 (name.clone(), visible)
             })
             .collect();
-        local.insert(binder.text.clone(), Binding::Live(ancilla));
+        self.bind_env(binder, Binding::Live(ancilla), &mut local);
         let start = self.operations.len();
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();

@@ -8,6 +8,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use super::ast::{FnKind, Module, Span};
 
+pub(super) mod locals;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) struct ModuleId(usize);
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]

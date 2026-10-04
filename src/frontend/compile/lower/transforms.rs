@@ -36,13 +36,14 @@ impl Lowerer<'_, '_> {
         if self.abstract_check || basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
             return Ok(None);
         }
-        if let Some(op) = self.bindings.get(&name.text) {
-            self.compiler.charge(
-                module,
-                name.span,
-                op.meaning.as_ref().map_or(0, |m| m.entries().len()),
-            )?;
-            return Ok(op.meaning.clone());
+        if let Some(op) = self.bound_operation(name) {
+            let cost = op.meaning.as_ref().map_or(0, |m| m.entries().len());
+            self.compiler.charge(module, name.span, cost)?;
+            return Ok(self
+                .bound_operation(name)
+                .expect("retained static binding")
+                .meaning
+                .clone());
         }
         let target = self.compiler.resolve(module, name)?;
         let key = match &target {

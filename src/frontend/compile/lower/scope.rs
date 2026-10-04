@@ -1,35 +1,21 @@
 //! Projection from block-local bindings back to the entry scope.
 //!
-//! `rebound` records direct `let` binders, not quantum slot changes. A new
-//! binder can have exactly the old Value (a gate preserves its slot/basis).
+//! Production keys include structural BinderId, so rebinding changes the key
+//! even when a gate preserves its slot/basis. `rebound` also supports the
+//! historical name-keyed comparison model below; production passes it empty.
 //! See the pointwise model in lean/Qleisli/Scope.lean and the refinement ledger.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
-use super::value::{Binding, Env, Value};
-use crate::frontend::ast::{Pattern, PatternKind, Span};
-
-/// Locate the source binder without changing the ownership/scope projection.
-pub(super) fn binding_span(pattern: &Pattern, name: &str) -> Option<Span> {
-    let mut pending = vec![pattern];
-    while let Some(pattern) = pending.pop() {
-        match &pattern.kind {
-            PatternKind::Name(ident) if ident.text == name => return Some(ident.span),
-            PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
-            _ => {}
-        }
-    }
-    None
-}
-
+use super::value::{Binding, Value};
 /// Reject unreturned local quantum owners, then restore the entry scope.
 /// Failure leaves `entry` unchanged. The result value and suspended frame are
 /// separate holders; this operation never changes the register store or IR.
-pub(super) fn close_scope<'a>(
-    entry: &mut Env,
-    local: &'a Env,
-    rebound: &BTreeSet<String>,
-) -> Result<(), &'a str> {
+pub(super) fn close_scope<'a, K: Ord>(
+    entry: &mut BTreeMap<K, Binding>,
+    local: &'a BTreeMap<K, Binding>,
+    rebound: &BTreeSet<K>,
+) -> Result<(), &'a K> {
     for (name, value) in local {
         if value.as_ref().is_some_and(Value::owns_quantum)
             && (rebound.contains(name) || entry.get(name) != Some(value))
@@ -53,8 +39,8 @@ mod tests {
     use crate::frontend::compile::Ty;
     use crate::ir::ClassicalId;
 
-    // Unlike the production snapshot algorithm, the oracle keeps explicit
-    // lexical identities. Rebinding changes the identity even for equal values.
+    // Compare the historical name-keyed projection to explicit lexical IDs.
+    // Production now includes that source identity in its map keys as well.
     #[derive(Clone)]
     struct LexicalBinding {
         identity: usize,
@@ -142,14 +128,19 @@ mod tests {
         assert_eq!(cases_a.len() * cases_b.len(), 7_225);
         for a in &cases_a {
             for b in &cases_b {
-                let mut entry = Env::new();
-                let mut local = Env::new();
+                let mut entry = BTreeMap::new();
+                let mut local = BTreeMap::new();
                 let mut rebound = BTreeSet::new();
-                let mut expected = Env::new();
+                let mut expected = BTreeMap::new();
+                let mut identity_entry = BTreeMap::new();
+                let mut identity_local = BTreeMap::new();
+                let mut identity_expected = BTreeMap::new();
                 let mut escaping = None;
                 for (name, case) in [("a", a), ("b", b)] {
                     if let Some(binding) = &case.entry {
                         entry.insert(name.to_owned(), slot(binding.value.clone()));
+                        identity_entry
+                            .insert((name, binding.identity), slot(binding.value.clone()));
                         // An immutable classical binding restores its entry
                         // value. Linear ownership stays only with its original
                         // still-live identity, otherwise it becomes spent.
@@ -162,10 +153,13 @@ mod tests {
                         } else {
                             binding.value.clone()
                         };
+                        identity_expected.insert((name, binding.identity), slot(projected.clone()));
                         expected.insert(name.to_owned(), slot(projected));
                     }
                     if let Some(binding) = &case.local {
                         local.insert(name.to_owned(), slot(binding.value.clone()));
+                        identity_local
+                            .insert((name, binding.identity), slot(binding.value.clone()));
                         if binding.identity == 1 {
                             rebound.insert(name.to_owned());
                             if binding.linear && escaping.is_none() {
@@ -176,12 +170,19 @@ mod tests {
                 }
                 let before = entry.clone();
                 let result = close_scope(&mut entry, &local, &rebound);
+                let identity_before = identity_entry.clone();
+                let identity_result =
+                    close_scope(&mut identity_entry, &identity_local, &BTreeSet::new());
                 if let Some(name) = escaping {
-                    assert_eq!(result, Err(name));
+                    assert_eq!(result.map_err(String::as_str), Err(name));
                     assert_eq!(entry, before, "rejection must not partly project the scope");
+                    assert_eq!(identity_result.map_err(|key| *key), Err((name, 1)));
+                    assert_eq!(identity_entry, identity_before);
                 } else {
                     assert_eq!(result, Ok(()));
                     assert_eq!(entry, expected);
+                    assert_eq!(identity_result, Ok(()));
+                    assert_eq!(identity_entry, identity_expected);
                 }
             }
         }

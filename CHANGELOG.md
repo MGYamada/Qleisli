@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Resolve local, basis, static-natural and static-operation bindings through
+  common structural identities in both finite compilation and sized checking
+  and elaboration. Preserve dynamic ownership, source diagnostic order,
+  public Send/Sync and retained proposal bytes (#32).
 - Restore contextual type words such as `Q` and `Op` as static natural names
   in the shared parser, including comparisons, dimensions and specialization;
   preserve ordinary runtime and operation-binder keyword rules (#32).

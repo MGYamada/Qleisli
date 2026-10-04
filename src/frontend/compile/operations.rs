@@ -36,7 +36,7 @@ enum Node {
     Repeat(u16, Operation),
     Conjugate(Operation, Operation),
 }
-pub(super) type Bindings = BTreeMap<String, Operation>;
+pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
 pub(super) fn access_index(access: Access) -> usize {
     match access {
         Access::Apply => 0,
@@ -245,7 +245,7 @@ impl Compiler<'_> {
                 None
             };
             bindings.insert(
-                p.name.text.clone(),
+                self.locals.key(self.locals.binder(&p.name)).clone(),
                 Operation {
                     basis,
                     access: [false; 3],
@@ -269,7 +269,11 @@ impl Compiler<'_> {
                     "finite profile does not support size predicates",
                 ));
             };
-            let Some(op) = bindings.get_mut(&constraint.name.text) else {
+            let Some(op) = self
+                .locals
+                .local_key(&constraint.name)
+                .and_then(|key| bindings.get_mut(key))
+            else {
                 return Err(self.error(
                     &key_name.0,
                     constraint.name.span,

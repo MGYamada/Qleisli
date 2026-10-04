@@ -1,0 +1,64 @@
+{
+  "observation_count": 24,
+  "observations": [
+    "duplicate-pattern",
+    "fold-two-activations",
+    "hide-live-owner",
+    "initializer-rebind",
+    "moved-shadows-import",
+    "multiple-acyclic",
+    "multiple-unused-invalid",
+    "shadow-static-operation",
+    "static-branch-rebind",
+    "zero-fold-capture",
+    "finite-rebind-check",
+    "finite-rebind-run",
+    "finite-branch-check",
+    "finite-branch-run",
+    "sized-fold-check",
+    "sized-fold-run",
+    "sized-recursive-check",
+    "sized-recursive-run",
+    "provider-h-check",
+    "provider-h-run",
+    "provider-x-check",
+    "provider-x-run",
+    "additional-shadow-static-missing-argument",
+    "additional-shadow-static-valid-argument"
+  ],
+  "proposal_count": 6,
+  "proposals": [
+    {
+      "label": "finite-rebind",
+      "file": "finite-rebind.proposal.json",
+      "sha256": "5bc4facd6a397e56ee95b2ec7b4aa0705755b18d13d37dee144c141592ee1356"
+    },
+    {
+      "label": "finite-branch",
+      "file": "finite-branch.proposal.json",
+      "sha256": "8a1df384ca8bba3410b2a30f67e52c7f7150d34200f21a7e175967a56c5a219f"
+    },
+    {
+      "label": "sized-fold",
+      "file": "sized-fold.proposal.json",
+      "sha256": "2f829bbdbd5a04be47f017cabb33444028d9b421683274ac509501ed1bf58fdb"
+    },
+    {
+      "label": "sized-recursive",
+      "file": "sized-recursive.proposal.json",
+      "sha256": "920254b241039b7fcc4bff998567feb0bb0d2ec6e6e7c51bb6ba549667e48472"
+    },
+    {
+      "label": "provider-h",
+      "file": "provider-h.proposal.json",
+      "sha256": "33b086aa3de118caee13dadd49c3dc7e7f577ca75054451039b74996b492da94"
+    },
+    {
+      "label": "provider-x",
+      "file": "provider-x.proposal.json",
+      "sha256": "72096756ec862e8bfe2761782c4e623350cd737d2319f87ed87e80c9069ca5a1"
+    }
+  ],
+  "compared": "Exact exit status, stdout and stderr; actual proposal bytes, without normalization.",
+  "excluded": "Build logs and proposal-writing stdout contain checkout/output paths; all commands must succeed."
+}

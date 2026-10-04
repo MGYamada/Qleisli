@@ -61,3 +61,5 @@ tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/*/fin
 tests/fixtures/frontend_v030/profile-diagnostics/hosted/14.stdout -text -whitespace
 tests/fixtures/review_v030alpha/static-natural-type-words/*.stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/static-natural-type-words/root-isolated/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/static-natural-type-words/root-msrv-tests/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/sized-lexical/sized-source.stdout.txt -text -whitespace

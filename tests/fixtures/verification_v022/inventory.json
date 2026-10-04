@@ -3174,7 +3174,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "f45afe7cf2a7e376bca150bf6fe2ba85dc0fce9c3182c03424cf927da5e55209",
+      "sha256": "4adde2a8262b2a9acfe3fed87baf1a4bbb44d4ed61843d2a9566254661825fad",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3204,7 +3204,7 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "05adf12f262f37e9690a62a6a77e3029413fcf1b913bccc6c941738ecdd75850",
+      "sha256": "530049b2a1397631228b8d1b01d7741e2e04d879cd1042a9720127233bc9271d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3214,7 +3214,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "ff375c0f2471bcd4f1f7a454441d2f8653c6f1e541d5f167c72bd2b863451771",
+      "sha256": "333e9eaffb1851f1c71d563a367ac5ffbad8075c51d8296024c74a1cd18ea301",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3224,7 +3224,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "2611551d230d68d1b147db7eb5cf42281efc54ab43edd58e3505f7730cd4b307",
+      "sha256": "8c353e939bebc1032d55db96b3e0657c1ee05f91f26c6e64c1a957e2914c0321",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3234,7 +3234,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "d19183f56cfa640927a681e5d69924e7d9d5e2c8841a0da96173de6474fa299a",
+      "sha256": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3254,7 +3254,7 @@
     },
     {
       "path": "src/frontend/compile/lower/scope.rs",
-      "sha256": "dd0800bbc194aaef050e07f46ff293d1d49576b407298dbb014857d200b985d4",
+      "sha256": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3264,7 +3264,7 @@
     },
     {
       "path": "src/frontend/compile/lower/transforms.rs",
-      "sha256": "ae7d1e2f6bcbccd5eeaffe846aad53970d398186f0b10d88b80c4141a1835d46",
+      "sha256": "09b5a680ee2bfba06eb1cf8d8e2e0b8d1cc96d7e00c98eda65eac32847df6681",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3274,7 +3274,7 @@
     },
     {
       "path": "src/frontend/compile/lower/value.rs",
-      "sha256": "d7e161bdce1f7a31e6f45a3899d91dd2e52d03165aa8a0c2d0784b72da9e6f74",
+      "sha256": "8d72d9349ab3d43ca5c43dc1e452c1da7ede71cf5ddcb77dbdb0339be49b6453",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3284,7 +3284,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "9ec24dd5722796d0d089eb3f213e5b21a22c4b462b7e7d920d99e603a5f242f1",
+      "sha256": "baf3b6fc5b70b73ee67b6cbf675c2aba4a017ba64f57b2e9ceb7713a2d597305",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3316,7 +3316,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "abfe91f3ce8977961009185b424afb50ac138e38f2a884974f7532089d66e0b0",
+      "sha256": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3512,7 +3512,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "47c1117fa9990cf3b3e57b91f03d30b3589a0ca7353ecfbc0fa334979cd88587",
+      "sha256": "c4663a03199703c984de792b98c1c0897ee57312689fa1a04424b91569a91c1a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3537,6 +3537,32 @@
       }
     },
     {
+      "path": "src/frontend/resolve/locals.rs",
+      "sha256": "7132b78dff038887df51a5431cb3b6e2d1e1b326ac7ab73634be37925a29bbfd",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>)",
+          "pub fn binder(&self, id: BinderId) -> &BinderInfo",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn info(&self, id: BinderId) -> &BinderInfo",
+          "pub fn insert(&mut self, index: Index<'ast>)",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn local_key(&self, name: &Ident) -> Option<&BinderKey>",
+          "pub fn natural_usage(&self, natural: &Natural) -> UseSiteId",
+          "pub fn new( definition: DefId, declaration: &'ast Decl, global: impl Fn(&str) -> Option<Target>, ) -> Self",
+          "pub fn resolve(&self, name: &Ident) -> ResolvedUse",
+          "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> UseSiteId"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/scanner.rs",
       "sha256": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
       "group": "source",
@@ -3553,7 +3579,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "48a6b5ad17b8604b97aca3833dc75b934d19eb4ab8306bea20309371b7a19ade",
+      "sha256": "f17ee82e54e40b3c0df4286a34e2918eebde287ad7cb9a3e6ebb302b6d4614c2",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3591,17 +3617,21 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "8913091f8a985e874bbd9e1d833b399f348d0b693c0a0f8dda6d6d0fec5465a7",
+      "sha256": "d096e015d055b4f0f82dcbb8b148fce66b0892c1e2632c4ec13461f7c703a724",
       "group": "sized-source",
       "surface": {
         "declarations": [],
-        "functions": [],
+        "functions": [
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "ceccd42868a5e59d2ee7ddcd55b2cc87e3ec68e1b9de508d23d4b153c97191e9",
+      "sha256": "2f118dd45410114d820f020a26e725d176c12208509aebc8dd94fd7665b4775a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3611,7 +3641,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "420d7954d8a6dfe746d133f749dc0917d67090be5f1eb248b06bba1cfbbc32d3",
+      "sha256": "2cd2ca2d7da2943826e08a107cc33acd85c7fe9133c8c7b697dc20a5d0dffe76",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3684,7 +3714,7 @@
     },
     {
       "path": "src/frontend/sized/linear.rs",
-      "sha256": "881e10a27be1ab3a6ea79a9d4da7d7315b03de1a8f5744852cf6df6916bef360",
+      "sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3693,12 +3723,12 @@
           "pub fn compare( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, ) -> Result<Self>",
           "pub fn constant(n: i128) -> Self",
           "pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool>",
-          "pub fn natural(names: impl IntoIterator<Item = String>) -> Result<Self>",
+          "pub fn natural(names: impl IntoIterator<Item = BinderKey>) -> Result<Self>",
           "pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool>",
           "pub fn push(&self, inequalities: &[Linear]) -> Self",
           "pub fn scale(&self, n: i128) -> Result<Self>",
           "pub fn sub(&self, b: &Self) -> Result<Self>",
-          "pub fn variable(name: &str) -> Self"
+          "pub fn variable(name: &BinderKey) -> Self"
         ],
         "capacity_constants": []
       }
@@ -3760,7 +3790,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "0e0ada101175ec1280e84fc002f43b81ca2361ede6d0d1adf62887aa97f7f6e1",
+      "sha256": "f3e86eb4aa196451c64c15e7180d04beca3730c7b9ce885fad5d159137600917",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5283,7 +5313,7 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "09c0496a9eeedfdc5d0ee58ae4a73cc8eaedf4803a82c3031472bb0a52dcd9b2",
+      "tests/sized_source.rs": "9ff2f4460b57546bf35ae7228c82d996df8ae5503dee9ea6524247ec90573253",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",

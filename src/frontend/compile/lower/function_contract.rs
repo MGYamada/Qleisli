@@ -132,7 +132,13 @@ impl Lowerer<'_, '_> {
         basis: &Ty,
         env: &Env,
     ) -> Result<Key, CompileError> {
-        if env.contains_key(&name.text) || self.bindings.contains_key(&name.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(name)
+            .is_some_and(|key| env.contains_key(key))
+            || self.bound_operation(name).is_some()
+        {
             return Err(self.error(
                 module,
                 name.span,

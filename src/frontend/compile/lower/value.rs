@@ -13,7 +13,7 @@ use super::super::{TreeSize, Ty, total_size};
 use crate::ir::{ClassicalId, TokenId, WireId};
 
 pub(super) type Slot = u32;
-pub(super) type Env = BTreeMap<String, Binding>;
+pub(super) type Env = BTreeMap<crate::frontend::resolve::locals::BinderKey, Binding>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) enum Binding {

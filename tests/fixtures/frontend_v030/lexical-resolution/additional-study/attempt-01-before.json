@@ -1,0 +1,24 @@
+[
+  {
+    "case": "shadow-static-missing-argument",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/Qargo.toml:0..36: Qargo.toml requires schema-version = 2\nsized.parse: main:77..81: unsupported: sized preparation profile: unsupported runtime expression\nfinite.check: Diagnostic { code: \"project\", message: \"Qargo.toml requires schema-version = 2\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/Qargo.toml\", span: Span { start: 0, end: 36 }, line: 1, column: 1 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "shadow-static-valid-argument",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/Qargo.toml:0..36: Qargo.toml requires schema-version = 2\nsized.parse: main:77..81: unsupported: sized preparation profile: unsupported runtime expression\nfinite.check: Diagnostic { code: \"project\", message: \"Qargo.toml requires schema-version = 2\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/Qargo.toml\", span: Span { start: 0, end: 36 }, line: 1, column: 1 }) }\n",
+    "stderr": ""
+  }
+]

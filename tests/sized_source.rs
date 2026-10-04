@@ -1961,3 +1961,95 @@ fn existing_empty_sized_spellings_remain_common_syntax() {
         "parse",
     );
 }
+
+#[test]
+fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
+    use qleisli::frontend::sized::{ElaboratedProgram, Instantiation};
+    fn send_sync<T: Send + Sync>() {}
+    send_sync::<ParsedProgram>();
+    send_sync::<Instantiation>();
+    send_sync::<ElaboratedProgram>();
+
+    let source = "use std::quantum::x; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { for static i in 0..n carry q = q { let q = x(q); yield q; } }";
+    let original = ParsedProgram::parse(sources(source)).unwrap();
+    let retained = original.clone();
+    drop(original);
+    // The AST has moved/cloned since indexing. Only owned numeric IDs/Table
+    // survive; no address from the borrowed projection index may be retained.
+    let elaborated = std::thread::spawn(move || {
+        retained
+            .instantiate("main::f", naturals(&[("n", 2)]), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+    })
+    .join()
+    .unwrap();
+    let root = &elaborated.definitions()[elaborated.root()];
+    assert_eq!(root.steps().len(), 2);
+    let first = &root.steps()[0];
+    let second = &root.steps()[1];
+    assert_eq!(first.inputs()[0], root.inputs()[0]);
+    assert_eq!(second.inputs()[0], *first.output());
+    assert_eq!(root.output(), second.output());
+    assert_ne!(first.inputs()[0].identity(), first.output().identity());
+    assert_ne!(first.output().identity(), second.output().identity());
+}
+
+#[test]
+fn common_lexical_static_substitution_uses_callee_binders_and_caller_values() {
+    let main = "use helper::apply; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { apply[n,U](q) }";
+    let helper = "pub unitary fn apply[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }";
+    let provider = "pub unitary fn keep[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
+    let parsed = ParsedProgram::parse(BTreeMap::from([
+        ("main".into(), main.into()),
+        ("helper".into(), helper.into()),
+        ("provider".into(), provider.into()),
+    ]))
+    .unwrap();
+    let instance = parsed
+        .instantiate(
+            "main::f",
+            naturals(&[("n", 2)]),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("provider::keep", naturals(&[("n", 2)])),
+            )]),
+        )
+        .unwrap();
+    drop(parsed);
+    let source = instance.clone().elaborate().unwrap();
+    let root = &source.definitions()[source.root()];
+    assert_eq!(root.naturals(), &naturals(&[("n", 2)]));
+    assert_eq!(root.inputs()[0].ty().width(), Some(2));
+    assert_eq!(root.output().ty().width(), Some(2));
+    let call = &root.steps()[0];
+    let called = &source.definitions()[call.called_definition().unwrap()];
+    assert_eq!(called.path(), "helper::apply");
+    assert_eq!(called.naturals(), &naturals(&[("n", 2)]));
+    assert_eq!(called.steps()[0].kind(), "apply");
+}
+
+#[test]
+fn indexed_projection_preserves_profile_diagnostic_order_before_resolution() {
+    let ordinary = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}";
+    let unsupported = "basis fn b(x:Bit)->Bit{x}";
+    for (a, z, expected_module) in [
+        (unsupported.to_owned(), "not valid source".to_owned(), "a"),
+        (
+            format!("use absent::missing; {ordinary}"),
+            unsupported.to_owned(),
+            "z",
+        ),
+        (
+            format!("{ordinary} {ordinary}"),
+            "not valid source".to_owned(),
+            "a",
+        ),
+    ] {
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("a".into(), a), ("z".into(), z)])).unwrap_err();
+        assert_eq!(error.code(), "unsupported", "{error}");
+        assert_eq!(error.module(), Some(expected_module), "{error}");
+    }
+}

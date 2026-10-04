@@ -15,14 +15,14 @@ impl Compiler<'_> {
         pattern: &Pattern,
         ty: &Ty,
         label: u16,
-    ) -> Result<BTreeMap<String, BasisValue>, CompileError> {
+    ) -> Result<BTreeMap<BinderKey, BasisValue>, CompileError> {
         let mut env = BTreeMap::new();
         let mut pending = vec![(pattern, ty, label)];
         while let Some((pattern, ty, label)) = pending.pop() {
             self.tick(module, pattern.span)?;
             match &pattern.kind {
                 PatternKind::Name(name) => {
-                    if env.contains_key(&name.text) {
+                    if env.keys().any(|key: &BinderKey| key.name == name.text) {
                         return Err(self.error(
                             module,
                             name.span,
@@ -32,7 +32,7 @@ impl Compiler<'_> {
                     }
                     self.charge(module, pattern.span, ty.tree_size().nodes)?;
                     env.insert(
-                        name.text.clone(),
+                        self.locals.key(self.locals.binder(name)).clone(),
                         BasisValue {
                             ty: ty.clone(),
                             label,
@@ -94,7 +94,7 @@ impl Compiler<'_> {
                     // Retain the existing work accounting for legacy binders.
                     self.charge(&key_name.0, param.span, ty.tree_size().nodes)?;
                     env.insert(
-                        name.text.clone(),
+                        self.locals.key(self.locals.binder(name)).clone(),
                         BasisValue {
                             ty: ty.clone(),
                             label,
@@ -127,7 +127,7 @@ impl Compiler<'_> {
         &mut self,
         module: &str,
         expr: &BasisExpr,
-        env: &BTreeMap<String, BasisValue>,
+        env: &BTreeMap<BinderKey, BasisValue>,
         depth: usize,
     ) -> Result<BasisValue, CompileError> {
         self.tick(module, expr.span)?;
@@ -141,14 +141,18 @@ impl Compiler<'_> {
         }
         let value = match &expr.kind {
             BasisExprKind::Name(name) => {
-                let value = env.get(&name.text).ok_or_else(|| {
-                    self.error(
-                        module,
-                        name.span,
-                        ErrorCode::UnknownName,
-                        format!("unknown basis value `{}`", name.text),
-                    )
-                })?;
+                let value = self
+                    .locals
+                    .local_key(name)
+                    .and_then(|key| env.get(key))
+                    .ok_or_else(|| {
+                        self.error(
+                            module,
+                            name.span,
+                            ErrorCode::UnknownName,
+                            format!("unknown basis value `{}`", name.text),
+                        )
+                    })?;
                 self.charge(module, name.span, value.ty.tree_size().nodes)?;
                 value.clone()
             }
@@ -208,7 +212,11 @@ impl Compiler<'_> {
                 }
             }
             BasisExprKind::Call { callee, args } => {
-                if env.contains_key(&callee.text) {
+                if self
+                    .locals
+                    .local_key(callee)
+                    .is_some_and(|key| env.contains_key(key))
+                {
                     return Err(self.error(
                         module,
                         callee.span,

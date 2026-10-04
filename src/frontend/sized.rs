@@ -142,12 +142,28 @@ impl ParsedProgram {
                 };
                 Error::new(code, e.span, e.message).in_module(name)
             })?;
-            let projected = parser::project(&module).map_err(|e| e.in_module(name))?;
+            let projected = parser::project(&module, None).map_err(|e| e.in_module(name))?;
             syntax.insert(name.clone(), module);
             modules.insert(name.clone(), projected);
         }
         let resolution = Resolution::new(syntax.iter().map(|(name, ast)| (name.as_str(), ast)))
             .map_err(Self::resolution_error)?;
+        // Preserve the per-module profile diagnostic boundary above. Reuse the
+        // same projection after real declaration IDs exist; no source reparse
+        // or competing preflight rules are involved.
+        for (id, declaration) in resolution.declarations() {
+            let module = &syntax[&declaration.name.0];
+            let index = super::resolve::locals::Index::new(
+                id,
+                &module.decls[declaration.ast_index],
+                |_| None,
+            );
+            modules.insert(
+                declaration.name.0.clone(),
+                parser::project(module, Some(&index))
+                    .map_err(|error| error.in_module(&declaration.name.0))?,
+            );
+        }
         let mut program = Self {
             sources,
             syntax,
