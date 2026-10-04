@@ -1,0 +1,10 @@
+{
+  "scope": "Integration records only; claims remain limited to each recorded command.",
+  "files": {
+    "README.md": "b509fcc71c7213f58e3ba9353d454077a3d0360ee7e99ee8b31c2ca8d4ccb302",
+    "format.json": "91401710cdf9c6da2778014ad84ed52af846229ead71ea3044eb1db0ffeaa3d3",
+    "format.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "format.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "validation.json": "289596adbf810d76f99c79adc03e2a7313ae12bbbdbe71fb2a015b471e917591"
+  }
+}

@@ -21,7 +21,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
     ("bell", "corpus/quantum_katas/bell_measure", 2),
-    ("classical_branch", "tests/fixtures/authoring_sessions/dual-v028/attempt-02", 2),
+    ("classical_branch", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02", 2),
     ("grover2", "corpus/quantum_katas/grover2", 2),
     ("qft2", "corpus/qualtran/qft2", 2),
     ("qpe3", "corpus/quantum_katas/qpe3", 4),

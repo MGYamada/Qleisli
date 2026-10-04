@@ -29,10 +29,10 @@ impl SourceType {
                 TypeKind::Bits(_) => "bits",
                 _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
             },
-            TypeKind::Bit => "cbit",
-            TypeKind::Bits(_) => "cbits",
+            TypeKind::Bit => "bit",
+            TypeKind::Bits(_) => "bits",
             TypeKind::Tuple(_) => "tuple",
-            TypeKind::Unit => unreachable!("sized Unit is not admitted by the profile"),
+            TypeKind::Unit => "unit",
         }
     }
     pub fn width(&self) -> Option<u32> {
@@ -45,7 +45,7 @@ impl SourceType {
                 _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
             },
             TypeKind::Tuple(_) => None,
-            TypeKind::Unit => unreachable!("sized Unit is not admitted by the profile"),
+            TypeKind::Unit => Some(0),
         }
     }
     pub fn fields(&self) -> &[SourceType] {
@@ -92,6 +92,13 @@ impl SourceValue {
     }
     pub fn fields(&self) -> &[SourceValue] {
         &self.fields
+    }
+    fn unit() -> Self {
+        Self {
+            ty: SourceType::unit(),
+            identity: None,
+            fields: Vec::new(),
+        }
     }
     fn tuple(fields: Vec<Self>) -> Self {
         Self {
@@ -471,22 +478,17 @@ fn concrete_type(
     values: &BTreeMap<BinderKey, u32>,
     span: Span,
 ) -> Result<SourceType> {
-    let ty = SourceType {
-        kind: match t {
-            ast::Type::Quantum(Basis::Bit) => TypeKind::Q(Box::new(SourceType::bit())),
-            ast::Type::Quantum(Basis::Bits(n)) => {
-                TypeKind::Q(Box::new(SourceType::bits(natural(n, values)?)))
-            }
-            ast::Type::CBit => TypeKind::Bit,
-            ast::Type::CBits(n) => TypeKind::Bits(natural(n, values)?),
-            ast::Type::Tuple(fields) => TypeKind::Tuple(
-                fields
-                    .iter()
-                    .map(|t| concrete_type(t, values, span))
-                    .collect::<Result<_>>()?,
-            ),
-        },
-    };
+    let ty = t.map_sizes(&mut |size| {
+        let value = natural(size, values)?;
+        if value > 8 {
+            return Err(error(
+                "limit",
+                span,
+                "concrete register/classical sequence exceeds eight bits",
+            ));
+        }
+        Ok(value)
+    })?;
     if ty.width().is_some_and(|n| n > 8) {
         return Err(error(
             "limit",
@@ -644,7 +646,10 @@ impl Builder<'_> {
                     let target_type =
                         self.provider_type(operations[&name.name].target(), function.span)?;
                     let required = concrete_type(
-                        &ast::Type::Quantum(basis.clone()),
+                        &ast::Type::quantum(match basis {
+                            Basis::Bit => ast::Type::bit(),
+                            Basis::Bits(n) => ast::Type::bits(n.clone()),
+                        }),
                         &resolved_naturals,
                         function.span,
                     )?;
@@ -1003,6 +1008,7 @@ impl Builder<'_> {
     ) -> Result<SourceValue> {
         let span = expr.span;
         match &expr.kind {
+            ExprKind::Unit => Ok(SourceValue::unit()),
             ExprKind::Name(name) => {
                 let b = name.get(&scope.values).cloned().ok_or_else(|| {
                     error(
@@ -1301,6 +1307,9 @@ impl Frame {
         if ty.value_cells() > 4096 {
             return Err(error("limit", span, "concrete value exceeds 4096 cells"));
         }
+        if matches!(ty.kind, TypeKind::Unit) {
+            return Ok(SourceValue::unit());
+        }
         if let TypeKind::Tuple(fields) = &ty.kind {
             return Ok(SourceValue::tuple(
                 fields
@@ -1378,6 +1387,9 @@ fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Fr
     match pattern {
         Pattern::Name(name, span) => bind_name(name, value, *span, scope, frame),
         Pattern::Tuple(patterns, span) => {
+            if patterns.is_empty() && matches!(value.ty.kind, TypeKind::Unit) {
+                return Ok(());
+            }
             if !matches!(value.ty.kind, TypeKind::Tuple(_)) || patterns.len() != value.fields.len()
             {
                 return Err(error(
@@ -1447,6 +1459,7 @@ fn primitive(
     fn shape(t: TypeShape, ns: &[u32], span: Span) -> Result<SourceType> {
         Ok(SourceType {
             kind: match t {
+                TypeShape::Unit => TypeKind::Unit,
                 TypeShape::Bit => TypeKind::Q(Box::new(SourceType::bit())),
                 TypeShape::CBit => TypeKind::Bit,
                 TypeShape::Bits(n) => TypeKind::Q(Box::new(SourceType::bits(size(n, ns, span)?))),

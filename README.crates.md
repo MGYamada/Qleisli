@@ -56,7 +56,7 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     (measure_z(a), measure_z(b))
 }
@@ -123,7 +123,7 @@ checked programs become `AcceptedProgram` values.
   QIR text/bitcode **input** additionally requires optional PyQIR 0.12.5.
   Cargo installs neither the Python host nor the Lean checker.
 - The additive experimental `qleisli sized` CLI checks and executes bounded
-  `Bits<n>` / `CBits<m>` source and shared measured QPE. It requires a separately
+  `Q<Bits<n>>` / ordinary `Bits<m>` source and shared measured QPE. It requires a separately
   built Lean kernel; Cargo does not install that kernel. General source/runtime
   correspondence and full-profile migration remain pending.
 - Lean is the sole production acceptance implementation. General **Soundness**, **Physical Realizability** and
@@ -139,7 +139,9 @@ Version 0.2.9 explicitly breaks the verifier API and runtime installation
 contract: replace `verify`/`VerifiedProgram` with native acceptance/`AcceptedProgram`,
 remove `interchange::dual`, and select the matching checker. Version 0.2.3 also
 requires an edition manifest for filesystem source trees. The 0.3.0-alpha
-prerelease preparation does not complete the planned 0.3.0 type-system work.
+prerelease uses ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1`; the retired
+`CBit`/`CBits`, `false`/`true` and empty-tuple type spellings reject. General
+basis polymorphism and the remaining common-checker work are still incomplete.
 
 ## Documentation
 
@@ -149,10 +151,10 @@ prerelease preparation does not complete the planned 0.3.0 type-system work.
 - [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Current documentation links target `v0.3.0-alpha`. The documentation cleanup retains
-the imaginary-v1 drafts and v0.3 Lean backend plan under `docs/`. The retired
-`docs-old/` tree has been deleted; new documentation belongs in `docs/` and
-follows adopted decisions, actual code and proofs.
+Current documentation links target `v0.3.0-alpha`. The single book has its
+sources in `docs/src/`, including the imaginary-v1 drafts and v0.3 Lean backend
+plan. The retired `docs-old/` tree has been deleted. New chapters follow adopted
+decisions, actual code and proofs.
 
 ## License
 

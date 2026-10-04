@@ -317,6 +317,11 @@ pub(super) fn remap_events(
 }
 
 fn atoms(v: &SourceValue) -> Vec<&SourceValue> {
+    // Ordinary Unit carries no value port. This is a constructor check,
+    // never a width-zero rule: empty quantum/register values remain atoms.
+    if v.ty().kind() == "unit" && !v.ty().is_quantum() {
+        return Vec::new();
+    }
     if v.ty().kind() == "tuple" {
         v.fields().iter().flat_map(atoms).collect()
     } else {
@@ -896,7 +901,7 @@ mod tests {
     use super::*;
     use crate::frontend::sized::ParsedProgram;
     fn proposal() -> HierarchyProposal {
-        let source = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (CBits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
+        let source = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
         ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())

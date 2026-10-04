@@ -32,7 +32,7 @@ const REJECTED: &[(&str, &str)] = &[
 fn fixture(name: &str) -> String {
     fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/qli_authoring")
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring")
             .join(format!("{name}.qli")),
     )
     .unwrap()
@@ -43,7 +43,7 @@ fn fixture(name: &str) -> String {
 fn current_predicate_fixture(name: &str) -> String {
     fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring")
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring")
             .join(format!("{name}.qli")),
     )
     .unwrap()
@@ -324,7 +324,8 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
 
 #[test]
 fn every_quick_reference_program_compiles_and_executes() {
-    let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/quick_reference");
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference");
     let programs = [
         "exact_phase.qli",
         "teleport_minus.qli",
@@ -407,7 +408,8 @@ fn every_source_fixture_belongs_to_an_exercised_case() {
     expected.insert("accepted/auxiliary_hh".into());
     expected.insert("accepted/pair_contract".into());
     expected.insert("accepted/product_reassociation".into());
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/qli_authoring");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring");
     fn sources(root: &Path, path: &Path, found: &mut BTreeSet<String>) {
         for entry in fs::read_dir(path).unwrap() {
             let path = entry.unwrap().path();

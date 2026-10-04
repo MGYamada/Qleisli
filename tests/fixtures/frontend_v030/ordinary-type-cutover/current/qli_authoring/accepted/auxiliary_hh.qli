@@ -1,0 +1,10 @@
+//! Exact cleanup through the explicit logical identity contract.
+use std::quantum::h;
+use std::quantum::init0;
+use std::observe::measure_z;
+basis fn predicate(b: Bit) -> Bit { b }
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+observe fn main() -> Bit {
+    let q = with_computed(h(init0()),predicate,identity) { |data,flag| (data,h(h(flag))) };
+    measure_z(h(q))
+}

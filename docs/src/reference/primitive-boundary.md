@@ -11,9 +11,9 @@ or discharged guarantee. The remaining decisions in
 this inventory does not adopt every proposal in them.
 
 The current implementation is `0.3.0-alpha`, in constitutional edition 2026.
-Names and signatures below describe the existing finite and sized frontends,
-including current `CBit` / `CBits<n>` spelling. They do not anticipate the
-unimplemented common-frontend type migration. Source paths identify files in
+Names and signatures below describe the existing finite and sized profiles
+with canonical ordinary `Unit`, `Bit` and `Bits<n>` types. Their supported
+lowering paths remain distinct; source type identity is shared. Source paths identify files in
 the [Qleisli repository](https://github.com/MGYamada/Qleisli).
 
 ## Meaning, spelling and implementation
@@ -69,7 +69,7 @@ and runtime preservation links are already proved.
 | `std::quantum::toffoli` | `(Q<Bit>, Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Q<Bit>)`; Unitary | `|a,b,t> ↦ |a,b,t xor (a and b)>`; emits `Toffoli` and preserves this nested result tree. All three owners must be distinct. |
 | `std::quantum::split` | `Q<(A,B)> -> (Q<A>, Q<B>)`; Unitary | Explicitly replaces one binary-product owner with two ordered owners over the same wire list. Emits `Split`; no measurement or separability claim. An arbitrary tuple tree is not flattened. |
 | `std::quantum::join` | `(Q<A>, Q<B>) -> Q<(A,B)>`; Unitary | Explicitly combines distinct owners into the ordered binary-product owner, concatenating left then right wires. Emits `Join`; no assertion that the inputs form a product state. |
-| `std::observe::measure_z` | `Q<Bit> -> CBit`; Observe | Destructive Z measurement. Consumes the quantum owner and creates a classical result; emits `MeasureZ`. The complete unnormalized outcome family is relevant with references. |
+| `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Destructive Z measurement. Consumes the quantum owner and creates an ordinary result; emits `MeasureZ`. The complete unnormalized outcome family is relevant with references. |
 | `std::observe::reset` | `Q<Bit> -> Q<Bit>`; Observe | Ends the input logical wire and returns a fresh logical owner/wire in zero. Emits `Reset`; it is an observing reset channel, not pure inverse computation or clean-release evidence. |
 | `std::observe::discard` | `Q<A> -> Unit`; Observe | Explicitly consumes the owner with discard semantics. Emits `Discard`; it is not implicit scope cleanup or proof of a zero state. |
 
@@ -84,8 +84,9 @@ mathematical meaning.
 
 `src/frontend/sized/primitive.rs` is a separate current catalog, shared by its
 symbolic checker and concrete elaborator. Its internal `TypeShape::Bit` and
-`Bits` denote quantum source values, while `CBit` and `CBits` denote ordinary
-values. The table spells the actual source types explicitly. Square-bracketed
+`Bits` labels still denote quantum source values, while internal `CBit` and
+`CBits` labels denote ordinary values. These private catalog labels are not
+source spellings. The table spells the actual source types explicitly. Square-bracketed
 parameters below are static natural arguments.
 
 | Entry | Current signature; effect | Meaning, owners and lowering provenance |
@@ -96,18 +97,18 @@ parameters below are static natural arguments.
 | `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
 | `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
 | `std::quantum::init0` | `() -> Q<Bit>`; Iso | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
-| `std::observe::measure_z` | `Q<Bit> -> CBit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
+| `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
 | `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>, Q<Bits<n-1>>)`; Unitary | Removes axis `k` into the first returned owner; the remaining axes keep their order. Requires `k < n`. Emits a structural `take_bit` proposal. |
 | `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>, Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Inserts the first owner's axis at position `k` in the remaining ordered axes. Requires `k < n`; emits structural `put_bit`. |
 | `std::registers::empty` | `() -> Q<Bits<0>>`; Unitary | Explicitly introduces a zero-width owner through structural `pack_empty_bits`. Zero physical width does not remove the owner obligation. |
-| `std::registers::consume_empty` | `Q<Bits<0>> -> ()`; Unitary | Explicitly consumes that zero-width owner through structural `unpack_empty_bits`; it is not a general discard operation. |
-| `std::classical::empty_bits` | `() -> CBits<0>`; Unitary | Constructs the empty ordinary bit list. No quantum owner or measurement is introduced. |
-| `std::classical::prepend_bit` | Static `[n]`; `(CBit, CBits<n>) -> CBits<n+1>`; Unitary | Packs the first classical bit before the existing ordered list; no quantum action. |
+| `std::registers::consume_empty` | `Q<Bits<0>> -> Unit`; Unitary | Explicitly consumes that zero-width owner through structural `unpack_empty_bits`; it is not a general discard operation. |
+| `std::classical::empty_bits` | `() -> Bits<0>`; Unitary | Constructs the empty ordinary bit list. No quantum owner or measurement is introduced. |
+| `std::classical::prepend_bit` | Static `[n]`; `(Bit, Bits<n>) -> Bits<n+1>`; Unitary | Packs the first ordinary bit before the existing ordered list; no quantum action. |
 
 `Unitary` here classifies the quantum action at fixed classical inputs. It does
 not make arbitrary classical copying, dropping or packing into a reversible
-classical computation. The empty ordinary result's current sized spelling is
-`()`. `Q<Bits<0>>` is still a distinct linear value.
+classical computation. The empty ordinary result has type `Unit` and value
+`()`. `Bits<0>` and `Q<Bits<0>>` are distinct from Unit and from each other.
 
 The actual checks are in `src/frontend/sized/check.rs::primitive_signature`
 and `src/frontend/sized/elaborate.rs::primitive`. Concrete phase arguments require

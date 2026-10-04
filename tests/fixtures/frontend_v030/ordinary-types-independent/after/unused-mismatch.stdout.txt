@@ -1,0 +1,3 @@
+common.parse: ok declarations=2
+finite.check: Diagnostic { code: "type_mismatch", message: "result does not match the function return type: expected `Q<Bit>`, found `Bit`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unused-mismatch/main.qli", span: Span { start: 72, end: 73 }, line: 1, column: 73 }) }
+sized.generic: Error { code: "type", module: Some("main"), span: Span { start: 72, end: 73 }, message: "type or tuple/size shape mismatch: expected Q(Bit), found Bit" }

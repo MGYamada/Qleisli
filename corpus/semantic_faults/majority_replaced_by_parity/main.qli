@@ -11,7 +11,7 @@ use std::quantum::split;
 use std::observe::measure_z;
 use kernel::kernel;
 
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let q = kernel(join(join(init0(), init0()), init0()));
     let (part2, w2) = split(q);
     let (w0, w1) = split(part2);

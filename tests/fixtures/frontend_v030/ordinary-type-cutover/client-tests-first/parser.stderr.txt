@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/parser.rs (target/debug/deps/parser-9b127f065bfaef57)

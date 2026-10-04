@@ -22,9 +22,9 @@ fn signature(ty: &SourceType) -> String {
 }
 
 #[test]
-fn concrete_accessor_views_preserve_data_owners_nesting_and_empty_tuples() {
+fn concrete_accessor_views_preserve_data_owners_nesting_and_unit() {
     let program = parsed(
-        "pub unitary fn f(q: Q<Bit>, r: Q<Bits<1>>, z: Q<Bits<0>>, c: CBit, d: CBits<1>, e: CBits<0>) -> ((Q<Bit>,Q<Bits<1>>),(Q<Bits<0>>,CBit),CBits<1>,CBits<0>,()) { ((q,r),(z,c),d,e,()) }",
+        "pub unitary fn f(q: Q<Bit>, r: Q<Bits<1>>, z: Q<Bits<0>>, c: Bit, d: Bits<1>, e: Bits<0>) -> ((Q<Bit>,Q<Bits<1>>),(Q<Bits<0>>,Bit),Bits<1>,Bits<0>,Unit) { ((q,r),(z,c),d,e,()) }",
     );
     let graph = program
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -41,14 +41,14 @@ fn concrete_accessor_views_preserve_data_owners_nesting_and_empty_tuples() {
             "bit:1:true",
             "bits:1:true",
             "bits:0:true",
-            "cbit:1:false",
-            "cbits:1:false",
-            "cbits:0:false"
+            "bit:1:false",
+            "bits:1:false",
+            "bits:0:false"
         ]
     );
     assert_eq!(
         signature(body.output().ty()),
-        "((bit:1:true,bits:1:true),(bits:0:true,cbit:1:false),cbits:1:false,cbits:0:false,())"
+        "((bit:1:true,bits:1:true),(bits:0:true,bit:1:false),bits:1:false,bits:0:false,unit:0:false)"
     );
     assert!(!body.output().ty().is_quantum());
     assert_eq!(body.output().ty().width(), None);
@@ -63,38 +63,42 @@ fn concrete_accessor_views_preserve_data_owners_nesting_and_empty_tuples() {
 }
 
 #[test]
-fn shared_identity_does_not_extend_the_sized_surface_profile() {
+fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_support() {
     for source in [
         "pub unitary fn f(x: Unit) -> Unit { x }",
-        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }",
         "pub unitary fn f(x: Bit) -> Bit { x }",
         "pub unitary fn f(x: Bits<1>) -> Bits<1> { x }",
     ] {
-        let e = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
-        assert_eq!(e.code(), "unsupported", "{e}");
-        assert!(e.message().starts_with("sized preparation profile:"));
+        parsed(source);
     }
+    let error = ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }".into(),
+    )]))
+    .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.message().starts_with("sized preparation profile:"));
 }
 
 #[test]
-fn symbolic_sizes_keep_exact_owner_shape_and_legacy_mismatch_diagnostics() {
+fn symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics() {
     parsed("pub unitary fn f[static n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<1+n>> { q }");
     for (source, message) in [
         (
             "pub unitary fn f(q: Q<Bits<1>>) -> Q<Bit> { q }",
-            "type or tuple/size shape mismatch: expected Bit, found Bits(Linear { constant: 1, terms: {} })",
+            "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))",
         ),
         (
-            "pub unitary fn f(c: CBits<0>) -> () { c }",
-            "type or tuple/size shape mismatch: expected Tuple([]), found CBits(Linear { constant: 0, terms: {} })",
+            "pub unitary fn f(c: Bits<0>) -> Unit { c }",
+            "type or tuple/size shape mismatch: expected Unit, found Bits(Linear { constant: 0, terms: {} })",
         ),
         (
-            "pub unitary fn f(c: CBit) -> Q<Bit> { c }",
-            "type or tuple/size shape mismatch: expected Bit, found CBit",
+            "pub unitary fn f(c: Bit) -> Q<Bit> { c }",
+            "type or tuple/size shape mismatch: expected Q(Bit), found Bit",
         ),
         (
-            "pub unitary fn f(q: Q<Bit>) -> CBit { q }",
-            "type or tuple/size shape mismatch: expected CBit, found Bit",
+            "pub unitary fn f(q: Q<Bit>) -> Bit { q }",
+            "type or tuple/size shape mismatch: expected Bit, found Q(Bit)",
         ),
     ] {
         let e = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();

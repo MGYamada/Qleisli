@@ -3,11 +3,13 @@
 This chapter specifies the **0.3.0 target contract** under the adopted
 [#22](https://github.com/MGYamada/Qleisli/issues/22) /
 [#27](https://github.com/MGYamada/Qleisli/issues/27) type boundary and the
-[authority hierarchy](authority.md). Implementation and conformance work remain
-in progress. The current alpha frontend still has `CBit` / `CBits<n>` and does
-not implement general basis polymorphism. The preserved authoring experiments
-in the [foundation packet](../design/type-foundation.md) record those failures;
-examples of the target rules below are not claims of current acceptance.
+[authority hierarchy](authority.md). The current alpha frontend uses the
+canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` spellings described
+below. Both checking profiles classify the common source type tree and retain
+its exact ownership boundaries. General basis polymorphism and convergence of
+the execution profiles remain in progress. The
+[foundation packet](../design/type-foundation.md) preserves the original
+experiments; their historical failures are not current acceptance results.
 
 ## One finite type universe
 
@@ -31,7 +33,7 @@ its linear obligations. There is no `C<A>` constructor.
 | `Q<A>` | One linear quantum owner with basis `A` |
 | `(Q<A>,Q<B>)` | Two linear owners, without any assumption of state separability |
 
-The target Bit literal spelling is `0` / `1` in both ordinary and basis
+The Bit literal spelling is `0` / `1` in both ordinary and basis
 computations. `false` / `true` migrate explicitly to `0` / `1`. A numeral in a
 static-Nat position instead denotes a natural; this stage/category distinction
 does not inspect quantum data. No literal creates a quantum owner. Other Bit
@@ -110,6 +112,13 @@ that action and the owner/evidence interface. A pure introduction or elimination
 map for a Unit owner needs its own explicit checked rule; ordinary `()` supplies
 neither such a map nor an implicit `Q<A> -> A` conversion.
 
+Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
+or matched by the empty pattern `()`, including inside an ordinary tuple.
+That pattern does not match `Bits<0>` or `Q<Bits<0>>`. Sized lowering omits
+ordinary Unit value ports while retaining the exact source interface and all
+executed operations. A computation returning Unit can still consume owners or
+perform observable work; omitting its result port does not omit its body.
+
 ## Inference and generic responsibilities
 
 Infer only uniquely determined static structure under specified rules. Reject
@@ -139,6 +148,16 @@ not a proof about every member of a generic family.
 | Sized result-type `()` | `Unit`; the value remains `()` |
 | A same-width value of a different tree | Explicit specified conversion or rejection; no implicit cast |
 
+The retired type and literal spellings reject with migration diagnostics; they
+are not accepted aliases. Empty parentheses remain value and pattern syntax,
+and an empty argument list remains nullary. In a type position, write `Unit`.
+
+The public sized `SourceType` view uses `kind() == "bit"` or `"bits"` for an
+ordinary or quantum leaf. Callers must use `is_quantum()` to distinguish their
+ownership; the kind string alone is insufficient. Ordinary Unit has kind
+`"unit"`, width zero and no tuple fields. Native classical port tags are
+unchanged by this source/API migration.
+
 Measurement explicitly consumes a supported `Q<A>` and produces ordinary data
 with Observe semantics. An ordinary `if` consumes an ordinary Bit condition;
 it cannot read a `Q<Bit>`. Coherent control has its separate rule.
@@ -148,6 +167,16 @@ Bits atom. Hierarchy distinguishes Unit/Bit/Bits/tuple. The common frontend must
 retain the full source tree and use an explicit representation mapping or
 reject an unsupported lowering profile. It must not silently map `Bits<1>` to
 Bit or `Bits<0>` to Unit to obtain evidence.
+
+The current finite profile supports ordinary Unit/Bit values and products, but
+does not yet lower Bits atoms. The sized profile checks ordinary Bit/Bits and
+Unit, supports its existing measurement/readout paths and lowers ordinary
+Unit computations. Sized runtime Bit literals/Boolean evaluation, general
+classical entry lowering, general product and `Q<Unit>` bases, and reusing basis
+functions as runtime computations remain unfinished profile obligations.
+Successful generic checking does not imply successful concrete lowering.
+These limits do not establish separate type universes or close the remaining
+[#27](https://github.com/MGYamada/Qleisli/issues/27) work.
 
 All frontend output remains an untrusted proposal. Existing native root,
 request, contract, hierarchy and finite-leaf gates remain mandatory. The

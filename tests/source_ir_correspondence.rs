@@ -197,7 +197,7 @@ unitary fn relabel(q: Q<((Bit,Unit),(Bit,(Unit,Bit)))>)
     -> Q<((Unit,Bit),((Bit,Bit),Unit))> {{
     do ((a,_),(b,(_,c))) <- q; pure (((),c),((a xor b,b),()))
 }}
-observe fn main() -> ((CBit,CBit),CBit) {{
+observe fn main() -> ((Bit,Bit),Bit) {{
     let a = do a <- {}; pure (a,());
     let c = do c <- {}; pure ((),c);
     let q = relabel(join(a,join({},c)));
@@ -252,7 +252,7 @@ fn growing_lift_matches_joint_pauli_statistics_with_two_reference_wires() {
 iso fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
     do (a,b) <- q; pure ((a,b),a xor b)
 }}
-observe fn main() -> (((CBit,CBit),CBit),(CBit,CBit)) {{
+observe fn main() -> (((Bit,Bit),Bit),(Bit,Bit)) {{
     let (a,r) = cnot(t(h(init0())),init0());
     let (b,s) = cnot(h(init0()),init0());
     let (ab,c) = split(grow(join(a,b))); let (a,b) = split(ab);
@@ -286,7 +286,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     // joint settings checks the corresponding unnormalized reference states.
     for axes in settings(2) {
         let source = format!(
-            "observe fn main() -> (CBit,CBit) {{ {preparation} ({},{}) }}",
+            "observe fn main() -> (Bit,Bit) {{ {preparation} ({},{}) }}",
             axes[0].read("a"),
             axes[1].read("r")
         );
@@ -307,7 +307,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     ];
     for axes in settings(2) {
         let source = format!(
-            "observe fn main() -> (CBit,CBit) {{ {preparation} let a=reset(a); ({},{}) }}",
+            "observe fn main() -> (Bit,Bit) {{ {preparation} let a=reset(a); ({},{}) }}",
             axes[0].read("a"),
             axes[1].read("r")
         );
@@ -325,7 +325,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
     ];
     for axes in settings(1) {
         let source = format!(
-            "observe fn main() -> CBit {{ {preparation} discard(a); {} }}",
+            "observe fn main() -> Bit {{ {preparation} discard(a); {} }}",
             axes[0].read("r")
         );
         assert_distribution(&compile(&source), &born(&discard_histories, &axes));
@@ -364,7 +364,7 @@ fn computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs() {
     for axes in settings(3) {
         let source = format!(
             "{COMPUTED}
-observe fn main() -> ((CBit,CBit),CBit) {{
+observe fn main() -> ((Bit,Bit),Bit) {{
     let au = do a <- h(init0()); pure (a,());
     let q = oracle(join(join(au,h(init0())),h(init0())));
     let (aub,c) = split(q); let (au,b) = split(aub); let (a,u) = split(au);
@@ -400,7 +400,7 @@ observe fn main() -> ((CBit,CBit),CBit) {{
             );
             let source = format!(
                 "{COMPUTED}
-observe fn main() -> (((CBit,CBit),CBit),CBit) {{
+observe fn main() -> (((Bit,Bit),Bit),Bit) {{
     let au = do a <- {}; pure (a,());
     let q = join(join(au,{}),{});
     let (control,q) = qif(h(init0()),q) {{ 0=>identity, 1=>oracle }};
@@ -434,7 +434,7 @@ unitary fn identity(q: Q<{basis}>) -> Q<{basis}> {{ q }}
         for axis in [Axis::X, Axis::Y] {
             let source = format!(
                 "{definitions}
-observe fn main() -> CBit {{
+observe fn main() -> Bit {{
     let (q,b)=split(do b <- init0(); pure ({label},b)); discard(b);
     let q=scalar(q);
     let (control,q)=qif(h(init0()),q) {{ 0=>identity, 1=>scalar }};
@@ -508,17 +508,17 @@ fn complete_branch_phi_transports_measured_results_fresh_wires_and_pending_frame
     for axes in settings(4) {
         let source = format!(
             "
-observe fn route(flag: CBit, a: Q<Bit>, b: Q<Bit>) -> ((CBit,Q<Bit>),(CBit,Q<Bit>)) {{
+observe fn route(flag: Bit, a: Q<Bit>, b: Q<Bit>) -> ((Bit,Q<Bit>),(Bit,Q<Bit>)) {{
     if flag {{ let m=measure_z(a); ((m,b),(not m,init0())) }}
     else {{ let m=measure_z(b); ((not m,init0()),(m,a)) }}
 }}
-observe fn read(u: Q<Unit>, result: ((CBit,Q<Bit>),(CBit,Q<Bit>)),
-                ra: Q<Bit>, rb: Q<Bit>, flag: CBit)
-    -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
+observe fn read(u: Q<Unit>, result: ((Bit,Q<Bit>),(Bit,Q<Bit>)),
+                ra: Q<Bit>, rb: Q<Bit>, flag: Bit)
+    -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     let ((c,left),(d,right))=result; discard(u);
     (flag,((c,d),(({},{}),({},{}))))
 }}
-observe fn main() -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
+observe fn main() -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     let (a,ra)=cnot(t(h(init0())),init0());
     let (b,rb)=cnot(t(t(h(init0()))),init0());
     let (u,a)=split(do a <- a; pure ((),a));
@@ -557,7 +557,7 @@ observe fn main() -> (CBit,((CBit,CBit),((CBit,CBit),(CBit,CBit)))) {{
 fn verified_ir_does_not_by_itself_establish_source_correspondence() {
     let checked = compile(
         "
-observe fn main() -> CBit { measure_z(do b <- init0(); pure not b) }
+observe fn main() -> Bit { measure_z(do b <- init0(); pure not b) }
 ",
     );
     let expected = Distribution::from([(vec![true], 1.0)]);

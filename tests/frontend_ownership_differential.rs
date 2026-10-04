@@ -86,7 +86,7 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     let arguments = quantum
         .iter()
         .map(|name| format!("{name}: Q<Bit>"))
-        .chain(std::iter::once("tag: CBit".into()))
+        .chain(std::iter::once("tag: Bit".into()))
         .collect::<Vec<_>>()
         .join(",");
     let mut classical = vec!["tag".into()];
@@ -212,10 +212,10 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     let mut returned = quantum.clone();
     let mut result_types = vec!["Q<Bit>".to_owned(); quantum.len()];
     // Classical owners are copyable: returning a copied tag more than once is
-    // a normal control against accidentally applying quantum rules to CBit.
+    // a normal control against accidentally applying quantum rules to Bit.
     for _ in 0..1 + random.choose(3) {
         returned.push(classical[random.choose(classical.len())].clone());
-        result_types.push("CBit".into());
+        result_types.push("Bit".into());
     }
     let declaration = if matches!(fault, Fault::EffectUnderdeclaration) {
         "unitary"

@@ -62,7 +62,7 @@ fn nested_register_pattern_names_the_actual_type_and_repairs() {
 #[test]
 fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
     let source = "use std::quantum::{init0,cnot}; use std::observe::measure_z;
-        observe fn main()->(CBit,CBit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
+        observe fn main()->(Bit,Bit){let a=init0();let b=init0();let b=cnot(a,b); (measure_z(b),measure_z(a))}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
     let start = source.find("let b=cnot").unwrap() + 4;
@@ -213,7 +213,7 @@ fn unknown_manifest_metadata_warns_in_text_and_json_without_changing_acceptance(
 fn phase_aliases_export_as_short_exact_target_words() {
     for (name, target) in [("s", "s"), ("sdg", "sdg"), ("tdg", "tdg")] {
         let root = SourceRoot::new(&format!(
-            "use std::quantum::{{init0,h,{name}}}; use std::observe::measure_z; observe fn main()->CBit{{measure_z(h({name}(h(init0()))))}}"
+            "use std::quantum::{{init0,h,{name}}}; use std::observe::measure_z; observe fn main()->Bit{{measure_z(h({name}(h(init0()))))}}"
         ));
         let program = compile_project(&root.0).unwrap();
         let qasm = export_openqasm3(&program).unwrap();

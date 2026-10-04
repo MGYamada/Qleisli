@@ -9,7 +9,7 @@ use std::quantum::init0;
 use std::observe::measure_z;
 use kernel::kernel;
 
-observe fn main() -> CBit {
+observe fn main() -> Bit {
     let q = kernel(init0());
     measure_z(q)
 }

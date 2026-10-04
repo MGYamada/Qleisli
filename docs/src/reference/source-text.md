@@ -5,10 +5,11 @@ constitutional edition 2026. Both finite project loading and sized explicit
 module loading use one scanner, token stream, parser and source `Module`/`Span`
 representation under the
 [common frontend decision](https://github.com/MGYamada/Qleisli/issues/32).
-The sized checker temporarily consumes an explicit projection of that AST; it
-does not parse source again. Name resolution, type/static/owner/effect checking
-and lowering are not yet unified. A parsed AST does not accept a program or
-confer native verification evidence.
+The sized checker consumes an explicit projection of that AST; it does not
+parse source again. Declaration and lexical identities and source type
+classification are shared. Static/owner/effect checking and lowering are not
+yet fully unified. A parsed AST does not accept a program or confer native
+verification evidence.
 
 ## Bytes, characters and positions
 
@@ -34,7 +35,11 @@ identifier positions formerly treated contextually by the sized parser:
 `basis` and `observe` immediately after `std::` as module names.
 
 `Bits`, `CBits` and `Nat` are contextual type/kind names and remain valid names
-in identifier positions. `for static`, the `in`/`carry` parts of that header,
+in identifier positions. Retained tokens for `CBit`, `true` and `false` permit
+targeted rejection of their old type/literal uses; they do not keep those uses
+accepted. Type-position `CBits<n>` likewise rejects. The replacement types and
+literals are `Bit`, `Bits<n>` and `0`/`1`.
+`for static`, the `in`/`carry` parts of that header,
 and `yield` at the start of a fold tail recognize their existing sized roles.
 Those words remain identifiers in other positions. `controlled(op)(args)` is
 the existing controlled-application construct; `controlled(q)` remains an
@@ -50,8 +55,9 @@ or subtraction. Existing static checks still require nonnegative, bounded and
 supported expressions. A power repetition count has the existing `2^e` form,
 with compound exponents parenthesized; this is not general exponentiation in
 the natural-expression language. The finite lowering profile still requires
-literal `repeat_op` counts in 0 through 4096. Final canonical value/type syntax
-remains subsequent work.
+literal `repeat_op` counts in 0 through 4096. Ordinary and basis Bit expressions
+share the `0`/`1` literal recognizer; other numerals are not Bit values. This
+does not change static-Nat literals or infer a quantum owner from a numeral.
 
 ## Comments and documentation
 
@@ -97,12 +103,13 @@ quantitative Resource Safety theorem.
 All declarations remain in the common AST. The sized profile projects every
 supported ordinary function in source order and checks each declaration,
 including unused siblings, before preparation succeeds. Empty sized modules
-remain unsupported. Existing empty sized type/pattern/block,
+remain unsupported. Empty parentheses in a type position reject with a
+diagnostic directing the author to `Unit`; the value and pattern remain `()`.
+Existing empty sized pattern/block,
 empty `yield`, empty specialization brackets and parameter trailing-comma
 spellings are represented by the shared syntax. Unsupported finite constructs
 receive a located profile rejection; parsing a spelling does not add backend
-support. This implementation step does not select final canonical syntax or
-add `Op<A,B>`/Basis-generic features.
+support. This implementation step does not add `Op<A,B>`/Basis-generic features.
 
 ## Declaration resolution and current profiles
 
@@ -138,7 +145,7 @@ The sized API loads only the supplied module map and its specified primitives;
 it does not implicitly discover bundled source modules. Common declaration
 and lexical identities are shared, while the finite and sized type, effect and
 ownership judgments still require convergence. This does not grant the final
-0.3.0 syntax. The implementation contract and remaining convergence are tracked
+set of 0.3.0 constructs. The implementation contract and remaining convergence are tracked
 in [#32](https://github.com/MGYamada/Qleisli/issues/32),
 [#41](https://github.com/MGYamada/Qleisli/issues/41) and
 [#65](https://github.com/MGYamada/Qleisli/issues/65).

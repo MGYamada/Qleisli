@@ -14,7 +14,7 @@ import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
-SOURCE = ROOT / "tests/fixtures/authoring_sessions/dual-v028/attempt-02"
+SOURCE = ROOT / "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02"
 FINITE = ROOT / "tests/fixtures/verification_v022/finite"
 
 

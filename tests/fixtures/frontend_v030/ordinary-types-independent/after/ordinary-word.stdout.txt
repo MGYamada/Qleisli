@@ -1,0 +1,8 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "register types are outside the finite lowering profile", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-word/main.qli", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Bits(1) }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Tuple([Type { kind: Bits(1) }, Type { kind: Bits(1) }]) }, identity: None, fields: [SourceValue { ty: Type { kind: Bits(1) }, identity: Some(0), fields: [] }, SourceValue { ty: Type { kind: Bits(1) }, identity: Some(0), fields: [] }] }
+sized.lower: Error { code: "unsupported", module: Some("main"), span: Span { start: 0, end: 59 }, message: "selected sized lowering profile requires quantum entry values; classical entry values are unsupported" }

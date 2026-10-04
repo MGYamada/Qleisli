@@ -24,7 +24,7 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
         unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}";
     for &count in counts {
         let source = format!(
-            "{imports} observe fn main()->CBit{{measure_z(repeat_static({count},ht,init0()))}}"
+            "{imports} observe fn main()->Bit{{measure_z(repeat_static({count},ht,init0()))}}"
         );
         root.write("main.qli", &source);
         let program = compile_project(&root.0).unwrap();
@@ -46,7 +46,7 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
             let inline = "let q=t(h(q));".repeat(count);
             root.write(
                 "main.qli",
-                &format!("{imports} observe fn main()->CBit{{let q=init0();{inline}measure_z(q)}}"),
+                &format!("{imports} observe fn main()->Bit{{let q=init0();{inline}measure_z(q)}}"),
             );
             let flat = compile_project(&root.0).unwrap();
             let result = run_closed(&flat, SimulationLimits::default()).unwrap();
@@ -56,14 +56,14 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
         }
     }
     for body in ["repeat_static(0,missing,q)", "repeat_static(0,bad,q)"] {
-        root.write("main.qli", &format!("{imports} observe fn bad(q:Q<Bit>)->CBit{{measure_z(q)}} unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
+        root.write("main.qli", &format!("{imports} observe fn bad(q:Q<Bit>)->Bit{{measure_z(q)}} unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
         assert!(check_project(&root.0).is_err());
     }
 }
 
 #[test]
 fn grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution() {
-    let source = "// 日本語\n/// Shared import docs.\nuse std::{quantum::{init0,h,},observe::measure_z};\nobserve fn main()->CBit{measure_z(h(init0()))}";
+    let source = "// 日本語\n/// Shared import docs.\nuse std::{quantum::{init0,h,},observe::measure_z};\nobserve fn main()->Bit{measure_z(h(init0()))}";
     let parsed = parse_documented_module(source).unwrap();
     assert_eq!(parsed.syntax.uses.len(), 3);
     for (item, docs) in parsed.syntax.uses.iter().zip(&parsed.import_docs) {
@@ -293,7 +293,7 @@ fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
     let root = SourceRoot::new(
         "use std::quantum::init0; use std::observe::measure_z;
         unitary fn id(q:Q<Bit>)->Q<Bit>{q}
-        observe fn main()->CBit{measure_z(apply_contract(id,id,init0()))}",
+        observe fn main()->Bit{measure_z(apply_contract(id,id,init0()))}",
     );
     let first = compile_project(&root.0).unwrap();
     let second = compile_project(&root.0).unwrap();
@@ -307,7 +307,9 @@ fn raw_equality_retains_proof_identity_and_effect_diagnostics_use_narrower() {
 
 #[test]
 fn toffoli_flat_pattern_remains_a_located_compatibility_error_with_a_nested_repair() {
-    let source = include_str!("fixtures/review_v021/toffoli_flat/main.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/toffoli_flat/main.qli"
+    );
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(

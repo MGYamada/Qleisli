@@ -112,7 +112,7 @@ fn increment_and_add_match_modular_arithmetic_on_every_basis_input() {
     let root = Root::new();
     for y in 0..4 {
         root.main(&format!(
-            "observe fn main()->(CBit,CBit){{measure_z2(increment2({}))}}",
+            "observe fn main()->(Bit,Bit){{measure_z2(increment2({}))}}",
             prepare2(y)
         ));
         probability(&root.run(), &bits((y + 1) % 4, 2), 1.0);
@@ -120,7 +120,7 @@ fn increment_and_add_match_modular_arithmetic_on_every_basis_input() {
     for x in 0..4 {
         for y in 0..4 {
             root.main(&format!(
-                "observe fn main()->((CBit,CBit),(CBit,CBit)){{
+                "observe fn main()->((Bit,Bit),(Bit,Bit)){{
                  let (a,b)=split(add2(join({},{}))); (measure_z2(a),measure_z2(b)) }}",
                 prepare2(x),
                 prepare2(y)
@@ -136,7 +136,7 @@ fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
     for input in 0..16 {
         for power in 0..=4 {
             root.main(&format!(
-                "observe fn main()->((CBit,CBit),(CBit,CBit)){{
+                "observe fn main()->((Bit,Bit),(Bit,Bit)){{
                  let (a,b)=split(repeat_static({power},mul2_mod15,{}));
                  (measure_z2(a),measure_z2(b)) }}",
                 prepare4(input)
@@ -149,7 +149,7 @@ fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
             probability(&root.run(), &bits(expected, 4), 1.0);
         }
         root.main(&format!(
-            "observe fn main()->((CBit,CBit),(CBit,CBit)){{
+            "observe fn main()->((Bit,Bit),(Bit,Bit)){{
              let (a,b)=split(adjoint(mul2_mod15,{})); (measure_z2(a),measure_z2(b)) }}",
             prepare4(input)
         ));
@@ -166,7 +166,7 @@ fn arithmetic_round_trip_preserves_four_entangled_references() {
     let root = Root::new();
     for operation in ["add2", "mul2_mod15"] {
         root.main(&format!(
-            "observe fn main()->(((CBit,CBit),(CBit,CBit)),((CBit,CBit),(CBit,CBit))){{
+            "observe fn main()->(((Bit,Bit),(Bit,Bit)),((Bit,Bit),(Bit,Bit))){{
              let (a,ra)=cnot(h(init0()),init0()); let (b,rb)=cnot(h(init0()),init0());
              let (c,rc)=cnot(h(init0()),init0()); let (d,rd)=cnot(h(init0()),init0());
              let q=adjoint({operation},{operation}(join(join(a,b),join(c,d))));
@@ -186,7 +186,7 @@ fn qpe_matches_every_modular_orbit_including_zero_and_unused_fifteen() {
     for input in 0..16 {
         root.main(&format!(
             "use estimation::phase3;
-             observe fn main()->((CBit,CBit),CBit){{
+             observe fn main()->((Bit,Bit),Bit){{
              let (phase,q)=phase3({}); discard(q); phase }}",
             prepare4(input)
         ));
@@ -216,7 +216,7 @@ fn qpe_preserves_reference_coherence_in_the_degenerate_fixed_subspace() {
     let root = Root::example();
     root.main(
         "use estimation::phase3;
-        observe fn main()->(((CBit,CBit),CBit),(CBit,((CBit,CBit),(CBit,CBit)))){
+        observe fn main()->(((Bit,Bit),Bit),(Bit,((Bit,Bit),(Bit,Bit)))){
         let (r,a)=cnot(h(init0()),init0()); let (r,b)=cnot(r,init0());
         let (r,c)=cnot(r,init0()); let (r,d)=cnot(r,init0());
         let (phase,q)=phase3(join(join(a,b),join(c,d)));
@@ -248,7 +248,7 @@ fn arithmetic_and_order_finding_obey_types_effects_and_ownership() {
             ErrorCode::Ownership,
         ),
         (
-            "use estimation::phase3; unitary fn f(q:Q<((Bit,Bit),(Bit,Bit))>)->(((CBit,CBit),CBit),Q<((Bit,Bit),(Bit,Bit))>){phase3(q)}",
+            "use estimation::phase3; unitary fn f(q:Q<((Bit,Bit),(Bit,Bit))>)->(((Bit,Bit),Bit),Q<((Bit,Bit),(Bit,Bit))>){phase3(q)}",
             ErrorCode::Effect,
         ),
         (

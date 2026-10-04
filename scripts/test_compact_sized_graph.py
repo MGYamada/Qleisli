@@ -27,9 +27,9 @@ class CompactionTests(unittest.TestCase):
         return result
 
     def test_source_empty_classical_boundary_compacts_to_identity(self):
-        for source in ('pub unitary fn f() -> () { () }',
-                       'pub unitary fn f(q: ()) -> () { q }',
-                       'pub unitary fn f(q: ((), ())) -> ((), ()) { q }'):
+        for source in ('pub unitary fn f() -> Unit { () }',
+                       'pub unitary fn f(q: Unit) -> Unit { q }',
+                       'pub unitary fn f(q: (Unit, Unit)) -> (Unit, Unit) { q }'):
             with self.subTest(source=source):
                 direct = compile_source(source, 'f', {}, compact=False)
                 normalized = compile_source(source, 'f', {})
@@ -65,7 +65,7 @@ class CompactionTests(unittest.TestCase):
         root = result['definitions'][result['entry']['implementation']]
         self.assertEqual(len(root['interface']['outputs']['quantum']), 1)
         with self.assertRaisesRegex(SourceError, 'unreturned quantum owners'):
-            compile_source('pub unitary fn f(q: Q<Bits<0>>) -> () { () }', 'f', {})
+            compile_source('pub unitary fn f(q: Q<Bits<0>>) -> Unit { () }', 'f', {})
 
     def test_routes_keep_zero_owner_and_bit_order(self):
         c = Circuit()

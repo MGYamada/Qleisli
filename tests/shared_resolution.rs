@@ -10,7 +10,7 @@ use std::{collections::BTreeMap, fs, path::PathBuf};
 #[test]
 fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
     let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/frontend_v030/shared-resolution/initial-study");
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study");
     for (case, finite, sized) in [
         ("unused-import-cycle", false, true),
         ("self-import-public", false, true),
@@ -48,7 +48,7 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
 #[test]
 fn unused_concrete_declaration_still_requires_native_eligible_effects() {
     let root = common::SourceRoot::new(
-        "use std::quantum::init0; unitary fn unused()->Q<Bit>{init0()} observe fn main()->CBit{false}",
+        "use std::quantum::init0; unitary fn unused()->Q<Bit>{init0()} observe fn main()->Bit{0}",
     );
     assert_eq!(check_project(&root.0).unwrap_err().code, ErrorCode::Effect);
 }

@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/certified_source.rs (target/debug/deps/certified_source-4d1f3b2e85d0190f)

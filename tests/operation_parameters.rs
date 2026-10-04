@@ -122,7 +122,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
         use provider::implementation;
         unitary fn client[static U:Op<Bit,ZMeaning>](q:Q<Bit>)->Q<Bit>
         requires Apply(U), Controlled(U) {{ U(q) }}
-        observe fn main()->(CBit,CBit) {{
+        observe fn main()->(Bit,Bit) {{
             let (r,q)=cnot(h(init0()),init0());
             let q=client[bind_op(implementation,ZMeaning)](q);
             let (r,q)=cnot(r,q);
@@ -230,7 +230,7 @@ fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
         requires Apply(U),Adjoint(U){adjoint(U,repeat_static(5,U,q))}
         unitary fn coherent[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
         requires Controlled(U){qif(c,q){0=>U,1=>ident}}
-        observe fn main()->(CBit,CBit){
+        observe fn main()->(Bit,Bit){
             let q=transform[phase](h(init0()));
             let(c,q)=coherent[direct_z](init0(),q);
             (measure_z(c),measure_z(h(q)))
@@ -249,7 +249,7 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
         unitary fn zero(q:Q<Unit>)->Q<Unit>{q}
         unitary fn ctrl[static U:Op<Unit,Minus>](c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)
         requires Controlled(U){qif(c,q){0=>U,1=>zero}}
-        observe fn main()->CBit{let q=do b<-init0();pure ((),b);let(e,b)=split(q);discard(b);
+        observe fn main()->Bit{let q=do b<-init0();pure ((),b);let(e,b)=split(q);discard(b);
             let(c,e)=ctrl[bind_op(minus,Minus)](h(init0()),e);discard(e);measure_z(h(c))}",
         &[true],
     );
@@ -265,7 +265,7 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
         ("Apply(U)", "adjoint(U,q)"),
         ("Controlled(U)", "U(q)"),
         ("Adjoint(U)", "repeat_static(0,U,q)"),
-        ("Apply(U)", "if false {adjoint(U,q)} else {q}"),
+        ("Apply(U)", "if 0 {adjoint(U,q)} else {q}"),
         ("Apply(U)", "use_op[inverse_op(U)](q)"),
         ("Adjoint(U)", "use_op[repeat_op(0,U)](q)"),
         ("Apply(U)", "use_op[conjugate_op(U,U)](q)"),
@@ -303,7 +303,7 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
                  requires Adjoint(V){{adjoint(V,q)}}
                  unitary fn derived[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->Q<(Bit,Bit)>
                  requires Controlled(U){{{body}}}
-                 observe fn main()->(CBit,CBit){{
+                 observe fn main()->(Bit,Bit){{
                      let (c,q) = split(derived[phase](x(init0()),t(h(init0()))));
                      (measure_z(x(c)),measure_z(h(q)))
                  }}"
@@ -371,8 +371,8 @@ fn generic_cleanup_obligations_are_discharged_for_each_actual_instance() {
 #[test]
 fn pending_call_frames_declared_effects_and_local_shadowing_are_preserved() {
     deterministic("unitary fn pair[static U:Op<Bit>](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){(a,U(b))}
-        observe fn main()->(CBit,CBit){let (a,b)=cnot(h(init0()),init0());
-            let(a,b)=pair[ident](a,if true {b} else {b});(measure_z(a) xor measure_z(b),false)}", &[false,false]);
+        observe fn main()->(Bit,Bit){let (a,b)=cnot(h(init0()),init0());
+            let(a,b)=pair[ident](a,if 1 {b} else {b});(measure_z(a) xor measure_z(b),0)}", &[false,false]);
     rejects(
         "unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let U=q;U(U)}",
         ErrorCode::TypeMismatch,
@@ -461,7 +461,7 @@ fn lexical_runtime_shadow_preserves_static_call_rejection_order() {
     for (source, code, message, text) in [
         (
             include_str!(
-                "fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
+                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
             ),
             ErrorCode::UnknownName,
             "unknown value `missing`",
@@ -469,7 +469,7 @@ fn lexical_runtime_shadow_preserves_static_call_rejection_order() {
         ),
         (
             include_str!(
-                "fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
+                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
             ),
             ErrorCode::TypeMismatch,
             "a local or spent runtime value cannot be a static operation",

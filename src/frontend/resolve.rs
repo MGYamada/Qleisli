@@ -418,7 +418,7 @@ mod tests {
 
     #[test]
     fn sealed_identity_does_not_expand_either_primitive_profile() {
-        let ast = parse_module("use std::registers::empty; pub unitary fn f()->(){()}").unwrap();
+        let ast = parse_module("use std::registers::empty; pub unitary fn f()-> Unit{()}").unwrap();
         let table = Resolution::new([("a", &ast)]).unwrap();
         let module = table.module("a").unwrap();
         assert!(matches!(

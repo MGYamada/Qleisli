@@ -12,7 +12,7 @@ use std::path::Path;
 
 fn source(case: &str) -> String {
     let root = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/frontend_v030/predicate-domain-independent");
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent");
     let repaired = root.join("repaired").join(case).join("main.qli");
     std::fs::read_to_string(if repaired.exists() {
         repaired

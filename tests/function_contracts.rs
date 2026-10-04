@@ -63,7 +63,7 @@ fn unchanged_client_requires_one_specification_across_private_layouts() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} use implementation::phase;
         unitary fn client(q: Q<Bit>) -> Q<Bit> {{ apply_contract(phase,specified_phase,q) }}
-        observe fn main() -> ((CBit,CBit),CBit) {{
+        observe fn main() -> ((Bit,Bit),Bit) {{
             let (r,q)=cnot(h(init0()),init0());
             let q=client(q);
             let (r,q)=cnot(r,q);
@@ -112,7 +112,7 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
         unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,specified,q) }}
         unitary fn top(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified,q) }}
         unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ adjoint(top,q) }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let q=repeat_static(2,top,h(init0()));
             let q=adjoint(top,adjoint(top,q));
             let (c,target)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => inverse }};
@@ -155,7 +155,7 @@ fn repeated_calls_reuse_one_immutable_evidence_object() {
             with_computed(q,predicate) {{ |a| z(a) }}
         }}
         unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified_phase,q) }}
-        observe fn main() -> CBit {{
+        observe fn main() -> Bit {{
             let q=phase(h(init0()));
             let q=phase(q);
             measure_z(h(q))
@@ -176,7 +176,7 @@ fn repeated_calls_reuse_one_immutable_evidence_object() {
 fn repeated_contract_calls_do_not_recompare_frozen_source_snapshots() {
     let statements = "let q=apply_contract(specified_phase,specified_phase,q);".repeat(60);
     let source = format!(
-        "{IMPORTS}\n// {}\nobserve fn main() -> CBit {{
+        "{IMPORTS}\n// {}\nobserve fn main() -> Bit {{
             let q=init0(); {statements} measure_z(q)
         }}",
         "metadata".repeat(1500)
@@ -202,7 +202,7 @@ fn unrelated_source_comments_do_not_multiply_contract_reuse_work() {
         unitary fn third(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified_phase,q) }}
         unitary fn fourth(q: Q<Bit>) -> Q<Bit> {{ apply_contract(third,specified_phase,q) }}
         unitary fn fifth(q: Q<Bit>) -> Q<Bit> {{ apply_contract(fourth,specified_phase,q) }}
-        observe fn main() -> CBit {{
+        observe fn main() -> Bit {{
             let q=fifth(h(init0())); let q=fifth(q); measure_z(h(q))
         }}"
     ));
@@ -238,7 +238,7 @@ unitary fn outer(q: Q<Bit>) -> Q<Bit> { apply_contract(inner,identity,q) }
 fn repeated_nested_contracts_share_one_execution_budget() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} {BUDGETED_FUNCTIONS}
-        observe fn main() -> CBit {{
+        observe fn main() -> Bit {{
             measure_z(h(repeat_static(30,outer,h(init0()))))
         }}"
     ));
@@ -268,7 +268,7 @@ fn repeated_nested_contracts_share_one_execution_budget() {
 fn classical_branches_and_ensemble_components_share_execution_budget() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} {BUDGETED_FUNCTIONS}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let coin=measure_z(h(init0()));
             let q=if coin {{ repeat_static(8,outer,init0()) }}
                   else {{ repeat_static(8,outer,init0()) }};
@@ -302,7 +302,7 @@ fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| t(a) }} }}
         unitary fn specified(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
         unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let q=repeat_static(2,phase,h(init0()));
             let q=adjoint(phase,adjoint(phase,q));
             let (c,tgt)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => phase }};
@@ -342,7 +342,7 @@ fn retained_contract_preserves_phase_with_an_entangled_reference() {
     let result = run(&format!(
         "{IMPORTS}
         unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| z(a) }} }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let (r,q)=cnot(h(init0()),init0());
             let q=apply_contract(implementation,specified_phase,q);
             let (r,q)=cnot(r,q);
@@ -364,7 +364,7 @@ fn ordered_function_outputs_are_part_of_the_contract() {
         }}"
     );
     let result = run(&format!(
-        "{definitions} observe fn main() -> (CBit,CBit) {{
+        "{definitions} observe fn main() -> (Bit,Bit) {{
             let q=apply_contract(implementation,specified,join(x(init0()),init0()));
             let (a,b)=split(q); (measure_z(a),measure_z(b))
         }}"
@@ -386,7 +386,7 @@ fn ordered_function_outputs_are_part_of_the_contract() {
 fn dependency_source_changes_invalidate_the_previous_compilation() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} use implementation::phase;
-        observe fn main() -> CBit {{ measure_z(h(apply_contract(phase,specified_phase,h(init0())))) }}"
+        observe fn main() -> Bit {{ measure_z(h(apply_contract(phase,specified_phase,h(init0())))) }}"
     ));
     root.write(
         "implementation.qli",
@@ -432,7 +432,7 @@ fn exact_source_types_declared_effects_and_ordinary_targets_are_required() {
             ErrorCode::TypeMismatch,
         ),
         (
-            "unitary fn implementation(flag: CBit,q: Q<Bit>) -> Q<Bit> { z(q) }",
+            "unitary fn implementation(flag: Bit,q: Q<Bit>) -> Q<Bit> { z(q) }",
             ErrorCode::TypeMismatch,
         ),
     ] {
@@ -474,7 +474,7 @@ fn input_ownership_is_consumed_once_and_quantum_frames_remain_owned() {
     );
     let result = run(&format!(
         "{IMPORTS}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let frame=x(init0());
             let q=apply_contract(specified_phase,specified_phase,h(init0()));
             (measure_z(frame),measure_z(h(q)))
@@ -492,7 +492,7 @@ fn zero_width_contract_phase_survives_coherent_control() {
         unitary fn specified(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(t(t(t(a)))) }} }}
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ apply_contract(implementation,specified,q) }}
-        observe fn main() -> CBit {{
+        observe fn main() -> Bit {{
             let pair=do value <- init0(); pure ((),value);
             let (unit,q)=split(pair);
             let (control,unit)=qif(h(init0()),unit) {{ 0 => unit_identity, 1 => phase }};

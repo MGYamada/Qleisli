@@ -1,0 +1,14 @@
+
+running 9 tests
+test splitmix_words_are_the_specified_unsigned_algorithm ... ok
+test sampler_rejects_open_interfaces_before_requesting_randomness ... ok
+test projection_copy_limits_precede_visible_and_hidden_random_draws ... ok
+test discarded_entangled_half_is_sampled_and_no_state_is_reused ... ok
+test bell_draws_follow_the_word_threshold_and_consume_deterministic_words ... ok
+test interference_probability_matches_an_independent_analytic_value ... ok
+test failures_are_errors_and_limits_apply_before_draws ... ok
+test preserved_grover_trial_has_an_explicit_current_predicate_translation ... ok
+test stochastic_samples_match_independent_bell_and_reset_feedback_contracts ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.02s
+

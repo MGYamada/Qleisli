@@ -1,0 +1,12 @@
+
+running 6 tests
+test verified_ir_does_not_by_itself_establish_source_correspondence ... ok
+test unit_factors_and_product_labels_match_every_explicit_basis_image ... ok
+test observation_instruments_preserve_public_weights_and_reference_statistics ... ok
+test computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs ... ok
+test complete_branch_phi_transports_measured_results_fresh_wires_and_pending_frames ... ok
+test growing_lift_matches_joint_pauli_statistics_with_two_reference_wires has been running for over 60 seconds
+test growing_lift_matches_joint_pauli_statistics_with_two_reference_wires ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 119.88s
+

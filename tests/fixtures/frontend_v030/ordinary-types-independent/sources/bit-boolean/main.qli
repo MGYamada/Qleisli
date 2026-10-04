@@ -1,0 +1,1 @@
+pub unitary fn f(a: Bit,b: Bit) -> Bit { if a { !b } else { a ^ b } }

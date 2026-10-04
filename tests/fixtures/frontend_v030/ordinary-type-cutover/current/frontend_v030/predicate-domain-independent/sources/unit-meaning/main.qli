@@ -1,0 +1,16 @@
+use std::quantum::init0;use std::quantum::h;use std::quantum::t;
+use std::quantum::join;use std::quantum::split;
+use std::observe::measure_z;use std::observe::discard;
+basis fn constant()->Bit{1}
+basis fn yes(_:Unit)->Bit{constant()}
+unitary fn logical(q:Q<Unit>)->Q<Unit>{with_computed(q,yes){|flag|t(flag)}}
+basis fn exponent(_:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
+meaning Eighth:Unit=phase_by(exponent);
+unitary fn use[static U:Op<Unit,Eighth>](q:Q<Unit>)->Q<Unit> requires Apply(U){U(q)}
+unitary fn scalar(q:Q<Unit>)->Q<Unit>{use[bind_op(logical,Eighth)](q)}
+unitary fn identity(q:Q<Unit>)->Q<Unit>{q}
+observe fn main()->CBit{
+let pair=do b<-init0();pure ((),b);let(unit,b)=split(pair);discard(b);
+let(control,unit)=qif(h(init0()),unit){0=>identity,1=>scalar};
+discard(unit);measure_z(h(control))
+}

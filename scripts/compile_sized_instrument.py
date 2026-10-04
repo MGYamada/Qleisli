@@ -30,9 +30,9 @@ class InstrumentParser(Parser):
         self.index += 1
 
     def ty(self):
-        if self.eat('CBit'):
+        if self.eat('Bit'):
             return ('cbit',)
-        if self.eat('CBits'):
+        if self.eat('Bits'):
             self.need('<')
             width = self.nat()
             self.need('>')
@@ -264,7 +264,7 @@ class InstrumentProducer(Producer):
         if name == 'prepend_bit':
             width, = sizes
             if width >= 8 or [value_type(value) for value in args] != [('cbit',), ('cbits', width)]:
-                raise SourceError('prepend_bit requires CBit and exactly CBits<n>, with n < 8')
+                raise SourceError('prepend_bit requires Bit and exactly Bits<n>, with n < 8')
             return Classical(('cbits', width+1), args[0].values+args[1].values)
         return super().call(name, sizes, args)
 
@@ -388,7 +388,7 @@ class InstrumentProducer(Producer):
         graph = self.finish_graph(result)
         values = [leaf for leaf in flattened(result) if isinstance(leaf, Classical)]
         if len(values) > 1 or values and values[0].ty[0] != 'cbits':
-            raise SourceError('this instrument profile returns at most one CBits value')
+            raise SourceError('this instrument profile returns at most one Bits value')
         if self.measured and not values:
             raise SourceError('this readout profile retains all measured results')
         readout = None

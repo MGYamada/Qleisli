@@ -1,0 +1,1 @@
+unitary fn flip(b: Bit) -> Bit { !b } observe fn main() -> (Bit,Bit,Bit) { let b = 1; let c = b ^ 0; let d = if b & c { flip(c) } else { 1 }; (b,c,d) }

@@ -1,0 +1,44 @@
+[
+  {
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "exit_code": 0,
+    "seconds": 0.03212958399672061,
+    "stdout": "version.stdout.txt",
+    "stderr": "version.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "ordinary_types"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "exit_code": 0,
+    "seconds": 4.286694208043627,
+    "stdout": "tests.stdout.txt",
+    "stderr": "tests.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--test",
+      "ordinary_types",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "exit_code": 0,
+    "seconds": 4.564193875005003,
+    "stdout": "clippy.stdout.txt",
+    "stderr": "clippy.stderr.txt"
+  }
+]

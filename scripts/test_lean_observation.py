@@ -360,7 +360,7 @@ def rust_program(program):
 def source_cases(log, record):
     cases=[]
     compiler=ROOT/'target/debug/qleisli'
-    paths=['tests/fixtures/authoring_sessions/raw-observing-v026/first','examples/bell',
+    paths=['tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first','examples/bell',
            'corpus/quantum_katas/graph_state2','corpus/qualtran/control_zero_reflection2',
            'corpus/pennylane_demos/ising_zz_negative2']
     with tempfile.TemporaryDirectory(prefix='qleisli-observation-source-') as directory:

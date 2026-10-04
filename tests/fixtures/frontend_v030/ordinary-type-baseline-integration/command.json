@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "tests/fixtures/frontend_v030/ordinary-type-baseline-integration/run.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "stdout": "command.stdout.txt",
+  "stderr": "command.stderr.txt",
+  "scope": "Existing selected function only. No full-script or Cargo/Lean-build execution."
+}

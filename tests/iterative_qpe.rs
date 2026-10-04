@@ -16,7 +16,9 @@ fn read(path: &str) -> String {
 }
 
 fn project(client: &str, coherent: bool) -> SourceRoot {
-    let source = read(&format!("tests/fixtures/iterative_qpe/{client}.qli"));
+    let source = read(&format!(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/{client}.qli"
+    ));
     let root = SourceRoot::new(&if coherent {
         source.replace("use iterative::phase3;", "use estimation::phase3;")
     } else {
@@ -180,7 +182,7 @@ fn semantic_oracles_detect_compiling_feedback_and_weight_faults() {
         let root = project("phase_t1", false);
         root.write(
             "iterative.qli",
-            &read(&format!("tests/fixtures/iterative_qpe/faults/{fault}.qli")),
+            &read(&format!("tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/{fault}.qli")),
         );
         let actual = execute(&root);
         assert!(actual.get(&expected).copied().unwrap_or_default() < 0.75);
@@ -188,9 +190,9 @@ fn semantic_oracles_detect_compiling_feedback_and_weight_faults() {
 }
 
 #[test]
-fn preserved_first_attempt_and_shipped_example_execute() {
+fn explicit_current_derivative_of_first_attempt_and_shipped_example_execute() {
     for directory in [
-        "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01",
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01",
         "examples/iterative_phase_estimation",
     ] {
         let program =

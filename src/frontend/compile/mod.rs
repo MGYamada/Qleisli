@@ -162,6 +162,44 @@ struct Compiler<'a> {
     closed_meanings: BTreeMap<MeaningCacheKey, crate::contract::exact::Matrix>,
 }
 
+struct FiniteTypeContext<'a, 'source> {
+    compiler: &'a mut Compiler<'source>,
+    module: &'a str,
+}
+impl super::types::SourceTypeContext for FiniteTypeContext<'_, '_> {
+    type Size = std::convert::Infallible;
+    type Error = CompileError;
+    fn resolve_size(&mut self, size: &Natural) -> Result<Self::Size, CompileError> {
+        Err(self.compiler.error(
+            self.module,
+            size.span,
+            ErrorCode::Unsupported,
+            "register types are outside the finite lowering profile",
+        ))
+    }
+    fn quantum_basis_error(&mut self, span: Span) -> CompileError {
+        self.compiler.error(
+            self.module,
+            span,
+            ErrorCode::TypeMismatch,
+            "a quantum basis must be an ordinary finite type; nested Q owners are invalid",
+        )
+    }
+    fn checked_node(&mut self, source: &Type, stage: Stage, ty: &Ty) -> Result<(), CompileError> {
+        self.compiler
+            .check_tree(self.module, source.span, ty.tree_size())?;
+        if stage == Stage::Basis && ty.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
+            return Err(self.compiler.error(
+                self.module,
+                source.span,
+                ErrorCode::Limit,
+                "basis type exceeds the initial 12-bit limit",
+            ));
+        }
+        Ok(())
+    }
+}
+
 impl Compiler<'_> {
     fn error(
         &self,
@@ -303,38 +341,14 @@ impl Compiler<'_> {
     }
 
     fn ty(&mut self, module: &str, ty: &Type, stage: Stage) -> Result<Ty, CompileError> {
-        let result = match &ty.kind {
-            TypeKind::Unit => Ty::unit(),
-            TypeKind::Bit if stage == Stage::Basis => Ty::bit(),
-            TypeKind::CBit if stage == Stage::Runtime => Ty::bit(),
-            TypeKind::Q(inner) if stage == Stage::Runtime => {
-                Ty::quantum(self.ty(module, inner, Stage::Basis)?)
-            }
-            TypeKind::Tuple(fields) => Ty::tuple(
-                fields
-                    .iter()
-                    .map(|field| self.ty(module, field, stage))
-                    .collect::<Result<_, _>>()?,
-            ),
-            _ => {
-                return Err(self.error(
-                    module,
-                    ty.span,
-                    ErrorCode::TypeMismatch,
-                    "Bit is a basis type; ordinary functions use CBit or Q<basis type>",
-                ));
-            }
-        };
-        self.check_tree(module, ty.span, result.tree_size())?;
-        if stage == Stage::Basis && result.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
-            return Err(self.error(
+        super::types::classify_source(
+            ty,
+            stage,
+            &mut FiniteTypeContext {
+                compiler: self,
                 module,
-                ty.span,
-                ErrorCode::Limit,
-                "basis type exceeds the initial 12-bit limit",
-            ));
-        }
-        Ok(result)
+            },
+        )
     }
 
     fn signature(&mut self, key: &Key) -> Result<(Vec<Ty>, Ty), CompileError> {
@@ -509,7 +523,7 @@ fn called_names<'a>(decl: &'a Decl, locals: &Forest<'_>) -> Vec<&'a Ident> {
                 ExprKind::StaticIf { .. }
                 | ExprKind::StaticFold { .. }
                 | ExprKind::Controlled { .. } => {} // Rejected by the finite-profile preflight.
-                ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
+                ExprKind::Name(_) | ExprKind::Unit | ExprKind::Bit(_) => {}
                 ExprKind::Not(input) => stack.push(Node::Expr(input)),
                 ExprKind::Tuple(fields) => stack.extend(fields.iter().map(Node::Expr)),
                 ExprKind::And(a, b) | ExprKind::Xor(a, b) => {

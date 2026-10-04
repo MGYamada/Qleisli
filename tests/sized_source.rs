@@ -190,7 +190,7 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
         (
             "std::observe::measure_z",
             "q: Q<Bit>",
-            "CBit",
+            "Bit",
             "measure_z(q)",
             "observe",
         ),
@@ -218,21 +218,21 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
         (
             "std::registers::consume_empty",
             "q: Q<Bits<0>>",
-            "()",
+            "Unit",
             "consume_empty(q)",
             "unitary",
         ),
         (
             "std::classical::empty_bits",
             "",
-            "CBits<0>",
+            "Bits<0>",
             "empty_bits()",
             "unitary",
         ),
         (
             "std::classical::prepend_bit",
-            "q: CBit, r: CBits<0>",
-            "CBits<1>",
+            "q: Bit, r: Bits<0>",
+            "Bits<1>",
             "prepend_bit[0](q,r)",
             "unitary",
         ),
@@ -271,16 +271,16 @@ fn measured_sources() -> BTreeMap<String, PathBuf> {
         ("preparation", "corpus/sized/qualtran_qpe/preparation.qli"),
         ("fourier", "corpus/sized/qualtran_qft/fourier.qli"),
         ("evolution", "corpus/sized/qualtran_qpe/evolution.qli"),
-        ("order", "tests/fixtures/measured_clients/order.qli"),
-        ("amplitude", "tests/fixtures/measured_clients/amplitude.qli"),
-        ("retiming", "tests/fixtures/measured_clients/retiming.qli"),
-        ("rotation", "tests/fixtures/sized_clients/rotation.qli"),
-        ("reflection", "tests/fixtures/sized_clients/reflection.qli"),
+        ("order", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli"),
+        ("amplitude", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli"),
+        ("retiming", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli"),
+        ("rotation", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/rotation.qli"),
+        ("reflection", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/reflection.qli"),
         (
             "amplification",
-            "tests/fixtures/sized_clients/amplification.qli",
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
         ),
-        ("modular", "tests/fixtures/sized_clients/modular.qli"),
+        ("modular", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli"),
     ]
     .into_iter()
     .map(|(name, file)| (name.into(), root.join(file)))
@@ -414,11 +414,11 @@ fn shadowing_moves_tuple_shape_and_effects() {
         "ownership",
     );
     reject(
-        "pub unitary fn f(q: (Q<Bit>,Q<Bit>)) -> ((Q<Bit>,Q<Bit>),()) { q }",
+        "pub unitary fn f(q: (Q<Bit>,Q<Bit>)) -> ((Q<Bit>,Q<Bit>),Unit) { q }",
         "type",
     );
     reject(
-        "use std::observe::measure_z; pub unitary fn f(q: Q<Bit>) -> CBit { measure_z(q) }",
+        "use std::observe::measure_z; pub unitary fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
         "effect",
     );
     reject(
@@ -501,7 +501,7 @@ fn duplicate_declarations_and_inconsistent_premises_reject() {
         "pub unitary fn f[static n: Nat, static n: Nat](q: Q<Bit>) -> Q<Bit> { q }",
         "name",
     );
-    reject("pub unitary fn f(x: CBit, x: CBit) -> CBit { x }", "name");
+    reject("pub unitary fn f(x: Bit, x: Bit) -> Bit { x }", "name");
     reject(
         "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> requires n < 0 { q }",
         "size",
@@ -600,7 +600,7 @@ fn concrete_bindings_preserve_provider_type_and_premises() {
 
 #[test]
 fn preparation_limits_and_utf8_diagnostics_are_explicit() {
-    let mut doubling = "pub unitary fn f(c: CBit) -> CBit { let t = (c,c); ".to_owned();
+    let mut doubling = "pub unitary fn f(c: Bit) -> Bit { let t = (c,c); ".to_owned();
     for _ in 0..17 {
         doubling.push_str("let t = (t,t); ");
     }
@@ -674,9 +674,9 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
 
 #[test]
 fn classical_shadows_restore_outer_bindings_in_branches_and_folds() {
-    let branch = "use std::classical::empty_bits; pub unitary fn f(x: CBit) -> CBit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
+    let branch = "use std::classical::empty_bits; pub unitary fn f(x: Bit) -> Bit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
     ParsedProgram::parse(sources(branch)).unwrap();
-    let fold = "use std::classical::empty_bits; pub unitary fn f(x: CBit, q: Q<Bit>) -> (CBit,Q<Bit>) { let q = for static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
+    let fold = "use std::classical::empty_bits; pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = for static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
     ParsedProgram::parse(sources(fold)).unwrap();
 }
 
@@ -703,7 +703,7 @@ fn concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout() {
         let root = &source.definitions()[source.root()];
         assert_eq!(root.path(), "measurement::qpe");
         assert_eq!(root.output().ty().kind(), "tuple");
-        assert_eq!(root.output().fields()[0].ty().kind(), "cbits");
+        assert_eq!(root.output().fields()[0].ty().kind(), "bits");
         assert_eq!(root.output().fields()[0].ty().width(), Some(m));
         assert_eq!(root.output().fields()[1].ty().width(), Some(n));
         let calls: Vec<_> = root
@@ -894,7 +894,7 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
 
 #[test]
 fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
-    let mut doubling = "pub unitary fn f(c: CBit) -> CBit { let t = (c,c); ".to_owned();
+    let mut doubling = "pub unitary fn f(c: Bit) -> Bit { let t = (c,c); ".to_owned();
     for _ in 0..9 {
         doubling.push_str("let t = (t,t); ");
     }
@@ -1090,7 +1090,10 @@ fn evolution(n: u32) -> BTreeMap<String, OperationBinding> {
 }
 
 fn delayed_fourier_source() -> String {
-    include_str!("fixtures/sized_clients/delayed_fourier.qli").into()
+    include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+    )
+    .into()
 }
 
 fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::sized::HierarchyProposal {
@@ -1130,16 +1133,16 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
             "iso roots",
         ),
         (
-            "pub unitary fn f(c: CBit) -> CBit { c }",
+            "pub unitary fn f(c: Bit) -> Bit { c }",
             "classical entry values",
         ),
         (
-            "use std::classical::empty_bits; pub unitary fn f() -> CBits<0> { empty_bits() }",
+            "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
             "classical results",
         ),
         (
-            "use std::observe::measure_z; pub observe fn f(q: Q<Bit>) -> CBit { measure_z(q) }",
-            "exactly one CBits",
+            "use std::observe::measure_z; pub observe fn f(q: Q<Bit>) -> Bit { measure_z(q) }",
+            "exactly one Bits",
         ),
     ] {
         let prepared = ParsedProgram::parse(sources(source))
@@ -1371,8 +1374,7 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
             .iter()
             .any(|m| m.crossed_events().contains(&0))
     );
-    let classical =
-        ParsedProgram::parse(sources("pub unitary fn f(c: CBit) -> CBit { c }")).unwrap();
+    let classical = ParsedProgram::parse(sources("pub unitary fn f(c: Bit) -> Bit { c }")).unwrap();
     assert_eq!(
         classical
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1384,7 +1386,7 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
             .code(),
         "unsupported"
     );
-    let reversed = "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(a: Q<Bit>, b: Q<Bit>) -> CBits<2> { let a = measure_z(a); let b = measure_z(b); let z = empty_bits(); let z = prepend_bit[0](a,z); prepend_bit[1](b,z) }";
+    let reversed = "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(a: Q<Bit>, b: Q<Bit>) -> Bits<2> { let a = measure_z(a); let b = measure_z(b); let z = empty_bits(); let z = prepend_bit[0](a,z); prepend_bit[1](b,z) }";
     let error = ParsedProgram::parse(sources(reversed))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1836,12 +1838,24 @@ fn common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics() {
 fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
     use qleisli::frontend::{parser::parse_module, project::Project};
     for source in [
-        include_str!("fixtures/frontend_v030/common-parser/shared.qli"),
-        include_str!("fixtures/frontend_v030/common-parser/contextual-type-name.qli"),
-        include_str!("fixtures/frontend_v030/common-parser/static-fold.qli"),
-        include_str!("fixtures/frontend_v030/common-parser/counted-control.qli"),
-        include_str!("fixtures/frontend_v030/common-parser/empty-owner.qli"),
-        include_str!("fixtures/frontend_v030/common-parser/empty-block.qli"),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli"
+        ),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/contextual-type-name.qli"
+        ),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli"
+        ),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli"
+        ),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-owner.qli"
+        ),
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-block.qli"
+        ),
     ] {
         let ast = parse_module(source).unwrap();
         let sized = ParsedProgram::parse(sources(source)).unwrap();
@@ -1856,7 +1870,9 @@ fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
 #[test]
 fn multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary() {
     use qleisli::frontend::parser::parse_module;
-    let acyclic = include_str!("fixtures/frontend_v030/common-parser/multi-declaration.qli");
+    let acyclic = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/multi-declaration.qli"
+    );
     let ast = parse_module(acyclic).unwrap();
     assert_eq!(ast.decls.len(), 2);
     let parsed = ParsedProgram::parse(sources(acyclic)).unwrap();
@@ -1913,7 +1929,9 @@ fn contextual_controlled_and_reserved_words_have_one_classification() {
         ast::{ExprKind, FnBody},
         parser::parse_module,
     };
-    let source = include_str!("fixtures/frontend_v030/common-parser/runtime-controlled-name.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/runtime-controlled-name.qli"
+    );
     let ast = parse_module(source).unwrap();
     let FnBody::Quantum(body) = &ast.decls[1].body else {
         panic!("runtime body")
@@ -1921,7 +1939,9 @@ fn contextual_controlled_and_reserved_words_have_one_classification() {
     assert!(
         matches!(&body.result.kind,ExprKind::Call { callee,.. } if callee.text == "controlled")
     );
-    let source = include_str!("fixtures/frontend_v030/common-parser/counted-control.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli"
+    );
     let ast = parse_module(source).unwrap();
     let FnBody::Quantum(body) = &ast.decls[0].body else {
         panic!("runtime body")
@@ -1944,7 +1964,7 @@ fn contextual_controlled_and_reserved_words_have_one_classification() {
 fn existing_empty_sized_spellings_remain_common_syntax() {
     use qleisli::frontend::parser::parse_module;
     for source in [
-        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield}}",
+        "pub unitary fn f()-> Unit{for static i in 0..1 carry ()=(){yield}}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q[]}",
         "pub unitary fn f(q:Q<Bit>,)->Q<Bit>{q}",
     ] {
@@ -1959,11 +1979,11 @@ fn existing_empty_sized_spellings_remain_common_syntax() {
     };
     assert_eq!(&source[body.result.span.start..body.result.span.end], "q[]");
     reject(
-        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){yield;}}",
+        "pub unitary fn f()-> Unit{for static i in 0..1 carry ()=(){yield;}}",
         "parse",
     );
     reject(
-        "pub unitary fn f()->(){for static i in 0..1 carry ()=(){}}",
+        "pub unitary fn f()-> Unit{for static i in 0..1 carry ()=(){}}",
         "parse",
     );
 }

@@ -12,7 +12,7 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
 
 #[test]
 fn native_transport_failures_use_the_closed_v1_project_code() {
-    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("valid.qirf");
     let emitted = cli(&[
         "emit-ir".as_ref(),
@@ -51,7 +51,7 @@ fn native_transport_failures_use_the_closed_v1_project_code() {
 #[test]
 fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
     let root = SourceRoot::new(include_str!(
-        "fixtures/review_v029/contract_mismatch/main.qli"
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli"
     ));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -103,7 +103,7 @@ fn truncated_static_arguments_emit_one_located_json_parse_error() {
 
 #[test]
 fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for (command, result) in [
         ("check", "{\"verified\":true}"),
         (
@@ -129,7 +129,7 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 
 #[test]
 fn json_command_identity_is_independent_of_leading_options() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for (command, flags, status) in [
         ("check", vec!["--source-bytes=1048576"], 0),
         ("run", vec!["--legacy-source-limits"], 0),
@@ -223,7 +223,7 @@ fn json_runtime_limit_does_not_emit_a_partial_distribution() {
 
 #[test]
 fn json_type_failure_is_located_in_the_original_source() {
-    let root = SourceRoot::new("observe fn main() -> CBit { () }");
+    let root = SourceRoot::new("observe fn main() -> Bit { () }");
     let output = cli(&[
         "check".as_ref(),
         "--format=json".as_ref(),

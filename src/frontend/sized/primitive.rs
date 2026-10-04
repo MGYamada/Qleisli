@@ -10,6 +10,7 @@ pub(super) enum Size {
 }
 #[derive(Clone, Copy)]
 pub(super) enum TypeShape {
+    Unit,
     Bit,
     Bits(Size),
     CBit,
@@ -49,7 +50,7 @@ macro_rules! primitives {
     };
 }
 use Size::{Argument as A, Constant as C};
-use TypeShape::{Bit, Bits, CBit, CBits, Tuple};
+use TypeShape::{Bit, Bits, CBit, CBits, Tuple, Unit};
 primitives! {
     H => ("std::quantum::h", 0, &[Bit], Bit, Unitary, None),
     X => ("std::quantum::x", 0, &[Bit], Bit, Unitary, None),
@@ -61,7 +62,7 @@ primitives! {
     TakeBit => ("std::registers::take_bit", 2, &[Bits(A(0, 0))], Tuple(&[Bit, Bits(A(0, -1))]), Unitary, RegisterIndex),
     PutBit => ("std::registers::put_bit", 2, &[Bit, Bits(A(0, -1))], Bits(A(0, 0)), Unitary, RegisterIndex),
     Empty => ("std::registers::empty", 0, &[], Bits(C(0)), Unitary, None),
-    ConsumeEmpty => ("std::registers::consume_empty", 0, &[Bits(C(0))], Tuple(&[]), Unitary, None),
+    ConsumeEmpty => ("std::registers::consume_empty", 0, &[Bits(C(0))], Unit, Unitary, None),
     EmptyBits => ("std::classical::empty_bits", 0, &[], CBits(C(0)), Unitary, None),
     PrependBit => ("std::classical::prepend_bit", 1, &[CBit, CBits(A(0, 0))], CBits(A(0, 1)), Unitary, None),
 }
@@ -76,7 +77,8 @@ mod tests {
                 TypeShape::Bits(Size::Argument(index, _))
                 | TypeShape::CBits(Size::Argument(index, _)) => assert!(index < arity),
                 TypeShape::Tuple(fields) => fields.iter().for_each(|f| shape(*f, arity)),
-                TypeShape::Bit
+                TypeShape::Unit
+                | TypeShape::Bit
                 | TypeShape::CBit
                 | TypeShape::Bits(Size::Constant(_))
                 | TypeShape::CBits(Size::Constant(_)) => {}

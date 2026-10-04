@@ -13,7 +13,7 @@ use std::path::Path;
 fn source(name: &str) -> String {
     fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/ergonomics")
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics")
             .join(format!("{name}.qli")),
     )
     .unwrap()
@@ -69,7 +69,7 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
             // Preserve the original counterexample; its current translation
             // must still reach the independent phase mismatch, not an arity error.
             include_str!(
-                "fixtures/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli"
+                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli"
             )
             .to_owned()
         } else {
@@ -123,7 +123,9 @@ fn missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliarie
 
 #[test]
 fn corpus_dropped_owner_now_points_to_b_not_the_body() {
-    let source = include_str!("fixtures/qli_authoring/rejected/dropped_owner.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli"
+    );
     let root = SourceRoot::new(source);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.as_ref().unwrap();
@@ -166,7 +168,7 @@ fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
         "basis fn bad((a,b,): (Bit,Bit)) -> Bit { a }",
         "basis fn bad(a: (Bit,Bit,)) -> Bit { 0 }",
         "basis fn bad(a:Bit) -> (Bit,Bit,Bit) { (a,a,a,) }",
-        "observe fn main() -> (CBit,CBit,CBit) { (false,false,true,) }",
+        "observe fn main() -> (Bit,Bit,Bit) { (0,0,1,) }",
     ] {
         assert!(parse_module(bad).is_err(), "{bad}");
     }
@@ -199,7 +201,7 @@ fn flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits() {
                     vec!["a"; 64].join(" xor ")
                 ),
                 format!(
-                    "observe fn f(a:CBit) -> Unit {{ ((),(),{}) }}",
+                    "observe fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
                     vec!["a"; 64].join(" xor ")
                 ),
             ] {

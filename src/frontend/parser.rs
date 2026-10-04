@@ -650,18 +650,16 @@ impl Parser {
     }
 
     fn ty_inner(&mut self) -> Result<Type, ParseError> {
-        if self.word("Bits") || self.word("CBits") {
+        if self.word("CBits") || self.current().kind == TokenKind::CBit {
+            return Err(self.error("CBit/CBits types were removed; use Bit/Bits<n>"));
+        }
+        if self.word("Bits") {
             let token = self.bump();
-            let classical = matches!(&token.kind, TokenKind::Ident(name) if name == "CBits");
             self.expect(&TokenKind::LAngle)?;
             let size = self.natural()?;
             let end = self.expect(&TokenKind::RAngle)?;
             return Ok(Type {
-                kind: if classical {
-                    TypeKind::CBits(size)
-                } else {
-                    TypeKind::Bits(size)
-                },
+                kind: TypeKind::Bits(size),
                 span: token.span.cover(end.span),
             });
         }
@@ -675,12 +673,6 @@ impl Parser {
         if let Some(token) = self.consume(&TokenKind::Bit) {
             return Ok(Type {
                 kind: TypeKind::Bit,
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::CBit) {
-            return Ok(Type {
-                kind: TypeKind::CBit,
                 span: token.span,
             });
         }
@@ -703,18 +695,16 @@ impl Parser {
     }
 
     fn basis_type_inner(&mut self) -> Result<Type, ParseError> {
+        if self.word("CBits") || self.current().kind == TokenKind::CBit {
+            return Err(self.error("CBit/CBits types were removed; use Bit/Bits<n>"));
+        }
         if self.word("Bits") {
             let token = self.bump();
-            let classical = matches!(&token.kind, TokenKind::Ident(name) if name == "CBits");
             self.expect(&TokenKind::LAngle)?;
             let size = self.natural()?;
             let end = self.expect(&TokenKind::RAngle)?;
             return Ok(Type {
-                kind: if classical {
-                    TypeKind::CBits(size)
-                } else {
-                    TypeKind::Bits(size)
-                },
+                kind: TypeKind::Bits(size),
                 span: token.span.cover(end.span),
             });
         }
@@ -737,9 +727,10 @@ impl Parser {
     fn tuple_type(&mut self, basis_only: bool) -> Result<Type, ParseError> {
         let open = self.expect(&TokenKind::LParen)?;
         if let Some(close) = self.consume(&TokenKind::RParen) {
-            return Ok(Type {
-                kind: TypeKind::Tuple(vec![]),
+            return Err(ParseError {
                 span: open.span.cover(close.span),
+                message: "empty tuple type spelling was removed; use Unit (the value remains ())"
+                    .into(),
             });
         }
         let mut fields = vec![if basis_only {
@@ -1107,7 +1098,7 @@ impl Parser {
                         (value, depth + 1)
                     }));
                 }
-                ExprKind::Name(_) | ExprKind::CBit(_) | ExprKind::Unit => {}
+                ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit => {}
             }
         }
         Ok(maximum)
@@ -1354,17 +1345,26 @@ impl Parser {
         })
     }
 
+    /// One literal classification for ordinary and basis Bit expressions.
+    /// Explicit natural positions use their own bounded Nat parser.
+    fn bit_literal(&mut self) -> Result<Option<(bool, Span)>, ParseError> {
+        let value = match self.current().kind {
+            TokenKind::Zero => false,
+            TokenKind::One => true,
+            TokenKind::True | TokenKind::False => {
+                return Err(self.error("true/false literals were removed; use 1/0 for Bit"));
+            }
+            TokenKind::Natural(_) => return Err(self.error("Bit literals must be 0 or 1")),
+            _ => return Ok(None),
+        };
+        Ok(Some((value, self.bump().span)))
+    }
+
     fn expr_atom(&mut self) -> Result<Expr, ParseError> {
-        if let Some(token) = self.consume(&TokenKind::True) {
+        if let Some((value, span)) = self.bit_literal()? {
             return Ok(Expr {
-                kind: ExprKind::CBit(true),
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::False) {
-            return Ok(Expr {
-                kind: ExprKind::CBit(false),
-                span: token.span,
+                kind: ExprKind::Bit(value),
+                span,
             });
         }
         if let TokenKind::Ident(_) = self.current().kind {
@@ -1563,16 +1563,10 @@ impl Parser {
                 kind: BasisExprKind::Name(ident),
             });
         }
-        if let Some(token) = self.consume(&TokenKind::Zero) {
+        if let Some((value, span)) = self.bit_literal()? {
             return Ok(BasisExpr {
-                kind: BasisExprKind::Bit(false),
-                span: token.span,
-            });
-        }
-        if let Some(token) = self.consume(&TokenKind::One) {
-            return Ok(BasisExpr {
-                kind: BasisExprKind::Bit(true),
-                span: token.span,
+                kind: BasisExprKind::Bit(value),
+                span,
             });
         }
         let open = self.expect(&TokenKind::LParen)?;

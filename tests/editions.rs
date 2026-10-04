@@ -9,7 +9,7 @@ use qleisli::frontend::{
 };
 use std::{collections::BTreeMap, fs, process::Command};
 
-const SOURCE: &str = "observe fn main() -> CBit { true }";
+const SOURCE: &str = "observe fn main() -> Bit { 1 }";
 
 #[test]
 fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {

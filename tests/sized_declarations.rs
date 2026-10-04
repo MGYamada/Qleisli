@@ -7,7 +7,7 @@ use std::path::Path;
 
 fn sources(case: &str) -> BTreeMap<String, String> {
     let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/frontend_v030/sized-declarations-independent/sources")
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources")
         .join(case);
     std::fs::read_dir(directory)
         .unwrap()

@@ -1,0 +1,90 @@
+RawProgram {
+    quantum_inputs: [],
+    classical_inputs: [],
+    operations: [
+        ClassicalConst {
+            value: true,
+            output: ClassicalId(
+                0,
+            ),
+        },
+        ClassicalConst {
+            value: false,
+            output: ClassicalId(
+                1,
+            ),
+        },
+        ClassicalXor {
+            left: ClassicalId(
+                0,
+            ),
+            right: ClassicalId(
+                1,
+            ),
+            output: ClassicalId(
+                2,
+            ),
+        },
+        ClassicalAnd {
+            left: ClassicalId(
+                0,
+            ),
+            right: ClassicalId(
+                2,
+            ),
+            output: ClassicalId(
+                3,
+            ),
+        },
+        ClassicalBranch {
+            condition: ClassicalId(
+                3,
+            ),
+            then_ops: [
+                ClassicalNot {
+                    input: ClassicalId(
+                        2,
+                    ),
+                    output: ClassicalId(
+                        4,
+                    ),
+                },
+            ],
+            else_ops: [
+                ClassicalConst {
+                    value: true,
+                    output: ClassicalId(
+                        5,
+                    ),
+                },
+            ],
+            quantum_phis: [],
+            classical_phis: [
+                ClassicalPhi {
+                    then_id: ClassicalId(
+                        4,
+                    ),
+                    else_id: ClassicalId(
+                        5,
+                    ),
+                    output: ClassicalId(
+                        6,
+                    ),
+                },
+            ],
+        },
+    ],
+    quantum_outputs: [],
+    classical_outputs: [
+        ClassicalId(
+            0,
+        ),
+        ClassicalId(
+            2,
+        ),
+        ClassicalId(
+            6,
+        ),
+    ],
+    declared_effect: Observe,
+}

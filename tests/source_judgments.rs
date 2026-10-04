@@ -25,7 +25,7 @@ fn rejected(source: &str, expected: ErrorCode) {
 fn declared_effects_survive_arguments_tuples_conditions_and_both_arms() {
     let declarations = r#"
 observe fn strong(v: Unit) -> Unit { v }
-observe fn condition(b: CBit) -> CBit { b }
+observe fn condition(b: Bit) -> Bit { b }
 unitary fn keep(v: Unit) -> Unit { v }
 "#;
     // Each callee emits no operations. Its declared effect must nevertheless
@@ -39,11 +39,11 @@ unitary fn keep(v: Unit) -> Unit { v }
         "if b { () } else { strong(()) }",
     ] {
         rejected(
-            &format!("{declarations} iso fn caller(b: CBit) -> Unit {{ {body} }}"),
+            &format!("{declarations} iso fn caller(b: Bit) -> Unit {{ {body} }}"),
             ErrorCode::Effect,
         );
         accepted(&format!(
-            "{declarations} observe fn caller(b: CBit) -> Unit {{ {body} }}"
+            "{declarations} observe fn caller(b: Bit) -> Unit {{ {body} }}"
         ));
     }
 
@@ -63,7 +63,7 @@ fn branch_local_shadows_expire_but_moved_outer_names_remain_reserved() {
     accepted(
         r#"
 use std::quantum::h;
-unitary fn restored(b: CBit, q: Q<Bit>) -> Q<Bit> {
+unitary fn restored(b: Bit, q: Q<Bit>) -> Q<Bit> {
     let q = if b { let h = q; h } else { q };
     h(q)
 }
@@ -72,7 +72,7 @@ unitary fn restored(b: CBit, q: Q<Bit>) -> Q<Bit> {
     rejected(
         r#"
 use std::quantum::h;
-unitary fn reserved(b: CBit, h: Q<Bit>) -> Q<Bit> {
+unitary fn reserved(b: Bit, h: Q<Bit>) -> Q<Bit> {
     let q = if b { let h = h; h } else { h };
     h(q)
 }
@@ -112,7 +112,7 @@ fn basis_domains_and_branch_results_preserve_exact_product_trees() {
         );
     }
     rejected(
-        "unitary fn different_trees(b: CBit) -> ((Unit,CBit),Unit) {
+        "unitary fn different_trees(b: Bit) -> ((Unit,Bit),Unit) {
             if b { (((),b),()) } else { ((),(b,())) }
         }",
         ErrorCode::TypeMismatch,
@@ -153,13 +153,13 @@ fn computed_certificates_preserve_effects_and_outer_name_restrictions() {
     let prefix = r#"
 use std::quantum::z;
 basis fn p(x: Bit) -> Bit { x }
-unitary fn forget(b: CBit) -> Unit { () }
+unitary fn forget(b: Bit) -> Unit { () }
 "#;
     for classification in ["unitary", "iso", "observe"] {
         let source = format!(
             "{prefix}
             {classification} fn phase(a: Q<Bit>) -> Q<Bit> {{ z(a) }}
-            unitary fn oracle(b: CBit, q: Q<Bit>) -> Q<Bit> {{
+            unitary fn oracle(b: Bit, q: Q<Bit>) -> Q<Bit> {{
                 with_computed(q,p) {{ |a| forget(b); phase(a) }}
             }}"
         );
@@ -169,7 +169,7 @@ unitary fn forget(b: CBit) -> Unit { () }
                 "{source}
                 use std::quantum::init0;
                 use std::observe::measure_z;
-                observe fn main() -> CBit {{
+                observe fn main() -> Bit {{
                     let b = measure_z(init0());
                     measure_z(oracle(b,init0()))
                 }}"
@@ -231,7 +231,7 @@ use std::quantum::h;
 use std::observe::measure_z;
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { q }
 basis fn predicate(x: Bit) -> Bit { 0 }
-observe fn main() -> (CBit,(CBit,CBit)) {
+observe fn main() -> (Bit,(Bit,Bit)) {
     let a = ordinary(init0());
     let b = lifted(init0());
     let c = h(oracle(h(init0())));

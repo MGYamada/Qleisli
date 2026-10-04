@@ -1,0 +1,12 @@
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::observe::measure_z;
+
+// First source, saved before checking. Exercise measurement-driven ownership.
+observe fn main() -> Bit {
+    let c = measure_z(h(init0()));
+    let q = init0();
+    let r = if c { x(q) } else { q };
+    measure_z(r)
+}

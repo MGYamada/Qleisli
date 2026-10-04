@@ -112,9 +112,11 @@ class Parser:
         return value
 
     def ty(self):
+        if self.eat('Unit'):
+            return ('tuple', ())
         if self.eat('('):
             if self.eat(')'):
-                return ('tuple', ())
+                raise SourceError('empty tuple type spelling was removed; use Unit')
             children = [self.ty()]
             self.need(',')
             children.append(self.ty())

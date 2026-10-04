@@ -1,0 +1,46 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Commuting-stage review regression adapted from the pinned Qualtran QFTTextBook
+// translation; source/license record: ../../../corpus/sized/README.md.
+use std::quantum::h;
+use std::quantum::controlled_phase;
+use std::registers::take_bit;
+use std::registers::put_bit;
+
+/// F[y,x] = exp(2*pi*i*x*y/2^n)/sqrt(2^n), including output reversal.
+/// Axis zero has weight one. Every phase is fixed, including under control.
+pub unitary fn fourier[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>>
+requires n >= 1 {
+    let q = for static stage in 0..n carry register = q {
+        yield if static stage+2 <= n {
+            let (target,rest) = take_bit[n,n-1-stage](register);
+            let target = h(target);
+            let (target,rest) = for static k in 1..n-1-stage carry pair = (target,rest) {
+                let (target,rest) = pair;
+                let (control,rest) = take_bit[n-1,k](rest);
+                let (control,target) = controlled_phase[1,n-stage-k](control,target);
+                yield (target,put_bit[n-1,k](control,rest));
+            };
+            put_bit[n,n-1-stage](target,rest)
+        } else {
+            let (zero,rest) = take_bit[n,0](register);
+            let (zero,rest) = for static t in 1..n carry pair = (zero,rest) {
+                let (zero,rest) = pair;
+                let (other,rest) = take_bit[n-1,t-1](rest);
+                let (zero,other) = controlled_phase[1,t+1](zero,other);
+                yield (zero,put_bit[n-1,t-1](other,rest));
+            };
+            put_bit[n,0](h(zero),rest)
+        };
+    };
+    // Swap each pair once. The guard excludes the middle bit and empty ranges;
+    // it uses only affine arithmetic, without division or nonlinear sizes.
+    for static k in 0..n carry register = q {
+        yield if static k+k+2 <= n {
+            let (low,rest) = take_bit[n,k](register);
+            let (high,rest) = take_bit[n-1,n-2-k](rest);
+            put_bit[n,k](high,put_bit[n-1,n-2-k](low,rest))
+        } else { register };
+    }
+}

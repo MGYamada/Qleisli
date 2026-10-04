@@ -1,0 +1,142 @@
+[
+    SourceEvent {
+        definition: 0,
+        step: 0,
+        call_path: [
+            0,
+        ],
+        module: "main",
+        span: Span {
+            start: 171,
+            end: 187,
+        },
+        kind: "pure",
+        node: Some(
+            0,
+        ),
+        inputs: [
+            Quantum(
+                Port {
+                    owner: 101,
+                    bit: false,
+                    axes: [],
+                },
+            ),
+        ],
+        outputs: [],
+        before: [
+            Port {
+                owner: 101,
+                bit: false,
+                axes: [],
+            },
+            Port {
+                owner: 102,
+                bit: true,
+                axes: [
+                    0,
+                ],
+            },
+        ],
+        after: [
+            Port {
+                owner: 102,
+                bit: true,
+                axes: [
+                    0,
+                ],
+            },
+        ],
+    },
+    SourceEvent {
+        definition: 1,
+        step: 1,
+        call_path: [],
+        module: "main",
+        span: Span {
+            start: 297,
+            end: 309,
+        },
+        kind: "observe",
+        node: None,
+        inputs: [
+            Quantum(
+                Port {
+                    owner: 102,
+                    bit: true,
+                    axes: [
+                        0,
+                    ],
+                },
+            ),
+        ],
+        outputs: [
+            Classical(
+                [
+                    1000001,
+                ],
+            ),
+        ],
+        before: [
+            Port {
+                owner: 102,
+                bit: true,
+                axes: [
+                    0,
+                ],
+            },
+        ],
+        after: [],
+    },
+    SourceEvent {
+        definition: 1,
+        step: 2,
+        call_path: [],
+        module: "main",
+        span: Span {
+            start: 310,
+            end: 322,
+        },
+        kind: "empty_bits",
+        node: None,
+        inputs: [],
+        outputs: [
+            Classical(
+                [],
+            ),
+        ],
+        before: [],
+        after: [],
+    },
+    SourceEvent {
+        definition: 1,
+        step: 3,
+        call_path: [],
+        module: "main",
+        span: Span {
+            start: 282,
+            end: 323,
+        },
+        kind: "prepend_bit",
+        node: None,
+        inputs: [
+            Classical(
+                [
+                    1000001,
+                ],
+            ),
+            Classical(
+                [],
+            ),
+        ],
+        outputs: [
+            Classical(
+                [
+                    1000001,
+                ],
+            ),
+        ],
+        before: [],
+        after: [],
+    },
+]

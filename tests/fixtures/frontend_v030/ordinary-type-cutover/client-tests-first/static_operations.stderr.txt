@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/static_operations.rs (target/debug/deps/static_operations-b76656b5a8af2a86)

@@ -107,7 +107,7 @@ use std::quantum::init0;
 use std::quantum::split;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let pair = entangle(h(init0()));
     let (left, right) = split(pair);
     let a = measure_z(left);
@@ -142,7 +142,7 @@ basis fn predicate(x: Bit) -> Bit { not x }
 pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
     with_computed(q, predicate) { |a| z(a) }
 }
-observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (CBit, Q<Bit>) {
+observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
     let b = measure_z(q);
     let r1 = if b { x(r) } else { r };
     (b, r1)
@@ -228,7 +228,7 @@ fn malformed_syntax_has_precise_error_spans() {
             "let",
             "expected",
         ),
-        ("basis fn f(x: CBit) -> Bit { x }", "CBit", "expected"),
+        ("basis fn f(x: CBit) -> Bit { x }", "CBit", "removed"),
     ];
     for (source, at, message) in cases {
         let error = parse_module(source).unwrap_err();
@@ -251,7 +251,7 @@ fn deep_syntax_is_rejected_without_exhausting_the_stack() {
         ", Bit)".repeat(10_000)
     );
     let conditionals = format!(
-        "observe fn f(b: CBit, q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "observe fn f(b: Bit, q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
         "if b { ".repeat(10_000),
         " } else { q }".repeat(10_000)
     );
@@ -437,8 +437,8 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
 
 #[test]
 fn classical_boolean_operators_have_precedence_and_left_associativity() {
-    let source = "unitary fn f(a: CBit, b: CBit, c: CBit) -> CBit {
-        not a and b xor c xor false
+    let source = "unitary fn f(a: Bit, b: Bit, c: Bit) -> Bit {
+        not a and b xor c xor 0
     }";
     let module = parse_module(source).unwrap();
     let FnBody::Quantum(body) = &module.decls[0].body else {
@@ -447,7 +447,7 @@ fn classical_boolean_operators_have_precedence_and_left_associativity() {
     let ExprKind::Xor(first, last) = &body.result.kind else {
         panic!("expected outer xor")
     };
-    assert!(matches!(last.kind, ExprKind::CBit(false)));
+    assert!(matches!(last.kind, ExprKind::Bit(false)));
     let ExprKind::Xor(left, right) = &first.kind else {
         panic!("expected left-associated xor")
     };
@@ -458,10 +458,10 @@ fn classical_boolean_operators_have_precedence_and_left_associativity() {
     assert!(matches!(negated.kind, ExprKind::Not(_)));
     assert_eq!(
         &source[body.result.span.start..body.result.span.end],
-        "not a and b xor c xor false"
+        "not a and b xor c xor 0"
     );
 
-    let module = parse_module("unitary fn f() -> CBit { true and false and true }").unwrap();
+    let module = parse_module("unitary fn f() -> Bit { 1 and 0 and 1 }").unwrap();
     let FnBody::Quantum(body) = &module.decls[0].body else {
         panic!("expected ordinary body")
     };
@@ -469,16 +469,16 @@ fn classical_boolean_operators_have_precedence_and_left_associativity() {
         panic!("expected outer and")
     };
     assert!(matches!(left.kind, ExprKind::And(_, _)));
-    assert!(matches!(right.kind, ExprKind::CBit(true)));
+    assert!(matches!(right.kind, ExprKind::Bit(true)));
 
-    parse_module("unitary fn f(a: CBit) -> CBit { not (a xor true) }").unwrap();
-    parse_module("unitary fn f(a: CBit) -> CBit { if not a { true } else { false } }").unwrap();
+    parse_module("unitary fn f(a: Bit) -> Bit { not (a xor 1) }").unwrap();
+    parse_module("unitary fn f(a: Bit) -> Bit { if not a { 1 } else { 0 } }").unwrap();
 }
 
 #[test]
-fn classical_literals_are_reserved_and_distinct_from_basis_bits() {
+fn canonical_bit_literals_share_spelling_with_basis_bits() {
     for source in [
-        "unitary fn f() -> (CBit,CBit) { (true,false) }",
+        "unitary fn f() -> (Bit,Bit) { (1,0) }",
         "basis fn f() -> (Bit,Bit) { (0,1) }",
     ] {
         parse_module(source).unwrap();
@@ -486,7 +486,7 @@ fn classical_literals_are_reserved_and_distinct_from_basis_bits() {
     for keyword in ["true", "false"] {
         for source in [
             format!("unitary fn {keyword}() -> Unit {{ () }}"),
-            format!("unitary fn f({keyword}: CBit) -> Unit {{ () }}"),
+            format!("unitary fn f({keyword}: Bit) -> Unit {{ () }}"),
             format!("unitary fn f() -> Unit {{ let {keyword} = (); () }}"),
             format!("use m::{keyword};"),
             format!("use {keyword}::f;"),
@@ -496,25 +496,25 @@ fn classical_literals_are_reserved_and_distinct_from_basis_bits() {
             assert!(parse_module(&source).is_err(), "{source}");
         }
     }
-    for expression in ["0", "1", "true and", "not", "true xor xor false"] {
-        let source = format!("unitary fn f() -> CBit {{ {expression} }}");
+    for expression in ["2", "01", "1 and", "not", "1 xor xor 0"] {
+        let source = format!("unitary fn f() -> Bit {{ {expression} }}");
         assert!(parse_module(&source).is_err(), "{source}");
     }
 }
 
 #[test]
 fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
-    let mut nested_chain = "true".to_owned();
+    let mut nested_chain = "1".to_owned();
     for _ in 0..20 {
-        nested_chain = format!("({nested_chain}){}", " xor true".repeat(20));
+        nested_chain = format!("({nested_chain}){}", " xor 1".repeat(20));
     }
     for expression in [
-        format!("{}true", "not ".repeat(10_000)),
-        format!("true{}", " xor false".repeat(10_000)),
-        format!("true{}", " and false".repeat(10_000)),
+        format!("{}1", "not ".repeat(10_000)),
+        format!("1{}", " xor 0".repeat(10_000)),
+        format!("1{}", " and 0".repeat(10_000)),
         nested_chain,
     ] {
-        let source = format!("unitary fn f() -> CBit {{ {expression} }}");
+        let source = format!("unitary fn f() -> Bit {{ {expression} }}");
         let error = parse_module(&source).unwrap_err();
         assert!(error.message.contains("limit"), "{error}");
         assert!(error.span.start < source.len());
@@ -524,10 +524,10 @@ fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 
     for expression in [
-        format!("{}true", "not ".repeat(32)),
-        format!("true{}", " xor false".repeat(32)),
+        format!("{}1", "not ".repeat(32)),
+        format!("1{}", " xor 0".repeat(32)),
     ] {
-        parse_module(&format!("unitary fn f() -> CBit {{ {expression} }}")).unwrap();
+        parse_module(&format!("unitary fn f() -> Bit {{ {expression} }}")).unwrap();
     }
 }
 

@@ -1,0 +1,1 @@
+unitary fn flip(b: CBit) -> CBit { not b } observe fn main() -> (CBit,CBit,CBit) { let b = true; let c = b xor false; let d = if b and c { flip(c) } else { true }; (b,c,d) }

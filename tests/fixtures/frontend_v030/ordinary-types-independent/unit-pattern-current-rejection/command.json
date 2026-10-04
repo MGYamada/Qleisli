@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "ordinary_types",
+    "sized_unit_patterns_consume_only_actual_unit_values",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 101,
+  "test_source_sha256": "919e936281d70198287782c14450002b14c26bb0d02857d54c657f18b153a739"
+}

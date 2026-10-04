@@ -1,0 +1,4 @@
+common.parse: ParseError { message: "CBit/CBits types were removed; use Bit/Bits<n>", span: Span { start: 98, end: 102 } }
+finite.check: Diagnostic { code: "parse", message: "parse error: CBit/CBits types were removed; use Bit/Bits<n>", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source/main.qli", span: Span { start: 98, end: 102 }, line: 1, column: 99 }) }
+finite.compile: Diagnostic { code: "parse", message: "parse error: CBit/CBits types were removed; use Bit/Bits<n>", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source/main.qli", span: Span { start: 98, end: 102 }, line: 1, column: 99 }) }
+sized.generic: Error { code: "parse", module: Some("main"), span: Span { start: 98, end: 102 }, message: "CBit/CBits types were removed; use Bit/Bits<n>" }

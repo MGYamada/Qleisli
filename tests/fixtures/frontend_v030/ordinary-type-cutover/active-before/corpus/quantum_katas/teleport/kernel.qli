@@ -1,0 +1,23 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/Teleportation/ReferenceImplementation.qs
+// Selected symbol(s): StandardTeleport_Reference; ReconstructMessage_Reference
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::cnot;
+use std::observe::measure_z;
+
+pub observe fn teleport(q: Q<Bit>) -> ((CBit, CBit), Q<Bit>) {
+    let (alice, bob) = cnot(h(init0()), init0());
+    let (q, alice) = cnot(q, alice);
+    let phase = measure_z(h(q));
+    let parity = measure_z(alice);
+    let bob = if phase { z(bob) } else { bob };
+    let bob = if parity { x(bob) } else { bob };
+    ((phase, parity), bob)
+}

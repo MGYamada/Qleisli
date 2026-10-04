@@ -15,7 +15,9 @@ fn reject(source: &str, code: ErrorCode) {
 
 #[test]
 fn formerly_silent_reassociation_now_rejects() {
-    let source = include_str!("fixtures/tuple_shapes/first_source/main.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/first_source/main.qli"
+    );
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
@@ -25,11 +27,11 @@ fn formerly_silent_reassociation_now_rejects() {
         "basis fn f((a,b,c): ((Bit,Bit),Bit)) -> Bit { a }",
         "basis fn f(((a,b),c): (Bit,Bit,Bit)) -> Bit { a }",
         "basis fn f(x:Bit) -> (Bit,Bit,Bit) { ((x,x),x) }",
-        "unitary fn f() -> ((CBit,CBit),CBit) { (true,false,true) }",
-        "unitary fn f() -> (CBit,CBit,CBit) { ((true,false),true) }",
-        "unitary fn f(x:(CBit,CBit,CBit)) -> CBit { let ((a,b),c)=x; a }",
-        "unitary fn f(x:((CBit,CBit),CBit)) -> CBit { let (a,b,c)=x; c }",
-        "unitary fn f(c:CBit) -> (CBit,CBit,CBit) { if c { (c,c,c) } else { ((c,c),c) } }",
+        "unitary fn f() -> ((Bit,Bit),Bit) { (1,0,1) }",
+        "unitary fn f() -> (Bit,Bit,Bit) { ((1,0),1) }",
+        "unitary fn f(x:(Bit,Bit,Bit)) -> Bit { let ((a,b),c)=x; a }",
+        "unitary fn f(x:((Bit,Bit),Bit)) -> Bit { let (a,b,c)=x; c }",
+        "unitary fn f(c:Bit) -> (Bit,Bit,Bit) { if c { (c,c,c) } else { ((c,c),c) } }",
     ] {
         reject(source, ErrorCode::TypeMismatch);
     }
@@ -37,7 +39,9 @@ fn formerly_silent_reassociation_now_rejects() {
 
 #[test]
 fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
-    let root = SourceRoot::new(include_str!("fixtures/tuple_shapes/explicit_layout.qli"));
+    let root = SourceRoot::new(include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli"
+    ));
     let program = compile_project(&root.0).unwrap();
     let result = run_closed(&program, SimulationLimits::default()).unwrap();
     assert!((result[&vec![false, false, true, false]] - 1.0).abs() < 1e-12);
@@ -55,7 +59,9 @@ fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
 
 #[test]
 fn same_shape_wrong_permutation_does_not_pass_identity_evidence() {
-    let root = SourceRoot::new(include_str!("fixtures/tuple_shapes/wrong_permutation.qli"));
+    let root = SourceRoot::new(include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli"
+    ));
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Contract);
     assert!(error.message.contains("exact"), "{error}");
@@ -87,10 +93,10 @@ fn nary_static_meanings_retain_shape_and_order() {
 #[test]
 fn nary_owners_include_units_pending_fields_and_branch_frames() {
     let root = SourceRoot::new(
-        "unitary fn f(q:Q<Unit>,c:CBit)->(Q<Unit>,CBit,Unit) {
+        "unitary fn f(q:Q<Unit>,c:Bit)->(Q<Unit>,Bit,Unit) {
         let t = if c { (q,c,()) } else { (q,not c,()) }; t
-    } observe fn main()->(CBit,CBit,CBit) {
-        let t=(true,false,true); let (a,b,c)=t; let (d,e,f)=t;
+    } observe fn main()->(Bit,Bit,Bit) {
+        let t=(1,0,1); let (a,b,c)=t; let (d,e,f)=t;
         (a xor d,b xor e,c xor f)
     }",
     );
@@ -110,7 +116,7 @@ fn nary_owners_include_units_pending_fields_and_branch_frames() {
     let root = SourceRoot::new(
         "use std::quantum::init0; use std::quantum::x;
         use std::observe::measure_z;
-        observe fn main()->(CBit,CBit,CBit){
+        observe fn main()->(Bit,Bit,Bit){
             let c=measure_z(init0());
             let (a,b,d)=(x(init0()),if c {init0()} else {x(init0())},init0());
             (measure_z(a),measure_z(b),measure_z(d))
@@ -182,14 +188,14 @@ fn flat_arity_and_nested_depth_have_distinct_bounds() {
 fn documented_type_categories_and_explicit_only_conversions() {
     for source in [
         "unitary fn f(x:Bit)->Unit{()}",
-        "unitary fn f(x:Q<CBit>)->Q<CBit>{x}",
+        "unitary fn f(x:Q<Bit>)->Q<Bit>{x}",
         "unitary fn f(x:Q<Q<Bit>>)->Q<Q<Bit>>{x}",
-        "basis fn f(x:CBit)->CBit{x}",
+        "basis fn f(x:Bit)->Bit{x}",
         "unitary fn f(x:Q<(Bit,Bit)>)->(Q<Bit>,Q<Bit>){x}",
         "unitary fn f(x:Q<Unit>)->Unit{x}",
-        "unitary fn f(x:(Unit,CBit))->CBit{x}",
+        "unitary fn f(x:(Unit,Bit))->Bit{x}",
         "unitary fn f(x:Bits<3>)->Unit{()}",
-        "unitary fn f(x:CBits<3>)->Unit{()}",
+        "unitary fn f(x:Bits<3>)->Unit{()}",
     ] {
         let root = SourceRoot::new(&format!("{source} observe fn main()->Unit{{()}}"));
         assert!(check_project(&root.0).is_err(), "{source}");
@@ -197,7 +203,7 @@ fn documented_type_categories_and_explicit_only_conversions() {
     let root = SourceRoot::new(
         "basis fn id((a,b,c):(Unit,Bit,Unit))->(Unit,Bit,Unit){(a,b,c)}
         unitary fn f(q:Q<(Unit,Unit,Unit)>)->Q<(Unit,Unit,Unit)>{q}
-        observe fn main()->(Unit,CBit,Unit){((),true,())}",
+        observe fn main()->(Unit,Bit,Unit){((),1,())}",
     );
     let ir = compile_project(&root.0).unwrap();
     assert_eq!(

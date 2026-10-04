@@ -26,7 +26,7 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 67)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 79)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 81)
         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
@@ -76,6 +76,8 @@ class NativeCI(unittest.TestCase):
         self.assertEqual(task['commands'], [
             ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],
             ['cargo', '+1.98.1', 'test', '--test', 'native_roundtrip', '--', '--nocapture'],
+            ['cargo', '+1.98.1', 'test', '--test', 'predicate_domain'],
+            ['cargo', '+1.98.1', 'test', '--test', 'ordinary_types'],
             ['cargo', '+1.98.1', 'build', '--locked', '--offline', '--example', 'native_acceptance'],
             ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
         ])

@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Use canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` through common
+  source type classification. Reject retired classical spellings with migration
+  diagnostics; migrate active clients and keep explicit historical translations.
+  Sized Unit values and empty patterns preserve executed operations while
+  omitting only ordinary Unit ports. Public type kind accessors now require
+  `is_quantum()` to distinguish ownership (#22, #27, #43).
 - Retain immutable corpus authoring records across source migrations, checking
   ordered predecessor hashes, complete project snapshots and source-bound
   observations. Record the six predicate-domain migrations and their original

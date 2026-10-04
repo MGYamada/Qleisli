@@ -1,0 +1,2 @@
+pub unitary fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{if static n==0{z_identity(q)}else{f[n-1](q)}}
+unitary fn z_identity(q:Q<Bit>)->Q<Bit>{q}

@@ -146,7 +146,7 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;f(q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;f(q)}",
             "a local value is not callable",
         ),
         (
@@ -166,15 +166,15 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "static operation requires a function name, not a local value",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if true{let f=q;f(f)}else{q}}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if 1{let f=q;f(f)}else{q}}",
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;apply_contract(f,f,q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;apply_contract(f,f,q)}",
             "apply_contract requires function names, not local values",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;with_computed(q,f){|a|a}}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;with_computed(q,f){|a|a}}",
             "with_computed requires a basis function name",
         ),
         (
@@ -194,7 +194,7 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
 fn dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers() {
     for (source, expected) in [
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if true{let f=true;()}else{()};f(q)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{if 1{let f=1;()}else{()};f(q)}",
             ErrorCode::UnknownName,
         ),
         (

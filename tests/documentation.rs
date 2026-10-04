@@ -84,8 +84,8 @@ fn misplaced_documentation_is_rejected_in_both_parse_entry_points() {
         "basis fn f(/// parameter\nx: Bit) -> Bit { x }",
         "basis fn f() -> Bit { /// expression\n0 }",
         "basis fn f() -> Bit { 0 //! after body value\n }",
-        "unitary fn f() -> CBit { let b = true; //! after statement\n b }",
-        "unitary fn f() -> CBit { if true { //! expression block\n true } else { false } }",
+        "unitary fn f() -> Bit { let b = 1; //! after statement\n b }",
+        "unitary fn f() -> Bit { if 1 { //! expression block\n 1 } else { 0 } }",
     ] {
         let error = parse_documented_module(source).unwrap_err();
         assert!(error.message.contains("documentation"), "{source}: {error}");
@@ -170,10 +170,10 @@ fn deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax() {
 #[test]
 fn documentation_neither_changes_ir_nor_authorizes_invalid_ownership() {
     let plain = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::observe::measure_z; observe fn main() -> CBit { measure_z(h(init0())) }",
+        "use std::quantum::init0; use std::quantum::h; use std::observe::measure_z; observe fn main() -> Bit { measure_z(h(init0())) }",
     );
     let documented = SourceRoot::new(
-        "//! A program.\nuse std::quantum::init0; use std::quantum::h; use std::observe::measure_z; /// Coin.\nobserve fn main() -> CBit { /*! Body. */ measure_z(h(init0())) }",
+        "//! A program.\nuse std::quantum::init0; use std::quantum::h; use std::observe::measure_z; /// Coin.\nobserve fn main() -> Bit { /*! Body. */ measure_z(h(init0())) }",
     );
     assert_eq!(
         compile_project(&plain.0).unwrap().raw(),

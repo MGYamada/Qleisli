@@ -1,0 +1,9 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "empty tuple type syntax is outside the finite profile; use Unit", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-unit-type/main.qli", span: Span { start: 20, end: 22 }, line: 1, column: 21 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Tuple([]) }, identity: None, fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Tuple([]) }, identity: None, fields: [] }
+sized.lower: proposed instrument=false
+sized.native: pure accepted

@@ -86,7 +86,7 @@ fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
         "main.qli",
         "use estimation::phase2; use std::quantum::init0;
         use std::quantum::x; use std::observe::measure_z;
-        observe fn main() -> ((CBit,CBit),CBit) {
+        observe fn main() -> ((Bit,Bit),Bit) {
             let (phase, q) = phase2(x(init0())); (phase, measure_z(q))
         }",
     );
@@ -113,7 +113,7 @@ fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
         "main.qli",
         &format!(
             "{IMPORTS} use estimation::phase3;
-        observe fn main() -> ((((CBit,CBit),CBit),CBit),CBit) {{
+        observe fn main() -> ((((Bit,Bit),Bit),Bit),Bit) {{
             let (r, q) = cnot(h(init0()), init0());
             let (phase, q) = phase3(q);
             ((phase, measure_z(r)), measure_z(q))
@@ -128,7 +128,7 @@ fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
         "main.qli",
         &format!(
             "{IMPORTS} use estimation::phase3;
-        observe fn main() -> ((((CBit,CBit),CBit),CBit),CBit) {{
+        observe fn main() -> ((((Bit,Bit),Bit),Bit),Bit) {{
             let (r, q) = cnot(h(init0()), init0());
             let (phase, q) = phase3(q);
             let (r, q) = cnot(r, q);
@@ -153,7 +153,7 @@ fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
             let (a,b) = cnot(a,b);
             join(b,a)
         }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let q = mix(join(init0(), h(init0())));
             let (a,b) = split(adjoint(mix,q));
             (measure_z(a),measure_x(b))
@@ -183,7 +183,7 @@ fn control_preserves_reflection_sign_including_inverse_and_nested_control() {
                 let (a,b) = qif(a,b) {{ 0 => idbit, 1 => negbit }};
                 join(a,b)
             }}
-            observe fn main() -> (CBit,(CBit,CBit)) {{
+            observe fn main() -> (Bit,(Bit,Bit)) {{
                 let q = join(x(init0()), h(init0()));
                 let (c,q) = qif(h(init0()),q) {{ 0 => identity, 1 => {operation} }};
                 let (a,b) = split(q);
@@ -206,7 +206,7 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
         unitary fn identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}
         unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase,q) }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let pair = do b <- init0(); pure ((),b);
             let (u,b) = split(pair);
             let (c,u) = qif(h(init0()),u) {{ 0 => identity, 1 => phase_back }};
@@ -229,7 +229,7 @@ fn grover_reflection_and_its_negative_are_distinguished_under_control() {
             unitary fn negative(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(reflect_uniform2(q)); join(z(x(z(x(a)))),b)
             }}
-            observe fn main() -> (CBit,(CBit,CBit)) {{
+            observe fn main() -> (Bit,(Bit,Bit)) {{
                 let (c,q) = qif(h(init0()),hadamard2(join(init0(),init0()))) {{ 0 => identity, 1 => {function} }};
                 let (a,b) = split(q); (measure_x(c),(measure_x(a),measure_x(b)))
             }}"));
@@ -244,7 +244,7 @@ fn repetition_zero_one_and_many_have_explicit_semantics() {
         root.write(
             "main.qli",
             &format!(
-                "{IMPORTS} observe fn main() -> CBit {{ measure_z(repeat_static({n},x,init0())) }}"
+                "{IMPORTS} observe fn main() -> Bit {{ measure_z(repeat_static({n},x,init0())) }}"
             ),
         );
         probability(&root.run(), &[n % 2 == 1], 1.0);
@@ -268,7 +268,7 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
             ErrorCode::Effect,
         ),
         (
-            "unitary fn u(q:Q<Bit>,c:CBit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
+            "unitary fn u(q:Q<Bit>,c:Bit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
             ErrorCode::TypeMismatch,
         ),
         (

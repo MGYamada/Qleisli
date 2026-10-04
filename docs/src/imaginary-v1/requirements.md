@@ -8,7 +8,7 @@ L=language, B=sealed built-in, D=ordinary-definition candidate; unresolved class
 
 | ID | Facility and independent checking obligation |
 | --- | --- |
-| R01 | Static finite `Bits<n>`, explicit ordered types/axes/bounds; quantum zero width stays owned, CBits copyable. |
+| R01 | Static finite `Bits<n>`, explicit ordered types/axes/bounds; quantum zero width stays owned, ordinary Bits values remain copyable. |
 | R02 | Static operation descriptions capture no owners; bind actual body, full signature, phase and dependencies. Matrix values grant no gate access. |
 | R03 | Adjoint/control/powers need separate capabilities; retain all owners/phase, count actual repeated uses. |
 | R04 | Finite carry/axis helpers return complete interfaces; check even zero bodies, partitions/reassembly/nonaliasing. Lifetime is not cleanup. |

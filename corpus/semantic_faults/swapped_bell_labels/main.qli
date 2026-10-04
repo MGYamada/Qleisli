@@ -11,7 +11,7 @@ use std::quantum::cnot;
 use std::quantum::join;
 use kernel::bell_measure;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     bell_measure(join(a, b))
 }

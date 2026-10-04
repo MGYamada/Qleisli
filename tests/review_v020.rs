@@ -15,7 +15,7 @@ fn long_source_trajectory_samples_with_the_original_cli_budget() {
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args([
             "sample",
-            "tests/fixtures/review_v020/long_trajectory",
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/long_trajectory",
             "--shots=3",
             "--seed=0",
             "--format=json",
@@ -99,7 +99,9 @@ fn long_identity_circuits_normalize_both_flat_and_compound_steps() {
 #[test]
 #[ignore = "historical many-receipt/300KB stress exceeds aggregate fresh-native work; batching is tracked in #274"]
 fn many_receipts_round_trip_shared_source_without_repeated_storage_work() {
-    let original = include_str!("fixtures/review_v020/shared_identities/main.qli");
+    let original = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/shared_identities/main.qli"
+    );
     for extra in [0, 300_000] {
         let root = SourceRoot::new(&format!("{original}\n/*{}*/", "p".repeat(extra)));
         let program = compile_project(&root.0).unwrap();
@@ -139,7 +141,7 @@ fn small_native_receipts_round_trip_shared_source() {
     let source = "use std::quantum::init0; use std::observe::measure_z;
         unitary fn actual(q:Q<Bit>)->Q<Bit>{q}
         unitary fn specified(q:Q<Bit>)->Q<Bit>{q}
-        observe fn main()->CBit{
+        observe fn main()->Bit{
             let q=init0();
             let q=apply_contract(actual,specified,q);
             let q=apply_contract(actual,specified,q);
@@ -202,7 +204,7 @@ fn usage_in_both_formats_lists_every_command_and_option() {
 #[test]
 #[ignore = "historical large expansion exceeds native time/work bounds before the former Rust diagnostic"]
 fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
-    let root = Path::new("tests/fixtures/review_v020");
+    let root = Path::new("tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020");
     let error = check_project(&root.join("expansion_limit")).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit);
     assert!(
@@ -213,7 +215,9 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
         error.message.contains("while checking main::main"),
         "{error}"
     );
-    let source = include_str!("fixtures/review_v020/expansion_limit/main.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/expansion_limit/main.qli"
+    );
     assert!(source[error.span.start..error.span.end].contains("fn main"));
     check_project(&root.join("repeat_300")).unwrap();
     // Historical repeat failure is repaired by structural copy validation.
@@ -222,7 +226,7 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
         "use std::quantum::{h,t,init0}; use std::observe::measure_z;
          unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}
          unitary fn long(q:Q<Bit>)->Q<Bit>{repeat_static(512,ht,q)}
-         observe fn main()->CBit{measure_z(apply_contract(long,long,init0()))}",
+         observe fn main()->Bit{measure_z(apply_contract(long,long,init0()))}",
     );
     let error = check_project(&explicit.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Limit);

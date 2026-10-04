@@ -2,8 +2,8 @@
 //!
 //! A size parameter is an implementation representation (symbolic or closed),
 //! not a source Basis parameter. Ordinary `Bit` and `Q<Bit>` share the same basis
-//! tree; their ownership differs only at Q. Profile adapters retain the current
-//! source restrictions and legacy diagnostics during this internal migration.
+//! tree; their ownership differs only at Q. Both source profiles classify the
+//! canonical types here and enforce their existing lowering restrictions separately.
 use std::convert::Infallible;
 use std::fmt;
 
@@ -29,6 +29,51 @@ pub(super) enum Stage {
     Runtime,
 }
 
+/// Profile-specific size resolution, diagnostics and existing work accounting.
+/// The constructor/ownership rules themselves are shared by both consumers.
+pub(super) trait SourceTypeContext {
+    type Size;
+    type Error;
+    fn resolve_size(&mut self, size: &super::ast::Natural) -> Result<Self::Size, Self::Error>;
+    fn quantum_basis_error(&mut self, span: super::ast::Span) -> Self::Error;
+    fn checked_node(
+        &mut self,
+        source: &super::ast::Type,
+        stage: Stage,
+        ty: &Type<Self::Size>,
+    ) -> Result<(), Self::Error>;
+}
+
+/// Classify the one source type universe without selecting a backend or
+/// inserting a physical/structural conversion. Children are checked first in
+/// source order, preserving each consumer's bounded accounting and locations.
+pub(super) fn classify_source<C: SourceTypeContext>(
+    source: &super::ast::Type,
+    stage: Stage,
+    context: &mut C,
+) -> Result<Type<C::Size>, C::Error> {
+    use super::ast::TypeKind;
+    let ty = match &source.kind {
+        TypeKind::Unit => Type::unit(),
+        TypeKind::Bit => Type::bit(),
+        TypeKind::Bits(size) => Type::bits(context.resolve_size(size)?),
+        TypeKind::Q(basis) => {
+            if stage == Stage::Basis {
+                return Err(context.quantum_basis_error(source.span));
+            }
+            Type::quantum(classify_source(basis, Stage::Basis, context)?)
+        }
+        TypeKind::Tuple(fields) => Type::tuple(
+            fields
+                .iter()
+                .map(|field| classify_source(field, stage, context))
+                .collect::<Result<_, _>>()?,
+        ),
+    };
+    context.checked_node(source, stage, &ty)?;
+    Ok(ty)
+}
+
 #[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct TreeSize {
     pub nodes: usize,
@@ -36,6 +81,24 @@ pub(super) struct TreeSize {
 }
 
 impl<N> Type<N> {
+    /// Resolve sizes without changing any constructor or owner boundary.
+    pub(super) fn map_sizes<M, E>(
+        &self,
+        resolve: &mut impl FnMut(&N) -> Result<M, E>,
+    ) -> Result<Type<M>, E> {
+        Ok(match &self.kind {
+            Kind::Unit => Type::unit(),
+            Kind::Bit => Type::bit(),
+            Kind::Bits(size) => Type::bits(resolve(size)?),
+            Kind::Q(basis) => Type::quantum(basis.map_sizes(resolve)?),
+            Kind::Tuple(fields) => Type::tuple(
+                fields
+                    .iter()
+                    .map(|field| field.map_sizes(resolve))
+                    .collect::<Result<_, _>>()?,
+            ),
+        })
+    }
     pub(super) fn unit() -> Self {
         Self { kind: Kind::Unit }
     }
@@ -165,8 +228,7 @@ impl<N: PartialEq> PartialEq for Type<N> {
 }
 impl<N: Eq> Eq for Type<N> {}
 
-/// Legacy finite source rendering. Bit in a basis stage or inside Q stays Bit;
-/// ordinary Bit keeps the current CBit spelling until the surface cutover.
+/// Canonical source rendering; evaluation stage does not rename ordinary types.
 pub(super) struct DisplayType<'a, N>(&'a Type<N>, Stage);
 impl<N: fmt::Display> fmt::Display for DisplayType<'_, N> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -180,16 +242,8 @@ impl<N: fmt::Display> fmt::Display for DisplayType<'_, N> {
                 Part::Text(s) => f.write_str(s)?,
                 Part::Type(ty, stage) => match &ty.kind {
                     Kind::Unit => f.write_str("Unit")?,
-                    Kind::Bit => f.write_str(if stage == Stage::Basis { "Bit" } else { "CBit" })?,
-                    Kind::Bits(n) => write!(
-                        f,
-                        "{}<{n}>",
-                        if stage == Stage::Basis {
-                            "Bits"
-                        } else {
-                            "CBits"
-                        }
-                    )?,
+                    Kind::Bit => f.write_str("Bit")?,
+                    Kind::Bits(n) => write!(f, "Bits<{n}>")?,
                     Kind::Q(inner) => {
                         f.write_str("Q<")?;
                         pending.extend([Part::Text(">"), Part::Type(inner, Stage::Basis)]);
@@ -218,13 +272,9 @@ impl<N: fmt::Debug> fmt::Debug for SizedDebug<'_, N> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.0.kind {
             Kind::Unit => f.write_str("Unit"),
-            Kind::Bit => f.write_str("CBit"),
-            Kind::Bits(n) => f.debug_tuple("CBits").field(n).finish(),
-            Kind::Q(inner) => match &inner.kind {
-                Kind::Bit => f.write_str("Bit"),
-                Kind::Bits(n) => f.debug_tuple("Bits").field(n).finish(),
-                _ => f.debug_tuple("Q").field(inner).finish(),
-            },
+            Kind::Bit => f.write_str("Bit"),
+            Kind::Bits(n) => f.debug_tuple("Bits").field(n).finish(),
+            Kind::Q(inner) => f.debug_tuple("Q").field(&inner.sized_debug()).finish(),
             Kind::Tuple(fields) => {
                 struct Fields<'a, N>(&'a [Type<N>]);
                 impl<N: fmt::Debug> fmt::Debug for Fields<'_, N> {

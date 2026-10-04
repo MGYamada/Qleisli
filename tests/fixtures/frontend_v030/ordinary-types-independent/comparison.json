@@ -1,0 +1,109 @@
+{
+  "byte_identical_files": [
+    {
+      "after": "after/canonical-actions-keywords/finite.qirf.json",
+      "before": "before-follow-up/legacy-actions-keywords/finite.qirf.json",
+      "sha256": "8f1bd3a3e07ebff31e2f9f11307eb78b44a9ff5c1f35db96f3ab0f71af8aa049"
+    },
+    {
+      "after": "after/canonical-actions-keywords/finite.raw.txt",
+      "before": "before-follow-up/legacy-actions-keywords/finite.raw.txt",
+      "sha256": "08ea501500c43f7b896b112e109148647c37c817384e6449ba5276bc6dbf2075"
+    },
+    {
+      "after": "after/canonical-actions-keywords/finite.action.txt",
+      "before": "before-follow-up/legacy-actions-keywords/finite.action.txt",
+      "sha256": "d9cc6d39b45b8afa12b8831518953e54f07e36657600ebdc1d22510448aee957"
+    },
+    {
+      "after": "after/canonical-feedback/finite.qirf.json",
+      "before": "before/legacy-feedback/finite.qirf.json",
+      "sha256": "563938fd408ccbca2543a19488cee67a8901e0824ffef9259a13c42b488b9a92"
+    },
+    {
+      "after": "after/canonical-feedback/finite.raw.txt",
+      "before": "before/legacy-feedback/finite.raw.txt",
+      "sha256": "10758f73d41b604b4f8dd4ec2a970e21f7baa6cb725c190c0fc7f42b9c8e6767"
+    },
+    {
+      "after": "after/canonical-feedback/finite.action.txt",
+      "before": "before/legacy-feedback/finite.action.txt",
+      "sha256": "d23766b98b8a15bace3c0995b031ff73c269a38bfe452cde1d0880c1a1af8984"
+    },
+    {
+      "after": "after/canonical-readout/proposal.json",
+      "before": "before/legacy-readout/proposal.json",
+      "sha256": "ce6f9cfc24cc6cb239e0c1cd00966bc22c247a7e79c0a9afb64792019bfc1c1c"
+    },
+    {
+      "after": "after/canonical-readout/request.json",
+      "before": "before/legacy-readout/request.json",
+      "sha256": "d9b028c2fd6edffd7fc82bc938581be68bc7d439eeb50492a81b5481b794a3ad"
+    },
+    {
+      "after": "after/canonical-readout/precursor.json",
+      "before": "before/legacy-readout/precursor.json",
+      "sha256": "bba0f440e6c7338de10a6a9190acedae7e40472796d1cd30a6dd37751e3e1ed0"
+    },
+    {
+      "after": "after/canonical-readout/instrument.action.json",
+      "before": "before/legacy-readout/instrument.action.json",
+      "sha256": "ea84045138e4f3660e6df5ca26270338f5534fb284c8db9a8e36360511e005bf"
+    },
+    {
+      "after": "after/unit-drain-readout/proposal.json",
+      "before": "before-follow-up/legacy-unit-drain-readout/proposal.json",
+      "sha256": "808fc240033c41c7457f399379d9b87ad28234f818cba3282fc6dedadeee6b23"
+    },
+    {
+      "after": "after/unit-drain-readout/request.json",
+      "before": "before-follow-up/legacy-unit-drain-readout/request.json",
+      "sha256": "5757cdeb28afc62e6de0a7bde7e691863d9262484cc5207bb05403d84d68cc69"
+    },
+    {
+      "after": "after/unit-drain-readout/precursor.json",
+      "before": "before-follow-up/legacy-unit-drain-readout/precursor.json",
+      "sha256": "aa42c4ab3cfb61386a05b4e0252badaafc944467e7b4ee06fb0725ae08855ab3"
+    },
+    {
+      "after": "after/unit-drain-readout/instrument.action.json",
+      "before": "before-follow-up/legacy-unit-drain-readout/instrument.action.json",
+      "sha256": "96cddff2517e0f596739e9d0f175536e9858c0816773135d186e92ce8fef364e"
+    },
+    {
+      "after": "after/unit-pattern-consume/proposal.json",
+      "before": "unit-pattern-before/unit-pattern-consume/proposal.json",
+      "sha256": "c3c068d8872c12015b55a46a9cb257d4b7c6b93cfb479ff488d38c0b1d4f7301"
+    },
+    {
+      "after": "after/unit-pattern-consume/request.json",
+      "before": "unit-pattern-before/unit-pattern-consume/request.json",
+      "sha256": "67a89f8d22b476e10278936d0639dc4f5413e5b093bd4102ff79aa0d17c01cc6"
+    },
+    {
+      "after": "after/unit-pattern-consume/precursor.json",
+      "before": "unit-pattern-before/unit-pattern-consume/precursor.json",
+      "sha256": "78315ba8cee5112ad68c6918035dfea88409836d2a49ce61425088f5c04145c5"
+    },
+    {
+      "after": "after/canonical-retained-source/finite.action.txt",
+      "before": "before-source-bearing/legacy-retained-source/finite.action.txt",
+      "sha256": "3acfc93580f29fb06c42b9414769dab58035fa1f6baaa0ca268e78661b0b1461"
+    }
+  ],
+  "changed_retained_sources": [
+    {
+      "after_sha256": "0a2ce8435c0443e6ca315f79e0f8f7aa0d81334a24657c59771a1a7109a35f17",
+      "before_sha256": "1c54d373ece17402de4160cb7852c7e91901092f626b3a028b4be28749897474",
+      "module": "main"
+    },
+    {
+      "after_sha256": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+      "before_sha256": "2718c8a13f45e2078bdf830d55e36dfb47489547c8885d4cfedc4662306d0d55",
+      "module": "std::routines"
+    }
+  ],
+  "scope": "Bounded explicit migration comparison; sources are validated against their own build snapshots, never ignored or rewritten by an acceptance path. Source-event spans may change with source spelling.",
+  "source_bearing_semantic_and_structural_fields_equal": true,
+  "status": "passed"
+}

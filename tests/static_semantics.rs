@@ -491,7 +491,7 @@ fn scalar_source_action_adds_no_auxiliary_wire_and_aliases_keep_linear_types() {
             ErrorCode::Ownership,
         ),
         (
-            "use std::quantum::phase_eighth; unitary fn f(q:CBit)->CBit{phase_eighth(q)}",
+            "use std::quantum::phase_eighth; unitary fn f(q:Bit)->Bit{phase_eighth(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
@@ -564,7 +564,8 @@ fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
 
 #[test]
 fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
-    let c3x = include_str!("fixtures/review_v023/c3x.qli");
+    let c3x =
+        include_str!("fixtures/frontend_v030/ordinary-type-cutover/current/review_v023/c3x.qli");
     let root = SourceRoot::new(&format!(
         "{IMPORTS}\n{c3x}
         observe fn main()->Unit {{
@@ -617,8 +618,8 @@ fn closed_classical_computation_selects_static_branches_and_preserves_output_axe
     let definitions = "
 unitary fn choose(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
-    let flag = if true { false xor not false } else { false };
-    let a = if flag and true { t(x(a)) } else { z(a) };
+    let flag = if 1 { 0 xor not 0 } else { 0 };
+    let a = if flag and 1 { t(x(a)) } else { z(a) };
     join(b,a)
 }
 unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
@@ -650,7 +651,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
             Exact::ZERO
         }
     });
-    let else_definitions = definitions.replace("if true {", "if false {");
+    let else_definitions = definitions.replace("if 1 {", "if 0 {");
     let else_steps = compiled_steps(&else_definitions, preparation, "repeat_static(1,choose,q)");
     assert_operator(2, &else_steps, |row, column| {
         let a = column & 1;
@@ -685,8 +686,8 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
 basis fn one(u:Unit)->Bit { 1 }
 unitary fn identity(q:Q<Unit>)->Q<Unit> { q }
 unitary fn scalar(q:Q<Unit>)->Q<Unit> {
-    if not false {
-        if true and false { q } else { with_computed(q,one) { |a| z(t(a)) } }
+    if not 0 {
+        if 1 and 0 { q } else { with_computed(q,one) { |a| z(t(a)) } }
     } else { q }
 }
 unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {

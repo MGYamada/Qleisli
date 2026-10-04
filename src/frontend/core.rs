@@ -124,7 +124,7 @@ pub const PRIMITIVES: &[Primitive] = &[
         name: "measure_z",
         kind: FnKind::Observe,
         arity: 1,
-        signature: "(Q<Bit>) -> CBit",
+        signature: "(Q<Bit>) -> Bit",
     },
     Primitive {
         module: "std::observe",

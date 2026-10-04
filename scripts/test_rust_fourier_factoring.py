@@ -67,7 +67,7 @@ def main():
         implementation_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in
             ('src/frontend/sized/fourier.rs','src/frontend/sized/lower.rs',
              'corpus/sized/qualtran_qft/fourier.qli',
-             'tests/fixtures/sized_clients/delayed_fourier.qli',
+             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli',
              'scripts/test_rust_fourier_factoring.py')},
         artifacts=artifacts,semantic=semantic,commands=commands)
     if args.record:

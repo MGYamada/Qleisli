@@ -37,7 +37,7 @@ fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declaratio
 fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
     use std::os::{fd::OwnedFd, unix::net::UnixStream};
     use std::process::Stdio;
-    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("out.qirf");
     for name in ["check", "run", "sample", "doc", "emit-ir", "verify-ir"] {
         let (writer, reader) = UnixStream::pair().unwrap();
@@ -102,7 +102,7 @@ fn doc_reports_truncated_static_arguments_without_panicking() {
 
 #[test]
 fn check_and_run_accept_source_roots_with_spaces_and_unicode() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     let source_root = root.0.join("source root 日本語");
     std::fs::create_dir(&source_root).unwrap();
     std::fs::rename(root.0.join("main.qli"), source_root.join("main.qli")).unwrap();
@@ -218,7 +218,7 @@ fn check_and_run_accept_existing_non_utf8_source_roots() {
     use std::ffi::OsStr;
     use std::os::unix::ffi::OsStrExt;
 
-    let root = SourceRoot::new("observe fn main() -> CBit { false }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 0 }");
     let source_root = root.0.join(OsStr::from_bytes(b"source-\xff"));
     std::fs::create_dir(&source_root).unwrap();
     std::fs::rename(root.0.join("main.qli"), source_root.join("main.qli")).unwrap();

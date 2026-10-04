@@ -134,7 +134,7 @@ use std::quantum::join;
 use std::quantum::split;
 use std::transforms::qft2;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = split(qft2(join(init0(), init0())));
     (measure_z(a), measure_z(b))
 }
@@ -149,7 +149,7 @@ observe fn main() -> (CBit, CBit) {
         write_project("invalid-ownership", """
 use std::quantum::init0;
 use std::observe::measure_z;
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let q = init0();
     (measure_z(q), measure_z(q))
 }

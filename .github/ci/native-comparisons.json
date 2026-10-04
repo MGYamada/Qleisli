@@ -803,6 +803,20 @@
         [
           "cargo",
           "+1.98.1",
+          "test",
+          "--test",
+          "predicate_domain"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "ordinary_types"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
           "build",
           "--locked",
           "--offline",

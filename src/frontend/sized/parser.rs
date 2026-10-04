@@ -196,18 +196,11 @@ impl Projection<'_, '_> {
         }
     }
     fn ty(&self, ty: &source::Type) -> Result<Type> {
-        Ok(match &ty.kind {
-            source::TypeKind::Q(inner) => Type::Quantum(self.basis(inner)?),
-            source::TypeKind::CBit => Type::CBit,
-            source::TypeKind::CBits(n) => Type::CBits(self.natural(n)),
-            source::TypeKind::Tuple(fields) => Type::Tuple(
-                fields
-                    .iter()
-                    .map(|value| self.ty(value))
-                    .collect::<Result<_>>()?,
-            ),
-            _ => return Err(unsupported(ty.span, "unsupported runtime type")),
-        })
+        crate::frontend::types::classify_source(
+            ty,
+            crate::frontend::types::Stage::Runtime,
+            &mut Projection { index: self.index },
+        )
     }
     fn pattern(&self, pattern: &source::Pattern) -> Result<Pattern> {
         Ok(match &pattern.kind {
@@ -258,7 +251,7 @@ impl Projection<'_, '_> {
     fn expr(&self, expr: &source::Expr) -> Result<Expr> {
         let kind = match &expr.kind {
             source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)),
-            source::ExprKind::Unit => ExprKind::Tuple(vec![]),
+            source::ExprKind::Unit => ExprKind::Unit,
             source::ExprKind::Tuple(fields) => ExprKind::Tuple(
                 fields
                     .iter()
@@ -338,5 +331,40 @@ impl Projection<'_, '_> {
             result: Box::new(self.expr(&block.result)?),
             span: block.span,
         })
+    }
+}
+
+impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
+    type Size = Natural;
+    type Error = Error;
+    fn resolve_size(&mut self, size: &source::Natural) -> Result<Natural> {
+        Ok(self.natural(size))
+    }
+    fn quantum_basis_error(&mut self, span: Span) -> Error {
+        Error::new(
+            "type",
+            span,
+            "a quantum basis must be an ordinary finite type; nested Q owners are invalid",
+        )
+    }
+    fn checked_node(
+        &mut self,
+        source: &source::Type,
+        _stage: crate::frontend::types::Stage,
+        ty: &Type,
+    ) -> Result<()> {
+        use crate::frontend::types::Kind;
+        if let Kind::Q(basis) = &ty.kind {
+            if !matches!(basis.kind, Kind::Bit | Kind::Bits(_)) {
+                let source::TypeKind::Q(inner) = &source.kind else {
+                    unreachable!()
+                };
+                return Err(unsupported(
+                    inner.span,
+                    "operation/quantum basis must be Bit or Bits<n>",
+                ));
+            }
+        }
+        Ok(())
     }
 }

@@ -1,0 +1,1 @@
+unitary fn id(x: Bit) -> Bit { x } pub unitary fn f(x: Bit) -> (Bit,Bit) { (id(x),x) }

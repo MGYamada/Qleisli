@@ -80,16 +80,7 @@ fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
     })
 }
 fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
-    let result = match t {
-        Type::Quantum(b) => basis(b, scope)?,
-        Type::CBit => Ty::bit(),
-        Type::CBits(n) => Ty::bits(linear::natural(n, &scope.naturals, &scope.context)?),
-        Type::Tuple(xs) => Ty::tuple(
-            xs.iter()
-                .map(|x| ty(x, scope, span))
-                .collect::<Result<_>>()?,
-        ),
-    };
+    let result = t.map_sizes(&mut |size| linear::natural(size, &scope.naturals, &scope.context))?;
     result.bounded(span)?;
     Ok(result)
 }
@@ -269,6 +260,7 @@ fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
                 }
                 bind_name(name, Ty { kind }, *span, scope)
             }
+            (Pattern::Tuple(patterns, _), Kind::Unit) if patterns.is_empty() => Ok(()),
             (Pattern::Tuple(patterns, span), Kind::Tuple(fields))
                 if patterns.len() == fields.len() =>
             {
@@ -619,6 +611,7 @@ impl Checker<'_> {
     fn expr(&mut self, expr: &Expr, scope: &mut Scope, expected: Option<&Ty>) -> Result<Ty> {
         let span = expr.span;
         let result = match &expr.kind {
+            ExprKind::Unit => Ty::unit(),
             ExprKind::Name(name) => {
                 let binding = name.get(&scope.values).cloned().ok_or_else(|| {
                     err(
@@ -878,6 +871,7 @@ fn primitive_signature(
     }
     fn shape(t: TypeShape, ns: &[Linear], span: Span) -> Result<Ty> {
         Ok(match t {
+            TypeShape::Unit => Ty::unit(),
             TypeShape::Bit => Ty::quantum(Ty::bit()),
             TypeShape::CBit => Ty::bit(),
             TypeShape::Bits(n) => Ty::quantum(Ty::bits(size(n, ns, span)?)),

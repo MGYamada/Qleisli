@@ -17,7 +17,7 @@ fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {
     for index in 0..count {
         source.push_str(&format!("unitary fn p{index}(q:Q<Bit>)->Q<Bit>{{x(q)}}\n"));
     }
-    source.push_str("observe fn main()->CBit{let q=init0();\n");
+    source.push_str("observe fn main()->Bit{let q=init0();\n");
     for index in 0..count {
         source.push_str(&format!("let q={};\n", calls(index)));
     }
@@ -126,7 +126,7 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
              basis fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
              unitary fn specified(q:Q<Bit>)->Q<Bit>{{x(q)}}
              unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
-             observe fn main()->CBit{{let q=init0(); let q={call}; measure_z(q)}}"
+             observe fn main()->Bit{{let q=init0(); let q={call}; measure_z(q)}}"
         ));
         root.write(
             "dep.qli",

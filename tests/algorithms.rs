@@ -74,7 +74,7 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
                     "use search::step;
                  use std::quantum::init0; use std::quantum::join;
                  use std::routines::hadamard2; use std::routines::measure_z2;
-                 observe fn main() -> (CBit, CBit) {{
+                 observe fn main() -> (Bit, Bit) {{
                      let q = hadamard2(join(init0(), init0()));
                      {} measure_z2(q)
                  }}",
@@ -127,7 +127,7 @@ fn bell_recovery_source(a: &str, b: &str, c: &str) -> String {
          use std::quantum::init0; use std::quantum::h; use std::quantum::x; use std::quantum::z;
          use std::quantum::cnot; use std::quantum::split; use std::quantum::join;
          use std::observe::measure_z; use std::routines::measure_x;
-         observe fn main() -> ((CBit, CBit), ((CBit, CBit), (CBit, CBit))) {{
+         observe fn main() -> ((Bit, Bit), ((Bit, Bit), (Bit, Bit))) {{
              let (reference, logical) = cnot(h(init0()), init0());
              let (ab, c) = split(encode(logical));
              let (a, b) = split(ab);
@@ -176,7 +176,7 @@ fn parity_measurement_keeps_coherence_within_each_parity_sector() {
         "
         use std::quantum::init0; use std::quantum::h;
         use std::routines::parity_zz; use std::routines::measure_x;
-        observe fn main() -> (CBit, (CBit, CBit)) {
+        observe fn main() -> (Bit, (Bit, Bit)) {
             let ((a, b), parity) = parity_zz(h(init0()), h(init0()));
             (parity, (measure_x(a), measure_x(b)))
         }",
@@ -198,7 +198,7 @@ fn derived_routines_cannot_bypass_ownership_effect_or_basis_type_checks() {
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn f(q: Q<Bit>) -> CBit { measure_x(q) } observe fn main() -> Unit { () }",
+            "unitary fn f(q: Q<Bit>) -> Bit { measure_x(q) } observe fn main() -> Unit { () }",
             ErrorCode::Effect,
         ),
         (

@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/algorithms.rs (target/debug/deps/algorithms-556ce47b3b70bc6c)

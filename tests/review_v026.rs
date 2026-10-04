@@ -11,9 +11,9 @@ const IMPORTS: &str = "use std::quantum::{init0,cnot,h}; use std::observe::measu
 #[test]
 fn tuple_diagnostics_do_not_blame_returned_or_destructured_bindings() {
     for body in [
-        "unitary fn both(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){let result=cnot(a,b);result}\nobserve fn main()->CBit{let a=init0();let b=init0();measure_z(h(both(a,b)))}",
-        "observe fn main()->CBit{let a=init0();let b=init0();let p=cnot(a,b);let (a,b)=p;measure_z(h((a,b)))}",
-        "observe fn main()->CBit{let a=init0();let b=init0();let p=if true{let inner=cnot(a,b);inner}else{cnot(a,b)};let (a,b)=p;measure_z(h((a,b)))}",
+        "unitary fn both(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){let result=cnot(a,b);result}\nobserve fn main()->Bit{let a=init0();let b=init0();measure_z(h(both(a,b)))}",
+        "observe fn main()->Bit{let a=init0();let b=init0();let p=cnot(a,b);let (a,b)=p;measure_z(h((a,b)))}",
+        "observe fn main()->Bit{let a=init0();let b=init0();let p=if 1{let inner=cnot(a,b);inner}else{cnot(a,b)};let (a,b)=p;measure_z(h((a,b)))}",
     ] {
         let source = format!("{IMPORTS}{body}");
         let root = SourceRoot::new(&source);
@@ -32,7 +32,7 @@ fn tuple_diagnostics_do_not_blame_returned_or_destructured_bindings() {
 #[test]
 fn tuple_binding_messages_have_no_host_path() {
     let root = SourceRoot::new(&format!(
-        "{IMPORTS}observe fn main()->CBit{{let a=init0();let b=init0();let p=cnot(a,b);measure_z(p)}}"
+        "{IMPORTS}observe fn main()->Bit{{let a=init0();let b=init0();let p=cnot(a,b);measure_z(p)}}"
     ));
     let failure = check_project_diagnostic(&root.0).unwrap_err();
     assert!(failure.message.contains("binding `p`"));

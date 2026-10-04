@@ -1,0 +1,728 @@
+[
+  {
+    "label": "version",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:32.104522+00:00",
+    "seconds": 0.028744875045958906,
+    "exit_code": 0,
+    "stdout": "version.stdout.txt",
+    "stderr": "version.stderr.txt"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:32.133417+00:00",
+    "seconds": 9.820094832975883,
+    "exit_code": 0,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/Observe.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:41.953804+00:00",
+    "seconds": 0.4184397079516202,
+    "exit_code": 0,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "bit-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-copy",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-copy",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:42.884259+00:00",
+    "seconds": 0.9118688750313595,
+    "exit_code": 0,
+    "stdout": "bit-copy.stdout.txt",
+    "stderr": "bit-copy.stderr.txt"
+  },
+  {
+    "label": "bit-drop",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-drop",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-drop",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:43.796531+00:00",
+    "seconds": 0.4696875829831697,
+    "exit_code": 0,
+    "stdout": "bit-drop.stdout.txt",
+    "stderr": "bit-drop.stderr.txt"
+  },
+  {
+    "label": "bit-zero",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-zero",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-zero",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:44.266706+00:00",
+    "seconds": 0.5089060839964077,
+    "exit_code": 0,
+    "stdout": "bit-zero.stdout.txt",
+    "stderr": "bit-zero.stderr.txt"
+  },
+  {
+    "label": "bit-one",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-one",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-one",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:44.775975+00:00",
+    "seconds": 0.43764054198982194,
+    "exit_code": 0,
+    "stdout": "bit-one.stdout.txt",
+    "stderr": "bit-one.stderr.txt"
+  },
+  {
+    "label": "bit-two",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-two",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-two",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.214014+00:00",
+    "seconds": 0.005185874993912876,
+    "exit_code": 0,
+    "stdout": "bit-two.stdout.txt",
+    "stderr": "bit-two.stderr.txt"
+  },
+  {
+    "label": "bit-boolean",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-boolean",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.219585+00:00",
+    "seconds": 0.004487415950279683,
+    "exit_code": 0,
+    "stdout": "bit-boolean.stdout.txt",
+    "stderr": "bit-boolean.stderr.txt"
+  },
+  {
+    "label": "bit-call",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-call",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-call",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.224389+00:00",
+    "seconds": 0.5852477080188692,
+    "exit_code": 0,
+    "stdout": "bit-call.stdout.txt",
+    "stderr": "bit-call.stderr.txt"
+  },
+  {
+    "label": "quantum-to-bit",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-to-bit",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-to-bit",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.810039+00:00",
+    "seconds": 0.006897541985381395,
+    "exit_code": 0,
+    "stdout": "quantum-to-bit.stdout.txt",
+    "stderr": "quantum-to-bit.stderr.txt"
+  },
+  {
+    "label": "bit-to-quantum",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-to-quantum",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-to-quantum",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.817422+00:00",
+    "seconds": 0.006408291985280812,
+    "exit_code": 0,
+    "stdout": "bit-to-quantum.stdout.txt",
+    "stderr": "bit-to-quantum.stderr.txt"
+  },
+  {
+    "label": "quantum-guard",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-guard",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-guard",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.824160+00:00",
+    "seconds": 0.005896749964449555,
+    "exit_code": 0,
+    "stdout": "quantum-guard.stdout.txt",
+    "stderr": "quantum-guard.stderr.txt"
+  },
+  {
+    "label": "ordinary-quantum-call",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-quantum-call",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/ordinary-quantum-call",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.830411+00:00",
+    "seconds": 0.02752637502271682,
+    "exit_code": 0,
+    "stdout": "ordinary-quantum-call.stdout.txt",
+    "stderr": "ordinary-quantum-call.stderr.txt"
+  },
+  {
+    "label": "quantum-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-copy",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-copy",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.858323+00:00",
+    "seconds": 0.006403665989637375,
+    "exit_code": 0,
+    "stdout": "quantum-copy.stdout.txt",
+    "stderr": "quantum-copy.stderr.txt"
+  },
+  {
+    "label": "quantum-zero-drop",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-drop",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-zero-drop",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.865090+00:00",
+    "seconds": 0.00537933298619464,
+    "exit_code": 0,
+    "stdout": "quantum-zero-drop.stdout.txt",
+    "stderr": "quantum-zero-drop.stderr.txt"
+  },
+  {
+    "label": "quantum-zero-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-copy",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-zero-copy",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.870799+00:00",
+    "seconds": 0.005368083016946912,
+    "exit_code": 0,
+    "stdout": "quantum-zero-copy.stdout.txt",
+    "stderr": "quantum-zero-copy.stderr.txt"
+  },
+  {
+    "label": "unit-copy",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-copy",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-copy",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:45.876569+00:00",
+    "seconds": 0.47998270799871534,
+    "exit_code": 0,
+    "stdout": "unit-copy.stdout.txt",
+    "stderr": "unit-copy.stderr.txt"
+  },
+  {
+    "label": "unit-empty",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-empty",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-empty",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:46.356942+00:00",
+    "seconds": 0.49052674998529255,
+    "exit_code": 0,
+    "stdout": "unit-empty.stdout.txt",
+    "stderr": "unit-empty.stderr.txt"
+  },
+  {
+    "label": "unit-vs-bits-zero",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-vs-bits-zero",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-vs-bits-zero",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:46.847865+00:00",
+    "seconds": 0.005869665998034179,
+    "exit_code": 0,
+    "stdout": "unit-vs-bits-zero.stdout.txt",
+    "stderr": "unit-vs-bits-zero.stderr.txt"
+  },
+  {
+    "label": "bit-vs-bits-one",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-vs-bits-one",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-vs-bits-one",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:46.854133+00:00",
+    "seconds": 0.005469374998938292,
+    "exit_code": 0,
+    "stdout": "bit-vs-bits-one.stdout.txt",
+    "stderr": "bit-vs-bits-one.stderr.txt"
+  },
+  {
+    "label": "quantum-bit-vs-bits-one",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-bit-vs-bits-one",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-bit-vs-bits-one",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:46.859953+00:00",
+    "seconds": 0.005315041984431446,
+    "exit_code": 0,
+    "stdout": "quantum-bit-vs-bits-one.stdout.txt",
+    "stderr": "quantum-bit-vs-bits-one.stderr.txt"
+  },
+  {
+    "label": "quantum-unit",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-unit",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-unit",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:46.865659+00:00",
+    "seconds": 0.42927766602952033,
+    "exit_code": 0,
+    "stdout": "quantum-unit.stdout.txt",
+    "stderr": "quantum-unit.stderr.txt"
+  },
+  {
+    "label": "quantum-nested",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-nested",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/quantum-nested",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.295386+00:00",
+    "seconds": 0.004654458025470376,
+    "exit_code": 0,
+    "stdout": "quantum-nested.stdout.txt",
+    "stderr": "quantum-nested.stderr.txt"
+  },
+  {
+    "label": "ordinary-word",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-word",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/ordinary-word",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.300443+00:00",
+    "seconds": 0.006407041975762695,
+    "exit_code": 0,
+    "stdout": "ordinary-word.stdout.txt",
+    "stderr": "ordinary-word.stderr.txt"
+  },
+  {
+    "label": "symbolic-word",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/symbolic-word",
+      "main::f",
+      "n=0"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.307241+00:00",
+    "seconds": 0.0059074999880976975,
+    "exit_code": 0,
+    "stdout": "symbolic-word.stdout.txt",
+    "stderr": "symbolic-word.stderr.txt"
+  },
+  {
+    "label": "accessors",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/accessors",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/accessors",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.313524+00:00",
+    "seconds": 0.0062083330121822655,
+    "exit_code": 0,
+    "stdout": "accessors.stdout.txt",
+    "stderr": "accessors.stderr.txt"
+  },
+  {
+    "label": "obsolete-cbit",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-cbit",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/obsolete-cbit",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.320159+00:00",
+    "seconds": 0.004497041052673012,
+    "exit_code": 0,
+    "stdout": "obsolete-cbit.stdout.txt",
+    "stderr": "obsolete-cbit.stderr.txt"
+  },
+  {
+    "label": "obsolete-cbits",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-cbits",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/obsolete-cbits",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.325020+00:00",
+    "seconds": 0.004329833027441055,
+    "exit_code": 0,
+    "stdout": "obsolete-cbits.stdout.txt",
+    "stderr": "obsolete-cbits.stderr.txt"
+  },
+  {
+    "label": "obsolete-false",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-false",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/obsolete-false",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.329750+00:00",
+    "seconds": 0.005083583004307002,
+    "exit_code": 0,
+    "stdout": "obsolete-false.stdout.txt",
+    "stderr": "obsolete-false.stderr.txt"
+  },
+  {
+    "label": "obsolete-true",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-true",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/obsolete-true",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.335241+00:00",
+    "seconds": 0.004590208001900464,
+    "exit_code": 0,
+    "stdout": "obsolete-true.stdout.txt",
+    "stderr": "obsolete-true.stderr.txt"
+  },
+  {
+    "label": "obsolete-unit-type",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-unit-type",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/obsolete-unit-type",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.340186+00:00",
+    "seconds": 0.0044379589962773025,
+    "exit_code": 0,
+    "stdout": "obsolete-unit-type.stdout.txt",
+    "stderr": "obsolete-unit-type.stderr.txt"
+  },
+  {
+    "label": "unused-mismatch",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unused-mismatch",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unused-mismatch",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.344980+00:00",
+    "seconds": 0.030954166024457663,
+    "exit_code": 0,
+    "stdout": "unused-mismatch.stdout.txt",
+    "stderr": "unused-mismatch.stderr.txt"
+  },
+  {
+    "label": "unit-drain-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-drain-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-drain-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.376356+00:00",
+    "seconds": 0.05867366603342816,
+    "exit_code": 0,
+    "stdout": "unit-drain-readout.stdout.txt",
+    "stderr": "unit-drain-readout.stderr.txt"
+  },
+  {
+    "label": "unit-forget-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-forget-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-forget-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.435491+00:00",
+    "seconds": 0.006152957968879491,
+    "exit_code": 0,
+    "stdout": "unit-forget-readout.stdout.txt",
+    "stderr": "unit-forget-readout.stderr.txt"
+  },
+  {
+    "label": "canonical-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/canonical-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.442016+00:00",
+    "seconds": 0.058317874965723604,
+    "exit_code": 0,
+    "stdout": "canonical-readout.stdout.txt",
+    "stderr": "canonical-readout.stderr.txt"
+  },
+  {
+    "label": "legacy-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.500882+00:00",
+    "seconds": 0.004794624983333051,
+    "exit_code": 0,
+    "stdout": "legacy-readout.stdout.txt",
+    "stderr": "legacy-readout.stderr.txt"
+  },
+  {
+    "label": "canonical-actions",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/canonical-actions",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.506114+00:00",
+    "seconds": 0.004436916031409055,
+    "exit_code": 0,
+    "stdout": "canonical-actions.stdout.txt",
+    "stderr": "canonical-actions.stderr.txt"
+  },
+  {
+    "label": "legacy-actions",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-actions",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.510951+00:00",
+    "seconds": 0.0046902920003049076,
+    "exit_code": 0,
+    "stdout": "legacy-actions.stdout.txt",
+    "stderr": "legacy-actions.stderr.txt"
+  },
+  {
+    "label": "canonical-feedback",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-feedback",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/canonical-feedback",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:47.516042+00:00",
+    "seconds": 0.8745441249920987,
+    "exit_code": 0,
+    "stdout": "canonical-feedback.stdout.txt",
+    "stderr": "canonical-feedback.stderr.txt"
+  },
+  {
+    "label": "legacy-feedback",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-feedback",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-feedback",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:48.390996+00:00",
+    "seconds": 0.005280707962810993,
+    "exit_code": 0,
+    "stdout": "legacy-feedback.stdout.txt",
+    "stderr": "legacy-feedback.stderr.txt"
+  },
+  {
+    "label": "bit-boolean-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/bit-boolean-keywords",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:48.396742+00:00",
+    "seconds": 0.43017308396520093,
+    "exit_code": 0,
+    "stdout": "bit-boolean-keywords.stdout.txt",
+    "stderr": "bit-boolean-keywords.stderr.txt"
+  },
+  {
+    "label": "canonical-actions-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/canonical-actions-keywords",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:48.827355+00:00",
+    "seconds": 0.9159172920044512,
+    "exit_code": 0,
+    "stdout": "canonical-actions-keywords.stdout.txt",
+    "stderr": "canonical-actions-keywords.stderr.txt"
+  },
+  {
+    "label": "legacy-actions-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-actions-keywords",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:49.743762+00:00",
+    "seconds": 0.005252417002338916,
+    "exit_code": 0,
+    "stdout": "legacy-actions-keywords.stdout.txt",
+    "stderr": "legacy-actions-keywords.stderr.txt"
+  },
+  {
+    "label": "legacy-unit-drain-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-unit-drain-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-unit-drain-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:49.749442+00:00",
+    "seconds": 0.004445375001523644,
+    "exit_code": 0,
+    "stdout": "legacy-unit-drain-readout.stdout.txt",
+    "stderr": "legacy-unit-drain-readout.stderr.txt"
+  },
+  {
+    "label": "canonical-retained-source",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/canonical-retained-source",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:49.754341+00:00",
+    "seconds": 1.1173996250145137,
+    "exit_code": 0,
+    "stdout": "canonical-retained-source.stdout.txt",
+    "stderr": "canonical-retained-source.stderr.txt"
+  },
+  {
+    "label": "legacy-retained-source",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/legacy-retained-source",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:50.872223+00:00",
+    "seconds": 0.0062991249724291265,
+    "exit_code": 0,
+    "stdout": "legacy-retained-source.stdout.txt",
+    "stderr": "legacy-retained-source.stderr.txt"
+  },
+  {
+    "label": "unit-pattern-consume",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/ordinary-types-observer-after",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/after/unit-pattern-consume",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-after-20261005",
+    "started_at": "2026-10-04T15:57:50.878968+00:00",
+    "seconds": 0.05419854202773422,
+    "exit_code": 0,
+    "stdout": "unit-pattern-consume.stdout.txt",
+    "stderr": "unit-pattern-consume.stderr.txt"
+  }
+]

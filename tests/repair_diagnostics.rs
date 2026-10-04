@@ -8,7 +8,7 @@ use std::{fs, path::Path, process::Command};
 fn fixture(name: &str) -> String {
     fs::read_to_string(
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/repair_diagnostics")
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics")
             .join(format!("{name}.qli")),
     )
     .unwrap()
@@ -18,13 +18,13 @@ fn fixture(name: &str) -> String {
 fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
     for (source, cause, derived, declared) in [
         (
-            "use std::observe::measure_z;\nunitary fn bad(q:Q<Bit>)->CBit{measure_z(q)}",
+            "use std::observe::measure_z;\nunitary fn bad(q:Q<Bit>)->Bit{measure_z(q)}",
             "measure_z(q)",
             "Observe",
             "Unitary",
         ),
         (
-            "use std::quantum::init0; use std::observe::measure_z;\nunitary fn bad()->CBit{measure_z(init0())}",
+            "use std::quantum::init0; use std::observe::measure_z;\nunitary fn bad()->Bit{measure_z(init0())}",
             "measure_z(init0())",
             "Observe",
             "Unitary",
@@ -49,19 +49,19 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Iso",
         ),
         (
-            "observe fn strong()->Unit{()} iso fn bad()->Unit{if false {strong()} else {()}}",
+            "observe fn strong()->Unit{()} iso fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
             "Iso",
         ),
         (
-            "observe fn strong()->Unit{()} iso fn bad()->Unit{if true {()} else {strong()}}",
+            "observe fn strong()->Unit{()} iso fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
             "Iso",
         ),
         (
-            "observe fn strong()->CBit{true} iso fn bad()->Unit{if strong() {()} else {()}}",
+            "observe fn strong()->Bit{1} iso fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
             "Iso",
@@ -189,11 +189,11 @@ fn concrete_mismatches_show_expected_and_actual_exact_types() {
         ("static_argument", "Op<Bit>", "Op<(Bit,Bit)>"),
         ("static_composition", "Op<Bit>", "Op<(Bit,Bit)>"),
         ("static_input", "Q<Bit>", "Q<(Bit,Bit)>"),
-        ("branch_result", "CBit", "Unit"),
-        ("primitive", "Q<Bit>", "CBit"),
+        ("branch_result", "Bit", "Unit"),
+        ("primitive", "Q<Bit>", "Bit"),
         ("zero_width", "Q<Bit>", "Q<Unit>"),
-        ("condition", "CBit", "Q<Bit>"),
-        ("boolean", "CBit", "Q<Unit>"),
+        ("condition", "Bit", "Q<Bit>"),
+        ("boolean", "Bit", "Q<Unit>"),
         ("predicate", "Bit -> Bit", "Unit -> Bit"),
         ("certified_predicate", "Bit -> Bit", "Unit -> Bit"),
     ] {
@@ -256,7 +256,9 @@ fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
 
 #[test]
 fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
-    let original = include_str!("fixtures/qli_authoring/rejected/auxiliary_hh.qli");
+    let original = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/auxiliary_hh.qli"
+    );
     let root = SourceRoot::new(original);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     assert_eq!(error.code, "unsupported");
@@ -282,7 +284,7 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     }
     root.write(
         "main.qli",
-        include_str!("fixtures/qli_authoring/accepted/auxiliary_hh.qli"),
+        include_str!("fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/auxiliary_hh.qli"),
     );
     let program = compile_project(&root.0).unwrap();
     let result = run_closed(&program, SimulationLimits::default()).unwrap();

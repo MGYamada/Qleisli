@@ -1,0 +1,2 @@
+use std::quantum::x;unitary fn z_helper(q:Q<Bit>)->Q<Bit>{x(q)}
+pub unitary fn gate(q:Q<Bit>)->Q<Bit>{z_helper(q)}

@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
+     Running tests/ordinary_types.rs (target/debug/deps/ordinary_types-86200ffd164ef91c)
+
+thread 'sized_unit_patterns_consume_only_actual_unit_values' (11960139) panicked at tests/ordinary_types.rs:26:76:
+called `Result::unwrap()` on an `Err` value: Error { code: "type", module: Some("main"), span: Span { start: 114, end: 116 }, message: "binding pattern does not preserve tuple arity and nesting" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+error: test failed, to rerun pass `--test ordinary_types`

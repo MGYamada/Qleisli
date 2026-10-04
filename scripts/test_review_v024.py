@@ -75,7 +75,7 @@ def program(width, body, column):
     join = "join(a,b)" if width == 2 else "join(join(a,b),c)"
     split = "let (a,b)=split(q);" if width == 2 else "let (ab,c)=split(q);let (a,b)=split(ab);"
     result = "(measure_z(a),measure_z(b))" if width == 2 else "((measure_z(a),measure_z(b)),measure_z(c))"
-    result_ty = "(CBit,CBit)" if width == 2 else "((CBit,CBit),CBit)"
+    result_ty = "(Bit,Bit)" if width == 2 else "((Bit,Bit),Bit)"
     return f"{IMPORTS}\n{body}\nobserve fn main()->{result_ty}{{{prepare}let q=apply({join});{split}{result}}}"
 
 

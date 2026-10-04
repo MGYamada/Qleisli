@@ -55,10 +55,10 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
-observe fn read_x(q: Q<Bit>) -> CBit { measure_z(h(q)) }
-unitary fn pair(left: CBit, right: CBit) -> (CBit,CBit) { (left,right) }
-unitary fn duplicate(b: CBit) -> (CBit,CBit) { pair(b,b) }
-observe fn main() -> ((CBit,CBit),CBit) {
+observe fn read_x(q: Q<Bit>) -> Bit { measure_z(h(q)) }
+unitary fn pair(left: Bit, right: Bit) -> (Bit,Bit) { (left,right) }
+unitary fn duplicate(b: Bit) -> (Bit,Bit) { pair(b,b) }
+observe fn main() -> ((Bit,Bit),Bit) {
     let (a,r) = cnot(h(init0()),init0());
     BODY
 }
@@ -83,14 +83,14 @@ use std::quantum::h;
 use std::quantum::x;
 use std::quantum::z;
 use std::observe::measure_z;
-unitary fn phase(flag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn phase(flag: Bit, q: Q<Bit>) -> Q<Bit> {{
     if flag {{ z(q) }} else {{ q }}
 }}
-unitary fn wrapped(flag: CBit, q: Q<Bit>, other: CBit) -> (CBit,Q<Bit>) {{
+unitary fn wrapped(flag: Bit, q: Q<Bit>, other: Bit) -> (Bit,Q<Bit>) {{
     let selected = if flag {{ let flag = other; flag }} else {{ let flag = other; flag }};
     (flag,phase(selected,q))
 }}
-observe fn main() -> ((CBit,CBit),(CBit,CBit)) {{
+observe fn main() -> ((Bit,Bit),(Bit,Bit)) {{
     let flag = measure_z({});
     let other = measure_z({});
     let phase = other;
@@ -121,14 +121,14 @@ use std::quantum::z;
 use std::quantum::t;
 use std::quantum::cnot;
 use std::observe::measure_z;
-unitary fn phased(b: CBit, q: Q<Bit>) -> Q<Bit> {
+unitary fn phased(b: Bit, q: Q<Bit>) -> Q<Bit> {
     if b { t(q) } else { z(t(q)) }
 }
-unitary fn relay(mixed: (CBit,Q<Bit>)) -> Q<Bit> {
+unitary fn relay(mixed: (Bit,Q<Bit>)) -> Q<Bit> {
     let (b,q) = mixed;
     phased(b,q)
 }
-observe fn main() -> (CBit,(CBit,CBit)) {
+observe fn main() -> (Bit,(Bit,Bit)) {
     let (a,r) = cnot(h(init0()),init0());
     let b = measure_z(h(init0()));
     BODY
@@ -164,7 +164,7 @@ use std::quantum::cnot;
 use std::quantum::split;
 use std::observe::measure_z;
 use std::observe::discard;
-observe fn main() -> ((CBit,CBit),((CBit,CBit),(CBit,CBit))) {
+observe fn main() -> ((Bit,Bit),((Bit,Bit),(Bit,Bit))) {
     let (a,r) = cnot(h(init0()),init0());
     let (u,a) = split(do k <- a; pure ((),k));
     let b = measure_z(h(init0()));

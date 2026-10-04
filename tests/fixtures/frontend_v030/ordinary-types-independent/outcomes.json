@@ -1,0 +1,988 @@
+{
+  "scope": "Verbatim stage outcome lines, not an acceptance aggregate; complete outputs retain SourceValue details.",
+  "cases": [
+    {
+      "case": "bit-copy",
+      "source_sha256": "2044478ac17e29981c0725abfadf2cc933aac479b5cdd0b12f85b66ec1fa25a1",
+      "before": {
+        "path": "before/bit-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-copy/main.qli\", span: Span { start: 20, end: 23 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 23 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 47 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-drop",
+      "source_sha256": "7ef999ea8f6cbcd53a7a40867161695c529ca09797dc7cafef2620cd2f90d701",
+      "before": {
+        "path": "before/bit-drop.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-drop/main.qli\", span: Span { start: 20, end: 23 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 23 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-drop.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 39 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-zero",
+      "source_sha256": "1f7dd48b3d44549e2c991f6d60689ae39828a4d21f49f4b080b88368668b6de8",
+      "before": {
+        "path": "before/bit-zero.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found `0`\", span: Span { start: 28, end: 29 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `0`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-zero/main.qli\", span: Span { start: 28, end: 29 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"expected `(`, found `0`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-zero.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-one",
+      "source_sha256": "54c52e1891127fa565a35e9b1e166969e32fb2651efe564f8ba1bd5f046c8f08",
+      "before": {
+        "path": "before/bit-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found `1`\", span: Span { start: 28, end: 29 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `1`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-one/main.qli\", span: Span { start: 28, end: 29 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"expected `(`, found `1`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-two",
+      "source_sha256": "0176011ea3c710501d8b9d8d3c817c04c8f9cfaa421d65e0a86f9638af061508",
+      "before": {
+        "path": "before/bit-two.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found natural number\", span: Span { start: 28, end: 29 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found natural number\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-two/main.qli\", span: Span { start: 28, end: 29 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"expected `(`, found natural number\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-two.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"Bit literals must be 0 or 1\", span: Span { start: 28, end: 29 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: Bit literals must be 0 or 1\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-two/main.qli\", span: Span { start: 28, end: 29 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 29 }, message: \"Bit literals must be 0 or 1\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-boolean",
+      "source_sha256": "1224a34251f569ca142fc6a814b9b438b8aa054bd4f47597a3130bb617516d8d",
+      "before": {
+        "path": "before/bit-boolean.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 48, end: 49 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean/main.qli\", span: Span { start: 48, end: 49 }, line: 1, column: 49 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 48, end: 49 }, message: \"unexpected character `!`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-boolean.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 48, end: 49 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean/main.qli\", span: Span { start: 48, end: 49 }, line: 1, column: 49 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 48, end: 49 }, message: \"unexpected character `!`\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-call",
+      "source_sha256": "0db82505e37b61f3160c6aeec446a0ece592e6ec0d121433a41071b4a0119d37",
+      "before": {
+        "path": "before/bit-call.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-call/main.qli\", span: Span { start: 17, end: 20 }, line: 1, column: 18 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 17, end: 20 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-call.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 35, end: 86 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-to-bit",
+      "source_sha256": "2a29688a853be488a22e0c74a0e24fb479ec20d1b1729bff27036b96c00f457f",
+      "before": {
+        "path": "before/quantum-to-bit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-to-bit/main.qli\", span: Span { start: 31, end: 34 }, line: 1, column: 32 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 31, end: 34 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-to-bit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"result does not match the function return type: expected `Bit`, found `Q<Bit>`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-to-bit/main.qli\", span: Span { start: 37, end: 38 }, line: 1, column: 38 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 37, end: 38 }, message: \"type or tuple/size shape mismatch: expected Bit, found Q(Bit)\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-to-quantum",
+      "source_sha256": "90733b28a46c6fe55182bd3f4fe9808abfefcd488fe6786f5e8d6fbab54f6bf3",
+      "before": {
+        "path": "before/bit-to-quantum.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-to-quantum/main.qli\", span: Span { start: 20, end: 23 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 23 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-to-quantum.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"result does not match the function return type: expected `Q<Bit>`, found `Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-to-quantum/main.qli\", span: Span { start: 37, end: 38 }, line: 1, column: 38 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 37, end: 38 }, message: \"type or tuple/size shape mismatch: expected Q(Bit), found Bit\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-guard",
+      "source_sha256": "f4d5c7e61238e3a3140d43e24e59226c313251c5f9885a4c2ec2fc11df5e952b",
+      "before": {
+        "path": "before/quantum-guard.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"if requires a CBit condition: expected `CBit`, found `Q<Bit>`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-guard/main.qli\", span: Span { start: 40, end: 61 }, line: 1, column: 41 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 40, end: 61 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-guard.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"if requires a Bit condition: expected `Bit`, found `Q<Bit>`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-guard/main.qli\", span: Span { start: 40, end: 61 }, line: 1, column: 41 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 40, end: 61 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "ordinary-quantum-call",
+      "source_sha256": "d60a3540ba9758f189c46407fd019099b0b8321fd8b4780457a7f7e6e2fcfff5",
+      "before": {
+        "path": "before/ordinary-quantum-call.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-quantum-call/main.qli\", span: Span { start: 61, end: 64 }, line: 1, column: 62 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 61, end: 64 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/ordinary-quantum-call.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"argument `q` has the wrong type: expected `Q<Bit>`, found `Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-quantum-call/main.qli\", span: Span { start: 81, end: 82 }, line: 1, column: 82 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 81, end: 82 }, message: \"type or tuple/size shape mismatch: expected Q(Bit), found Bit\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-copy",
+      "source_sha256": "8796157637c20d706bb790de1e38cf4066ecbd45f4481cd695b402deb22e2fa1",
+      "before": {
+        "path": "before/quantum-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-copy/main.qli\", span: Span { start: 52, end: 53 }, line: 1, column: 53 }) }",
+          "sized.generic: Error { code: \"ownership\", module: Some(\"main\"), span: Span { start: 52, end: 53 }, message: \"unbound or consumed value q\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"ownership\", message: \"quantum ownership `q` has already been consumed\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-copy/main.qli\", span: Span { start: 52, end: 53 }, line: 1, column: 53 }) }",
+          "sized.generic: Error { code: \"ownership\", module: Some(\"main\"), span: Span { start: 52, end: 53 }, message: \"unbound or consumed value q\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-zero-drop",
+      "source_sha256": "44e9279ccfad50ab5270a6128feeecbeb3f90a5724d0a2a1e55bb508ace46088",
+      "before": {
+        "path": "before/quantum-zero-drop.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-drop/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 35, end: 39 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-zero-drop.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-drop/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"ownership\", module: Some(\"main\"), span: Span { start: 40, end: 46 }, message: \"function leaves live quantum arguments unconsumed\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-zero-copy",
+      "source_sha256": "c6125da953d866b81f04bdd64392ff9eb39a767d6766f085a184df2c0bee15ce",
+      "before": {
+        "path": "before/quantum-zero-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-copy/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"ownership\", module: Some(\"main\"), span: Span { start: 64, end: 65 }, message: \"unbound or consumed value q\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-zero-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-zero-copy/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"ownership\", module: Some(\"main\"), span: Span { start: 64, end: 65 }, message: \"unbound or consumed value q\" }"
+        ]
+      }
+    },
+    {
+      "case": "unit-copy",
+      "source_sha256": "a55aa59ea745fa0d7c5075d4dbc593837cf798dd3938a77e3a0190da55475011",
+      "before": {
+        "path": "before/unit-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 24 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unit-copy.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=false",
+          "sized.native: pure accepted"
+        ]
+      }
+    },
+    {
+      "case": "unit-empty",
+      "source_sha256": "b88cbfd4ae68bfc6411abee88a23e32f00670d35822af59d1ab7b91ca6a6a368",
+      "before": {
+        "path": "before/unit-empty.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 24 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unit-empty.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=false",
+          "sized.native: pure accepted"
+        ]
+      }
+    },
+    {
+      "case": "unit-vs-bits-zero",
+      "source_sha256": "585176c8db35ec9aaf02946138c79cef1c49102630c825597c86d673a9ac8ba0",
+      "before": {
+        "path": "before/unit-vs-bits-zero.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-vs-bits-zero/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 27 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unit-vs-bits-zero.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-vs-bits-zero/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 39, end: 40 }, message: \"type or tuple/size shape mismatch: expected Unit, found Bits(Linear { constant: 0, terms: {} })\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-vs-bits-one",
+      "source_sha256": "8a78ec3b9140917b8c99b73fe5c09cfe2beafc1ae1c1520ce26270f66cb5f3e8",
+      "before": {
+        "path": "before/bit-vs-bits-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-vs-bits-one/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 27 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-vs-bits-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-vs-bits-one/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 38, end: 39 }, message: \"type or tuple/size shape mismatch: expected Bit, found Bits(Linear { constant: 1, terms: {} })\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-bit-vs-bits-one",
+      "source_sha256": "f0c478c03961508d5de2845e8de4e76c4e75441c5f0ee5e19e8b623aa3d52174",
+      "before": {
+        "path": "before/quantum-bit-vs-bits-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-bit-vs-bits-one/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 44, end: 45 }, message: \"type or tuple/size shape mismatch: expected Bit, found Bits(Linear { constant: 1, terms: {} })\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-bit-vs-bits-one.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-bit-vs-bits-one/main.qli\", span: Span { start: 22, end: 29 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 44, end: 45 }, message: \"type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-unit",
+      "source_sha256": "b5aeeb54dbf7141a53012391bebd695779897321c338a1784cb243b9dc4ef7cb",
+      "before": {
+        "path": "before/quantum-unit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 22, end: 26 }, message: \"sized preparation profile: operation/quantum basis must be Bit or Bits<n>\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-unit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 22, end: 26 }, message: \"sized preparation profile: operation/quantum basis must be Bit or Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "quantum-nested",
+      "source_sha256": "486675aa300986a698bbb583f8960b83fd8bc34c31a9f351477a95a707ff7651",
+      "before": {
+        "path": "before/quantum-nested.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found `Q`\", span: Span { start: 22, end: 23 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `Q`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-nested/main.qli\", span: Span { start: 22, end: 23 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 22, end: 23 }, message: \"expected `(`, found `Q`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/quantum-nested.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found `Q`\", span: Span { start: 22, end: 23 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `Q`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-nested/main.qli\", span: Span { start: 22, end: 23 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 22, end: 23 }, message: \"expected `(`, found `Q`\" }"
+        ]
+      }
+    },
+    {
+      "case": "ordinary-word",
+      "source_sha256": "ae005b0094ddd4847ea93f28a8acefd9bc67b3a3d8fe96be1db42af134411793",
+      "before": {
+        "path": "before/ordinary-word.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-word/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 27 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/ordinary-word.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-word/main.qli\", span: Span { start: 20, end: 27 }, line: 1, column: 21 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 59 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "symbolic-word",
+      "source_sha256": "879ed16dd0129503c606f2c204913f6c9a8beb03e7b8864065f0dd5149e46012",
+      "before": {
+        "path": "before/symbolic-word.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 35, end: 44 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/symbolic-word.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"finite profile does not support static Nat parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli\", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 64 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "accessors",
+      "source_sha256": "9263fa22f6e178f8dc2671b5a6752a6fef13f825f932ba97f8bbca2dad294140",
+      "before": {
+        "path": "before/accessors.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/accessors/main.qli\", span: Span { start: 27, end: 34 }, line: 1, column: 28 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 23 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/accessors.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/accessors/main.qli\", span: Span { start: 27, end: 34 }, line: 1, column: 28 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 183 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      }
+    },
+    {
+      "case": "obsolete-cbit",
+      "source_sha256": "7fe16c6950ee5bec4dc5b269acf5d33c9e705ca0b30346fa5a2c70cc826702d0",
+      "before": {
+        "path": "before/obsolete-cbit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 39 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      },
+      "after": {
+        "path": "after/obsolete-cbit.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 20, end: 24 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-cbit/main.qli\", span: Span { start: 20, end: 24 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 20, end: 24 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "obsolete-cbits",
+      "source_sha256": "67706c61e197c36f696f39d3c841c754e870035a385542ad27f1d17420877bd5",
+      "before": {
+        "path": "before/obsolete-cbits.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"register types are outside the finite lowering profile\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-cbits/main.qli\", span: Span { start: 20, end: 28 }, line: 1, column: 21 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 0, end: 47 }, message: \"selected sized lowering profile requires quantum entry values; classical entry values are unsupported\" }"
+        ]
+      },
+      "after": {
+        "path": "after/obsolete-cbits.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 20, end: 25 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-cbits/main.qli\", span: Span { start: 20, end: 25 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 20, end: 25 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "obsolete-false",
+      "source_sha256": "3550479c351c53276343a64e8f16ca02f453fb3ca33575b85650be309da55107",
+      "before": {
+        "path": "before/obsolete-false.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-false/main.qli\", span: Span { start: 22, end: 25 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 22, end: 25 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/obsolete-false.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"true/false literals were removed; use 1/0 for Bit\", span: Span { start: 28, end: 33 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: true/false literals were removed; use 1/0 for Bit\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-false/main.qli\", span: Span { start: 28, end: 33 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 33 }, message: \"true/false literals were removed; use 1/0 for Bit\" }"
+        ]
+      }
+    },
+    {
+      "case": "obsolete-true",
+      "source_sha256": "1ddf0b42797ef86535ad0753669f263d594350d2a0126294f2ca206bea10fbc5",
+      "before": {
+        "path": "before/obsolete-true.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-true/main.qli\", span: Span { start: 22, end: 25 }, line: 1, column: 23 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 22, end: 25 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/obsolete-true.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"true/false literals were removed; use 1/0 for Bit\", span: Span { start: 28, end: 32 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: true/false literals were removed; use 1/0 for Bit\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-true/main.qli\", span: Span { start: 28, end: 32 }, line: 1, column: 29 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 28, end: 32 }, message: \"true/false literals were removed; use 1/0 for Bit\" }"
+        ]
+      }
+    },
+    {
+      "case": "obsolete-unit-type",
+      "source_sha256": "53b6a2f081b7c6e85bfd7d20a6386f55a3f11c380dd7d81494bb94e8664a99a9",
+      "before": {
+        "path": "before/obsolete-unit-type.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"unsupported\", message: \"empty tuple type syntax is outside the finite profile; use Unit\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-unit-type/main.qli\", span: Span { start: 20, end: 22 }, line: 1, column: 21 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=false",
+          "sized.native: pure accepted"
+        ]
+      },
+      "after": {
+        "path": "after/obsolete-unit-type.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"empty tuple type spelling was removed; use Unit (the value remains ())\", span: Span { start: 20, end: 22 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: empty tuple type spelling was removed; use Unit (the value remains ())\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/obsolete-unit-type/main.qli\", span: Span { start: 20, end: 22 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 20, end: 22 }, message: \"empty tuple type spelling was removed; use Unit (the value remains ())\" }"
+        ]
+      }
+    },
+    {
+      "case": "unused-mismatch",
+      "source_sha256": "44fdd5f9ad571490e75a976b46d1e8c71313ec3b5b0ce48019d8e30378c768e9",
+      "before": {
+        "path": "before/unused-mismatch.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unused-mismatch/main.qli\", span: Span { start: 55, end: 58 }, line: 1, column: 56 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 22, end: 26 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unused-mismatch.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"result does not match the function return type: expected `Q<Bit>`, found `Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unused-mismatch/main.qli\", span: Span { start: 72, end: 73 }, line: 1, column: 73 }) }",
+          "sized.generic: Error { code: \"type\", module: Some(\"main\"), span: Span { start: 72, end: 73 }, message: \"type or tuple/size shape mismatch: expected Q(Bit), found Bit\" }"
+        ]
+      }
+    },
+    {
+      "case": "unit-drain-readout",
+      "source_sha256": "f8b0d9f26dcd8cea0ef551f387a488ac5aa3ef863ee0f42ca09913a4def94c54",
+      "before": {
+        "path": "before/unit-drain-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::registers`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-drain-readout/main.qli\", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 164, end: 168 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unit-drain-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::registers`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-drain-readout/main.qli\", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=true",
+          "sized.native: instrument accepted",
+          "sized.source_events: validated 4 events, 0 movements"
+        ]
+      }
+    },
+    {
+      "case": "unit-forget-readout",
+      "source_sha256": "34e0a22f1d15b2a2ab24de9a23dc1478c9147e4206e58d88f8a4e6bb473e2952",
+      "before": {
+        "path": "before/unit-forget-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::classical`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-forget-readout/main.qli\", span: Span { start: 29, end: 60 }, line: 1, column: 30 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 126, end: 130 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/unit-forget-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::classical`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-forget-readout/main.qli\", span: Span { start: 29, end: 60 }, line: 1, column: 30 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: Error { code: \"unsupported\", module: None, span: Span { start: 0, end: 0 }, message: \"instrument result must retain every observation in chronological low-bit-first order\" }"
+        ]
+      }
+    },
+    {
+      "case": "canonical-readout",
+      "source_sha256": "e6a5f50be2f2e551d24b2c232ef76cb79e93410a21a1a4cdc13806e00c8f7196",
+      "before": {
+        "path": "before/canonical-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::classical`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-readout/main.qli\", span: Span { start: 50, end: 81 }, line: 1, column: 51 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 146, end: 153 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/canonical-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::classical`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-readout/main.qli\", span: Span { start: 50, end: 81 }, line: 1, column: 51 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=true",
+          "sized.native: instrument accepted",
+          "sized.source_events: validated 4 events, 0 movements"
+        ]
+      }
+    },
+    {
+      "case": "legacy-readout",
+      "source_sha256": "cae330ccde44835cfbfaeb4ed2cdcff5f02cdc7aa6ba0390ea634363fc2600a4",
+      "before": {
+        "path": "before/legacy-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::classical`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-readout/main.qli\", span: Span { start: 50, end: 81 }, line: 1, column: 51 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=true",
+          "sized.native: instrument accepted",
+          "sized.source_events: validated 4 events, 0 movements"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 146, end: 151 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-readout/main.qli\", span: Span { start: 146, end: 151 }, line: 1, column: 147 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 146, end: 151 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "canonical-actions",
+      "source_sha256": "dd8fd59b1fba0fe8e913e46b4dd69498deb7034b88c40d3d8d74a6619ace29af",
+      "before": {
+        "path": "before/canonical-actions.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 33, end: 34 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli\", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli\", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 33, end: 34 }, message: \"unexpected character `!`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/canonical-actions.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 33, end: 34 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli\", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions/main.qli\", span: Span { start: 33, end: 34 }, line: 1, column: 34 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 33, end: 34 }, message: \"unexpected character `!`\" }"
+        ]
+      }
+    },
+    {
+      "case": "legacy-actions",
+      "source_sha256": "d452310185d9cadd5cb363a27251ac9d1443432ba78fb0c10332ad905ef31b09",
+      "before": {
+        "path": "before/legacy-actions.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 35, end: 36 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions/main.qli\", span: Span { start: 35, end: 36 }, line: 1, column: 36 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions/main.qli\", span: Span { start: 35, end: 36 }, line: 1, column: 36 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 35, end: 36 }, message: \"unexpected character `!`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-actions.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"unexpected character `!`\", span: Span { start: 35, end: 36 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions/main.qli\", span: Span { start: 35, end: 36 }, line: 1, column: 36 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: unexpected character `!`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions/main.qli\", span: Span { start: 35, end: 36 }, line: 1, column: 36 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 35, end: 36 }, message: \"unexpected character `!`\" }"
+        ]
+      }
+    },
+    {
+      "case": "canonical-feedback",
+      "source_sha256": "f0cea7bdf1877b2694f6734d70eb8bfbd5cf4517fddd800aab2024cda9db4043",
+      "before": {
+        "path": "before/canonical-feedback.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-feedback/main.qli\", span: Span { start: 118, end: 121 }, line: 1, column: 119 }) }",
+          "finite.compile: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-feedback/main.qli\", span: Span { start: 118, end: 121 }, line: 1, column: 119 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 118, end: 121 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/canonical-feedback.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 185, end: 209 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "legacy-feedback",
+      "source_sha256": "326283625344be5a9c1d0f8d70e3ec329e67a82ddf070f20ccbc3672a8d997bc",
+      "before": {
+        "path": "before/legacy-feedback.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 187, end: 211 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-feedback.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 118, end: 122 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-feedback/main.qli\", span: Span { start: 118, end: 122 }, line: 1, column: 119 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-feedback/main.qli\", span: Span { start: 118, end: 122 }, line: 1, column: 119 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 118, end: 122 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "bit-boolean-keywords",
+      "source_sha256": "9394a999c72a4f5a90b792ee8d5e5b0e2998c9d452c350cf3f0e3908f107abe1",
+      "before": {
+        "path": "before-follow-up/bit-boolean-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean-keywords/main.qli\", span: Span { start: 20, end: 23 }, line: 1, column: 21 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 20, end: 23 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/bit-boolean-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: ok",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 41, end: 72 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "canonical-actions-keywords",
+      "source_sha256": "44062a1ef29abbcc84e798c58e660181233495a61a2ff4cea5fe4186df49304f",
+      "before": {
+        "path": "before-follow-up/canonical-actions-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"expected `(`, found `1`\", span: Span { start: 86, end: 87 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `1`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords/main.qli\", span: Span { start: 86, end: 87 }, line: 1, column: 87 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: expected `(`, found `1`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords/main.qli\", span: Span { start: 86, end: 87 }, line: 1, column: 87 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 86, end: 87 }, message: \"expected `(`, found `1`\" }"
+        ]
+      },
+      "after": {
+        "path": "after/canonical-actions-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 33, end: 38 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "legacy-actions-keywords",
+      "source_sha256": "40be593fb0660dc420c6cdd9cf8de7844a61a96b996afc264aca97f0567fdc6b",
+      "before": {
+        "path": "before-follow-up/legacy-actions-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 35, end: 40 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-actions-keywords.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 19, end: 23 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions-keywords/main.qli\", span: Span { start: 19, end: 23 }, line: 1, column: 20 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions-keywords/main.qli\", span: Span { start: 19, end: 23 }, line: 1, column: 20 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 19, end: 23 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "legacy-unit-drain-readout",
+      "source_sha256": "3b776cce7ad747953d98af435fb17f9fb58853d9a45f5782fed57921259bbc46",
+      "before": {
+        "path": "before-follow-up/legacy-unit-drain-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=2",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::registers`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-unit-drain-readout/main.qli\", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=true",
+          "sized.native: instrument accepted",
+          "sized.source_events: validated 4 events, 0 movements"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-unit-drain-readout.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"empty tuple type spelling was removed; use Unit (the value remains ())\", span: Span { start: 164, end: 166 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: empty tuple type spelling was removed; use Unit (the value remains ())\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-unit-drain-readout/main.qli\", span: Span { start: 164, end: 166 }, line: 1, column: 165 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 164, end: 166 }, message: \"empty tuple type spelling was removed; use Unit (the value remains ())\" }"
+        ]
+      }
+    },
+    {
+      "case": "canonical-retained-source",
+      "source_sha256": "0a2ce8435c0443e6ca315f79e0f8f7aa0d81334a24657c59771a1a7109a35f17",
+      "before": {
+        "path": "before-source-bearing/canonical-retained-source.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=4",
+          "finite.check: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli\", span: Span { start: 248, end: 251 }, line: 1, column: 249 }) }",
+          "finite.compile: Diagnostic { code: \"type_mismatch\", message: \"Bit is a basis type; ordinary functions use CBit or Q<basis type>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-retained-source/main.qli\", span: Span { start: 248, end: 251 }, line: 1, column: 249 }) }",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 98, end: 101 }, message: \"sized preparation profile: unsupported runtime type\" }"
+        ]
+      },
+      "after": {
+        "path": "after/canonical-retained-source.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=4",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 273, end: 325 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      }
+    },
+    {
+      "case": "legacy-retained-source",
+      "source_sha256": "1c54d373ece17402de4160cb7852c7e91901092f626b3a028b4be28749897474",
+      "before": {
+        "path": "before-source-bearing/legacy-retained-source.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=4",
+          "finite.check: ok",
+          "finite.compile: native accepted",
+          "sized.generic: Error { code: \"unsupported\", module: Some(\"main\"), span: Span { start: 276, end: 328 }, message: \"sized preparation profile: unsupported runtime expression\" }"
+        ]
+      },
+      "after": {
+        "path": "after/legacy-retained-source.stdout.txt",
+        "observed_lines": [
+          "common.parse: ParseError { message: \"CBit/CBits types were removed; use Bit/Bits<n>\", span: Span { start: 98, end: 102 } }",
+          "finite.check: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source/main.qli\", span: Span { start: 98, end: 102 }, line: 1, column: 99 }) }",
+          "finite.compile: Diagnostic { code: \"parse\", message: \"parse error: CBit/CBits types were removed; use Bit/Bits<n>\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-retained-source/main.qli\", span: Span { start: 98, end: 102 }, line: 1, column: 99 }) }",
+          "sized.generic: Error { code: \"parse\", module: Some(\"main\"), span: Span { start: 98, end: 102 }, message: \"CBit/CBits types were removed; use Bit/Bits<n>\" }"
+        ]
+      }
+    },
+    {
+      "case": "unit-pattern-consume",
+      "source_sha256": "8ef919b3d607a8f78bd3a3bac2a4e2fc1c94d4c59049caa8c29d0347baf18568",
+      "before": {
+        "path": "unit-pattern-before/unit-pattern-consume.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::registers`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume/main.qli\", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=false",
+          "sized.native: pure accepted"
+        ]
+      },
+      "after": {
+        "path": "after/unit-pattern-consume.stdout.txt",
+        "observed_lines": [
+          "common.parse: ok declarations=1",
+          "finite.check: Diagnostic { code: \"project\", message: \"missing module `std::registers`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume/main.qli\", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }",
+          "sized.generic: ok",
+          "sized.instance: ok",
+          "sized.elaborate: ok",
+          "sized.lower: proposed instrument=false",
+          "sized.native: pure accepted"
+        ]
+      }
+    }
+  ]
+}

@@ -338,7 +338,7 @@ def driver(n, column, row=None, axis="x"):
         source += f"unitary fn reference(q: Q<{typ}>) -> Q<{typ}> {{\n" + split_register(n)
         source += tuple_of([f"x(w{i})" if ((column ^ row) >> i) & 1 else f"w{i}" for i in range(n)], join=True) + "\n}\n"
     outputs = n + (row is not None)
-    source += f"observe fn main() -> {tuple_of(['CBit'] * outputs)} {{\n"
+    source += f"observe fn main() -> {tuple_of(['Bit'] * outputs)} {{\n"
     source += "let q = " + tuple_of(["x(init0())" if column >> i & 1 else "init0()" for i in range(n)], join=True) + ";\n"
     if row is None:
         source += "let q = kernel(q);\n"
@@ -664,14 +664,14 @@ def protocol_probes(case):
             for parity in [False, True]:
                 a = "x(init0())" if phase else "init0()"
                 b = "x(init0())" if parity else "init0()"
-                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> (CBit,CBit) {\n"
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> (Bit,Bit) {\n"
                 source += f"let (a,b) = cnot(h({a}), {b});\nbell_measure(join(a,b))\n}}\n"
                 yield source, {(phase, parity): 1.0}, f"Bell-label-{phase}-{parity}"
         # Choi probe: measure the two inputs of two Bell pairs, retaining both
         # reference wires. Nine Pauli pairs determine every conditional matrix.
         for left in "xyz":
             for right in "xyz":
-                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> ((CBit,CBit),(CBit,CBit)) {\n"
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> ((Bit,Bit),(Bit,Bit)) {\n"
                 source += "let (r0,a) = cnot(h(init0()),init0());\nlet (r1,b) = cnot(h(init0()),init0());\nlet outcome = bell_measure(join(a,b));\n"
                 source += f"(outcome, ({measure('r0', left)}, {measure('r1', right)}))\n}}\n"
                 expected = {}
@@ -686,11 +686,11 @@ def protocol_probes(case):
     if case["kind"] == "dense":
         for a in [False, True]:
             for b in [False, True]:
-                yield IMPORTS + f"use kernel::send;\nobserve fn main() -> (CBit,CBit) {{ send({str(a).lower()}, {str(b).lower()}) }}\n", {(a, b): 1.0}, "classical-message"
+                yield IMPORTS + f"use kernel::send;\nobserve fn main() -> (Bit,Bit) {{ send({int(a)}, {int(b)}) }}\n", {(a, b): 1.0}, "classical-message"
         return
     if case["kind"] == "measure":
         for prep, expected in [("init0()", .5), ("x(init0())", .5), ("h(init0())", 1), ("h(x(init0()))", 0), ("t(t(h(init0())))", .5), ("t(h(init0()))", (2 + math.sqrt(2)) / 4)]:
-            yield IMPORTS + f"use kernel::is_plus;\nobserve fn main() -> CBit {{ is_plus({prep}) }}\n", {(True,): expected, (False,): 1 - expected}, "plus-polarity"
+            yield IMPORTS + f"use kernel::is_plus;\nobserve fn main() -> Bit {{ is_plus({prep}) }}\n", {(True,): expected, (False,): 1 - expected}, "plus-polarity"
         return
     require(case["kind"] == "teleport", f"unknown protocol oracle: {case['kind']}")
     # Tomography of the teleported half of a Bell pair, with both message bits.
@@ -698,7 +698,7 @@ def protocol_probes(case):
     # every classical branch separately rather than marginalizing the message.
     for ref in "xyz":
         for target in "xyz":
-            source = IMPORTS + "use kernel::teleport;\nobserve fn main() -> ((CBit,CBit),(CBit,CBit)) {\nlet (r,q) = cnot(h(init0()), init0());\nlet (message,bob) = teleport(q);\n" + f"(message, ({measure('r', ref)}, {measure('bob', target)}))\n}}\n"
+            source = IMPORTS + "use kernel::teleport;\nobserve fn main() -> ((Bit,Bit),(Bit,Bit)) {\nlet (r,q) = cnot(h(init0()), init0());\nlet (message,bob) = teleport(q);\n" + f"(message, ({measure('r', ref)}, {measure('bob', target)}))\n}}\n"
             expected = {}
             for a in [False, True]:
                 for b in [False, True]:

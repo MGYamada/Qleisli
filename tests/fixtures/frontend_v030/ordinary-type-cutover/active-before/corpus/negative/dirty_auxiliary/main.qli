@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Deliberate QLI rejection fixture; not an external translation.
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+basis fn identity(a: Bit) -> Bit { a }
+observe fn main() -> CBit {
+    let q = with_computed(init0(),identity) { |flag| x(flag) };
+    measure_z(q)
+}

@@ -82,9 +82,7 @@ pub struct Type {
 pub enum TypeKind {
     Unit,
     Bit,
-    CBit,
     Bits(Natural),
-    CBits(Natural),
     Q(Box<Type>),
     Tuple(Vec<Type>),
 }
@@ -176,7 +174,7 @@ pub enum ExprKind {
         body: Block,
     },
     Name(Ident),
-    CBit(bool),
+    Bit(bool),
     Unit,
     Tuple(Vec<Expr>),
     Not(Box<Expr>),

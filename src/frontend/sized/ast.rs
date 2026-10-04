@@ -76,13 +76,7 @@ pub(super) enum Basis {
     Bit,
     Bits(Natural),
 }
-#[derive(Clone, Debug)]
-pub(super) enum Type {
-    Quantum(Basis),
-    CBit,
-    CBits(Natural),
-    Tuple(Vec<Type>),
-}
+pub(super) type Type = crate::frontend::types::Type<Natural>;
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum Effect {
     Unitary,
@@ -117,6 +111,7 @@ pub(super) struct Expr {
 }
 #[derive(Clone, Debug)]
 pub(super) enum ExprKind {
+    Unit,
     Name(Reference),
     Tuple(Vec<Expr>),
     Call(Reference, Vec<Argument>, Vec<Expr>),

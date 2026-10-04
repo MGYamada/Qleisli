@@ -50,8 +50,8 @@
 //!
 //! # Scope and compatibility
 //!
-//! Sized `Bits<n>` / `CBits<m>` source experiments are not production frontend
-//! APIs. General Soundness, Physical Realizability and Resource Safety theorems
+//! Sized `Q<Bits<n>>` / ordinary `Bits<m>` source experiments retain bounded
+//! execution profiles. General Soundness, Physical Realizability and Resource Safety theorems
 //! remain proof goals. Successful checking is not an algorithm or hardware proof.
 //! Simulated probabilities are approximate and may contain tiny rounding residues.
 //! The first-registry-release name migration replaces the earlier Git/path
@@ -59,7 +59,9 @@
 //! clients must migrate dependency/import names or use a Cargo dependency alias.
 //! Version 0.2.9 is an explicitly approved breaking verifier migration: use
 //! `AcceptedProgram` and `Kernel::accept_raw` in place of the removed Rust
-//! verifier and its handles. The 0.3.0 type-system work remains separate.
+//! verifier and its handles. Version 0.3.0 uses ordinary `Unit`, `Bit`, `Bits<n>`
+//! and `0`/`1`; their retired classical spellings reject. General basis
+//! polymorphism and common-checker convergence remain unfinished.
 //! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md),
 //! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
 //! and versioning policy.

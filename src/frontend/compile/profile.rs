@@ -41,7 +41,7 @@ pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
 }
 fn ty(ty: &Type) -> Result<(), Failure> {
     match &ty.kind {
-        TypeKind::Bits(_) | TypeKind::CBits(_) => {
+        TypeKind::Bits(_) => {
             return Err((
                 ty.span,
                 "register types are outside the finite lowering profile",
@@ -193,7 +193,7 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             self::expr(source)?;
             block(body)?;
         }
-        ExprKind::Name(_) | ExprKind::Unit | ExprKind::CBit(_) => {}
+        ExprKind::Name(_) | ExprKind::Unit | ExprKind::Bit(_) => {}
     }
     Ok(())
 }

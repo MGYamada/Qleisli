@@ -29,7 +29,7 @@ fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
             "iso roots",
         ),
         (
-            "pub unitary fn f(q: Q<Bit>, c: CBit) -> (Q<Bit>,CBit) { (q,c) }",
+            "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
             "classical entry",
         ),
     ] {
@@ -116,7 +116,7 @@ fn native_failure_diagnostics_preserve_codes_profile_and_producer_or_caller_scop
             "--hierarchy-request-pending",
         ),
         (
-            "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> CBits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
+            "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> Bits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
             "instrument",
             "composition-instrument checking",
             "--instrument-pending",

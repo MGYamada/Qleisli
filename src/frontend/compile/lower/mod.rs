@@ -732,7 +732,7 @@ impl Lowerer<'_, '_> {
                 self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
             }
             ExprKind::Unit => Ok(Value::Unit),
-            ExprKind::CBit(value) => {
+            ExprKind::Bit(value) => {
                 let output = self.classical();
                 self.operations.push(RawOp::ClassicalConst {
                     value: *value,
@@ -748,7 +748,7 @@ impl Lowerer<'_, '_> {
                         expr.span,
                         ErrorCode::TypeMismatch,
                         format!(
-                            "not requires a CBit operand: expected `CBit`, found `{}`",
+                            "not requires a Bit operand: expected `Bit`, found `{}`",
                             value.ty().runtime()
                         ),
                     ));
@@ -765,7 +765,7 @@ impl Lowerer<'_, '_> {
                         expr.span,
                         ErrorCode::TypeMismatch,
                         format!(
-                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            "and/xor require Bit operands: expected `Bit`, found `{}`",
                             value.ty().runtime()
                         ),
                     ));
@@ -779,7 +779,7 @@ impl Lowerer<'_, '_> {
                         expr.span,
                         ErrorCode::TypeMismatch,
                         format!(
-                            "and/xor require CBit operands: expected `CBit`, found `{}`",
+                            "and/xor require Bit operands: expected `Bit`, found `{}`",
                             value.ty().runtime()
                         ),
                     ));
@@ -946,7 +946,7 @@ impl Lowerer<'_, '_> {
                         expr.span,
                         ErrorCode::TypeMismatch,
                         format!(
-                            "if requires a CBit condition: expected `CBit`, found `{}`",
+                            "if requires a Bit condition: expected `Bit`, found `{}`",
                             value.ty().runtime()
                         ),
                     ));

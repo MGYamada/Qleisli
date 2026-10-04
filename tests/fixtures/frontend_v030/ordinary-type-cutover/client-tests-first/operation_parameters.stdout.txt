@@ -1,0 +1,36 @@
+
+running 15 tests
+test lexical_runtime_shadow_preserves_static_call_rejection_order ... ok
+test generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers ... FAILED
+test new_grammar_imports_documentation_and_depth_limits_are_explicit ... ok
+test meanings_reject_wrong_phase_wrong_tree_and_nonpermutations ... ok
+test parameter_adjoint_repeat_and_both_qif_polarities_are_correct ... ok
+test scalar_phase_and_zero_width_ownership_survive_control ... ok
+test pending_call_frames_declared_effects_and_local_shadowing_are_preserved ... ok
+test control_conjugation_needs_no_controlled_basis_change_and_keeps_phase ... ok
+test generic_cleanup_obligations_are_discharged_for_each_actual_instance ... ok
+test unused_generic_declarations_and_static_dependencies_are_checked ... ok
+test shipped_contract_examples_execute_after_reserved_module_migration ... ok
+test controlled_only_access_derives_transparent_inverse_and_controlled_circuits ... ok
+test unchanged_generic_client_accepts_two_independent_providers_and_retains_receipts ... ok
+test all_constructors_match_independent_full_operator_specifications ... ok
+test static_circuit_width_step_and_instance_limits_reject_without_panics ... ok
+
+failures:
+
+---- generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers stdout ----
+
+thread 'generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers' (12254554) panicked at tests/operation_parameters.rs:105:5:
+assertion `left == right` failed: unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){if false {adjoint(U,q)} else {q}}
+            unitary fn caller(q:Q<Bit>)->Q<Bit>{bad[direct_z](q)}
+/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-72453-15/main.qli:14:73: Project: parse error: true/false literals were removed; use 1/0 for Bit
+  left: Project
+ right: Capability
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers
+
+test result: FAILED. 14 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.33s
+

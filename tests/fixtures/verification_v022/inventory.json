@@ -1021,16 +1021,8 @@
           "declaration": "Bit",
           "group": "source"
         },
-        "CBit": {
-          "declaration": "CBit",
-          "group": "source"
-        },
         "Bits": {
           "declaration": "Bits(Natural)",
-          "group": "source"
-        },
-        "CBits": {
-          "declaration": "CBits(Natural)",
           "group": "source"
         },
         "Q": {
@@ -1129,8 +1121,8 @@
           "declaration": "Name(Ident)",
           "group": "source"
         },
-        "CBit": {
-          "declaration": "CBit(bool)",
+        "Bit": {
+          "declaration": "Bit(bool)",
           "group": "source"
         },
         "Unit": {
@@ -2869,7 +2861,7 @@
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "700c83c7c0098a0683ca4519f0f85c8026ef71f534df4cbf2604f8a2c82c6317",
+      "sha256": "98cef7b584d6d7363956285983d1b1d1606d3893a65572409835801e495c6aaf",
       "group": "raw-core",
       "surface": null
     },
@@ -3135,7 +3127,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+      "sha256": "d030ccea0dcd5a22362e2f80cc49d1134dcd8b7a32b6af245259f24de39a763e",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3230,7 +3222,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "46e9fc2318ce2f44a7423af77ca7bd845d30a0b45d69021315270eec72cf1f57",
+      "sha256": "54d3ddf9d7c8b41e9adc7e10d867f6fb3f6de8e526f0a6f4209ad3244f9f627c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3290,7 +3282,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "baf3b6fc5b70b73ee67b6cbf675c2aba4a017ba64f57b2e9ceb7713a2d597305",
+      "sha256": "ce80213cfda91622bf5e5f308964426cf17de827b0691f02cf96c758933aa600",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3332,7 +3324,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "8916be769b047b70eb3ed9adf58350f6137db3f0850dbbd77b0668f93e08360f",
+      "sha256": "62d7817d59d2425d73c48bd5a9c123ebacba7851da1cf5c0ea0a249ce857d7de",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3342,7 +3334,7 @@
     },
     {
       "path": "src/frontend/core.rs",
-      "sha256": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+      "sha256": "a5b5793259b45cb20f586708aba9c96f5b4085f517654c8bb8964a522208ca90",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3425,7 +3417,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
+      "sha256": "02d30ba4a770080de0d30b152e4afc42a3b9f9ed14034efae01aeb0c2a0107d0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3490,7 +3482,7 @@
     },
     {
       "path": "src/frontend/project/manifest.rs",
-      "sha256": "8614136fba9798fcf6bb911ddc301acd6f9d4059ae5a74e18e8ed5a53be0e043",
+      "sha256": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3518,7 +3510,7 @@
     },
     {
       "path": "src/frontend/resolve.rs",
-      "sha256": "c4663a03199703c984de792b98c1c0897ee57312689fa1a04424b91569a91c1a",
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3544,7 +3536,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "7132b78dff038887df51a5431cb3b6e2d1e1b326ac7ab73634be37925a29bbfd",
+      "sha256": "9a0575f82bea44d8cecefa1c360ecdb34eecb0b6240e2c834ed0f955bf03fa90",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3623,7 +3615,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "71a944c9df4a2d125fb87b33d7c0c0a2b08d505a7619a23bedd4262b688b5d75",
+      "sha256": "fe15a7da31c865b0aca9dab5e9f88bcc1a46d269e0f6ce3c6480900c6ec4433e",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3637,7 +3629,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "dbc35aa8970e68722e5e8e224229e20cbcb9c390d07acb08939bfd81091f9986",
+      "sha256": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3647,7 +3639,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "2cd2ca2d7da2943826e08a107cc33acd85c7fe9133c8c7b697dc20a5d0dffe76",
+      "sha256": "ca9aed2642cfe2600b3155fa76ed0408db62ca0df3ff6e246093751a3b5302a9",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3741,7 +3733,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "4edbcf115c9756713317056b9eeefadef42543cf97e8710fd94f3346e1d89e68",
+      "sha256": "c2e7766861cb8c468fbdd19f42b1549eb5407c0ace8950f2e4a5a5aa79770469",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3764,7 +3756,7 @@
     },
     {
       "path": "src/frontend/sized/lower/preservation.rs",
-      "sha256": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+      "sha256": "898ca8c9ffa99015c8c8361449273ab8d8572f8c4cd4d7977f7152ac502cafc9",
       "surface": {
         "declarations": [
           "FramePort",
@@ -3796,7 +3788,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "25fc2251f393e830540a5cd63bb0dedfc1354c1e791d32ef8222c425898facd4",
+      "sha256": "79219b953f65f7e54cc201aa7ae2e34d6de5917aefe1086fc7f6c7b0fe1c105e",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3806,7 +3798,7 @@
     },
     {
       "path": "src/frontend/sized/primitive.rs",
-      "sha256": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+      "sha256": "9ed3bbdf2099486eda1bb771159a9856f01ede7f53b5febb131284e2e9542e2c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3835,7 +3827,7 @@
     },
     {
       "path": "src/frontend/types.rs",
-      "sha256": "a64ee4ce2737e91bd26e9efb74745d1da67fbb4d6322d36728fc652ba0f1ac57",
+      "sha256": "3217e86016c514b65510809e2dc19848eb3db29437ea9c915fdc3758701abe48",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4347,7 +4339,7 @@
     },
     {
       "path": "src/lib.rs",
-      "sha256": "6a22e150ee2d9a850d863e182fd5faf6d760212ea15bb24429e9e4bcdd54bcd6",
+      "sha256": "ca1c6358f8b5ea1680aa70888db7f83363e4773c79c0adebc111bf74938d67d4",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -4445,7 +4437,7 @@
     },
     {
       "path": "stdlib/src/routines.qli",
-      "sha256": "2718c8a13f45e2078bdf830d55e36dfb47489547c8885d4cfedc4662306d0d55",
+      "sha256": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
       "group": "source",
       "surface": null
     },
@@ -4468,7 +4460,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -4490,7 +4482,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -4511,7 +4503,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -4532,7 +4524,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -4553,7 +4545,7 @@
       "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
       "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
       "failure": "Reject shape/domain/phase/request/identity mismatch and capacity; no Lean seal or production hierarchy value",
       "replacement": [
         "VM-23",
@@ -4576,7 +4568,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Same generated IR independently verified; source-preservation proof remains open",
       "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
-      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
+      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; source tree4096/depth64; calls/static expansion1M work/depth64; source policy1MiB/file16MiB/project or explicit legacy",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -4598,7 +4590,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
+      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -5005,7 +4997,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -5047,7 +5039,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [
@@ -5200,34 +5192,34 @@
       "corpus/authoring/v022-simple/check-initial.json": "cc3b819ef38acf1c48773bf7e730f6606ad26d2191cca24f383979d65c80887e",
       "corpus/authoring/v022-simple/semantic-validation.json": "4539e0a8e7065b0e1dcd5f72c22f406af0a280aa2e759d330c947fab9dd55cfc",
       "corpus/authoring/v022-simple/session.json": "8fa9f929aa453728cab3a206643be8ce555276b37986b033ad23c0a304826373",
-      "corpus/negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
-      "corpus/negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
       "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
-      "corpus/negative/measured_owner/main.qli": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
-      "corpus/negative/measurement_adjoint/main.qli": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measured_owner/main.qli": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measurement_adjoint/main.qli": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
       "corpus/pennylane_demos/phase_kickback1/README.md": "843a011e783c0798cc759c6549564a5358379d07aa84a062062f990145da0f55",
       "corpus/pennylane_demos/phase_kickback1/kernel.qli": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50",
-      "corpus/pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/phase_kickback1/main.qli": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
       "corpus/pennylane_demos/rx_quarter/README.md": "cd35a7700d8f90a27ac894e2a675a7d40c90f8a46149bf11d85e2be3e1ed9826",
       "corpus/pennylane_demos/rx_quarter/kernel.qli": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893",
-      "corpus/pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rx_quarter/main.qli": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
       "corpus/qualtran/bitwise_not2/README.md": "53e93a50d0ee657d4d06e09f33da299fe6edc1f4b011236e6f05be7c3e248a55",
       "corpus/qualtran/bitwise_not2/kernel.qli": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f",
-      "corpus/qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/bitwise_not2/main.qli": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
       "corpus/qualtran/xor_constant2/README.md": "adc6fe0ec024e5e3cdc4ebf4243d9f3863982257525421bdffc54e70000c532a",
       "corpus/qualtran/xor_constant2/kernel.qli": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b",
-      "corpus/qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor_constant2/main.qli": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
       "corpus/quantum_katas/fredkin3/README.md": "ca656477241fed81c6af9ff22c91882af3fce4e450b5935b2244a1573f478028",
       "corpus/quantum_katas/fredkin3/kernel.qli": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752",
-      "corpus/quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/fredkin3/main.qli": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
       "corpus/quantum_katas/swap2/README.md": "3fcdbc4a08fcef4efba29ce6d06af3e1c4b59cac24e1e65af558e569e33f53a3",
       "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
-      "corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
       "corpus/validation-v0.2.2.json": "0cde88f0e1e98f5ed8acf0e59b3b983bc9e663f37c44e54eaefe81af10bd181c",
       "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
-      "examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
-      "examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
-      "examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
       "tests/fixtures/verification_v022/corpus-manifest.json": "6a571c10c44d09e4861c7b7a702052c4b248f5343f259a4dfa3de6327c319f31",
       "tests/fixtures/verification_v022/corpus-semantic-faults.json": "6f8564810fba9b7e8ab012868022d993b1b4393c27ce035db500b454a809ef89"
     }
@@ -5299,13 +5291,13 @@
       "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
       "scripts/test_hierarchical_readout.py": "9ed1e73c607c5960ca5c6901c1b2f94fb6b50225fadbe9e89c9a6f00c55948dd",
       "scripts/test_sized_qpe_readout.py": "0f122d49718d3b799ba6ea72bdcb483d13978b327f3160042470538b7206da0d",
-      "scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
-      "scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_corpus.py": "b93b9bff0cf5c57fcc960d1d4a403b234683e800854d8fa456bf4675097a08d4",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/compile_sized_instrument.py": "f8088bc6f06f9a40aa751ca229666b78a044ff790d1123743c84cd5b1bbf924c",
       "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
       "scripts/instrument_transport.py": "662a2aab4a0029c88fc9246f7ebda898c30af507f79fa79ef3478b369d207b63",
       "scripts/test_hierarchical_preparation.py": "c347b168c9668275d0895180ce3e1b7920172eb892c461baa3d6795f75c8e3f7",
-      "scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
-      "scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_sized_instrument.py": "af808d62b67af839515849c6fbab7d8ee71d6cd09a40702db07754b600adda41",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_compact_sized_graph.py": "223ec772861f2fcb6662c47ab8c701c35ad414d08694075f3a50b15fa12b8d09",
       "scripts/test_hierarchical_instrument.py": "d51ff8e84b6b5e66d09b518f06a89f111b479685c7b3f8a620b46abd07849d43",
       "tests/sized_corpus.rs": "78ebff4a5dc00aec6e06497b7c632d5df65fae4fa6cff3547d2a55ad90371832",
       "scripts/test_instrument_host.py": "dd092f990088732ab43cfbab33154f8eba66e353039fe1efef65503985eace64",
@@ -5319,21 +5311,23 @@
       "scripts/test_hierarchical_qpe_schedule.py": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
       "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
-      "tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "e97ab5f1464bad204d1363fc7e2be4d35c649843b88ce55bdc3268a02961a20d",
       "tests/sized_cli.rs": "6ec3e5e57899ad9036e23044a9553949b0c54a5a97805cd605859e9189efb11f",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",
-      "tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
-      "tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
-      "tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
-      "tests/sized_review_diagnostics.rs": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/frontend_ownership_differential.rs": "538f1fc0c4546b5479c316cfa492c692c4d211efc853142318eeca72dc420994",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/with_computed_diagnostics.rs": "41c914e009acf0425c68f1c516bb15196b0e9bd5c0e95c9a71dfa7ec4b5edba1",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_dialects.rs": "73733a4cd96c10d24a9e79051aff7bf9008100f21a975a6e0a659c843144be09",
+      "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_review_diagnostics.rs": "21076bb595c8006c98c6ab6bd3fa443a4bee67e0405c78dd265b3f72bcdff97a",
       "tests/fixtures/sized_clients/delayed_fourier.qli": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
       "tests/fixtures/sized_review/unguarded_take.qli": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
-      "scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
+      "tests/fixtures/verification_v022/ordinary-type-migration/before/scripts/test_rust_fourier_factoring.py": "5e5fc0b490e290755da3286d142a91c31beae9fa1d7e22c27769a0865a3a11a9",
       "tests/fixtures/qpe_capacity_v023/Profile.lean": "7aceb8cb9607a0833df0951b57e297e990baf539a0771110bf4503634cd64905",
-      "tests/fixtures/qpe_capacity_v023/run_profile.py": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564"
+      "tests/fixtures/qpe_capacity_v023/run_profile.py": "843c836c0fcddb2c8798930fbea76a121e40ce085a56e81eb600192a031f3564",
+      "tests/fixtures/verification_v022/ordinary-type-migration/relocations.json": "d20741ef457c892393ead181582e81d774e1030e1863151b7321446f2add3c20",
+      "tests/fixtures/verification_v022/ordinary-type-migration/inventory-before.json": "d79097879af0e1ab255e0a435ded695a3d6aaec74de287053657a9fe3047ef85"
     },
     "reference": "scripts/test_verification_baseline.py: direct complex basis columns with explicit scratch cleanup; fixed source distributions; never issues evidence",
     "commands": [

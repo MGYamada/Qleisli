@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.09s
+     Running tests/source_snapshots.rs (target/debug/deps/source_snapshots-8900d00ebda85b47)

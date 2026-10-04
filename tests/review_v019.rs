@@ -10,7 +10,7 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
     for source in [
         "\r",
         "\r\r\n",
-        "observe\r fn main()->CBit{true}",
+        "observe\r fn main()->Bit{1}",
         "// comment\r hidden code",
         "/* comment\r hidden code */",
         "/// documentation\r hidden code",
@@ -23,7 +23,9 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
         assert_eq!(error.span.start, source.find('\r').unwrap());
         assert_eq!(error.span.end, error.span.start + 1);
     }
-    let original = include_str!("fixtures/review_v019/bare_cr/main.qli");
+    let original = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli"
+    );
     let root = SourceRoot::new(original);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.span.start, original.find('\r').unwrap());
@@ -47,7 +49,9 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
 
 #[test]
 fn unused_static_arguments_share_exact_work_across_calls() {
-    let base = include_str!("fixtures/review_v019/static_budget/main.qli");
+    let base = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli"
+    );
     let expression = format!("{}p{}", "repeat_op(150,".repeat(10), ")".repeat(10));
     let once = base.replace("repeat_op(150,repeat_op(150,p))", &expression);
     let root = SourceRoot::new(&once);

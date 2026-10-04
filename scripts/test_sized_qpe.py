@@ -2,7 +2,7 @@
 """Shared coherent QPE source and independent full-column/reference diagnostics.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 Remaining validation uses small qubit systems by the 2026-09-30 user decision.
-The measured CBits API remains open.
+The measured Bits API remains open.
 """
 import argparse
 import cmath
@@ -79,7 +79,7 @@ def probes(artifact, n, m, j=1, d=3, provider='phase'):
     for column in refs:
         maximum = max(maximum, difference(evaluate(column), expected(n, m, column, j, d, provider)))
     # Read the final quantum phase register diagnostically, retaining target
-    # vectors per branch; this is not a production CBits measurement implementation.
+    # vectors per branch; this is not a production Bits measurement implementation.
     initial = {0: 1/math.sqrt(2), 1 << m: 1j/math.sqrt(2)}
     actual, wanted = evaluate(initial), expected(n, m, initial, j, d, provider)
     branch_error = max(difference({x >> m: z for x, z in actual.items() if x % (1 << m) == y},
@@ -199,7 +199,7 @@ def main():
         malformed[name] = 'contract'
     report = dict(format='qleisli.sized-qpe-experiment', version=1,
                   status='passed-small-coherent-source-path',
-                  scope='Unitary coherent core only; measured CBits API, named QPE contract and production execution remain open.',
+                  scope='Unitary coherent core only; measured Bits API, named QPE contract and production execution remain open.',
                   validation_selection='Small qubit systems only, as requested on 2026-09-30; no new maximum-size generation or check. Earlier (8,8) limit is retained in the authoring history.',
                   source_sha256={key: hashlib.sha256(value.encode()).hexdigest() for key, value in source.items()},
                   producer_sha256=hashlib.sha256((ROOT/'scripts/compile_sized_corpus.py').read_bytes()).hexdigest(),

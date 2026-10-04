@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Small coherent order/amplitude clients of the same shared QPE source.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
-Local integration material, not a fourth external corpus or measured CBits API.
+Local integration material, not a fourth external corpus or measured Bits API.
 """
 import argparse
 import cmath
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def sources():
-    result = {p.stem: p.read_text() for directory in ('tests/fixtures/sized_clients',
+    result = {p.stem: p.read_text() for directory in ('tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients',
               'corpus/sized/qualtran_qpe') for p in (ROOT/directory).glob('*.qli')}
     result['fourier'] = (ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
     return result
@@ -220,7 +220,7 @@ def main():
             break
     artifacts['false-forwarded-leaf']=malformed
     report=dict(format='qleisli.sized-qpe-clients',version=1,status='pending',
-        scope='Small coherent local integration clients; no maximum-size validation, measured CBits API, certified decoder or production integration claim.',
+        scope='Small coherent local integration clients; no maximum-size validation, measured Bits API, certified decoder or production integration claim.',
         source_sha256={k:hashlib.sha256(v.encode()).hexdigest() for k,v in base.items()},
         producer_sha256=hashlib.sha256((ROOT/'scripts/compile_sized_corpus.py').read_bytes()).hexdigest(),
         source_rejections=source_rejections(base))

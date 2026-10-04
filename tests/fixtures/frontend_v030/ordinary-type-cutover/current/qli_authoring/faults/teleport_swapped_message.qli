@@ -1,0 +1,10 @@
+//! Intentional type-correct protocol fault: exchange the roles of two CBits.
+use bell::prepare;
+use bell::measure;
+use corrections::pauli;
+pub observe fn teleport(psi: Q<Bit>) -> ((Bit,Bit),Q<Bit>) {
+    let (alice,bob) = prepare();
+    let (phase_bit,parity_bit) = measure(psi,alice);
+    let bob = pauli(parity_bit,phase_bit,bob);
+    ((phase_bit,parity_bit),bob)
+}

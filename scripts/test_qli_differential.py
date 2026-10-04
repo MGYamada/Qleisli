@@ -182,7 +182,7 @@ unitary fn checked(q:Q<{ty}>)->Q<{ty}>{{apply_contract(u,reference,q)}}
             bits = tuple(prefix + [bool((label >> axis) & 1) for axis, _ in measurements])
             expected[bits] = expected.get(bits, 0.0) + abs(value) ** 2
     arity = len(outcomes)
-    result_type = "CBit" if arity == 1 else "(" + ",".join(["CBit"] * arity) + ")"
+    result_type = "Bit" if arity == 1 else "(" + ",".join(["Bit"] * arity) + ")"
     result = outcomes[0] if arity == 1 else "(" + ",".join(outcomes) + ")"
     source = IMPORTS + definitions + f"observe fn main()->{result_type}{{{''.join(preparation)}{result}}}"
     return source, expected

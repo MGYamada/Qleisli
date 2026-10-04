@@ -284,7 +284,7 @@ fn shared_receipts_are_rebuilt_once_and_meaning_tags_have_checked_migration() {
 
 #[test]
 fn portable_artifacts_run_in_fresh_processes_after_source_removal() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     let path = root.0.join("artifact 日本語.json");
     let emit = || {
         Command::new(env!("CARGO_BIN_EXE_qleisli"))

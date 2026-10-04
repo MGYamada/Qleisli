@@ -103,8 +103,8 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
 fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
     for source in [
         "use std::quantum::h; pub iso fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
-        "pub unitary fn f(q: Q<Bit>, c: CBit) -> (Q<Bit>,CBit) { (q,c) }",
-        "use std::classical::empty_bits; pub unitary fn f() -> CBits<0> { empty_bits() }",
+        "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
+        "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
         let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
@@ -134,7 +134,9 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
 #[test]
 #[ignore = "requires the development Python 3.11+ oracle"]
 fn python_concrete_execution_does_not_replace_generic_size_obligations() {
-    let first = include_str!("fixtures/sized_review/unguarded_take.qli");
+    let first = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli"
+    );
     let corrected = first.replace("Q<Bits<n>> {", "Q<Bits<n>> requires n >= 1 {");
     let cases = vec![
         (first.into(), BTreeMap::from([("n".into(), 1)])),
@@ -324,7 +326,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
             .is_err()
         );
     }
-    let classical = "pub unitary fn flip(a: Q<Bit>, b: CBit) -> (Q<Bit>,CBit) { (a,b) }";
+    let classical = "pub unitary fn flip(a: Q<Bit>, b: Bit) -> (Q<Bit>,Bit) { (a,b) }";
     assert!(
         ParsedProgram::parse(BTreeMap::from([
             ("main".into(), template.into()),
@@ -345,7 +347,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     .unwrap()
     .lower()
     .unwrap();
-    let copyable_unit = "pub unitary fn identity(q: ()) -> () { q }";
+    let copyable_unit = "pub unitary fn identity(q: Unit) -> Unit { q }";
     let unit_client = "use dep::identity; pub unitary fn f(c: Q<Bit>) -> Q<Bit> { let (c,()) = controlled(identity)(c,()); c }";
     assert!(
         ParsedProgram::parse(BTreeMap::from([

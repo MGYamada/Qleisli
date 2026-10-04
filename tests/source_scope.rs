@@ -32,11 +32,12 @@ fn assert_distribution(source: &str, expected: BTreeMap<Vec<bool>, f64>) {
 #[test]
 fn nested_projection_restores_classical_entries_and_preserves_mixed_pending_ownership() {
     for flag in [false, true] {
+        let flag_literal = u8::from(flag);
         let source = format!(
             "{IMPORTS}
-unitary fn relay(flag: CBit, payload: (CBit,(Q<Unit>,Q<Bit>)))
-    -> (CBit,(CBit,(CBit,(Q<Unit>,Q<Bit>)))) {{
-    if flag {{ let flag=false; () }} else {{ let flag=true; () }};
+unitary fn relay(flag: Bit, payload: (Bit,(Q<Unit>,Q<Bit>)))
+    -> (Bit,(Bit,(Bit,(Q<Unit>,Q<Bit>)))) {{
+    if flag {{ let flag=0; () }} else {{ let flag=1; () }};
     let result = if flag {{
         let flag=not flag;
         let payload=if flag {{ let carry=payload; let payload=carry; payload }}
@@ -52,17 +53,17 @@ unitary fn relay(flag: CBit, payload: (CBit,(Q<Unit>,Q<Bit>)))
     }};
     (flag,result)
 }}
-observe fn read(held: Q<Bit>, result: (CBit,(CBit,(CBit,(Q<Unit>,Q<Bit>)))))
-    -> ((CBit,CBit),(CBit,(CBit,CBit))) {{
+observe fn read(held: Q<Bit>, result: (Bit,(Bit,(Bit,(Q<Unit>,Q<Bit>)))))
+    -> ((Bit,Bit),(Bit,(Bit,Bit))) {{
     let (outer,(inner,(tag,(u,q))))=result;
     discard(u);
     ((outer,inner),(tag,(measure_z(h(held)),measure_z(h(q)))))
 }}
-observe fn main() -> ((CBit,CBit),(CBit,(CBit,CBit))) {{
+observe fn main() -> ((Bit,Bit),(Bit,(Bit,Bit))) {{
     let (q,r)=cnot(h(init0()),init0());
     let (u,q)=split(do b <- q; pure ((),b));
-    let flag={flag};
-    read(r,relay(flag,(true,(u,q))))
+    let flag={flag_literal};
+    read(r,relay(flag,(1,(u,q))))
 }}"
         );
         // The first branch leaves the entry mixed owner untouched. Later
@@ -82,10 +83,10 @@ observe fn main() -> ((CBit,CBit),(CBit,(CBit,CBit))) {{
 
 #[test]
 fn equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner() {
-    for ty in ["Q<Unit>", "(CBit,(Q<Unit>,Q<Bit>))"] {
+    for ty in ["Q<Unit>", "(Bit,(Q<Unit>,Q<Bit>))"] {
         let block = "{ let carry=v; let v=carry; () }";
         let source = format!(
-            "unitary fn bad(flag: CBit, v: {ty}) -> {ty} {{
+            "unitary fn bad(flag: Bit, v: {ty}) -> {ty} {{
     if flag {block} else {{ () }};
     v
 }}"
@@ -106,13 +107,13 @@ fn equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner() {
         // cannot substitute for the identity of the original binding.
 
         let arm = "{
-        let result=if flag { let carry=v; let v=true; carry }
-                       else { let carry=v; let v=false; carry };
+        let result=if flag { let carry=v; let v=1; carry }
+                       else { let carry=v; let v=0; carry };
         let v=();
         result
     }";
         let source = format!(
-            "unitary fn bad(flag: CBit, v: {ty}) -> ({ty},{ty}) {{
+            "unitary fn bad(flag: Bit, v: {ty}) -> ({ty},{ty}) {{
     let result=if flag {arm} else {arm};
     (result,v)
 }}"
@@ -160,14 +161,15 @@ fn local_spent_names_expire_but_entry_spent_names_still_hide_functions() {
         // A new branch-local flip is spent before the branch exits, and its
         // tombstone must disappear so the declaration becomes visible again.
         for flag in [false, true] {
+            let flag_literal = u8::from(flag);
             let source = format!(
                 "{IMPORTS}
 unitary fn flip(q: Q<Bit>) -> Q<Bit> {{ x(q) }}
-unitary fn accepted(flag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn accepted(flag: Bit, q: Q<Bit>) -> Q<Bit> {{
     {move_through_local}
     {call}
 }}
-observe fn main() -> CBit {{ measure_z(accepted({flag},init0())) }}"
+observe fn main() -> Bit {{ measure_z(accepted({flag_literal},init0())) }}"
             );
             assert_distribution(&source, BTreeMap::from([(vec![expected_bit], 1.0)]));
         }
@@ -178,7 +180,7 @@ observe fn main() -> CBit {{ measure_z(accepted({flag},init0())) }}"
         let source = format!(
             "{IMPORTS}
 unitary fn flip(q: Q<Bit>) -> Q<Bit> {{ x(q) }}
-unitary fn rejected(flag: CBit, flip: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {{
+unitary fn rejected(flag: Bit, flip: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {{
     let held=flip;
     {move_through_local}
     (held,{call})

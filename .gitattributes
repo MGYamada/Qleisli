@@ -78,3 +78,11 @@ tests/fixtures/frontend_v030/predicate-domain-independent/first-current/test.std
 tests/fixtures/frontend_v030/predicate-domain/validation/remaining-focused-tests.stdout.txt -text -whitespace
 tests/fixtures/constitution_v030/routed-control-commutation/ArtifactData.lean.txt -text -whitespace
 tests/fixtures/constitution_v030/routed-control-commutation/contract.md -text -whitespace
+# Canonical-type migration preserves raw libtest output and lexical regressions.
+tests/fixtures/frontend_v030/ordinary-type-cutover/client-tests-first/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli -text -whitespace
+tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/shared_identities/main.qli -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/isolated-final/tests.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/test-first/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-current-rejection/stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-fixed/stdout.txt -text -whitespace

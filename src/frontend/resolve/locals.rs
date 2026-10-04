@@ -375,10 +375,10 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                     PatternKind::Wildcard => {}
                 },
                 Task::Type(ty) => match &ty.kind {
-                    TypeKind::Bits(n) | TypeKind::CBits(n) => tasks.push(Task::Natural(n)),
+                    TypeKind::Bits(n) => tasks.push(Task::Natural(n)),
                     TypeKind::Tuple(fields) => tasks.extend(fields.iter().rev().map(Task::Type)),
                     TypeKind::Q(inner) => tasks.push(Task::Type(inner)),
-                    TypeKind::Unit | TypeKind::Bit | TypeKind::CBit => {}
+                    TypeKind::Unit | TypeKind::Bit => {}
                 },
                 Task::Natural(natural) => match &natural.kind {
                     NatKind::Name(name) => {
@@ -572,7 +572,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                         Task::Expression(target),
                         Task::Expression(control),
                     ]),
-                    ExprKind::CBit(_) | ExprKind::Unit => {}
+                    ExprKind::Bit(_) | ExprKind::Unit => {}
                 },
             }
         }
@@ -733,7 +733,7 @@ mod tests {
     #[test]
     fn constructed_deep_syntax_and_sibling_scopes_do_not_alias_bindings() {
         let mut module =
-            parse_module("unitary fn f(x:CBit)->CBit{let y=if true {let x=x;x}else{let x=x;x};x}")
+            parse_module("unitary fn f(x:Bit)->Bit{let y=if 1 {let x=x;x}else{let x=x;x};x}")
                 .unwrap();
         let decl = &mut module.decls[0];
         let FnBody::Quantum(body) = &mut decl.body else {

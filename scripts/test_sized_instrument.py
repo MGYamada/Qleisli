@@ -25,7 +25,7 @@ from test_sized_qpe_clients import sources as client_sources, expected as client
 def sources():
     return client_sources() | {p.stem:p.read_text() for p in
         (ROOT/'corpus/sized/measured_qpe').glob('*.qli')} | {
-        'measured_'+p.stem:p.read_text() for p in (ROOT/'tests/fixtures/measured_clients').glob('*.qli')}
+        'measured_'+p.stem:p.read_text() for p in (ROOT/'tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients').glob('*.qli')}
 
 
 def compile_instrument(*args, **kwargs):
@@ -58,7 +58,7 @@ def source_rejections(base):
         ('unitary-initializer', 'initialization', 'pub iso fn', 'pub unitary fn'),
         ('iso-readout', 'readout', 'pub observe fn', 'pub iso fn'),
         ('missing-access', 'measurement', ', Controlled(U)', ''),
-        ('wrong-classical-width', 'measurement', 'CBits<m>', 'CBits<m+1>'),
+        ('wrong-classical-width', 'measurement', 'Bits<m>', 'Bits<m+1>'),
         ('drop-empty-owner', 'readout', 'let () = consume_empty(q);', ''),
         ('consume-nonempty', 'readout', 'let (bit,rest) = take_bit[n,0](q);', 'let () = consume_empty(q); let (bit,rest) = take_bit[n,0](q);'),
         ('reuse-measured-bit', 'readout', 'let first = measure_z(bit);', 'let first = measure_z(bit); let second = measure_z(bit);'),

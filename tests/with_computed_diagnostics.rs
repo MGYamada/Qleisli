@@ -68,7 +68,7 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
 fn certified_classical_capture_has_a_classical_repair_hint() {
     let source = format!(
         "{IMPORTS}
-unitary fn candidate(tag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
     with_computed(q,predicate,identity) {{ |data,flag|
         if tag {{ (data,flag) }} else {{ (data,flag) }}
     }}
@@ -126,7 +126,7 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
 fn two_argument_body_keeps_its_existing_classical_capture_support() {
     let source = format!(
         "{IMPORTS}
-unitary fn candidate(tag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
     with_computed(q,predicate) {{ |flag| let _=tag; flag }}
 }}"
     );
@@ -143,7 +143,7 @@ unitary fn controlled_x(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
     let (control,target)=cnot(control,target);
     join(control,target)
 }}
-observe fn main() -> (CBit,CBit) {{
+observe fn main() -> (Bit,Bit) {{
     let q=h(init0());
     let other=init0();
     let pair=with_computed(join(q,other),first,controlled_x) {{ |data,flag|

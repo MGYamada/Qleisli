@@ -1,0 +1,1 @@
+pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 0 { for static k in 0..n carry q = q { yield if static k < n { q } else { q }; } }
