@@ -2,7 +2,7 @@
 
 This chapter is normative for authority, change review and the distinction
 between specification, acceptance and proof. It is subordinate to the ratified
-`CONSTITUTION.md` in the [Qleisli repository](https://github.com/MGYamada/Qleisli).
+[`CONSTITUTION.md`](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md).
 It does not supply a binding mathematical interpretation of QS, PR or RS.
 
 Edition 2026 was ratified effective 2026-10-04 (Asia/Tokyo). The repository record

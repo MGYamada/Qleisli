@@ -190,7 +190,7 @@ Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
 
 The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
-proposal for Unit/Bit/Q<Bit>/products, including specialized ordinary helper
+proposal for `Unit`/`Bit`/`Q<Bit>`/products, including specialized ordinary helper
 calls and static folds. Its `source()` retains whole parameter/result trees and
 the original source instance. Native `Kernel::accept` must check `proposal()`
 before execution. `validate_source_steps` separately compares the exact accepted

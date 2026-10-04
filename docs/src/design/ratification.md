@@ -21,7 +21,14 @@ message, which supplied no timestamp.
 ## Exact adopted texts
 
 The sole constitutional editing source is repository-root `CONSTITUTION.md`.
-Its entire approved text is protected. The following identities bind the act:
+Its entire approved text is protected.
+
+The [ratified text](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md)
+and [authority hierarchy](../reference/authority.md) can be read from this
+companion chapter. These navigation links are outside the protected text;
+they neither amend it nor create a second constitutional editing source.
+
+The following identities bind the act:
 
 | Object | SHA-256 |
 | --- | --- |
