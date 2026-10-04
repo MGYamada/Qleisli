@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Restrict native round-trip compilation to current corpus provider roots,
+  preserving migration archives as history. Select an explicit canonical
+  bare-CR diagnostic input while retaining its original bytes (#27, #32).
 - Match ordinary `Unit` with `()` in finite let and basis patterns using the
   same exact shape rule as sized checking. Preserve effectful computations,
   quantum owners and scalar phase; reject other zero-width types (#43).

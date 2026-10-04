@@ -1,0 +1,41 @@
+{
+  "format": "qleisli.hosted-distribution-failure-files",
+  "version": 1,
+  "files": [
+    {
+      "path": "14.stderr",
+      "bytes": 6154,
+      "sha256": "30a836756218de2783575f3373a1d855577dbd7da2495b8c7f4aa7538c9de72d"
+    },
+    {
+      "path": "14.stdout",
+      "bytes": 36544,
+      "sha256": "55c72ea2504e06e517da16c9e89ca33dab00d317d4a74492add1382ae7d869e1"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3279,
+      "sha256": "b9028823ae261918f8d58976034e248a9e8167e4839d071fc7e1d1adad86e1a8"
+    },
+    {
+      "path": "failure-excerpt.txt",
+      "bytes": 848,
+      "sha256": "78b8e7873e1e58bc5a0e7f659f8d81d354576e3472c678377d32e49b9601ff39"
+    },
+    {
+      "path": "provenance.json",
+      "bytes": 2642,
+      "sha256": "fb95d649d8719516b901db8037c8ef9b10fd9967b5e1a052260ba3d4f230f460"
+    },
+    {
+      "path": "report-summary.json",
+      "bytes": 9951,
+      "sha256": "36b51e7d2a9ac187feab0a815b950177582446323636fd6fe67dd62bb839ddc0"
+    },
+    {
+      "path": "report.json.gz",
+      "bytes": 303523,
+      "sha256": "777ba34507c164225428c65edd8e8d30b31a9692b6738d6c723747b102429031"
+    }
+  ]
+}

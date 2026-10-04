@@ -1,0 +1,22 @@
+{
+  "files": {
+    "tests/fixtures/review_v030alpha/hosted-source-clients/README.md": "96b8780bb2d95802c236683d004ba78a3f0d599735b338ec5d99607efcd9cc48",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/source-map.json": "df69a2889b43785fcae4835719f8b5f0de6d6460ce1a2ed9f34dbeb5651fb6ef",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/latest-0.stderr.txt": "83857d43086d28aa87094f1f6c2120c4e4141594b6356dfbc06759edf23e3f7c",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/latest-0.stdout.txt": "60a8ec00f411c277b6dba61167562d346b9c95c90c9c8f59b601cce77fafb24d",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/latest-1.stderr.txt": "1c036a6493d23c1e345736a4277544eda143267586e168f5c25127bd8a5bf1da",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/latest-1.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/metadata.json": "4f7f6a4f2b5e6820004d81a761e4379237b731e09b83a9ac7612094aded75d93",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/msrv-0.stderr.txt": "bdeae4f607a8f73cb35e7eef59b40ee9901177f31975cec0216a6323bdb98b4f",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/msrv-0.stdout.txt": "c0f150b554ab5905bde871d09d0a2a845da5f9f59c160b9a6c8be78d32c30190",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/msrv-1.stderr.txt": "353a02d272b2f5837acff5d04d8dd58b968480a934f5940de5504b1cfa963f65",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/msrv-1.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/result.json": "29082500c2961d4685623c4c5f296862046596c2299bb69773dc9d5aa95071f1",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/sources-before.json": "071cca2afd515950e94b569893f3bd7314ef4bdebb2de043312d38e06344f99f",
+    "tests/fixtures/review_v030alpha/hosted-source-clients/validation/toolchains.json": "dac28e5ba7682075c2f89bec8a620929f2540d0d4fe5f772b1df866098189b0d",
+    "tests/native_roundtrip.rs": "94d528ce0d2b8c3f7165585bdb3f09c77f6f9a195173a9f546efbb13e7482722",
+    "tests/review_v019.rs": "48acf2aa51e4fc2df46e775a84a9414e032f02840dc59d8903c32dd9fd1d0e2c"
+  }
+}

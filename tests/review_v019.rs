@@ -23,8 +23,10 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
         assert_eq!(error.span.start, source.find('\r').unwrap());
         assert_eq!(error.span.end, error.span.start + 1);
     }
+    // The canonical derivative retains the literal CR; its source map preserves
+    // the earlier CBit input without compiling obsolete syntax after CR repair.
     let original = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli"
+        "fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli"
     );
     let root = SourceRoot::new(original);
     let error = check_project(&root.0).unwrap_err();

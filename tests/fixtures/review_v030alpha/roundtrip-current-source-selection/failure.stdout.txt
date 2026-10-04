@@ -1,0 +1,23 @@
+2026-10-04T17:24:05.2401834Z      Running tests/native_roundtrip.rs (target/debug/deps/native_roundtrip-e0e3087e107ff45c)
+2026-10-04T17:24:05.2414834Z 
+2026-10-04T17:24:05.2415099Z running 4 tests
+2026-10-04T17:24:05.4263347Z test a_wrong_table_is_rejected_before_any_receipt_exists ... ok
+2026-10-04T17:24:06.2394297Z test positive_evidence_coverage_reaches_every_retained_path ... ok
+2026-10-04T17:24:07.7740216Z test qirf2_meaning_entries_execute_the_checked_table ... ok
+2026-10-04T17:25:05.2417635Z test compiled_programs_reencode_exactly_and_caches_match_implementations has been running for over 60 seconds
+2026-10-04T17:25:47.2384786Z test compiled_programs_reencode_exactly_and_caches_match_implementations ... FAILED
+2026-10-04T17:25:47.2385767Z 
+2026-10-04T17:25:47.2388157Z failures:
+2026-10-04T17:25:47.2388706Z 
+2026-10-04T17:25:47.2389140Z ---- compiled_programs_reencode_exactly_and_caches_match_implementations stdout ----
+2026-10-04T17:25:47.2389683Z 
+2026-10-04T17:25:47.2390388Z thread 'compiled_programs_reencode_exactly_and_caches_match_implementations' (128875) panicked at tests/native_roundtrip.rs:141:74:
+2026-10-04T17:25:47.2393366Z called `Result::unwrap()` on an `Err` value: CompileError { code: Project, path: "/home/runner/work/Qleisli/Qleisli/corpus/migrations/predicate-domain-v030/sources/pennylane_demos/phase_lock/main.qli", span: Span { start: 605, end: 609 }, line: 14, column: 26, message: "parse error: CBit/CBits types were removed; use Bit/Bits<n>" }
+2026-10-04T17:25:47.2395816Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-04T17:25:47.2396344Z 
+2026-10-04T17:25:47.2396356Z 
+2026-10-04T17:25:47.2396498Z failures:
+2026-10-04T17:25:47.2397021Z     compiled_programs_reencode_exactly_and_caches_match_implementations
+2026-10-04T17:25:47.2397487Z 
+2026-10-04T17:25:47.2397935Z test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 102.00s
+2026-10-04T17:25:47.2398593Z 

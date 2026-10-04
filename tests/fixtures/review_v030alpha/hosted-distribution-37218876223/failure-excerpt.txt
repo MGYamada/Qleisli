@@ -1,0 +1,12 @@
+---- compiled_programs_reencode_exactly_and_caches_match_implementations stdout ----
+
+thread 'compiled_programs_reencode_exactly_and_caches_match_implementations' (131029) panicked at tests/native_roundtrip.rs:141:74:
+called `Result::unwrap()` on an `Err` value: CompileError { code: Project, path: "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/source/corpus/migrations/predicate-domain-v030/sources/pennylane_demos/phase_lock/main.qli", span: Span { start: 605, end: 609 }, line: 14, column: 26, message: "parse error: CBit/CBits types were removed; use Bit/Bits<n>" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    compiled_programs_reencode_exactly_and_caches_match_implementations
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 101.24s
+

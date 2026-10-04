@@ -1,0 +1,276 @@
+{
+  "format": "qleisli.distribution-validation",
+  "version": 1,
+  "started_utc": "2026-10-04T17:04:55.029565+00:00",
+  "finished_utc": "2026-10-04T17:27:03.871803+00:00",
+  "candidate": {
+    "clean": true,
+    "commit": "392f403434557e5644e7641a1f86170cb9f1a5dd",
+    "tree": "39be7c8d319df112eb9b88ad758336daeae57796"
+  },
+  "status": "failed",
+  "error": "command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/14.stderr",
+  "work": {
+    "keep_requested": false,
+    "path": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m",
+    "status": "removed"
+  },
+  "cargo_target": {
+    "ownership": "caller",
+    "path": "/home/runner/work/_temp/qleisli-distribution-target"
+  },
+  "crate": {
+    "cargo_verification": "passed",
+    "extracted_metadata_and_lock": "validated offline with --locked",
+    "file_count": 8492,
+    "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/qleisli-0.3.0-alpha.crate",
+    "sha256": "a96da2ba6b77a065349615677258b76a95bc46483a61e4b6fcb0fd79756b162f"
+  },
+  "source_archive": {
+    "excluded_tracked_files": [],
+    "file_count": 8498,
+    "path": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/qleisli-0.3.0-alpha-source.tar",
+    "sha256": "cf5287c65e6f2f4b57b7c07131b7bf97e4869f59a9750ad1140935fbffd01a73"
+  },
+  "installed_quickstart": {
+    "binary": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/installed/bin/qleisli",
+    "checks": [
+      "Bell check/run/sample in text and JSON",
+      "embedded qft2",
+      "reject measured-owner reuse"
+    ],
+    "execution": "temporary directory; empty helper-tool PATH",
+    "historical_registry_links_pending_live_check": [],
+    "package": "qleisli",
+    "publication": "not performed",
+    "readmes": "matching Bell source and version",
+    "registry_links": "absolute; current targets exist locally; retired contracts use reviewed immutable refs",
+    "version": "0.3.0-alpha"
+  },
+  "commands": [
+    {
+      "index": 0,
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 0.012,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/00.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/00.stdout"
+    },
+    {
+      "index": 1,
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 0.008,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/01.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/01.stdout"
+    },
+    {
+      "index": 2,
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--no-deps",
+        "--format-version=1"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 0.016,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/02.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/02.stdout"
+    },
+    {
+      "index": 3,
+      "argv": [
+        "git",
+        "-c",
+        "tar.umask=0022",
+        "archive",
+        "--format=tar",
+        "392f403434557e5644e7641a1f86170cb9f1a5dd"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 0.274,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/03.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/qleisli-0.3.0-alpha-source.tar"
+    },
+    {
+      "index": 4,
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_input_corpus.py"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/source",
+      "elapsed_seconds": 0.369,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/04.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/04.stdout"
+    },
+    {
+      "index": 5,
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_lean_kernel.py"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/source",
+      "elapsed_seconds": 1.363,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/05.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/05.stdout"
+    },
+    {
+      "index": 6,
+      "argv": [
+        "/usr/bin/python3",
+        "scripts/check_schema_registry.py",
+        "--source-only"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/source",
+      "elapsed_seconds": 0.082,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/06.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/06.stdout"
+    },
+    {
+      "index": 7,
+      "argv": [
+        "cargo",
+        "package",
+        "--offline",
+        "--list"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 0.149,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/07.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/07.stdout"
+    },
+    {
+      "index": 8,
+      "argv": [
+        "cargo",
+        "package",
+        "--offline",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/package"
+      ],
+      "cwd": "/home/runner/work/Qleisli/Qleisli",
+      "elapsed_seconds": 19.086,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/08.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/08.stdout"
+    },
+    {
+      "index": 9,
+      "argv": [
+        "cargo",
+        "metadata",
+        "--offline",
+        "--locked",
+        "--format-version=1"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/packaged-source",
+      "elapsed_seconds": 0.049,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/09.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/09.stdout"
+    },
+    {
+      "index": 10,
+      "argv": [
+        "cargo",
+        "rustdoc",
+        "--offline",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/package-docs",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/packaged-source",
+      "elapsed_seconds": 4.387,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/10.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/10.stdout"
+    },
+    {
+      "index": 11,
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/package-docs"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/packaged-source",
+      "elapsed_seconds": 15.964,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/11.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/11.stdout"
+    },
+    {
+      "index": 12,
+      "argv": [
+        "cargo",
+        "install",
+        "--path",
+        "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/packaged-source",
+        "--offline",
+        "--locked",
+        "--bin",
+        "qleisli",
+        "--root",
+        "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/installed",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/install"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m",
+      "elapsed_seconds": 32.605,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/12.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/12.stdout"
+    },
+    {
+      "index": 13,
+      "argv": [
+        "/usr/bin/python3",
+        "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/packaged-source/scripts/check_installation.py",
+        "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/installed/bin/qleisli"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m",
+      "elapsed_seconds": 4.495,
+      "exit_code": 0,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/13.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/13.stdout"
+    },
+    {
+      "index": 14,
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--all-targets",
+        "--target-dir",
+        "/home/runner/work/_temp/qleisli-distribution-target/source-production"
+      ],
+      "cwd": "/home/runner/work/_temp/qleisli-distribution-work-svv9gc8m/source",
+      "elapsed_seconds": 1244.035,
+      "exit_code": 101,
+      "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/14.stderr",
+      "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-dk0sjhyb/logs/14.stdout"
+    }
+  ]
+}

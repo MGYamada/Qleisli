@@ -1,0 +1,66 @@
+{
+  "scope": "Actual hosted distribution failure evidence. Download bounded to exact metadata size and SHA-256 checked; ZIP read only selected report/log entries. No source/crate extraction, build or replay.",
+  "run_id": 37218876223,
+  "job_id": 111485304488,
+  "head_commit": "bfceca338a1dfc07b9501758afcd00675b88733d",
+  "tested_merge_commit": "392f403434557e5644e7641a1f86170cb9f1a5dd",
+  "tested_tree": "39be7c8d319df112eb9b88ad758336daeae57796",
+  "artifact": {
+    "id": 11309589083,
+    "name": "distribution-392f403434557e5644e7641a1f86170cb9f1a5dd",
+    "size_in_bytes": 32244929,
+    "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/artifacts/11309589083",
+    "archive_download_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/artifacts/11309589083/zip",
+    "expired": false,
+    "created_at": "2026-10-04T17:27:06Z",
+    "expires_at": "2027-01-02T17:00:35Z",
+    "updated_at": "2026-10-04T17:27:06Z",
+    "digest": "sha256:05e11d77201b351ef58eac9c367bcbdc826b3964497504199ab7faccc3a860ac",
+    "workflow_run": {
+      "id": 37218876223,
+      "repository_id": 1388276590,
+      "head_repository_id": 1388276590,
+      "head_branch": "codex/v0.3.0-foundation",
+      "head_sha": "bfceca338a1dfc07b9501758afcd00675b88733d"
+    }
+  },
+  "download": {
+    "argv": [
+      "gh",
+      "api",
+      "repos/MGYamada/Qleisli/actions/artifacts/11309589083/zip"
+    ],
+    "maximum_bytes": 32244929,
+    "actual_bytes": 32244929,
+    "sha256": "05e11d77201b351ef58eac9c367bcbdc826b3964497504199ab7faccc3a860ac",
+    "temporary_zip": "/private/tmp/qleisli-distribution-37218876223.zip",
+    "full_extraction": false
+  },
+  "stored_entries": {
+    "report": {
+      "zip_entry": "qleisli-distribution.json",
+      "stored_path": "report.json.gz",
+      "uncompressed_bytes": 1738572,
+      "uncompressed_sha256": "65a7ee4e1fd2d95860f4b38a2bfc079f71a435d6a26c203db7d3c3d74d95bed4"
+    },
+    "stdout": {
+      "zip_entry": "qleisli-distribution-artifacts-dk0sjhyb/logs/14.stdout",
+      "stored_path": "14.stdout",
+      "uncompressed_bytes": 36544,
+      "uncompressed_sha256": "55c72ea2504e06e517da16c9e89ca33dab00d317d4a74492add1382ae7d869e1"
+    },
+    "stderr": {
+      "zip_entry": "qleisli-distribution-artifacts-dk0sjhyb/logs/14.stderr",
+      "stored_path": "14.stderr",
+      "uncompressed_bytes": 6154,
+      "uncompressed_sha256": "30a836756218de2783575f3373a1d855577dbd7da2495b8c7f4aa7538c9de72d"
+    }
+  },
+  "excerpt": {
+    "source": "14.stdout",
+    "start_byte": 35696,
+    "start_line": 533,
+    "bytes": 848,
+    "sha256": "78b8e7873e1e58bc5a0e7f659f8d81d354576e3472c678377d32e49b9601ff39"
+  }
+}

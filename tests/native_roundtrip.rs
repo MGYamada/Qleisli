@@ -123,13 +123,66 @@ fn projects(root: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
+const CORPUS_SOURCES: [&str; 3] = ["quantum_katas", "qualtran", "pennylane_demos"];
+
+fn compiled_projects(manifest: &Path) -> Vec<PathBuf> {
+    let mut roots = Vec::new();
+    projects(&manifest.join("examples"), &mut roots);
+    // Migration and authoring snapshots retain historical source syntax. Only
+    // the approved provider roots are current executable corpus projects.
+    for source in CORPUS_SOURCES {
+        projects(&manifest.join("corpus").join(source), &mut roots);
+    }
+    roots
+}
+
+#[test]
+fn compiled_project_discovery_selects_current_sources() {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let roots = compiled_projects(manifest);
+    let selected: BTreeSet<_> = roots.iter().cloned().collect();
+    assert_eq!(selected.len(), roots.len(), "duplicate compiled project");
+
+    // Independently enumerate the current flat provider layout. This guards
+    // against excluding active projects while avoiding preserved snapshots.
+    let corpus = manifest.join("corpus");
+    let mut expected = BTreeSet::new();
+    for source in CORPUS_SOURCES {
+        let provider: BTreeSet<_> = std::fs::read_dir(corpus.join(source))
+            .unwrap()
+            .map(|entry| entry.unwrap().path())
+            .filter(|path| path.join("main.qli").is_file())
+            .collect();
+        assert!(!provider.is_empty(), "missing corpus provider {source}");
+        expected.extend(provider);
+    }
+    let actual: BTreeSet<_> = roots
+        .iter()
+        .filter(|path| path.starts_with(&corpus))
+        .cloned()
+        .collect();
+    assert_eq!(actual, expected, "current corpus discovery changed");
+
+    let mut historical = Vec::new();
+    projects(&corpus.join("migrations"), &mut historical);
+    assert!(
+        !historical.is_empty(),
+        "missing migration regression inputs"
+    );
+    for path in historical {
+        assert!(
+            !selected.contains(&path),
+            "historical project selected for current compilation: {}",
+            path.display()
+        );
+    }
+}
+
 #[test]
 fn compiled_programs_reencode_exactly_and_caches_match_implementations() {
     let kernel = kernel();
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
-    let mut roots = Vec::new();
-    projects(&manifest.join("examples"), &mut roots);
-    projects(&manifest.join("corpus"), &mut roots);
+    let roots = compiled_projects(manifest);
     assert!(
         roots.len() >= 100,
         "project discovery found {}",

@@ -91,3 +91,8 @@ tests/fixtures/review_v030alpha/hosted-canonical-integration/interop-failure.txt
 tests/fixtures/review_v030alpha/hosted-canonical-integration/release-test-failure.txt -text -whitespace
 # Retain raw Unit-pattern validation transcripts, including libtest blank lines.
 tests/fixtures/frontend_v030/unit-pattern-integration/*/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli -text
+tests/fixtures/review_v030alpha/hosted-source-clients/validation/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/roundtrip-current-source-selection/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-distribution-37218876223/14.stdout -text -whitespace
+tests/fixtures/review_v030alpha/hosted-distribution-37218876223/failure-excerpt.txt -text -whitespace

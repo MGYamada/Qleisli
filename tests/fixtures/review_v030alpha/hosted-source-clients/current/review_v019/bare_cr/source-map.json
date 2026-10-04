@@ -1,0 +1,43 @@
+{
+  "format": "qleisli.historical-source-client-derivative",
+  "version": 1,
+  "status": "prepared-not-executed",
+  "baseline_git_commit": "bfceca338a1dfc07b9501758afcd00675b88733d",
+  "finding": "The active Rust test repaired CR to CRLF in the selected prior source, then expected compilation success, but its unchanged CBit return type is rejected by the canonical ordinary-type parser. This finding was established by reading source bytes and test control flow, not by executing this test.",
+  "original": {
+    "path": "tests/fixtures/review_v019/bare_cr/main.qli",
+    "sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
+    "bytes": 157
+  },
+  "previous_selected_derivative": {
+    "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli",
+    "sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
+    "bytes": 157
+  },
+  "current": {
+    "path": "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli",
+    "sha256": "021e23b43c6db16f4d7035ecde005dfdd78f3dcc3c283bb5509469ea751262c9",
+    "bytes": 156
+  },
+  "manifest": {
+    "path": "tests/fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/Qargo.toml",
+    "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "bytes": 45
+  },
+  "transformation": "Replace the one CBit type token with Bit. Retain the original literal CR, all other source bytes and the explicit CR-to-CRLF repair performed by the test.",
+  "original_cr_byte_offsets": [
+    127
+  ],
+  "current_cr_byte_offsets": [
+    126
+  ],
+  "consumer": {
+    "path": "tests/review_v019.rs",
+    "test": "bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset",
+    "before_sha256": "74920de4a3e04adccba6afa581cd1be684de3291a2f04ed4c3d2a18fe981c5ec",
+    "after_sha256": "48acf2aa51e4fc2df46e775a84a9414e032f02840dc59d8903c32dd9fd1d0e2c"
+  },
+  "required_regression": "The canonical input must reject at its literal CR byte and line. Explicitly replacing CR with CRLF must compile, pass the native checker, execute the formerly hidden X and return Bit 1 with probability 1.",
+  "performed": "Read-only source/control-flow audit; exact byte transformation and SHA-256 inventory checks.",
+  "not_performed": "No Cargo or Lean build, parser/kernel invocation, compilation or runtime test was performed for this derivative."
+}
