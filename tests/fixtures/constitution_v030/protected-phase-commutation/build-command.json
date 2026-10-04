@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "lake",
+    "build",
+    "Qleisli.RawProtectedCommutation"
+  ],
+  "cwd": "lean",
+  "exit_code": 0,
+  "capture": "Combined tool output returned by exec_command session 86247; transcript retained after completion.",
+  "stdout": "build.stdout.txt",
+  "warning_as_error": "Existing lean/lakefile.toml leanOptions sets warningAsError=true."
+}

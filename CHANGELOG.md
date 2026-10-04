@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prove adjacent protected literal phases commute on arbitrary joint/reference
+  states, and connect both successful executable matrix checks to identical
+  complex entries and actions. Retain shared-control and zero-target examples
+  plus a noncommuting phase/X counterexample; general access rules remain open
+  (#303).
+- Quote generic type notation in API documentation so strict packaged rustdoc
+  generation succeeds after the common type refactor.
 - Share exact type trees, structural comparison and linear-owner classification
   across finite, symbolic-sized and concrete-sized checking. Preserve existing
   source profile restrictions, capacities and public type accessors; ordinary

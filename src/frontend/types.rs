@@ -1,7 +1,7 @@
 //! Common untrusted source type identity, independent of lowering and evidence.
 //!
 //! A size parameter is an implementation representation (symbolic or closed),
-//! not a source Basis parameter. Ordinary Bit and Q<Bit> share the same basis
+//! not a source Basis parameter. Ordinary `Bit` and `Q<Bit>` share the same basis
 //! tree; their ownership differs only at Q. Profile adapters retain the current
 //! source restrictions and legacy diagnostics during this internal migration.
 use std::convert::Infallible;

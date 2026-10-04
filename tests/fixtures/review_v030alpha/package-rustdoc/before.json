@@ -1,0 +1,19 @@
+{
+  "commit": "6daea68fe7efb75df0b627f2d20bd7b409f0cfd3",
+  "argv": [
+    "cargo",
+    "rustdoc",
+    "--offline",
+    "--locked",
+    "--lib",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 101,
+  "source": "src/frontend/types.rs",
+  "source_sha256": "95acfa6a050b2bf2304e28672c54f2c3383b9de1420f8ab307f700bed23989cd",
+  "hosted_run": 37203327934,
+  "hosted_distribution_job": 111439463322,
+  "hosted_archive_sha256": "518d853993073466799752027989d6c893a103d6207b8656dc27793e6b099996"
+}

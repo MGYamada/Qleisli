@@ -9,6 +9,7 @@ import Qleisli.Raw
 import Qleisli.RawDenotation
 import Qleisli.RawProtected
 import Qleisli.RawProtectedEvaluation
+import Qleisli.RawProtectedCommutation
 import Qleisli.RawFunction
 import Qleisli.RawPure
 import Qleisli.RawInstrument

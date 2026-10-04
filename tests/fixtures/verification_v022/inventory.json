@@ -2659,7 +2659,7 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "7271ddd396f491494b0902fdb897263264e972640d771ccd0c84eb169c943db1",
+      "sha256": "5ed3d0884a20cb319f459b6e94b10253b11e2efcc8ff697213b36f4a1f29039f",
       "group": "raw-core",
       "surface": null
     },
@@ -2738,6 +2738,12 @@
     {
       "path": "lean/Qleisli/RawProtected.lean",
       "sha256": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawProtectedCommutation.lean",
+      "sha256": "6005d23fc77a7900f144797d413f7fd823a72e1379567efb1fd31b88143d5dbb",
       "group": "raw-core",
       "surface": null
     },
@@ -3751,7 +3757,7 @@
     },
     {
       "path": "src/frontend/types.rs",
-      "sha256": "95acfa6a050b2bf2304e28672c54f2c3383b9de1420f8ab307f700bed23989cd",
+      "sha256": "a64ee4ce2737e91bd26e9efb74745d1da67fbb4d6322d36728fc652ba0f1ac57",
       "group": "source",
       "surface": {
         "declarations": [

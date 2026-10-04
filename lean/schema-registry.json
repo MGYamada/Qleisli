@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "68e1317698d9304f7239f7520fb08be90a04bd3b61abdbda7d680ef1630cf516",
+    "sha256": "1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -73,6 +73,7 @@
       "lean/Qleisli/RawInstrument.lean": "3faa8c3fd6b9ca22b0d5461ea3d64cd439a215c8c4b063e0036feebae2e1d2ef",
       "lean/Qleisli/RawInstrumentDenotation.lean": "587697b9f1b965f500eb9717a4e4e11a91817bed8d8f4a8d299a93ef6f027221",
       "lean/Qleisli/RawProtected.lean": "f2622b8cdbfc97b734480a56ee51211cb2d7583b14cbff31315090815d3ce409",
+      "lean/Qleisli/RawProtectedCommutation.lean": "6005d23fc77a7900f144797d413f7fd823a72e1379567efb1fd31b88143d5dbb",
       "lean/Qleisli/RawProtectedEvaluation.lean": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
       "lean/Qleisli/RawPure.lean": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
       "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
@@ -100,7 +101,7 @@
       "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
       "lean/Qleisli/Semantics/RawPure.lean": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
       "lean/Qleisli/Transition.lean": "e2a6be7d61e3b56b4079ba1ec39feca391a6d0feb3bc7193792993a0d4612b19",
-      "lean/Qleisli.lean": "7271ddd396f491494b0902fdb897263264e972640d771ccd0c84eb169c943db1",
+      "lean/Qleisli.lean": "5ed3d0884a20cb319f459b6e94b10253b11e2efcc8ff697213b36f4a1f29039f",
       "lean/SchemaExport.lean": "40cbef842550d1e08c26f8371844713e5d47d236b953f9d63b6fff3ee675c02e",
       "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
       "lean/lakefile.toml": "70c000687aa6ec019d69db771f6f74e9eba06d82ba6f0ca23806e20c6d97327f",
