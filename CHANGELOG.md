@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Specify the 0.3.0 target ordinary/quantum type boundary, Bit literals, exact
+  tree equality, zero-width owner phase and explicit generic responsibilities.
+  Record these ordinary design choices separately from implementation and
+  retain the operation/Meaning calculus as a reviewable design candidate.
 - Share physical source scanning between finite and sized frontends, preserving
   original UTF-8 spans, contextual token adapters and existing capacity limits.
   Sized comments now follow the same control-character and whitespace rules;

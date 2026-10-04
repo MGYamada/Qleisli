@@ -14,10 +14,12 @@
 # Language Reference
 
 - [Source text and lexical boundary](reference/source-text.md)
+- [Ordinary types, quantum owners and equality](reference/type-model.md)
 
 # Design candidates
 
 - [Type foundation and common frontend](design/type-foundation.md)
+- [Operations, meanings and capabilities](design/operations.md)
 
 # Retained plans and drafts
 

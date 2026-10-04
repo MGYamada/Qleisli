@@ -1,12 +1,19 @@
 # Type foundation and common frontend decision candidate
 
-**Status: nonnormative decision candidate; preparation only.** This packet
-proposes the common frontend and the minimum explicit 0.3.0 type surface. It
-does not change production syntax, implement a feature, adopt an Issue proposal,
-issue a Guardian ruling, or discharge a guarantee. Examples below are desired
+**Status: nonnormative design analysis with selected target rules.** This packet
+proposes the common frontend and the minimum explicit 0.3.0 type surface. The
+selected type rules are recorded in the Reference linked below; the remaining
+choices are candidates. This packet does not implement a feature, issue a
+Guardian ruling, or discharge a guarantee. Examples below are desired
 0.3.0 source unless explicitly labelled current behavior. They are not reported
 as compiled. The [authority hierarchy](../reference/authority.md) and
 [production boundary](../reference/production-boundary.md) govern the work.
+
+The [target type contract](../reference/type-model.md) now selects the ordinary
+Bit literals, exact tree distinctions and explicit generic boundary as ordinary
+implementation choices under the approved plan. It does not record a new human
+Guardian ruling. Other recommendations in this packet, including the operator
+and capability details, remain candidates until their grouped decision is made.
 
 The approved implementation order is one source AST, module/name resolver,
 static elaboration and type/ownership checking, followed by separate finite and
@@ -22,7 +29,7 @@ the constitutional regime. Release compatibility carries this syntax change.
 | [#22](https://github.com/MGYamada/Qleisli/issues/22), [#27](https://github.com/MGYamada/Qleisli/issues/27), [#43](https://github.com/MGYamada/Qleisli/issues/43) | Adopted conceptual direction: ordinary finite types are unmarked, `Q<T>` is linear ownership, there is no `C<T>` universe, and `Q<Unit>` retains its owner and scalar phase. The implementation does not yet meet that surface. |
 | [#84](https://github.com/MGYamada/Qleisli/issues/84), [#100](https://github.com/MGYamada/Qleisli/issues/100) | Recorded 0.3.0 boundary: distinguish definitional equality, canonical coherence and physical maps; infer only unique static structure, never quantum meaning. |
 | Approved implementation plan | A common frontend precedes new features; use one 0.3.0 source cutover and retain edition 2026. |
-| Conservative implementation recommendation | Preserve the existing exact type distinctions: `Bit` / `Bits<1>`, `Unit` / `Bits<0>`, immediate tuple arity and nesting. Insert no implicit coherence or physical conversion in this foundation. These concrete choices are recommendations under the approved plan, not separately recorded human rulings. |
+| Selected conservative type contract | Preserve the existing exact type distinctions: `Bit` / `Bits<1>`, `Unit` / `Bits<0>`, immediate tuple arity and nesting. Insert no implicit coherence or physical conversion in this foundation. The target Reference records these ordinary implementation choices under the approved plan, not separate human rulings. |
 | [#44](https://github.com/MGYamada/Qleisli/issues/44), [#45](https://github.com/MGYamada/Qleisli/issues/45), [#46](https://github.com/MGYamada/Qleisli/issues/46), [#83](https://github.com/MGYamada/Qleisli/issues/83), [#89](https://github.com/MGYamada/Qleisli/issues/89) | Open design details: basis kinds, operator input/output interfaces, meaning and capability judgments, specialization/evidence responsibility and callable categories. The concrete rules below are recommendations for maintainer judgment. |
 | [#32](https://github.com/MGYamada/Qleisli/issues/32), [#33](https://github.com/MGYamada/Qleisli/issues/33), [#35](https://github.com/MGYamada/Qleisli/issues/35), [#37](https://github.com/MGYamada/Qleisli/issues/37), [#196](https://github.com/MGYamada/Qleisli/issues/196) | Surface normalization and its child choices. Issue examples do not individually adopt grammar. The three-level `q***` / `Q<T>` / ordinary distinction is incorporated by adopted #27. |
 | [#197](https://github.com/MGYamada/Qleisli/issues/197) | Explicitly later, 0.4.0 convenience work: automatic coherence, richer patterns, omitted static arguments and general cross-stage reuse policy. This packet does not pull those conveniences forward. |
@@ -43,7 +50,7 @@ proposed public contract. Paths refer to the
 
 | Area | Current finite frontend | Current sized frontend | Required common result |
 | --- | --- | --- | --- |
-| Syntax | `ast.rs`, `lexer.rs`, `parser.rs`; a module has several declarations and grouped imports. | `sized/ast.rs`, `sized/parser.rs`; separate tokenizer, one function per module and separate import grammar. | One token stream, spans, recursive AST and declaration list. Backend choice cannot select a grammar. |
+| Syntax | `ast.rs`, `lexer.rs`, `parser.rs`; a module has several declarations and grouped imports. | As of commit `061636d`, the physical scanner is shared, with a separate parser and one function per module. The next common-parser unit is in progress. | One token stream, spans, recursive AST and declaration list. Backend choice cannot select a grammar. |
 | Types | `TypeKind` and private `compile::Ty` distinguish `Unit`, basis `Bit`, ordinary `CBit`, `Q` and products; ordinary `Bit` currently rejects. | Separate symbolic and concrete types distinguish quantum `Bit` / `Bits<n>` and ordinary `CBit` / `CBits<n>`; quantum-ness is encoded differently. | One finite type tree with explicit `Q`, shared symbolic and instantiated forms, and one equality operation. |
 | Ordinary finite expressions | Separate `BasisExpr` and ordinary expression variants; `0/1` are basis literals and `true/false` are ordinary `CBit` literals. | Sized expressions focus on providers, static conditions and folds. | One expression/pattern tree; staging is a checked judgment, not a second parser. |
 | Modules and names | `project.rs` loads source trees and resolves local, bundled and sealed imports; the compiler resolves declaration categories. | `sized.rs` accepts an explicit module map; `sized/check.rs` separately resolves visibility, imports and providers. | One resolved module graph and stable definition identities, with project and explicit-map loading as adapters. |
@@ -484,14 +491,15 @@ claim of formal discharge or a genuine change to the interpreted boundary needs
 the established human adequacy/admission process; implementation approval or
 the shared checker cannot supply it.
 
-## Maintainer choices that must be settled before grammar implementation
+## Selected type choices and remaining grammar decisions
 
-1. **One Bit literal spelling.** The current finite grammar uses `0/1` for basis
-   values and `true/false` for ordinary `CBit`; retaining that split would keep a
-   second value-language distinction after #22. Recommendation: use `0/1` for
-   ordinary and basis `Bit`, reserve numerals in static-Nat positions for naturals,
-   and migrate `false/true` explicitly. This is a candidate choice, not an adopted
-   literal policy. Reject other Bit numerals; no literal creates a quantum owner.
+1. **One Bit literal spelling: selected target.** The current finite grammar uses
+   `0/1` for basis values and `true/false` for ordinary `CBit`; retaining that split
+   would keep a second value-language distinction after #22. The target Reference
+   selects `0/1` for ordinary and basis `Bit`, reserves numerals in static-Nat
+   positions for naturals, and requires explicit migration of `false/true`.
+   Other Bit numerals reject; no literal creates a quantum owner. The source
+   implementation and conformance tests remain required.
 2. **Explicit exits.** #196 illustrates ordinary `return` over `Q<T>`, while #37
    proposes structured quantum bodies without early return or hidden exits.
    The surface classification does not itself authorize the example. Recommend
@@ -516,11 +524,11 @@ the shared checker cannot supply it.
    above. This changes admitted source and needs the stated migration tests;
    it is not merely moving implementation files.
 
-The recommended strict 0.3.0 treatment of `Bits<0>`, tuple structure and owner
-packaging preserves current distinctions while satisfying the need for an
-explicit policy. Record that choice under #43/#84/#100 as an ordinary design
-decision before claiming those criteria complete; this packet does not present
-it as a previously adopted human ruling. Any future implicit convenience remains
+The target Reference's strict 0.3.0 treatment of `Bits<0>`, tuple structure and
+owner packaging preserves current distinctions while satisfying the need for an
+explicit policy. The ordinary design decision belongs in #43/#84/#100; the
+implementation and validation criteria remain open. This packet does not present
+the choice as a human ruling. Any future implicit convenience remains
 subject to the separately reviewed 0.4.0 policy in #197.
 Likewise, #196's illustrative `CBit` occurrence is superseded by adopted #22/#27.
 Neither stale example warrants reopening the unmarked ordinary type boundary.

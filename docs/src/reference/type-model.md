@@ -1,0 +1,134 @@
+# Ordinary types, quantum owners and equality
+
+This chapter specifies the **0.3.0 target contract** under the adopted
+[#22](https://github.com/MGYamada/Qleisli/issues/22) /
+[#27](https://github.com/MGYamada/Qleisli/issues/27) type boundary and the
+[authority hierarchy](authority.md). Implementation and conformance work remain
+in progress. The current alpha frontend still has `CBit` / `CBits<n>` and does
+not implement general basis polymorphism. The preserved authoring experiments
+in the [foundation packet](../design/type-foundation.md) record those failures;
+examples of the target rules below are not claims of current acceptance.
+
+## One finite type universe
+
+The initial ordinary finite types are `Unit`, `Bit`, `Bits<n>` and ordered
+tuples of finite types. `n` is a checked static natural. `Basis` is the static
+kind of such finite type trees; it is not a second copy of ordinary values.
+Finite ADTs join this universe when their own specified constructors and
+checking rules are implemented.
+
+`Q<A>` is linear quantum ownership over the finite value space `A`. A basis
+argument to `Q` cannot itself contain a quantum owner. Ordinary tuples may mix
+ordinary fields and quantum owners, but each quantum-containing field retains
+its linear obligations. There is no `C<A>` constructor.
+
+| Type | Value and ownership |
+| --- | --- |
+| `Unit` | Ordinary singleton, with value `()` |
+| `Bit` | Ordinary finite bit, with values `0` and `1` |
+| `Bits<n>` | Ordinary sequence of exactly `n` bits, retaining ordered positions |
+| `(A,B)` | One ordered product value, retaining its immediate arity and nesting |
+| `Q<A>` | One linear quantum owner with basis `A` |
+| `(Q<A>,Q<B>)` | Two linear owners, without any assumption of state separability |
+
+The target Bit literal spelling is `0` / `1` in both ordinary and basis
+computations. `false` / `true` migrate explicitly to `0` / `1`. A numeral in a
+static-Nat position instead denotes a natural; this stage/category distinction
+does not inspect quantum data. No literal creates a quantum owner. Other Bit
+numerals reject, and expected typing cannot implicitly prepare or measure data.
+
+Typing keeps ordinary bindings, static bindings, linear owners and semantic
+effects distinct. Ordinary values may be copied or dropped. Every quantum owner
+must be moved, returned or explicitly consumed according to an admitted rule.
+An ordinary binding operation on `Q<A>` does not require a `qlet` spelling.
+Effects cannot be inferred from ownership alone, and an annotation cannot
+downgrade the effect of its body.
+
+## Structural equality, coherence and physical maps
+
+Definitional type equality compares constructor tags, evaluated static sizes,
+immediate tuple arity, nesting and ordered leaves. In this 0.3.0 contract:
+
+- `Bit` and `Bits<1>` are distinct.
+- `Unit` and `Bits<0>` are distinct.
+- `((A,B),C)`, `(A,(B,C))` and `(A,B,C)` are distinct.
+- `Q<(A,B)>` and `(Q<A>,Q<B>)` are distinct ownership interfaces.
+
+Equal width, cardinality or Hilbert-space dimension is insufficient. For
+symbolic sizes, the bounded static solver must establish equality under the
+same explicit premises; failure to find a counterexample is not equality.
+
+Canonical coherence is a separately justified structural map, not definitional
+equality. Its admitted action must preserve ownership and ordered axes with
+exact phase `+1`, including extension by an arbitrary reference system. No
+implicit coherence is introduced by this foundation. Existing split/join and
+any subsequent reassociation or unit map remain explicit and independently
+checked. The catalogue of future implicit conveniences remains in
+[#197](https://github.com/MGYamada/Qleisli/issues/197).
+
+A physical map, including SWAP, preparation, observation, reset, discard or
+nontrivial phase, is never inserted as ordinary type coercion. Rearranging
+bindings is not permission to rearrange axes. Pattern destructuring of a tuple
+does not implicitly split a quantum owner whose basis is a tuple.
+
+## Unit owners retain phase
+
+`H(Unit)` is one-dimensional, not zero-dimensional. `Q<Unit>` remains a linear
+owner despite having zero physical wires. So does `Q<Bits<0>>`. Copying,
+silently dropping or reviving either owner rejects.
+
+The scalar operator `[-1]` cannot be erased: under coherent control it becomes
+the nontrivial relative phase `diag(1,-1)`. Structural simplification must retain
+that action and the owner/evidence interface. A pure introduction or elimination
+map for a Unit owner needs its own explicit checked rule; ordinary `()` supplies
+neither such a map nor an implicit `Q<A> -> A` conversion.
+
+## Inference and generic responsibilities
+
+Infer only uniquely determined static structure under specified rules. Reject
+ambiguous type substitutions, callable categories and provider choices. No
+search for a convenient implementation, numerical coincidence or matching name
+may manufacture meaning, an inverse, coherent control or semantic evidence.
+
+An abstract `A : Basis` is opaque. A body may move and return `Q<A>` and apply
+explicit providers justified by its constraints. It cannot inspect the type as
+a tuple, assume a width or prepare a state merely because `A` is finite.
+Static parameters are explicit and ordered; a parameter kind may refer only to
+earlier parameters. Runtime values never determine static sizes or providers.
+
+Generic checking covers every declaration, owner/effect rule, capability and
+static branch, including unused declarations and zero-iteration bodies.
+Specialization then checks closed substitutions, exact type trees, provider
+identity, premises and aggregate work. Specialization keys retain those inputs
+and source/dependency identity; width alone is not a key. Instance success is
+not a proof about every member of a generic family.
+
+## Migration and native boundary
+
+| Previous surface | Target mapping |
+| --- | --- |
+| `CBit` / `CBits<n>` | `Bit` / `Bits<n>` |
+| Ordinary `false` / `true` | `0` / `1` |
+| Sized result-type `()` | `Unit`; the value remains `()` |
+| A same-width value of a different tree | Explicit specified conversion or rejection; no implicit cast |
+
+Measurement explicitly consumes a supported `Q<A>` and produces ordinary data
+with Observe semantics. An ordinary `if` consumes an ordinary Bit condition;
+it cannot read a `Q<Bit>`. Coherent control has its separate rule.
+
+The finite QIRF basis representation currently has Unit/Bit/Pair/Tuple but no
+Bits atom. Hierarchy distinguishes Unit/Bit/Bits/tuple. The common frontend must
+retain the full source tree and use an explicit representation mapping or
+reject an unsupported lowering profile. It must not silently map `Bits<1>` to
+Bit or `Bits<0>` to Unit to obtain evidence.
+
+All frontend output remains an untrusted proposal. Existing native root,
+request, contract, hierarchy and finite-leaf gates remain mandatory. The
+[two admitted scoped guarantees](../design/initial-guarantees.md) do not by
+themselves prove source type-tree preservation. Required conformance includes
+same-width different-tree substitution, tuple arity, zero-owner loss/duplication,
+controlled scalar phase and runtime-to-static leakage. These requirements
+remain open until their implementations and actual results are recorded in the
+linked Issues; this chapter does not discharge QS, PR or quantitative RS.
+
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
